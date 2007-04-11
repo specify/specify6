@@ -16,7 +16,7 @@
     <icon name="Export"     file="import.png" sizes="all"/>
     
     <icon name="Configure"  file="configure.gif" sizes="all"/>
-    <icon name="OnRamp"     file="workbench.gif" sizes="all"/>
+    <icon name="Workbench"     file="workbench.gif" sizes="all"/>
     <icon name="Data_Entry" file="form.gif" sizes="all"/>
     <icon name="Taxon_Tree" file="taxon.gif" sizes="all"/>
     <icon name="Labels"     file="labels.gif" sizes="all"/>
@@ -85,7 +85,6 @@
     <icon name="Repository Agreement" alias="Accession"/>
     <icon name="Reference Work"    alias="ReferenceWork"/>
     <icon name="ConvertGeoRef"	   alias="Configure"/>
-    <icon name="OnRamp"	           alias="Workbench"/>
     
     <icon name="Startup"	   alias="AppIcon"/>
     

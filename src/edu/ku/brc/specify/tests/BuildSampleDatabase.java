@@ -885,10 +885,11 @@ public class BuildSampleDatabase
         ////////////////////////////////
         
         // setup a template and its mapping items
-        WorkbenchTemplate wbTemplate = createWorkbenchTemplate(user, "BasicTemplate", "These are the remarks");
+        String name = "Simple DataSet";
+        WorkbenchTemplate wbTemplate = createWorkbenchTemplate(user, name, "These are the remarks");
         WorkbenchTemplateMappingItem wbtmi0 = createWorkbenchMappingItem("CollectionObject", 
                                                                         1, "fieldNumber", "Field Number", 25, 0, 0, wbTemplate);
-        WorkbenchTemplateMappingItem wbtmi1 = createWorkbenchMappingItem("CollectionObject", 
+        WorkbenchTemplateMappingItem wbtmi1 = createWorkbenchMappingItem("CollectionObject",    
                                                                         1, "catalogedDate", "Cataloged Date", 25, 1, 1, wbTemplate);
         WorkbenchTemplateMappingItem wbtmi2 = createWorkbenchMappingItem("CollectionObject", 
                                                                         1, "catalogNumber", "Catalog Number", 25, 2, 2, wbTemplate);
@@ -902,7 +903,7 @@ public class BuildSampleDatabase
         dataObjects.add(wbtmi3);
 
         // setup a workbench based on that template
-        Workbench         workBench  = createWorkbench(user, "My Workbench", "These are the remarks", "field_notebook.cvs", wbTemplate);
+        Workbench         workBench  = createWorkbench(user, name, "These are the remarks", "field_notebook.cvs", wbTemplate);
         dataObjects.add(workBench);
 
         // create a bunch of rows for the workbench

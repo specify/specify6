@@ -51,7 +51,6 @@ import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxAction;
 import edu.ku.brc.af.core.NavBoxItemIFace;
-import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskCommandDef;
@@ -113,25 +112,25 @@ public class WorkbenchTask extends BaseTask
 {
 	private static final Logger log = Logger.getLogger(WorkbenchTask.class);
     
-	public static final DataFlavor WORKBENCH_FLAVOR      = new DataFlavor(WorkbenchTask.class, "OnRamp");
-    public static final String     WORKBENCH             = "OnRamp";
-    public static final String     WORKBENCHTEMPLATE     = "OnRampTemplate";
-    public static final String     NEW_WORKBENCH         = "New OnRamp";
+	public static final DataFlavor WORKBENCH_FLAVOR      = new DataFlavor(WorkbenchTask.class, "Workbench");
+    public static final String     WORKBENCH             = "Workbench";
+    public static final String     WORKBENCHTEMPLATE     = "WorkbenchTemplate";
+    public static final String     NEW_WORKBENCH         = "New Workbench";
     public static final String     NEW_TEMPLATE          = "New Template";
     public static final String     IMPORT_DATA_FILE      = "New Template From File";
     public static final String     SELECTED_TEMPLATE     = "Selected Template";
-    public static final String     SELECTED_WORKBENCH    = "Selected OnRamp";
+    public static final String     SELECTED_WORKBENCH    = "Selected Workbench";
     public static final String     WB_BARCHART           = "WB_BARCHART";
     public static final String     PRINT_REPORT          = "PrintReport";
     public static final String     WB_TOP10_REPORT       = "WB_TOP10_REPORT";
     public static final String     WB_IMPORTCARDS        = "WB_IMPORT_CARDS";
     public static final String     EXPORT_DATA_FILE      = "Export Data";
     public static final String     EXPORT_TEMPLATE       = "Export Template";
+    public static final String     REUSE_MAPPING         = "Reuse Mapping";
     
     protected static WeakReference<DBTableIdMgr> databasechema = null;
 
     // Data Members
-    protected NavBox                      templateNavBox;
     protected NavBox                      workbenchNavBox;
     protected Vector<ToolBarDropDownBtn>  tbList         = new Vector<ToolBarDropDownBtn>();
     protected Vector<JComponent>          menus          = new Vector<JComponent>();
@@ -168,16 +167,17 @@ public class WorkbenchTask extends BaseTask
             
             RolloverCommand roc = null;
             NavBox navBox = new NavBox(getResourceString("Actions"));
-            makeDnDNavBtn(navBox, getResourceString("WB_IMPORTDATA"),   "Import", new CommandAction(WORKBENCH, IMPORT_DATA_FILE, wbTblId), null, false);// true means make it draggable
-            makeDnDNavBtn(navBox, getResourceString(WB_IMPORTCARDS),    "Import", new CommandAction(WORKBENCH, WB_IMPORTCARDS, wbTblId),   null, false);// true means make it draggable
-            makeDnDNavBtn(navBox, getResourceString("WB_NEW_TEMPLATE"), "PlusSign", new CommandAction(WORKBENCH, NEW_TEMPLATE, wbTmpTblId),     null, false);// true means make it draggable
-            makeDnDNavBtn(navBox, getResourceString("WB_NEW_DATASET"),  "PlusSign", new CommandAction(WORKBENCH, NEW_WORKBENCH, wbTblId),    null, false);// true means make it draggable
+            makeDnDNavBtn(navBox, getResourceString("WB_IMPORTDATA"), "Import", getResourceString("WB_IMPORTDATA_TT"), new CommandAction(WORKBENCH, IMPORT_DATA_FILE, wbTblId), null, false);// true means make it draggable
+            makeDnDNavBtn(navBox, getResourceString(WB_IMPORTCARDS),  "Import", getResourceString("WB_IMPORTCARDS_TT"), new CommandAction(WORKBENCH, WB_IMPORTCARDS, wbTblId),   null, false);// true means make it draggable
             
-            roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_EXPORT_DATA"),   "Export", new CommandAction(WORKBENCH, EXPORT_DATA_FILE, wbTblId), null, true);// true means make it draggable
+            makeDnDNavBtn(navBox, getResourceString("WB_REUSE_MAPPING"), "PlusSign", getResourceString("WB_REUSE_MAPPING_TT"), new CommandAction(WORKBENCH, REUSE_MAPPING, wbTmpTblId), null, false);// true means make it draggable
+            makeDnDNavBtn(navBox, getResourceString("WB_NEW_DATASET"),   "PlusSign", getResourceString("WB_NEW_DATASET_TT"), new CommandAction(WORKBENCH, NEW_TEMPLATE, wbTblId),     null, false);// true means make it draggable
+            
+            roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_EXPORT_DATA"), "Export", getResourceString("WB_EXPORT_DATA_TT"), new CommandAction(WORKBENCH, EXPORT_DATA_FILE, wbTblId), null, true);// true means make it draggable
             roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
             roc.addDragDataFlavor(new DataFlavor(Workbench.class, EXPORT_DATA_FILE));
             
-            roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_EXPORT_TEMPLATE"),   "Export", new CommandAction(WORKBENCH, EXPORT_TEMPLATE, wbTmpTblId), null, true);// true means make it draggable
+            roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_EXPORT_TEMPLATE"), "Export", getResourceString("WB_EXPORT_TEMPLATE_TT"),new CommandAction(WORKBENCH, EXPORT_TEMPLATE, wbTmpTblId), null, true);// true means make it draggable
             roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCHTEMPLATE));
             roc.addDragDataFlavor(new DataFlavor(Workbench.class, EXPORT_TEMPLATE));
             
@@ -187,15 +187,8 @@ public class WorkbenchTask extends BaseTask
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             try
             {
-                templateNavBox = new NavBox(getResourceString("Templates"), true);           
-                List list      = session.getDataList("From WorkbenchTemplate where SpecifyUserID = "+SpecifyUser.getCurrentUser().getSpecifyUserId());
-                for (Object obj : list)
-                {
-                    addTemplateToNavBox((WorkbenchTemplate)obj);
-                }
-                
                 workbenchNavBox = new NavBox(getResourceString("WB_DATASETS"));
-                list            = session.getDataList("From Workbench where SpecifyUserID = "+SpecifyUser.getCurrentUser().getSpecifyUserId());
+                List list       = session.getDataList("From Workbench where SpecifyUserID = "+SpecifyUser.getCurrentUser().getSpecifyUserId());
                 dataSetCount    = list.size();
                 for (Object obj : list)
                 {
@@ -271,7 +264,7 @@ public class WorkbenchTask extends BaseTask
             }
             
             // Add these last and in order
-            navBoxes.addElement(templateNavBox);
+            // TEMPLATES navBoxes.addElement(templateNavBox);
             navBoxes.addElement(workbenchNavBox);
             
             updateNavBoxUI(dataSetCount);
@@ -303,39 +296,6 @@ public class WorkbenchTask extends BaseTask
     }
     
     /**
-     * Adds a WorkbenchTemplate to the Left Pane NavBox.
-     * @param workbenchTemplate the template to be added
-     */
-    protected void addTemplateToNavBox(final WorkbenchTemplate workbenchTemplate)
-    {
-        CommandAction cmd = new CommandAction(WORKBENCH, SELECTED_TEMPLATE, WorkbenchTemplate.getClassTableId());
-        RecordSet     rs  = new RecordSet(workbenchTemplate.getName(), WorkbenchTemplate.getClassTableId());
-        rs.addItem(workbenchTemplate.getWorkbenchTemplateId());
-        cmd.setProperty("template", rs);
-        
-        final RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(templateNavBox, 
-                                                                   workbenchTemplate.getName(),
-                                                                   "Template", 
-                                                                   cmd, 
-                                                                   new CommandAction(WORKBENCH, DELETE_CMD_ACT, rs), 
-                                                                   true);// true means make it draggable
-        roc.setData(rs);
-        roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
-        roc.addDragDataFlavor(new DataFlavor(Workbench.class, WORKBENCHTEMPLATE));
-        roc.addDropDataFlavor(new DataFlavor(Workbench.class, EXPORT_TEMPLATE));
-        
-        JPopupMenu popupMenu = new JPopupMenu();
-        UIHelper.createMenuItem(popupMenu, getResourceString("WB_EDIT_PROPS"), getResourceString("WB_EDIT_PROPS_MNEU"), null, true, new ActionListener() {
-            public void actionPerformed(ActionEvent e)
-            {
-                editWorkbenchTemplateProps(roc);
-            }
-        });
-        roc.setPopupMenu(popupMenu);
-        
-     }
-    
-    /**
      * Adds a WorkbenchTemplate to the Left Pane NavBox
      * @param workbench the workbench to be added
      */
@@ -348,6 +308,7 @@ public class WorkbenchTask extends BaseTask
         final RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(workbenchNavBox, workbench.getName(), name, cmd, 
                                                                    new CommandAction(WORKBENCH, DELETE_CMD_ACT, rs), 
                                                                    true);// true means make it draggable
+        roc.setToolTip(getResourceString("WB_CLICK_EDIT_DATA_TT"));
         roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
         
         roc.addDropDataFlavor(new DataFlavor(Workbench.class, EXPORT_DATA_FILE));
@@ -362,6 +323,30 @@ public class WorkbenchTask extends BaseTask
                 editWorkbenchProps(roc);
             }
         });
+        UIHelper.createMenuItem(popupMenu, getResourceString("WB_EDIT_DATASET_MAPPING"), getResourceString("WB_EDIT_DATASET_MAPPING_MNEU"), null, true, new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                Object cmdData = roc.getData();
+                if (cmdData != null && cmdData instanceof CommandAction)
+                {
+                    CommandAction subCmd = (CommandAction)cmdData;
+                    if (subCmd.getTableId() == Workbench.getClassTableId())
+                    {
+                        Workbench         wb = selectWorkbench(subCmd);
+                        if (wb != null)
+                        {
+                            WorkbenchTemplate template  = wb.getWorkbenchTemplate();
+                            editTemplate(template);
+                            
+                        } else
+                        {
+                            log.error("No Workbench selected or found.");
+                        }
+                    }
+                }
+            }
+        });
+
         roc.setPopupMenu(popupMenu);
 
     }
@@ -411,6 +396,7 @@ public class WorkbenchTask extends BaseTask
     {
         if (roc != null)
         {
+            
             WorkbenchTemplate workbenchTemplate = loadWorkbenchTemplate((RecordSet)roc.getData());
             if (workbenchTemplate != null && askUserForInfo("WorkbenchTemplate", getResourceString("WB_TEMPLATE_INFO"), workbenchTemplate))
             {
@@ -732,8 +718,6 @@ public class WorkbenchTask extends BaseTask
                 session.commit();
                 session.flush();
                 
-                addTemplateToNavBox(workbenchTemplate);
-                
             } catch (Exception ex)
             {
                 log.error(ex);
@@ -849,7 +833,7 @@ public class WorkbenchTask extends BaseTask
                     helpContext);
             dlg.setCloseOnApply(true);
             dlg.setOkLabel(getResourceString(colInfo != null ? "WB_REUSE" : "OK"));
-            dlg.setApplyLabel(getResourceString("WB_NEW_TEMPLATE"));
+            dlg.setApplyLabel(getResourceString("WB_NEW_DATASET"));
             dlg.setModal(true);
             UIHelper.centerAndShow(dlg);
             
@@ -966,6 +950,47 @@ public class WorkbenchTask extends BaseTask
     }
     
     /**
+     * @param cmdAction
+     */
+    protected void createNewReuseTemplate(final CommandAction cmdAction)
+    {
+       // Check incoming command for a RecordSet contain the Workbench
+       Workbench workbench  = null;
+       Object    data = cmdAction.getData();
+       if (data instanceof CommandAction)
+       {
+           CommandAction subCmd = (CommandAction)data;
+           if (subCmd != cmdAction)
+           {
+               if (subCmd.getTableId() == cmdAction.getTableId())
+               {
+                   workbench = selectWorkbench(subCmd);
+               }
+           }
+       }
+       
+       // The command may have been clicked on so ask for one
+       if (workbench == null)
+       {
+           workbench = selectWorkbench(cmdAction);
+       }
+
+       if (workbench != null)
+       {
+           try
+           {
+               WorkbenchTemplate newTemplate  = (WorkbenchTemplate)workbench.getWorkbenchTemplate().clone();
+               createNewWorkbench(newTemplate);
+           }
+           catch (Exception ex)
+           {
+               log.error(ex);
+           }
+       }
+       UICacheManager.getStatusBar().setText("");
+    }
+    
+    /**
      * Exports a Workbench to xls or csv format.
      * @param cmdAction the incoming command request
      */
@@ -1050,7 +1075,7 @@ public class WorkbenchTask extends BaseTask
            {
                if (subCmd.getTableId() == cmdAction.getTableId())
                {
-                   workbenchTemplate = selectWorkbenchTemplate(subCmd, "OnRampTemplateExporting");
+                   workbenchTemplate = selectWorkbenchTemplate(subCmd, "WorkbenchTemplateExporting");
                    
                } else
                {
@@ -1061,7 +1086,7 @@ public class WorkbenchTask extends BaseTask
        
        if (workbenchTemplate == null)
        {
-           workbenchTemplate = selectWorkbenchTemplate(cmdAction, "OnRampTemplateExporting");
+           workbenchTemplate = selectWorkbenchTemplate(cmdAction, "WorkbenchTemplateExporting");
        }
 
        // The command may have been clicked on so ask for one
@@ -1169,7 +1194,7 @@ public class WorkbenchTask extends BaseTask
             ImportDataFileInfo dataFileInfo = new ImportDataFileInfo();
             if (dataFileInfo.load(file))
             {
-                int btnPressed = selectExistingTemplate(dataFileInfo.getColInfo(), "OnRampImportData");
+                int btnPressed = selectExistingTemplate(dataFileInfo.getColInfo(), "WorkbenchImportData");
                 workbenchTemplate = selectedTemplate;
                 selectedTemplate  = null;
                 if (btnPressed == ChooseFromListDlg.APPLY_BTN)
@@ -1371,7 +1396,6 @@ public class WorkbenchTask extends BaseTask
             {
                 tmpSession = DataProviderFactory.getInstance().createSession();
                 tmpSession.attach(workbench);
-               
             }
             
             workbench.forceLoad();
@@ -1397,16 +1421,6 @@ public class WorkbenchTask extends BaseTask
                          } else
                          {
                              log.error("Couldn't find RolloverCommand for WorkbenchId ["+workbench.getWorkbenchId()+"]");
-                         }
-                         
-                         roc = getNavBtnById(templateNavBox, workbench.getWorkbenchTemplate().getWorkbenchTemplateId(), "template");
-                         if (roc != null)
-                         {
-                             roc.setEnabled(false);
-                             
-                         } else
-                         {
-                             log.error("Couldn't find RolloverCommand for WorkbenchTemplateId ["+workbench.getWorkbenchTemplate().getWorkbenchTemplateId()+"]");
                          }
                          
                          if (session == null && finiSession != null)
@@ -1452,6 +1466,7 @@ public class WorkbenchTask extends BaseTask
                     log.error("Couldn't find RolloverCommand for WorkbenchId ["+workbench.getWorkbenchId()+"]");
                 }
                 
+                /* TEMPLATES
                 roc = getNavBtnById(templateNavBox, workbench.getWorkbenchTemplate().getWorkbenchTemplateId(), "template");
                 if (roc != null)
                 {
@@ -1460,7 +1475,7 @@ public class WorkbenchTask extends BaseTask
                 } else
                 {
                     log.error("Couldn't find RolloverCommand for WorkbenchTemplateId ["+workbench.getWorkbenchTemplate().getWorkbenchTemplateId()+"]");
-                }
+                }*/
             }
         }
     }
@@ -1471,21 +1486,36 @@ public class WorkbenchTask extends BaseTask
      * @param wbTemplateIsNew the WorkbenchTemplate is brand new (not reusing an existing template)
      * @return the new workbench
      */
-    protected Workbench createNewWorkbench(final WorkbenchTemplate workbenchTemplate)
+    protected Workbench createNewWorkbench(final WorkbenchTemplate workbenchTemplateArg)
     {
+        boolean isNewTemplate = workbenchTemplateArg.getWorkbenchTemplateId() == null;
+        
         Workbench workbench = null;
         
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
-            session.attach(workbenchTemplate);
+            WorkbenchTemplate workbenchTemplate;
+            if (!isNewTemplate)
+            {
+                session.attach(workbenchTemplateArg);
+                workbenchTemplateArg.forceLoad();
+                workbenchTemplate = (WorkbenchTemplate)workbenchTemplateArg.clone();
+            } else
+            {
+                workbenchTemplate = workbenchTemplateArg;
+            }
             
             workbench = createNewWorkbenchDataObj(workbenchTemplate, false);
+            
             if (workbench != null)
             {
+                workbenchTemplate.setName(workbench.getName());
+                
                 workbench.addRow();
     
                 session.beginTransaction();
+                session.save(workbenchTemplate);
                 session.save(workbench);
                 session.commit();
                 session.flush();
@@ -1501,7 +1531,13 @@ public class WorkbenchTask extends BaseTask
             
         } finally
         {
-            session.close();
+            try
+            {
+                session.close();
+            } catch (Exception ex)
+            {
+                log.error(ex);
+            }
         }
         
         
@@ -1541,12 +1577,15 @@ public class WorkbenchTask extends BaseTask
                     try
                     {
                         session.attach(workbench);
-                        
-                        workbench.getWorkbenchTemplate().getWorkbenches().remove(workbench);
-                        workbench.setWorkbenchTemplate(null);
-                    
                         session.beginTransaction();
+                        
+                        WorkbenchTemplate template = workbench.getWorkbenchTemplate();
+                        //template.getWorkbenches().clear();
+                        //workbench.setWorkbenchTemplate(null);
+                        
                         session.delete(workbench);
+                        session.delete(template);
+                        
                         session.commit();
                         session.flush();
                         
@@ -1557,11 +1596,17 @@ public class WorkbenchTask extends BaseTask
                     } catch (Exception ex)
                     {
                         ex.printStackTrace();
-                        // XXX Error Dialog
                         
                     } finally 
                     {
-                        session.close();
+                        try
+                        {
+                            session.close();
+                            
+                        } catch (Exception ex)
+                        {
+                            log.error(ex);
+                        }
                     }
                     log.info("Deleted a Workbench ["+workbench.getName()+"]");
                 } else
@@ -1583,120 +1628,6 @@ public class WorkbenchTask extends BaseTask
         worker.start();
 
     }
-    
-    /**
-     * Deletes a workbench.
-     * @param workbench the workbench to be deleted
-     */
-    protected void deleteWorkbenchTemplate(final RecordSet recordSet)
-    {
-        WorkbenchTemplate workbenchTemplate = loadWorkbenchTemplate(recordSet);
-        if (workbenchTemplate == null)
-        {
-            return;
-        }
-            
-        boolean okToDel = false;
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        try
-        {
-            session.attach(workbenchTemplate);
-            
-            if (workbenchTemplate.getWorkbenches().size() > 0)
-            {
-                String msg = String.format(getResourceString("WBT_DEL_MSG"), new Object[] {workbenchTemplate.getWorkbenches().size()});
-                okToDel = UICacheManager.displayConfirm(getResourceString("WBT_DEL_TITLE"), 
-                                                        msg, 
-                                                        getResourceString("WBT_DELBTN"), 
-                                                        getResourceString("Cancel"),
-                                                        JOptionPane.QUESTION_MESSAGE);
-            } else
-            {
-                okToDel = true;
-            }
-            session.evict(workbenchTemplate);
-            
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-            // XXX Error Dialog
-            
-        } finally 
-        {
-            
-            session.evict(WorkbenchTemplate.class);
-            session.close();
-        }
-        
-        if (!okToDel)
-        {
-            return;
-        }
-
-        UICacheManager.writeGlassPaneMsg(String.format(getResourceString("WB_DELETING_TEMPLATE"), new Object[] {workbenchTemplate.getName()}), 32);
-
-        final WorkbenchTemplate delTemplate = workbenchTemplate;
-        final SwingWorker worker = new SwingWorker()
-        {
-            public Object construct()
-            {
-                try
-                {
-                    Thread.sleep(500);
-                    
-                } catch (Exception ex) {}
-                
-                 DataProviderSessionIFace swSession = DataProviderFactory.getInstance().createSession();
-                 try
-                 {
-                     swSession.attach(delTemplate);
-                     
-                     NavBoxItemIFace nbi = getBoxByTitle(templateNavBox, delTemplate.getName());
-                     if (nbi != null)
-                     {
-                         templateNavBox.remove(nbi);
-                         
-                         swSession.beginTransaction();
-                         for (Workbench wb : delTemplate.getWorkbenches())
-                         {
-                             NavBoxItemIFace wbNBI = getBoxByTitle(workbenchNavBox, wb.getName());
-                             workbenchNavBox.remove(wbNBI);
-                             swSession.delete(wb);                                
-                         }
-                         delTemplate.getWorkbenches().clear();
-                         swSession.delete(delTemplate);
-                         swSession.commit();
-                         swSession.flush();
-                         log.info("Deleted a Workbench ["+delTemplate.getName()+"]");
-                         
-                         updateNavBoxUI(null);
-                         
-                         NavBoxMgr.getInstance().validate();
-
-                     }
-                             
-                 } catch (Exception ex)
-                 {
-                     log.error(ex);
-                     
-                 } finally 
-                 {
-                     swSession.close();
-                 }
-
-                return null;
-            }
-
-            //Runs on the event-dispatching thread.
-            public void finished()
-            {
-                UICacheManager.clearGlassPaneMsg();
-                UICacheManager.getStatusBar().setText(String.format(getResourceString("WB_DELETED_TEMPLATE"), new Object[] {delTemplate.getName()}));
-            }
-        };
-        worker.start();
-    }
-    
     
     /**
      * Creates a report.
@@ -1777,58 +1708,83 @@ public class WorkbenchTask extends BaseTask
     @SuppressWarnings("unchecked")
     protected Workbench selectWorkbench(final CommandAction cmdAction)
     {
-        DataProviderSessionIFace session   = DataProviderFactory.getInstance().createSession();
-        
-        RecordSet recordSet = (RecordSet)cmdAction.getProperty("workbench");
-        if (recordSet == null)
-        {
-            Object data = cmdAction.getData();
-            if (data instanceof CommandAction)
-            {
-                recordSet = (RecordSet)((CommandAction)data).getProperty("workbench");
-                
-            } else if (data instanceof RecordSet)
-            {
-                recordSet = (RecordSet)data;
-            }
-        }
-        
-        if (recordSet != null && recordSet.getDbTableId() != Workbench.getClassTableId())
-        {
-            return null;
-        }
-        
         Workbench workbench = null;
-        if (recordSet == null)
+
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
         {
-            List<Workbench> list = (List<Workbench>)session.getDataList("From Workbench where SpecifyUserID = "+SpecifyUser.getCurrentUser().getSpecifyUserId());
-            if (list.size() == 0)
+            RecordSet recordSet = (RecordSet)cmdAction.getProperty("workbench");
+            if (recordSet == null)
             {
-                // XXX Probably should have a dialog here.
-                return null;
-                
-            } else if (list.size() == 1)
-            {
-                session.close();
-                return list.get(0);
+                Object data = cmdAction.getData();
+                if (data instanceof CommandAction)
+                {
+                    recordSet = (RecordSet)((CommandAction)data).getProperty("workbench");
+                    
+                } else if (data instanceof RecordSet)
+                {
+                    recordSet = (RecordSet)data;
+                }
             }
-            ChooseFromListDlg<Workbench> dlg = new ChooseFromListDlg<Workbench>((Frame)UICacheManager.get(UICacheManager.FRAME),
-                                                                                getResourceString("WB_CHOOSE_DATASET"), list);
-            dlg.setModal(true);
-            UIHelper.centerAndShow(dlg);
-            if (!dlg.isCancelled())
+            
+            if (recordSet != null && recordSet.getDbTableId() != Workbench.getClassTableId())
             {
-                workbench = dlg.getSelectedObject();
+                return null;
+            }
+            
+            if (recordSet == null)
+            {
+                List<Workbench> list = (List<Workbench>)session.getDataList("From Workbench where SpecifyUserID = "+SpecifyUser.getCurrentUser().getSpecifyUserId());
+                if (list.size() == 0)
+                {
+                    // XXX Probably should have a dialog here.
+                    return null;
+                    
+                } else if (list.size() == 1)
+                {
+                    list.get(0).getWorkbenchTemplate().forceLoad();
+                    return list.get(0);
+                }
+                session.close();
+                session = null;
+                
+                ChooseFromListDlg<Workbench> dlg = new ChooseFromListDlg<Workbench>((Frame)UICacheManager.get(UICacheManager.FRAME),
+                                                                                    getResourceString("WB_CHOOSE_DATASET"), list);
+                dlg.setModal(true);
+                UIHelper.centerAndShow(dlg);
+                if (!dlg.isCancelled())
+                {
+                    session = DataProviderFactory.getInstance().createSession();
+                    workbench = dlg.getSelectedObject();
+                    session.attach(workbench);
+                    workbench.getWorkbenchTemplate().forceLoad();
+                    
+                } else
+                {
+                    return null;
+                }
             } else
             {
-                session.close();
-                return null;
+                workbench = session.get(Workbench.class, recordSet.getItems().iterator().next().getRecordId());
             }
-        } else
+            
+        } catch (Exception ex)
         {
-            workbench = session.get(Workbench.class, recordSet.getItems().iterator().next().getRecordId());
+           log.error(ex); 
         }
-        session.close();
+        finally
+        {
+            if (session != null)
+            {
+                try
+                {
+                    session.close();
+                } catch (Exception ex)
+                {
+                    log.error(ex);
+                }
+            }
+        }
         return workbench;
     }
 
@@ -1917,7 +1873,7 @@ public class WorkbenchTask extends BaseTask
                 CustomDialog.OKCANCELHELP,
                 ToggleButtonChooserDlg.Type.RadioButton);
         
-        dlg.setHelpContext("OnRampReporting");
+        dlg.setHelpContext("WorkbenchReporting");
         dlg.setModal(true);
         dlg.setVisible(true);  
         return dlg.isCancelled() ? null : dlg.getSelectedObject();
@@ -2100,7 +2056,13 @@ public class WorkbenchTask extends BaseTask
                 
             } finally
             {
-                session.close();    
+                try
+                {
+                    session.close();
+                } catch (Exception ex)
+                {
+                    log.error(ex);
+                }  
             }
         }
     }
@@ -2110,7 +2072,7 @@ public class WorkbenchTask extends BaseTask
      */
     protected void importCardImages()
     {
-        int               btnPressed        = selectExistingTemplate(null, "OnRampImportImages");
+        int               btnPressed        = selectExistingTemplate(null, "WorkbenchImportImages");
         WorkbenchTemplate workbenchTemplate = selectedTemplate;
         selectedTemplate  = null;
         
@@ -2172,7 +2134,13 @@ public class WorkbenchTask extends BaseTask
                         
                     } finally
                     {
-                        session.close();    
+                        try
+                        {
+                            session.close();
+                        } catch (Exception ex)
+                        {
+                            log.error(ex);
+                        }
                     }
                 } else
                 {
@@ -2311,7 +2279,13 @@ public class WorkbenchTask extends BaseTask
                         
                     } finally
                     {
-                        session.close();    
+                        try
+                        {
+                            session.close();
+                        } catch (Exception ex)
+                        {
+                            log.error(ex);
+                        }    
                     }
 
                 } else
@@ -2485,6 +2459,10 @@ public class WorkbenchTask extends BaseTask
                 createTemplateFromFile();
             }
             
+        } else if (cmdAction.isAction(REUSE_MAPPING))
+        {
+            createNewReuseTemplate(cmdAction);
+            
         } else if (cmdAction.isAction(EXPORT_DATA_FILE))
         {
             exportWorkbench(cmdAction);
@@ -2504,7 +2482,7 @@ public class WorkbenchTask extends BaseTask
         {
             if (isClickedOn)
             {
-                WorkbenchTemplate workbenchTemplate = selectWorkbenchTemplate(cmdAction, "OnRampNewDataSet");
+                WorkbenchTemplate workbenchTemplate = selectWorkbenchTemplate(cmdAction, "WorkbenchNewDataSet");
                 if (workbenchTemplate != null)
                 {
                     createNewWorkbench(workbenchTemplate);
@@ -2532,9 +2510,6 @@ public class WorkbenchTask extends BaseTask
                 {
                     deleteWorkbench(rs);
                     
-                } else if (rs.getDbTableId() == WorkbenchTemplate.getClassTableId())
-                {
-                    deleteWorkbenchTemplate(rs);
                 }
             }
         }

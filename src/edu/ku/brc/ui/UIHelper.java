@@ -1518,5 +1518,31 @@ public final class UIHelper
         }
         return false;
     }
+    
+    /**
+     * Takes a string and separates the 'names' inside by the capitial letters.
+     * @param nameToFix the name to fix
+     * @return the new name with spaces in it
+     */
+    public static String makeNamePretty(final String nameToFix)
+    {
+        StringBuilder s = new StringBuilder();
+        for (int i=0;i<nameToFix.length();i++)
+        {
+            if (i == 0) 
+            {
+                s.append(Character.toUpperCase(nameToFix.charAt(i)));
+            } else
+            {
+                char c = nameToFix.charAt(i);
+                if (Character.isUpperCase(c))
+                {
+                    s.append(' ');
+                }
+                s.append(c);
+            }
+        }
+        return s.toString();  
+    }
 
 }

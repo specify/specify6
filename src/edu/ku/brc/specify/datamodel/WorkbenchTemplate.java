@@ -318,5 +318,30 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
         if(name!=null)return name;
         return super.getIdentityTitle();
     }
+    
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#clone()
+     */
+    public Object clone() throws CloneNotSupportedException
+    {
+        WorkbenchTemplate wbt = (WorkbenchTemplate)super.clone();
+        wbt.workbenchTemplateId = null;
+        wbt.name        = name;
+        wbt.remarks     = remarks;
+        wbt.specifyUser = specifyUser;
+        wbt.srcFilePath = srcFilePath;
+        
+        wbt.workbenches                   = new HashSet<Workbench>();
+        wbt.workbenchTemplateMappingItems = new HashSet<WorkbenchTemplateMappingItem>();
+        
+        for (WorkbenchTemplateMappingItem item : workbenchTemplateMappingItems)
+        {
+            wbt.workbenchTemplateMappingItems.add((WorkbenchTemplateMappingItem)item.clone());
+        }
+        
+        return wbt;
+
+    }
 
 }

@@ -424,6 +424,33 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     {
         return getClassTableId();
     }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#clone()
+     */
+    public Object clone() throws CloneNotSupportedException
+    {
+        WorkbenchTemplateMappingItem wbtmi = (WorkbenchTemplateMappingItem)super.clone();
+        wbtmi.tableName             = tableName;
+        wbtmi.srcTableId            = srcTableId;
+        wbtmi.fieldName             = fieldName;
+        wbtmi.importedColName       = fieldName;
+        wbtmi.caption               = caption;
+        wbtmi.viewOrder             = viewOrder;
+        wbtmi.origImportColumnIndex = origImportColumnIndex;
+        wbtmi.dataFieldLength       = dataFieldLength;
+        wbtmi.fieldType             = fieldType;
+        wbtmi.workbenchTemplate     = workbenchTemplate;
+        wbtmi.metaData              = metaData;
+        wbtmi.xCoord                = xCoord;
+        wbtmi.yCoord                = yCoord;
+        wbtmi.carryForward          = carryForward;
+        wbtmi.isExportableToContent = isExportableToContent;
+        wbtmi.isIncludedInTitle     = isIncludedInTitle;
+        wbtmi.isRequired            = isRequired;
+
+        return wbtmi;
+    }
 
     /**
      * @return the Table ID for the class.

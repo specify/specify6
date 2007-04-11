@@ -45,7 +45,7 @@ public class FieldInfo extends TableFieldPair implements TableListItemIFace
      */
     public String getText()
     {
-        return fieldInfo.getName();
+        return fieldInfo.getColumn();
     }
 
     /* (non-Javadoc)

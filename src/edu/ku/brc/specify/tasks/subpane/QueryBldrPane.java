@@ -51,6 +51,7 @@ import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.tasks.subpane.TableNameRenderer.TableNameRendererIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.MultiStateIconButon;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * @author rod
@@ -156,7 +157,7 @@ public class QueryBldrPane extends BaseSubPane
                     DBTableIdMgr.TableInfo trTI = DBTableIdMgr.getInstance().getByClassName(tr.getClassName());
                     if (alreadyThere.get(trTI.getClassObj()) == null)
                     {
-                        tempList.add(new TableInfo(trTI, ti.getTitle() + " - " + fixName(tr.getName()), trTI.getClassObj().getSimpleName()));
+                        tempList.add(new TableInfo(trTI, ti.getTitle() + " - " + UIHelper.makeNamePretty(tr.getName()), trTI.getClassObj().getSimpleName()));
                         //alreadyThere.put(trTI.getClassObj(), true);
                         
                         Vector<TableFieldPair> fldList = new Vector<TableFieldPair>();
@@ -338,26 +339,7 @@ public class QueryBldrPane extends BaseSubPane
             });
         }
     }
-    protected String fixName(final String nameToFix)
-    {
-        StringBuilder s = new StringBuilder();
-        for (int i=0;i<nameToFix.length();i++)
-        {
-            if (i == 0) 
-            {
-                s.append(Character.toUpperCase(nameToFix.charAt(i)));
-            } else
-            {
-                char c = nameToFix.charAt(i);
-                if (Character.isUpperCase(c))
-                {
-                    s.append(' ');
-                }
-                s.append(c);
-            }
-        }
-        return s.toString();  
-    }
+
 
     //------------------------------------------------------------
     // One of the Criteria for the search
