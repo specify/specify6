@@ -109,7 +109,7 @@ public class CustomFrame extends JFrame
     {
         super(title);
         
-        this.whichBtns = OK_BTN | CANCEL_BTN;
+        this.whichBtns = whichBtns;
         this.contentPanel = contentPanel;
     }
 

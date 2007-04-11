@@ -6,12 +6,23 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
+
+import java.awt.BorderLayout;
+import java.awt.Font;
 import java.io.File;
 import java.util.Vector;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 
 import org.apache.commons.io.FilenameUtils;
 
 import edu.ku.brc.specify.datamodel.Workbench;
+import edu.ku.brc.ui.CustomFrame;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * @author timbo
@@ -24,6 +35,7 @@ public class ImportDataFileInfo
 {
     protected static String XLS_MIME_TYPE = "bindary/xls";
     protected static String CSV_MIME_TYPE = "text/csv";
+    protected static String MODIFIED_IMPORT_DATA = "WB_MODIFIED_IMPORT_DATA";
     
     protected DataImportIFace importer;
     
@@ -71,13 +83,53 @@ public class ImportDataFileInfo
     }
 
     /**
+     *  shows modified (truncated) data after import
+     */
+    protected void showModifiedData()
+    {
+        JPanel mainPane = new JPanel(new BorderLayout());
+        JLabel msg = new JLabel(getResourceString("WB_TRUNCATIONS"));
+        msg.setFont(msg.getFont().deriveFont(Font.BOLD));
+        mainPane.add(msg, BorderLayout.NORTH);
+        String[] heads = new String[3];
+        String[][] vals = new String[importer.getTruncations().size()][3];
+        heads[0] = getResourceString("WB_ROW");
+        heads[1] = getResourceString("WB_COLUMN");
+        heads[2] = getResourceString("WB_TRUNCATED");
+        int row = 0;
+        for (DataImportTruncation trunc : importer.getTruncations())
+        {
+            vals[row][0] = String.valueOf(trunc.getRow());
+            vals[row][1] = trunc.getColHeader();
+            if (vals[row][1] == "")
+            {
+                vals[row][1] = String.valueOf(trunc.getCol());
+            }
+            vals[row++][2] = trunc.getExcluded();
+        }
+        
+        JTable mods = new JTable(vals, heads);
+        
+        mainPane.add(new JScrollPane(mods), BorderLayout.CENTER);
+        
+        CustomFrame cwin = new CustomFrame(getResourceString(MODIFIED_IMPORT_DATA), CustomFrame.OKHELP, mainPane);
+        cwin.setHelpContext("WorkbenchImportData"); //help context could be more specific
+        UIHelper.centerAndShow(cwin);
+    }
+    
+    /**
      * @param workbench the workbench to be loaded
      * @param workbench
      * @return
      */
     public DataImportIFace.Status loadData(final Workbench workbench)
     {
-        return importer.getData(workbench);
+        DataImportIFace.Status result = importer.getData(workbench);
+        if (result == DataImportIFace.Status.Modified && importer.getTruncations().size() > 0) 
+        {
+            showModifiedData();
+        }
+        return result;
     }
 
     /**

@@ -24,7 +24,7 @@ public class DataImport
     protected Vector<DataImportTruncation> truncations;
     protected Status                     status = DataImportIFace.Status.None;
     // maximum length of text to be assigned to a workbench cell
-    public int                         MAX_FIELD_SIZE = 255;
+    public static int                         MAX_FIELD_SIZE = 256;
 
     protected String truncateIfNecessary(final String value,
                                          final int row,
@@ -40,9 +40,8 @@ public class DataImport
                                 final short col,
                                 final String colHeader)
     {
-        String truncVal = value.substring(0, MAX_FIELD_SIZE - 1);
-        truncations.add(new DataImportTruncation(row, col, colHeader, value, truncVal));
-        return truncVal;
+        truncations.add(new DataImportTruncation(row, col, colHeader, value));
+        return value.substring(0, MAX_FIELD_SIZE - 1);
     }
 
     public Vector<DataImportTruncation> getTruncations()

@@ -9,6 +9,9 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
+import edu.ku.brc.specify.tasks.subpane.wb.DataImport;
+
+
 /**
  * @author timbo
  *
@@ -21,7 +24,6 @@ public class DataImportTruncation
     protected short    col;
     protected String colHeader;
     protected String originalValue;
-    protected String truncatedValue;
 
     /**
      * @return the originalValue
@@ -40,14 +42,6 @@ public class DataImportTruncation
     }
 
     /**
-     * @return the truncatedValue
-     */
-    public String getTruncatedValue()
-    {
-        return truncatedValue;
-    }
-
-    /**
      * @return the col
      */
     public short getCol()
@@ -63,15 +57,21 @@ public class DataImportTruncation
         return colHeader;
     }
 
-    public DataImportTruncation(int row, short col, String colHeader, String originalValue,
-            String truncatedValue)
+    /**
+     * @return portion of original value that was not imported
+     */
+    public String getExcluded()
+    {
+        return this.originalValue.substring(DataImport.MAX_FIELD_SIZE);
+    }
+    
+    public DataImportTruncation(int row, short col, String colHeader, String originalValue)
     {
         super();
         this.row = row;
         this.col = col;
         this.colHeader = colHeader;
         this.originalValue = originalValue;
-        this.truncatedValue = truncatedValue;
-    }
+     }
 
 }
