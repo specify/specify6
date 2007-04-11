@@ -198,8 +198,8 @@ public class FileCache
 	}
 
 	/**
-	 * Set the max cache size.  Only enforced if
-	 * <code>enforceMaxSize</code> is set to true.
+	 * Set the max cache size.  Also turns on enforcement of the
+     * cache size limit.
 	 * 
 	 * @see #getMaxCacheSize()
 	 * @param kilobytes the new cache size limit, in kilobytes (using 1 kilobyte = 1000 bytes)
@@ -207,6 +207,7 @@ public class FileCache
 	public void setMaxCacheSize(int kilobytes)
 	{
 		maxCacheKb = kilobytes;
+        this.enforceMaxSize = true;
 	}
 
 	/**

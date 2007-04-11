@@ -744,6 +744,8 @@ public class UICacheManager
             try
             {
                 instance.longTermCache = new FileCache("longTerm.Cache");
+                // set the cache size to 20 MB
+                instance.longTermCache.setMaxCacheSize(20000);
             } catch (Exception ex)
             {
                 ex.printStackTrace();
