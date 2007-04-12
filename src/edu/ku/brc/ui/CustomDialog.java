@@ -246,6 +246,16 @@ public class CustomDialog extends JDialog
 
     }
     
+    public Component getContentPanel()
+    {
+        return contentPanel;
+    }
+
+    public void setContentPanel(Component contentPanel)
+    {
+        this.contentPanel = contentPanel;
+    }
+
     /**
      * Performs cancel action.
      */
@@ -296,11 +306,21 @@ public class CustomDialog extends JDialog
     public void setOkLabel(final String text)
     {
         this.okLabel = text;
+        
+        if (okBtn != null)
+        {
+            okBtn.setText(okLabel);
+        }
     }
 
     public void setCancelLabel(final String text)
     {
         this.cancelLabel = text;
+
+        if (cancelBtn != null)
+        {
+            cancelBtn.setText(cancelLabel);
+        }
     }
 
     public int getBtnPressed()
@@ -311,6 +331,11 @@ public class CustomDialog extends JDialog
     public void setApplyLabel(String applyLabel)
     {
         this.applyLabel = applyLabel;
+        
+        if (applyBtn != null)
+        {
+            applyBtn.setText(applyLabel);
+        }
     }
 
     public void setHelpContext(String helpContext)
@@ -321,6 +346,11 @@ public class CustomDialog extends JDialog
     public void setHelpLabel(String helpLabel)
     {
         this.helpLabel = helpLabel;
+        
+        if (helpBtn != null)
+        {
+            helpBtn.setText(helpLabel);
+        }
     }
 
     /*
