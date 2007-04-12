@@ -78,7 +78,9 @@ import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.extras.BGMRecordTableModel;
 import edu.ku.brc.specify.extras.BioGeoMancerMapper;
-import edu.ku.brc.specify.extras.BioGeoMancerMapper.MapperListener;
+import edu.ku.brc.specify.tasks.services.LocalityMapper.MapperListener;
+import edu.ku.brc.specify.tasks.services.biogeomancer.BioGeomancerQuerySummary;
+import edu.ku.brc.specify.tasks.services.biogeomancer.BioGeomancerResult;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
@@ -109,7 +111,7 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
     protected Locality            locality;
     protected JButton             infoBtn    = null;
     protected JProgressBar        progress   = null;
-    protected JTable              table;
+    protected JTable              bgResultsTable;
 
     protected JFrame              frame      = null;
     protected JButton             okBtn      = null;
@@ -137,12 +139,11 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
      */
     public void createInfoFrame(@SuppressWarnings("unused") final String domStr)
     {
- 
         try
         {
             frame = new JFrame();
             JPanel p = new JPanel(new BorderLayout());
-            p.add(createBGMPanel(XMLHelper.readFileToDOM4J(new File("biogeomancer.xml")), null), BorderLayout.CENTER);
+            p.add(createBGMPanel(XMLHelper.readFileToDOM4J(new File("biogeomancer.xml")), null, true), BorderLayout.CENTER);
 
             frame.setContentPane(p);
             frame.setVisible(true);
@@ -185,7 +186,6 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
                 progress.setIndeterminate(false);
                 progress.setVisible(false);
                 //frame.setData(getter.getDom());
-
             }
         });
     }
@@ -206,9 +206,8 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
      * @param name element
      * @return the data
      */
-    protected String getData(final Element element, final String name)
+    protected static String getData(final Element element, final String name)
     {
-
         Element node = (Element)element.selectSingleNode(name);
         if (node != null)
         {
@@ -220,8 +219,8 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
                 return data.substring(inx+1, einx);
             }
             return data;
-            
         }
+        
         // else
         // Although the name may not have been found it could be because no results came back
         log.debug("****** ["+name+"] was not found.");
@@ -300,13 +299,13 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
      * 
      * @param bioGeomancerResponseString the response from the BG service
      * @return the number of possible results found in the given response
-     * @throws Exception
+     * @throws Exception if parsing the response string fails
      */
     public static int getResultsCount(final String bioGeomancerResponseString) throws Exception
     {
         Element responseAsXml = XMLHelper.readStrToDOM4J(bioGeomancerResponseString);
         List<?> records = responseAsXml.selectNodes("//record");
-        return (records!=null) ? records.size() : 0;
+        return (records != null) ? records.size() : 0;
     }
 
     /**
@@ -314,7 +313,8 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
      * @param root the root DOM node of the document
      * @return a panel with the results
      */
-    public JPanel createBGMPanel(final Element root, final Window window)
+    @SuppressWarnings("null")
+    public JPanel createBGMPanel(final Element root, final Window window, final boolean createBtns)
     {
         String rowDef = UIHelper.createDuplicateJGoodiesDef("p", "2px", 19);
         PanelBuilder builder = new PanelBuilder(new FormLayout("p,2px,p,10px,p,2px,C:p:g", rowDef));
@@ -337,9 +337,13 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
 
            label.setPreferredSize(new Dimension(BGM_WIDTH, BGM_HEIGHT));
            
-           okBtn = new JButton(getResourceString("Accept"));
-           okBtn.setEnabled(false);
-           JButton closeBtn = new JButton(getResourceString("Close"));
+           JButton closeBtn = null;
+           if (createBtns)
+           {
+               okBtn = new JButton(getResourceString("Accept"));
+               okBtn.setEnabled(false);
+               closeBtn = new JButton(getResourceString("Close"));
+           }
            
            int rowInx = 13;
            String [] dataNames  = {"countryBoundingBox",   "matchedRecordCount", "boundingBox",  "boundingBoxCentroid",   "boundingBoxCentroidErrorRadius", "boundingBoxCentroidErrorRadiusUnits", "multiPointMatch",  "weightedCentroid"};
@@ -352,7 +356,7 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
 
            List<String[]> rowData = new ArrayList<String[]>();
            List<?> records = root.selectNodes("//record");
-           numResults = (records!=null) ? records.size() : 0;
+           numResults = (records != null) ? records.size() : 0;
            if (records != null && records.size() > 0)
            {
                String[] elementNames = {"country", "adm1", "adm2", "featureName", "featureType", "gazetteerSource", "InterpretedCoordinates", "offsetVector", "boundingBox", "InterpretedString"};
@@ -398,32 +402,35 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
            }
 
            BGMRecordTableModel bgmTableModel = new BGMRecordTableModel(rowData);
-           table = new JTable(bgmTableModel);
-           table.setShowVerticalLines(false);
-           table.setShowHorizontalLines(false);
-           table.setRowSelectionAllowed(true);
+           bgResultsTable = new JTable(bgmTableModel);
+           bgResultsTable.setShowVerticalLines(false);
+           bgResultsTable.setShowHorizontalLines(false);
+           bgResultsTable.setRowSelectionAllowed(true);
 
-           table.getSelectionModel().addListSelectionListener( new ListSelectionListener()
+           if (createBtns)
            {
-               public void valueChanged(ListSelectionEvent e)
+               bgResultsTable.getSelectionModel().addListSelectionListener( new ListSelectionListener()
                {
-                   if (!e.getValueIsAdjusting() && okBtn != null && table != null)
+                   public void valueChanged(ListSelectionEvent e)
                    {
-                       okBtn.setEnabled(table.getSelectedRowCount() > 0);
+                       if (!e.getValueIsAdjusting() && okBtn != null && bgResultsTable != null)
+                       {
+                           okBtn.setEnabled(bgResultsTable.getSelectedRowCount() > 0);
+                       }
                    }
-               }
-           });
-           
-           table.addMouseListener(new MouseAdapter() {
-               @Override
-               public void mouseClicked(MouseEvent e)
-               {
-                   if (e.getClickCount() == 2)
+               });
+               
+               bgResultsTable.addMouseListener(new MouseAdapter() {
+                   @Override
+                   public void mouseClicked(MouseEvent e)
                    {
-                       okBtn.doClick(); //emulate button click
+                       if (e.getClickCount() == 2)
+                       {
+                           okBtn.doClick(); //emulate button click
+                       }
                    }
-               }
-           });
+               });
+           }
            
            
            if (bgmTableModel.getRowCount() == 0)
@@ -432,12 +439,16 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
                
            } else if (bgmTableModel.getRowCount() == 1)
            {
-               table.setRowSelectionInterval(0, 0);
-               okBtn.setEnabled(true);
+               bgResultsTable.setRowSelectionInterval(0, 0);
+               
+               if (createBtns)
+               {
+                   okBtn.setEnabled(true);
+               }
            }
            
 
-           JScrollPane scrollPane = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+           JScrollPane scrollPane = new JScrollPane(bgResultsTable, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
            builder.add(scrollPane, cc.xywh(1,rowInx, 7, 1));
            rowInx += 2;
            
@@ -452,62 +463,67 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
            progress = new JProgressBar(0, 100);
            progress.setVisible(false);
            
-           btnBar.add(progress, cc.xy(1,1));
-           btnBar.add(ButtonBarFactory.buildOKCancelBar(okBtn, closeBtn), cc.xy(3,1));
-           builder.add(btnBar.getPanel(), cc.xywh(3,rowInx, 5, 1));
+           if (createBtns)
+           {
+               btnBar.add(progress, cc.xy(1,1));
+               btnBar.add(ButtonBarFactory.buildOKCancelBar(okBtn, closeBtn), cc.xy(3,1));
+               builder.add(btnBar.getPanel(), cc.xywh(3,rowInx, 5, 1));
 
-           closeBtn.addActionListener( new ActionListener() {
-               public void actionPerformed(ActionEvent e)
-               {
-                   if (window!=null)
+               closeBtn.addActionListener( new ActionListener() {
+                   public void actionPerformed(ActionEvent e)
                    {
-                       window.setVisible(false);
-                       window.dispose();
+                       if (window!=null)
+                       {
+                           window.setVisible(false);
+                           window.dispose();
+                       }
+                       else
+                       {
+                           frame.setVisible(false);
+                           frame.dispose();
+                           frame = null;
+                       }
                    }
-                   else
-                   {
-                       frame.setVisible(false);
-                       frame.dispose();
-                       frame = null;
-                   }
-               }
-           });
+               });
 
-           okBtn.addActionListener( new ActionListener() {
-               public void actionPerformed(ActionEvent e)
-               {
+               okBtn.addActionListener( new ActionListener() {
+                   public void actionPerformed(ActionEvent e)
+                   {
 
-                   String lonLatStr = (String)table.getModel().getValueAt(table.getSelectedRow(), 7);
-                   if (StringUtils.isNotEmpty(lonLatStr))
-                   {
-                       String[] coords = StringUtils.split(lonLatStr);
-                       longitude.setText(coords[0]);
-                       latitude.setText(coords[1]);
+                       String lonLatStr = (String)bgResultsTable.getModel().getValueAt(bgResultsTable.getSelectedRow(), 7);
+                       if (StringUtils.isNotEmpty(lonLatStr))
+                       {
+                           String[] coords = StringUtils.split(lonLatStr);
+                           longitude.setText(coords[0]);
+                           latitude.setText(coords[1]);
+                       }
+                       if (window!=null)
+                       {
+                           window.setVisible(false);
+                           window.dispose();
+                       }
+                       else
+                       {
+                           frame.setVisible(false);
+                           frame.dispose();
+                           frame = null;
+                       }
                    }
-                   if (window!=null)
-                   {
-                       window.setVisible(false);
-                       window.dispose();
-                   }
-                   else
-                   {
-                       frame.setVisible(false);
-                       frame.dispose();
-                       frame = null;
-                   }
-               }
-           });
+               });
+           }
 
         }
-        calcColumnWidths(table);
+        calcColumnWidths(bgResultsTable);
         return builder.getPanel();
     }
 
+    
+    
     /**
      * Calculates and sets the each column to it preferred size.
      * @param table the table to fix ups
      */
-    public static void calcColumnWidths(JTable table)
+    protected void calcColumnWidths(JTable table)
     {
         JTableHeader header = table.getTableHeader();
 
@@ -630,13 +646,8 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
                 {
                     public void actionPerformed(ActionEvent e)
                     {
-                        SwingUtilities.invokeLater(new Runnable() {
-                            public void run()
-                            {
-                                //createInfoFrame();
-                                getBioGeoMancerData();
-                            }
-                        });
+                        //createInfoFrame();
+                        getBioGeoMancerData();
                     }
                 });
     }
@@ -704,7 +715,6 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
             public void finished()
             {
                 createInfoFrame(domStr);
-
             }
         };
         worker.start();
@@ -779,7 +789,104 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
         }
         return retVal;
     }
+    
+    public static BioGeomancerQuerySummary getBioGeomancerResponses(final String id,
+                                                         final String country,
+                                                         final String adm1,
+                                                         final String adm2,
+                                                         final String localityString)
+                                                        throws Exception
+    {
+        String responseStr = getBioGeoMancerResponse(id, country, adm1, adm2, localityString);
+        return parseBioGeomancerResponse(responseStr);
+    }
+    
+    public static BioGeomancerQuerySummary parseBioGeomancerResponse(String bgResponse) throws Exception
+    {
+        // read the string into a DOM
+        Element root = XMLHelper.readStrToDOM4J(bgResponse);
+        Element summary = (Element)root.selectSingleNode("//summary");
+        if (summary == null)
+        {
+            throw new Exception("BioGeomancer response is missing required data");
+        }
 
+        BioGeomancerQuerySummary querySummary = new BioGeomancerQuerySummary();
+
+        // get all of the data from the summary section
+        querySummary.id                                  = getData(summary,"queryId");
+        querySummary.country                             = getData(summary,"queryCountry");
+        querySummary.adm1                                = getData(summary,"queryAdm1");
+        querySummary.adm2                                = getData(summary,"queryAdm2");
+        querySummary.localityStr                         = getData(summary,"queryString");
+        querySummary.countryBoundingBox                  = getData(summary,"countryBoundingBox");
+        querySummary.matchedRecordCount                  = getData(summary,"matchedRecordCount");
+        querySummary.boundingBox                         = getData(summary,"boundingBox");
+        querySummary.boundingBoxCentroid                 = getData(summary,"boundingBoxCentroid");
+        querySummary.boundingBoxCentroidErrorRadius      = getData(summary,"boundingBoxCentroidErrorRadius");
+        querySummary.boundingBoxCentroidErrorRadiusUnits = getData(summary,"boundingBoxCentroidErrorRadiusUnits");
+        querySummary.multiPointMatch                     = getData(summary,"multiPointMatch");
+        querySummary.weightedCentroid                    = getData(summary,"weightedCentroid");
+
+        // get each of the results records
+        List<?> records = root.selectNodes("//record");
+        BioGeomancerResult[] results = new BioGeomancerResult[records.size()];
+        int index = 0;
+        for (Object o: records)
+        {
+            Element record = (Element)o;
+            BioGeomancerResult result = new BioGeomancerResult();
+            result.country     = getData(record, "country");
+            result.adm1        = getData(record, "adm1");
+            result.adm2        = getData(record, "adm2");
+            result.featureName = getData(record, "featureName");
+            result.featureType = getData(record, "featureType");
+            result.gazetteer   = getData(record, "gazetteerSource");
+            result.coordinates = getData(record, "InterpretedCoordinates");
+            result.offset      = getData(record, "offsetVector");
+            result.boundingBox = getData(record, "boundingBox");
+            result.locality    = getData(record, "InterpretedString");
+            results[index++] = result;
+        }
+        querySummary.results = results;
+
+        return querySummary;
+    }
+    
+    public static void getMapOfBioGeomancerResults(String bgResponse, MapperListener callback) throws Exception
+    {
+        BioGeomancerQuerySummary summary = parseBioGeomancerResponse(bgResponse);
+        getMapOfQuerySummary(summary, callback);
+    }
+
+    public static void getMapOfQuerySummary(BioGeomancerQuerySummary querySummary, MapperListener callback)
+    {
+        BioGeoMancerMapper bioGeoMancerMapper = new BioGeoMancerMapper();
+
+        for (int i = 0; i < querySummary.results.length; ++i)
+        {
+            BioGeomancerResult result = querySummary.results[i];
+            String[] coords = StringUtils.split(result.coordinates);
+            double lon = Double.parseDouble(coords[0]);
+            double lat = Double.parseDouble(coords[1]);
+            
+            String bbox = result.boundingBox;
+            if (StringUtils.isNotEmpty(bbox))
+            {
+                String[] boxList = StringUtils.split(bbox.replace(',', ' '));
+                double[] box = new double[4];
+                for (int j = 0; j < boxList.length; ++j)
+                {
+                    box[j] = Double.parseDouble(boxList[j]);
+                }
+                bioGeoMancerMapper.addBGMDataAndLabel(lat, lon, box[1], box[0], box[3], box[2], Integer.toString(i+1));
+                bioGeoMancerMapper.setMaxMapWidth(BGM_WIDTH);
+                bioGeoMancerMapper.setMaxMapHeight(BGM_HEIGHT);
+            }
+        }
+        bioGeoMancerMapper.getMap(callback);
+    }
+    
     public static Exception getException()
     {
         return exception;
@@ -882,12 +989,22 @@ public class BioGeoMancer extends JPanel implements GetSetValueIFace, UIPluginab
         frame = null;
     }
 
+    //--------------------------------------------------------
+    // MapperListener
+    //--------------------------------------------------------
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.extras.BioGeoMancerMapper.MapperListener#mapReceived(javax.swing.Icon)
+     */
     public void mapReceived(Icon map)
     {
         label.setIcon(map);
         label.invalidate();
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.extras.BioGeoMancerMapper.MapperListener#exceptionOccurred(java.lang.Exception)
+     */
     public void exceptionOccurred(Exception e)
     {
         label.setIcon(null);

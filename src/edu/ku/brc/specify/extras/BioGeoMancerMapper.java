@@ -37,6 +37,7 @@ import org.jdesktop.animation.timing.Envelope;
 import org.jdesktop.animation.timing.TimingController;
 import org.jdesktop.animation.timing.TimingTarget;
 
+import edu.ku.brc.specify.tasks.services.LocalityMapper.MapperListener;
 import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.SimpleCircleIcon;
 import edu.ku.brc.util.Pair;
@@ -627,11 +628,18 @@ public class BioGeoMancerMapper implements TimingTarget
                 try
                 {
                     Icon map = grabNewMap();
-                    callback.mapReceived(map);
+                    
+                    if (callback != null)
+                    {
+                        callback.mapReceived(map);
+                    }
                 }
                 catch( Exception e )
                 {
-                    callback.exceptionOccurred(e);
+                    if (callback != null)
+                    {
+                        callback.exceptionOccurred(e);
+                    }
                 }
             }
         };
@@ -762,13 +770,6 @@ public class BioGeoMancerMapper implements TimingTarget
     // -----------------------------------------------------------------
     // Inner Class / Interface
     // -----------------------------------------------------------------
-    public interface MapperListener
-    {
-        public void mapReceived(Icon map);
-
-        public void exceptionOccurred(Exception e);
-    }
-
     public class BGMData
     {
         public double px;

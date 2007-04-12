@@ -91,7 +91,6 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.StaleObjectException;
 import edu.ku.brc.helpers.SwingWorker;
-import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
@@ -110,6 +109,7 @@ import edu.ku.brc.specify.tasks.ExportTask;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.tasks.services.LocalityMapper;
 import edu.ku.brc.specify.tasks.services.LocalityMapper.MapperListener;
+import edu.ku.brc.specify.tasks.services.biogeomancer.BioGeomancerResult;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
@@ -269,7 +269,9 @@ public class WorkbenchPaneSS extends BaseSubPane
                 
                 final SwingWorker worker = new SwingWorker()
                 {
-                     public Object construct()
+                     @SuppressWarnings("synthetic-access")
+                    @Override
+                    public Object construct()
                     {
                          try
                          {
@@ -284,6 +286,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                     }
 
                     //Runs on the event-dispatching thread.
+                    @Override
                     public void finished()
                     {
                         UICacheManager.clearGlassPaneMsg();
@@ -686,12 +689,12 @@ public class WorkbenchPaneSS extends BaseSubPane
     {
         if (currentPanelType == PanelType.Spreadsheet)
         {
-            log.error("rows "+spreadSheet.getRowCount()+" "+spreadSheet.getSelectedRow());
+            log.debug("rows "+spreadSheet.getRowCount()+" "+spreadSheet.getSelectedRow());
             spreadSheet.scrollToRow(rowIndex);
             spreadSheet.setRowSelectionInterval(rowIndex, rowIndex);
             spreadSheet.setColumnSelectionInterval(0, spreadSheet.getColumnCount()-1);
             spreadSheet.repaint();
-            log.error("rows "+spreadSheet.getRowCount()+" "+spreadSheet.getSelectedRow());
+            log.debug("rows "+spreadSheet.getRowCount()+" "+spreadSheet.getSelectedRow());
             
         } else
         {
@@ -1457,6 +1460,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         }
         
+        // gather all of the WorkbenchRows into a vector
         List<WorkbenchRow> rows = workbench.getWorkbenchRowsAsList();
         final List<WorkbenchRow> selectedRows = new Vector<WorkbenchRow>();
         for (int i: selection)
@@ -1464,14 +1468,19 @@ public class WorkbenchPaneSS extends BaseSubPane
             selectedRows.add(rows.get(i));
         }
         
+        // create a progress bar dialog to show the network progress
         final ProgressDialog progressDialog = new ProgressDialog("BioGeomancer Progress", false, true);
         progressDialog.getCloseBtn().setText(getResourceString("Cancel"));
         progressDialog.setModal(true);
         progressDialog.setAlwaysOnTop(true);
         progressDialog.setProcess(0, selection.length);
 
+        // use a SwingWorker thread to do all of the work, and update the GUI when done
         final SwingWorker bgTask = new SwingWorker()
         {
+            final JStatusBar statusBar = UICacheManager.getStatusBar();
+            
+            @SuppressWarnings("synthetic-access")
             @Override
             public Object construct()
             {
@@ -1497,14 +1506,56 @@ public class WorkbenchPaneSS extends BaseSubPane
                     String state   = (stateColIndex!=-1) ? row.getData(stateColIndex) : "";
                     String county  = (countyColIndex!=-1) ? row.getData(countyColIndex) : "";
                     
-                    String bgResults = BioGeoMancer.getBioGeoMancerResponse(row.getWorkbenchRowId().toString(), country, state, county, localityNameStr);
+                    log.info("Making call to BioGeomancer service: " + localityNameStr);
+                    final String bgResults = BioGeoMancer.getBioGeoMancerResponse(row.getWorkbenchRowId().toString(), country, state, county, localityNameStr);
                     Exception bgException = BioGeoMancer.getException();
-                    if (bgException == null)
+
+                    // if there was at least one result, pre-cache a map for that result
+                    int resCount;
+                    try
                     {
-                        // everything must have worked
+                        resCount = BioGeoMancer.getResultsCount(bgResults);
+                    }
+                    catch (Exception e1)
+                    {
+                        // we couldn't read the results, so we have to assume there were no (readable) results
+                        statusBar.setWarningMessage("Error while parsing BioGeomancer results", e1);
+                        log.warn("Failed to get result count from BioGeomancer respsonse", e1);
+                        resCount = 0;
+                    }
+                    if (resCount > 0)
+                    {
+                        final int rowNumber = row.getRowNumber();
+                        // create a thread to go grab the map so it will be cached for later use
+                        Thread t = new Thread(new Runnable()
+                        {
+                            public void run()
+                            {
+                                try
+                                {
+                                    log.info("Requesting map of BioGeomancer results for workbench row " + rowNumber);
+                                    BioGeoMancer.getMapOfBioGeomancerResults(bgResults, null);
+                                }
+                                catch (Exception e)
+                                {
+                                    log.warn("Failed to pre-cache BioGeomancer results map",e);
+                                }
+                            }
+                        });
+                        t.setName("Map Pre-Caching Thread: row " + row.getRowNumber());
+                        log.debug("Starting map pre-caching thread");
+                        t.start();
+                    }
+                    
+                    // if we got at least one result...
+                    if (bgException == null && resCount > 0)
+                    {
+                        // everything must have worked and returned at least 1 result
                         row.setBioGeomancerResults(bgResults);
                         setChanged(true);
                     }
+                    
+                    // update the progress bar UI and move on
                     progressDialog.setProcess(++progress);
                 }
                 
@@ -1514,27 +1565,21 @@ public class WorkbenchPaneSS extends BaseSubPane
             @Override
             public void finished()
             {
-                JStatusBar statusBar = UICacheManager.getStatusBar();
-
+                // hide the progress dialog
                 progressDialog.setVisible(false);
                 
-                int numRecordsWithResults = 0;
+                // find out how many records actually had results
+                List<WorkbenchRow> rowsWithResults = new Vector<WorkbenchRow>();
                 for (WorkbenchRow row: selectedRows)
                 {
-                    try
+                    if (row.getBioGeomancerResults() != null)
                     {
-                        if (getBioGeomancerResultCount(row) > 0)
-                        {
-                            ++numRecordsWithResults;
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        statusBar.setErrorMessage(e.getMessage(), e);
+                        rowsWithResults.add(row);
                     }
                 }
                 
                 // if no records had possible results...
+                int numRecordsWithResults = rowsWithResults.size();
                 if (numRecordsWithResults == 0)
                 {
                     statusBar.setWarningMessage("BioGeomancer returned 0 results");
@@ -1550,19 +1595,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                     return;
                 }
                 
-                
-                for (WorkbenchRow row: selectedRows)
-                {
-                    try
-                    {
-                        processBGMResults(row, row.getBioGeomancerResults());
-                    }
-                    catch (Exception e)
-                    {
-                        // the user cancelled out of the process
-                        return;
-                    }
-                }
+                displayBioGeomancerResults(rowsWithResults);
             }
         };
         
@@ -1582,10 +1615,16 @@ public class WorkbenchPaneSS extends BaseSubPane
         UIHelper.centerAndShow(progressDialog);
     }
     
-    public int getBioGeomancerResultCount(final WorkbenchRow row) throws Exception
+    /**
+     * Given the BioGeomancer XML response (as a String), determines the
+     * number of possible georeference results returned.
+     * 
+     * @param bgResponse the XML response from BioGeomancer
+     * @return the number of possible georeference results
+     * @throws Exception if the XML cannot be parsed
+     */
+    public int getBioGeomancerResultCount(final String bgResponse) throws Exception
     {
-        String bgResponse = row.getBioGeomancerResults();
-        
         if (bgResponse == null)
         {
             return 0;
@@ -1597,102 +1636,50 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
         catch (Exception e)
         {
-            throw new Exception("Unable to parse response from BioGeomancer service", e);
+            throw new Exception("Unable to determine number of results from BioGeomancer service", e);
         }
     }
     
     /**
-     * Processes the BGM results and displays a dialog.
-     * @param selectedRow the WorkbenchRow we are working on
-     * @param data the results we got back from BGM
-     * @return true if a dialog was presented to the user
+     * Create a dialog to display the set of rows that had at least one result option
+     * returned by BioGeomancer.  The dialog allows the user to iterate through the
+     * records supplied, choosing a result (or not) for each one.
+     * 
+     * @param rows the set of records containing valid BioGeomancer responses with at least one result
      */
-    protected boolean processBGMResults(final WorkbenchRow selectedRow, final String data) throws Exception
+    protected void displayBioGeomancerResults(List<WorkbenchRow> rows)
     {
-        // show the BGM frame to allow the user to select from the results
-            BioGeoMancer bgmService = new BioGeoMancer();
-            bgmService.initialize(null, false);
-            
-            Locality loc = new Locality();
-            loc.initialize();
-            bgmService.setValue(loc, null);
-            
-            JDialog dialog = new JDialog();
-            dialog.setTitle("BioGeoManacer");
-            dialog.setModal(true);
-            JPanel bgPanel = null;
-            try
-            {
-                bgPanel = bgmService.createBGMPanel(XMLHelper.readStrToDOM4J(data), dialog);
-            }
-            catch (Exception e)
-            {
-                log.error("Exception while parsing BioGeomancer reply",e);
-                return false;
-            }
-            
-            if (bgmService.getResultsCount() == 0)
-            {
-                // since the user didn't cancel this, return true
-                selectedRow.setBioGeomancerResults(null);
-                setChanged(true);
-                return false;
-            }
-            
-            dialog.setContentPane(bgPanel);
-            dialog.pack();
-            
-            // This must be a Java 6 feature
-            //ImageIcon icon = IconManager.getIcon("BioGeoMancer", IconManager.IconSize.Std16);
-            //if (icon != null)
-            //{
-            //    dialog.setIconImage(icon.getImage());
-            //}
-            UIHelper.centerAndShow(dialog);
-            
-            loc = (Locality)bgmService.getValue();
-            if (loc == null || loc.getLatitude1() == null || loc.getLongitude1() == null)
-            {
-                // no value was chosen
-                // the user probably pressed the "close" button instead of "OK"
-                throw new Exception();
-            }
-            log.debug("Lat:"+loc.getLatitude1().toString() + " Long:" + loc.getLongitude1().toString());
-            
-            // get the latitude1 and longitude1 column indices
-            int localityTableId = DBTableIdMgr.getInstance().getIdByClassName(Locality.class.getName());
-            int latIndex        = workbench.getColumnIndex(localityTableId, "latitude1");
-            int lonIndex        = workbench.getColumnIndex(localityTableId, "longitude1");
-
-            selectedRow.setData(loc.getLatitude1().toString(), (short)latIndex);
-            selectedRow.setData(loc.getLongitude1().toString(), (short)lonIndex);
-            spreadSheet.repaint();
-            return true;
-    }
-    
-    /**
-     * @param bgService
-     * @throws Exception
-     */
-    protected void showBioGeomancerDialog(final BioGeoMancer bgService) throws Exception
-    {
-        // can't use CustomPanel here since the BG service produces a panel WITH buttons in it already
-        JDialog dialog = new JDialog();
-        dialog.setModal(true);
-        JPanel p = new JPanel(new BorderLayout());
-        p.add(bgService.createBGMPanel(XMLHelper.readFileToDOM4J(new File("biogeomancer.xml")), dialog), BorderLayout.CENTER);
-        dialog.setContentPane(p);
-        dialog.setLocation(0,0);
-        dialog.pack();
+        // create the UI for displaying the BG results
+        JFrame topFrame = (JFrame)UICacheManager.get(UICacheManager.TOPFRAME);
+        BioGeomancerResultsChooser bgResChooser = new BioGeomancerResultsChooser(topFrame,"BioGeomancer Results Chooser",rows);
         
-        //ImageIcon icon = IconManager.getIcon("BioGeoMancer", IconManager.IconSize.Std16);
-//        if (icon != null)
-//        {
-//            dialog.setIconImage(icon.getImage());
-//        }
-        dialog.setVisible(true);
+        List<BioGeomancerResult> results = bgResChooser.getResultsChosen();
+        
+        // get the latitude1 and longitude1 column indices
+        int localityTableId = DBTableIdMgr.getInstance().getIdByClassName(Locality.class.getName());
+        int latIndex        = workbench.getColumnIndex(localityTableId, "latitude1");
+        int lonIndex        = workbench.getColumnIndex(localityTableId, "longitude1");
+
+        for (int i = 0; i < rows.size(); ++i)
+        {
+            WorkbenchRow row = rows.get(i);
+            BioGeomancerResult userChoice = results.get(i);
+            
+            if (userChoice != null)
+            {
+                System.out.println(userChoice.coordinates);
+                
+                String[] coords = StringUtils.split(userChoice.coordinates);
+
+                row.setData(coords[1], (short)latIndex);
+                row.setData(coords[0], (short)lonIndex);
+                
+                setChanged(true);
+            }
+        }
+        spreadSheet.repaint();
     }
-    
+        
     /**
      * Set that there has been a change.
      * 
