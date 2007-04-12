@@ -142,7 +142,6 @@ public class WorkbenchTask extends BaseTask
     
     protected WorkbenchTemplate           selectedTemplate = null; // Transient set by selectExistingTemplate
 
-
 	/**
 	 * Constructor. 
 	 */
@@ -165,23 +164,26 @@ public class WorkbenchTask extends BaseTask
             super.initialize(); // sets isInitialized to false
             
             int wbTblId    = Workbench.getClassTableId(); 
-            int wbTmpTblId = WorkbenchTemplate.getClassTableId();
             
             RolloverCommand roc = null;
             NavBox navBox = new NavBox(getResourceString("Actions"));
             makeDnDNavBtn(navBox, getResourceString("WB_IMPORTDATA"), "Import", getResourceString("WB_IMPORTDATA_TT"), new CommandAction(WORKBENCH, IMPORT_DATA_FILE, wbTblId), null, false);// true means make it draggable
             makeDnDNavBtn(navBox, getResourceString(WB_IMPORTCARDS),  "Import", getResourceString("WB_IMPORTCARDS_TT"), new CommandAction(WORKBENCH, WB_IMPORTCARDS, wbTblId),   null, false);// true means make it draggable
             
-            makeDnDNavBtn(navBox, getResourceString("WB_REUSE_MAPPING"), "PlusSign", getResourceString("WB_REUSE_MAPPING_TT"), new CommandAction(WORKBENCH, REUSE_MAPPING, wbTmpTblId), null, false);// true means make it draggable
             makeDnDNavBtn(navBox, getResourceString("WB_NEW_DATASET"),   "PlusSign", getResourceString("WB_NEW_DATASET_TT"), new CommandAction(WORKBENCH, NEW_TEMPLATE, wbTblId),     null, false);// true means make it draggable
+            roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_REUSE_MAPPING"), "PlusSign", getResourceString("WB_REUSE_MAPPING_TT"), new CommandAction(WORKBENCH, REUSE_MAPPING, wbTblId), null, false);// true means make it draggabl
+            roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
+            enableNavBoxList.add((NavBoxItemIFace)roc);
             
             roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_EXPORT_DATA"), "Export", getResourceString("WB_EXPORT_DATA_TT"), new CommandAction(WORKBENCH, EXPORT_DATA_FILE, wbTblId), null, true);// true means make it draggable
             roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
             roc.addDragDataFlavor(new DataFlavor(Workbench.class, EXPORT_DATA_FILE));
+            enableNavBoxList.add((NavBoxItemIFace)roc);
             
-            roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_EXPORT_TEMPLATE"), "Export", getResourceString("WB_EXPORT_TEMPLATE_TT"),new CommandAction(WORKBENCH, EXPORT_TEMPLATE, wbTmpTblId), null, true);// true means make it draggable
-            roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCHTEMPLATE));
+            roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_EXPORT_TEMPLATE"), "Export", getResourceString("WB_EXPORT_TEMPLATE_TT"),new CommandAction(WORKBENCH, EXPORT_TEMPLATE, wbTblId), null, true);// true means make it draggable
+            roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
             roc.addDragDataFlavor(new DataFlavor(Workbench.class, EXPORT_TEMPLATE));
+            enableNavBoxList.add((NavBoxItemIFace)roc);
             
             navBoxes.addElement(navBox);
             
@@ -246,7 +248,6 @@ public class WorkbenchTask extends BaseTask
                         roc = (RolloverCommand)nbi;
                         roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
                         roc.addDragDataFlavor(new DataFlavor(Workbench.class, "Report"));
-
 
                     } else
                     {
@@ -835,7 +836,7 @@ public class WorkbenchTask extends BaseTask
                     helpContext);
             dlg.setCloseOnApply(true);
             dlg.setOkLabel(getResourceString(colInfo != null ? "WB_REUSE" : "OK"));
-            dlg.setApplyLabel(getResourceString("WB_NEW_DATASET"));
+            dlg.setApplyLabel(getResourceString("WB_NEW_DATASET_MAPPINGS"));
             dlg.setModal(true);
             UIHelper.centerAndShow(dlg);
             
@@ -1477,17 +1478,6 @@ public class WorkbenchTask extends BaseTask
                 {
                     log.error("Couldn't find RolloverCommand for WorkbenchId ["+workbench.getWorkbenchId()+"]");
                 }
-                
-                /* TEMPLATES
-                roc = getNavBtnById(templateNavBox, workbench.getWorkbenchTemplate().getWorkbenchTemplateId(), "template");
-                if (roc != null)
-                {
-                    roc.setEnabled(getCountOfPanesForTemplate(workbench.getWorkbenchTemplate().getWorkbenchTemplateId()) < 2);
-                    
-                } else
-                {
-                    log.error("Couldn't find RolloverCommand for WorkbenchTemplateId ["+workbench.getWorkbenchTemplate().getWorkbenchTemplateId()+"]");
-                }*/
             }
         }
     }
@@ -1661,7 +1651,8 @@ public class WorkbenchTask extends BaseTask
         items.addAll(mappings);
         session.close();
         
-        if (true) // Research into JRDataSources 
+        String actionStr = cmdAction.getPropertyAsString("action");
+        if (StringUtils.isNotEmpty(actionStr) && actionStr.equals("PrintBasicLabel")) // Research into JRDataSources 
         {
             RecordSet rs = new RecordSet();
             rs.initialize();
@@ -1778,6 +1769,7 @@ public class WorkbenchTask extends BaseTask
             } else
             {
                 workbench = session.get(Workbench.class, recordSet.getItems().iterator().next().getRecordId());
+                workbench.getWorkbenchTemplate().forceLoad();
             }
             
         } catch (Exception ex)

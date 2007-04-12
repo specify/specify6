@@ -32,7 +32,7 @@ import javax.persistence.Transient;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 @MappedSuperclass
-public abstract class DataModelObjBase implements FormDataObjIFace
+public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
 {
     protected PropertyChangeSupport changes;
     
@@ -318,4 +318,17 @@ public abstract class DataModelObjBase implements FormDataObjIFace
         }
         changes.removePropertyChangeListener(propertyName, listener);
     }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException
+    {
+        // TODO Auto-generated method stub
+        DataModelObjBase obj = (DataModelObjBase)super.clone();
+        obj.timestampCreated  = timestampCreated;
+        obj.timestampModified = timestampModified;
+        obj.lastEditedBy      = lastEditedBy;
+        return obj;
+    }
+    
+    
 }
