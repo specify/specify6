@@ -24,7 +24,7 @@ public interface DataImportIFace
     /**
      * @param config
      */
-    public void setConfig(ConfigureExternalDataIFace config);
+    public void setConfig(final ConfigureExternalDataIFace config);
 
     /**
      * @return
@@ -34,7 +34,7 @@ public interface DataImportIFace
     /**
      * @param workbench
      */
-    public DataImportIFace.Status getData(Workbench workbench);
+    public DataImportIFace.Status getData(final Workbench workbench);
     
     /**
      * @return

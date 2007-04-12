@@ -65,7 +65,7 @@ public class DataImportTruncation
         return this.originalValue.substring(DataImport.MAX_FIELD_SIZE);
     }
     
-    public DataImportTruncation(int row, short col, String colHeader, String originalValue)
+    public DataImportTruncation(final int row, final short col, final String colHeader, final String originalValue)
     {
         super();
         this.row = row;

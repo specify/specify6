@@ -33,10 +33,10 @@ public class ExportFileConfigurationFactory
     
     protected ExportFileConfigurationFactory()
     {
-        
+        //blank
     }
 
-    public static ConfigureExternalDataIFace getConfiguration(Properties props)
+    public static ConfigureExternalDataIFace getConfiguration(final Properties props)
     {
         if (props.getProperty("mimetype", XLS_MIME_TYPE) == XLS_MIME_TYPE)
         {

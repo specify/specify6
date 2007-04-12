@@ -58,7 +58,7 @@ public class WorkbenchBackupMgr
         return result;
     }
     
-    protected static File getEarliestBackup(Vector<File> backups)
+    protected static File getEarliestBackup(final Vector<File> backups)
     {
         Date earliest = null;
         File earliestFile = null;

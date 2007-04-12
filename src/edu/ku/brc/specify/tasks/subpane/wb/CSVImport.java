@@ -132,7 +132,7 @@ public class CSVImport extends DataImport implements DataImportIFace
 
     public void setConfig(final ConfigureExternalDataIFace config)
     {
-        this.config = (ConfigureCSV) config;
+        this.config = config;
     }
 
 }

@@ -1661,7 +1661,7 @@ public class WorkbenchTask extends BaseTask
         items.addAll(mappings);
         session.close();
         
-        if (false) // Research into JRDataSources 
+        if (true) // Research into JRDataSources 
         {
             RecordSet rs = new RecordSet();
             rs.initialize();

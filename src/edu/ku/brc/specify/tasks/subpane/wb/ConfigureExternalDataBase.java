@@ -71,7 +71,7 @@ public abstract class ConfigureExternalDataBase implements ConfigureExternalData
         return status;
     }
 
-    protected void readHeaders(String prop)
+    protected void readHeaders(final String prop)
     {
         if (prop != null)
         {
@@ -115,12 +115,12 @@ public abstract class ConfigureExternalDataBase implements ConfigureExternalData
         return headers;
     }
     
-    public void setHeaders(String[] headers)
+    public void setHeaders(final String[] headers)
     {
         this.headers = headers;
     }
     
-    public void setInteractive(boolean arg)
+    public void setInteractive(final boolean arg)
     {
         interactive = arg;
     }
@@ -196,7 +196,7 @@ public abstract class ConfigureExternalDataBase implements ConfigureExternalData
         return result;
     }
     
-    protected void addBoolProperty(Properties props, final String key, final boolean value)    
+    protected void addBoolProperty(final Properties props, final String key, final boolean value)    
     {
         props.setProperty(key, (value ? "true" : "false"));
     }

@@ -66,7 +66,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase
         readConfig(file);
     }
 
-    public ConfigureCSV(Properties props)
+    public ConfigureCSV(final Properties props)
     {
         super(props);
         
@@ -249,6 +249,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase
      * 
      * @return selected delimiter
      */
+    @SuppressWarnings("unused")
     private char determineDelimiter()
     {
         Vector<String> list = new Vector<String>();
@@ -274,6 +275,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase
      * 
      * @return selected delimiter
      */
+    @SuppressWarnings("unused")
     private char determineTextQualifier()
     {
         Vector<String> list = new Vector<String>();
@@ -308,6 +310,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase
      * 
      * @return selected character set
      */
+    @SuppressWarnings("unused")
     private Charset determineCharset()
     {
         Vector<String> list = new Vector<String>();
@@ -345,6 +348,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase
      * 
      * @return selected escape mode
      */
+    @SuppressWarnings("unused")
     private int determineEscapeMode()
     {
         Vector<String> list = new Vector<String>();
@@ -372,7 +376,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase
         return CsvReader.ESCAPE_MODE_DOUBLED;
     }
 
-    private ImportColumnInfo.ColumnType getCellType(@SuppressWarnings("unused") int colIndex)
+    private ImportColumnInfo.ColumnType getCellType(@SuppressWarnings("unused") final int colIndex)
     {
         return ImportColumnInfo.ColumnType.String; // hmmmm....
     }
@@ -520,7 +524,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase
      * @return
      * String[] - the new header array 
      */
-    public String[] padColumnHeaders(int highestColumnCnt, String[] array)
+    public String[] padColumnHeaders(final int highestColumnCnt, final String[] array)
     {
         return DataImportDialog.padArray(highestColumnCnt, array, true);
     }
@@ -535,7 +539,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase
     /**
      * @param textQualifier the textQualifier to set
      */
-    public void setTextQualifier(boolean use, char textQualifier)
+    public void setTextQualifier(final boolean use, final char textQualifier)
     {
         shouldUseTextQualifier = true;
         if(use)
@@ -547,7 +551,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase
 	/**
 	 * @param escapeMode the escapeMode to set
 	 */
-	public void setEscapeMode(int escapeMode)
+	public void setEscapeMode(final int escapeMode)
 	{
 		this.escapeMode = escapeMode;
 	}
@@ -555,7 +559,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase
 	/**
 	 * @param delimiter the delimiter to set
 	 */
-	public void setDelimiter(char delimiter)
+	public void setDelimiter(final char delimiter)
 	{
 		this.delimiter = delimiter;
 	}
@@ -563,7 +567,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase
 	/**
 	 * @param charset the charset to set
 	 */
-	public void setCharset(Charset charset)
+	public void setCharset(final Charset charset)
 	{
 		this.charset = charset;
 	}
@@ -579,7 +583,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase
     /**
      * @param numOfColsToAppend the numOfColsToAppend to set
      */
-    public void setNumOfColsToAppend(int numOfColsToAppend)
+    public void setNumOfColsToAppend(final int numOfColsToAppend)
     {
         this.numOfColsToAppend = numOfColsToAppend;
     }
@@ -596,7 +600,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase
     /**
      * @param shouldUseTextQualifier the shouldUseTextQualifier to set
      */
-    public void setShouldUseTextQualifier(boolean userTextQualifier)
+    public void setShouldUseTextQualifier(final boolean userTextQualifier)
     {
         this.shouldUseTextQualifier = userTextQualifier;
     }

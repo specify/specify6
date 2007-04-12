@@ -95,20 +95,20 @@ public class ConfigureXLS extends ConfigureExternalDataBase
             colTracker.clear();
 
             // Iterate over each row in the sheet
-            Iterator rows = sheet.rowIterator();
+            @SuppressWarnings("unchecked") Iterator<HSSFRow> rows =  sheet.rowIterator();
             while (rows.hasNext())
             {
-                HSSFRow row = (HSSFRow) rows.next();
+                HSSFRow row = rows.next();
 
                 //System.out.println("Row #" + row.getRowNum());
 
                 if (firstRow || numRows == 1)
                 {
                     // Iterate over each cell in the row and print out the cell's content
-                    Iterator cells = row.cellIterator();
+                    @SuppressWarnings("unchecked") Iterator<HSSFCell> cells = row.cellIterator();
                     while (cells.hasNext())
                     {
-                        HSSFCell cell = (HSSFCell) cells.next();
+                        HSSFCell cell = cells.next();
                         //System.out.println("Cell #" + cell.getCellNum());
                         ImportColumnInfo.ColumnType colType = ImportColumnInfo.ColumnType.Integer;
                         String  value   = null;
