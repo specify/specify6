@@ -1331,7 +1331,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         String[] heads = new String[colHeads.size()];
         for (int h = 0; h < colHeads.size(); h++)
         {
-          heads[h] = colHeads.get(h).getCaption();
+          heads[h] = colHeads.get(h).getFieldName();
         }
         config.setHeaders(heads);
         
