@@ -702,7 +702,7 @@ public class TemplateEditor extends CustomDialog
         {
             int index = tableModel.indexOf(item);
             Vector<FieldInfo> fiItems = ti.getFieldItems();
-            for (int i=fiItems.size()-1;i>0;i--)
+            for (int i=fiItems.size()-1;i>=0;i--)
             {
                 tableModel.insertElementAt(fiItems.get(i), index+1);
             }
