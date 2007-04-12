@@ -339,7 +339,7 @@ public class XMLHelper
        StringBuilder sb = new StringBuilder();
        try
        {
-           List    lines    = FileUtils.readLines(file);
+           List<?> lines    = FileUtils.readLines(file);
            boolean fndBegin = false;
            
            for (Object lineObj : lines)
