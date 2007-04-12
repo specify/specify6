@@ -182,6 +182,34 @@ public class XMLHelper
    }
    
    /**
+    * Get the value of the XML element with the given name that is a child of the given element.
+    * 
+    * @param element the parent XML element
+    * @param name the name of the child element to get the value for
+    * @return the data the child element's value
+    */
+   public static String getValue(final Element element, final String name)
+   {
+       Element node = (Element)element.selectSingleNode(name);
+       if (node != null)
+       {
+           String data = node.getTextTrim();
+           int inx = data.indexOf("(");
+           if (inx != -1)
+           {
+               int einx = data.indexOf(")");
+               return data.substring(inx+1, einx);
+           }
+           return data;
+       }
+       
+       // else
+       // Although the name may not have been found it could be because no results came back
+       log.debug("****** ["+name+"] was not found.");
+       return "";
+   }
+   
+   /**
     * Returns the contents of a file as a string
     * @param file the file to be read
     * @return the contents as a string
