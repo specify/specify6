@@ -28,6 +28,7 @@ import java.util.Properties;
 import java.util.Vector;
 
 import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import net.sf.jasperreports.engine.JRDataSource;
@@ -37,12 +38,14 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.fill.AsynchronousFillHandle;
 import net.sf.jasperreports.engine.fill.AsynchronousFilllListener;
+import net.sf.jasperreports.engine.query.JRHibernateQueryExecuterFactory;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.view.JRViewer;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.Session;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
@@ -50,6 +53,7 @@ import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
@@ -83,6 +87,8 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
     protected File                   cachePath        = null;
     
     protected Properties             params           = null;
+    protected boolean                requiresHibernate = false;
+    protected Session                session           = null;
 
     /**
      * Constructor.
@@ -114,7 +120,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
         if (label == null)
         {
             removeAll();
-            label = new JLabel("", JLabel.CENTER);
+            label = new JLabel("", SwingConstants.CENTER);
             add(label, BorderLayout.CENTER);
         }
         
@@ -250,6 +256,13 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
         if (appRes != null)
         {
             String subReportsStr = appRes.getMetaData("subreports");
+            String hqlStr = appRes.getMetaData("hql");
+            
+            if (StringUtils.isNotEmpty(hqlStr))
+            {
+                requiresHibernate = Boolean.parseBoolean(hqlStr.toLowerCase());
+            }
+            
             if (StringUtils.isNotEmpty(subReportsStr))
             {
                 String[] subReportNames = subReportsStr.split(",");
@@ -358,6 +371,12 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                             parameters.put(key, params.get(key));
                         }
                     }
+                    
+                    if (requiresHibernate)
+                    {
+                        session = HibernateUtil.getNewSession();
+                        parameters.put(JRHibernateQueryExecuterFactory.PARAMETER_HIBERNATE_SESSION, session);
+                    }
 
                     progressLabel.setText(getResourceString("JasperReportFilling"));
                     if (recordSet != null)
@@ -448,6 +467,22 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
     {
         asyncFillHandler = null;
     }
+    
+    protected void closeSession()
+    {
+        
+        if (session != null)
+        {
+            try
+            {
+                session.close();
+                
+            } catch (Exception ex)
+            {
+                log.error(ex);
+            }
+        }
+    }
 
     /* (non-Javadoc)
      * @see net.sf.jasperreports.engine.fill.AsynchronousFilllListener#reportFillError(java.lang.Throwable)
@@ -459,6 +494,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
         log.error(t);
         t.printStackTrace();
         asyncFillHandler = null;
+        closeSession();
     }
 
     /* (non-Javadoc)
@@ -476,7 +512,8 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
 
             UICacheManager.forceTopFrameRepaint();
 
-
+            closeSession();
+            
         } catch (Exception ex)
         {
             setLabelText(getResourceString("JasperReportCreatingViewer"));

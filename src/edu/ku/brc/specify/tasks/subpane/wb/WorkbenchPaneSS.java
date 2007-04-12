@@ -2094,6 +2094,16 @@ public class WorkbenchPaneSS extends BaseSubPane
             setClickCountToStart (1); 
         }
 
+        @Override
+        public boolean stopCellEditing()
+        {
+            if (textField.getText().length() > 255)
+            {
+                return false;
+            }
+            return super.stopCellEditing();
+        }
+
         /* (non-Javadoc)
          * @see javax.swing.CellEditor#getCellEditorValue()
          */

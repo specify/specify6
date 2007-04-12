@@ -44,6 +44,7 @@ import javax.swing.SwingUtilities;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.Session;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
@@ -64,6 +65,7 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.QueryResultsContainerIFace;
 import edu.ku.brc.dbsupport.QueryResultsHandlerIFace;
 import edu.ku.brc.dbsupport.QueryResultsListener;
@@ -1916,20 +1918,65 @@ public class WorkbenchTask extends BaseTask
             final Vector<Object> data = new Vector<Object>();
             try
             {
-                String sql = "select * from (SELECT distinct CellData as Name, count(CellData) as Cnt FROM workbenchdataitem di inner join workbenchrow rw on " +
-                    "di.WorkbenchRowId = rw.WorkbenchRowId where rw.WorkBenchId = " +
-                    workbench.getWorkbenchId() + " and WorkbenchTemplateMappingItemId = "+selectMappingItem.getWorkbenchTemplateMappingItemId()+"  group by CellData order by rw.RowNumber asc) t1 order by Cnt desc";
-                Connection conn = DBConnection.getInstance().createConnection();
-                Statement  stmt = conn.createStatement();
-                
-                
-                ResultSet rs = stmt.executeQuery(sql);
-                int count = 0;
-                while (rs.next() && (doBarChart || count < 10))
+                if (true)
                 {
-                    data.add(rs.getString(1));
-                    data.add(rs.getInt(2));
-                    count++;
+                    String sql = "SELECT CellData as Name, count(CellData) as Cnt FROM workbenchdataitem di inner join workbenchrow rw on " +
+                        "di.WorkbenchRowId = rw.WorkbenchRowId where rw.WorkBenchId = " +
+                        workbench.getWorkbenchId() + " and WorkbenchTemplateMappingItemId = "+selectMappingItem.getWorkbenchTemplateMappingItemId()+" group by CellData order by Cnt desc, Name asc";
+                    Connection conn = DBConnection.getInstance().createConnection();
+                    Statement  stmt = conn.createStatement();
+                    
+                    ResultSet rs = stmt.executeQuery(sql);
+                    int count = 0;
+                    while (rs.next() && (doBarChart || count < 10))
+                    {
+                        data.add(rs.getString(1));
+                        data.add(rs.getInt(2));
+                        count++;
+                    }
+                } else
+                {
+                    Session hibSession = null;
+                    try
+                    {
+                        String hql = "SELECT item.cellData as Name, count(item.cellData) as Cnt FROM WorkbenchDataItem as item inner join item.workbenchRow as row join item.workbenchTemplateMappingItem as mapitem where mapitem.workbenchTemplateMappingItemId = " + selectMappingItem.getWorkbenchTemplateMappingItemId()+" group by item.cellData order by count(item.cellData) desc";
+                        hibSession = HibernateUtil.getNewSession();
+                        List list = hibSession.createQuery(hql).list();
+                        System.out.println("Num: " + list.size());
+                        
+                        int count = 0;
+                        int returnCnt = list.size();
+                        while (count < returnCnt && (doBarChart || count < 10))
+                        {
+                            Object dataRow = list.get(count);
+                            if (dataRow instanceof Object[])
+                            {
+                                for (Object o : (Object[])dataRow)
+                                {
+                                    data.add(o);
+                                }
+                            }
+                            count++;
+                        }
+                        
+                        
+                    } catch (Exception ex)
+                    {
+                        log.error(ex);
+                    }
+                    finally 
+                    {
+                        if (hibSession != null)
+                        {
+                            try
+                            {
+                                hibSession.close();
+                            } catch (Exception ex)
+                            {
+                                log.error(ex);
+                            }
+                        }
+                    }
                 }
                 
             } catch (Exception ex)
