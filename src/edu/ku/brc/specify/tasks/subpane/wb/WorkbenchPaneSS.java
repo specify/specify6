@@ -32,6 +32,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.ConnectException;
 import java.util.Collections;
@@ -91,6 +92,8 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.StaleObjectException;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.services.biogeomancer.BioGeomancer;
+import edu.ku.brc.services.biogeomancer.BioGeomancerResultStruct;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
@@ -104,12 +107,10 @@ import edu.ku.brc.specify.exporters.ExportToFile;
 import edu.ku.brc.specify.exporters.GoogleEarthExporter;
 import edu.ku.brc.specify.exporters.GoogleEarthPlacemarkIFace;
 import edu.ku.brc.specify.exporters.WorkbenchRowPlacemarkWrapper;
-import edu.ku.brc.specify.plugins.BioGeoMancer;
 import edu.ku.brc.specify.tasks.ExportTask;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.tasks.services.LocalityMapper;
 import edu.ku.brc.specify.tasks.services.LocalityMapper.MapperListener;
-import edu.ku.brc.specify.tasks.services.biogeomancer.BioGeomancerResult;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
@@ -1507,25 +1508,36 @@ public class WorkbenchPaneSS extends BaseSubPane
                     String county  = (countyColIndex!=-1) ? row.getData(countyColIndex) : "";
                     
                     log.info("Making call to BioGeomancer service: " + localityNameStr);
-                    final String bgResults = BioGeoMancer.getBioGeoMancerResponse(row.getWorkbenchRowId().toString(), country, state, county, localityNameStr);
-                    Exception bgException = BioGeoMancer.getException();
+                    String bgResults;
+                    try
+                    {
+                        bgResults = BioGeomancer.getBioGeoMancerResponse(row.getWorkbenchRowId().toString(), country, state, county, localityNameStr);
+                    }
+                    catch (IOException ex1)
+                    {
+                        log.error("A network error occurred while contacting the BioGeomancer service", ex1);
+                        // update the progress bar UI and move on
+                        progressDialog.setProcess(++progress);
+                        continue;
+                    }
 
                     // if there was at least one result, pre-cache a map for that result
                     int resCount;
                     try
                     {
-                        resCount = BioGeoMancer.getResultsCount(bgResults);
+                        resCount = BioGeomancer.getResultsCount(bgResults);
                     }
-                    catch (Exception e1)
+                    catch (Exception ex2)
                     {
                         // we couldn't read the results, so we have to assume there were no (readable) results
-                        statusBar.setWarningMessage("Error while parsing BioGeomancer results", e1);
-                        log.warn("Failed to get result count from BioGeomancer respsonse", e1);
+                        statusBar.setWarningMessage("Error while parsing BioGeomancer results", ex2);
+                        log.warn("Failed to get result count from BioGeomancer respsonse", ex2);
                         resCount = 0;
                     }
                     if (resCount > 0)
                     {
                         final int rowNumber = row.getRowNumber();
+                        final String bioGeoResults = bgResults;
                         // create a thread to go grab the map so it will be cached for later use
                         Thread t = new Thread(new Runnable()
                         {
@@ -1534,7 +1546,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                                 try
                                 {
                                     log.info("Requesting map of BioGeomancer results for workbench row " + rowNumber);
-                                    BioGeoMancer.getMapOfBioGeomancerResults(bgResults, null);
+                                    BioGeomancer.getMapOfBioGeomancerResults(bioGeoResults, null);
                                 }
                                 catch (Exception e)
                                 {
@@ -1548,7 +1560,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                     }
                     
                     // if we got at least one result...
-                    if (bgException == null && resCount > 0)
+                    if (resCount > 0)
                     {
                         // everything must have worked and returned at least 1 result
                         row.setBioGeomancerResults(bgResults);
@@ -1632,7 +1644,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         try
         {
-            return BioGeoMancer.getResultsCount(bgResponse);
+            return BioGeomancer.getResultsCount(bgResponse);
         }
         catch (Exception e)
         {
@@ -1653,7 +1665,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         JFrame topFrame = (JFrame)UICacheManager.get(UICacheManager.TOPFRAME);
         BioGeomancerResultsChooser bgResChooser = new BioGeomancerResultsChooser(topFrame,"BioGeomancer Results Chooser",rows);
         
-        List<BioGeomancerResult> results = bgResChooser.getResultsChosen();
+        List<BioGeomancerResultStruct> results = bgResChooser.getResultsChosen();
         
         // get the latitude1 and longitude1 column indices
         int localityTableId = DBTableIdMgr.getInstance().getIdByClassName(Locality.class.getName());
@@ -1663,7 +1675,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         for (int i = 0; i < rows.size(); ++i)
         {
             WorkbenchRow row = rows.get(i);
-            BioGeomancerResult userChoice = results.get(i);
+            BioGeomancerResultStruct userChoice = results.get(i);
             
             if (userChoice != null)
             {

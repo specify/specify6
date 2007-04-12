@@ -4,9 +4,9 @@ import java.awt.Frame;
 import java.util.List;
 import java.util.Vector;
 
+import edu.ku.brc.services.biogeomancer.BioGeomancerResultStruct;
+import edu.ku.brc.services.biogeomancer.BioGeomancerResultsDisplay;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
-import edu.ku.brc.specify.tasks.services.biogeomancer.BioGeomancerResult;
-import edu.ku.brc.specify.tasks.services.biogeomancer.BioGeomancerResultsDisplay;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
@@ -15,7 +15,7 @@ public class BioGeomancerResultsChooser extends CustomDialog
 {
     protected BioGeomancerResultsDisplay resultsDisplayPanel = new BioGeomancerResultsDisplay();
     protected List<WorkbenchRow> rows;
-    protected List<BioGeomancerResult> chosenResults;
+    protected List<BioGeomancerResultStruct> chosenResults;
     protected boolean hasBeenShown;
     protected int rowIndex;
     
@@ -26,7 +26,7 @@ public class BioGeomancerResultsChooser extends CustomDialog
         hasBeenShown = false;
         
         // create a vector for all of the user choices
-        chosenResults = new Vector<BioGeomancerResult>(rows.size());
+        chosenResults = new Vector<BioGeomancerResultStruct>(rows.size());
         // make sure it's the same size as the incoming list of rows
         for (int i = 0; i < rows.size(); ++i)
         {
@@ -38,7 +38,7 @@ public class BioGeomancerResultsChooser extends CustomDialog
         rowIndex = 0;
     }
     
-    public List<BioGeomancerResult> getResultsChosen()
+    public List<BioGeomancerResultStruct> getResultsChosen()
     {
         if (!hasBeenShown)
         {
@@ -88,7 +88,7 @@ public class BioGeomancerResultsChooser extends CustomDialog
         isCancelled = false;
         btnPressed  = OK_BTN;
         
-        BioGeomancerResult result = resultsDisplayPanel.getSelectedResult();
+        BioGeomancerResultStruct result = resultsDisplayPanel.getSelectedResult();
         chosenResults.set(rowIndex, result);
         
         // if that was the last one to work on...

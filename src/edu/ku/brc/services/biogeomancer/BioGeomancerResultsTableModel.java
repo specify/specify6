@@ -1,13 +1,13 @@
-package edu.ku.brc.specify.tasks.services.biogeomancer;
+package edu.ku.brc.services.biogeomancer;
 
 import javax.swing.table.AbstractTableModel;
 
 
 public class BioGeomancerResultsTableModel extends AbstractTableModel
 {
-    protected BioGeomancerResult[] results;
+    protected BioGeomancerResultStruct[] results;
     
-    public BioGeomancerResultsTableModel(BioGeomancerResult[] results)
+    public BioGeomancerResultsTableModel(BioGeomancerResultStruct[] results)
     {
         this.results = results;
     }
@@ -78,7 +78,7 @@ public class BioGeomancerResultsTableModel extends AbstractTableModel
 
     public Object getValueAt(int rowIndex, int columnIndex)
     {
-        BioGeomancerResult result = results[rowIndex];
+        BioGeomancerResultStruct result = results[rowIndex];
         
         switch(columnIndex)
         {

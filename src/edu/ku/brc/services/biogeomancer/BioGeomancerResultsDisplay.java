@@ -1,4 +1,4 @@
-package edu.ku.brc.specify.tasks.services.biogeomancer;
+package edu.ku.brc.services.biogeomancer;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
@@ -23,7 +23,6 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.SkyKrupp;
 
-import edu.ku.brc.specify.plugins.BioGeoMancer;
 import edu.ku.brc.specify.tasks.services.LocalityMapper.MapperListener;
 import edu.ku.brc.ui.UIHelper;
 
@@ -51,7 +50,7 @@ public class BioGeomancerResultsDisplay extends JPanel implements MapperListener
     protected JTextField multiPointMatchField;
     protected JTextField weightedCentroidField;
     
-    protected BioGeomancerQuerySummary summary;
+    protected BioGeomancerQuerySummaryStruct summary;
     
     public BioGeomancerResultsDisplay()
     {
@@ -140,7 +139,7 @@ public class BioGeomancerResultsDisplay extends JPanel implements MapperListener
     
     public void setBioGeomancerResultsData(String bgXmlResponse) throws Exception
     {
-        summary = BioGeoMancer.parseBioGeomancerResponse(bgXmlResponse);
+        summary = BioGeomancer.parseBioGeomancerResponse(bgXmlResponse);
         
         idField.setText(summary.id);
         countryField.setText(summary.country);
@@ -159,7 +158,7 @@ public class BioGeomancerResultsDisplay extends JPanel implements MapperListener
         bgResultsTable.setModel(new BioGeomancerResultsTableModel(summary.results));
         UIHelper.calcColumnWidths(bgResultsTable);
         
-        BioGeoMancer.getMapOfQuerySummary(summary, this);
+        BioGeomancer.getMapOfQuerySummary(summary, this);
         repaint();
     }
     
@@ -173,7 +172,7 @@ public class BioGeomancerResultsDisplay extends JPanel implements MapperListener
         bgResultsTable.getSelectionModel().removeListSelectionListener(listener);
     }
     
-    public BioGeomancerResult getSelectedResult()
+    public BioGeomancerResultStruct getSelectedResult()
     {
         int rowIndex = bgResultsTable.getSelectedRow();
         if (rowIndex < 0 || rowIndex > summary.results.length-1)

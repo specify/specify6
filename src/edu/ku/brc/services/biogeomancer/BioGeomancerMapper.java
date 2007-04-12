@@ -13,7 +13,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.ku.brc.specify.extras;
+package edu.ku.brc.services.biogeomancer;
 
 
 import java.awt.Color;
@@ -51,9 +51,9 @@ import edu.ku.brc.util.services.MapGrabber;
  * @author rods
  *
  */
-public class BioGeoMancerMapper implements TimingTarget
+public class BioGeomancerMapper implements TimingTarget
 {
-    private static final Logger          log                 = Logger.getLogger(BioGeoMancerMapper.class);
+    private static final Logger          log                 = Logger.getLogger(BioGeomancerMapper.class);
     protected List<BGMData>    bgmDatas;
     protected BGMData          currentLoc;
     protected List<String>      labels;
@@ -105,7 +105,7 @@ public class BioGeoMancerMapper implements TimingTarget
     protected Icon             overlayIcon = null;
     protected boolean           cacheValid;
 
-    public BioGeoMancerMapper()
+    public BioGeomancerMapper()
     {
         minLat = -90;
         minLong = -180;
@@ -623,6 +623,7 @@ public class BioGeoMancerMapper implements TimingTarget
     {
         Thread mapGrabberThread = new Thread("Mapper Grabber")
         {
+            @Override
             public void run()
             {
                 try
@@ -685,6 +686,7 @@ public class BioGeoMancerMapper implements TimingTarget
         }
         Icon icon = new Icon()
         {
+            @SuppressWarnings("synthetic-access")
             public void paintIcon(Component c, Graphics g, int x, int y)
             {
                 // this helps keep the labels inside the map

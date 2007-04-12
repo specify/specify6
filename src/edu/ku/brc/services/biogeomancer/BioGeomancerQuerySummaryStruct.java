@@ -1,15 +1,15 @@
-package edu.ku.brc.specify.tasks.services.biogeomancer;
+package edu.ku.brc.services.biogeomancer;
 
 
 /**
  * This class is nothing more than a C-style struct holding a bunch of string
- * values and an array of {@link BioGeomancerResult}s.
+ * values and an array of {@link BioGeomancerResultStruct}s.
  * 
  * @author jstewart
  * @code_status Alpha
  *
  */
-public class BioGeomancerQuerySummary
+public class BioGeomancerQuerySummaryStruct
 {
     public String id;
     public String country;
@@ -25,5 +25,5 @@ public class BioGeomancerQuerySummary
     public String multiPointMatch;
     public String weightedCentroid;
     
-    public BioGeomancerResult[] results;
+    public BioGeomancerResultStruct[] results;
 }

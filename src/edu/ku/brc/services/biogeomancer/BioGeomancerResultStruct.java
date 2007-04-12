@@ -1,4 +1,4 @@
-package edu.ku.brc.specify.tasks.services.biogeomancer;
+package edu.ku.brc.services.biogeomancer;
 
 /**
  * This class is nothing more than a C-style struct holding a bunch of string
@@ -8,7 +8,7 @@ package edu.ku.brc.specify.tasks.services.biogeomancer;
  * @code_status Alpha
  *
  */
-public class BioGeomancerResult
+public class BioGeomancerResultStruct
 {
     // results values
     public String country;
