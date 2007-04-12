@@ -12,6 +12,7 @@ import javax.swing.event.ListSelectionListener;
 import edu.ku.brc.services.biogeomancer.BioGeomancerResultStruct;
 import edu.ku.brc.services.biogeomancer.BioGeomancerResultsDisplay;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
+import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UICacheManager;
 import edu.ku.brc.ui.UIHelper;
@@ -95,6 +96,8 @@ public class BioGeomancerResultsChooser extends CustomDialog
             hasBeenShown = true;
             createUI();
 
+            HelpMgr.registerComponent(this.helpBtn, "biogeomancer");
+
             showNextRecord();
 
             UIHelper.centerWindow(this);
@@ -116,15 +119,6 @@ public class BioGeomancerResultsChooser extends CustomDialog
         chosenResults.set(rowIndex, result);
         
         showNextRecord();
-    }
-
-    @Override
-    protected void helpButtonPressed()
-    {
-        // TODO Auto-generated method stub
-        super.helpButtonPressed();
-        
-        // show the help window
     }
 
     @Override
