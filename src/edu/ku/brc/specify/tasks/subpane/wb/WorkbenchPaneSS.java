@@ -110,7 +110,6 @@ import edu.ku.brc.specify.tasks.ExportTask;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.tasks.services.LocalityMapper;
 import edu.ku.brc.specify.tasks.services.LocalityMapper.MapperListener;
-import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
@@ -1281,7 +1280,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             selection = new int[rowCnt];
             for (int i = 0; i < rowCnt; ++i)
             {
-                selection[i]=spreadSheet.convertRowIndexToModel(i);
+                selection[i] = spreadSheet.convertRowIndexToModel(i);
             }
         }
         
@@ -1295,46 +1294,24 @@ public class WorkbenchPaneSS extends BaseSubPane
             selectedRows.add(row);
         }
         
-        CommandAction command = new CommandAction(ExportTask.EXPORT,ExportTask.EXPORT_LIST);
+        CommandAction command = new CommandAction(ExportTask.EXPORT, ExportTask.EXPORT_LIST);
         command.setData(selectedRows);
         command.setProperty("exporter", ExportToFile.class);
         
         
         Properties props = new Properties();
-        
-        Vector<String> list = new Vector<String>();
-        list.add("Excel");
-        list.add("CSV");
-        
-        ChooseFromListDlg<String> dlg = new ChooseFromListDlg<String>((Frame)UICacheManager.get(UICacheManager.FRAME), 
-                                                                      "File Format?", null,
-                                                                      ChooseFromListDlg.OKCANCELHELP,
-                                                                      list, "WorkbenchImportCvs"); //XXX I18N
-        dlg.setModal(true);
-        UIHelper.centerAndShow(dlg);
-
-        String format = dlg.getSelectedObject();
-
-        if (format == "Excel") 
-        { 
-            props.setProperty("mimetype", ExportFileConfigurationFactory.XLS_MIME_TYPE);
-        }
-        else if (format == "CSV")
-        {
-            props.setProperty("mimetype", ExportFileConfigurationFactory.CSV_MIME_TYPE);   
-        }
-        else
-        {
-            return;
-        }
+        props.setProperty("mimetype", ExportFileConfigurationFactory.XLS_MIME_TYPE);
 
         FileDialog fileDialog = new FileDialog((Frame) UICacheManager.get(UICacheManager.FRAME),
-                getResourceString("CHOOSE_WORKBENCH_EXPORT_FILE"), FileDialog.SAVE);
+                                               getResourceString("CHOOSE_WORKBENCH_EXPORT_FILE"), FileDialog.SAVE);
         UIHelper.centerAndShow(fileDialog);
 
         String fileName = fileDialog.getFile();
-        String path = fileDialog.getDirectory();
-        if (StringUtils.isEmpty(fileName)) { return; }
+        String path     = fileDialog.getDirectory();
+        if (StringUtils.isEmpty(fileName))
+        {
+            return;
+        }
         props.setProperty("fileName", path + File.separator + fileName);
 
         ConfigureExternalDataIFace config = ExportFileConfigurationFactory.getConfiguration(props);

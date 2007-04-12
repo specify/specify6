@@ -1403,7 +1403,7 @@ public class WorkbenchTask extends BaseTask
             UICacheManager.writeGlassPaneMsg(String.format(getResourceString("WB_LOADING_DATASET"), new Object[] {workbench.getName()}), 32);
             
             final WorkbenchTask            thisTask    = this;
-            final DataProviderSessionIFace finiSession = session;
+            final DataProviderSessionIFace finiSession = tmpSession;
             final SwingWorker worker = new SwingWorker()
             {
                  public Object construct()
@@ -1423,13 +1423,23 @@ public class WorkbenchTask extends BaseTask
                              log.error("Couldn't find RolloverCommand for WorkbenchId ["+workbench.getWorkbenchId()+"]");
                          }
                          
-                         if (session == null && finiSession != null)
-                         {
-                             finiSession.close();
-                         }
                      } catch (Exception ex)
                      {
                          log.error(ex);
+                     } 
+                     finally
+                     {
+                         if (session == null && finiSession != null)
+                         {
+                             try
+                             {
+                                 finiSession.close();
+                                 
+                             } catch (Exception ex)
+                             {
+                                 log.error(ex);
+                             }
+                         }
                      }
 
                     return null;
