@@ -1374,42 +1374,42 @@ public class WorkbenchPaneSS extends BaseSubPane
             selectedRows.add(new WorkbenchRowPlacemarkWrapper(row));
         }
         
-        // get an icon URL that is specific to the current context
-        String discipline = CollectionObjDef.getCurrentCollectionObjDef().getDiscipline();
-        String iconUrl = null;
-        discipline = discipline.toLowerCase();
-        if (discipline.startsWith("fish"))
-        {
-            iconUrl = getResourceString("WB_GOOGLE_FISH_ICON_URL");
-        }
-        if (discipline.startsWith("bird"))
-        {
-            iconUrl = getResourceString("WB_GOOGLE_BIRD_ICON_URL");
-        }
-        if (discipline.startsWith("insect") || discipline.startsWith("ento"))
-        {
-            iconUrl = getResourceString("WB_GOOGLE_ENTO_ICON_URL");
-        }
-        if (discipline.startsWith("plant") || discipline.equals("botany"))
-        {
-            iconUrl = getResourceString("WB_GOOGLE_PLANT_ICON_URL");
-        }
-        if (discipline.startsWith("mammal"))
-        {
-            iconUrl = getResourceString("WB_GOOGLE_MAMMAL_ICON_URL");
-        }
-        if (discipline.startsWith("herp"))
-        {
-            iconUrl = getResourceString("WB_GOOGLE_HERP_ICON_URL");
-        }
+//        // get an icon URL that is specific to the current context
+//        String discipline = CollectionObjDef.getCurrentCollectionObjDef().getDiscipline();
+//        String iconUrl = null;
+//        discipline = discipline.toLowerCase();
+//        if (discipline.startsWith("fish"))
+//        {
+//            iconUrl = getResourceString("WB_GOOGLE_FISH_ICON_URL");
+//        }
+//        if (discipline.startsWith("bird"))
+//        {
+//            iconUrl = getResourceString("WB_GOOGLE_BIRD_ICON_URL");
+//        }
+//        if (discipline.startsWith("insect") || discipline.startsWith("ento"))
+//        {
+//            iconUrl = getResourceString("WB_GOOGLE_ENTO_ICON_URL");
+//        }
+//        if (discipline.startsWith("plant") || discipline.equals("botany"))
+//        {
+//            iconUrl = getResourceString("WB_GOOGLE_PLANT_ICON_URL");
+//        }
+//        if (discipline.startsWith("mammal"))
+//        {
+//            iconUrl = getResourceString("WB_GOOGLE_MAMMAL_ICON_URL");
+//        }
+//        if (discipline.startsWith("herp"))
+//        {
+//            iconUrl = getResourceString("WB_GOOGLE_HERP_ICON_URL");
+//        }
         
         CommandAction command = new CommandAction(ExportTask.EXPORT,ExportTask.EXPORT_LIST);
         command.setData(selectedRows);
         command.setProperty("exporter", GoogleEarthExporter.class);
-        if (iconUrl != null)
-        {
-            command.setProperty("iconURL", iconUrl);
-        }
+//        if (iconUrl != null)
+//        {
+//            command.setProperty("iconURL", iconUrl);
+//        }
         CommandDispatcher.dispatch(command);
         JStatusBar statusBar = UICacheManager.getStatusBar();
         statusBar.setText("Opening Google Earth");
