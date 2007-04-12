@@ -34,6 +34,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -192,8 +193,8 @@ public class SpecifyInitializer
         protected JTextField createField(final PanelBuilder builder, final String label, final int row, final boolean isPassword)
         {
             JTextField txt = isPassword ? new JPasswordField(15) : new JTextField(15);
-            builder.add(new JLabel(label+":", JLabel.RIGHT), cc.xy(1, row));
-            builder.add(txt,                                 cc.xy(3, row));
+            builder.add(new JLabel(label+":", SwingConstants.RIGHT), cc.xy(1, row));
+            builder.add(txt,                                         cc.xy(3, row));
             //txt.addFocusListener(this);
             //txt.addKeyListener(keyAdapter);
             
@@ -338,12 +339,12 @@ public class SpecifyInitializer
             passwordTxt     = createField(builder, "Password",      row, true);row += 2;
             dbNameTxt       = createField(builder, "Database Name", row);row += 2;
             
-            builder.add(new JLabel("Discipline:", JLabel.RIGHT), cc.xy(1, row));
-            builder.add(disciplines,                             cc.xy(3, row));
+            builder.add(new JLabel("Discipline:", SwingConstants.RIGHT), cc.xy(1, row));
+            builder.add(disciplines, cc.xy(3, row));
             row += 2;
             
-            builder.add(new JLabel("Driver:", JLabel.RIGHT), cc.xy(1, row));
-            builder.add(drivers,                             cc.xy(3, row));
+            builder.add(new JLabel("Driver:", SwingConstants.RIGHT), cc.xy(1, row));
+            builder.add(drivers, cc.xy(3, row));
             row += 2;
             
             // Select Fish as the default

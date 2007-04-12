@@ -19,7 +19,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.Frame;
 import java.awt.Graphics2D;
 import java.awt.KeyboardFocusManager;
 import java.awt.Point;
@@ -349,18 +348,33 @@ public class UICacheManager
                 base = fullPath + instance.appName;
             } else
             {
-                base = fullPath + "." + instance.appName;
+                base = fullPath + instance.appName;
             }
             
         } else
         {
+            String homeDir = System.getProperty("user.home");
+            
             if (System.getProperty("os.name").indexOf("Windows") > -1)
             {
                 base = System.getenv("APPDATA") + File.separator + instance.appName;
+                
+            } else if (System.getProperty("os.name").indexOf("Mac") > -1)
+            {
+                String docPath = homeDir + File.separator + "Documents"; // Not Localized
+                if (new File(docPath).exists())
+                {
+                    base = docPath + File.separator + instance.appName;
+                    
+                } else
+                {
+                    base = homeDir + File.separator + instance.appName;
+                }
             } else
             {
-                base = System.getProperty("user.home") + File.separator + "." + instance.appName;
+                base = homeDir + File.separator + instance.appName;
             }
+            
             File baseDir = new File(base);
             if (!baseDir.exists())
             {

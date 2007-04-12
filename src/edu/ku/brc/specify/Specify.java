@@ -59,8 +59,14 @@ import org.apache.log4j.Logger;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.looks.windows.WindowsLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
+import com.jgoodies.looks.plastic.theme.DesertBlue;
+import com.jgoodies.looks.plastic.theme.DesertGreen;
+import com.jgoodies.looks.plastic.theme.ExperienceBlue;
+import com.jgoodies.looks.plastic.theme.SkyBluer;
 import com.jgoodies.looks.plastic.theme.SkyKrupp;
+import com.sun.java.swing.plaf.gtk.GTKLookAndFeel;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
@@ -1189,10 +1195,20 @@ public class Specify extends JPanel implements DatabaseLoginListener
               
               try
               {
-                  if (!System.getProperty("os.name").equals("Mac OS X"))
+                  UIHelper.OSTYPE osType = UIHelper.getOSType();
+                  if (osType == UIHelper.OSTYPE.Windows )
                   {
+                      UIManager.setLookAndFeel(new WindowsLookAndFeel());
+                      
+                  } else if (osType == UIHelper.OSTYPE.Linux )
+                  {
+                      //UIManager.setLookAndFeel(new GTKLookAndFeel());
                       UIManager.setLookAndFeel(new PlasticLookAndFeel());
-                      PlasticLookAndFeel.setPlasticTheme(new SkyKrupp());
+                      //PlasticLookAndFeel.setPlasticTheme(new SkyKrupp());
+                      //PlasticLookAndFeel.setPlasticTheme(new DesertBlue());
+                      //PlasticLookAndFeel.setPlasticTheme(new ExperienceBlue());
+                      //PlasticLookAndFeel.setPlasticTheme(new DesertGreen());
+                     
                   }
               }
               catch (Exception e)

@@ -101,8 +101,9 @@ public class BioGeomancerResultsChooser extends CustomDialog
             showNextRecord();
 
             UIHelper.centerWindow(this);
+            pack();
         }
-        
+
         super.setVisible(visible);
     }
 

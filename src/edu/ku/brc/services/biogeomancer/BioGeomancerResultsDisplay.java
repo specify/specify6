@@ -2,7 +2,9 @@ package edu.ku.brc.services.biogeomancer;
 
 import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Insets;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -132,9 +134,13 @@ public class BioGeomancerResultsDisplay extends JPanel implements MapperListener
 
     protected JTextField createTextField()
     {
-        JTextField dataLabel = new JTextField();
-        dataLabel.setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
-        return dataLabel;
+        JTextField tf     = new JTextField();
+        Insets     insets = tf.getBorder().getBorderInsets(tf);
+        tf.setBorder(BorderFactory.createEmptyBorder(insets.top, insets.left, insets.bottom, insets.bottom));
+        tf.setForeground(Color.BLACK);
+        tf.setBackground(Color.WHITE);
+        tf.setEditable(false);
+        return tf;
     }
     
     public void setBioGeomancerResultsData(String bgXmlResponse) throws Exception
