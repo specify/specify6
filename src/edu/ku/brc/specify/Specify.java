@@ -59,14 +59,8 @@ import org.apache.log4j.Logger;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.looks.windows.WindowsLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
-import com.jgoodies.looks.plastic.theme.DesertBlue;
-import com.jgoodies.looks.plastic.theme.DesertGreen;
-import com.jgoodies.looks.plastic.theme.ExperienceBlue;
-import com.jgoodies.looks.plastic.theme.SkyBluer;
-import com.jgoodies.looks.plastic.theme.SkyKrupp;
-import com.sun.java.swing.plaf.gtk.GTKLookAndFeel;
+import com.jgoodies.looks.windows.WindowsLookAndFeel;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;

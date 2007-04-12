@@ -94,7 +94,6 @@ import edu.ku.brc.dbsupport.StaleObjectException;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.services.biogeomancer.BioGeomancer;
 import edu.ku.brc.services.biogeomancer.BioGeomancerResultStruct;
-import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.RecordSet;
