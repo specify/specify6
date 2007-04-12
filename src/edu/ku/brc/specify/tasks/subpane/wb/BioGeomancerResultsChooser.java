@@ -1,8 +1,13 @@
 package edu.ku.brc.specify.tasks.subpane.wb;
 
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
+
 import java.awt.Frame;
 import java.util.List;
 import java.util.Vector;
+
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import edu.ku.brc.services.biogeomancer.BioGeomancerResultStruct;
 import edu.ku.brc.services.biogeomancer.BioGeomancerResultsDisplay;
@@ -18,12 +23,14 @@ public class BioGeomancerResultsChooser extends CustomDialog
     protected List<BioGeomancerResultStruct> chosenResults;
     protected boolean hasBeenShown;
     protected int rowIndex;
+    protected String baseTitle;
     
     public BioGeomancerResultsChooser(Frame parent, String title, List<WorkbenchRow> rows)
     {
-        super(parent,title,true,null);
+        super(parent,title,true,CustomDialog.OKCANCELAPPLYHELP,null);
         this.rows = rows;
-        hasBeenShown = false;
+        this.hasBeenShown = false;
+        this.baseTitle = title;
         
         // create a vector for all of the user choices
         chosenResults = new Vector<BioGeomancerResultStruct>(rows.size());
@@ -35,7 +42,39 @@ public class BioGeomancerResultsChooser extends CustomDialog
         
         setContentPanel(resultsDisplayPanel);
         
-        rowIndex = 0;
+        this.applyLabel = getResourceString("Skip");
+        
+        resultsDisplayPanel.addListSelectionListener(new ListSelectionListener()
+        {
+            public void valueChanged(ListSelectionEvent e)
+            {
+                // ignore the event that fires during a user change
+                // just catch the one that fires when the user is done changing
+                if (e.getValueIsAdjusting())
+                {
+                    return;
+                }
+                
+                if (onLastRecord())
+                {
+                    // no need to mess with the button now, since it should be disabled
+                    return;
+                }
+                
+                if (resultsDisplayPanel.getSelectedResult() == null)
+                {
+                    // if the user hasn't selected a result record, put "Skip" on the button
+                    setApplyLabel(getResourceString("Skip"));
+                }
+                else
+                {
+                    // if the user selected a result record, put "Next" on the button
+                    setApplyLabel(getResourceString("Next"));
+                }
+            }
+        });
+        
+        rowIndex = -1;
     }
     
     public List<BioGeomancerResultStruct> getResultsChosen()
@@ -55,25 +94,8 @@ public class BioGeomancerResultsChooser extends CustomDialog
         {
             hasBeenShown = true;
             createUI();
-            
-            if (rowIndex < rows.size()-1)
-            {
-                setOkLabel("Next");
-            }
-            else
-            {
-                setOkLabel("OK");
-            }
 
-            try
-            {
-                resultsDisplayPanel.setBioGeomancerResultsData(rows.get(0).getBioGeomancerResults());
-            }
-            catch (Exception e)
-            {
-                UICacheManager.getStatusBar().setErrorMessage("Error while displaying BioGeomancer results", e);
-                super.setVisible(false);
-            }
+            showNextRecord();
 
             UIHelper.centerWindow(this);
         }
@@ -82,35 +104,50 @@ public class BioGeomancerResultsChooser extends CustomDialog
     }
 
     @Override
-    protected void okButtonPressed()
+    protected void applyButtonPressed()
     {
-        // don't call super.okButtonPressed() since we don't want to go invisible
-        isCancelled = false;
-        btnPressed  = OK_BTN;
+        // remember, we're using the 'apply' button for "next" or "skip" to progress
+        // to the next record in the list
         
+        super.applyButtonPressed();
+        
+        // store the user selection into the chosen results list
         BioGeomancerResultStruct result = resultsDisplayPanel.getSelectedResult();
         chosenResults.set(rowIndex, result);
         
-        // if that was the last one to work on...
-        // close the dialog
-        if (rowIndex >= rows.size()-1)
-        {
-            super.setVisible(false);
-            return;
-        }
+        showNextRecord();
+    }
+
+    @Override
+    protected void helpButtonPressed()
+    {
+        // TODO Auto-generated method stub
+        super.helpButtonPressed();
         
-        // since we have more rows to work on...
+        // show the help window
+    }
+
+    @Override
+    protected void okButtonPressed()
+    {
+        // store the user selection into the chosen results list
+        BioGeomancerResultStruct result = resultsDisplayPanel.getSelectedResult();
+        chosenResults.set(rowIndex, result);
         
+        super.okButtonPressed();
+    }
+    
+    protected void showNextRecord()
+    {
         rowIndex++;
-        if (rowIndex < rows.size()-1)
+
+        if (onLastRecord())
         {
-            setOkLabel("Next");
-        }
-        else
-        {
-            setOkLabel("OK");
+            applyBtn.setEnabled(false);
         }
 
+        setTitle(baseTitle + ": " + (rowIndex+1) + " " + getResourceString("of") + " " + rows.size());
+        
         try
         {
             resultsDisplayPanel.setBioGeomancerResultsData(rows.get(rowIndex).getBioGeomancerResults());
@@ -120,5 +157,10 @@ public class BioGeomancerResultsChooser extends CustomDialog
             UICacheManager.getStatusBar().setErrorMessage("Error while displaying BioGeomancer results", e);
             super.setVisible(false);
         }
+    }
+    
+    protected boolean onLastRecord()
+    {
+        return (rowIndex == rows.size()-1) ? true : false;
     }
 }

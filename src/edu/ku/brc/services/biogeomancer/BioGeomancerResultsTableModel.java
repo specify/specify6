@@ -1,7 +1,8 @@
 package edu.ku.brc.services.biogeomancer;
 
-import javax.swing.table.AbstractTableModel;
+import static edu.ku.brc.ui.UICacheManager.getResourceString;
 
+import javax.swing.table.AbstractTableModel;
 
 public class BioGeomancerResultsTableModel extends AbstractTableModel
 {
@@ -29,47 +30,47 @@ public class BioGeomancerResultsTableModel extends AbstractTableModel
         {
             case 0:
             {
-                return "Id";
+                return getResourceString("Id");
             }
             case 1:
             {
-                return "Country";
+                return getResourceString("Country");
             }
             case 2:
             {
-                return "Adm 1";
+                return getResourceString("Adm1");
             }
             case 3:
             {
-                return "Adm 2";
+                return getResourceString("Adm2");
             }
             case 4:
             {
-                return "Feat. Name";
+                return getResourceString("FeatureName");
             }
             case 5:
             {
-                return "Feat. Type";
+                return getResourceString("FeatureType");
             }
             case 6:
             {
-                return "Gazetteer";
+                return getResourceString("Gazetteer");
             }
             case 7:
             {
-                return "Coordinates";
+                return getResourceString("Coordinates");
             }
             case 8:
             {
-                return "Offset";
+                return getResourceString("Offset");
             }
             case 9:
             {
-                return "Bounding Box";
+                return getResourceString("BoundingBox");
             }
             case 10:
             {
-                return "Locality";
+                return getResourceString("Locality");
             }
         }
         

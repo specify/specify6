@@ -60,15 +60,15 @@ public class BioGeomancerResultsDisplay extends JPanel implements MapperListener
         CellConstraints cc = new CellConstraints();
 
         int rowIndex = 3;
-        idField       = addRow(cc, "ID",        1, rowIndex);
+        idField       = addRow(cc, getResourceString("ID"),        1, rowIndex);
         rowIndex+=2;
-        countryField  = addRow(cc, "Country",   1, rowIndex);
+        countryField  = addRow(cc, getResourceString("Country"),   1, rowIndex);
         rowIndex+=2;
-        adm1Field     = addRow(cc, "Adm1",      1, rowIndex);
+        adm1Field     = addRow(cc, getResourceString("Adm1"),      1, rowIndex);
         rowIndex+=2;
-        adm2Field     = addRow(cc, "Adm2",      1, rowIndex);
+        adm2Field     = addRow(cc, getResourceString("Adm2"),      1, rowIndex);
         rowIndex+=2;
-        localityField = addRow(cc, "Locality",  1, rowIndex);
+        localityField = addRow(cc, getResourceString("Locality"),  1, rowIndex);
         rowIndex+=2;
 
         mapLabel = new JLabel();
@@ -77,21 +77,21 @@ public class BioGeomancerResultsDisplay extends JPanel implements MapperListener
 
         mapLabel.setPreferredSize(new Dimension(MAP_WIDTH, MAP_HEIGHT));
 
-        countryBoundingBoxField       = addRow(cc, "Country Bounding Box",        1, rowIndex);
+        countryBoundingBoxField       = addRow(cc, getResourceString("CountryBoundingBox"),       1, rowIndex);
         rowIndex+=2;
-        matchedCountField             = addRow(cc, "Matched Count",               1, rowIndex);
+        matchedCountField             = addRow(cc, getResourceString("MatchedCount"),             1, rowIndex);
         rowIndex+=2;
-        boundingBoxField              = addRow(cc, "Bounding Box",                1, rowIndex);
+        boundingBoxField              = addRow(cc, getResourceString("BoundingBox"),              1, rowIndex);
         rowIndex+=2;
-        boundingBoxCentroidField      = addRow(cc, "Bounding Box Centroid",       1, rowIndex);
+        boundingBoxCentroidField      = addRow(cc, getResourceString("BoundingBoxCentroid"),      1, rowIndex);
         rowIndex+=2;
-        centroidErrorRadiusField      = addRow(cc, "Centroid Error Radius",       1, rowIndex);
+        centroidErrorRadiusField      = addRow(cc, getResourceString("CentroidErrorRadius"),      1, rowIndex);
         rowIndex+=2;
-        centroidErrorRadiusUnitsField = addRow(cc, "Centroid Error Radius Units", 1, rowIndex);
+        centroidErrorRadiusUnitsField = addRow(cc, getResourceString("CentroidErrorRadiusUnits"), 1, rowIndex);
         rowIndex+=2;
-        multiPointMatchField          = addRow(cc, "Multi Point Match",           1, rowIndex);
+        multiPointMatchField          = addRow(cc, getResourceString("MultiPointMatch"),          1, rowIndex);
         rowIndex+=2;
-        weightedCentroidField         = addRow(cc, "Weighted Centroid",           1, rowIndex);
+        weightedCentroidField         = addRow(cc, getResourceString("WeightedCentroid"),         1, rowIndex);
         rowIndex+=2;
 
         bgResultsTable = new JTable();
