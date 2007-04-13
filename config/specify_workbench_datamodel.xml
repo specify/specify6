@@ -31,7 +31,7 @@
     <field column="Start Time" name="startTime" type="short"/>
     <field column="End Time" name="endTime" type="short"/>
     <field column="Verbatim Locality" name="verbatimLocality" type="text" length="255"/>
-    <field column="Remarks" name="remarks" type="text" length="255"/>
+    <field column="CollectingEvent Remarks" name="remarks" type="text" length="255"/>
     <field column="Collector1" name="Collector1" type="java.lang.String" length="64"/>
     <field column="Collector2" name="Collector2" type="java.lang.String" length="64"/>
     <field column="Collector3" name="Collector3" type="java.lang.String" length="64"/>
@@ -220,6 +220,7 @@
     <field column="Genus Species" name="Genus Species" type="java.lang.String" length="128"/>
     <field column="Species" name="Species" type="java.lang.String" length="64"/>
     <field column="Sub Species" name="Sub Species" type="java.lang.String" length="64"/>
+    <field column="Common Name" name="commonName" type="java.lang.String" length="128"/>
     <field column="Citation" name="Citation" type="java.lang.String" length="128"/>
   </table>
 </database>
