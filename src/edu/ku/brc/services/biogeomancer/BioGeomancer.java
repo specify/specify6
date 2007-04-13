@@ -197,6 +197,8 @@ public class BioGeomancer
     public static void getMapOfQuerySummary(BioGeomancerQuerySummaryStruct querySummary, MapperListener callback)
     {
         BioGeomancerMapper bioGeoMancerMapper = new BioGeomancerMapper();
+        bioGeoMancerMapper.setMaxMapWidth(MAP_MAX_WIDTH);
+        bioGeoMancerMapper.setMaxMapHeight(MAP_MAX_HEIGHT);
 
         for (int i = 0; i < querySummary.results.length; ++i)
         {
@@ -215,8 +217,6 @@ public class BioGeomancer
                     box[j] = Double.parseDouble(boxList[j]);
                 }
                 bioGeoMancerMapper.addBGMDataAndLabel(lat, lon, box[1], box[0], box[3], box[2], Integer.toString(i+1));
-                bioGeoMancerMapper.setMaxMapWidth(MAP_MAX_WIDTH);
-                bioGeoMancerMapper.setMaxMapHeight(MAP_MAX_HEIGHT);
             }
         }
         bioGeoMancerMapper.getMap(callback);
