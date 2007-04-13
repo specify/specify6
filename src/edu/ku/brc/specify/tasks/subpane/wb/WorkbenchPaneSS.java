@@ -93,6 +93,7 @@ import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.StaleObjectException;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.services.biogeomancer.BioGeomancer;
+import edu.ku.brc.services.biogeomancer.BioGeomancerQuerySummaryStruct;
 import edu.ku.brc.services.biogeomancer.BioGeomancerResultStruct;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
@@ -1508,35 +1509,37 @@ public class WorkbenchPaneSS extends BaseSubPane
                     
                     log.info("Making call to BioGeomancer service: " + localityNameStr);
                     String bgResults;
+                    BioGeomancerQuerySummaryStruct bgQuerySummary;
                     try
                     {
                         bgResults = BioGeomancer.getBioGeoMancerResponse(row.getWorkbenchRowId().toString(), country, state, county, localityNameStr);
+                        bgQuerySummary = BioGeomancer.parseBioGeomancerResponse(bgResults);
                     }
                     catch (IOException ex1)
                     {
+                        statusBar.setWarningMessage("Network error while contacting BioGeomancer", ex1);
                         log.error("A network error occurred while contacting the BioGeomancer service", ex1);
+                        
+                        // update the progress bar UI and move on
+                        progressDialog.setProcess(++progress);
+                        continue;
+                    }
+                    catch (Exception ex2)
+                    {
+                        statusBar.setWarningMessage("Error while parsing BioGeomancer results", ex2);
+                        log.warn("Failed to get result count from BioGeomancer respsonse", ex2);
+                        
                         // update the progress bar UI and move on
                         progressDialog.setProcess(++progress);
                         continue;
                     }
 
                     // if there was at least one result, pre-cache a map for that result
-                    int resCount;
-                    try
-                    {
-                        resCount = BioGeomancer.getResultsCount(bgResults);
-                    }
-                    catch (Exception ex2)
-                    {
-                        // we couldn't read the results, so we have to assume there were no (readable) results
-                        statusBar.setWarningMessage("Error while parsing BioGeomancer results", ex2);
-                        log.warn("Failed to get result count from BioGeomancer respsonse", ex2);
-                        resCount = 0;
-                    }
+                    int resCount = bgQuerySummary.results.length;
                     if (resCount > 0)
                     {
                         final int rowNumber = row.getRowNumber();
-                        final String bioGeoResults = bgResults;
+                        final BioGeomancerQuerySummaryStruct summaryStruct = bgQuerySummary;
                         // create a thread to go grab the map so it will be cached for later use
                         Thread t = new Thread(new Runnable()
                         {
@@ -1545,7 +1548,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                                 try
                                 {
                                     log.info("Requesting map of BioGeomancer results for workbench row " + rowNumber);
-                                    BioGeomancer.getMapOfBioGeomancerResults(bioGeoResults, null);
+                                    BioGeomancer.getMapOfQuerySummary(summaryStruct, null);
                                 }
                                 catch (Exception e)
                                 {
