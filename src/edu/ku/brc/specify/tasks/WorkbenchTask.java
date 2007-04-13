@@ -1670,7 +1670,7 @@ public class WorkbenchTask extends BaseTask
             cmd.setProperty("title",  "Labels");
             cmd.setProperty("file",   "basic_label.jrxml");
             //params hard-coded for harvard demo:
-            cmd.setProperty("params", "title=PLANTS OF CONNECTICUT, U.S.A.;subtitle=Hartford County");
+            cmd.setProperty("params", "title=PLANTS OF CONNECTICUT, U.S.A.;subtitle=Hartford County;footer=HARVARD UNIVERSITY HERBARIA");
             cmd.setProperty(NavBoxAction.ORGINATING_TASK, this);
             
             SwingUtilities.invokeLater(new Runnable() {
