@@ -1,9 +1,9 @@
 /*
-     * Copyright (C) 2007  The University of Kansas
-     *
-     * [INSERT KU-APPROVED LICENSE TEXT HERE]
-     *
-     */
+ * Copyright (C) 2007 The University of Kansas
+ * 
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ * 
+ */
 /**
  * 
  */
@@ -24,68 +24,76 @@ import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
  * JaperReports Custom DataSource for WorkbenchRows.
  * 
  * @author rod
- *
+ * 
  * @code_status Alpha
- *
+ * 
  * Apr 2, 2007
- *
+ * 
  */
 public class WorkbenchJRDataSource implements JRDataSource
 {
-    private Hashtable<String, Short> map = new Hashtable<String, Short>();
+    private Hashtable<String, Short> map      = new Hashtable<String, Short>();
     private Workbench                workbench;
-    private int                      rowIndex = -1;        
+    private int                      rowIndex = -1;
+    private int                      fldIndex = 0;
     private List<WorkbenchRow>       workbenchRows;
-    
+ 
     public WorkbenchJRDataSource(final Workbench workbench)
     {
         this.workbench = workbench;
-        workbenchRows  = workbench.getWorkbenchRowsAsList();
+        workbenchRows = workbench.getWorkbenchRowsAsList();
         createMap();
     }
 
     public WorkbenchJRDataSource(final Workbench workbench, final List<WorkbenchRow> workbenchRows)
     {
-        this.workbench     = workbench;
+        this.workbench = workbench;
         this.workbenchRows = workbenchRows;
         Collections.sort(workbenchRows);
-        
+
         createMap();
     }
-    
+
     /**
      * Maps the name to the column index.
      */
     protected void createMap()
     {
-        for (WorkbenchTemplateMappingItem wbtmi : workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems())
+        for (WorkbenchTemplateMappingItem wbtmi : workbench.getWorkbenchTemplate()
+                .getWorkbenchTemplateMappingItems())
         {
             map.put(wbtmi.getFieldName(), wbtmi.getViewOrder());
+            System.out.println(wbtmi.getFieldName() + ", " + wbtmi.getViewOrder());
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see net.sf.jasperreports.engine.JRDataSource#getFieldValue(net.sf.jasperreports.engine.JRField)
      */
     public Object getFieldValue(final JRField field) throws JRException
     {
         WorkbenchRow row = workbench.getRow(rowIndex);
         Short inx = map.get(field.getName());
-        return inx == null ? "XX" :  row.getData(inx);
+        return inx == null ? "XX" : row.getData(inx);
+        //return row.getData(fldIndex++);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see net.sf.jasperreports.engine.JRDataSource#next()
      */
     public boolean next() throws JRException
     {
-        System.out.println("["+rowIndex+"]["+workbenchRows.size()+"]");
-        if (rowIndex >= workbenchRows.size()-1)
+        System.out.println("[" + rowIndex + "][" + workbenchRows.size() + "]");
+        if (rowIndex >= workbenchRows.size() - 1)
         {
             return false;
         }
         rowIndex++;
+        fldIndex = 0;
         return true;
     }
 }
-

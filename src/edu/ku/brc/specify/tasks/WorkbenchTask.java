@@ -1661,6 +1661,8 @@ public class WorkbenchTask extends BaseTask
             
             session = DataProviderFactory.getInstance().createSession();
             session.attach(workbench);
+            
+            workbench.forceLoad();            
             WorkbenchJRDataSource dataSrc = new WorkbenchJRDataSource(workbench, workbench.getWorkbenchRowsAsList());
             session.close();
             
