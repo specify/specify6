@@ -9,7 +9,7 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
-import edu.ku.brc.specify.tasks.subpane.wb.DataImport;
+import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 
 
 /**
@@ -62,7 +62,7 @@ public class DataImportTruncation
      */
     public String getExcluded()
     {
-        return this.originalValue.substring(DataImport.MAX_FIELD_SIZE);
+        return this.originalValue.substring(WorkbenchDataItem.getCellDataLength()-1);
     }
     
     public DataImportTruncation(final int row, final short col, final String colHeader, final String originalValue)

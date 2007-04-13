@@ -162,7 +162,7 @@ public class XLSImport extends DataImport implements DataImportIFace
     
                         if (!skip)
                         {
-                            wbRow.setData(truncateIfNecessary(value, numRows, cellNum, ""), wbtmi.getViewOrder());
+                            wbRow.setData(truncateIfNecessary(value, numRows, wbtmi.getViewOrder(), wbtmi.getCaption()), wbtmi.getViewOrder());
                         }
                     }
                     numRows++;

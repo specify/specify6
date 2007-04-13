@@ -101,9 +101,9 @@ public class ImportDataFileInfo
         {
             vals[row][0] = String.valueOf(trunc.getRow());
             vals[row][1] = trunc.getColHeader();
-            if (vals[row][1] == "")
+            if (vals[row][1].equals(""))
             {
-                vals[row][1] = String.valueOf(trunc.getCol());
+                vals[row][1] = String.valueOf(trunc.getCol()+1);
             }
             vals[row++][2] = trunc.getExcluded();
         }

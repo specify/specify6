@@ -114,7 +114,9 @@ public class CSVImport extends DataImport implements DataImportIFace
                             WorkbenchTemplateMappingItem wbtmi = colHash.get((short) col);
                             if (wbtmi != null)
                             {
-                                wbRow.setData(truncateIfNecessary(csv.get(col), row, (short) col, ""), wbtmi.getViewOrder());
+                                wbRow.setData(truncateIfNecessary(csv.get(col), config
+                                        .getFirstRowHasHeaders() ? row - 1 : row, wbtmi
+                                        .getViewOrder(), wbtmi.getCaption()), wbtmi.getViewOrder());
                             }
                         }
                     }
