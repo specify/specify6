@@ -15,6 +15,7 @@
 package edu.ku.brc.specify;
 
 import java.awt.CardLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -26,7 +27,6 @@ import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -43,6 +43,7 @@ import javax.swing.event.ListDataListener;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.ButtonBarFactory;
@@ -78,16 +79,24 @@ import edu.ku.brc.ui.UIHelper;
  */
 public class SpecifyInitializer
 {
-    private static final boolean DO_DEBUG = false;
+    private static final Logger log                = Logger.getLogger(SpecifyInitializer.class);
+    
+    private static final boolean DO_DEBUG           = true;
+    private static final boolean DO_CHANGE_USERNAME = false;
     
     protected final String HOSTNAME = "localhost";
     protected CellConstraints    cc = new CellConstraints();
+    
+    protected boolean           doLoginOnly        = false;
+    protected boolean           assumeDerby        = false;
 
     /**
      * Constructor.
      */
-    public SpecifyInitializer()
+    public SpecifyInitializer(final boolean doLoginOnly, final boolean assumeDerby)
     {
+        this.doLoginOnly = doLoginOnly;
+        this.assumeDerby = assumeDerby;
 
     }
     
@@ -135,6 +144,12 @@ public class SpecifyInitializer
         if (!setUseCurrentLocation() || StringUtils.isEmpty(localPrefs.get("login.dbdriver_selected", null)))
         {
             final SetupDialog specifyInitFrame = new SetupDialog(specify);
+            // I can't believe I have to do the following....
+            UIHelper.centerWindow(specifyInitFrame);
+            specifyInitFrame.pack();
+            Dimension size = specifyInitFrame.getSize();
+            size.height += 10;
+            specifyInitFrame.setSize(size);
             UIHelper.centerAndShow(specifyInitFrame);
             
         } else
@@ -250,7 +265,10 @@ public class SpecifyInitializer
          */
         protected void updateBtnUI()
         {
-            nextBtn.setEnabled(isUIValid());
+            if (nextBtn != null)
+            {
+                nextBtn.setEnabled(isUIValid());
+            }
         }
 
         
@@ -301,13 +319,16 @@ public class SpecifyInitializer
         protected JComboBox          disciplines;
         
         protected Vector<DatabaseDriverInfo> driverList;
+        protected boolean                    doSetDefaultValues;
         
         /**
          * Creates a dialog for entering database name and selecting the appropriate driver.
          */
-        public DatabasePanel(final JButton nextBtn)
+        public DatabasePanel(final JButton nextBtn, final boolean doSetDefaultValues)
         {
             super(nextBtn);
+            
+            this.doSetDefaultValues = doSetDefaultValues;
             
             String header = "Fill in following information for the database:";
 
@@ -330,7 +351,8 @@ public class SpecifyInitializer
                 public void contentsChanged(ListDataEvent e) { adjustLabel(); }
             });
             
-            PanelBuilder builder = new PanelBuilder(new FormLayout("p,2px,p:g", "p:g,2px," + UIHelper.createDuplicateJGoodiesDef("p", "2px", 5)+",p:g"), this);
+            int numRows = 3 + (doLoginOnly ? 0 : 2);
+            PanelBuilder builder = new PanelBuilder(new FormLayout("p,2px,p:g", "p:g,2px," + UIHelper.createDuplicateJGoodiesDef("p", "2px", numRows)+",p:g"), this);
             int row = 1;
             
             builder.add(new JLabel(header), cc.xywh(1,row,3,1));row += 2;
@@ -339,13 +361,20 @@ public class SpecifyInitializer
             passwordTxt     = createField(builder, "Password",      row, true);row += 2;
             dbNameTxt       = createField(builder, "Database Name", row);row += 2;
             
-            builder.add(new JLabel("Discipline:", SwingConstants.RIGHT), cc.xy(1, row));
-            builder.add(disciplines, cc.xy(3, row));
-            row += 2;
+            if (!doLoginOnly)
+            {
+                builder.add(new JLabel("Discipline:", SwingConstants.RIGHT), cc.xy(1, row));
+                builder.add(disciplines, cc.xy(3, row));
+                row += 2;
+                
+                builder.add(new JLabel("Driver:", SwingConstants.RIGHT), cc.xy(1, row));
+                builder.add(drivers, cc.xy(3, row));
+                row += 2;
+            }
             
-            builder.add(new JLabel("Driver:", SwingConstants.RIGHT), cc.xy(1, row));
-            builder.add(drivers, cc.xy(3, row));
-            row += 2;
+            // Select Derby or MySQL as the default
+            drivers.setSelectedItem(DatabaseDriverInfo.getDriver(assumeDerby ? "Derby" : "MySQL"));
+
             
             // Select Fish as the default
             for (Discipline discipline : dispList)
@@ -356,11 +385,18 @@ public class SpecifyInitializer
                 }
             }
             
+            if (doSetDefaultValues)
+            {
+                usernameTxt.setText("guest");
+                passwordTxt.setText("guest");
+                dbNameTxt.setText("workbench");  
+            }
+            
             if (DO_DEBUG) // XXX Debug
             {
                 usernameTxt.setText("rods");
                 passwordTxt.setText("rods");
-                dbNameTxt.setText("mydata");
+                dbNameTxt.setText("workbench");
                 drivers.setSelectedIndex(0);
             }
             updateBtnUI();
@@ -372,12 +408,18 @@ public class SpecifyInitializer
          */
         protected void updateBtnUI()
         {
-            nextBtn.setEnabled(isUIValid());
+            if (nextBtn != null)
+            {
+                nextBtn.setEnabled(isUIValid());
+            }
         }
         
         public void adjustLabel()
         {
-            nextBtn.setText(isUsingDerby() ? "Next" : "Finished");
+            if (nextBtn != null)
+            {
+                nextBtn.setText(isUsingDerby() ? "Next" : "Finished");
+            }
         }
         
         public boolean isUsingDerby()
@@ -437,13 +479,13 @@ public class SpecifyInitializer
      */
     class DBLocationPanel extends BaseSetupPanel
     {
-        protected JCheckBox                  useCurrentDrive;
         protected BrowseBtnPanel             browse;
         
         protected JRadioButton               useCurrentRB;
         protected JRadioButton               useHomeRB;
         protected JRadioButton               useUserDefinedRB;
         protected JTextField                 filePath          = null;
+        protected boolean                    localDirOK        = true;
         
         /**
          * Creates a dialog for entering database name and selecting the appropriate driver.
@@ -453,7 +495,7 @@ public class SpecifyInitializer
             super(nextBtn);
 
             
-            boolean localDirOK = true;
+            localDirOK = true;
             File currentPath = new File(UICacheManager.getUserDataDir(true) + File.separator + "specify_tmp.tmp");
             try
             {
@@ -464,6 +506,8 @@ public class SpecifyInitializer
             {
                 localDirOK = false;
             }
+            
+            //localDirOK = false ; // XXX TESTING
             
             ButtonGroup  grp       = new ButtonGroup();
             useHomeRB = new JRadioButton("<html>Use your home directory: <b>"+UICacheManager.getUserDataDir(false)+"</b></html>");
@@ -567,6 +611,16 @@ public class SpecifyInitializer
             return useUserDefinedRB.isSelected();
         }
         
+        public boolean isUseHomeDirectory()
+        {
+            return useHomeRB.isSelected();
+        }
+        
+        public boolean isLocalOKForWriting()
+        {
+            return localDirOK;
+        }
+        
         public String getUserDefinedPath()
         {
             return filePath.getText();
@@ -585,11 +639,11 @@ public class SpecifyInitializer
         protected JButton                cancelBtn;
         
         protected NewAgentPanel          agentPanel;
-        protected DatabasePanel           userPanel;
+        protected DatabasePanel          userPanel;
         protected DBLocationPanel        locationPanel;
         
-        protected int                    step = 0;
-        protected int                    LAST_STEP = 3;
+        protected int                    step     = 0;
+        protected int                    lastStep = 3;
         
         protected boolean                isCancelled;
         protected JPanel                 cardPanel;
@@ -607,26 +661,56 @@ public class SpecifyInitializer
             setTitle("Configuring a Database");
             cardPanel = new JPanel(cardLayout);
             
-            helpBtn    = new JButton("Help");    // XXX I18N
-            backBtn    = new JButton("Back");
-            nextBtn    = new JButton("Next");
-            cancelBtn  = new JButton("Cancel");
+            agentPanel    = new NewAgentPanel(nextBtn);
+            userPanel     = new DatabasePanel(nextBtn, true);
+            locationPanel = new DBLocationPanel(nextBtn);
             
-            HelpMgr.registerComponent(helpBtn, "ConfiguringDatabase");
+            // Even though we don't show the extra panels they still have important default values
+            panels.add(agentPanel);
+            if (DO_CHANGE_USERNAME)
+            {
+                panels.add(userPanel);
+            }
+            //panels.add(locationPanel);
             
-            JPanel btnBar = ButtonBarFactory.buildWizardBar(helpBtn, backBtn, nextBtn, cancelBtn);
+            lastStep = panels.size();
+            
+            cancelBtn  = new JButton(UICacheManager.getResourceString("Cancel"));
+            helpBtn    = new JButton(UICacheManager.getResourceString("Help"));
+            
+            JPanel btnBar;
+            if (lastStep > 1)
+            {
+                backBtn    = new JButton("Back");    // XXX I18N
+                nextBtn    = new JButton("Next");    // XXX I18N
+                
+                HelpMgr.registerComponent(helpBtn, "ConfiguringDatabase");
+                btnBar = ButtonBarFactory.buildWizardBar(helpBtn, backBtn, nextBtn, cancelBtn);
+                
+            } else
+            {
+                nextBtn = new JButton(UICacheManager.getResourceString("OK"));
+                btnBar  = ButtonBarFactory.buildOKCancelHelpBar(nextBtn, cancelBtn, helpBtn);
+            }
+            
+            
              
-            backBtn.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent ae)
-                {
-                    if (step > 0)
+            if (backBtn != null)
+            {
+                backBtn.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent ae)
                     {
-                        step--;
-                        cardLayout.show(cardPanel, Integer.toString(step));
+                        if (step > 0)
+                        {
+                            step--;
+                            cardLayout.show(cardPanel, Integer.toString(step));
+                        }
+                        updateBtnBar();
                     }
-                    updateBtnBar();
-                }
-            });
+                });
+                
+                backBtn.setEnabled(false);
+            }
             
             nextBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae)
@@ -637,12 +721,12 @@ public class SpecifyInitializer
                         configureDatabase();
                         dispose();
                         
-                    } else if (step < LAST_STEP-1)
+                    } else if (step < lastStep-1)
                     {
                         step++;
                         cardLayout.show(cardPanel, Integer.toString(step));
                         updateBtnBar();
-                        
+                          
                     } else
                     {
                         setVisible(false);
@@ -660,12 +744,7 @@ public class SpecifyInitializer
                     dispose();
                 }
              });
-            
-            backBtn.setEnabled(false);
-            
-            panels.add(agentPanel    = new NewAgentPanel(nextBtn));
-            panels.add(userPanel     = new DatabasePanel(nextBtn));
-            panels.add(locationPanel = new DBLocationPanel(nextBtn));
+
             
             for (int i=0;i<panels.size();i++)
             {
@@ -681,13 +760,14 @@ public class SpecifyInitializer
             builder.setDefaultDialogBorder();
             setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             setContentPane(builder.getPanel());
+            
             pack();
 
         }
         
         protected void updateBtnBar()
         {
-            if (step == LAST_STEP-1)
+            if (step == lastStep-1)
             {
                 nextBtn.setEnabled(panels.get(step).isUIValid());
                 nextBtn.setText("Finished");
@@ -700,98 +780,246 @@ public class SpecifyInitializer
             
             backBtn.setEnabled(step > 0); 
         }
+        
+        protected boolean fillPrefs(final boolean doAutoLogin)
+        {
+            AppPreferences.getLocalPrefs().putBoolean("login.rememberuser", true);
+            AppPreferences.getLocalPrefs().putBoolean("login.rememberpassword", true);
+            AppPreferences.getLocalPrefs().putBoolean("login.autologin", doAutoLogin);
+            
+            AppPreferences.getLocalPrefs().put("login.username", "guest");
+            AppPreferences.getLocalPrefs().put("login.password", Encryption.encrypt("guest"));
+            
+            AppPreferences.getLocalPrefs().put("login.databases", userPanel.getDbName());
+            AppPreferences.getLocalPrefs().put("login.servers",   HOSTNAME);
+            
+            AppPreferences.getLocalPrefs().put("login.servers_selected", HOSTNAME);
+            AppPreferences.getLocalPrefs().put("login.dbdriver_selected", userPanel.getDriver().getName());
+            AppPreferences.getLocalPrefs().put("login.databases_selected", userPanel.getDbName());
+            
+            AppPreferences.getLocalPrefs().put("derby.location", System.getProperty("derby.system.home"));
+            log.debug(System.getProperty("derby.system.home"));
 
+            
+            if (DO_CHANGE_USERNAME)
+            {
+                AppPreferences.getLocalPrefs().put("startup.username",  userPanel.getUsername());
+                AppPreferences.getLocalPrefs().put("startup.password",  Encryption.encrypt(new String(userPanel.getPassword())));
+            }
+            
+            AppPreferences.getLocalPrefs().put("startup.firstname", agentPanel.getFirstName());
+            AppPreferences.getLocalPrefs().put("startup.lastname",  agentPanel.getLastName());
+            AppPreferences.getLocalPrefs().put("startup.email",     agentPanel.getEmail());
+            
+            try
+            {
+                AppPreferences.getLocalPrefs().flush();
+                return true;
+                
+            } catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+            return false;
+        }
+        
+        /*
+        protected boolean loginAndFixUserName()
+        {
+            HibernateUtil.shutdown();
+            
+            DatabaseDriverInfo driverInfo = userPanel.getDriver();
+            
+            String connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Create, HOSTNAME, userPanel.getDbName());
+            if (connStr == null)
+            {
+                connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, HOSTNAME, userPanel.getDbName());
+            }
+            
+            if (UIHelper.tryLogin(driverInfo.getDriverClassName(), 
+                    driverInfo.getDialectClassName(), 
+                    userPanel.getDbName(), 
+                    connStr, 
+                    userPanel.getUsername(), 
+                    userPanel.getPassword()))
+            {
+                
+                
+                specify.startUp();
+                return true;
+            }
+            
+            return false;
+        }*/
+        
+        protected String stripSubDirs(final String path, final int numToStrip)
+        {
+            String databasePath = path;
+            
+            for (int i=0;i<numToStrip;i++)
+            {
+                int endInx = databasePath.lastIndexOf(File.separator);
+                databasePath = databasePath.substring(0, endInx);
+            }
+            return databasePath;
+        }
+
+        /**
+         * 
+         */
         public void configureDatabase()
         {
-            // CLear and Reset Everything!
+            // Clear and Reset Everything!
             AppPreferences.shutdownLocalPrefs();
             UICacheManager.setDefaultWorkingPath(null);
             
-            //UICacheManager.setUseCurrentLocation(dlg.getUseCurrentDrive());
+            String derbyPath;
+            if (locationPanel.isUsingUserDefinedDirectory())
+            {
+                derbyPath = locationPanel.getUserDefinedPath() + File.separator + "DerbyDatabases";
+                
+            } else
+            {
+                if (locationPanel.isUseHomeDirectory())
+                {
+                    UICacheManager.setUseCurrentLocation(false);
+                    
+                    // Copy over the database if we can't use this directory for writing.
+                    // if it is being run off of a CD
+                    if (!locationPanel.isLocalOKForWriting())
+                    {
+                        derbyPath = stripSubDirs(UICacheManager.getDefaultWorkingPath(), 1) + File.separator + "DerbyDatabases";
+                        
+                        String destParentDirStr = stripSubDirs(UICacheManager.getDefaultWorkingPath(), 1);
+                        
+                        String databasePath = UICacheManager.getUserDataDir(true);
+                        
+                        String srcDerbyPath = stripSubDirs(databasePath, 2) + File.separator + "DerbyDatabases";
+                        log.debug("srcDerbyPath["+srcDerbyPath+"] "+StringUtils.isNotEmpty(srcDerbyPath));
+                        if (StringUtils.isNotEmpty(srcDerbyPath))
+                        {
+                            File srcDir = new File(srcDerbyPath);
+                            log.debug("srcDir ["+srcDir.getAbsoluteFile()+"] "+srcDir.exists());
+                            if (srcDir.exists())
+                            {
+                                File destDir = new File(destParentDirStr);
+                                log.debug("Destination ["+destDir.getAbsoluteFile()+"] exists! "+destDir.exists());
+                                if (destDir.exists())
+                                {
+                                    File derbyDestDir = new File(derbyPath);
+                                    if (!derbyDestDir.exists())
+                                    {
+                                        derbyDestDir.mkdir();
+                                    }
+                                    
+                                    try
+                                    {
+                                        log.debug("Copy from["+srcDir.getAbsoluteFile()+"] to["+derbyDestDir.getAbsoluteFile()+"]");
+                                        FileUtils.copyDirectory(srcDir, derbyDestDir);
+                                        
+                                    } catch (Exception ex)
+                                    {
+                                        log.error(ex);
+                                    }
+                                } else
+                                {
+                                    log.error("Dir ["+destDir.getAbsoluteFile()+"] DOESN'T exists!");
+                                }
+                                
+                            } else
+                            {
+                                log.error("Path doesn't exist ["+srcDir.getAbsolutePath()+"]");
+                            }
+                        } else
+                        {
+                            log.error("Empty sibling path for ["+srcDerbyPath+"]");
+                        }
+                    } else
+                    {
+                        derbyPath = UICacheManager.getDefaultWorkingPath() + File.separator + "DerbyDatabases";
+                    }
+                    
+                } else
+                {
+                    UICacheManager.setUseCurrentLocation(true);
+                    String databasePath = stripSubDirs(UICacheManager.getDefaultWorkingPath(), 2);
+                    System.out.println((new File(databasePath).exists())+"["+databasePath+"]");
+                    
+                    derbyPath = databasePath + File.separator + "DerbyDatabases";
+                }
+            }
+            
+            System.setProperty("derby.system.home", derbyPath);
+            log.debug("**** "+System.getProperty("derby.system.home"));
             
             // Now initialize
             AppPreferences localPrefs = AppPreferences.getLocalPrefs();
             localPrefs.setDirPath(UICacheManager.getDefaultWorkingPath());
-            
-            String databasePath = UICacheManager.getDefaultWorkingPath();
-            if (locationPanel.isUsingUserDefinedDirectory())
+            System.out.println(UICacheManager.getDefaultWorkingPath());
+
+            if (doLoginOnly && assumeDerby)
             {
-                databasePath = locationPanel.getUserDefinedPath();
-            }
-            
-            System.setProperty("derby.system.home", databasePath + File.separator + "DerbyDatabases");
-            //System.err.println(UICacheManager.getDefaultWorkingPath() + File.separator + "DerbyDatabases");
-   
-            try
-            {
-                final SwingWorker worker = new SwingWorker()
+                if (fillPrefs(true))
                 {
-                    protected boolean isOK = false;
-                    
-                    public Object construct()
-                    {
-                        try
-                        {
-                            DatabaseDriverInfo driverInfo = userPanel.getDriver();
-                            if (driverInfo == null)
-                            {
-                                throw new RuntimeException("Couldn't find driver by name ["+driverInfo+"] in driver list.");
-                            }
-
-                            BuildSampleDatabase builder = new BuildSampleDatabase();
-                            builder.getFrame().setIconImage(IconManager.getImage("Specify16", IconManager.IconSize.Std16).getImage());
-                            isOK = builder.buildEmptyDatabase(driverInfo,
-                                                              HOSTNAME,
-                                                              userPanel.getDbName(),
-                                                              userPanel.getUsername(), 
-                                                              userPanel.getPassword(), 
-                                                              agentPanel.getFirstName(), 
-                                                              agentPanel.getLastName(), 
-                                                              agentPanel.getEmail(),
-                                                              userPanel.getDiscipline());
-                        } catch (Exception ex)
-                        {
-                            ex.printStackTrace();
-                        }
-                        return null;
-                    }
-
-                    //Runs on the event-dispatching thread.
-                    public void finished()
-                    {
-                        if (isOK)
-                        {
-                            AppPreferences.getLocalPrefs().putBoolean("login.rememberuser", true);
-                            AppPreferences.getLocalPrefs().putBoolean("login.rememberpassword", true);
-                            AppPreferences.getLocalPrefs().putBoolean("login.autologin", false);
-                            
-                            AppPreferences.getLocalPrefs().put("login.username", userPanel.getUsername());
-                            AppPreferences.getLocalPrefs().put("login.password", Encryption.encrypt(new String(userPanel.getPassword())));
-                            
-                            AppPreferences.getLocalPrefs().put("login.databases", userPanel.getDbName());
-                            AppPreferences.getLocalPrefs().put("login.servers",   HOSTNAME);
-                            
-                            AppPreferences.getLocalPrefs().put("login.servers_selected", HOSTNAME);
-                            AppPreferences.getLocalPrefs().put("login.dbdriver_selected", userPanel.getDriver().getName());
-                            AppPreferences.getLocalPrefs().put("login.databases_selected", userPanel.getDbName());
-
-                            try{
-                                AppPreferences.getLocalPrefs().flush();
-                            } catch (Exception e)
-                            {
-                                e.printStackTrace();
-                            }
-                            
-                            HibernateUtil.shutdown();
-                            specify.startUp();
-                        }
-                    }
-                };
-                worker.start();
-            
-            } catch (Exception ex)
+                    specify.startUp();
+                }
+                
+            } else
             {
-                ex.printStackTrace();
+                //System.err.println(UICacheManager.getDefaultWorkingPath() + File.separator + "DerbyDatabases");
+                try
+                {
+                    final SwingWorker worker = new SwingWorker()
+                    {
+                        protected boolean isOK = false;
+                        
+                        public Object construct()
+                        {
+                            try
+                            {
+                                DatabaseDriverInfo driverInfo = userPanel.getDriver();
+                                if (driverInfo == null)
+                                {
+                                    throw new RuntimeException("Couldn't find driver by name ["+driverInfo+"] in driver list.");
+                                }
+    
+                                BuildSampleDatabase builder = new BuildSampleDatabase();
+                                builder.getFrame().setIconImage(IconManager.getImage("Specify16", IconManager.IconSize.Std16).getImage());
+                                isOK = builder.buildEmptyDatabase(driverInfo,
+                                                                  HOSTNAME,
+                                                                  userPanel.getDbName(),
+                                                                  userPanel.getUsername(), 
+                                                                  userPanel.getPassword(), 
+                                                                  agentPanel.getFirstName(), 
+                                                                  agentPanel.getLastName(), 
+                                                                  agentPanel.getEmail(),
+                                                                  userPanel.getDiscipline());
+                            } catch (Exception ex)
+                            {
+                                ex.printStackTrace();
+                            }
+                            return null;
+                        }
+    
+                        //Runs on the event-dispatching thread.
+                        public void finished()
+                        {
+                            if (isOK)
+                            {
+                                if (fillPrefs(false))
+                                {
+                                    HibernateUtil.shutdown();
+                                    specify.startUp();
+                                }
+                            }
+                        }
+                    };
+                    worker.start();
+                
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
             }
         }
     }

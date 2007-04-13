@@ -43,7 +43,7 @@ public class AppPreferences
     public static final String factoryName = "edu.ku.brc.af.prefs.AppPrefsIOIFace";
 
     // Static Data Memebers
-    protected final static String LOCALFILENAME  = "user.properties";
+    public final static String LOCALFILENAME  = "user.properties";
     
     private   static final String NOT_INIT = "AppPrefs have not been initialized!";
     

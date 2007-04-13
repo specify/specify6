@@ -152,10 +152,9 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
                             */
                             throw new RuntimeException("AppResource pref name["+PREF_NAME+"] has not AppResourceData object.");
                             
-                        } else
-                        {
-                            ard = appResource.getAppResourceDatas().iterator().next();
                         }
+                        // else
+                        ard = appResource.getAppResourceDatas().iterator().next();
                          
                         properties.load(new ByteArrayInputStream(ard.getData()));
                         

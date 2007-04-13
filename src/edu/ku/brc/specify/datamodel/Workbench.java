@@ -60,7 +60,7 @@ import edu.ku.brc.dbsupport.DBTableIdMgr;
 @Table(name = "workbench")
 @org.hibernate.annotations.Table(appliesTo="taxon", indexes =
     {   
-        @Index (name="NameIDX", columnNames={"name"})
+        @Index (name="WorkbenchNameIDX", columnNames={"name"})
     })
 @org.hibernate.annotations.Proxy(lazy = false)
 public class Workbench extends DataModelObjBase implements java.io.Serializable, Comparable<Workbench>

@@ -179,14 +179,15 @@ public class BuildSampleDatabase
     protected ProgressFrame      frame;
     protected Properties         initPrefs = null;
     
-    protected SetupDialog        setupDlg = null;
+    protected SetupDialog        setupDlg  = null;
+    protected boolean            hideFrame = false;
     
     /**
      * 
      */
     public BuildSampleDatabase()
     {
-        frame = new ProgressFrame("Building OnRamp Database");
+        frame = new ProgressFrame("Building Specify Workbench Database");
     }
     
     public Session getSession()
@@ -261,7 +262,7 @@ public class BuildSampleDatabase
      */
     public List<Object> createSingleDiscipline(final String colObjDefName, final String disciplineName)
     {
-        log.info("Creating single discipline database: " + disciplineName);
+        System.err.println("Creating single discipline database: " + disciplineName);
         
         int createStep = 0;
         
@@ -1467,11 +1468,34 @@ public class BuildSampleDatabase
     /**
      * Creates the dialog to find out what database and what database driver to use. 
      */
-    protected void buildSetup()
+    protected void buildSetup(final String[] args)
     {
+        boolean doEmptyBuild = false;
+        String  derbyPath    = null;
+        
+        if (args != null && args.length > 0)
+        {
+            if (args.length == 2)
+            {
+                doEmptyBuild = args[0].equals("build_empty");
+                derbyPath    = StringUtils.isNotEmpty(args[1]) ? args[1] : null;
+                hideFrame    = true;
+                System.out.println("doEmptyBuild [ "+doEmptyBuild+" ]");
+                
+            } else
+            {
+                throw new RuntimeException("The args MUST be \"empty <derby path>\"");
+            }
+        }
+        
         UICacheManager.setAppName("Specify");
         
-        System.setProperty("derby.system.home", UICacheManager.getDefaultWorkingPath() + File.separator + "DerbyDatabases");
+        System.setProperty("derby.system.home", (derbyPath != null ? derbyPath : UICacheManager.getDefaultWorkingPath()) + File.separator + "DerbyDatabases");
+        
+        if (hideFrame)
+        {
+            System.out.println("Derby Path [ "+System.getProperty("derby.system.home")+" ]");
+        }
         
         System.setProperty(AppPreferences.factoryName,          "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
         System.setProperty("edu.ku.brc.dbsupport.DataProvider", "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
@@ -1481,45 +1505,54 @@ public class BuildSampleDatabase
         String driverName   = backstopPrefs.getProperty("initializer.drivername",   "MySQL");
         String databaseName = backstopPrefs.getProperty("initializer.databasename", "testfish");        
             
-        setupDlg = new SetupDialog(databaseName, driverName);
-         
-        final SwingWorker worker = new SwingWorker()
+        if (doEmptyBuild)
         {
-            @Override
-            public Object construct()
-            {
-                UIHelper.centerAndShow(setupDlg);
-                try
-                {
-                    int seconds = 10;
-                    while (seconds > 0)
-                    {
-                        setupDlg.setTitle(Integer.toString(seconds));
-                        Thread.sleep(1000); 
-                        seconds--;
-                    }
-                    
-                    if (setupDlg != null)
-                    {
-                        setupDlg.closeDlg(false);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    // ignore
-                }
-                return null;
-            }
+            Discipline         discipline = Discipline.getDiscipline("fish");
+            DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver("Derby");
+            buildEmptyDatabase(driverInfo, "localhost", "workbench", "guest", "guest", "guest", "guest", "guest@ku.edu", discipline);
 
-            //Runs on the event-dispatching thread.
-            @SuppressWarnings("synthetic-access")
-            @Override
-            public void finished()
+        } else
+        {
+            setupDlg = new SetupDialog(databaseName, driverName);
+             
+            final SwingWorker worker = new SwingWorker()
             {
-                // no-op
-            }
-        };
-        worker.start();
+                @Override
+                public Object construct()
+                {
+                    UIHelper.centerAndShow(setupDlg);
+                    try
+                    {
+                        int seconds = 10;
+                        while (seconds > 0)
+                        {
+                            setupDlg.setTitle(Integer.toString(seconds));
+                            Thread.sleep(1000); 
+                            seconds--;
+                        }
+                        
+                        if (setupDlg != null)
+                        {
+                            setupDlg.closeDlg(false);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // ignore
+                    }
+                    return null;
+                }
+    
+                //Runs on the event-dispatching thread.
+                @SuppressWarnings("synthetic-access")
+                @Override
+                public void finished()
+                {
+                    // no-op
+                }
+            };
+            worker.start();
+        }
 
     }
     
@@ -1595,8 +1628,15 @@ public class BuildSampleDatabase
     {
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setSize(new Dimension(500,125));
-        frame.setTitle("Building OnRamp Database");
-        UIHelper.centerAndShow(frame);
+        frame.setTitle("Building Specify Database");
+        if (!hideFrame)
+        {
+            UIHelper.centerAndShow(frame);
+        } else
+        {
+            System.out.println("Building Specify Database Username["+username+"]");
+        }
+        
         frame.setProcessPercent(true);
         frame.setOverall(0, 4);
         frame.getCloseBtn().setVisible(false);
@@ -1616,6 +1656,8 @@ public class BuildSampleDatabase
         
         try
         {
+            if (hideFrame) System.out.println("Creating schema");
+            
             SpecifySchemaGenerator schemaGen = new SpecifySchemaGenerator();
             schemaGen.generateSchema(driverInfo, hostName, dbName, username, password);
             
@@ -1635,6 +1677,7 @@ public class BuildSampleDatabase
             {
                 connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, dbName);
             }
+            
             if (!UIHelper.tryLogin(driverInfo.getDriverClassName(), 
                     driverInfo.getDialectClassName(), 
                     dbName, 
@@ -1642,8 +1685,8 @@ public class BuildSampleDatabase
                     username, 
                     password))
             {
+                if (hideFrame) System.out.println("Login Failed!");
                 return false;
-
             }         
             
             setSession(HibernateUtil.getCurrentSession());
@@ -1669,6 +1712,8 @@ public class BuildSampleDatabase
             AttachmentUtils.setAttachmentManager(attachMgr);
             AttachmentUtils.setThumbnailer(thumb);
             
+            if (hideFrame) System.out.println("Creating Empty Database");
+            
             List<Object> dataObjects = createEmptyDiscipline(discipline.getTitle(), 
                                                              discipline.getName(),
                                                              username,
@@ -1689,10 +1734,13 @@ public class BuildSampleDatabase
                 }
             });
             
+            if (hideFrame) System.out.println("Persisting Data...");
             startTx();
             persist(dataObjects);
             commitTx();
             HibernateUtil.getCurrentSession().close();
+            
+            if (hideFrame) System.out.println("Done.");
             
             frame.setVisible(false);
             frame.dispose();
@@ -2043,29 +2091,39 @@ public class BuildSampleDatabase
         }
     }
     
-    public static void main(String[] args)
+    public static void main(final String[] args)
     {
-        SwingUtilities.invokeLater(new Runnable()
+        if (args != null && args.length > 0)
         {
-            public void run()
+            System.out.println("BuildSampleDatabase ");
+           
+            BuildSampleDatabase builder = new BuildSampleDatabase();
+            builder.buildSetup(args);
+   
+        } else
+        {
+            SwingUtilities.invokeLater(new Runnable()
             {
-                
-                try
+                public void run()
                 {
-                    if (!System.getProperty("os.name").equals("Mac OS X"))
+                    
+                    try
                     {
-                        UIManager.setLookAndFeel(new Plastic3DLookAndFeel());
-                        PlasticLookAndFeel.setPlasticTheme(new DesertBlue());
+                        if (!System.getProperty("os.name").equals("Mac OS X"))
+                        {
+                            UIManager.setLookAndFeel(new Plastic3DLookAndFeel());
+                            PlasticLookAndFeel.setPlasticTheme(new DesertBlue());
+                        }
                     }
+                    catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+                    
+                    BuildSampleDatabase builder = new BuildSampleDatabase();
+                    builder.buildSetup(null);
                 }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-                
-                BuildSampleDatabase builder = new BuildSampleDatabase();
-                builder.buildSetup();
-            }
-        });
+            });
+        }
     }
 }

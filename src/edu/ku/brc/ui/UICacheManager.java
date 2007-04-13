@@ -337,29 +337,25 @@ public class UICacheManager
             throw new RuntimeException("The AppName has not been set into the UICacheManger!");
         }
         
+        UIHelper.OSTYPE osType = UIHelper.getOSType();
         String base;
         if (useCurrentLoc)
         {
             File   file     = new File(".");
             String fullPath = file.getAbsolutePath();
             fullPath        = fullPath.substring(0, fullPath.length()-1);
-            if (System.getProperty("os.name").indexOf("Windows") > -1)
-            {
-                base = fullPath + instance.appName;
-            } else
-            {
-                base = fullPath + instance.appName;
-            }
+
+            base = fullPath + instance.appName;
             
         } else
         {
             String homeDir = System.getProperty("user.home");
             
-            if (System.getProperty("os.name").indexOf("Windows") > -1)
+            if (osType == UIHelper.OSTYPE.Windows)
             {
                 base = System.getenv("APPDATA") + File.separator + instance.appName;
                 
-            } else if (System.getProperty("os.name").indexOf("Mac") > -1)
+            } else if (osType == UIHelper.OSTYPE.MacOSX)
             {
                 String docPath = homeDir + File.separator + "Documents"; // Not Localized
                 if (new File(docPath).exists())
@@ -370,7 +366,7 @@ public class UICacheManager
                 {
                     base = homeDir + File.separator + instance.appName;
                 }
-            } else
+            } else // Do Linux
             {
                 base = homeDir + File.separator + instance.appName;
             }

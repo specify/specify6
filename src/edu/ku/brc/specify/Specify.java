@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.prefs.BackingStoreException;
@@ -54,6 +55,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -71,12 +73,17 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsEditor;
 import edu.ku.brc.af.prefs.PrefMainPanel;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.specify.config.LoggerDialog;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.datamodel.Collector;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tests.SpecifyAppPrefs;
 import edu.ku.brc.specify.ui.CollectorActionListener;
@@ -124,7 +131,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private MainPanel           mainPanel          = null;
     private JMenuItem           changeCatSeriesBtn = null;
 
-    protected  boolean          hasChanged         = false;
+    protected boolean           hasChanged         = false;
 
     protected String             currentDatabaseName = null;
     protected DatabaseLoginPanel dbLoginPanel        = null;
@@ -174,13 +181,13 @@ public class Specify extends JPanel implements DatabaseLoginListener
     /**
      * Starts up Specify with the initializer that enables the user to create a new empty database. 
      */
-    public void startWithInitializer()
+    public void startWithInitializer(final boolean doLoginOnly, final boolean assumeDerby)
     {
         preStartUp();
         
         if (true)
         {
-            SpecifyInitializer specifyInitializer = new SpecifyInitializer();
+            SpecifyInitializer specifyInitializer = new SpecifyInitializer(doLoginOnly, assumeDerby);
             specifyInitializer.setup(this);
             
         } else
@@ -201,7 +208,12 @@ public class Specify extends JPanel implements DatabaseLoginListener
             UICacheManager.setUseCurrentLocation(false);
         }
 
-        System.setProperty("derby.system.home", UICacheManager.getDefaultWorkingPath() + File.separator + "DerbyDatabases");
+        // Insurance
+        if (StringUtils.isEmpty( System.getProperty("derby.system.home")))
+        {
+            System.setProperty("derby.system.home", UICacheManager.getDefaultWorkingPath() + File.separator + "DerbyDatabases");
+            log.debug(System.getProperty("derby.system.home"));
+        }
         
         // Attachment related helpers
         Thumbnailer thumb = new Thumbnailer();
@@ -241,6 +253,12 @@ public class Specify extends JPanel implements DatabaseLoginListener
         
         // Load Local Prefs
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        String         derbyPath  = localPrefs.get("derby.location", null);
+        if (StringUtils.isNotEmpty(derbyPath))
+        {
+            System.setProperty("derby.system.home", derbyPath);
+            log.debug(System.getProperty("derby.system.home"));
+        }
         localPrefs.setDirPath(UICacheManager.getDefaultWorkingPath());
         //localPrefs.load(); moved to end for not-null constraint
         
@@ -1065,6 +1083,85 @@ public class Specify extends JPanel implements DatabaseLoginListener
         this.databaseName = databaseNameArg;
         this.userName     = userNameArg;
         
+        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        if (localPrefs.get("startup.lastname", null) != null)
+        {
+            String userNameStr  = AppPreferences.getLocalPrefs().get("startup.username",  null);
+            String passwordStr  = Encryption.decrypt(AppPreferences.getLocalPrefs().get("startup.password",  null));
+            
+            String firstNameStr = AppPreferences.getLocalPrefs().get("startup.firstname", null);
+            String lastNameStr  = AppPreferences.getLocalPrefs().get("startup.lastname",  null);
+            String emailStr     = AppPreferences.getLocalPrefs().get("startup.email",     null);
+            
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            //for (SpecifyUser su : session.getDataList(SpecifyUser.class))
+            //{
+            //    System.out.println("["+su.getName()+"]");
+            //}
+
+            List list = session.getDataList(SpecifyUser.class, "name", "guest");
+            if (list.size() == 1)
+            {
+                SpecifyUser user      = (SpecifyUser)list.get(0);
+                Agent       userAgent = user.getAgent();
+                if (StringUtils.isNotEmpty(userNameStr))
+                {
+                    user.setName(userNameStr);
+                }
+                userAgent.setFirstName(firstNameStr);
+                userAgent.setLastName(lastNameStr);
+                userAgent.setEmail(emailStr);
+                
+                try
+                {
+                    session.beginTransaction();
+                    session.saveOrUpdate(userAgent);
+                    session.saveOrUpdate(user);
+                    session.commit();
+                    session.flush();
+                    
+                    AppPreferences.getLocalPrefs().remove("startup.username");
+                    AppPreferences.getLocalPrefs().remove("startup.password");
+                    AppPreferences.getLocalPrefs().remove("startup.firstname");
+                    AppPreferences.getLocalPrefs().remove("startup.lastname");
+                    AppPreferences.getLocalPrefs().remove("startup.email");
+                    
+                    if (StringUtils.isNotEmpty(userNameStr))
+                    {
+                        this.userName = userNameStr;
+                        AppPreferences.getLocalPrefs().put("login.username", userNameStr);
+                        AppPreferences.getLocalPrefs().put("login.password", Encryption.encrypt(passwordStr));
+                    }
+                    
+                    try
+                    {
+                        AppPreferences.getLocalPrefs().flush();
+                        
+                    } catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+                    
+                } catch (Exception ex)
+                {
+                    log.error(ex);
+                    
+                } finally
+                {
+                    try
+                    {
+                        session.close();
+                    } catch (Exception ex)
+                    {
+                        log.error(ex);
+                    }
+                }
+                
+            } else
+            {
+                throw new RuntimeException("The user ["+userName+"] could  not be located as a Specify user.");
+            }
+        }
         
         restartApp(databaseName, userName, false, firstTime);
         
@@ -1220,7 +1317,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
               boolean startAsWorkBench = false; // XXX Workbench Testing (start up testing)
               if (startAsWorkBench)
               {
-                  specify.startWithInitializer(); // For a WorkBench Only Release  
+                  // For a WorkBench Only Release  
+                  specify.startWithInitializer(true, true);  // true, true means doLoginOnly and assume Derby
                   
               } else
               {

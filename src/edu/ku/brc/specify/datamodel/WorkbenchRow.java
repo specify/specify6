@@ -451,7 +451,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
             if (StringUtils.isNotEmpty(dataStr))
             {
                 Short inx = (short)col;
-                wbdi = new WorkbenchDataItem(this, workbench.getMappingFromColumn(col), dataStr, rowNumber, col); // adds it to the row also
+                wbdi = new WorkbenchDataItem(this, workbench.getMappingFromColumn(col), dataStr, rowNumber); // adds it to the row also
                 items.put(inx, wbdi);
                 workbenchDataItems.add(wbdi);
             }

@@ -37,7 +37,7 @@ import org.hibernate.annotations.Index;
 @Table(name = "workbenchdataitem")
 @org.hibernate.annotations.Table(appliesTo="taxon", indexes =
     {   
-        @Index (name="RowNumberIDX", columnNames={"rowNumber"}),
+        @Index (name="DataItemRowNumberIDX", columnNames={"rowNumber"}),
     })
 @org.hibernate.annotations.Proxy(lazy = false)
 public class WorkbenchDataItem implements java.io.Serializable, Comparable<WorkbenchDataItem>
@@ -65,8 +65,7 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
     public WorkbenchDataItem(final WorkbenchRow workbenchRow, 
                              final WorkbenchTemplateMappingItem wbtmi,
                              final String cellData, 
-                             final Short rowNumber, 
-                             final Short columnNumber)
+                             final Short rowNumber)
     {
        initialize();
        this.cellData     = cellData;
@@ -136,11 +135,11 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
         this.workbenchDataItemId = workbenchDataItemId;
     }
 
-    private static int cellDataLength = 255;
+    private static int cellDataLength = 512;
     /**
      * 
      */
-    @Column(name = "CellData", length=255, unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "CellData", length=512, unique = false, nullable = true, insertable = true, updatable = true)
     public String getCellData()
     {
         return this.cellData;
@@ -157,6 +156,7 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
     @Column(name = "RowNumber", unique = false, nullable = true, insertable = true, updatable = true)
     public Short getRowNumber()
     {
+    
         return this.rowNumber;
     }
 

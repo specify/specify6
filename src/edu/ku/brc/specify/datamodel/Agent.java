@@ -59,8 +59,8 @@ import edu.ku.brc.util.AttachmentUtils;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "agent")
 @org.hibernate.annotations.Table(appliesTo="agent", indexes =
-    {   @Index (name="LastNameIDX", columnNames={"LastName"}),
-        @Index (name="FirstNameIDX", columnNames={"FirstName"})  })
+    {   @Index (name="AgentLastNameIDX", columnNames={"LastName"}),
+        @Index (name="AgentFirstNameIDX", columnNames={"FirstName"})  })
 public class Agent extends DataModelObjBase implements java.io.Serializable {
 
     // Fields

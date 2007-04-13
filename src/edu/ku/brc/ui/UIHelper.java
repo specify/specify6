@@ -991,7 +991,9 @@ public final class UIHelper
 
         if (useDialog)
         {
+            JDialog.setDefaultLookAndFeelDecorated(false); 
             DatabaseLoginDlg dlg = new DatabaseLoginDlg((Frame)UICacheManager.get(UICacheManager.TOPFRAME), listener);
+            JDialog.setDefaultLookAndFeelDecorated(true); 
             dlg.setDoAutoLogin(doAutoLoginNow);
             dlg.setDoAutoClose(doAutoClose);
             UIHelper.centerAndShow(dlg);

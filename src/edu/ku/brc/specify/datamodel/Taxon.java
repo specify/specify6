@@ -40,11 +40,11 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
 @Table(name = "taxon")
 @org.hibernate.annotations.Proxy(lazy = false)
 @org.hibernate.annotations.Table(appliesTo="taxon", indexes =
-    {   @Index (name="GuidIDX", columnNames={"Guid"}),
+    {   @Index (name="TaxonGuidIDX", columnNames={"Guid"}),
         @Index (name="TaxonomicSerialNumberIDX", columnNames={"TaxonomicSerialNumber"}),
-        @Index (name="CommonNameIDX", columnNames={"CommonName"}),
-        @Index (name="NameIDX", columnNames={"Name"}),
-        @Index (name="FullNameIDX", columnNames={"FullName"})
+        @Index (name="TaxonCommonNameIDX", columnNames={"CommonName"}),
+        @Index (name="TaxonNameIDX", columnNames={"Name"}),
+        @Index (name="TaxonFullNameIDX", columnNames={"FullName"})
     })
 public class Taxon extends DataModelObjBase implements Serializable, Treeable<Taxon,TaxonTreeDef,TaxonTreeDefItem>
 {
