@@ -359,6 +359,8 @@ public class MapGrabber
 	 */
 	protected void calcWidthAndHeight()
 	{
+        log.debug("Entering calcWidthAndHeight():  maxWidth = " + maxWidth + "  maxHeight = " + maxHeight);
+        
 		double longSpread = maxLong - minLong;
 		double latSpread = maxLat - minLat;
 
@@ -370,9 +372,12 @@ public class MapGrabber
 			maxHeight = (int)(latSpread/longSpread*maxWidth);
 			return;
 		}
-		
+		// else (tall map)
+        
 		// calculate the width from the max height
 		maxWidth = (int)(maxHeight*longSpread/latSpread);
+        
+        log.debug("Leaving calcWidthAndHeight():  maxWidth = " + maxWidth + "  maxHeight = " + maxHeight);
 		return;
 	}
 
