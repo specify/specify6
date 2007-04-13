@@ -253,14 +253,14 @@ public class Specify extends JPanel implements DatabaseLoginListener
         
         // Load Local Prefs
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        localPrefs.setDirPath(UICacheManager.getDefaultWorkingPath());
+        //localPrefs.load(); moved to end for not-null constraint
         String         derbyPath  = localPrefs.get("derby.location", null);
         if (StringUtils.isNotEmpty(derbyPath))
         {
             System.setProperty("derby.system.home", derbyPath);
             log.debug(System.getProperty("derby.system.home"));
         }
-        localPrefs.setDirPath(UICacheManager.getDefaultWorkingPath());
-        //localPrefs.load(); moved to end for not-null constraint
         
         FileCache.setDefaultPath(UICacheManager.getDefaultWorkingPath()+ File.separator + "cache");
 
