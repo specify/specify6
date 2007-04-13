@@ -54,8 +54,8 @@ import edu.ku.brc.util.services.MapGrabber;
 public class BioGeomancerMapper implements TimingTarget
 {
     private static final Logger          log                 = Logger.getLogger(BioGeomancerMapper.class);
-    protected List<BGMData>    bgmDatas;
-    protected BGMData          currentLoc;
+    protected List<BGMData>     bgmDatas;
+    protected BGMData           currentLoc;
     protected List<String>      labels;
     protected List<Point>       markerLocations;
     protected List<Rectangle>   boxLocations;
@@ -521,26 +521,94 @@ public class BioGeomancerMapper implements TimingTarget
         createBoundingBoxBufferRegion();
     }
 
+    /**
+     * Increases the size of the current bounding box in order to create
+     * a bit of a buffer (and ensure the bounding box isn't a single point).
+     */
     protected void createBoundingBoxBufferRegion()
     {
-        // make sure we have a 5% buffer around the edge of the map
         double latSpread = maxLat-minLat;
-        if( latSpread==0 )
+        if( latSpread < .25 )
         {
-            latSpread += 5;
+            // expand the range to at least be .5 degrees
+            double diff = .25 - latSpread;
+            latSpread = .25;
+            mapMinLat = minLat - diff/2;
+            mapMaxLat = maxLat + diff/2;
         }
+        else
+        {
+            // just add 5% to each side
+            mapMinLat = minLat - (.05*latSpread);
+            mapMaxLat = maxLat + (.05*latSpread);
+        }
+        
         double longSpread = maxLong-minLong;
-        if( longSpread==0 )
+        if( longSpread < .25 )
         {
-            longSpread += 5;
+            // expand the range to at least be .5 degrees
+            double diff = .25 - longSpread;
+            longSpread = .25;
+            mapMinLong = minLong - diff/2;
+            mapMaxLong = maxLong + diff/2;
         }
-
-        double bufferFactor = .20;
-        mapMinLat = Math.max(-90,minLat-latSpread*bufferFactor);
-        mapMinLong = Math.max(-180,minLong-longSpread*bufferFactor);
-        mapMaxLat = Math.min(90,maxLat+latSpread*bufferFactor);
-        mapMaxLong = Math.min(180,maxLong+longSpread*bufferFactor);
+        else
+        {
+            // just add 5% to each side
+            mapMinLong = minLong - (.05*longSpread);
+            mapMaxLong = maxLong + (.05*longSpread);
+        }
     }
+    
+//    protected void expandMapRegionToFillUsableSpace()
+//    {
+//        double maxSizeAspectRatio = maxMapWidth / maxMapHeight;
+//        
+//        double currentAspectRatio = (mapMaxLong-mapMinLong) / (mapMaxLat-mapMinLat);
+//        
+//        if (currentAspectRatio > maxSizeAspectRatio)
+//        {
+//            // we need to make the map taller by increasing the latitude range
+//            double newLatRange = maxSizeAspectRatio * (mapMaxLong-mapMinLong);
+//            double rangeDiff = newLatRange - (mapMaxLat-mapMinLat);
+//            
+//            // add half the difference in each direction
+//            mapMaxLat += rangeDiff / 2;
+//            mapMinLat -= rangeDiff / 2;
+//            
+//            // now make sure the map won't be out of the standard range
+//            // shift the map right, then crop to valid longitude range
+//            if (mapMinLat < -180)
+//            {
+//                double diff = -180 - mapMinLat;
+//                mapMinLat = -180;
+//                mapMaxLat += diff;
+//            }
+//            mapMinLat = Math.max(-180,mapMinLat);
+//            mapMaxLat = Math.min(180,mapMaxLat);
+//        }
+//        else if (currentAspectRatio < maxSizeAspectRatio)
+//        {
+//            // we need to make the map wider by increasing the longitude range
+//            double newLongRange = maxSizeAspectRatio * (mapMaxLat-mapMinLat);
+//            double rangeDiff = newLongRange - (mapMaxLong-mapMinLong);
+//            
+//            // add half the difference in each direction
+//            mapMaxLong += rangeDiff / 2;
+//            mapMinLong -= rangeDiff / 2;
+//            
+//            // now make sure the map won't be out of the standard range
+//            // shift the map right, then crop to valid longitude range
+//            if (mapMinLong < -180)
+//            {
+//                double diff = -180 - mapMinLong;
+//                mapMinLong = -180;
+//                mapMaxLong += diff;
+//            }
+//            mapMinLong = Math.max(-180,mapMinLong);
+//            mapMaxLong = Math.min(180,mapMaxLong);
+//        }
+//    }
 
     protected Image getMapFromService(final String host,
                                       final String defaultPathAndParams,
@@ -550,11 +618,13 @@ public class BioGeomancerMapper implements TimingTarget
                                       double maxLatArg,
                                       double maxLongArg)   throws HttpException, IOException
     {
-
         mapGrabber.setHost(host);
         mapGrabber.setDefaultPathAndParams(defaultPathAndParams);
         mapGrabber.setLayers(layers);
-
+        
+        // XXX
+        // TODO: increase min/max lat/long to make full use of the max height and width set by the caller
+        
         mapGrabber.setMinLat(minLatArg);
         mapGrabber.setMaxLat(maxLatArg);
         mapGrabber.setMinLong(minLongArg);

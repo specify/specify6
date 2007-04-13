@@ -892,29 +892,42 @@ public class LocalityMapper implements TimingTarget
 
 	/**
 	 * Increases the size of the current bounding box in order to create
-	 * a 5% size buffer.
+	 * a bit of a buffer (and ensure the bounding box isn't a single point).
 	 */
-	protected void createBoundingBoxBufferRegion()
-	{
-        // ensure at least a 5 degree range
-		double latSpread = maxLat-minLat;
-		if( latSpread<4 )
-		{
-			latSpread = 5;
-		}
-		double longSpread = maxLong-minLong;
-		if( longSpread<4 )
-		{
-			longSpread = 5;
-		}
-
-        // make sure we have a 5% buffer around the edge of the map
-		double bufferFactor = .05;
-		mapMinLat = Math.max(-90,minLat-latSpread*bufferFactor);
-		mapMinLong = Math.max(-180,minLong-longSpread*bufferFactor);
-		mapMaxLat = Math.min(90,maxLat+latSpread*bufferFactor);
-		mapMaxLong = Math.min(180,maxLong+longSpread*bufferFactor);
-	}
+    protected void createBoundingBoxBufferRegion()
+    {
+        double latSpread = maxLat-minLat;
+        if( latSpread < .25 )
+        {
+            // expand the range to at least be .5 degrees
+            double diff = .25 - latSpread;
+            latSpread = .25;
+            mapMinLat = minLat - diff/2;
+            mapMaxLat = maxLat + diff/2;
+        }
+        else
+        {
+            // just add 5% to each side
+            mapMinLat = minLat - (.05*latSpread);
+            mapMaxLat = maxLat + (.05*latSpread);
+        }
+        
+        double longSpread = maxLong-minLong;
+        if( longSpread < .25 )
+        {
+            // expand the range to at least be .5 degrees
+            double diff = .25 - longSpread;
+            longSpread = .25;
+            mapMinLong = minLong - diff/2;
+            mapMaxLong = maxLong + diff/2;
+        }
+        else
+        {
+            // just add 5% to each side
+            mapMinLong = minLong - (.05*longSpread);
+            mapMaxLong = maxLong + (.05*longSpread);
+        }
+    }
     
     /**
      * Modifies the bounding box to ensure that the minimum and maximum
