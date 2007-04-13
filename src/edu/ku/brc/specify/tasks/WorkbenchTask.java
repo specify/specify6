@@ -1669,7 +1669,8 @@ public class WorkbenchTask extends BaseTask
             final CommandAction cmd = new CommandAction(LabelsTask.LABELS, LabelsTask.PRINT_LABEL, dataSrc);
             cmd.setProperty("title",  "Labels");
             cmd.setProperty("file",   "basic_label.jrxml");
-            cmd.setProperty("params", "title=title;subtitle=subtitle");
+            //params hard-coded for harvard demo:
+            cmd.setProperty("params", "title=PLANTS OF CONNECTICUT, U.S.A.;subtitle=Hartford County");
             cmd.setProperty(NavBoxAction.ORGINATING_TASK, this);
             
             SwingUtilities.invokeLater(new Runnable() {

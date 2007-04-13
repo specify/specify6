@@ -35,7 +35,6 @@ public class WorkbenchJRDataSource implements JRDataSource
     private Hashtable<String, Short> map      = new Hashtable<String, Short>();
     private Workbench                workbench;
     private int                      rowIndex = -1;
-    private int                      fldIndex = 0;
     private List<WorkbenchRow>       workbenchRows;
  
     public WorkbenchJRDataSource(final Workbench workbench)
@@ -77,7 +76,6 @@ public class WorkbenchJRDataSource implements JRDataSource
         WorkbenchRow row = workbench.getRow(rowIndex);
         Short inx = map.get(field.getName());
         return inx == null ? "XX" : row.getData(inx);
-        //return row.getData(fldIndex++);
     }
 
     /*
@@ -93,7 +91,6 @@ public class WorkbenchJRDataSource implements JRDataSource
             return false;
         }
         rowIndex++;
-        fldIndex = 0;
         return true;
     }
 }
