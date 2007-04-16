@@ -38,7 +38,6 @@ import java.util.prefs.BackingStoreException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -50,7 +49,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
-import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
@@ -1208,7 +1206,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
               Specify specify = new Specify();
               
               
-              boolean startAsWorkBench = true; // XXX Workbench Testing (start up testing)
+              boolean startAsWorkBench = false; // XXX Workbench Testing (start up testing)
               if (startAsWorkBench)
               {
                   // For a WorkBench Only Release  

@@ -1,11 +1,8 @@
 /*
-     * Copyright (C) 2007  The University of Kansas
-     *
-     * [INSERT KU-APPROVED LICENSE TEXT HERE]
-     *
-     */
-/**
- * 
+ * Copyright (C) 2007  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ *
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
@@ -41,7 +38,7 @@ public class WorkbenchBackupMgr
 
     protected static String getPrefix(final Workbench workbench)
     {
-        return "WB" +  workbench.getId().toString() + ":";
+        return "WB" +  workbench.getId().toString() + "_";
     }
     
     protected static Vector<File> getExistingBackups(final Workbench workbench)
@@ -113,8 +110,7 @@ public class WorkbenchBackupMgr
             session.close();
             session = null;
             
-            String fileName = getPrefix(workbench) + workbench.getName() + new Date().toString()
-                    + ".xls";
+            String fileName = getPrefix(workbench) + workbench.getName() + ".xls";
 
             Properties props = new Properties();
             props.setProperty("mimetype", ExportFileConfigurationFactory.XLS_MIME_TYPE);
