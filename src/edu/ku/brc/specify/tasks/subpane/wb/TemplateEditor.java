@@ -195,10 +195,14 @@ public class TemplateEditor extends CustomDialog
         for (TableInfo ti : tableInfoList)
         {
             tableModel.add(ti);
-            ti.setExpanded(true);
-            for (FieldInfo fieldInfo : ti.getFieldItems())
+            // Star out Collapsed when start on fro scratch
+            if (!isFromScratch)
             {
-                tableModel.add(fieldInfo);
+                ti.setExpanded(true);
+                for (FieldInfo fieldInfo : ti.getFieldItems())
+                {
+                    tableModel.add(fieldInfo);
+                }
             }
         }
         tableList = new JList(tableModel);

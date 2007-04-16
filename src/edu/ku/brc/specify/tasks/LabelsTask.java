@@ -146,7 +146,7 @@ public class LabelsTask extends BaseTask
                         {
                             CommandAction cmdAction = new CommandAction(LABELS, PRINT_LABEL, null);
                             cmdAction.addStringProperties(tcd.getParams());
-                            labelsList.add(makeDnDNavBtn(navBox, tcd.getName(), name, cmdAction, null, true));// true means make it draggable
+                            labelsList.add(makeDnDNavBtn(navBox, tcd.getName(), name, cmdAction, null, true, false));// true means make it draggable
                             
                         } else
                         {

@@ -167,14 +167,14 @@ public class InteractionsTask extends BaseTask
             NavBox navBox = new NavBox(getResourceString("Actions"));
             
             CommandAction cmdAction = new CommandAction(INTERACTIONS, NEW_LOAN);
-            NavBoxButton roc = (NavBoxButton)makeDnDNavBtn(navBox, getResourceString(NEW_LOAN), name, cmdAction, null, true);// true means make it draggable
+            NavBoxButton roc = (NavBoxButton)makeDnDNavBtn(navBox, getResourceString(NEW_LOAN), name, cmdAction, null, true, false);// true means make it draggable
             roc.addDropDataFlavor(InfoRequestTask.INFOREQUEST_FLAVOR);
             
             navBox.add(NavBox.createBtn(getResourceString("New_Gifts"), "Loan", IconManager.IconSize.Std16));
             navBox.add(NavBox.createBtn(getResourceString("New_Exchange"), "Loan", IconManager.IconSize.Std16));
             
             cmdAction = new CommandAction(INTERACTIONS, InfoRequestName);
-            roc = (NavBoxButton)makeDnDNavBtn(navBox, getResourceString(InfoRequestName), InfoRequestName, cmdAction, null, true);// true means make it draggable
+            roc = (NavBoxButton)makeDnDNavBtn(navBox, getResourceString(InfoRequestName), InfoRequestName, cmdAction, null, true, false);// true means make it draggable
             roc.addDropDataFlavor(InfoRequestTask.INFOREQUEST_FLAVOR);
             
             
@@ -211,7 +211,7 @@ public class InteractionsTask extends BaseTask
                         
                         cmdAction = new CommandAction(INTERACTIONS, PRINT_LOAN, Loan.getClassTableId());
                         cmdAction.addStringProperties(tcd.getParams());
-                        invoiceList.add(makeDnDNavBtn(navBox, tcd.getName(), "Loan", cmdAction, null, true));// true means make it draggable
+                        invoiceList.add(makeDnDNavBtn(navBox, tcd.getName(), "Loan", cmdAction, null, true, false));// true means make it draggable
 
                     } else
                     {

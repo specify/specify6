@@ -126,7 +126,7 @@ public class ExportTask extends BaseTask
                 {
                     CommandAction cmdAction = new CommandAction(EXPORT, EXPORT_RS);
                     cmdAction.setProperty("exporter",exporter);
-                    exportersList.add(makeDnDNavBtn(navBox, exporter.getName(), exporter.getIconName(), cmdAction, null, true));// true means make it draggable
+                    exportersList.add(makeDnDNavBtn(navBox, exporter.getName(), exporter.getIconName(), cmdAction, null, true, false));// true means make it draggable
                 }
     
                 navBoxes.addElement(navBox);

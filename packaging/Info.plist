@@ -94,6 +94,11 @@
 			<string>$JAVAROOT/jdic_stub.jar</string>
 			<string>$JAVAROOT/derby.jar</string>
 			<string>$JAVAROOT/MacAttachmentUtils.jar</string>
+			<string>$JAVAROOT/jh.jar</string>
+			<string>$JAVAROOT/iReport.jar</string>
+			<string>$JAVAROOT/javacsv.jar</string>
+			<string>$JAVAROOT/swingx.jar</string>
+			<string>$JAVAROOT/help</string>
 			</array>
 		<key>Properties</key>
 		<dict>

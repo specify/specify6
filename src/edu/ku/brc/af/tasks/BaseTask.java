@@ -232,7 +232,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
                                             final Object        data,
                                             final int           position)
     {
-        NavBoxItemIFace nbi = makeDnDNavBtn(navBox, labelText, iconName, null, null, delCmdAction, true, position);
+        NavBoxItemIFace nbi = makeDnDNavBtn(navBox, labelText, iconName, null, null, delCmdAction, true, position, false);
         if (nbi instanceof GhostActionable)
         {
             ((GhostActionable)nbi).setData(data != null ? data : this);
@@ -249,7 +249,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
                                             final String        dragFlavor,
                                             final String        dropFlavor)
 {
-        RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(navBox, labelText, null, iconName, cmdAction, delCmdAction, true, -1);
+        RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(navBox, labelText, null, iconName, cmdAction, delCmdAction, true, -1, false);
         roc.addDragDataFlavor(new DataFlavor(Workbench.class, dragFlavor));
         roc.addDropDataFlavor(new DataFlavor(flavorClass, dropFlavor));
         return (NavBoxItemIFace)roc;
@@ -260,20 +260,10 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
                                             final String        iconName,
                                             final CommandAction cmdAction,
                                             final CommandAction delCmdAction,
-                                            final boolean       makeDraggable)
+                                            final boolean       makeDraggable,
+                                            final boolean       addSorted)
     {
-        return makeDnDNavBtn(navBox, labelText, iconName, null, cmdAction, delCmdAction, makeDraggable, -1);
-    }
- 
-    protected NavBoxItemIFace makeDnDNavBtn(final NavBox        navBox,
-                                            final String        labelText,
-                                            final String        iconName,
-                                            final String        toolTip,
-                                            final CommandAction cmdAction,
-                                            final CommandAction delCmdAction,
-                                            final boolean       makeDraggable)
-    {
-        return makeDnDNavBtn(navBox, labelText, iconName, toolTip, cmdAction, delCmdAction, makeDraggable, -1);
+        return makeDnDNavBtn(navBox, labelText, iconName, null, cmdAction, delCmdAction, makeDraggable, -1, addSorted);
     }
  
     protected NavBoxItemIFace makeDnDNavBtn(final NavBox        navBox,
@@ -283,7 +273,20 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
                                             final CommandAction cmdAction,
                                             final CommandAction delCmdAction,
                                             final boolean       makeDraggable,
-                                            final int           position)
+                                            final boolean       addSorted)
+    {
+        return makeDnDNavBtn(navBox, labelText, iconName, toolTip, cmdAction, delCmdAction, makeDraggable, -1, addSorted);
+    }
+ 
+    protected NavBoxItemIFace makeDnDNavBtn(final NavBox        navBox,
+                                            final String        labelText,
+                                            final String        iconName,
+                                            final String        toolTip,
+                                            final CommandAction cmdAction,
+                                            final CommandAction delCmdAction,
+                                            final boolean       makeDraggable,
+                                            final int           position,
+                                            final boolean       addSorted)
     {
         NavBoxItemIFace nb = NavBox.createBtn(labelText, iconName, IconManager.IconSize.Std16);
         if (StringUtils.isNotEmpty(toolTip))
@@ -302,9 +305,13 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
             ((NavBoxButton)nb).setDeleteCommandAction(delCmdAction);
         }
         
-        if (position == -1)
+        if (addSorted)
         {
             navBox.insertSorted(nb);
+            
+        } else if (position == -1)
+        {
+            navBox.add(nb);
 
         } else
         {
