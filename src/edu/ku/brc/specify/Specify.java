@@ -60,6 +60,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
+import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 import com.jgoodies.looks.windows.WindowsLookAndFeel;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -593,7 +594,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         if (!isWorkbenchOnly)
         {
             menu = UIHelper.createMenu(mb, "AdvMenu", "AdvMneu");
-            mi = UIHelper.createMenuItem(menu, getResourceString("ESConfig"), getResourceString("ESConfig_Mn"), getResourceString("ESConfig"), false, null);
+            mi = UIHelper.createMenuItem(menu, getResourceString("ESConfig"), getResourceString("ESConfig_Mn"), getResourceString("ESConfig"), true, null);
             mi.addActionListener(new ActionListener()
                     {
                         public void actionPerformed(ActionEvent ae)
@@ -1181,7 +1182,9 @@ public class Specify extends JPanel implements DatabaseLoginListener
                   UIHelper.OSTYPE osType = UIHelper.getOSType();
                   if (osType == UIHelper.OSTYPE.Windows )
                   {
-                      UIManager.setLookAndFeel(new WindowsLookAndFeel());
+                      //UIManager.setLookAndFeel(new WindowsLookAndFeel());
+                      UIManager.setLookAndFeel(new PlasticLookAndFeel());
+                      PlasticLookAndFeel.setPlasticTheme(new ExperienceBlue());
                       
                   } else if (osType == UIHelper.OSTYPE.Linux )
                   {

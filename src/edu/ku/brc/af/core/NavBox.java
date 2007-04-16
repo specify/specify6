@@ -32,6 +32,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
+import org.apache.log4j.Logger;
+
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UICacheManager;
 
@@ -47,6 +49,8 @@ import edu.ku.brc.ui.UICacheManager;
 @SuppressWarnings("serial")
 public class NavBox extends JPanel implements NavBoxIFace
 {
+    private static final Logger      log      = Logger.getLogger(NavBox.class);
+    
     protected String             name;
     protected NavBoxIFace.Scope  scope;
     protected NavBoxMgr          mgr;
@@ -412,17 +416,24 @@ public class NavBox extends JPanel implements NavBoxIFace
     public static void refresh(final NavBoxIFace nb)
     {
         NavBox box = (NavBox)nb;
-       
+        //log.debug("0box "+box.getPreferredSize()+" "+box.getSize());
+        
         box.invalidate();
         box.validate();
         box.doLayout();
-        box.setSize(box.getPreferredSize());
+        //box.setSize(box.getPreferredSize());
         box.repaint();
         
         NavBoxMgr.getInstance().invalidate();
         NavBoxMgr.getInstance().doLayout();
         NavBoxMgr.getInstance().repaint();
         
+        /*log.debug("1box "+box.getPreferredSize()+" "+box.getSize());
+        for (NavBoxItemIFace nbi : box.items)
+        {
+            Component c = (Component)nbi;
+            log.debug("nbi "+c.getPreferredSize()+" "+c.getSize());
+        }*/
         UICacheManager.forceTopFrameRepaint();
     }
     
@@ -435,7 +446,7 @@ public class NavBox extends JPanel implements NavBoxIFace
             comp.doLayout();
             comp.setSize(comp.getPreferredSize());
             comp.repaint();
-            
+            log.debug("comp "+comp.getPreferredSize()+" "+comp.getSize());
             refresh((NavBox)nbi.getUIComponent().getParent());
         }
     }

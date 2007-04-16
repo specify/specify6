@@ -346,6 +346,7 @@ public class WorkbenchTask extends BaseTask
 
         roc.setPopupMenu(popupMenu);
 
+        NavBox.refresh(workbenchNavBox);
     }
     
     /**
