@@ -129,7 +129,7 @@ public class TemplateEditor extends CustomDialog
      */
     public TemplateEditor(final Frame frame, final String title, final ImportDataFileInfo dataFileInfo)
     {
-        super(frame, title, true, OKCANCELAPPLYHELP, null);
+        super(frame, title, true, OKCANCELHELP, null);
         
         this.dataFileInfo    = dataFileInfo;
         this.isMappedToAFile = dataFileInfo != null;
@@ -147,7 +147,7 @@ public class TemplateEditor extends CustomDialog
      */
     public TemplateEditor(final Frame frame, final String title, final WorkbenchTemplate wbTemplate)
     {
-        super(frame, title, true, OKCANCELAPPLYHELP, null);
+        super(frame, title, true, OKCANCELHELP, null);
         
         this.workbenchTemplate = wbTemplate;
         this.isMappedToAFile   = StringUtils.isNotEmpty(wbTemplate.getSrcFilePath());
@@ -527,9 +527,6 @@ public class TemplateEditor extends CustomDialog
         
         okBtn.setEnabled(false);
         
-        // Meg Here is your apply Btn
-        // applyBtn.setText("Set this to your I18N Label");
-
         HelpMgr.registerComponent(helpBtn, helpContext);
         
         if (dataFileInfo != null)
