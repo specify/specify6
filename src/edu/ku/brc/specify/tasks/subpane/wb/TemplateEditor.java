@@ -31,6 +31,7 @@ import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
@@ -51,25 +52,25 @@ import javax.swing.event.ListSelectionListener;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.dom4j.Element;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.specify.datamodel.Accession;
-import edu.ku.brc.specify.datamodel.CollectingEvent;
-import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
+import edu.ku.brc.specify.tasks.subpane.TableFieldPair;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.DefaultModifiableListModel;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.util.Pair;
 
 /**
  * This panel is enables a user to make all the columns from a data file (XLS) to our Database schema.
@@ -326,6 +327,7 @@ public class TemplateEditor extends CustomDialog
         });
         
         tableList.addMouseListener(new MouseAdapter(){
+            @Override
             public void mouseClicked(MouseEvent e)
             {
                 tableListClicked(e);
@@ -397,6 +399,7 @@ public class TemplateEditor extends CustomDialog
             /* (non-Javadoc)
              * @see java.awt.Container#paintComponents(java.awt.Graphics)
              */
+            @Override
             public void paintComponent(Graphics g)
             {
                 super.paintComponent(g);
@@ -549,6 +552,7 @@ public class TemplateEditor extends CustomDialog
         pack();
         
         SwingUtilities.invokeLater(new Runnable() {
+            @SuppressWarnings("synthetic-access")
             public void run()
             {
                 cancelBtn.requestFocus();
@@ -835,7 +839,7 @@ public class TemplateEditor extends CustomDialog
         FieldInfo fieldInfo  = fieldInfoArg == null ? (FieldInfo)tableList.getSelectedValue() : fieldInfoArg;
         fieldInfo.setChecked(true);
         
-        Class             tableClass = getTableClass(fieldInfo);
+        Class<?>          tableClass = getTableClass(fieldInfo);
         ImportColumnInfo  colInfo    = new ImportColumnInfo((short)-1, 
                                                             ImportColumnInfo.getType(tableClass), 
                                                             fieldInfo.getFieldInfo().getColumn(), 
@@ -857,9 +861,9 @@ public class TemplateEditor extends CustomDialog
      * @param fieldInfo
      * @return
      */
-    protected Class getTableClass(final FieldInfo fieldInfo)
+    protected Class<?> getTableClass(final FieldInfo fieldInfo)
     {
-        Class<?>  tableClass = null;
+        Class<?> tableClass = null;
         try
         {
             Object newDbObj = fieldInfo.getTableinfo().getClassObj().newInstance();
@@ -929,65 +933,28 @@ public class TemplateEditor extends CustomDialog
      * @param fieldNameArg the field name
      * @return the Table Field Pair
      */
-    protected FieldInfo autoMapFieldName(final String fieldNameArg)
+    protected FieldInfo autoMapFieldName(final String fieldNameArg, List<Pair<String,TableFieldPair>> automappings)
     {
         String fieldNameLower = fieldNameArg.toLowerCase();
         String fieldName      = StringUtils.deleteWhitespace(fieldNameLower);
         
         FieldInfo fieldInfo  = null;
         
-        // Check some standard common names
-        if (fieldName.indexOf("date") > -1)
+        // find the mapping that matches this column name
+        for (Pair<String,TableFieldPair> mapping: automappings)
         {
-            if (fieldName.indexOf("collected") > -1 || fieldNameLower.equals("date"))
+            if (fieldName.matches(mapping.first))
             {
-                fieldInfo = getFieldInfo(getTableInfo(CollectingEvent.class), "startDate");
-                
-            } else if (fieldName.indexOf("cataloged") > -1)
-            {
-                fieldInfo = getFieldInfo(getTableInfo(CollectingEvent.class), "catalogedDate");
-                
-            } else if (fieldName.indexOf("start") > -1)
-            {
-                fieldInfo = getFieldInfo(getTableInfo(CollectingEvent.class), "startDate");
-                
-            } else if (fieldName.indexOf("end") > -1)
-            {
-                fieldInfo = getFieldInfo(getTableInfo(CollectingEvent.class), "endDate");
-                
-            } else if (fieldName.indexOf("accession") > -1)
-            {
-                fieldInfo = getFieldInfo(getTableInfo(Accession.class), "dateAccessioned");
-            }
-        } else if (fieldName.startsWith("elevation"))
-        {
-            if (fieldName.startsWith("min"))
-            {
-                fieldInfo = getFieldInfo(getTableInfo(Locality.class), "minElevation");
-                
-            } else if (fieldName.startsWith("max"))
-            {
-                fieldInfo = getFieldInfo(getTableInfo(Locality.class), "maxElevation");
-            } else
-            {
-                fieldInfo = getFieldInfo(getTableInfo(Locality.class), "minElevation");
-            }
-        } else if (fieldName.startsWith("field"))
-        {
-            if (fieldName.startsWith("fieldno") || fieldName.startsWith("fieldnum"))
-            {
-                fieldInfo = getFieldInfo(getTableInfo(CollectionObject.class), "FieldNumber");
-            }
-        } else if (fieldName.startsWith("catalog"))
-        {
-            if (fieldName.startsWith("catalogno") || fieldName.startsWith("catalognum") ||
-                fieldName.startsWith("number"))
-            {
-                fieldInfo = getFieldInfo(getTableInfo(CollectionObject.class), "CatalogNumber");
+                TableFieldPair tblFldPair = mapping.second;
+                fieldInfo = new FieldInfo(tblFldPair.getTableinfo(),tblFldPair.getFieldInfo());
+                log.debug("Mapping incoming column name '" + fieldNameArg +
+                        "' to " + tblFldPair.getTableinfo().getTableName() +
+                        "." + tblFldPair.getFieldInfo().getName());
+                break;
             }
         }
         
-        // If we had not luck then just loop through everything looking for it.
+        // If we had no luck then just loop through everything looking for it.
         if (fieldInfo == null)
         {
             for (int i=0;i<tableModel.size();i++)
@@ -1015,10 +982,60 @@ public class TemplateEditor extends CustomDialog
     {
         Hashtable<TableInfo, Boolean> tablesInUse = new Hashtable<TableInfo, Boolean>();
         
-        boolean notAllMapped = false;  // assume we can auto map everything
-        for (ImportColumnInfo colInfo : colInfos)
+        // XXX
+        // TODO: 'discover' this somehow (System.getProperty() ? )
+        String currentLocale = "en";
+        
+        // don't use a hashtable for this since it doesn't guarantee iterator order
+        // and we want the order of these mappings in the file to be the order they are
+        // checked
+        List<Pair<String,TableFieldPair>> automappings = new Vector<Pair<String,TableFieldPair>>();
+
+        // read in the automapping config file
+        Element mappingsInXml = null;
+        try
         {
-            FieldInfo fieldInfo = autoMapFieldName(colInfo.getColName());
+            mappingsInXml = XMLHelper.readDOMFromConfigDir("datamodel_automappings.xml");
+        }
+        catch (Exception e)
+        {
+            log.error("Failed to read/parse automapping config file", e);
+            return;
+        }
+        
+        // read in all of the mappings
+        List<?> mappings = mappingsInXml.selectNodes("//mapping");
+        for (Object o: mappings)
+        {
+            Element mapping = (Element)o;
+            String className = XMLHelper.getValue(mapping, "class");
+            String fieldName = XMLHelper.getValue(mapping, "field");
+            DBTableIdMgr tableIdMgr = DBTableIdMgr.getInstance();
+            DBTableIdMgr.TableInfo table = tableIdMgr.getByClassName(className);
+            DBTableIdMgr.FieldInfo field = table.getFieldByName(fieldName);
+            
+            TableFieldPair tblFldPair = new TableFieldPair(table,field);
+
+            for (Object regO: mapping.selectNodes("regex"))
+            {
+                Element regex = (Element)regO;
+                String regexStr = regex.getText();
+                String locale   = XMLHelper.getAttr(regex, "locale", "en");
+                
+                // only grab the mappings for the current locale
+                if (locale.equalsIgnoreCase(currentLocale))
+                {
+                    automappings.add(new Pair<String, TableFieldPair>(regexStr,tblFldPair));
+                    log.debug("Registering regex (" + regexStr + ") as match for " + className + "." + fieldName);
+                }
+            }
+        }
+        
+        
+        boolean notAllMapped = false;  // assume we can auto map everything
+        for (ImportColumnInfo colInfo: colInfos)
+        {
+            FieldInfo fieldInfo = autoMapFieldName(colInfo.getColName(), automappings);
             if (fieldInfo != null)
             {
                 // Find the right TableInfo
@@ -1338,6 +1355,7 @@ public class TemplateEditor extends CustomDialog
         /* (non-Javadoc)
          * @see javax.swing.JComponent#getToolTipText()
          */
+        @Override
         public String getToolTipText()
         {
             if (fieldInfo != null)
