@@ -304,7 +304,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
         
         if (position == -1)
         {
-            navBox.add(nb);
+            navBox.insertSorted(nb);
 
         } else
         {

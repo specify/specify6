@@ -25,7 +25,7 @@ import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
  * 
  * @author rod
  * 
- * @code_status Alpha
+ * @code_status Complete
  * 
  * Apr 2, 2007
  * 
@@ -37,6 +37,10 @@ public class WorkbenchJRDataSource implements JRDataSource
     private int                      rowIndex = -1;
     private List<WorkbenchRow>       workbenchRows;
  
+    /**
+     * Constrcutor with Workbench.
+     * @param workbench the workbench
+     */
     public WorkbenchJRDataSource(final Workbench workbench)
     {
         this.workbench = workbench;
@@ -44,6 +48,11 @@ public class WorkbenchJRDataSource implements JRDataSource
         createMap();
     }
 
+    /**
+     * Constrcutor with Workbench and a the rows to use.
+     * @param workbench the workbench
+     * @param workbenchRows the rows to use
+     */
     public WorkbenchJRDataSource(final Workbench workbench, final List<WorkbenchRow> workbenchRows)
     {
         this.workbench = workbench;
@@ -62,30 +71,27 @@ public class WorkbenchJRDataSource implements JRDataSource
                 .getWorkbenchTemplateMappingItems())
         {
             map.put(wbtmi.getFieldName(), wbtmi.getViewOrder());
-            System.out.println(wbtmi.getFieldName() + ", " + wbtmi.getViewOrder());
+            //System.out.println(wbtmi.getFieldName() + ", " + wbtmi.getViewOrder());
         }
     }
 
     /*
      * (non-Javadoc)
-     * 
      * @see net.sf.jasperreports.engine.JRDataSource#getFieldValue(net.sf.jasperreports.engine.JRField)
      */
     public Object getFieldValue(final JRField field) throws JRException
     {
         WorkbenchRow row = workbench.getRow(rowIndex);
         Short inx = map.get(field.getName());
-        return inx == null ? "XX" : row.getData(inx);
+        return inx == null ? "" : row.getData(inx);
     }
 
     /*
      * (non-Javadoc)
-     * 
      * @see net.sf.jasperreports.engine.JRDataSource#next()
      */
     public boolean next() throws JRException
     {
-        System.out.println("[" + rowIndex + "][" + workbenchRows.size() + "]");
         if (rowIndex >= workbenchRows.size() - 1)
         {
             return false;

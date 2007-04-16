@@ -108,7 +108,6 @@ public class UICacheManager
     public static final String DELETE       = "Delete";
     public static final String Clear        = "Clear";
     
-
     public static final String LONGTERM_CACHE_MAP = "longterm-cache-map.xml";
 
     private static final Logger           log      = Logger.getLogger(UICacheManager.class);
@@ -343,9 +342,9 @@ public class UICacheManager
         {
             File   file     = new File(".");
             String fullPath = file.getAbsolutePath();
-            fullPath        = fullPath.substring(0, fullPath.length()-1);
+            fullPath        = UIHelper.stripSubDirs(file.getAbsolutePath(), 2);
 
-            base = fullPath + instance.appName;
+            base = fullPath + File.separator  + instance.appName;
             
         } else
         {
@@ -370,16 +369,17 @@ public class UICacheManager
             {
                 base = homeDir + File.separator + instance.appName;
             }
-            
-            File baseDir = new File(base);
-            if (!baseDir.exists())
+        }
+        
+        File baseDir = new File(base);
+        if (!baseDir.exists())
+        {
+            if (!baseDir.mkdir())
             {
-                if (!baseDir.mkdir())
-                {
-                    throw new RuntimeException("Couldn't create data directory for "+instance.appName+" ["+baseDir.getAbsolutePath()+"]");
-                }
+                throw new RuntimeException("Couldn't create data directory for "+instance.appName+" ["+baseDir.getAbsolutePath()+"]");
             }
         }
+        
         return base;
     }
 

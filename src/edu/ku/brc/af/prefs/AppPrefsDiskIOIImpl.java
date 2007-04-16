@@ -72,7 +72,7 @@ public class AppPrefsDiskIOIImpl implements AppPrefsIOIFace
         
         if (appPrefsMgr.getDirPath() == null || appPrefsMgr.getDirPath().length() == 0)
         {
-            throw new RuntimeException("The directory path for the prefs ["+appPrefsMgr.getLocalFileName()+"] cannot be empty!");
+            throw new RuntimeException("The directory path for the prefs ["+appPrefsMgr.getDirPath()+"] ["+appPrefsMgr.getLocalFileName()+"] cannot be empty!");
         } 
     }
     

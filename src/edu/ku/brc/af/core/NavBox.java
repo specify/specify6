@@ -22,6 +22,7 @@ import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.event.ActionListener;
+import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
@@ -168,13 +169,25 @@ public class NavBox extends JPanel implements NavBoxIFace
     }
 
     /**
+     * Adds a NavBoxItemIFace item to the box insorted order.
+     * @param item the NavBoxItemIFace item to be added
+     * @param notify whether to have it relayout or not (true -> does layout)
+     * @return the UI component for this item
+     */
+    public Component insertSorted(final NavBoxItemIFace item)
+    {
+        int insertionInx = Math.abs(Collections.binarySearch(items, item)) - 1;
+        return insert(item, true, insertionInx);
+    }
+
+    /**
      * Adds a NavBoxItemIFace item to the box and returns the UI component for that item.
      * @param item the NavBoxItemIFace item to be added
      * @param notify whether to have it relayout or not (true -> does layout)
      * @param position the position in the list
      * @return the UI component for this item
      */
-    public Component insert(final NavBoxItemIFace item, boolean notify, int position)
+    public Component insert(final NavBoxItemIFace item, final boolean notify, final int position)
     {
         if (position == -1 || position == items.size())
         {
@@ -193,8 +206,9 @@ public class NavBox extends JPanel implements NavBoxIFace
        
         if (notify && mgr != null)
         {
-            mgr.invalidate();
-            mgr.doLayout();
+            refresh(this);
+            //mgr.invalidate();
+            //mgr.doLayout();
         }
         item.getUIComponent().setBackground(getBackground());
         item.getUIComponent().setOpaque(true);

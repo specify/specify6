@@ -219,4 +219,13 @@ public class TreeNodeFindWidget extends JPanel implements NavBoxItemIFace, Actio
     {
         // does not support an icon (but that is OK)
     }
+    
+    
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(final NavBoxItemIFace obj)
+    {
+        return -1;
+    }
 }

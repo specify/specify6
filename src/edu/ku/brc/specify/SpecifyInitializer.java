@@ -851,17 +851,22 @@ public class SpecifyInitializer
             
             return false;
         }*/
+
         
-        protected String stripSubDirs(final String path, final int numToStrip)
+        protected String stripSpecifyDir(final String path)
         {
-            String databasePath = path;
-            
-            for (int i=0;i<numToStrip;i++)
+            if (UIHelper.getOSType() == UIHelper.OSTYPE.MacOSX)
             {
-                int endInx = databasePath.lastIndexOf(File.separator);
-                databasePath = databasePath.substring(0, endInx);
+                String appPath = path;
+                int endInx = appPath.indexOf("Specify.app");
+                if (endInx > -1)
+                {
+                    appPath = appPath.substring(0, endInx-1);
+                }
+                return appPath;
+                
             }
-            return databasePath;
+            return path;
         }
 
         /**
@@ -872,6 +877,12 @@ public class SpecifyInitializer
             // Clear and Reset Everything!
             AppPreferences.shutdownLocalPrefs();
             UICacheManager.setDefaultWorkingPath(null);
+            
+            log.debug("********** WORK["+UICacheManager.getDefaultWorkingPath()+"]");
+            log.debug("********** USER LOC["+stripSpecifyDir(UICacheManager.getUserDataDir(true))+"]");
+            
+            String baseAppDir = stripSpecifyDir(UICacheManager.getUserDataDir(true));
+            log.debug("********** Base Dir for App ["+baseAppDir+"]");
             
             String derbyPath;
             if (locationPanel.isUsingUserDefinedDirectory())
@@ -888,22 +899,23 @@ public class SpecifyInitializer
                     // if it is being run off of a CD
                     if (!locationPanel.isLocalOKForWriting())
                     {
-                        derbyPath = stripSubDirs(UICacheManager.getDefaultWorkingPath(), 1) + File.separator + "DerbyDatabases";
+                        log.debug("WORKING PATH["+UICacheManager.getDefaultWorkingPath()+"]");
                         
-                        String destParentDirStr = stripSubDirs(UICacheManager.getDefaultWorkingPath(), 1);
+                        derbyPath = UIHelper.stripSubDirs(UICacheManager.getDefaultWorkingPath(), 1) + File.separator + "DerbyDatabases";
                         
-                        String databasePath = UICacheManager.getUserDataDir(true);
+                        String destParentDirStr = UIHelper.stripSubDirs(UICacheManager.getDefaultWorkingPath(), 1);
                         
-                        String srcDerbyPath = stripSubDirs(databasePath, 2) + File.separator + "DerbyDatabases";
-                        log.debug("srcDerbyPath["+srcDerbyPath+"] "+StringUtils.isNotEmpty(srcDerbyPath));
+                        String srcDerbyPath = baseAppDir + File.separator + "DerbyDatabases";
+                        
+                        log.debug("Derby Source Path["+srcDerbyPath+"] "+StringUtils.isNotEmpty(srcDerbyPath));
                         if (StringUtils.isNotEmpty(srcDerbyPath))
                         {
                             File srcDir = new File(srcDerbyPath);
-                            log.debug("srcDir ["+srcDir.getAbsoluteFile()+"] "+srcDir.exists());
+                            log.debug("Derby Source Path ["+srcDir.getAbsoluteFile()+"] "+srcDir.exists());
                             if (srcDir.exists())
                             {
                                 File destDir = new File(destParentDirStr);
-                                log.debug("Destination ["+destDir.getAbsoluteFile()+"] exists! "+destDir.exists());
+                                log.debug("Derby Destination Path ["+destDir.getAbsoluteFile()+"] exists! "+destDir.exists());
                                 if (destDir.exists())
                                 {
                                     File derbyDestDir = new File(derbyPath);
@@ -914,7 +926,7 @@ public class SpecifyInitializer
                                     
                                     try
                                     {
-                                        log.debug("Copy from["+srcDir.getAbsoluteFile()+"] to["+derbyDestDir.getAbsoluteFile()+"]");
+                                        log.debug("Copy Derby Databases from["+srcDir.getAbsoluteFile()+"] to["+derbyDestDir.getAbsoluteFile()+"]");
                                         FileUtils.copyDirectory(srcDir, derbyDestDir);
                                         
                                     } catch (Exception ex)
@@ -942,15 +954,15 @@ public class SpecifyInitializer
                 } else
                 {
                     UICacheManager.setUseCurrentLocation(true);
-                    String databasePath = stripSubDirs(UICacheManager.getDefaultWorkingPath(), 2);
-                    System.out.println((new File(databasePath).exists())+"["+databasePath+"]");
+                    log.debug((new File(baseAppDir).exists())+" baseAppDir["+baseAppDir+"]");
                     
-                    derbyPath = databasePath + File.separator + "DerbyDatabases";
+                    derbyPath = baseAppDir + File.separator + "DerbyDatabases";
+                    log.debug(" Derby Database Path ["+derbyPath+"]");
                 }
             }
             
             System.setProperty("derby.system.home", derbyPath);
-            log.debug("**** "+System.getProperty("derby.system.home"));
+            log.debug("**** derby.system.home="+System.getProperty("derby.system.home"));
             
             // Now initialize
             AppPreferences localPrefs = AppPreferences.getLocalPrefs();

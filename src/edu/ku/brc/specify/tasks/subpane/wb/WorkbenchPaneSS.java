@@ -1681,7 +1681,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             
             if (userChoice != null)
             {
-                System.out.println(userChoice.coordinates);
+                //System.out.println(userChoice.coordinates);
                 
                 String[] coords = StringUtils.split(userChoice.coordinates);
 
@@ -1761,7 +1761,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
 
             //XXX: Before Swing 1.1 Beta 2, use setMinWidth instead.
-            column.setPreferredWidth(Math.max(maxWidth, cellWidth));
+            column.setPreferredWidth(Math.min(Math.max(maxWidth, cellWidth), 400));
             
             column.setCellEditor(cellEditor);
         }

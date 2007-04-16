@@ -79,8 +79,8 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
 
     protected boolean                isOver      = false;
     protected static Color           focusColor  = Color.BLUE;
-    protected static Color           activeColor = new Color(0, 150, 0, 128);
-    protected static Color           hoverColor  = new Color(0, 0, 150, 128);
+    protected static Color           activeColor = new Color(0, 150, 0, 100); 
+    protected static Color           hoverColor  = new Color(0, 0, 150, 100);
     protected Vector<ActionListener> actions     = new Vector<ActionListener>();
 
     protected ImageIcon              imgIcon     = null;

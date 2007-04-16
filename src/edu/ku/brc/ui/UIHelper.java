@@ -27,6 +27,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.Thread.UncaughtExceptionHandler;
@@ -1632,6 +1633,25 @@ public final class UIHelper
             }
         }
         return s.toString();  
+    }
+    
+    
+    /**
+     * Strips directories off the end of a path.
+     * @param path the path to be stripped
+     * @param numToStrip the number to strip
+     * @return the stripped directory path
+     */
+    public static String stripSubDirs(final String path, final int numToStrip)
+    {
+        String databasePath = path;
+        
+        for (int i=0;i<numToStrip;i++)
+        {
+            int endInx = databasePath.lastIndexOf(File.separator);
+            databasePath = databasePath.substring(0, endInx);
+        }
+        return databasePath;
     }
 
 }

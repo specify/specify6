@@ -19,13 +19,13 @@ import javax.swing.JComponent;
 
 /**
  * Interface of an item to be organized by a NavBox
- 
+ *
  * @code_status Complete
- **
+ *
  * @author rods
  *
  */
-public interface NavBoxItemIFace
+public interface NavBoxItemIFace extends Comparable<NavBoxItemIFace>
 {
     /**
      * Returns the localized title of the item (it can be used for look ups by others).

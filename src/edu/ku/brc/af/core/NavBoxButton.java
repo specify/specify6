@@ -53,4 +53,11 @@ public class NavBoxButton extends RolloverCommand implements NavBoxItemIFace
         return label;
     }
     
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(final NavBoxItemIFace obj)
+    {
+        return label.toLowerCase().compareTo(obj.getTitle().toLowerCase());
+    }
 }

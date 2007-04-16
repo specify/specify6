@@ -140,13 +140,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
     protected GhostGlassPane     glassPane;
 
-    private JLabel               splashLabel = null;
-
-    // Used only if swingset is an application
-    private JWindow              splashWindow        = null;
-    private ImageIcon            specifyImageIcon    = null;
-    
-    
     private boolean              isWorkbenchOnly     = true;
     private boolean              isRelease           = true;
 
@@ -377,103 +370,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
         return false;
     }
 
-    /**
-     * Show the spash screen while the rest of the demo loads
-     */
-    public void createSplashScreen()
-    {
-        specifyImageIcon = new ImageIcon(Specify.class.getResource("images/specify_splash.gif"));
-        splashLabel = new JLabel(specifyImageIcon);
-        if(!isApplet())
-        {
-            splashWindow = new JWindow(getFrame());
-            splashWindow.getContentPane().add(splashLabel);
-            splashWindow.getContentPane().setBackground(Color.WHITE);
-            splashWindow.pack();
-            Dimension scrSize = getToolkit().getScreenSize();// getFrame().getGraphicsConfiguration().getBounds();
-            splashWindow.setLocation(scrSize.width/2 - splashWindow.getSize().width/2,
-                                     scrSize.height/2 - splashWindow.getSize().height/2);
-            /*
-            specifyspecifyImageIcon = new ImageIcon(Specify.class.getResource("images/specify_splash.gif"));
-            JPanel panel = new JPanel() {
-
-                public void paintComponent(Graphics g)
-                {
-                    if (specifyspecifyImageIcon != null)
-                    {
-                        g.drawImage(specifyspecifyImageIcon.getImage(),0,0,null);
-                        //g.setColor(Color.BLACK);
-                       // g.draw3DRect(0,0,199,199, true);
-                        //System.out.println("Paint RECT");
-
-                    }
-                }
-                public Dimension getSize()
-                {
-                    //return new Dimension(200,200);
-                    return new Dimension(specifyspecifyImageIcon.getIconWidth(), specifyspecifyImageIcon.getIconHeight());
-                }
-                public Dimension getPreferredSize()
-                {
-                    return getSize();
-                }
-            };
-            panel.setOpaque(false);
-            JFrame splashFrame = new JFrame("Transparent Window");
-            splashScreen = new TransparentBackground(splashFrame, specifyspecifyImageIcon);
-            splashFrame.setSize(specifyspecifyImageIcon.getIconWidth(), specifyspecifyImageIcon.getIconHeight());
-            splashScreen.setSize(specifyspecifyImageIcon.getIconWidth(), specifyspecifyImageIcon.getIconHeight());
-
-            //splashScreen.setLayout(new BorderLayout());
-            //splashScreen.add(panel, BorderLayout.CENTER);
-
-            splashFrame.setUndecorated(true);
-            //splashFrame.getContentPane().setLayout(new BorderLayout());
-            //splashFrame.getContentPane().add(splashScreen, BorderLayout.CENTER);
-            splashFrame.pack();
-            Dimension scrSize = getToolkit().getScreenSize();// getFrame().getGraphicsConfiguration().getBounds();
-            splashFrame.setLocation(scrSize.width/2 - splashFrame.getSize().width/2,
-                                    scrSize.height/2 - splashFrame.getSize().height/2);
-            System.out.println(splashFrame.getLocation());
-            System.out.println(splashFrame.getSize());
-            splashFrame.setVisible(true);
-            */
-        }
-
-    }
-
-    public void showSplashScreen()
-    {
-        if (!isApplet())
-        {
-            if (splashWindow != null)
-            {
-                splashWindow.setVisible(true);
-                splashWindow.validate();
-                splashWindow.repaint();
-            }
-            //splashScreen.getFrame().setVisible(true);
-        } else
-        {
-            add(splashLabel, BorderLayout.CENTER);
-            validate();
-            repaint();
-        }
-    }
-
-    /**
-     * pop down the spash screen
-     */
-    public void hideSplash()
-    {
-        if (!isApplet() && splashWindow != null)
-        {
-            //splashScreen.hideAll();
-            splashWindow.setVisible(false);
-            splashWindow = null;
-            splashLabel = null;
-        }
-    }
 
     /**
      * General Method for initializing the class
@@ -901,10 +797,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
         			}
         		});
         UIHelper.centerAndShow(f);
-        
-        //hideSplash();
     }
-
+    
     /**
      * Returns the frame instance
      */
@@ -1314,7 +1208,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
               Specify specify = new Specify();
               
               
-              boolean startAsWorkBench = false; // XXX Workbench Testing (start up testing)
+              boolean startAsWorkBench = true; // XXX Workbench Testing (start up testing)
               if (startAsWorkBench)
               {
                   // For a WorkBench Only Release  
