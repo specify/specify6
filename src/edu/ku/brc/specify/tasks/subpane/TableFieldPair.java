@@ -62,6 +62,7 @@ public class TableFieldPair implements Comparable<TableFieldPair>
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
+    @Override
     public String toString()
     {
         return fieldInfo.toString();
