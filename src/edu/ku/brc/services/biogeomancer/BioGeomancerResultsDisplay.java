@@ -8,7 +8,6 @@ import java.awt.Insets;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -16,14 +15,10 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.ListSelectionListener;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.looks.plastic.PlasticLookAndFeel;
-import com.jgoodies.looks.plastic.theme.SkyKrupp;
 
 import edu.ku.brc.specify.tasks.services.LocalityMapper.MapperListener;
 import edu.ku.brc.ui.UIHelper;
@@ -56,12 +51,12 @@ public class BioGeomancerResultsDisplay extends JPanel implements MapperListener
     
     public BioGeomancerResultsDisplay()
     {
-        String rowDef = UIHelper.createDuplicateJGoodiesDef("p", "2px", 19);
-        setLayout(new FormLayout("p,2px,p,10px,p,2px,C:p:g", rowDef));
+        String rowDef = UIHelper.createDuplicateJGoodiesDef("p", "2px", 13) + ",20px,p:g";
+        setLayout(new FormLayout("p,10px,400px,10px,C:p:g", rowDef));
 
         CellConstraints cc = new CellConstraints();
 
-        int rowIndex = 3;
+        int rowIndex = 1;
         idField       = addRow(cc, getResourceString("ID"),        1, rowIndex);
         rowIndex+=2;
         countryField  = addRow(cc, getResourceString("Country"),   1, rowIndex);
@@ -72,12 +67,6 @@ public class BioGeomancerResultsDisplay extends JPanel implements MapperListener
         rowIndex+=2;
         localityField = addRow(cc, getResourceString("Locality"),  1, rowIndex);
         rowIndex+=2;
-
-        mapLabel = new JLabel();
-        mapLabel.setText(getResourceString("LOADING_MAP"));
-        add(mapLabel, cc.xywh(7,3,1,25));
-
-        mapLabel.setPreferredSize(new Dimension(MAP_WIDTH, MAP_HEIGHT));
 
         countryBoundingBoxField       = addRow(cc, getResourceString("CountryBoundingBox"),       1, rowIndex);
         rowIndex+=2;
@@ -96,6 +85,12 @@ public class BioGeomancerResultsDisplay extends JPanel implements MapperListener
         weightedCentroidField         = addRow(cc, getResourceString("WeightedCentroid"),         1, rowIndex);
         rowIndex+=2;
 
+        mapLabel = new JLabel();
+        mapLabel.setText(getResourceString("LOADING_MAP"));
+        add(mapLabel, cc.xywh(5,1,1,25));
+
+        mapLabel.setPreferredSize(new Dimension(MAP_WIDTH, MAP_HEIGHT));
+
         bgResultsTable = new JTable();
         bgResultsTable.setShowVerticalLines(false);
         bgResultsTable.setShowHorizontalLines(false);
@@ -104,7 +99,7 @@ public class BioGeomancerResultsDisplay extends JPanel implements MapperListener
         mapLabel.setText("");
 
         JScrollPane scrollPane = new JScrollPane(bgResultsTable, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        add(scrollPane, cc.xywh(1,rowIndex, 7, 1));
+        add(scrollPane, cc.xywh(1,rowIndex, 5, 1));
         rowIndex+=2;
     }
     
@@ -145,6 +140,9 @@ public class BioGeomancerResultsDisplay extends JPanel implements MapperListener
     
     public void setBioGeomancerResultsData(String bgXmlResponse) throws Exception
     {
+        mapLabel.setIcon(null);
+        mapLabel.setText(getResourceString("LOADING_MAP"));
+        
         summary = BioGeomancer.parseBioGeomancerResponse(bgXmlResponse);
         
         idField.setText(summary.id);
@@ -197,27 +195,5 @@ public class BioGeomancerResultsDisplay extends JPanel implements MapperListener
     public void mapReceived(Icon map)
     {
         mapLabel.setIcon(map);
-    }
-
-    public static void main(String[] args) throws UnsupportedLookAndFeelException
-    {
-        UIManager.setLookAndFeel(new PlasticLookAndFeel());
-        PlasticLookAndFeel.setPlasticTheme(new SkyKrupp());
-
-        BioGeomancerResultsDisplay d = new BioGeomancerResultsDisplay();
-        JFrame f = new JFrame();
-        f.add(d);
-        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        f.pack();
-        f.setVisible(true);
-        
-        try
-        {
-            d.setBioGeomancerResultsData("<SOAP-ENV:Envelope xmlns:xsi=\"http://www.w3.org/1999/XMLSchema-instance\" xmlns:SOAP-ENC=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/1999/XMLSchema\" xmlns:namesp2=\"http://namespaces.soaplite.com/perl\" SOAP-ENV:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><SOAP-ENV:Body><namesp1:text2latlongResponse xmlns:namesp1=\"http://130.132.27.130/GeoParse\"><return xsi:type=\"namesp2:returnType\" SOAP-ENC:arrayType=\"namesp2:responseSetType[1]\"><responseSet xsi:type=\"namesp2:responseSetType\"><summary xsi:type=\"namesp2:summaryType\"><queryId xsi:type=\"xsd:string\">39</queryId><queryCountry xsi:type=\"xsd:string\">USA</queryCountry><queryAdm1 xsi:type=\"xsd:string\">Kansas</queryAdm1><queryAdm2 xsi:type=\"xsd:string\">Cherokee</queryAdm2><queryString xsi:type=\"xsd:string\">Spring River</queryString><countryName xsi:type=\"xsd:string\">United States</countryName><countryBoundingBox xsi:type=\"xsd:string\">-180 -2. -15.5 90</countryBoundingBox><matchedRecordCount xsi:type=\"xsd:int\">1</matchedRecordCount><boundingBox xsi:type=\"xsd:string\">BOX(-94.7525 36.79194, -94.7525 36.79194)</boundingBox><boundingBoxCentroid xsi:type=\"xsd:string\">POINT(-94.7525 36.79194)</boundingBoxCentroid><boundingBoxCentroidErrorRadius xsi:type=\"xsd:float\">0.0</boundingBoxCentroidErrorRadius><boundingBoxCentroidErrorRadiusUnits xsi:type=\"xsd:string\">km</boundingBoxCentroidErrorRadiusUnits><multiPointMatch xsi:type=\"xsd:string\">MULTIPOINT(-94.7525 36.79194)</multiPointMatch><weightedCentroid xsi:type=\"xsd:string\">POINT(-94.7525 36.79194)</weightedCentroid></summary><records xsi:type=\"namesp2:recordsType\" SOAP-ENC:arrayType=\"namesp2:recordType[1]\"><record xsi:type=\"namesp2:recordType\"><adm2 xsi:type=\"xsd:string\">Cherokee</adm2><adm1 xsi:type=\"xsd:string\">KS</adm1><country xsi:type=\"xsd:string\">USA</country><featureType xsi:type=\"xsd:string\">stream</featureType><featureName xsi:type=\"xsd:string\">Spring River</featureName><gazetteerSource xsi:type=\"xsd:string\">GNIS</gazetteerSource><InterpretedCoordinates xsi:type=\"xsd:string\">POINT(-94.7525 36.79194)</InterpretedCoordinates><boundingBox xsi:type=\"xsd:string\">BOX(-94.7525 36.79194, -94.7525 36.79194)</boundingBox><sourceCoordinates xsi:type=\"xsd:string\">POINT(-94.7525 36.79194)</sourceCoordinates><InterpretedString xsi:type=\"xsd:string\">Spring River</InterpretedString></record></records></responseSet></return></namesp1:text2latlongResponse></SOAP-ENV:Body></SOAP-ENV:Envelope>");
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
     }
 }

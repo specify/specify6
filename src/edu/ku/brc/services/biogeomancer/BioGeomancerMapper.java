@@ -527,12 +527,14 @@ public class BioGeomancerMapper implements TimingTarget
      */
     protected void createBoundingBoxBufferRegion()
     {
+        double minDegRange = .1;
+        
         double latSpread = maxLat-minLat;
-        if( latSpread < .25 )
+        if( latSpread < minDegRange )
         {
             // expand the range to at least be .5 degrees
-            double diff = .25 - latSpread;
-            latSpread = .25;
+            double diff = minDegRange - latSpread;
+            latSpread = minDegRange;
             mapMinLat = minLat - diff/2;
             mapMaxLat = maxLat + diff/2;
         }
@@ -544,11 +546,11 @@ public class BioGeomancerMapper implements TimingTarget
         }
         
         double longSpread = maxLong-minLong;
-        if( longSpread < .25 )
+        if( longSpread < minDegRange )
         {
             // expand the range to at least be .5 degrees
-            double diff = .25 - longSpread;
-            longSpread = .25;
+            double diff = minDegRange - longSpread;
+            longSpread = minDegRange;
             mapMinLong = minLong - diff/2;
             mapMaxLong = maxLong + diff/2;
         }

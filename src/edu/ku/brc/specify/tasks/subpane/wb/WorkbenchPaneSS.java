@@ -1421,6 +1421,7 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected boolean isTemplateBGCompatible()
     {
+        // look for the locality fields
         int localityTableId = DBTableIdMgr.getInstance().getIdByClassName(Locality.class.getName());
         if (workbench.getColumnIndex(localityTableId, "localityName") == -1 ||
             workbench.getColumnIndex(localityTableId, "latitude1") == -1 ||
@@ -1429,7 +1430,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             return false;
         }
         
-        // get the geography data
+        // look for the geography fields
         int geographyTableId = DBTableIdMgr.getInstance().getIdByClassName(Geography.class.getName());
         if (workbench.getColumnIndex(geographyTableId, "Country") == -1 ||
             workbench.getColumnIndex(geographyTableId, "State") == -1 ||
