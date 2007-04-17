@@ -146,18 +146,31 @@ public class BioGeomancerResultsDisplay extends JPanel implements MapperListener
         summary = BioGeomancer.parseBioGeomancerResponse(bgXmlResponse);
         
         idField.setText(summary.id);
+        idField.setCaretPosition(0);
         countryField.setText(summary.country);
+        countryField.setCaretPosition(0);
         adm1Field.setText(summary.adm1);
+        adm1Field.setCaretPosition(0);
         adm2Field.setText(summary.adm2);
+        adm2Field.setCaretPosition(0);
         localityField.setText(summary.localityStr);
+        localityField.setCaretPosition(0);
         countryBoundingBoxField.setText(summary.countryBoundingBox);
+        countryBoundingBoxField.setCaretPosition(0);
         matchedCountField.setText(summary.matchedRecordCount);
+        matchedCountField.setCaretPosition(0);
         boundingBoxField.setText(summary.boundingBox);
+        boundingBoxField.setCaretPosition(0);
         boundingBoxCentroidField.setText(summary.boundingBoxCentroid);
+        boundingBoxCentroidField.setCaretPosition(0);
         centroidErrorRadiusField.setText(summary.boundingBoxCentroidErrorRadius);
+        centroidErrorRadiusField.setCaretPosition(0);
         centroidErrorRadiusUnitsField.setText(summary.boundingBoxCentroidErrorRadiusUnits);
+        centroidErrorRadiusUnitsField.setCaretPosition(0);
         multiPointMatchField.setText(summary.multiPointMatch);
+        multiPointMatchField.setCaretPosition(0);
         weightedCentroidField.setText(summary.weightedCentroid);
+        weightedCentroidField.setCaretPosition(0);
         
         bgResultsTable.setModel(new BioGeomancerResultsTableModel(summary.results));
         UIHelper.calcColumnWidths(bgResultsTable);
