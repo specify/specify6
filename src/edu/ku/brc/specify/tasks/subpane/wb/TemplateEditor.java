@@ -1010,8 +1010,7 @@ public class TemplateEditor extends CustomDialog
             Element mapping = (Element)o;
             String className = XMLHelper.getValue(mapping, "class");
             String fieldName = XMLHelper.getValue(mapping, "field");
-            DBTableIdMgr tableIdMgr = DBTableIdMgr.getInstance();
-            DBTableIdMgr.TableInfo table = tableIdMgr.getByClassName(className);
+            DBTableIdMgr.TableInfo table = databaseSchema.getByClassName(className);
             DBTableIdMgr.FieldInfo field = table.getFieldByName(fieldName);
             
             TableFieldPair tblFldPair = new TableFieldPair(table,field);

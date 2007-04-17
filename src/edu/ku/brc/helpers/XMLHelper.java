@@ -34,12 +34,17 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIHelper;
+
 
 /**
- * An XML Helper, this currently is for w3c DOM, probably won't need this since we will be switch to DOM4J
- 
- * @code_status Unknown (auto-generated)
- **
+ * An XML Helper, this currently is for w3c DOM, probably won't need this since we will be switch to DOM4J.
+ * 
+ * (This Class needs to be moved to somewhere probably to the "ui" package.)
+ *
+ * @code_status Beta
+ *
  * @author rods
  */
 public class XMLHelper
@@ -47,6 +52,8 @@ public class XMLHelper
     // Static Data Members
     private static final Logger log = Logger.getLogger(XMLHelper.class);
     private static final String eol = System.getProperty("line.separator");
+    
+    private static File configDir   = null;
 
    /**
     * Reads a File and return the root element from the DOM
@@ -101,12 +108,41 @@ public class XMLHelper
     */
     public static String getConfigDirPath(final String fileName)
     {
-        String path = new File(".").getAbsolutePath();
-        if (path.endsWith("."))
+        if (configDir == null)
         {
-            path = path.substring(0, path.length() - 2);
+            String path = new File(".").getAbsolutePath();
+            if (path.endsWith("."))
+            {
+                path = UIHelper.stripSubDirs(path, 1);
+            }
+            
+            File cfgDir = new File(path + File.separator + "config");
+            if (!cfgDir.exists())
+            {
+                String subDir = "";
+                switch (UIHelper.getOSType())
+                {
+                    case MacOSX :
+                        throw new RuntimeException("The Mac build is incorect, the working path is not set");
+                        
+                    case Windows :
+                        subDir = UICacheManager.getAppName() + "Win";
+                        break;
+                        
+                    case Linux :
+                        subDir = UICacheManager.getAppName() + "Linux";
+                        break;
+                        
+                }
+                cfgDir = new File(path + File.separator + subDir + File.separator + "config");
+                if (!cfgDir.exists())
+                {
+                    throw new RuntimeException("Can't find the config dir["+cfgDir.getAbsolutePath()+"]");
+                }
+            }
+            configDir = cfgDir;
         }
-        return path + File.separator + "config" + (fileName != null ? (File.separator + fileName) : "");
+        return configDir.getAbsolutePath() + File.separator + (fileName != null ? (File.separator + fileName) : "");
     }
 
     /**
@@ -130,10 +166,7 @@ public class XMLHelper
    {
        try
        {
-           java.io.File f = new java.io.File(".");
-           String cwd = f.getAbsolutePath() +  File.separator + "config" + File.separator + fileName;
-
-           return XMLHelper.readFileToDOM4J(new File(cwd));
+           return XMLHelper.readFileToDOM4J(getConfigDir(fileName));
 
        } catch (Exception ex)
        {

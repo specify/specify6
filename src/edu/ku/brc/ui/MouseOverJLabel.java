@@ -110,7 +110,6 @@ public class MouseOverJLabel extends JLabel
             public void mouseEntered(MouseEvent e)
             {
                 mouseIsOver = true;
-                System.out.println("enter");
                 super.mouseEntered(e);
                 MouseOverJLabel.super.setForeground(activatedTextColor);
                 MouseOverJLabel.this.repaint();
@@ -121,7 +120,6 @@ public class MouseOverJLabel extends JLabel
             public void mouseExited(MouseEvent e)
             {
                 mouseIsOver = false;
-                System.out.println("exit");
                 super.mouseExited(e);
                 MouseOverJLabel.super.setForeground(normalForeground);
                 MouseOverJLabel.this.repaint();
