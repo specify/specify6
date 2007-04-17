@@ -32,10 +32,6 @@ import javax.swing.ImageIcon;
 
 import org.apache.commons.httpclient.HttpException;
 import org.apache.log4j.Logger;
-import org.jdesktop.animation.timing.Cycle;
-import org.jdesktop.animation.timing.Envelope;
-import org.jdesktop.animation.timing.TimingController;
-import org.jdesktop.animation.timing.TimingTarget;
 
 import edu.ku.brc.specify.tasks.services.LocalityMapper.MapperListener;
 import edu.ku.brc.ui.GraphicsUtils;
@@ -51,27 +47,27 @@ import edu.ku.brc.util.services.MapGrabber;
  * @author rods
  *
  */
-public class BioGeomancerMapper implements TimingTarget
+public class BioGeomancerMapper
 {
-    private static final Logger          log                 = Logger.getLogger(BioGeomancerMapper.class);
+    private static final Logger log = Logger.getLogger(BioGeomancerMapper.class);
     protected List<BGMData>     bgmDatas;
     protected BGMData           currentLoc;
     protected List<String>      labels;
     protected List<Point>       markerLocations;
     protected List<Rectangle>   boxLocations;
     protected MapGrabber        mapGrabber;
-    // the actual bounds of the collecting bgmDatas
+    
+    // the actual bounds of the BioGeomancer data points
     protected double            minLat;
     protected double            maxLat;
     protected double            minLong;
     protected double            maxLong;
-    // the bounds of the map after including a 5% buffer region
+    
+    // the bounds of the map after including calculating the best size
     protected double            mapMinLat;
     protected double            mapMaxLat;
     protected double            mapMinLong;
     protected double            mapMaxLong;
-    protected double            mapLatRange;
-    protected double            mapLongRange;
     protected double            pixelPerLatRatio;
     protected double            pixelPerLongRatio;
     protected Integer           maxMapWidth;
@@ -84,25 +80,12 @@ public class BioGeomancerMapper implements TimingTarget
     // an icon for the little marker dots
     // this icon will get repainted in each location
     protected SimpleCircleIcon  marker;
-    // this icon will be painted on whichever marker is considered current
-    // by using a separate Icon for the current one, we can later decide
-    // to not only customize the icon color for the current BGMData, but
-    // also the entire Icon (using a diff shape, etc)
-    protected SimpleCircleIcon  currentLocMarker;
-    // some configuration of the image
-    protected boolean           showArrows;
-    protected boolean           showArrowAnimations = true;
-    protected boolean           showLabels;
-    protected Color             arrowColor;
+    
     protected Color             labelColor;
-    protected boolean           animationInProgress = false;
-    protected float             percent;
-    protected TimingController  animator;
-    protected BGMData          animStartLoc;
-    protected BGMData          animEndLoc;
+    
     // the cached information
     protected Icon              mapIcon;
-    protected Icon             overlayIcon = null;
+    protected Icon              overlayIcon = null;
     protected boolean           cacheValid;
 
     public BioGeomancerMapper()
@@ -117,221 +100,22 @@ public class BioGeomancerMapper implements TimingTarget
         this.markerLocations = new Vector<Point>();
         this.boxLocations = new Vector<Rectangle>();
         this.mapGrabber = new MapGrabber();
-        showArrows = true;
-        showLabels = true;
         labelColor = Color.BLACK;
-        arrowColor = Color.BLACK;
         cacheValid = false;
         marker = new SimpleCircleIcon(8,Color.BLACK);
-        currentLocMarker = new SimpleCircleIcon(8,Color.BLACK);
-        // setup the animation Cycle
-        int resolution = 0;
-        int duration = 1000;
-        Cycle cycle = new Cycle(duration,resolution);
-        // setup the animation Envelope
-        double repeatCount = 1;
-        int start = 0;
-        Envelope.RepeatBehavior repeatBehavior = Envelope.RepeatBehavior.REVERSE;
-        Envelope.EndBehavior endBehavior = Envelope.EndBehavior.HOLD;
-        Envelope env = new Envelope(repeatCount,start,repeatBehavior,endBehavior);
-        // setup the TimingController (the animation controller)
-        animator = new TimingController(cycle,env,this);
     }
-
-    /**
-     * @return Returns the animator.
-     */
-    public TimingController getAnimator()
-    {
-        return animator;
-    }
-
 
     public void addBGMDataAndLabel(double px, double py, double lx, double ly, double rx, double ry, String label)
     {
         BGMData bgmData = new BGMData(px, py, lx, ly, rx, ry);
         bgmDatas.add(bgmData);
+        recalculateBoundingBox();
+
         labels.add(label);
-        //System.out.println("["+loc.getLatitude1()+"]["+label+"]");
         Point iconLoc = determinePixelCoordsOfBGMData(bgmData);
         markerLocations.add(iconLoc);
         Rectangle rect = determinePixelRectOfBGMData(bgmData);
         boxLocations.add(rect);
-        if( bgmDatas.size()==1 )
-        {
-            recalculateBoundingBox();
-        }
-        // instead of recalculating the bounding box from scratch
-        // just factor in how this new data point might change it
-        Pair<Double, Double> latLong = getLatLong(bgmData);
-        double lat = latLong.first;
-        double lon = latLong.second;
-        if( lat<minLat )
-        {
-            minLat = lat;
-            cacheValid = false;
-        }
-        if( lat>maxLat )
-        {
-            maxLat = lat;
-            cacheValid = false;
-        }
-        if( lon<minLong )
-        {
-            minLong = lon;
-            cacheValid = false;
-        }
-        if( lon>maxLong )
-        {
-            maxLong = lon;
-            cacheValid = false;
-        }
-        createBoundingBoxBufferRegion();
-    }
-
-    /**
-     * @return Returns the arrowColor.
-     */
-    public Color getArrowColor()
-    {
-        return arrowColor;
-    }
-
-    /**
-     * @param arrowColor
-     *            The arrowColor to set.
-     */
-    public void setArrowColor(Color arrowColor)
-    {
-        this.arrowColor = arrowColor;
-    }
-
-    /**
-     * @return Returns the dotColor.
-     */
-    public Color getDotColor()
-    {
-        return marker.getColor();
-    }
-
-    /**
-     * @param dotColor
-     *            The dotColor to set.
-     */
-    public void setDotColor(Color dotColor)
-    {
-        marker.setColor(dotColor);
-    }
-
-    /**
-     * @return Returns the currentLocColor.
-     */
-    public Color getCurrentLocColor()
-    {
-        return currentLocMarker.getColor();
-    }
-
-    /**
-     * @param currentLocColor
-     *            The currentLocColor to set.
-     */
-    public void setCurrentLocColor(Color currentLocColor)
-    {
-        currentLocMarker.setColor(currentLocColor);
-    }
-
-    /**
-     * @return the showArrowAnimations
-     */
-    public boolean getShowArrowAnimations()
-    {
-        return showArrowAnimations;
-    }
-
-    /**
-     * @param showArrowAnimations
-     *            the showArrowAnimations to set
-     */
-    public void setShowArrowAnimations(boolean showArrowAnimations)
-    {
-        this.showArrowAnimations = showArrowAnimations;
-    }
-
-    /**
-     * @return Returns the dotSize.
-     */
-    public int getDotSize()
-    {
-        return marker.getSize();
-    }
-
-    /**
-     * @param dotSize
-     *            The dotSize to set.
-     */
-    public void setDotSize(int dotSize)
-    {
-        marker.setSize(dotSize);
-        currentLocMarker.setSize(dotSize);
-    }
-
-    /**
-     * @return Returns the labelColor.
-     */
-    public Color getLabelColor()
-    {
-        return labelColor;
-    }
-
-    /**
-     * @param labelColor
-     *            The labelColor to set.
-     */
-    public void setLabelColor(Color labelColor)
-    {
-        this.labelColor = labelColor;
-    }
-
-    /**
-     * @return Returns the showArrows.
-     */
-    public boolean getShowArrows()
-    {
-        return showArrows;
-    }
-
-    /**
-     * @param showArrows
-     *            The showArrows to set.
-     */
-    public void setShowArrows(boolean showArrows)
-    {
-        this.showArrows = showArrows;
-    }
-
-    /**
-     * @return Returns the showLabels.
-     */
-    public boolean getShowLabels()
-    {
-        return showLabels;
-    }
-
-    /**
-     * @param showLabels
-     *            The showLabels to set.
-     */
-    public void setShowLabels(boolean showLabels)
-    {
-        this.showLabels = showLabels;
-    }
-
-    /**
-     * @return Returns the maxMapHeight.
-     */
-    public Integer getMaxMapHeight()
-    {
-        return maxMapHeight;
     }
 
     /**
@@ -360,121 +144,11 @@ public class BioGeomancerMapper implements TimingTarget
         this.maxMapWidth = maxMapWidth;
     }
 
-    /**
-     * @return Returns the mapHeight.
-     */
-    public int getMapHeight()
-    {
-        return mapHeight;
-    }
-
-    /**
-     * @return Returns the mapWidth.
-     */
-    public int getMapWidth()
-    {
-        return mapWidth;
-    }
-
-    public List<Point> getMarkerLocations()
-    {
-        return markerLocations;
-    }
-
-    public void zoom(float percentZoom)
-    {
-        if( percentZoom==1||percentZoom<=0 )
-        {
-            // don't waste any time
-            return;
-        }
-        cacheValid = false;
-        double longRangeChange = mapLongRange*1/percentZoom;
-        double longChange = .5*(mapLongRange-longRangeChange);
-        mapMinLong += longChange;
-        mapMaxLong -= longChange;
-        double latRangeChange = mapLatRange*1/percentZoom;
-        double latChange = .5*(mapLatRange-latRangeChange);
-        mapMinLat += latChange;
-        mapMaxLat -= latChange;
-    }
-
-    public void pan(double latChangeArg, double longChangeArg)
-    {
-        double latChange  = latChangeArg;
-        double longChange = longChangeArg;
-        
-        cacheValid = false;
-        if( mapMinLat+latChange<-90 )
-        {
-            latChange = -90-mapMinLat;
-        }
-        if( mapMaxLat+latChange>90 )
-        {
-            latChange = 90-mapMaxLat;
-        }
-        if( mapMinLong+longChange<-180 )
-        {
-            longChange = -180-mapMinLong;
-        }
-        if( mapMaxLong+longChange>180 )
-        {
-            longChange = 180-mapMaxLong;
-        }
-
-        mapMinLat += latChange;
-        mapMaxLat += latChange;
-        mapMinLong += longChange;
-        mapMaxLong += longChange;
-    }
-
-    protected boolean boxIsValid(double minLatArg, double minLongArg, double maxLatArg, double maxLongArg)
-    {
-        if( -90<=minLatArg&&minLatArg<maxLatArg&&maxLatArg<=90 )
-        {
-            if( -180<=minLongArg&&minLongArg<maxLongArg&&maxLongArg<=180 )
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void setBoundingBox(double minLat, double minLong, double maxLat, double maxLong)
-    {
-        if( !boxIsValid(minLat,minLong,maxLat,maxLong) )
-        {
-            throw new IllegalArgumentException("Arguments define invalid bounding box");
-        }
-
-        cacheValid = false;
-        mapMinLat = minLat;
-        mapMinLong = minLong;
-        mapMaxLat = maxLat;
-        mapMaxLong = maxLong;
-    }
-
     private Pair<Double, Double> getLatLong(BGMData loc)
     {
         Double lat1 = loc.getLatitude1();
         Double long1 = loc.getLongitude1();
         return new Pair<Double, Double>(lat1,long1);
-    }
-
-    @SuppressWarnings("unused")
-    private Pair<Double, Double> centerOfBBox(Double lat1, Double lat2, Double long1, Double long2)
-    {
-        Pair<Double, Double> center = new Pair<Double, Double>();
-        center.first = (lat1+lat2)/2;
-        center.second = (long1+long2)/2;
-        return center;
-    }
-
-    protected double getLatLongRatio()
-    {
-        double longRange = maxLong-minLong;
-        double latRange = maxLat-minLat;
-        return latRange/longRange;
     }
 
     protected void recalculateBoundingBox()
@@ -501,24 +175,29 @@ public class BioGeomancerMapper implements TimingTarget
         for( BGMData loc : bgmDatas )
         {
             Pair<Double, Double> latLong = getLatLong(loc);
-            if( latLong.first<minLat )
+            if( latLong.first < minLat )
             {
                 minLat = latLong.first;
             }
-            if( latLong.second<minLong )
+            if( latLong.second < minLong )
             {
                 minLong = latLong.second;
             }
-            if( latLong.first>maxLat )
+            if( latLong.first > maxLat )
             {
                 maxLat = latLong.first;
             }
-            if( latLong.second>maxLong )
+            if( latLong.second > maxLong )
             {
                 maxLong = latLong.second;
             }
         }
         createBoundingBoxBufferRegion();
+        expandMapRegionToFillUsableSpace();
+        
+        // XXX
+        // TODO: ensure the resulting bounding box is valid by panning left/right/up/down and shrinking
+        // to make sure it's within (-90,-180,90,180)
     }
 
     /**
@@ -532,7 +211,7 @@ public class BioGeomancerMapper implements TimingTarget
         double latSpread = maxLat-minLat;
         if( latSpread < minDegRange )
         {
-            // expand the range to at least be .5 degrees
+            // expand the range to at least be minDegRange degrees
             double diff = minDegRange - latSpread;
             latSpread = minDegRange;
             mapMinLat = minLat - diff/2;
@@ -548,7 +227,7 @@ public class BioGeomancerMapper implements TimingTarget
         double longSpread = maxLong-minLong;
         if( longSpread < minDegRange )
         {
-            // expand the range to at least be .5 degrees
+            // expand the range to at least be minDegRange degrees
             double diff = minDegRange - longSpread;
             longSpread = minDegRange;
             mapMinLong = minLong - diff/2;
@@ -562,55 +241,31 @@ public class BioGeomancerMapper implements TimingTarget
         }
     }
     
-//    protected void expandMapRegionToFillUsableSpace()
-//    {
-//        double maxSizeAspectRatio = maxMapWidth / maxMapHeight;
-//        
-//        double currentAspectRatio = (mapMaxLong-mapMinLong) / (mapMaxLat-mapMinLat);
-//        
-//        if (currentAspectRatio > maxSizeAspectRatio)
-//        {
-//            // we need to make the map taller by increasing the latitude range
-//            double newLatRange = maxSizeAspectRatio * (mapMaxLong-mapMinLong);
-//            double rangeDiff = newLatRange - (mapMaxLat-mapMinLat);
-//            
-//            // add half the difference in each direction
-//            mapMaxLat += rangeDiff / 2;
-//            mapMinLat -= rangeDiff / 2;
-//            
-//            // now make sure the map won't be out of the standard range
-//            // shift the map right, then crop to valid longitude range
-//            if (mapMinLat < -180)
-//            {
-//                double diff = -180 - mapMinLat;
-//                mapMinLat = -180;
-//                mapMaxLat += diff;
-//            }
-//            mapMinLat = Math.max(-180,mapMinLat);
-//            mapMaxLat = Math.min(180,mapMaxLat);
-//        }
-//        else if (currentAspectRatio < maxSizeAspectRatio)
-//        {
-//            // we need to make the map wider by increasing the longitude range
-//            double newLongRange = maxSizeAspectRatio * (mapMaxLat-mapMinLat);
-//            double rangeDiff = newLongRange - (mapMaxLong-mapMinLong);
-//            
-//            // add half the difference in each direction
-//            mapMaxLong += rangeDiff / 2;
-//            mapMinLong -= rangeDiff / 2;
-//            
-//            // now make sure the map won't be out of the standard range
-//            // shift the map right, then crop to valid longitude range
-//            if (mapMinLong < -180)
-//            {
-//                double diff = -180 - mapMinLong;
-//                mapMinLong = -180;
-//                mapMaxLong += diff;
-//            }
-//            mapMinLong = Math.max(-180,mapMinLong);
-//            mapMaxLong = Math.min(180,mapMaxLong);
-//        }
-//    }
+    /**
+     * In order to ensure that we grab the largest map allowed, we need to expand either
+     * then width or height to fill in the extra space.  So, we figure out which way the
+     * map needs to be expanded, then adjust the bounding box to accomplish that.
+     */
+    protected void expandMapRegionToFillUsableSpace()
+    {
+        double degToPixelLat = (mapMaxLat - mapMinLat) / maxMapHeight;
+        double degToPixelLon = (mapMaxLong - mapMinLong) / maxMapWidth;
+        
+        // we need a uniform deg/pixel ratio for both lat and long, so find the largest one and use it
+        double uniformDegToPixel = Math.max(degToPixelLat, degToPixelLon);
+        
+        double correctedLatRange = uniformDegToPixel * maxMapHeight;
+        double correctedLonRange = uniformDegToPixel * maxMapWidth;
+        
+        double latRangeDiff = correctedLatRange - (mapMaxLat - mapMinLat);
+        double lonRangeDiff = correctedLonRange - (mapMaxLong - mapMinLong);
+        
+        // apply the corrections evenly
+        mapMaxLat  += latRangeDiff / 2;
+        mapMinLat  -= latRangeDiff / 2;
+        mapMaxLong += lonRangeDiff / 2;
+        mapMinLong -= lonRangeDiff / 2;
+    }
 
     protected Image getMapFromService(final String host,
                                       final String defaultPathAndParams,
@@ -620,12 +275,17 @@ public class BioGeomancerMapper implements TimingTarget
                                       double maxLatArg,
                                       double maxLongArg)   throws HttpException, IOException
     {
+        log.debug("Asking for map from service with following arguments...");
+        log.debug("\tmin lat: " + minLatArg);
+        log.debug("\tmin lon: " + minLongArg);
+        log.debug("\tmax lat: " + maxLatArg);
+        log.debug("\tmax lon: " + maxLongArg);
+        log.debug("\twidth:   " + maxMapWidth);
+        log.debug("\theight:  " + maxMapHeight);
+        
         mapGrabber.setHost(host);
         mapGrabber.setDefaultPathAndParams(defaultPathAndParams);
         mapGrabber.setLayers(layers);
-        
-        // XXX
-        // TODO: increase min/max lat/long to make full use of the max height and width set by the caller
         
         mapGrabber.setMinLat(minLatArg);
         mapGrabber.setMaxLat(maxLatArg);
@@ -649,7 +309,6 @@ public class BioGeomancerMapper implements TimingTarget
 
     protected Rectangle determinePixelRectOfBGMData(BGMData loc)
     {
-
         double y = loc.lx-mapMinLat;
         double x = loc.ly-mapMinLong;
         double y2 = loc.rx-mapMinLat;
@@ -672,23 +331,6 @@ public class BioGeomancerMapper implements TimingTarget
             return false;
         }
         return true;
-    }
-
-    public Pair<Double, Double> getLatLongForPointOnMapIcon(int x, int y)
-    {
-        if( !pointIsOnMapIcon(x,y) )
-        {
-            return null;
-        }
-        // calculate the latitude
-        double lat = -1;
-        int relativeY = y-mostRecentPaintedY;
-        lat = mapMaxLat-relativeY/pixelPerLatRatio;
-        // calculate the longitude
-        double lon = -1;
-        int relativeX = x-mostRecentPaintedX;
-        lon = relativeX/pixelPerLongRatio+mapMinLong;
-        return new Pair<Double, Double>(lat,lon);
     }
 
     public void getMap(final MapperListener callback)
@@ -741,8 +383,8 @@ public class BioGeomancerMapper implements TimingTarget
             mapWidth = mapIcon.getIconWidth();
             mapHeight = mapIcon.getIconHeight();
 
-            mapLatRange = mapMaxLat-mapMinLat;
-            mapLongRange = mapMaxLong-mapMinLong;
+            double mapLatRange = mapMaxLat-mapMinLat;
+            double mapLongRange = mapMaxLong-mapMinLong;
 
             pixelPerLatRatio = mapHeight / mapLatRange;
             pixelPerLongRatio = mapWidth / mapLongRange;
@@ -766,7 +408,6 @@ public class BioGeomancerMapper implements TimingTarget
                 // log the x and y for the MouseMotionListener
                 mostRecentPaintedX = x;
                 mostRecentPaintedY = y;
-
 
                 mapIcon.paintIcon(c,g,x,y);
                 overlayIcon.paintIcon(c, g, x, y);
@@ -826,21 +467,6 @@ public class BioGeomancerMapper implements TimingTarget
         return icon;
     }
 
-    public void begin()
-    {
-        this.animationInProgress = true;
-    }
-
-    public void end()
-    {
-        this.animationInProgress = false;
-    }
-
-    public void timingEvent(long arg0, long arg1, float percentDone)
-    {
-        this.percent = percentDone;
-    }
-
     // -----------------------------------------------------------------
     // Inner Class / Interface
     // -----------------------------------------------------------------
@@ -852,6 +478,7 @@ public class BioGeomancerMapper implements TimingTarget
         public double ly;
         public double rx;
         public double ry;
+        
         public BGMData(double px, double py, double lx, double ly, double rx, double ry)
         {
             super();
@@ -863,6 +490,7 @@ public class BioGeomancerMapper implements TimingTarget
             this.rx = rx;
             this.ry = ry;
         }
+        
         public Double getLatitude1()
         {
             return px;
@@ -872,6 +500,5 @@ public class BioGeomancerMapper implements TimingTarget
         {
             return py;
         }
-
     }
 }
