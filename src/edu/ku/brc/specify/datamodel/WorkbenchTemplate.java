@@ -337,7 +337,9 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
         
         for (WorkbenchTemplateMappingItem item : workbenchTemplateMappingItems)
         {
-            wbt.workbenchTemplateMappingItems.add((WorkbenchTemplateMappingItem)item.clone());
+            WorkbenchTemplateMappingItem newItem = (WorkbenchTemplateMappingItem)item.clone();
+            newItem.setWorkbenchTemplate(wbt);
+            wbt.workbenchTemplateMappingItems.add(newItem);
         }
         
         return wbt;
