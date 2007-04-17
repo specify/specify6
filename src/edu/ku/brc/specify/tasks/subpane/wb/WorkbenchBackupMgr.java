@@ -1,8 +1,8 @@
 /*
- * Copyright (C) 2007  The University of Kansas
- *
+ * Copyright (C) 2007 The University of Kansas
+ * 
  * [INSERT KU-APPROVED LICENSE TEXT HERE]
- *
+ * 
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
@@ -25,22 +25,21 @@ import edu.ku.brc.ui.UICacheManager;
 
 /**
  * @author timbo
- *
+ * 
  * @code_status Alpha
- *
+ * 
  */
 public class WorkbenchBackupMgr
 {
-    private static final Logger log = Logger.getLogger(WorkbenchPaneSS.class);
-    private static int maxBackupCount = 5;
-    private static String backupSubDir = "Backups";
-    
+    private static final Logger log            = Logger.getLogger(WorkbenchPaneSS.class);
+    private static int          maxBackupCount = 5;
+    private static String       backupSubDir   = "Backups";
 
     protected static String getPrefix(final Workbench workbench)
     {
-        return "WB" +  workbench.getId().toString() + "_";
+        return "WB" + workbench.getId().toString() + "_";
     }
-    
+
     protected static Vector<File> getExistingBackups(final Workbench workbench)
     {
         File[] backups = UICacheManager.getDefaultWorkingPathSubDir(backupSubDir, true).listFiles();
@@ -54,7 +53,7 @@ public class WorkbenchBackupMgr
         }
         return result;
     }
-    
+
     protected static File getEarliestBackup(final Vector<File> backups)
     {
         Date earliest = null;
@@ -70,9 +69,9 @@ public class WorkbenchBackupMgr
         }
         return earliestFile;
     }
-        
+
     /**
-     * if more than maxBackupCount backups exist then the earliest one will be removed. 
+     * if more than maxBackupCount backups exist then the earliest one will be removed.
      * 
      * @param workbench - backups for this workbench will be cleaned up
      */
@@ -95,11 +94,26 @@ public class WorkbenchBackupMgr
             }
         }
     }
-    
+
+    protected static String getFileName(final Workbench workbench)
+    {
+        String result;
+        File file;
+        int tries = 0;
+        do
+        {
+            result = getPrefix(workbench) + Math.round(Math.random() * 1000) + "_" + workbench.getName()
+                    + ".xls";
+            file = new File(result);
+        } while (tries++ < 100 && file.exists());
+        return result;
+    }
+
     /**
-     * loads workbench from the database and backs it up (exports to an xls file) in a subdir in the default working Path, and deletes old backups if necessary.
+     * loads workbench from the database and backs it up (exports to an xls file) in a subdir in the
+     * default working Path, and deletes old backups if necessary.
      */
-    public static void backupWorkbench(final  long workbenchId, final WorkbenchTask task)
+    public static void backupWorkbench(final long workbenchId, final WorkbenchTask task)
     {
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
@@ -109,8 +123,8 @@ public class WorkbenchBackupMgr
             workbench.forceLoad();
             session.close();
             session = null;
-            
-            String fileName = getPrefix(workbench) + workbench.getName() + ".xls";
+
+            String fileName = getFileName(workbench);
 
             Properties props = new Properties();
             props.setProperty("mimetype", ExportFileConfigurationFactory.XLS_MIME_TYPE);
@@ -146,5 +160,5 @@ public class WorkbenchBackupMgr
                 session.close();
             }
         }
-   }
+    }
 }
