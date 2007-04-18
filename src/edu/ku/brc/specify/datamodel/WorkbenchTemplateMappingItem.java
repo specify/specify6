@@ -13,6 +13,7 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -431,6 +432,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     public Object clone() throws CloneNotSupportedException
     {
         WorkbenchTemplateMappingItem wbtmi = (WorkbenchTemplateMappingItem)super.clone();
+        wbtmi.workbenchTemplateMappingItemId = null;
         wbtmi.tableName             = tableName;
         wbtmi.srcTableId            = srcTableId;
         wbtmi.fieldName             = fieldName;
@@ -440,7 +442,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
         wbtmi.origImportColumnIndex = origImportColumnIndex;
         wbtmi.dataFieldLength       = dataFieldLength;
         wbtmi.fieldType             = fieldType;
-        wbtmi.workbenchTemplate     = workbenchTemplate;
+        wbtmi.workbenchTemplate     = null;
         wbtmi.metaData              = metaData;
         wbtmi.xCoord                = xCoord;
         wbtmi.yCoord                = yCoord;
@@ -448,6 +450,11 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
         wbtmi.isExportableToContent = isExportableToContent;
         wbtmi.isIncludedInTitle     = isIncludedInTitle;
         wbtmi.isRequired            = isRequired;
+        wbtmi.workbenchDataItems    = new HashSet<WorkbenchDataItem>();
+        
+        wbtmi.timestampCreated      = new Date();
+        wbtmi.timestampModified     = null;
+        wbtmi.lastEditedBy          = null;
 
         return wbtmi;
     }
