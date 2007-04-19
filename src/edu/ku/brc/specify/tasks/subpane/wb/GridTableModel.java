@@ -251,7 +251,7 @@ public class GridTableModel extends SpreadSheetModel
         Arrays.sort(rows);
         for (int i=rows.length-1;i>-1;i--)
         {
-            log.error("Deleting Row Index "+rows[i]+" Row Count["+getRowCount()+"]");
+            log.info("Deleting Row Index "+rows[i]+" Row Count["+getRowCount()+"]");
             workbench.deleteRow(rows[i]);
             if (spreadSheet != null)
             {
