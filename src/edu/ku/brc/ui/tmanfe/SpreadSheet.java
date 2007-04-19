@@ -358,31 +358,34 @@ public class SpreadSheet  extends SearchableJXTable
         if (getSelectedColumnCount() == 1)
         {
             final int[] rows = getSelectedRows();
-            if (row == rows[0])
+            if (rows.length > 1)
             {
-                if (!isImage)
+                if (row == rows[0])
                 {
-                    JMenuItem mi = pMenu.add(new JMenuItem("Fill Down")); // I18N
-                    mi.addActionListener(new ActionListener() {
-                        public void actionPerformed(ActionEvent ae)
-                        {
-                            model.fill(getSelectedColumn(), row, rows);
-                            popupMenu.setVisible(false);
-                        }
-                    });
-                }
-            } else if (row == rows[rows.length-1])
-            {
-                if (!isImage)
+                    if (!isImage)
+                    {
+                        JMenuItem mi = pMenu.add(new JMenuItem("Fill Down")); // I18N
+                        mi.addActionListener(new ActionListener() {
+                            public void actionPerformed(ActionEvent ae)
+                            {
+                                model.fill(getSelectedColumn(), row, rows);
+                                popupMenu.setVisible(false);
+                            }
+                        });
+                    }
+                } else if (row == rows[rows.length-1])
                 {
-                    JMenuItem mi = pMenu.add(new JMenuItem("Fill Up")); // I18N
-                    mi.addActionListener(new ActionListener() {
-                        public void actionPerformed(ActionEvent ae)
-                        {
-                            model.fill(getSelectedColumn(), row, rows);
-                            popupMenu.setVisible(false);
-                        }
-                    });
+                    if (!isImage)
+                    {
+                        JMenuItem mi = pMenu.add(new JMenuItem("Fill Up")); // I18N
+                        mi.addActionListener(new ActionListener() {
+                            public void actionPerformed(ActionEvent ae)
+                            {
+                                model.fill(getSelectedColumn(), row, rows);
+                                popupMenu.setVisible(false);
+                            }
+                        });
+                    }
                 }
             }
         }
@@ -424,7 +427,7 @@ public class SpreadSheet  extends SearchableJXTable
         
         mouseDown = type == MouseEvent.MOUSE_PRESSED;
 
-        if ((type == MouseEvent.MOUSE_RELEASED) && (modifiers == InputEvent.BUTTON3_MASK))
+        if (ev.isPopupTrigger())
         {
             
             if (getSelectedRowCount() > 0)
