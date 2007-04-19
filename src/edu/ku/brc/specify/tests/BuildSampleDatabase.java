@@ -79,6 +79,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -1562,7 +1563,7 @@ public class BuildSampleDatabase
      * @throws SQLException
      * @throws IOException
      */
-    protected void startBuild(final String dbName, final String driverName)
+    protected void startBuild(final String dbName, final String driverName, final String username, final String password)
     {
         final SwingWorker worker = new SwingWorker()
         {
@@ -1575,7 +1576,7 @@ public class BuildSampleDatabase
                     {
                         Discipline discipline = Discipline.getDiscipline("fish");
                         DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver("Derby");
-                        buildEmptyDatabase(driverInfo, "localhost", "mydata", "rods", "rods", "Rod", "Spears", "rods@ku.edu", discipline);
+                        buildEmptyDatabase(driverInfo, "localhost", "mydata", username, password, "Rod", "Spears", "rods@ku.edu", discipline);
 
                     } else
                     {
@@ -1995,6 +1996,8 @@ public class BuildSampleDatabase
         protected DatabaseDriverInfo dbDriver;
         protected boolean            isCancelled = false;
         
+        protected JTextField         usernameTxtFld;
+        protected JPasswordField     passwdTxtFld;
         protected JTextField         databaseNameTxt;
         protected JComboBox          drivers;
         protected Vector<DatabaseDriverInfo> driverList;
@@ -2017,16 +2020,23 @@ public class BuildSampleDatabase
             
             databaseNameTxt = new JTextField(databaseName);
             
-            PanelBuilder    builder    = new PanelBuilder(new FormLayout("p,2px,p:g", "p,4px,p,10px,p"));
+            usernameTxtFld = new JTextField("rods");
+            passwdTxtFld = new JPasswordField("rods");
+            
+            PanelBuilder    builder    = new PanelBuilder(new FormLayout("p,2px,p:g", "p,4px,p,4px,p,4px,p,10px,p"));
             CellConstraints cc         = new CellConstraints();
-            builder.add(new JLabel("Database Name:", SwingConstants.RIGHT), cc.xy(1,1));
-            builder.add(databaseNameTxt,                                    cc.xy(3,1));
-            builder.add(new JLabel("Driver:", SwingConstants.RIGHT),        cc.xy(1,3));
-            builder.add(drivers,                                            cc.xy(3,3));
+            builder.add(new JLabel("Username:", SwingConstants.RIGHT),      cc.xy(1,1));
+            builder.add(usernameTxtFld,                                     cc.xy(3,1));
+            builder.add(new JLabel("Password:", SwingConstants.RIGHT),      cc.xy(1,3));
+            builder.add(passwdTxtFld,                                       cc.xy(3,3));
+            builder.add(new JLabel("Database Name:", SwingConstants.RIGHT), cc.xy(1,5));
+            builder.add(databaseNameTxt,                                    cc.xy(3,5));
+            builder.add(new JLabel("Driver:", SwingConstants.RIGHT),        cc.xy(1,7));
+            builder.add(drivers,                                            cc.xy(3,7));
             
             JButton okBtn     = new JButton("OK");
             JButton cancelBtn = new JButton("Cancel");
-            builder.add(ButtonBarFactory.buildOKCancelBar(okBtn, cancelBtn), cc.xywh(1,5,3,1));
+            builder.add(ButtonBarFactory.buildOKCancelBar(okBtn, cancelBtn), cc.xywh(1,9,3,1));
             
             cancelBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae)
@@ -2077,7 +2087,9 @@ public class BuildSampleDatabase
                 {
                     try
                     {
-                        startBuild(databaseName, dbDriver.getName());
+                        String username = usernameTxtFld.getText();
+                        String password = new String(passwdTxtFld.getPassword());
+                        startBuild(databaseName, dbDriver.getName(), username, password);
                         
                     } catch (Exception ex)
                     {
