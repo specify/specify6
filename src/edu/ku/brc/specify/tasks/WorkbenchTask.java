@@ -154,6 +154,7 @@ public class WorkbenchTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.Taskable#initialize()
      */
+    @Override
     public void initialize()
     {
         if (!isInitialized)
@@ -186,7 +187,7 @@ public class WorkbenchTask extends BaseTask
             try
             {
                 workbenchNavBox = new NavBox(getResourceString("WB_DATASETS"));
-                List list       = session.getDataList("From Workbench where SpecifyUserID = "+SpecifyUser.getCurrentUser().getSpecifyUserId()+" order by name");
+                List<?> list    = session.getDataList("From Workbench where SpecifyUserID = "+SpecifyUser.getCurrentUser().getSpecifyUserId()+" order by name");
                 dataSetCount    = list.size();
                 for (Object obj : list)
                 {
@@ -321,6 +322,7 @@ public class WorkbenchTask extends BaseTask
             }
         });
         UIHelper.createMenuItem(popupMenu, getResourceString("WB_EDIT_DATASET_MAPPING"), getResourceString("WB_EDIT_DATASET_MAPPING_MNEU"), null, true, new ActionListener() {
+            @SuppressWarnings("synthetic-access")
             public void actionPerformed(ActionEvent e)
             {
                 Object cmdData = roc.getData();
@@ -485,6 +487,7 @@ public class WorkbenchTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.BaseTask#getStarterPane()
      */
+    @Override
     public SubPaneIFace getStarterPane()
     {
         File htmlFile = new File(getResourceString("WB_INITIAL_HTML"));
@@ -508,6 +511,7 @@ public class WorkbenchTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.Taskable#getToolBarItems()
      */
+    @Override
     public List<ToolBarItemDesc> getToolBarItems()
     {
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
@@ -523,6 +527,7 @@ public class WorkbenchTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.Taskable#getMenuItems()
      */
+    @Override
     public List<MenuItemDesc> getMenuItems()
     {
         Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
@@ -533,6 +538,7 @@ public class WorkbenchTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.Taskable#getTaskClass()
      */
+    @Override
     public Class<? extends BaseTask> getTaskClass()
     {
         return this.getClass();
@@ -649,7 +655,7 @@ public class WorkbenchTask extends BaseTask
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
-            List list = session.getDataList("From WorkbenchTemplate where SpecifyUserID = "+SpecifyUser.getCurrentUser().getSpecifyUserId());
+            List<?> list = session.getDataList("From WorkbenchTemplate where SpecifyUserID = "+SpecifyUser.getCurrentUser().getSpecifyUserId());
             for (Object obj : list)
             {
                 WorkbenchTemplate template = (WorkbenchTemplate)obj;
@@ -1027,11 +1033,11 @@ public class WorkbenchTask extends BaseTask
         
         fileDialog.setFilenameFilter(new java.io.FilenameFilter()
         {
-            public boolean accept(File dir, String name)
+            public boolean accept(File dir, String filename)
             {
                 for (ExportFileConfigurationFactory.ExportableType exportType : ExportFileConfigurationFactory.getExportList())
                 {
-                    String ext = FilenameUtils.getExtension(name);
+                    String ext = FilenameUtils.getExtension(filename);
                     if (StringUtils.isNotEmpty(ext) && exportType.getExtension().toLowerCase().equals(ext))
                     {
                         return true;
@@ -1149,13 +1155,13 @@ public class WorkbenchTask extends BaseTask
      * @param name
      * @return
      */
-    protected boolean fillInWorkbenchNameAndAttrs(final Workbench workbench, final String name)
+    protected boolean fillInWorkbenchNameAndAttrs(final Workbench workbench, final String wbName)
     {
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         
         try
         {
-            String newWorkbenchName = name;
+            String newWorkbenchName = wbName;
             
             boolean alwaysAsk = true;
             Object  foundWB   = null;
@@ -1188,10 +1194,9 @@ public class WorkbenchTask extends BaseTask
                     UICacheManager.getStatusBar().setText("");
                     return false;
                     
-                } else
-                {
-                    workbench.setName(newWorkbenchName);
                 }
+                // else
+                workbench.setName(newWorkbenchName);
             } while (foundWB != null);
             
         } catch (Exception ex)
@@ -1309,7 +1314,9 @@ public class WorkbenchTask extends BaseTask
             final DataProviderSessionIFace finiSession = tmpSession;
             final SwingWorker worker = new SwingWorker()
             {
-                 public Object construct()
+                 @SuppressWarnings("synthetic-access")
+                @Override
+                public Object construct()
                 {
                      try
                      {
@@ -1349,6 +1356,7 @@ public class WorkbenchTask extends BaseTask
                 }
 
                 //Runs on the event-dispatching thread.
+                @Override
                 public void finished()
                 {
                     UICacheManager.clearGlassPaneMsg();
@@ -1499,13 +1507,18 @@ public class WorkbenchTask extends BaseTask
         
         final SwingWorker worker = new SwingWorker()
         {
+            @SuppressWarnings("synthetic-access")
+            @Override
             public Object construct()
             {
                 try
                 {
                     Thread.sleep(500);
                     
-                } catch (Exception ex) {}
+                } catch (Exception ex)
+                {
+                    // ignore?
+                }
                 
                 final NavBoxItemIFace nbi = getBoxByTitle(workbenchNavBox, workbench.getName());
                 if (nbi != null)
@@ -1552,6 +1565,7 @@ public class WorkbenchTask extends BaseTask
             }
 
             //Runs on the event-dispatching thread.
+            @Override
             public void finished()
             {
                 UICacheManager.clearGlassPaneMsg();
@@ -1868,7 +1882,7 @@ public class WorkbenchTask extends BaseTask
                     {
                         String hql = "SELECT item.cellData as Name, count(item.cellData) as Cnt FROM WorkbenchDataItem as item inner join item.workbenchRow as row join item.workbenchTemplateMappingItem as mapitem where mapitem.workbenchTemplateMappingItemId = " + selectMappingItem.getWorkbenchTemplateMappingItemId()+" group by item.cellData order by count(item.cellData) desc";
                         hibSession = HibernateUtil.getNewSession();
-                        List list = hibSession.createQuery(hql).list();
+                        List<?> list = hibSession.createQuery(hql).list();
                         
                         int count = 0;
                         int returnCnt = list.size();
@@ -1912,10 +1926,10 @@ public class WorkbenchTask extends BaseTask
             
             QueryResultsHandlerIFace qrhi = new QueryResultsHandlerIFace()
             {
-                public void init(final QueryResultsListener listener, final java.util.List<QueryResultsContainerIFace> list) {}
+                public void init(final QueryResultsListener listener, final java.util.List<QueryResultsContainerIFace> list){}
                 public void init(final QueryResultsListener listener, final QueryResultsContainerIFace qrc){}
-                public void startUp(){ }
-                public void cleanUp() {}
+                public void startUp(){}
+                public void cleanUp(){}
     
                 public java.util.List<Object> getDataObjects()
                 {
@@ -2390,6 +2404,7 @@ public class WorkbenchTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#doCommand(edu.ku.brc.ui.CommandAction)
      */
+    @Override
     public void doCommand(final CommandAction cmdAction)
     {
         if (cmdAction.isType(WORKBENCH))
