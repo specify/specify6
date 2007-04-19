@@ -126,6 +126,7 @@ import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.ToggleButtonChooserDlg.Type;
 import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.ResultSetController;
+import edu.ku.brc.ui.forms.ResultSetControllerListener;
 import edu.ku.brc.ui.tmanfe.SpreadSheet;
 import edu.ku.brc.util.GeoRefConverter;
 import edu.ku.brc.util.StringConverter;
@@ -183,7 +184,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected JPanel                controllerPane;
     protected CardLayout            cpCardLayout               = null;
     
-    protected ImageFrame        imageFrame                 = null;
+    protected ImageFrame            imageFrame                 = null;
     protected boolean               imageFrameWasShowing       = false;
     protected ListSelectionListener workbenchRowChangeListener = null;
     
@@ -539,7 +540,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         // See if we need to make the Image Frame visible
         // Commenting this out for now because it is so annoying.
-        /*
+        
         if (showImageView || hasOneOrMoreImages)
         {
             SwingUtilities.invokeLater(new Runnable()
@@ -550,7 +551,25 @@ public class WorkbenchPaneSS extends BaseSubPane
                     ((Frame)UICacheManager.get(UICacheManager.FRAME)).toFront();
                 }
             });
-        }*/
+        }
+        
+        resultsetController.addListener(new ResultSetControllerListener() {
+            public boolean indexAboutToChange(int oldIndex, int newIndex)
+            {
+                return true;
+            }
+            public void indexChanged(int newIndex)
+            {
+                if (imageFrame != null && newIndex > -1)
+                {
+                    imageFrame.setRow(workbench.getRow(newIndex));
+                }
+                
+            }
+            public void newRecordAdded()
+            {
+            }
+        });
     }
     
     /**
