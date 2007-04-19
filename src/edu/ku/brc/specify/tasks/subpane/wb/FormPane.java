@@ -306,6 +306,15 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         }
     }
     
+    /**
+     * Sets in a new Workbench.
+     * @param workbench the new wb
+     */
+    public void setWorkbench(final Workbench workbench)
+    {
+        this.workbench = workbench;
+    }
+    
     /* (non-Javadoc)
      * @see javax.swing.JComponent#getPreferredSize()
      */

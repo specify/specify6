@@ -1891,6 +1891,8 @@ public class WorkbenchPaneSS extends BaseSubPane
             session.flush();
 
             workbench = (Workbench)dObj;
+            model.setWorkbench(workbench);
+            formPane.setWorkbench(workbench);
             
             log.info("Session Saved[ and Flushed "+session.hashCode()+"]");
             

@@ -53,6 +53,15 @@ public class GridTableModel extends SpreadSheetModel
     }
     
     /**
+     * Sets in a new Workbench.
+     * @param workbench the new wb
+     */
+    public void setWorkbench(final Workbench workbench)
+    {
+        this.workbench = workbench;
+    }
+    
+    /**
      * Fires off a change notiication for the spreasheet. 
      */
     public void fireDataChanged()
