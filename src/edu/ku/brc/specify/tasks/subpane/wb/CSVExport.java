@@ -1,9 +1,9 @@
 /*
-     * Copyright (C) 2007  The University of Kansas
-     *
-     * [INSERT KU-APPROVED LICENSE TEXT HERE]
-     *
-     */
+ * Copyright (C) 2007 The University of Kansas
+ * 
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ * 
+ */
 /**
  * 
  */
@@ -14,26 +14,26 @@ import java.util.List;
 
 import com.csvreader.CsvWriter;
 
-import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 
 /**
  * @author timbo
- *
+ * 
  * @code_status Alpha
- *
+ * 
  */
 public class CSVExport implements DataExport
 {
     ConfigureCSV config;
-    
+
     public CSVExport(final ConfigureExternalDataIFace config)
     {
-       this.config = (ConfigureCSV)config; 
+        this.config = (ConfigureCSV) config;
     }
-    
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.ku.brc.specify.tasks.subpane.wb.DataExport#getConfig()
      */
     public ConfigureExternalDataIFace getConfig()
@@ -41,12 +41,14 @@ public class CSVExport implements DataExport
         return this.config;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.ku.brc.specify.tasks.subpane.wb.DataExport#setConfig(edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalDataIFace)
      */
     public void setConfig(ConfigureExternalDataIFace config)
     {
-        this.config = (ConfigureCSV)config; 
+        this.config = (ConfigureCSV) config;
     }
 
     protected void writeHeaders(CsvWriter csv) throws IOException
@@ -54,7 +56,8 @@ public class CSVExport implements DataExport
         try
         {
             csv.writeRecord(config.getHeaders(), true);
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             throw e;
         }
@@ -65,7 +68,10 @@ public class CSVExport implements DataExport
      * 
      * @see edu.ku.brc.specify.tasks.subpane.wb.DataExport#writeData(java.util.List)
      */
-    public void writeData(final List<?> data/*, final DataProviderSessionIFace session, final boolean closeSession*/) throws Exception
+    public void writeData(final List<?> data/*
+                                             * , final DataProviderSessionIFace session, final
+                                             * boolean closeSession
+                                             */) throws Exception
     {
         String[] record;
         CsvWriter writer = new CsvWriter(config.getFileName());
@@ -73,32 +79,24 @@ public class CSVExport implements DataExport
         {
             writeHeaders(writer);
         }
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        try
+        for (int r = 0; r < data.size(); r++)
         {
-            session.attach(((WorkbenchRow) data.get(0)).getWorkbench());
-            for (int r = 0; r < data.size(); r++)
+            WorkbenchRow row = (WorkbenchRow) data.get(r);
+            record = new String[row.getWorkbenchDataItems().size()];
+            for (int c = 0; c < row.getWorkbenchDataItems().size(); c++)
             {
-                WorkbenchRow row = (WorkbenchRow) data.get(r);
-                record = new String[row.getWorkbenchDataItems().size()];
-                for (int c = 0; c < row.getWorkbenchDataItems().size(); c++)
-                {
-                    record[c] = row.getData(c);
-                }
-                try
-                {
-                    writer.writeRecord(record);
-                } catch (IOException e)
-                {
-                    throw (e);
-                }
+                record[c] = row.getData(c);
             }
-            writer.flush();
+            try
+            {
+                writer.writeRecord(record);
+            }
+            catch (IOException e)
+            {
+                throw (e);
+            }
         }
-        finally
-        {
-            session.close();
-        }
+        writer.flush();
     }
 
 }

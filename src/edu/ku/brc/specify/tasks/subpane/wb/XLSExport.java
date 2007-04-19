@@ -17,8 +17,6 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
-import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
@@ -72,7 +70,7 @@ public class XLSExport implements DataExport
     }
     
     /**
-     * @param row 
+     * @param row
      * @return HSSFCellTypes for each column in workbench.
      */
     protected int[] bldColTypes(final WorkbenchTemplate wbt)
@@ -116,7 +114,7 @@ public class XLSExport implements DataExport
         }
         else if (dataType == java.lang.Boolean.class)
         {
-            //XXX still need to test if this type allows "don't know"
+            // XXX still need to test if this type allows "don't know"
             return HSSFCell.CELL_TYPE_BOOLEAN;
         }
         else
@@ -126,8 +124,9 @@ public class XLSExport implements DataExport
     }
     
     /**
-     * calls HSSFCell.setCellValue with the java type appropriate for the cell type. 
-     * @param cell 
+     * calls HSSFCell.setCellValue with the java type appropriate for the cell type.
+     * 
+     * @param cell
      * @param value
      */
     protected void setCellValue(final HSSFCell cell, String value)
@@ -140,9 +139,11 @@ public class XLSExport implements DataExport
                 cell.setCellValue(Double.parseDouble(value));
             }
             // parseBoolean returns true if value == "true" (ignoring case) else false.
-            // Seems like data could be lost so I am assigning the string unless value definitely seems
+            // Seems like data could be lost so I am assigning the string unless value definitely
+            // seems
             // to be boolean.
-            // We probably should add a new cell editor specifically for "boolean" to control the value.
+            // We probably should add a new cell editor specifically for "boolean" to control the
+            // value.
             // But we probably shouldn't even with bother with CELL_TYPE_BOOLEAN since Specify6
             // booleans arent' true booleans anyway so
             // why bother?
@@ -183,13 +184,9 @@ public class XLSExport implements DataExport
         }
         if (data.size() > 0)
         {
-            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            try
-            {
                 int[] colTypes;
                 if (data.get(0).getClass() == WorkbenchTemplate.class)
                 {
-                    session.attach(data.get(0));
                     colTypes = bldColTypes((WorkbenchTemplate) data.get(0));
                     // now set up cell types and formats for a bunch of empty rows....
                     
@@ -198,9 +195,6 @@ public class XLSExport implements DataExport
                 {
                     WorkbenchRow wbRow     = (WorkbenchRow) data.get(0);
                     Workbench    workBench = wbRow.getWorkbench();
-                    
-                    // No attachment needed
-                    //session.attach(workBench);
                     
                     colTypes = bldColTypes(workBench.getWorkbenchTemplate());
                     for (Object rowObj : data)
@@ -215,12 +209,7 @@ public class XLSExport implements DataExport
                             setCellValue(cell, row.getData(colNum));
                         }
                     }
-               }
-            }
-            finally
-            {
-                session.close();
-            }
+                }
         }
         try
         {
