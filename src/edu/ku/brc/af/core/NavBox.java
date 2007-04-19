@@ -31,6 +31,7 @@ import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import org.apache.log4j.Logger;
 
@@ -55,6 +56,8 @@ public class NavBox extends JPanel implements NavBoxIFace
     protected NavBoxIFace.Scope  scope;
     protected NavBoxMgr          mgr;
     protected Vector<NavBoxItemIFace> items = new Vector<NavBoxItemIFace>();
+    
+    protected JPanel itemsPanel;
     
     protected boolean            collapsed             = false;
     protected ImageIcon          icon                  = null;
@@ -84,11 +87,20 @@ public class NavBox extends JPanel implements NavBoxIFace
         this.name = name;
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         
+        itemsPanel = new JPanel();
+        itemsPanel.setLayout(new BoxLayout(itemsPanel, BoxLayout.PAGE_AXIS));
+        itemsPanel.setBorder(null);
+        itemsPanel.setBackground(Color.WHITE);
+        itemsPanel.setOpaque(true);
+        
         setBorder(BorderFactory.createEmptyBorder(22, 4, 4, 4));
         //setBorder(BorderFactory.createCompoundBorder(new CurvedBorder(new Color(160,160,160)), getBorder()));
         setBackground(Color.WHITE);
         setOpaque(true);
         
+        JScrollPane scrollPane = new JScrollPane(itemsPanel);
+        scrollPane.setBorder(null);
+        add(scrollPane);
         
         if (collapsable)
         {/*
@@ -195,7 +207,7 @@ public class NavBox extends JPanel implements NavBoxIFace
     {
         if (position == -1 || position == items.size())
         {
-            super.add(item.getUIComponent());
+            itemsPanel.add(item.getUIComponent());
             items.addElement(item);
             
         } else
@@ -204,7 +216,7 @@ public class NavBox extends JPanel implements NavBoxIFace
             removeAll();
             for (NavBoxItemIFace nb : items)
             {
-                super.add(nb.getUIComponent());
+                itemsPanel.add(nb.getUIComponent());
             }
         }
        
@@ -289,6 +301,9 @@ public class NavBox extends JPanel implements NavBoxIFace
         {
             size.height = minHeight;
         }
+        
+        log.debug("NavBox preferred size: " + size);
+        
         return size;
     }
         
