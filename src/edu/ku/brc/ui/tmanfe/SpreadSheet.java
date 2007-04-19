@@ -360,33 +360,33 @@ public class SpreadSheet  extends SearchableJXTable
             final int[] rows = getSelectedRows();
             if (rows.length > 1)
             {
-                if (row == rows[0])
-                {
+                //if (row == rows[0])
+                //{
                     if (!isImage)
                     {
                         JMenuItem mi = pMenu.add(new JMenuItem("Fill Down")); // I18N
                         mi.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent ae)
                             {
-                                model.fill(getSelectedColumn(), row, rows);
+                                model.fill(getSelectedColumn(), rows[0], rows);
                                 popupMenu.setVisible(false);
                             }
                         });
                     }
-                } else if (row == rows[rows.length-1])
-                {
+                //} else if (row == rows[rows.length-1])
+                //{
                     if (!isImage)
                     {
                         JMenuItem mi = pMenu.add(new JMenuItem("Fill Up")); // I18N
                         mi.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent ae)
                             {
-                                model.fill(getSelectedColumn(), row, rows);
+                                model.fill(getSelectedColumn(), rows[rows.length-1], rows);
                                 popupMenu.setVisible(false);
                             }
                         });
                     }
-                }
+                //}
             }
         }
         
