@@ -384,7 +384,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 showGeoRefConvertDialog();
             }
         });
-        convertGeoRefFormatBtn.setEnabled(true);
+        convertGeoRefFormatBtn.setEnabled(workbench.containsGeoRefData());
         
         exportExcelCsvBtn = createIconBtn("Export", IconManager.IconSize.Std16, "WB_EXPORT_DATA", true, new ActionListener()
         {
