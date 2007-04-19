@@ -18,6 +18,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.LayoutManager2;
+import java.awt.Rectangle;
 import java.util.List;
 import java.util.Vector;
 
@@ -36,10 +37,11 @@ import edu.ku.brc.ui.Trash;
 public class NavBoxLayoutManager implements LayoutManager2
 {
 
-    private Vector<Component> comps         = new Vector<Component>();
-    private Dimension         preferredSize = new Dimension();
-    private int               borderPadding = 2;
-    private int               ySeparation   = 5;
+    private Vector<Component> comps             = new Vector<Component>();
+    private Dimension         preferredSize     = new Dimension();
+    private int               borderPadding     = 2;
+    private int               ySeparation       = 5;
+    private boolean           stretchLastNavBox = true;
 
     /**
      * Contructs a layout manager for layting out NavBoxes. It lays out all the NavBoxes vertically
@@ -48,10 +50,11 @@ public class NavBoxLayoutManager implements LayoutManager2
      * @param borderPadding the margin around the boxes
      * @param ySeparation the vertical separation inbetween the boxes.
      */
-    public NavBoxLayoutManager(final int borderPadding, final int ySeparation)
+    public NavBoxLayoutManager(final int borderPadding, final int ySeparation, boolean stretchLastNavBox)
     {
-        this.borderPadding = borderPadding;
-        this.ySeparation   = ySeparation;
+        this.borderPadding     = borderPadding;
+        this.ySeparation       = ySeparation;
+        this.stretchLastNavBox = stretchLastNavBox;
     }
 
     /* (non-Javadoc)
@@ -109,8 +112,9 @@ public class NavBoxLayoutManager implements LayoutManager2
         int y = borderPadding;
 
         Trash trash = null;
+        Component lastComp = null;
         
-        for (Component comp : comps)
+        for (Component comp: comps)
         {
             Dimension size = comp.getPreferredSize();
             if (comp instanceof Trash)
@@ -119,6 +123,7 @@ public class NavBoxLayoutManager implements LayoutManager2
                 
             } else
             {
+                lastComp = comp;
                 comp.setBounds(x, y, parentSize.width, size.height);
                 y += size.height + ySeparation;
             }
@@ -131,6 +136,19 @@ public class NavBoxLayoutManager implements LayoutManager2
             trash.setBounds((parentSize.width - size.width)/2, trashY > y ? trashY : y, size.width, size.height);
         }
 
+        if (stretchLastNavBox && lastComp != null)
+        {
+            Rectangle lastCompBounds = lastComp.getBounds();
+            if (trash != null)
+            {
+                lastCompBounds.height = trash.getBounds().y - lastCompBounds.y - ySeparation;
+            }
+            else
+            {
+                lastCompBounds.height = Math.max(parentSize.height - lastCompBounds.y - 1, 0);
+            }
+            lastComp.setBounds(lastCompBounds);
+        }
     }
 
     /**

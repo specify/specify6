@@ -52,11 +52,14 @@ public class NavBox extends JPanel implements NavBoxIFace
 {
     private static final Logger      log      = Logger.getLogger(NavBox.class);
     
+    private static final int MAX_HEIGHT = 180;
+    
     protected String             name;
     protected NavBoxIFace.Scope  scope;
     protected NavBoxMgr          mgr;
     protected Vector<NavBoxItemIFace> items = new Vector<NavBoxItemIFace>();
     
+    protected boolean scrollable;
     protected JPanel itemsPanel;
     
     protected boolean            collapsed             = false;
@@ -73,7 +76,7 @@ public class NavBox extends JPanel implements NavBoxIFace
      */
     public NavBox(final String name)
     {
-        this(name, false);
+        this(name, false, false);
     }
     
     /**
@@ -81,26 +84,34 @@ public class NavBox extends JPanel implements NavBoxIFace
      * @param name the name of the NavBox.
      * @param collapsable indicates whether the NavBox can be collapsable
      */
-    public NavBox(final String name, final boolean collapsable)
+    public NavBox(final String name, final boolean collapsable, final boolean scrollable)
     {
         super();
         this.name = name;
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         
-        itemsPanel = new JPanel();
-        itemsPanel.setLayout(new BoxLayout(itemsPanel, BoxLayout.PAGE_AXIS));
-        itemsPanel.setBorder(null);
-        itemsPanel.setBackground(Color.WHITE);
-        itemsPanel.setOpaque(true);
+        this.scrollable = scrollable;
+        
+        if (scrollable)
+        {
+            itemsPanel = new JPanel();
+            itemsPanel.setLayout(new BoxLayout(itemsPanel, BoxLayout.PAGE_AXIS));
+            itemsPanel.setBorder(null);
+            itemsPanel.setBackground(Color.WHITE);
+            itemsPanel.setOpaque(true);
+        }
         
         setBorder(BorderFactory.createEmptyBorder(22, 4, 4, 4));
         //setBorder(BorderFactory.createCompoundBorder(new CurvedBorder(new Color(160,160,160)), getBorder()));
         setBackground(Color.WHITE);
         setOpaque(true);
         
-        JScrollPane scrollPane = new JScrollPane(itemsPanel);
-        scrollPane.setBorder(null);
-        add(scrollPane);
+        if (scrollable)
+        {
+            JScrollPane scrollPane = new JScrollPane(itemsPanel);
+            scrollPane.setBorder(null);
+            add(scrollPane);
+        }
         
         if (collapsable)
         {/*
@@ -207,7 +218,14 @@ public class NavBox extends JPanel implements NavBoxIFace
     {
         if (position == -1 || position == items.size())
         {
-            itemsPanel.add(item.getUIComponent());
+            if (scrollable)
+            {
+                itemsPanel.add(item.getUIComponent());
+            }
+            else
+            {
+                super.add(item.getUIComponent());
+            }
             items.addElement(item);
             
         } else
@@ -216,7 +234,14 @@ public class NavBox extends JPanel implements NavBoxIFace
             removeAll();
             for (NavBoxItemIFace nb : items)
             {
-                itemsPanel.add(nb.getUIComponent());
+                if (scrollable)
+                {
+                    itemsPanel.add(nb.getUIComponent());
+                }
+                else
+                {
+                    super.add(nb.getUIComponent());
+                }
             }
         }
        
@@ -296,6 +321,11 @@ public class NavBox extends JPanel implements NavBoxIFace
         Insets      insets = getBorder().getBorderInsets(this);
         width += insets.left + insets.right;
         size.width = Math.max(size.width, width);
+        
+        if (size.height > MAX_HEIGHT)
+        {
+            size.height = MAX_HEIGHT;
+        }
         
         if (collapsed)
         {

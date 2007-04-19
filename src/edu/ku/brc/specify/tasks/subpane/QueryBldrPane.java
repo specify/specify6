@@ -250,7 +250,7 @@ public class QueryBldrPane extends BaseSubPane
         builder.add(innerBuilder.getPanel(), cc.xy(1, 1));
         
         queryFieldsPanel = new JPanel();
-        queryFieldsPanel.setLayout(new NavBoxLayoutManager(0,2));
+        queryFieldsPanel.setLayout(new NavBoxLayoutManager(0,2,false));
         sp = new JScrollPane(queryFieldsPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         builder.add(sp, cc.xy(1, 3));
         

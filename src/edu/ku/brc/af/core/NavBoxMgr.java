@@ -43,7 +43,7 @@ public class NavBoxMgr extends JPanel
     
     // Data Members
     private List<NavBoxIFace>   list   = Collections.synchronizedList(new ArrayList<NavBoxIFace>());
-    private NavBoxLayoutManager layout = new NavBoxLayoutManager(5, 5);
+    private NavBoxLayoutManager layout = new NavBoxLayoutManager(5, 5, true);
     private JSplitPane          splitPane;
     
     /**

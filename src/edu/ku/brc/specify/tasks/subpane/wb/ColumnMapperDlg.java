@@ -194,7 +194,7 @@ public class ColumnMapperDlg extends CustomDialog
         
         dataFileColPanel = new JPanel();
         dataFileColPanel.setBackground(Color.WHITE);
-        dataFileColPanel.setLayout(new NavBoxLayoutManager(0,2));
+        dataFileColPanel.setLayout(new NavBoxLayoutManager(0,2,false));
         JScrollPane sp = new JScrollPane(dataFileColPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         
         PanelBuilder leftSide = new PanelBuilder(new FormLayout("f:p:g, p, 2px, p", "p"));        

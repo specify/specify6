@@ -186,7 +186,7 @@ public class WorkbenchTask extends BaseTask
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             try
             {
-                workbenchNavBox = new NavBox(getResourceString("WB_DATASETS"));
+                workbenchNavBox = new NavBox(getResourceString("WB_DATASETS"),false,true);
                 List<?> list    = session.getDataList("From Workbench where SpecifyUserID = "+SpecifyUser.getCurrentUser().getSpecifyUserId()+" order by name");
                 dataSetCount    = list.size();
                 for (Object obj : list)
@@ -264,6 +264,13 @@ public class WorkbenchTask extends BaseTask
             // Add these last and in order
             // TEMPLATES navBoxes.addElement(templateNavBox);
             navBoxes.addElement(workbenchNavBox);
+
+            // XXX: remove
+            // TODO: remove this after we all agree the NavBoxed w/ scroll bars look good
+            for (int i = 0; i < 50; ++i)
+            {
+                workbenchNavBox.add(NavBox.createBtn(Integer.toString(i),null,null));
+            }
             
             updateNavBoxUI(dataSetCount);
         }
