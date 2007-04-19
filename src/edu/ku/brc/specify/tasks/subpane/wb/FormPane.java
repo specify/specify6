@@ -67,7 +67,7 @@ import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
 import edu.ku.brc.ui.forms.ResultSetControllerListener;
 import edu.ku.brc.ui.validation.ValCheckBox;
-import edu.ku.brc.ui.validation.ValFormattedTextField;
+import edu.ku.brc.ui.validation.ValTextArea;
 import edu.ku.brc.ui.validation.ValTextField;
 
 /**
@@ -351,7 +351,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
      */
     protected JScrollPane createTextArea(final short len, final short rows)
     {
-        JTextArea textArea = new JTextArea("", rows, len);
+        ValTextArea textArea = new ValTextArea("", rows, len);
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
         textArea.getDocument().addDocumentListener(this);
@@ -481,8 +481,9 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         // handle dates
         if (dbFieldType.equals(Calendar.class) || dbFieldType.equals(Date.class))
         {
-            ValFormattedTextField txt = new ValFormattedTextField("Date"); 
-            txt.setColumns(columns == -1 ? DEFAULT_TEXTFIELD_COLS : columns);
+            //ValFormattedTextField txt = new ValFormattedTextField("Date"); 
+            //txt.setColumns(columns == -1 ? DEFAULT_TEXTFIELD_COLS : columns);
+            ValTextField txt = new ValTextField(columns);
             txt.getDocument().addDocumentListener(this);
             comp = txt;
             
