@@ -19,6 +19,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
@@ -169,10 +170,10 @@ public class XLSExport implements DataExport
      * 
      * @see edu.ku.brc.specify.tasks.subpane.wb.DataExport#writeData(java.util.List)
      */
-    public void writeData(List<?> data) throws Exception
+    public void writeData(final List<?> data) throws Exception
     {
-        HSSFWorkbook workBook = new HSSFWorkbook();
-        HSSFSheet workSheet = workBook.createSheet();
+        HSSFWorkbook workBook  = new HSSFWorkbook();
+        HSSFSheet    workSheet = workBook.createSheet();
         int rowNum = 0;
 
         if (config.getFirstRowHasHeaders() && !config.getAppendData())
@@ -195,18 +196,23 @@ public class XLSExport implements DataExport
                 }
                 else
                 {
-                    session.attach(((WorkbenchRow) data.get(0)).getWorkbench());
-                    colTypes = bldColTypes(((WorkbenchRow) data.get(0)).getWorkbench()
-                            .getWorkbenchTemplate());
-                    for (Object row : data)
+                    WorkbenchRow wbRow     = (WorkbenchRow) data.get(0);
+                    Workbench    workBench = wbRow.getWorkbench();
+                    
+                    // No attachment needed
+                    //session.attach(workBench);
+                    
+                    colTypes = bldColTypes(workBench.getWorkbenchTemplate());
+                    for (Object rowObj : data)
                     {
-                        HSSFRow hssfRow = workSheet.createRow(rowNum++);
-                        for (short colNum = 0; colNum < ((WorkbenchRow) row).getWorkbenchDataItems()
-                                .size(); colNum++)
+                        WorkbenchRow row     = (WorkbenchRow)rowObj;
+                        HSSFRow      hssfRow = workSheet.createRow(rowNum++);
+                        
+                        for (short colNum = 0; colNum < row.getWorkbenchDataItems().size(); colNum++)
                         {
                             HSSFCell cell = hssfRow.createCell(colNum);
                             cell.setCellType(colTypes[colNum]);
-                            setCellValue(cell, ((WorkbenchRow) row).getData(colNum));
+                            setCellValue(cell, row.getData(colNum));
                         }
                     }
                }
@@ -226,4 +232,4 @@ public class XLSExport implements DataExport
         }
     }
     
-    }
+}
