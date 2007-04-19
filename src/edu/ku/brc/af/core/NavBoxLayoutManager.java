@@ -39,6 +39,7 @@ public class NavBoxLayoutManager implements LayoutManager2
 
     private Vector<Component> comps             = new Vector<Component>();
     private Dimension         preferredSize     = new Dimension();
+    private Dimension         minimumSize       = new Dimension();
     private int               borderPadding     = 2;
     private int               ySeparation       = 5;
     private boolean           stretchLastNavBox = true;
@@ -96,7 +97,7 @@ public class NavBoxLayoutManager implements LayoutManager2
      */
     public Dimension minimumLayoutSize(Container arg0)
     {
-         return new Dimension(preferredSize);
+         return new Dimension(minimumSize);
     }
 
     /* (non-Javadoc)
@@ -166,6 +167,8 @@ public class NavBoxLayoutManager implements LayoutManager2
             Dimension size = comp.getPreferredSize();
             preferredSize.width = Math.max(preferredSize.width, size.width + (2 * borderPadding));
             preferredSize.height += size.height + ySeparation;
+            
+            minimumSize.width = Math.max(minimumSize.width, comp.getMinimumSize().width + (2 * borderPadding));
         }
         preferredSize.height -= ySeparation;
     }
@@ -234,7 +237,7 @@ public class NavBoxLayoutManager implements LayoutManager2
     public Dimension maximumLayoutSize(Container target)
     {
         calcPreferredSize();
-        return new Dimension(preferredSize);
+        return new Dimension(minimumSize);
     }
 
 }

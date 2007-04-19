@@ -16,6 +16,7 @@ package edu.ku.brc.af.core;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -109,6 +110,7 @@ public class NavBox extends JPanel implements NavBoxIFace
         if (scrollable)
         {
             JScrollPane scrollPane = new JScrollPane(itemsPanel);
+            scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
             scrollPane.setBorder(null);
             add(scrollPane);
         }
@@ -321,10 +323,14 @@ public class NavBox extends JPanel implements NavBoxIFace
         Insets      insets = getBorder().getBorderInsets(this);
         width += insets.left + insets.right;
         size.width = Math.max(size.width, width);
-        
-        if (size.height > MAX_HEIGHT)
+
+        // if we're putting the items in a scrollpane, return 180 as the maximum preferred height
+        if (scrollable)
         {
-            size.height = MAX_HEIGHT;
+            if (size.height > MAX_HEIGHT)
+            {
+                size.height = MAX_HEIGHT;
+            }
         }
         
         if (collapsed)
@@ -492,7 +498,20 @@ public class NavBox extends JPanel implements NavBoxIFace
             comp.setSize(comp.getPreferredSize());
             comp.repaint();
             log.debug("comp "+comp.getPreferredSize()+" "+comp.getSize());
-            refresh((NavBox)nbi.getUIComponent().getParent());
+            
+            Container parentComp = nbi.getUIComponent().getParent();
+            if (parentComp instanceof NavBox)
+            {
+                refresh( (NavBox)parentComp );
+            }
+            else if (parentComp instanceof JScrollPane)
+            {
+                // this must be a scrollable NavBox;
+                // let's get the actual NavBox
+                // container heirarchy is NavBox -> JScrollPane -> NavBoxItem
+                parentComp = parentComp.getParent().getParent();
+                refresh( (NavBox)parentComp );
+            }
         }
     }
 
