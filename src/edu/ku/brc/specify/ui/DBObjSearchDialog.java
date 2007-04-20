@@ -265,7 +265,7 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
         builder.add(searchBtn, cc.xy(3,1));
 
         panel.add(builder.getPanel(), BorderLayout.NORTH);
-        contentPanel = new JPanel(new NavBoxLayoutManager(0,2,false));
+        contentPanel = new JPanel(new NavBoxLayoutManager(0,2));
 
 
         scrollPane = new JScrollPane(contentPanel);

@@ -145,7 +145,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
         setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
 
         add(multiView, BorderLayout.NORTH);
-        contentPanel = new JPanel(new NavBoxLayoutManager(0,2,false));
+        contentPanel = new JPanel(new NavBoxLayoutManager(0,2));
         
         if (parentWin instanceof JDialog)
         {

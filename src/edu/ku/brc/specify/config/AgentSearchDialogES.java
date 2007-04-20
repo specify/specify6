@@ -194,7 +194,7 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
         builder.add(searchBtn, cc.xy(3,1));
 
         panel.add(builder.getPanel(), BorderLayout.NORTH);
-        contentPanel = new JPanel(new NavBoxLayoutManager(0,2,false));
+        contentPanel = new JPanel(new NavBoxLayoutManager(0,2));
         //contentPanel.setMaximumSize(new Dimension(300,300));
         //contentPanel.setPreferredSize(new Dimension(300,300));
 

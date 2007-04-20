@@ -82,7 +82,7 @@ public class ExpressSearchResultsPane extends BaseSubPane implements ExpressSear
         setPreferredSize(new Dimension(600,600));
         setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
 
-        contentPanel = new JPanel(layoutMgr = new NavBoxLayoutManager(0, 2, false));
+        contentPanel = new JPanel(layoutMgr = new NavBoxLayoutManager(0, 2));
 
         scrollPane = new JScrollPane(contentPanel);
         add(scrollPane, BorderLayout.CENTER);

@@ -33,6 +33,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 
 import org.apache.log4j.Logger;
 
@@ -60,8 +61,8 @@ public class NavBox extends JPanel implements NavBoxIFace
     protected NavBoxMgr          mgr;
     protected Vector<NavBoxItemIFace> items = new Vector<NavBoxItemIFace>();
     
-    protected boolean scrollable;
-    protected JPanel itemsPanel;
+    protected boolean            scrollable;
+    protected JPanel             itemsPanel;
     
     protected boolean            collapsed             = false;
     protected ImageIcon          icon                  = null;
@@ -110,7 +111,7 @@ public class NavBox extends JPanel implements NavBoxIFace
         if (scrollable)
         {
             JScrollPane scrollPane = new JScrollPane(itemsPanel);
-            scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
             scrollPane.setBorder(null);
             add(scrollPane);
         }
