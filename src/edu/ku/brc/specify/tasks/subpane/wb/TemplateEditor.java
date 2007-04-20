@@ -741,21 +741,22 @@ public class TemplateEditor extends CustomDialog
         if (colInfo != null)
         {
             wbtmi = unusedWBTMIs.get(colInfo);
-            
+            unusedModel.remove(colInfo);
         }
         
         if (mapList.getSelectedIndex() > -1)
         {
             fmp = (FieldMappingPanel)mapList.getSelectedValue();
+            fmp.getFieldInfo().setChecked(false);
             fmp.setFieldInfo(fi);
+            fi.setChecked(true);
+            tableList.repaint();
             mapList.repaint();
             
         } else
         {
             fmp = map(colInfo, fi, wbtmi);
         }
-        
-        unusedModel.remove(colInfo);
         
         if (wbtmi != null)
         {
