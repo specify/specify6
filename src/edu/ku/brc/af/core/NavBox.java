@@ -233,14 +233,18 @@ public class NavBox extends JPanel implements NavBoxIFace
         } else
         {
             items.insertElementAt(item, position);
-            removeAll();
-            for (NavBoxItemIFace nb : items)
+            if (scrollable)
             {
-                if (scrollable)
+                itemsPanel.removeAll();
+                for (NavBoxItemIFace nb : items)
                 {
                     itemsPanel.add(nb.getUIComponent());
                 }
-                else
+            }
+            else
+            {
+                removeAll();
+                for (NavBoxItemIFace nb : items)
                 {
                     super.add(nb.getUIComponent());
                 }
@@ -285,7 +289,14 @@ public class NavBox extends JPanel implements NavBoxIFace
      */
     public void remove(final NavBoxItemIFace item)
     {
-        remove(item.getUIComponent());
+        if (scrollable)
+        {
+            itemsPanel.remove(item.getUIComponent());
+        }
+        else
+        {
+            remove(item.getUIComponent());
+        }
         items.remove(item);
         
         refresh(this);
@@ -296,7 +307,14 @@ public class NavBox extends JPanel implements NavBoxIFace
      */
     public void clear()
     {
-        removeAll();
+        if (scrollable)
+        {
+            itemsPanel.removeAll();
+        }
+        else
+        {
+            removeAll();
+        }
         items.clear();
         refresh(this);
     }
