@@ -265,13 +265,6 @@ public class WorkbenchTask extends BaseTask
             // TEMPLATES navBoxes.addElement(templateNavBox);
             navBoxes.addElement(workbenchNavBox);
 
-            // XXX: remove
-            // TODO: remove this after we all agree the NavBoxed w/ scroll bars look good
-            for (int i = 0; i < 50; ++i)
-            {
-                workbenchNavBox.add(NavBox.createBtn(Integer.toString(i),null,null));
-            }
-            
             updateNavBoxUI(dataSetCount);
         }
     }
