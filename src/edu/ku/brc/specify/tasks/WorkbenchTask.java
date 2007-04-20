@@ -186,7 +186,7 @@ public class WorkbenchTask extends BaseTask
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             try
             {
-                workbenchNavBox = new NavBox(getResourceString("WB_DATASETS"),false,true);
+                workbenchNavBox = new NavBox(getResourceString("WB_DATASETS"),false,false);
                 List<?> list    = session.getDataList("From Workbench where SpecifyUserID = "+SpecifyUser.getCurrentUser().getSpecifyUserId()+" order by name");
                 dataSetCount    = list.size();
                 for (Object obj : list)
