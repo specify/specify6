@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.ui.forms;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.BorderLayout;
@@ -82,7 +82,7 @@ import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.JAutoCompComboBox;
 import edu.ku.brc.ui.db.PickListItemIFace;
@@ -395,7 +395,7 @@ public class FormViewObj implements Viewable,
         {
             if (!hideSaveBtn)
             {
-                saveBtn = new JButton(UICacheManager.getResourceString("Search"), IconManager.getImage("Search", IconManager.IconSize.Std16));
+                saveBtn = new JButton(UIRegistry.getResourceString("Search"), IconManager.getImage("Search", IconManager.IconSize.Std16));
                 comps.add(saveBtn);
             }
 
@@ -457,7 +457,7 @@ public class FormViewObj implements Viewable,
      */
     protected void addSaveBtn()
     {
-        saveBtn = new JButton(UICacheManager.getResourceString("Save"), IconManager.getIcon("Save", IconManager.IconSize.Std16));
+        saveBtn = new JButton(UIRegistry.getResourceString("Save"), IconManager.getIcon("Save", IconManager.IconSize.Std16));
         saveBtn.setToolTipText(ResultSetController.createTooltip("SaveRecordTT", view.getObjTitle()));
         saveBtn.setMargin(new Insets(1,1,1,1));
         saveBtn.setEnabled(false);
@@ -555,7 +555,7 @@ public class FormViewObj implements Viewable,
             Frame frame = UIHelper.getFrame(viewable.getUIComponent());
             if (frame == null) // should never be null
             {
-                frame = (Frame)UICacheManager.get(UICacheManager.TOPFRAME);
+                frame = (Frame)UIRegistry.get(UIRegistry.TOPFRAME);
             }
             JDialog dialog = new JDialog(frame);
             dialog.setTitle(viewable.getValidator().getName());
@@ -717,7 +717,7 @@ public class FormViewObj implements Viewable,
                 //mainComp.invalidate();
                 //mainComp.validate();
                 //mainComp.doLayout();
-                UICacheManager.forceTopFrameRepaint();
+                UIRegistry.forceTopFrameRepaint();
             }
         });
     }
@@ -1213,7 +1213,7 @@ public class FormViewObj implements Viewable,
             removeFromParent(dataObj);
             mvParent.getTopLevel().addDeletedItem(dataObj);
             String delMsg = (businessRules != null) ? businessRules.getDeleteMsg(dataObj) : "";
-            UICacheManager.getStatusBar().setText(delMsg);
+            UIRegistry.getStatusBar().setText(delMsg);
             formValidator.setHasChanged(true);
             
             adjustRSControllerAfterRemove();
@@ -1278,10 +1278,10 @@ public class FormViewObj implements Viewable,
             {
                 adjustRSControllerAfterRemove();
                 
-                UICacheManager.getStatusBar().setText(delMsg);
+                UIRegistry.getStatusBar().setText(delMsg);
             } else
             {
-                UICacheManager.getStatusBar().setText(getResourceString("OBJ_NOT_DELETED"));
+                UIRegistry.getStatusBar().setText(getResourceString("OBJ_NOT_DELETED"));
             }
 
 

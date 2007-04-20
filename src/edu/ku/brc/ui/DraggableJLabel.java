@@ -141,7 +141,7 @@ public class DraggableJLabel extends JLabel implements GhostActionable
      */
     public void createMouseInputAdapter()
     {
-        mouseInputAdapter = new GhostMouseInputAdapter(UICacheManager.getGlassPane(), "action", this);
+        mouseInputAdapter = new GhostMouseInputAdapter(UIRegistry.getGlassPane(), "action", this);
         addMouseListener(mouseInputAdapter);
         addMouseMotionListener(mouseInputAdapter);
     }

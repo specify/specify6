@@ -61,7 +61,7 @@ import edu.ku.brc.ui.MemoryDropDownButton;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.Trash;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
@@ -329,7 +329,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
                 ((RolloverCommand)nb).setCursor(new Cursor(Cursor.HAND_CURSOR));
             } else
             {
-                UICacheManager.getGlassPane().add(ga);
+                UIRegistry.getGlassPane().add(ga);
             }
         }
         return nb;
@@ -345,7 +345,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
         RolloverCommand roc = (RolloverCommand)nbi;
         if (nbi instanceof GhostActionable)
         {
-            UICacheManager.getGlassPane().remove((GhostActionable)roc);
+            UIRegistry.getGlassPane().remove((GhostActionable)roc);
             
             box.remove(nbi);
             
@@ -353,7 +353,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
             NavBoxMgr.getInstance().invalidate();
             NavBoxMgr.getInstance().doLayout();
             NavBoxMgr.getInstance().repaint();
-            UICacheManager.forceTopFrameRepaint();
+            UIRegistry.forceTopFrameRepaint();
         }
     }
     
@@ -732,7 +732,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      */
     public static RecordSetIFace askForRecordSet(final int tableId)
     {
-        ChooseRecordSetDlg dlg = new ChooseRecordSetDlg((Frame)UICacheManager.get(UICacheManager.TOPFRAME), tableId);
+        ChooseRecordSetDlg dlg = new ChooseRecordSetDlg((Frame)UIRegistry.get(UIRegistry.TOPFRAME), tableId);
         if (dlg.hasRecordSets())
         {
             if (dlg.getRecordSets().size() == 1)

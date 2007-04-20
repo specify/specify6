@@ -15,7 +15,7 @@
 
 package edu.ku.brc.ui.db;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.apache.commons.lang.StringUtils.split;
@@ -48,7 +48,7 @@ import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.ViewBasedDialogFactoryIFace;
 import edu.ku.brc.ui.forms.DataGetterForObj;
@@ -158,7 +158,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
      */
     protected void createInfoFrame()
     {
-        frame = UICacheManager.getViewbasedFactory().createDisplay(UIHelper.getFrame(this),
+        frame = UIRegistry.getViewbasedFactory().createDisplay(UIHelper.getFrame(this),
                                                                    displayInfoDialogName,
                                                                    frameTitle,
                                                                    getResourceString("Close"),

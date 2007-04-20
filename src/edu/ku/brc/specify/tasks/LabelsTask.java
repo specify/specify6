@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.specify.tasks;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import it.businesslogic.ireport.gui.MainFrame;
 
 import java.awt.Frame;
@@ -55,7 +55,7 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.GhostActionableDropManager;
@@ -203,7 +203,7 @@ public class LabelsTask extends BaseTask
         if (recordSet.getItems().size() > 200) // XXX Pref
         {
             Object[] options = {getResourceString("CreateLabels"), getResourceString("Cancel")};
-            int n = JOptionPane.showOptionDialog(UICacheManager.get(UICacheManager.FRAME),
+            int n = JOptionPane.showOptionDialog(UIRegistry.get(UIRegistry.FRAME),
                                                 String.format(getResourceString("LotsOfLabels"), new Object[] {(recordSet.getItems().size())}),
                                                 getResourceString("LotsOfLabelsTitle"),
                                                 JOptionPane.YES_NO_OPTION,
@@ -249,7 +249,7 @@ public class LabelsTask extends BaseTask
 
         } else
         {
-            ChooseFromListDlg<NavBoxItemIFace> dlg = new ChooseFromListDlg<NavBoxItemIFace>((Frame)UICacheManager.get(UICacheManager.TOPFRAME),
+            ChooseFromListDlg<NavBoxItemIFace> dlg = new ChooseFromListDlg<NavBoxItemIFace>((Frame)UIRegistry.get(UIRegistry.TOPFRAME),
                                                                                             getResourceString("ChooseLabel"),
                                                                                             labelsList, 
                                                                                             IconManager.getIcon(name, IconManager.IconSize.Std24));
@@ -550,7 +550,7 @@ public class LabelsTask extends BaseTask
                 {
                     if (nbi instanceof GhostActionable)
                     {
-                        gpa.addGhostDropListener(new GhostActionableDropManager(UICacheManager.getGlassPane(), nbi.getUIComponent(), ga));
+                        gpa.addGhostDropListener(new GhostActionableDropManager(UIRegistry.getGlassPane(), nbi.getUIComponent(), ga));
                     }
                  }
             }

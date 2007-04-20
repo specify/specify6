@@ -1,6 +1,6 @@
 package edu.ku.brc.specify.tasks.subpane.wb;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Frame;
 import java.util.List;
@@ -14,7 +14,7 @@ import edu.ku.brc.services.biogeomancer.BioGeomancerResultsDisplay;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 
 public class BioGeomancerResultsChooser extends CustomDialog
@@ -149,7 +149,7 @@ public class BioGeomancerResultsChooser extends CustomDialog
         }
         catch (Exception e)
         {
-            UICacheManager.getStatusBar().setErrorMessage("Error while displaying BioGeomancer results", e);
+            UIRegistry.getStatusBar().setErrorMessage("Error while displaying BioGeomancer results", e);
             super.setVisible(false);
         }
     }

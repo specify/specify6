@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.specify.tasks;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.datatransfer.DataFlavor;
@@ -55,7 +55,7 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.Trash;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.DataActionEvent;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.FormHelper;
@@ -188,7 +188,7 @@ public class RecordSetTask extends BaseTask
         NavBoxMgr.getInstance().invalidate();
         NavBoxMgr.getInstance().doLayout();
         NavBoxMgr.getInstance().repaint();
-        UICacheManager.forceTopFrameRepaint();
+        UIRegistry.forceTopFrameRepaint();
 
         CommandDispatcher.dispatch(new CommandAction("Labels", "NewRecordSet", nbi));
     }
@@ -360,7 +360,7 @@ public class RecordSetTask extends BaseTask
                     }
                     session.close();
                 }
-                String rsName  = JOptionPane.showInputDialog(UICacheManager.get(UICacheManager.FRAME), 
+                String rsName  = JOptionPane.showInputDialog(UIRegistry.get(UIRegistry.FRAME), 
                                                              getResourceString("AskForRSName"), intialName);
                 if (isNotEmpty(rsName))
                 {

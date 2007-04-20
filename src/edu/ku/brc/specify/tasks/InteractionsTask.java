@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.specify.tasks;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Component;
 import java.awt.Frame;
@@ -85,7 +85,7 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.Trash;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
@@ -422,7 +422,7 @@ public class InteractionsTask extends BaseTask
                 {
                     public Object construct()
                     {
-                        JStatusBar statusBar = UICacheManager.getStatusBar();
+                        JStatusBar statusBar = UIRegistry.getStatusBar();
                         statusBar.setIndeterminate(true);
                         statusBar.setText(getResourceString("CreatingLoan"));
                         
@@ -475,7 +475,7 @@ public class InteractionsTask extends BaseTask
                     //Runs on the event-dispatching thread.
                     public void finished()
                     {
-                        JStatusBar statusBar = UICacheManager.getStatusBar();
+                        JStatusBar statusBar = UIRegistry.getStatusBar();
                         statusBar.setIndeterminate(false);
                         statusBar.setText("");
                     }
@@ -506,7 +506,7 @@ public class InteractionsTask extends BaseTask
 
         } else
         {
-            ChooseFromListDlg<NavBoxItemIFace> dlg = new ChooseFromListDlg<NavBoxItemIFace>((Frame)UICacheManager.get(UICacheManager.TOPFRAME),
+            ChooseFromListDlg<NavBoxItemIFace> dlg = new ChooseFromListDlg<NavBoxItemIFace>((Frame)UIRegistry.get(UIRegistry.TOPFRAME),
                                                                                             getResourceString("ChooseInvoice"), 
                                                                                             invoiceList, 
                                                                                             IconManager.getIcon(name, IconManager.IconSize.Std24));
@@ -602,7 +602,7 @@ public class InteractionsTask extends BaseTask
             
         } else
         {
-            UICacheManager.displayErrorDlgLocalized("ERROR_MISSING_RS_OR_NOITEMS");  
+            UIRegistry.displayErrorDlgLocalized("ERROR_MISSING_RS_OR_NOITEMS");  
         }
     }
 
@@ -628,7 +628,7 @@ public class InteractionsTask extends BaseTask
         if (printLoan == null)
         {
             Object[] options = {getResourceString("CreateLoanInvoice"), getResourceString("Cancel")};
-            int n = JOptionPane.showOptionDialog(UICacheManager.get(UICacheManager.FRAME),
+            int n = JOptionPane.showOptionDialog(UIRegistry.get(UIRegistry.FRAME),
                                                 String.format(getResourceString("CreateLoanInvoiceForNum"), new Object[] {(loan.getLoanNumber())}),
                                                 getResourceString("CreateLoanInvoice"),
                                                 JOptionPane.YES_NO_OPTION,
@@ -647,12 +647,12 @@ public class InteractionsTask extends BaseTask
                 //session.attach(loan);
                 if (loan.getShipments().size() == 0)
                 {
-                    UICacheManager.displayErrorDlg(getResourceString("NO_SHIPMENTS_ERROR"));
+                    UIRegistry.displayErrorDlg(getResourceString("NO_SHIPMENTS_ERROR"));
                     
                 } else if (loan.getShipments().size() > 1)
                 {
                     // XXX Do we allow them to pick a shipment or print all?
-                    UICacheManager.displayErrorDlg(getResourceString("MULTI_SHIPMENTS_NOT_SUPPORTED"));
+                    UIRegistry.displayErrorDlg(getResourceString("MULTI_SHIPMENTS_NOT_SUPPORTED"));
                     
                 } else
                 {
@@ -663,16 +663,16 @@ public class InteractionsTask extends BaseTask
                     Shipment shipment = loan.getShipments().iterator().next();
                     if (shipment.getShippedBy() == null)
                     {
-                        UICacheManager.displayErrorDlg(getResourceString("SHIPMENT_MISSING_SHIPPEDBY"));
+                        UIRegistry.displayErrorDlg(getResourceString("SHIPMENT_MISSING_SHIPPEDBY"));
                     } else if (shipment.getShippedBy().getAddresses().size() == 0)
                     {
-                        UICacheManager.displayErrorDlg(getResourceString("SHIPPEDBY_MISSING_ADDR"));
+                        UIRegistry.displayErrorDlg(getResourceString("SHIPPEDBY_MISSING_ADDR"));
                     } else if (shipment.getShippedTo() == null)
                     {
-                        UICacheManager.displayErrorDlg(getResourceString("SHIPMENT_MISSING_SHIPPEDTO"));
+                        UIRegistry.displayErrorDlg(getResourceString("SHIPMENT_MISSING_SHIPPEDTO"));
                     } else if (shipment.getShippedTo().getAddresses().size() == 0)
                     {
-                        UICacheManager.displayErrorDlg(getResourceString("SHIPPEDTO_MISSING_ADDR"));
+                        UIRegistry.displayErrorDlg(getResourceString("SHIPPEDTO_MISSING_ADDR"));
                     } else
                     {
                         //session.close();
@@ -723,7 +723,7 @@ public class InteractionsTask extends BaseTask
                     final Hashtable<String, String> emailPrefs = new Hashtable<String, String>();
                     if (!EMailHelper.isEMailPrefsOK(emailPrefs))
                     {
-                        JOptionPane.showMessageDialog(UICacheManager.get(UICacheManager.TOPFRAME), 
+                        JOptionPane.showMessageDialog(UIRegistry.get(UIRegistry.TOPFRAME), 
                                 getResourceString("NO_EMAIL_PREF_INFO"), 
                                 getResourceString("NO_EMAIL_PREF_INFO_TITLE"), JOptionPane.WARNING_MESSAGE);
                         return;
@@ -737,7 +737,7 @@ public class InteractionsTask extends BaseTask
                     emailPrefs.put("bodytext", "");
                     emailPrefs.put("attachedFileName", tempExcelFileName.getName());
                     
-                    final Frame topFrame = (Frame)UICacheManager.get(UICacheManager.TOPFRAME);
+                    final Frame topFrame = (Frame)UIRegistry.get(UIRegistry.TOPFRAME);
                     final ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog(topFrame,
                                                   "SystemSetup",
                                                   "SendMail",
@@ -774,7 +774,7 @@ public class InteractionsTask extends BaseTask
                                 SwingUtilities.invokeLater(new Runnable() {
                                     public void run()
                                     {
-                                        UICacheManager.displayLocalizedStatusBarText("SENDING_EMAIL");
+                                        UIRegistry.displayLocalizedStatusBarText("SENDING_EMAIL");
                                     }
                                 });
                                 
@@ -795,7 +795,7 @@ public class InteractionsTask extends BaseTask
                                     SwingUtilities.invokeLater(new Runnable() {
                                         public void run()
                                         {
-                                            UICacheManager.displayLocalizedStatusBarText(status ? "EMAIL_SENT_ERROR" : "EMAIL_SENT_OK");
+                                            UIRegistry.displayLocalizedStatusBarText(status ? "EMAIL_SENT_ERROR" : "EMAIL_SENT_OK");
                                         }
                                     });
                                 }
@@ -864,7 +864,7 @@ public class InteractionsTask extends BaseTask
         {
             public Object construct()
             {
-                JStatusBar statusBar = UICacheManager.getStatusBar();
+                JStatusBar statusBar = UIRegistry.getStatusBar();
                 statusBar.setIndeterminate(true);
                 statusBar.setText(getResourceString("ReturningLoanItems"));
                 
@@ -893,7 +893,7 @@ public class InteractionsTask extends BaseTask
             //Runs on the event-dispatching thread.
             public void finished()
             {
-                JStatusBar statusBar = UICacheManager.getStatusBar();
+                JStatusBar statusBar = UIRegistry.getStatusBar();
                 statusBar.setIndeterminate(false);
                 statusBar.setText("");
             }
@@ -1025,7 +1025,7 @@ public class InteractionsTask extends BaseTask
             {
                 if (((RecordSetIFace)cmdAction.getData()).getDbTableId() != cmdAction.getTableId())
                 {
-                    JOptionPane.showMessageDialog(UICacheManager.get(UICacheManager.TOPFRAME), 
+                    JOptionPane.showMessageDialog(UIRegistry.get(UIRegistry.TOPFRAME), 
                                                   getResourceString("ERROR_RECORDSET_TABLEID"), 
                                                   getResourceString("Error"), 
                                                   JOptionPane.ERROR_MESSAGE);

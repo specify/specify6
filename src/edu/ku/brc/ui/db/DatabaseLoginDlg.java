@@ -14,14 +14,14 @@
  */
 package edu.ku.brc.ui.db;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Frame;
 
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * This dialog simply wraps the DatabaseLoginPanel
@@ -57,7 +57,7 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
         dbPanel = new DatabaseLoginPanel(this, true);
         setContentPane(dbPanel);
 
-        setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
+        setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         this.setModal(true);
 

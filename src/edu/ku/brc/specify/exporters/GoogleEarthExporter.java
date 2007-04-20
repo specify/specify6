@@ -6,7 +6,7 @@
  */
 package edu.ku.brc.specify.exporters;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,7 +26,7 @@ import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.dbsupport.RecordSetLoader;
 import edu.ku.brc.specify.tasks.services.KeyholeMarkupGenerator;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.Pair;
 import edu.ku.brc.util.services.GenericKmlGenerator;
@@ -91,7 +91,7 @@ public class GoogleEarthExporter implements RecordSetExporter
     protected void exportCollectionObjectRecordSet(@SuppressWarnings("unused") RecordSet data)
     {
         log.info("Exporting a RecordSet of CollectionObjects");
-        JFrame topFrame = (JFrame)UICacheManager.get(UICacheManager.TOPFRAME);
+        JFrame topFrame = (JFrame)UIRegistry.get(UIRegistry.TOPFRAME);
         Icon icon = IconManager.getIcon(getIconName());
         JOptionPane.showMessageDialog(topFrame, "Not yet implemented", getName() + " data export", JOptionPane.ERROR_MESSAGE, icon);
     }

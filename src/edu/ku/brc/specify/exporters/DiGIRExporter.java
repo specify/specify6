@@ -1,6 +1,6 @@
 package edu.ku.brc.specify.exporters;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.util.List;
 import java.util.Properties;
@@ -12,7 +12,7 @@ import javax.swing.JOptionPane;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 
 public class DiGIRExporter implements RecordSetExporter
 {
@@ -20,7 +20,7 @@ public class DiGIRExporter implements RecordSetExporter
     
     public void exportRecordSet(RecordSet data, Properties reqParams)
     {
-        JFrame topFrame = (JFrame)UICacheManager.get(UICacheManager.TOPFRAME);
+        JFrame topFrame = (JFrame)UIRegistry.get(UIRegistry.TOPFRAME);
         Icon icon = IconManager.getIcon(NAME);
         JOptionPane.showMessageDialog(topFrame, "Not yet implemented", NAME + " data export", JOptionPane.ERROR_MESSAGE, icon);
     }

@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.specify.plugins;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Color;
 import java.awt.Insets;
@@ -47,7 +47,7 @@ import edu.ku.brc.specify.extras.FishBaseInfoGetterListener;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIPluginable;
 import edu.ku.brc.ui.ViewBasedDialogFactoryIFace;
@@ -91,7 +91,7 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
         String species = taxon.getName();
         String genus   = taxon.getParent().getName();
 
-        frame = UICacheManager.getViewbasedFactory().createDisplay(UIHelper.getFrame(this),
+        frame = UIRegistry.getViewbasedFactory().createDisplay(UIHelper.getFrame(this),
                                                                    "FishBase",
                                                                    "Fish Base Information",
                                                                    getResourceString("Close"),

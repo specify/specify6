@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.helpers;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.Frame;
@@ -54,7 +54,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.sun.mail.smtp.SMTPTransport;
 
 import edu.ku.brc.af.prefs.AppPreferences;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * Sends an email with optional attachment
@@ -436,7 +436,7 @@ public class EMailHelper
 
             if (!hasEMailSettings(usernameStr, passwordStr, emailStr, smtpStr, serverNameStr, acctTypeStr, localMailBoxStr))
             {
-                JOptionPane.showMessageDialog(UICacheManager.getMostRecentFrame(), getResourceString("emailsetnotvalid"));
+                JOptionPane.showMessageDialog(UIRegistry.getMostRecentFrame(), getResourceString("emailsetnotvalid"));
             }
 
             // Open Local Box if POP

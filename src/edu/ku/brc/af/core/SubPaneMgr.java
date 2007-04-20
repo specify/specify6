@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.ui.ExtendedTabbedPane;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * Manages all the SubPanes that are in the main Tabbed pane. It notifies listeners when SubPanes are added, removed or Shown.
@@ -109,7 +109,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             throw new NullPointerException("Null name or pane when adding to SubPaneMgr");
         }
         
-        UICacheManager.getStatusBar().setText("");
+        UIRegistry.getStatusBar().setText("");
         
         if (instance.panes.contains(pane))
         {
@@ -138,7 +138,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      */
     protected void adjustCloseAllMenu()
     {
-        Action closeAll = UICacheManager.getAction("CloseAll");
+        Action closeAll = UIRegistry.getAction("CloseAll");
         if (closeAll != null)
         {
             closeAll.setEnabled(panes.size() > 1  || TaskMgr.getVisibleTaskCount() > 1);
@@ -153,7 +153,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      */
     public SubPaneIFace renamePane(final SubPaneIFace pane, final String newName)
     {
-        UICacheManager.getStatusBar().setText("");
+        UIRegistry.getStatusBar().setText("");
         
         if (panes.get(pane.getPaneName()) != null)
         {
@@ -181,7 +181,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      */
     public SubPaneIFace replacePane(final SubPaneIFace oldPane, final SubPaneIFace newPane)
     {
-        UICacheManager.getStatusBar().setText("");
+        UIRegistry.getStatusBar().setText("");
         
         //System.err.println("SubPaneMgr::replacePane ************************************************");
 
@@ -234,7 +234,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      */
     public boolean removePane(final SubPaneIFace pane)
     {
-        UICacheManager.getStatusBar().setText("");
+        UIRegistry.getStatusBar().setText("");
         
         if (currentPane == pane)
         {
@@ -344,7 +344,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
       */
     public SubPaneIFace showPane(final String name)
     {
-        UICacheManager.getStatusBar().setText("");
+        UIRegistry.getStatusBar().setText("");
         
         // Look the the desired pane
         SubPaneIFace pane = panes.get(name);

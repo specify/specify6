@@ -37,7 +37,7 @@ import javax.swing.JScrollPane;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * This organized NavBoxItemIFace object in a vertical layout (via a layout manager)<br>
@@ -485,7 +485,7 @@ public class NavBox extends JPanel implements NavBoxIFace
             Component c = (Component)nbi;
             log.debug("nbi "+c.getPreferredSize()+" "+c.getSize());
         }*/
-        UICacheManager.forceTopFrameRepaint();
+        UIRegistry.forceTopFrameRepaint();
     }
     
     public static void refresh(final NavBoxItemIFace nbi)

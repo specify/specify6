@@ -15,7 +15,7 @@
 
 package edu.ku.brc.specify.tasks.subpane;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -74,7 +74,7 @@ import edu.ku.brc.specify.tasks.services.LocalityMapper;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ImageDisplay;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.ControlBarPanel;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
@@ -385,7 +385,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
             {
                 try
                 {
-                    UICacheManager.displayStatusBarText("Exporting Collecting Events in KML."); // XXX I18N
+                    UIRegistry.displayStatusBarText("Exporting Collecting Events in KML."); // XXX I18N
                     kmlGen.setSpeciesToImageMapper(imageURLs);
                     kmlGen.outputToFile(System.getProperty("user.home")+File.separator+"specify.kml");
 

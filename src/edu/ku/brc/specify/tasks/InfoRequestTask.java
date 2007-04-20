@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.specify.tasks;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Component;
 import java.awt.Frame;
@@ -68,7 +68,7 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.Trash;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
@@ -292,7 +292,7 @@ public class InfoRequestTask extends BaseTask
             NavBoxMgr.getInstance().invalidate();
             NavBoxMgr.getInstance().doLayout();
             NavBoxMgr.getInstance().repaint();
-            UICacheManager.forceTopFrameRepaint();
+            UIRegistry.forceTopFrameRepaint();
         }
     }
     
@@ -411,7 +411,7 @@ public class InfoRequestTask extends BaseTask
                     final Hashtable<String, String> emailPrefs = new Hashtable<String, String>();
                     if (!isEMailPrefsOK(emailPrefs))
                     {
-                        JOptionPane.showMessageDialog(UICacheManager.get(UICacheManager.TOPFRAME), 
+                        JOptionPane.showMessageDialog(UIRegistry.get(UIRegistry.TOPFRAME), 
                                 getResourceString("NO_EMAIL_PREF_INFO"), 
                                 getResourceString("NO_EMAIL_PREF_INFO_TITLE"), JOptionPane.WARNING_MESSAGE);
                         return;
@@ -427,7 +427,7 @@ public class InfoRequestTask extends BaseTask
                     values.put("bodytext", "");
                     values.put("attachedFileName", tempExcelFileName.getName());
                     
-                    final ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame)UICacheManager.get(UICacheManager.TOPFRAME),
+                    final ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame)UIRegistry.get(UIRegistry.TOPFRAME),
                                                   "SystemSetup",
                                                   "SendMail",
                                                   null,
@@ -461,11 +461,11 @@ public class InfoRequestTask extends BaseTask
                                 //EMailHelper.setDebugging(true);
                                 String text = values.get("bodytext").replace("\n", "<br>") + "<BR><BR>" + sb.toString();
                                 
-                                // XXX need to move the invokdeLater into the UICacheManager
+                                // XXX need to move the invokdeLater into the UIRegistry
                                 SwingUtilities.invokeLater(new Runnable() {
                                     public void run()
                                     {
-                                        UICacheManager.displayLocalizedStatusBarText("SENDING_EMAIL");
+                                        UIRegistry.displayLocalizedStatusBarText("SENDING_EMAIL");
                                     }
                                 });
                                 
@@ -480,7 +480,7 @@ public class InfoRequestTask extends BaseTask
                                     SwingUtilities.invokeLater(new Runnable() {
                                         public void run()
                                         {
-                                            UICacheManager.displayLocalizedStatusBarText(status ? "EMAIL_SENT_ERROR" : "EMAIL_SENT_OK");
+                                            UIRegistry.displayLocalizedStatusBarText(status ? "EMAIL_SENT_ERROR" : "EMAIL_SENT_OK");
                                         }
                                     });
                                 }

@@ -22,7 +22,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.ConfigureXLS;
 import edu.ku.brc.specify.tasks.subpane.wb.DataExport;
 import edu.ku.brc.specify.tasks.subpane.wb.XLSExport;
 import edu.ku.brc.ui.JStatusBar;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author timbo
@@ -58,10 +58,10 @@ public class ExportToFile implements RecordSetExporter
         if (exporter != null)
         {
             String name = FilenameUtils.getName(exporter.getConfig().getFileName());
-            JStatusBar statusBar = UICacheManager.getStatusBar();
+            JStatusBar statusBar = UIRegistry.getStatusBar();
             if (statusBar != null)
             {
-                statusBar.setText(String.format(UICacheManager.getResourceString("EXPORTING_TO"), new Object[] {name}));
+                statusBar.setText(String.format(UIRegistry.getResourceString("EXPORTING_TO"), new Object[] {name}));
             }
             try
             {
@@ -69,7 +69,7 @@ public class ExportToFile implements RecordSetExporter
                 
                 if (statusBar != null)
                 {
-                    statusBar.setText(String.format(UICacheManager.getResourceString("EXPORTING_DONE"), new Object[] {name}));
+                    statusBar.setText(String.format(UIRegistry.getResourceString("EXPORTING_DONE"), new Object[] {name}));
                 }
             }
             catch (IOException e)

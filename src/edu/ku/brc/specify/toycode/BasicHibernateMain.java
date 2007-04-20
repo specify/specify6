@@ -15,7 +15,7 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.tests.SpecifyAppPrefs;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.DatabaseLoginListener;
 
@@ -62,7 +62,7 @@ public class BasicHibernateMain implements DatabaseLoginListener
         // Name factories
         System.setProperty(AppContextMgr.factoryName,                   "edu.ku.brc.specify.config.SpecifyAppContextMgr"); // Needed by AppContextMgr
         System.setProperty(AppPreferences.factoryName,                  "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
-        System.setProperty("edu.ku.brc.ui.ViewBasedDialogFactoryIFace", "edu.ku.brc.specify.ui.DBObjDialogFactory");       // Needed By UICacheManager
+        System.setProperty("edu.ku.brc.ui.ViewBasedDialogFactoryIFace", "edu.ku.brc.specify.ui.DBObjDialogFactory");       // Needed By UIRegistry
         System.setProperty("edu.ku.brc.ui.forms.DraggableRecordIdentifierFactory", "edu.ku.brc.specify.ui.SpecifyDraggableRecordIdentiferFactory"); // Needed By the Form System
         System.setProperty("edu.ku.brc.dbsupport.AuditInterceptor",     "edu.ku.brc.specify.dbsupport.AuditInterceptor");       // Needed By the Form System for updating Lucene and loggin transactions
         System.setProperty("edu.ku.brc.dbsupport.DataProvider",         "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
@@ -70,12 +70,12 @@ public class BasicHibernateMain implements DatabaseLoginListener
         System.setProperty("edu.ku.brc.ui.db.TreeFinderFactory",           "edu.ku.brc.specify.treeutils.TreeFinderFactoryImpl"); // needed for treequerycbx components
 
         IconManager.setApplicationClass(Specify.class);
-        UICacheManager.getInstance(); // initializes it first thing
-        UICacheManager.setAppName("Specify");
+        UIRegistry.getInstance(); // initializes it first thing
+        UIRegistry.setAppName("Specify");
 
         // Load Local Prefs
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-        localPrefs.setDirPath(UICacheManager.getDefaultWorkingPath());
+        localPrefs.setDirPath(UIRegistry.getDefaultWorkingPath());
         localPrefs.load();
 
         BasicHibernateMain tester = new BasicHibernateMain();

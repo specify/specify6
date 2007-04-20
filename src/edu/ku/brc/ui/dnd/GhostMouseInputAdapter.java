@@ -30,7 +30,7 @@ import javax.swing.event.MouseInputAdapter;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.GhostGlassPane.ImagePaintMode;
 
 /**
@@ -211,7 +211,7 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
 
         glassPane.setPoint(p, paintPositionMode);
 
-        JComponent rootPane = (JComponent)UICacheManager.get(UICacheManager.MAINPANE);
+        JComponent rootPane = (JComponent)UIRegistry.get(UIRegistry.MAINPANE);
 
         // find the component that under this point
         Component dropComponent;
@@ -378,7 +378,7 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
 
         // Translate the Point from current component to the Main pane
         // which is the same size as the ghost pane
-        JComponent rootPane = (JComponent)UICacheManager.get(UICacheManager.MAINPANE);
+        JComponent rootPane = (JComponent)UIRegistry.get(UIRegistry.MAINPANE);
         Point      pp       = (Point) pnt.clone();
         SwingUtilities.convertPointToScreen(pp, c);
         SwingUtilities.convertPointFromScreen(pp, rootPane);

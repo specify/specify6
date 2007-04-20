@@ -15,7 +15,7 @@
 package edu.ku.brc.specify.tests;
 
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -101,7 +101,7 @@ import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.tests.forms.TestDataObj;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.DatabaseLoginDlg;
 import edu.ku.brc.ui.db.DatabaseLoginListener;
@@ -160,8 +160,8 @@ public class FormEditor implements DatabaseLoginListener
     @SuppressWarnings("unused")
     private void initialize()
     {
-        UICacheManager.getInstance(); // initializes it first thing
-        UICacheManager.setAppName("Specify");
+        UIRegistry.getInstance(); // initializes it first thing
+        UIRegistry.setAppName("Specify");
         IconManager.setApplicationClass(Specify.class);
         
         /*
@@ -174,18 +174,18 @@ public class FormEditor implements DatabaseLoginListener
         System.setProperty("edu.ku.brc.af.core.AppContextMgrFactory", "edu.ku.brc.specify.config.SpecifyAppContextMgr");
         System.setProperty("AppPrefsIOClassName", "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");
         
-        UICacheManager.getInstance(); // initializes it first thing
-        UICacheManager.setAppName("Specify");
+        UIRegistry.getInstance(); // initializes it first thing
+        UIRegistry.setAppName("Specify");
         IconManager.setApplicationClass(Specify.class);
         
         
         // Load Local Prefs
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-        localPrefs.setDirPath(UICacheManager.getDefaultWorkingPath());
+        localPrefs.setDirPath(UIRegistry.getDefaultWorkingPath());
         localPrefs.load();
         
         
-        FileCache.setDefaultPath(UICacheManager.getDefaultWorkingPath());
+        FileCache.setDefaultPath(UIRegistry.getDefaultWorkingPath());
 
         try
         {
@@ -511,7 +511,7 @@ public class FormEditor implements DatabaseLoginListener
 
 
             contentPane.doLayout();
-            UICacheManager.forceTopFrameRepaint();
+            UIRegistry.forceTopFrameRepaint();
 
             mainFrame.invalidate();
             mainFrame.doLayout();
@@ -748,7 +748,7 @@ public class FormEditor implements DatabaseLoginListener
 
         builder = new PanelBuilder(new FormLayout("p", "p"), contentPane);
 
-        UICacheManager.register(UICacheManager.TOPFRAME, mainFrame);
+        UIRegistry.register(UIRegistry.TOPFRAME, mainFrame);
 
         JMenuBar menuBar = createMenus();
         if (menuBar != null)
@@ -1244,7 +1244,7 @@ public class FormEditor implements DatabaseLoginListener
             {
                 System.setProperty(AppContextMgr.factoryName,                   "edu.ku.brc.specify.config.SpecifyAppContextMgr"); // Needed by AppContextMgr
                 System.setProperty(AppPreferences.factoryName,                  "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
-                System.setProperty("edu.ku.brc.ui.ViewBasedDialogFactoryIFace", "edu.ku.brc.specify.ui.DBObjDialogFactory");       // Needed By UICacheManager
+                System.setProperty("edu.ku.brc.ui.ViewBasedDialogFactoryIFace", "edu.ku.brc.specify.ui.DBObjDialogFactory");       // Needed By UIRegistry
                 System.setProperty("edu.ku.brc.ui.forms.DraggableRecordIdentifierFactory", "edu.ku.brc.specify.ui.SpecifyDraggableRecordIdentiferFactory"); // Needed By the Form System
                 System.setProperty("edu.ku.brc.dbsupport.AuditInterceptor",     "edu.ku.brc.specify.dbsupport.AuditInterceptor");       // Needed By the Form System for updating Lucene and logging transactions
                 System.setProperty("edu.ku.brc.dbsupport.DataProvider",         "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
@@ -1252,8 +1252,8 @@ public class FormEditor implements DatabaseLoginListener
                 System.setProperty("edu.ku.brc.ui.db.TreeFinderFactory",        "edu.ku.brc.specify.treeutils.TreeFinderFactoryImpl"); // needed for treequerycbx components
                 
                 IconManager.setApplicationClass(Specify.class);
-                UICacheManager.getInstance(); // initializes it first thing
-                UICacheManager.setAppName("Specify");
+                UIRegistry.getInstance(); // initializes it first thing
+                UIRegistry.setAppName("Specify");
                 
                 String hostName = "localhost";
                 
@@ -1273,7 +1273,7 @@ public class FormEditor implements DatabaseLoginListener
                     //dlg.setModal(true);
                     GhostGlassPane glassPane = new GhostGlassPane();
                     dlg.setGlassPane(glassPane);
-                    UICacheManager.register(UICacheManager.GLASSPANE, glassPane);
+                    UIRegistry.register(UIRegistry.GLASSPANE, glassPane);
                     ColumnMapperDlg mapper = new ColumnMapperDlg(dlg, dataFileInfo);
                     dlg.setContentPane(mapper);
                     dlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -1326,14 +1326,14 @@ public class FormEditor implements DatabaseLoginListener
                 System.setProperty("edu.ku.brc.af.core.AppContextMgrFactory", "edu.ku.brc.specify.config.SpecifyAppContextMgr");
                 System.setProperty("AppPrefsIOClassName", "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");
                 
-                UICacheManager.getInstance(); // initializes it first thing
-                UICacheManager.setAppName("Specify");
+                UIRegistry.getInstance(); // initializes it first thing
+                UIRegistry.setAppName("Specify");
                 IconManager.setApplicationClass(Specify.class);
                 
                 
                 // Load Local Prefs
                 AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-                localPrefs.setDirPath(UICacheManager.getDefaultWorkingPath());
+                localPrefs.setDirPath(UIRegistry.getDefaultWorkingPath());
                 localPrefs.load();
                 
                 AppPrefsCache.reset();
@@ -1351,7 +1351,7 @@ public class FormEditor implements DatabaseLoginListener
                 AppPrefsCache.register(viewFieldColor, "ui", "formatting", "viewfieldcolor");
                 
                 
-                FileCache.setDefaultPath(UICacheManager.getDefaultWorkingPath());
+                FileCache.setDefaultPath(UIRegistry.getDefaultWorkingPath());
 
                 
                 /*
@@ -1583,7 +1583,7 @@ frame.setVisible(true);
             
             setTitle("View Sets");
             
-            //setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
+            //setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));
             setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
             pack();
         }

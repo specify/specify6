@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.specify.tasks;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.Color;
@@ -79,7 +79,7 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.JAutoCompTextField;
 import edu.ku.brc.ui.db.PickListDBAdapterFactory;
 /**
@@ -160,7 +160,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
         SpecifyAppContextMgr appContext = (SpecifyAppContextMgr)AppContextMgr.getInstance();
         if (appContext != null)
         {
-            String luceneLocPref = AppPreferences.getLocalPrefs().get("ui.misc.luceneLocation", UICacheManager.getDefaultWorkingPath());
+            String luceneLocPref = AppPreferences.getLocalPrefs().get("ui.misc.luceneLocation", UIRegistry.getDefaultWorkingPath());
             AppPreferences.getLocalPrefs().put("ui.misc.luceneLocation", luceneLocPref);
             
             path = new File(luceneLocPref + File.separator + appContext.getDatabaseName() + File.separator + "index-dir");
@@ -385,7 +385,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
                 addSubPaneToMgr(expressSearchPane);
             } else
             {
-                UICacheManager.displayLocalizedStatusBarText("NoExpressSearchResults");
+                UIRegistry.displayLocalizedStatusBarText("NoExpressSearchResults");
             }
             AppPreferences.getLocalPrefs().put(LAST_SEARCH, searchTerm);
         }
@@ -784,13 +784,13 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
 
         } catch (ParseException ex)
         {
-            JOptionPane.showMessageDialog(UICacheManager.get(UICacheManager.FRAME), getResourceString("BadQuery"), getResourceString("BadQueryTitle"), JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(UIRegistry.get(UIRegistry.FRAME), getResourceString("BadQuery"), getResourceString("BadQueryTitle"), JOptionPane.ERROR_MESSAGE);
             log.error(ex);
 
         } catch (IOException ex)
         {
             // XXX Change message
-            JOptionPane.showMessageDialog(UICacheManager.get(UICacheManager.FRAME), getResourceString("BadQuery"), getResourceString("BadQueryTitle"), JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(UIRegistry.get(UIRegistry.FRAME), getResourceString("BadQuery"), getResourceString("BadQueryTitle"), JOptionPane.ERROR_MESSAGE);
             log.error(ex);
         }
         

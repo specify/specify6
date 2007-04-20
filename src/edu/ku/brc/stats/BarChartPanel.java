@@ -15,7 +15,7 @@
 
 package edu.ku.brc.stats;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIHelper.getInt;
 import static edu.ku.brc.ui.UIHelper.getString;
 
@@ -35,7 +35,7 @@ import edu.ku.brc.dbsupport.QueryResultsHandlerIFace;
 import edu.ku.brc.dbsupport.QueryResultsListener;
 import edu.ku.brc.dbsupport.QueryResultsProcessable;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 
 
 /**
@@ -125,7 +125,7 @@ public class BarChartPanel extends ChartPanel implements QueryResultsListener, Q
         getParent().getParent().validate();
         getParent().getParent().repaint();
         */
-        UICacheManager.forceTopFrameRepaint();
+        UIRegistry.forceTopFrameRepaint();
     }
 
     /*
@@ -180,7 +180,7 @@ public class BarChartPanel extends ChartPanel implements QueryResultsListener, Q
         repaint();
         
         // TODO This is a kludge for now to get the BarChart to Paint Correctly
-        UICacheManager.forceTopFrameRepaint();
+        UIRegistry.forceTopFrameRepaint();
 
     }
 

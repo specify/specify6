@@ -23,7 +23,7 @@ import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
@@ -227,7 +227,7 @@ public class DraggableRecordIdentifier extends JComponent implements GhostAction
      */
     public void createMouseInputAdapter()
     {
-        mouseInputAdapter = new GhostMouseInputAdapter(UICacheManager.getGlassPane(), "action", this);
+        mouseInputAdapter = new GhostMouseInputAdapter(UIRegistry.getGlassPane(), "action", this);
         addMouseListener(mouseInputAdapter);
         addMouseMotionListener(mouseInputAdapter);
     }

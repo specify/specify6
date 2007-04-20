@@ -11,7 +11,7 @@ import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.ui.CommandAction;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
@@ -289,7 +289,7 @@ public class FormPane extends DroppableTaskPane
                 cacheDesc = desc;
                 desc      = null;
                 doLayout();
-                UICacheManager.forceTopFrameRepaint();
+                UIRegistry.forceTopFrameRepaint();
 
             }
         } else
@@ -313,7 +313,7 @@ public class FormPane extends DroppableTaskPane
             formProcessor = null;
         }
         doLayout();
-        UICacheManager.forceTopFrameRepaint();
+        UIRegistry.forceTopFrameRepaint();
     }
 
     /**
@@ -336,11 +336,11 @@ public class FormPane extends DroppableTaskPane
 
             } else
             {
-                UICacheManager.displayErrorDlg(getResourceString("cantcreateform")+" viewset name["+viewSetName+"]  id["+viewName+"]");
+                UIRegistry.displayErrorDlg(getResourceString("cantcreateform")+" viewset name["+viewSetName+"]  id["+viewName+"]");
             }
         } else
         {
-            UICacheManager.displayErrorDlg(getResourceString("cantfindviewdef")+" viewset name["+viewSetName+"]  id["+viewName+"]");
+            UIRegistry.displayErrorDlg(getResourceString("cantfindviewdef")+" viewset name["+viewSetName+"]  id["+viewName+"]");
         }
         return null;
     }*/

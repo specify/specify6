@@ -33,7 +33,7 @@ import org.dom4j.Element;
 
 import edu.ku.brc.helpers.HTTPGetter;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 
 /*
  * @code_status Unknown (auto-generated)
@@ -71,7 +71,7 @@ public class FishBaseInfoGetter extends HTTPGetter
 
         //tmpDir = System.getProperty("java.io.tmpdir");
         // XXX Will use long term cache in future
-        File path = UICacheManager.getDefaultWorkingPathSubDir("cache", true);
+        File path = UIRegistry.getDefaultWorkingPathSubDir("cache", true);
         if (path.exists())
         {
             tmpDir = path.getAbsolutePath();

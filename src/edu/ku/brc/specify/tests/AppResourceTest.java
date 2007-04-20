@@ -31,7 +31,7 @@ import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -53,18 +53,18 @@ public class AppResourceTest extends TestCase
         //-----------------------------------------------------
         // This is needed for loading views
         //-----------------------------------------------------
-        UICacheManager.getInstance(); // initializes it first thing
-        if (UICacheManager.getAppName() == null) // this is needed because the setUp gets run separately for each test
+        UIRegistry.getInstance(); // initializes it first thing
+        if (UIRegistry.getAppName() == null) // this is needed because the setUp gets run separately for each test
         {
             System.setProperty("edu.ku.brc.af.core.AppContextMgrFactory", "edu.ku.brc.specify.config.SpecifyAppContextMgr");
             System.setProperty("AppPrefsIOClassName", "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");
             
-            UICacheManager.getInstance(); // initializes it first thing
-            UICacheManager.setAppName("Specify");
+            UIRegistry.getInstance(); // initializes it first thing
+            UIRegistry.setAppName("Specify");
 
             // Load Local Prefs
             AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-            localPrefs.setDirPath(UICacheManager.getDefaultWorkingPath());
+            localPrefs.setDirPath(UIRegistry.getDefaultWorkingPath());
             localPrefs.load();
 
             String hostName = "localhost";

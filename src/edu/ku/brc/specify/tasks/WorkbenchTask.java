@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.specify.tasks;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.FileDialog;
 import java.awt.Frame;
@@ -97,7 +97,7 @@ import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.Trash;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.forms.MultiView;
@@ -561,7 +561,7 @@ public class WorkbenchTask extends BaseTask
                                          final Object data)
     {
         ViewBasedDisplayDialog editorDlg = new ViewBasedDisplayDialog(
-                (Frame)UICacheManager.get(UICacheManager.TOPFRAME),
+                (Frame)UIRegistry.get(UIRegistry.TOPFRAME),
                 "Global",
                 viewSetName,
                 null,
@@ -597,10 +597,10 @@ public class WorkbenchTask extends BaseTask
         TemplateEditor  mapper;
         if (template != null)
         {
-            mapper = new TemplateEditor((Frame)UICacheManager.get(UICacheManager.FRAME), getResourceString(titleKey), template);
+            mapper = new TemplateEditor((Frame)UIRegistry.get(UIRegistry.FRAME), getResourceString(titleKey), template);
         } else
         {
-            mapper = new TemplateEditor((Frame)UICacheManager.get(UICacheManager.FRAME), getResourceString(titleKey), dataFileInfo);
+            mapper = new TemplateEditor((Frame)UIRegistry.get(UIRegistry.FRAME), getResourceString(titleKey), dataFileInfo);
         }
         UIHelper.centerAndShow(mapper);
         return mapper;
@@ -728,7 +728,7 @@ public class WorkbenchTask extends BaseTask
         // Ask the user to choose an existing template.
         if (matchingTemplates.size() > 0)
         {
-            ChooseFromListDlg<WorkbenchTemplate> dlg = new ChooseFromListDlg<WorkbenchTemplate>((Frame)UICacheManager.get(UICacheManager.FRAME), 
+            ChooseFromListDlg<WorkbenchTemplate> dlg = new ChooseFromListDlg<WorkbenchTemplate>((Frame)UIRegistry.get(UIRegistry.FRAME), 
                     getResourceString("WB_CHOOSE_DATASET_REUSE_TITLE"), 
                     getResourceString("WB_CHOOSE_DATASET_REUSE"), 
                     ChooseFromListDlg.OKCANCELAPPLYHELP,
@@ -807,7 +807,7 @@ public class WorkbenchTask extends BaseTask
         } else
         {
             ChooseFromListDlg<ExportFileConfigurationFactory.ExportableType> dlg = 
-                new ChooseFromListDlg<ExportFileConfigurationFactory.ExportableType>((Frame) UICacheManager.get(UICacheManager.FRAME), 
+                new ChooseFromListDlg<ExportFileConfigurationFactory.ExportableType>((Frame) UIRegistry.get(UIRegistry.FRAME), 
                         getResourceString("WB_FILE_FORMAT"),
                         null,
                         ChooseFromListDlg.OKCANCELHELP, 
@@ -826,14 +826,14 @@ public class WorkbenchTask extends BaseTask
             extension = dlg.getSelectedObject().getExtension();
         }
         
-        FileDialog fileDialog = new FileDialog((Frame) UICacheManager.get(UICacheManager.FRAME),
+        FileDialog fileDialog = new FileDialog((Frame) UIRegistry.get(UIRegistry.FRAME),
                                                getResourceString("CHOOSE_WORKBENCH_EXPORT_FILE"), FileDialog.SAVE);
         UIHelper.centerAndShow(fileDialog);
 
         String fileName = fileDialog.getFile();
         if (StringUtils.isEmpty(fileName))
         {
-            UICacheManager.getStatusBar().setErrorMessage(getResourceString("WB_EXPORT_NOFILENAME"));
+            UIRegistry.getStatusBar().setErrorMessage(getResourceString("WB_EXPORT_NOFILENAME"));
             return false;
         }
         
@@ -1034,7 +1034,7 @@ public class WorkbenchTask extends BaseTask
     {
         // For ease of testing
         File file = null;
-        FileDialog fileDialog = new FileDialog((Frame)UICacheManager.get(UICacheManager.FRAME), 
+        FileDialog fileDialog = new FileDialog((Frame)UIRegistry.get(UIRegistry.FRAME), 
                                                getResourceString("CHOOSE_WORKBENCH_IMPORT_FILE"), 
                                                FileDialog.LOAD);
         
@@ -1075,7 +1075,7 @@ public class WorkbenchTask extends BaseTask
                 
             } else if (dataFileInfo.getConfig().getStatus() != ConfigureExternalDataIFace.Status.Cancel)
             {
-                JStatusBar statusBar = UICacheManager.getStatusBar();
+                JStatusBar statusBar = UIRegistry.getStatusBar();
                 statusBar.setErrorMessage(String.format(getResourceString("WB_PARSE_FILE_ERROR"), new Object[] { file.getName() }));
             }
         }
@@ -1183,7 +1183,7 @@ public class WorkbenchTask extends BaseTask
                     foundWB = session.getData(Workbench.class, "name", newWorkbenchName, DataProviderSessionIFace.CompareType.Equals);
                     if (foundWB != null)
                     {
-                        UICacheManager.getStatusBar().setErrorMessage(String.format(getResourceString("WB_DATASET_EXISTS"), new Object[] { newWorkbenchName}));
+                        UIRegistry.getStatusBar().setErrorMessage(String.format(getResourceString("WB_DATASET_EXISTS"), new Object[] { newWorkbenchName}));
                     }
                 }
                 
@@ -1198,7 +1198,7 @@ public class WorkbenchTask extends BaseTask
                         
                     }
                     // else
-                    UICacheManager.getStatusBar().setText("");
+                    UIRegistry.getStatusBar().setText("");
                     return false;
                     
                 }
@@ -1264,7 +1264,7 @@ public class WorkbenchTask extends BaseTask
             
         } else
         {
-            UICacheManager.getStatusBar().setText("");
+            UIRegistry.getStatusBar().setText("");
         }
         return workbench;
         
@@ -1315,7 +1315,7 @@ public class WorkbenchTask extends BaseTask
             
             workbench.forceLoad();
             
-            UICacheManager.writeGlassPaneMsg(String.format(getResourceString("WB_LOADING_DATASET"), new Object[] {workbench.getName()}), 32);
+            UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_LOADING_DATASET"), new Object[] {workbench.getName()}), 32);
             
             final WorkbenchTask            thisTask    = this;
             final DataProviderSessionIFace finiSession = tmpSession;
@@ -1366,7 +1366,7 @@ public class WorkbenchTask extends BaseTask
                 @Override
                 public void finished()
                 {
-                    UICacheManager.clearGlassPaneMsg();
+                    UIRegistry.clearGlassPaneMsg();
                 }
             };
             worker.start();
@@ -1510,7 +1510,7 @@ public class WorkbenchTask extends BaseTask
             return;
         }
         
-        UICacheManager.writeGlassPaneMsg(String.format(getResourceString("WB_DELETING_DATASET"), new Object[] {workbench.getName()}), 32);
+        UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_DELETING_DATASET"), new Object[] {workbench.getName()}), 32);
         
         final SwingWorker worker = new SwingWorker()
         {
@@ -1575,8 +1575,8 @@ public class WorkbenchTask extends BaseTask
             @Override
             public void finished()
             {
-                UICacheManager.clearGlassPaneMsg();
-                UICacheManager.getStatusBar().setText(String.format(getResourceString("WB_DELETED_DATASET"), new Object[] {workbench.getName()}));
+                UIRegistry.clearGlassPaneMsg();
+                UIRegistry.getStatusBar().setText(String.format(getResourceString("WB_DELETED_DATASET"), new Object[] {workbench.getName()}));
 
             }
         };
@@ -1707,7 +1707,7 @@ public class WorkbenchTask extends BaseTask
                 session.close();
                 session = null;
                 
-                ChooseFromListDlg<Workbench> dlg = new ChooseFromListDlg<Workbench>((Frame)UICacheManager.get(UICacheManager.FRAME),
+                ChooseFromListDlg<Workbench> dlg = new ChooseFromListDlg<Workbench>((Frame)UIRegistry.get(UIRegistry.FRAME),
                                                                                     getResourceString("WB_CHOOSE_DATASET"), list);
                 dlg.setModal(true);
                 UIHelper.centerAndShow(dlg);
@@ -1791,7 +1791,7 @@ public class WorkbenchTask extends BaseTask
                 session.close();
                 return list.get(0);
             }
-            ChooseFromListDlg<WorkbenchTemplate> dlg = new ChooseFromListDlg<WorkbenchTemplate>((Frame)UICacheManager.get(UICacheManager.FRAME),
+            ChooseFromListDlg<WorkbenchTemplate> dlg = new ChooseFromListDlg<WorkbenchTemplate>((Frame)UIRegistry.get(UIRegistry.FRAME),
                                                                                 getResourceString("WB_CHOOSE_DATASET_REUSE_TITLE"), 
                                                                                 getResourceString("WB_CHOOSE_DATASET_REUSE"), 
                                                                                 ChooseFromListDlg.OKCANCELHELP, 
@@ -1825,7 +1825,7 @@ public class WorkbenchTask extends BaseTask
         Collections.sort(items);
         
         ToggleButtonChooserDlg<WorkbenchTemplateMappingItem> dlg = new ToggleButtonChooserDlg<WorkbenchTemplateMappingItem>(
-                (Frame)UICacheManager.get(UICacheManager.FRAME),
+                (Frame)UIRegistry.get(UIRegistry.FRAME),
                 "WB_SELECT_FIELD_TITLE", 
                 "WB_SELECT_FIELD", 
                 items, 
@@ -2049,7 +2049,7 @@ public class WorkbenchTask extends BaseTask
                     session.evict(workbench);
                 }*/
                 
-                UICacheManager.getStatusBar().setText(getResourceString("WB_SAVED_MAPPINGS"));
+                UIRegistry.getStatusBar().setText(getResourceString("WB_SAVED_MAPPINGS"));
             } catch (Exception ex)
             {
                 log.error(ex);
@@ -2099,7 +2099,7 @@ public class WorkbenchTask extends BaseTask
                 chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
                 chooser.setMultiSelectionEnabled(true);
                 
-                if (chooser.showOpenDialog(UICacheManager.get(UICacheManager.FRAME)) == JFileChooser.APPROVE_OPTION)
+                if (chooser.showOpenDialog(UIRegistry.get(UIRegistry.FRAME)) == JFileChooser.APPROVE_OPTION)
                 {
 
                     DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
@@ -2145,7 +2145,7 @@ public class WorkbenchTask extends BaseTask
                     }
                 } else
                 {
-                    UICacheManager.getStatusBar().setText("");
+                    UIRegistry.getStatusBar().setText("");
                 }
             } 
         }
@@ -2173,10 +2173,10 @@ public class WorkbenchTask extends BaseTask
                 break;
         }
         
-        JStatusBar statusBar = UICacheManager.getStatusBar();
+        JStatusBar statusBar = UIRegistry.getStatusBar();
         statusBar.setErrorMessage(getResourceString(key), row.getLoadException());
         
-        return UICacheManager.displayConfirmLocalized("WB_ERROR_LOAD_IMAGE", key, "Continue", "WB_STOP_LOADING", JOptionPane.ERROR_MESSAGE);
+        return UIRegistry.displayConfirmLocalized("WB_ERROR_LOAD_IMAGE", key, "Continue", "WB_STOP_LOADING", JOptionPane.ERROR_MESSAGE);
     }
     
     /**

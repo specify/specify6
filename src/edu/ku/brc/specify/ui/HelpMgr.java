@@ -6,7 +6,7 @@
  */
 package edu.ku.brc.specify.ui;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;

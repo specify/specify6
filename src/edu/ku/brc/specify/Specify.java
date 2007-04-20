@@ -15,7 +15,7 @@
 
 package edu.ku.brc.specify;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -94,7 +94,7 @@ import edu.ku.brc.ui.DefaultClassActionHandler;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.ToolbarLayoutManager;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.DatabaseLoginListener;
 import edu.ku.brc.ui.db.DatabaseLoginPanel;
@@ -147,7 +147,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
      */
     public Specify()
     {
-        UICacheManager.setRelease(isRelease);
+        UIRegistry.setRelease(isRelease);
     }
     
     /**
@@ -155,7 +155,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
      */
     protected void preStartUp()
     {
-        UICacheManager.setUseCurrentLocation(true);
+        UIRegistry.setUseCurrentLocation(true);
         
         //UIHelper.attachUnhandledException();
         
@@ -167,7 +167,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         setUpSystemProperties();
         
         IconManager.setApplicationClass(Specify.class);
-        UICacheManager.setAppName("Specify");        
+        UIRegistry.setAppName("Specify");        
     }
     
     /**
@@ -197,13 +197,13 @@ public class Specify extends JPanel implements DatabaseLoginListener
         // home directory,
         if (!SpecifyInitializer.setUseCurrentLocation())
         {
-            UICacheManager.setUseCurrentLocation(false);
+            UIRegistry.setUseCurrentLocation(false);
         }
 
         // Insurance
         if (StringUtils.isEmpty( System.getProperty("derby.system.home")))
         {
-            System.setProperty("derby.system.home", UICacheManager.getDefaultWorkingPath() + File.separator + "DerbyDatabases");
+            System.setProperty("derby.system.home", UIRegistry.getDefaultWorkingPath() + File.separator + "DerbyDatabases");
             log.debug(System.getProperty("derby.system.home"));
         }
         
@@ -224,7 +224,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
         AttachmentManagerIface attachMgr = null;
         
-        File location = UICacheManager.getDefaultWorkingPathSubDir("AttachmentStorage", true);
+        File location = UIRegistry.getDefaultWorkingPathSubDir("AttachmentStorage", true);
         try
         {
             attachMgr = new FileStoreAttachmentManager(location);
@@ -245,7 +245,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         
         // Load Local Prefs
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-        localPrefs.setDirPath(UICacheManager.getDefaultWorkingPath());
+        localPrefs.setDirPath(UIRegistry.getDefaultWorkingPath());
         //localPrefs.load(); moved to end for not-null constraint
         String         derbyPath  = localPrefs.get("derby.location", null);
         if (StringUtils.isNotEmpty(derbyPath))
@@ -254,9 +254,9 @@ public class Specify extends JPanel implements DatabaseLoginListener
             log.debug(System.getProperty("derby.system.home"));
         }
         
-        FileCache.setDefaultPath(UICacheManager.getDefaultWorkingPath()+ File.separator + "cache");
+        FileCache.setDefaultPath(UIRegistry.getDefaultWorkingPath()+ File.separator + "cache");
 
-        UICacheManager.register(UICacheManager.MAINPANE, this); // important to be done immediately
+        UIRegistry.register(UIRegistry.MAINPANE, this); // important to be done immediately
  
         specifyApp = this;
         
@@ -283,7 +283,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
 //        }
         
         // Setup base font AFTER setting Look and Feel
-        UICacheManager.setBaseFont((new JLabel()).getFont());
+        UIRegistry.setBaseFont((new JLabel()).getFont());
 
         log.info("Creating Database configuration ");
 
@@ -309,7 +309,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         // Name factories
         System.setProperty(AppContextMgr.factoryName,                   "edu.ku.brc.specify.config.SpecifyAppContextMgr");      // Needed by AppContextMgr
         System.setProperty(AppPreferences.factoryName,                  "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");         // Needed by AppReferences
-        System.setProperty("edu.ku.brc.ui.ViewBasedDialogFactoryIFace", "edu.ku.brc.specify.ui.DBObjDialogFactory");            // Needed By UICacheManager
+        System.setProperty("edu.ku.brc.ui.ViewBasedDialogFactoryIFace", "edu.ku.brc.specify.ui.DBObjDialogFactory");            // Needed By UIRegistry
         System.setProperty("edu.ku.brc.ui.forms.DraggableRecordIdentifierFactory", "edu.ku.brc.specify.ui.SpecifyDraggableRecordIdentiferFactory"); // Needed By the Form System
         System.setProperty("edu.ku.brc.dbsupport.AuditInterceptor",     "edu.ku.brc.specify.dbsupport.AuditInterceptor");       // Needed By the Form System for updating Lucene and logging transactions
         System.setProperty("edu.ku.brc.dbsupport.DataProvider",         "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
@@ -350,7 +350,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
         mainPanel.setBackground(Color.WHITE);
 
-        JToolBar toolBar = (JToolBar)UICacheManager.get(UICacheManager.TOOLBAR);
+        JToolBar toolBar = (JToolBar)UIRegistry.get(UIRegistry.TOOLBAR);
         if (toolBar != null && toolBar.getComponentCount() < 2)
         {
             toolBar.setVisible(false);
@@ -389,13 +389,13 @@ public class Specify extends JPanel implements DatabaseLoginListener
         topFrame.setGlassPane(glassPane = new GhostGlassPane());
         topFrame.setLocationRelativeTo(null);
         Toolkit.getDefaultToolkit().setDynamicLayout(true);
-        UICacheManager.register(UICacheManager.GLASSPANE, glassPane);
+        UIRegistry.register(UIRegistry.GLASSPANE, glassPane);
 
         JPanel top = new JPanel();
         top.setLayout(new BorderLayout());
         add(top, BorderLayout.NORTH);
 
-        UICacheManager.register(UICacheManager.TOPFRAME, topFrame);
+        UIRegistry.register(UIRegistry.TOPFRAME, topFrame);
 
         menuBar = createMenus();
         if (menuBar != null)
@@ -403,7 +403,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
             //top.add(menuBar, BorderLayout.NORTH);
             topFrame.setJMenuBar(menuBar);
         }
-        UICacheManager.register(UICacheManager.MENUBAR, menuBar);
+        UIRegistry.register(UIRegistry.MENUBAR, menuBar);
 
 
         JToolBar toolBar = createToolBar();
@@ -411,7 +411,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         {
             top.add(toolBar, BorderLayout.CENTER);
         }
-        UICacheManager.register(UICacheManager.TOOLBAR, toolBar);
+        UIRegistry.register(UIRegistry.TOOLBAR, toolBar);
 
         mainPanel = new MainPanel();
 
@@ -419,7 +419,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         statusField = new JStatusBar(sections);
         statusField.setErrorIcon(IconManager.getIcon("Error",IconManager.IconSize.Std16));
         statusField.setWarningIcon(IconManager.getIcon("Warning", IconManager.IconSize.Std16));
-        UICacheManager.setStatusBar(statusField);
+        UIRegistry.setStatusBar(statusField);
 
         add(statusField, BorderLayout.SOUTH);
 
@@ -538,7 +538,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                     });
         }
        
-        menu = UICacheManager.getInstance().createEditMenu();
+        menu = UIRegistry.getInstance().createEditMenu();
         mb.add(menu);
         //menu = UIHelper.createMenu(mb, "EditMenu", "EditMneu");
         if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
@@ -625,7 +625,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
             }
         };
         mi = UIHelper.createMenuItemWithAction(menu, "Close All", "A", "Close All", false, closeAll);
-        UICacheManager.registerAction("CloseAll", closeAll);
+        UIRegistry.registerAction("CloseAll", closeAll);
 
         if (!isRelease)
         {
@@ -706,7 +706,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         }
         
         JMenu helpMenu = new JMenu(getResourceString("Help"));
-        UICacheManager.register("HELPMENU", helpMenu);
+        UIRegistry.register("HELPMENU", helpMenu);
         
         if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
         {
@@ -759,7 +759,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     		// save the long term cache mapping info
     		try
     		{
-    			UICacheManager.getLongTermFileCache().saveCacheMapping();
+    			UIRegistry.getLongTermFileCache().saveCacheMapping();
     			log.info("Successfully saved long term cache mapping");
     		}
     		catch( IOException e1 )
@@ -866,9 +866,9 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 initialize(gc);
     
                 topFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-                UICacheManager.register(UICacheManager.FRAME, topFrame);
+                UIRegistry.register(UIRegistry.FRAME, topFrame);
                 
-                ((JMenuBar)UICacheManager.get(UICacheManager.MENUBAR)).add(HelpMgr.createHelpMenuItem((JMenu)UICacheManager.get("HELPMENU"), "Specify"));
+                ((JMenuBar)UIRegistry.get(UIRegistry.MENUBAR)).add(HelpMgr.createHelpMenuItem((JMenu)UIRegistry.get("HELPMENU"), "Specify"));
             }
             
             initStartUpPanels(databaseNameArg, userNameArg);
@@ -1138,7 +1138,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
               {
                   protected void setMessage(final String msg, final boolean isError)
                   {
-                      JStatusBar statusBar = UICacheManager.getStatusBar();
+                      JStatusBar statusBar = UIRegistry.getStatusBar();
                       if (statusBar != null)
                       {
                           if (isError)

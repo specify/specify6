@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.ui;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.BorderLayout;
@@ -160,7 +160,7 @@ public final class UIHelper
      */
     public static void centerWindow(java.awt.Window window)
     {
-        JFrame topFrame = (JFrame)UICacheManager.get(UICacheManager.TOPFRAME);
+        JFrame topFrame = (JFrame)UIRegistry.get(UIRegistry.TOPFRAME);
         Insets screenInsets = null;
         Rectangle screenRect = null;
         
@@ -993,7 +993,7 @@ public final class UIHelper
         if (useDialog)
         {
             JDialog.setDefaultLookAndFeelDecorated(false); 
-            DatabaseLoginDlg dlg = new DatabaseLoginDlg((Frame)UICacheManager.get(UICacheManager.TOPFRAME), listener);
+            DatabaseLoginDlg dlg = new DatabaseLoginDlg((Frame)UIRegistry.get(UIRegistry.TOPFRAME), listener);
             JDialog.setDefaultLookAndFeelDecorated(true); 
             dlg.setDoAutoLogin(doAutoLoginNow);
             dlg.setDoAutoClose(doAutoClose);
@@ -1135,11 +1135,11 @@ public final class UIHelper
          */
         public UnhandledExceptionDialog(final String message, final Exception exception)
         {
-            super((Frame)UICacheManager.get(UICacheManager.FRAME), getResourceString("UnhandledExceptionTitle"), true);
+            super((Frame)UIRegistry.get(UIRegistry.FRAME), getResourceString("UnhandledExceptionTitle"), true);
             
             createUI(message, exception);
             
-            setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
+            setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));
             setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
             this.setAlwaysOnTop(true);
         }
@@ -1149,10 +1149,10 @@ public final class UIHelper
          */
         public UnhandledExceptionDialog(final String message)
         {
-            super((Frame)UICacheManager.get(UICacheManager.FRAME), getResourceString("UnhandledExceptionTitle"), true);
+            super((Frame)UIRegistry.get(UIRegistry.FRAME), getResourceString("UnhandledExceptionTitle"), true);
             
             createUI(message, null);
-            setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
+            setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));
             setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
             this.setAlwaysOnTop(true);
         }
@@ -1162,11 +1162,11 @@ public final class UIHelper
          */
         public UnhandledExceptionDialog(final Throwable throwable)
         {
-            super((Frame)UICacheManager.get(UICacheManager.FRAME), getResourceString("UnhandledExceptionTitle"), true);
+            super((Frame)UIRegistry.get(UIRegistry.FRAME), getResourceString("UnhandledExceptionTitle"), true);
             
             createUI(throwable.getMessage(), throwable);
             
-            setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
+            setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));
             setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
             this.setAlwaysOnTop(true);
         }
@@ -1300,7 +1300,7 @@ public final class UIHelper
         {
             int     opts = (isNewObject ? MultiView.IS_NEW_OBJECT : MultiView.NO_OPTIONS) | MultiView.HIDE_SAVE_BTN;
             String  title   = (isNewObject && isEditMode) ? getResourceString("Edit") : dataObj.getIdentityTitle();
-            ViewBasedDisplayIFace dialog = UICacheManager.getViewbasedFactory().createDisplay(UIHelper.getFrame(mainComp),
+            ViewBasedDisplayIFace dialog = UIRegistry.getViewbasedFactory().createDisplay(UIHelper.getFrame(mainComp),
                                                                         defFormName,
                                                                         title,
                                                                         getResourceString("OK"),

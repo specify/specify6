@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.specify.ui;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -47,7 +47,7 @@ import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.tasks.RecordSetTask;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * XXX (NOT USED RIGHT NOW)
@@ -76,7 +76,7 @@ public class ChooseColObjIdsDlg extends JDialog implements ActionListener
     {
         super(frame, true);
         createUI();
-        setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
+        setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
     }

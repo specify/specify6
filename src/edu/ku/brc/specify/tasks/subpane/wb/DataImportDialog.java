@@ -17,7 +17,7 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -87,7 +87,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalDataIFace.Status;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.MouseOverJLabel;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -632,7 +632,7 @@ public class DataImportDialog extends JDialog implements ActionListener
             textArea.setCaretPosition(0);
             JScrollPane pane = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                     JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-            JOptionPane.showMessageDialog(UICacheManager.get(UICacheManager.TOPFRAME), pane,getResourceString("DATA_IMPORT_ISSUES"),JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(UIRegistry.get(UIRegistry.TOPFRAME), pane,getResourceString("DATA_IMPORT_ISSUES"),JOptionPane.WARNING_MESSAGE);
         }
     }
     

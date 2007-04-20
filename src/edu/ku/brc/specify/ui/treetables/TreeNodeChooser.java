@@ -6,7 +6,7 @@
  */
 package edu.ku.brc.specify.ui.treetables;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -25,7 +25,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import edu.ku.brc.specify.datamodel.TreeDefIface;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  *
@@ -83,7 +83,7 @@ public class TreeNodeChooser extends JPanel implements ActionListener, ListSelec
         add(treeViewer,BorderLayout.CENTER);
         add(southPanel,BorderLayout.SOUTH);
         
-        JFrame topFrame = (JFrame)UICacheManager.get(UICacheManager.TOPFRAME);
+        JFrame topFrame = (JFrame)UIRegistry.get(UIRegistry.TOPFRAME);
         dialog = new JDialog(topFrame,"Find and select a node",true);
         dialog.pack();
         dialog.setSize(treeViewer.getMinimumSize().width, dialog.getHeight() + treeViewer.getMinimumSize().height);

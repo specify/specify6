@@ -7,7 +7,7 @@
 
 package edu.ku.brc.specify.plugins.latlon;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Component;
 import java.awt.event.ItemEvent;

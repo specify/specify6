@@ -6,7 +6,7 @@
  */
 package edu.ku.brc.specify.tasks;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.datatransfer.DataFlavor;
 import java.util.List;
@@ -36,7 +36,7 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * A task to handle RecordSet data exporting.  This task provides a pluggable
@@ -195,7 +195,7 @@ public class ExportTask extends BaseTask
         catch (Exception e)
         {
             log.error("Exception while exporting a RecordSet", e);
-            JStatusBar statusBar = UICacheManager.getStatusBar();
+            JStatusBar statusBar = UIRegistry.getStatusBar();
             statusBar.setErrorMessage(e.getMessage(), e);
         }
     }
@@ -209,7 +209,7 @@ public class ExportTask extends BaseTask
         catch (Exception e)
         {
             log.error("Exception while exporting a data list", e);
-            JStatusBar statusBar = UICacheManager.getStatusBar();
+            JStatusBar statusBar = UIRegistry.getStatusBar();
             statusBar.setErrorMessage(e.getLocalizedMessage(), e);
         }
     }

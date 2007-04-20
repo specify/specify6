@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.specify.ui;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Frame;
@@ -48,7 +48,7 @@ import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.tasks.RecordSetTask;
 import edu.ku.brc.ui.IconListCellRenderer;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * Choose a record set from the a list from the database
@@ -77,7 +77,7 @@ public class ChooseRecordSetDlg extends JDialog implements ActionListener
     {
         super(frame, true);
         createUI(tableId);
-        setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
+        setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     }
 

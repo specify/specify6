@@ -17,7 +17,7 @@ package edu.ku.brc.af.core;
 
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 import static edu.ku.brc.helpers.XMLHelper.readDOMFromConfigDir;
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static org.apache.commons.lang.StringUtils.split;
 
 import java.awt.Component;
@@ -44,7 +44,7 @@ import org.dom4j.Element;
 
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolbarLayoutManager;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -208,7 +208,7 @@ public class TaskMgr
      */
     protected static void registerWithUI(final Taskable plugin)
     {
-        JToolBar toolBar = (JToolBar)UICacheManager.get(UICacheManager.TOOLBAR);
+        JToolBar toolBar = (JToolBar)UIRegistry.get(UIRegistry.TOOLBAR);
         if (toolBar != null)
         {
             for (ToolBarItemDesc tbItem : plugin.getToolBarItems())
@@ -247,7 +247,7 @@ public class TaskMgr
         }
         
         // Load all the menu Items
-        JMenuBar menuBar = (JMenuBar)UICacheManager.get(UICacheManager.MENUBAR);
+        JMenuBar menuBar = (JMenuBar)UIRegistry.get(UIRegistry.MENUBAR);
         if (menuBar != null)
         {
             for (MenuItemDesc menuItem : plugin.getMenuItems())

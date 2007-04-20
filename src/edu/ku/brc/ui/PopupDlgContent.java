@@ -46,7 +46,7 @@ public class PopupDlgContent
 	 */
 	public PopupDlgContent(final String messageStr)
 	{
-		this(messageStr, UICacheManager.getResourceString("DONT_ASK_AGAIN"));
+		this(messageStr, UIRegistry.getResourceString("DONT_ASK_AGAIN"));
 	}	
 
 
@@ -72,7 +72,7 @@ public class PopupDlgContent
 	public PopupDlgContent(final Container displayableComponent)
 	{
 		super();
-		checkbox = new JCheckBox(UICacheManager.getResourceString("DONT_ASK_AGAIN"));
+		checkbox = new JCheckBox(UIRegistry.getResourceString("DONT_ASK_AGAIN"));
 		values   = new Object[] {displayableComponent, checkbox};
 	}	
 

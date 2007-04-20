@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.ui;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.BorderLayout;
@@ -140,8 +140,8 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
            }
         }
 
-		int returnVal = chooser.showOpenDialog(UICacheManager
-				.get(UICacheManager.TOPFRAME));
+		int returnVal = chooser.showOpenDialog(UIRegistry
+				.get(UIRegistry.TOPFRAME));
 		if (returnVal == JFileChooser.APPROVE_OPTION)
 		{
 			File file = new File(chooser.getSelectedFile().getAbsolutePath());
@@ -446,7 +446,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 			{
 				setNoImage(false); // means it is loading it
 
-				FileCache fileCache = UICacheManager.getLongTermFileCache();
+				FileCache fileCache = UIRegistry.getLongTermFileCache();
 				if (fileCache != null)
 				{
 					File file = fileCache.getCacheFile(urlStr);

@@ -156,7 +156,7 @@ import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.ui.ProgressFrame;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.util.AttachmentManagerIface;
@@ -1489,9 +1489,9 @@ public class BuildSampleDatabase
             }
         }
         
-        UICacheManager.setAppName("Specify");
+        UIRegistry.setAppName("Specify");
         
-        System.setProperty("derby.system.home", (derbyPath != null ? derbyPath : UICacheManager.getDefaultWorkingPath()) + File.separator + "DerbyDatabases");
+        System.setProperty("derby.system.home", (derbyPath != null ? derbyPath : UIRegistry.getDefaultWorkingPath()) + File.separator + "DerbyDatabases");
         
         if (hideFrame)
         {
@@ -1709,7 +1709,7 @@ public class BuildSampleDatabase
             thumb.setMaxHeight(128);
             thumb.setMaxWidth(128);
 
-            AttachmentManagerIface attachMgr = new FileStoreAttachmentManager(UICacheManager.getDefaultWorkingPathSubDir("AttachmentStorage", true));
+            AttachmentManagerIface attachMgr = new FileStoreAttachmentManager(UIRegistry.getDefaultWorkingPathSubDir("AttachmentStorage", true));
             AttachmentUtils.setAttachmentManager(attachMgr);
             AttachmentUtils.setThumbnailer(thumb);
             
@@ -1842,7 +1842,7 @@ public class BuildSampleDatabase
                     thumb.setMaxHeight(128);
                     thumb.setMaxWidth(128);
 
-                    AttachmentManagerIface attachMgr = new FileStoreAttachmentManager(UICacheManager.getDefaultWorkingPathSubDir("AttachmentStorage", true));
+                    AttachmentManagerIface attachMgr = new FileStoreAttachmentManager(UIRegistry.getDefaultWorkingPathSubDir("AttachmentStorage", true));
                     
                     AttachmentUtils.setAttachmentManager(attachMgr);
                     AttachmentUtils.setThumbnailer(thumb);
@@ -1971,7 +1971,7 @@ public class BuildSampleDatabase
         Properties properties = new Properties();
         try
         {
-            String base = UICacheManager.getDefaultWorkingPath();
+            String base = UIRegistry.getDefaultWorkingPath();
             File initFile = new File(base + File.separator + (databaseName != null ? (databaseName + "_") : "") + "init.prefs");
             if (initFile.exists())
             {

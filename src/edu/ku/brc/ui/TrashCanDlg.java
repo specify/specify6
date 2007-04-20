@@ -15,7 +15,7 @@
 
 package edu.ku.brc.ui;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Frame;
@@ -73,9 +73,9 @@ public class TrashCanDlg extends JDialog implements ActionListener, ListSelectio
      */
     public TrashCanDlg(final Frame frame) throws HeadlessException
     {
-        super((Frame)UICacheManager.get(UICacheManager.FRAME), true);
+        super((Frame)UIRegistry.get(UIRegistry.FRAME), true);
         createUI();
-        setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
+        setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     }
 
@@ -153,7 +153,7 @@ public class TrashCanDlg extends JDialog implements ActionListener, ListSelectio
      */
     protected void restoreItem()
     {
-        JOptionPane.showMessageDialog(UICacheManager.get(UICacheManager.FRAME), "Sorry, not implemented yet.");
+        JOptionPane.showMessageDialog(UIRegistry.get(UIRegistry.FRAME), "Sorry, not implemented yet.");
     }
     
     //Handle clicks on the Set and Cancel buttons.

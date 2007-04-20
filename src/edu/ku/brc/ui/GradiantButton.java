@@ -235,11 +235,11 @@ public class GradiantButton extends JButton implements MouseListener
     protected boolean pressed = false;
     public void mouseExited(MouseEvent evt) 
     { 
-        UICacheManager.displayStatusBarText("");
+        UIRegistry.displayStatusBarText("");
     }
     public void mouseEntered(MouseEvent evt) 
     { 
-        UICacheManager.displayStatusBarText(itself.getToolTipText());
+        UIRegistry.displayStatusBarText(itself.getToolTipText());
     }
     public void mouseClicked(MouseEvent evt)
     {

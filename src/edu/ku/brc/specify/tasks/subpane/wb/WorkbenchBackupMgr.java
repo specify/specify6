@@ -21,7 +21,7 @@ import edu.ku.brc.specify.exporters.ExportToFile;
 import edu.ku.brc.specify.tasks.ExportTask;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.ui.CommandAction;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author timbo
@@ -42,7 +42,7 @@ public class WorkbenchBackupMgr
 
     protected static Vector<File> getExistingBackups(final Workbench workbench)
     {
-        File[] backups = UICacheManager.getDefaultWorkingPathSubDir(backupSubDir, true).listFiles();
+        File[] backups = UIRegistry.getDefaultWorkingPathSubDir(backupSubDir, true).listFiles();
         Vector<File> result = new Vector<File>(maxBackupCount);
         for (File f : backups)
         {
@@ -128,7 +128,7 @@ public class WorkbenchBackupMgr
 
             Properties props = new Properties();
             props.setProperty("mimetype", ExportFileConfigurationFactory.XLS_MIME_TYPE);
-            props.setProperty("fileName", UICacheManager.getDefaultWorkingPathSubDir(backupSubDir,
+            props.setProperty("fileName", UIRegistry.getDefaultWorkingPathSubDir(backupSubDir,
                     true)
                     + File.separator + fileName);
 
@@ -146,7 +146,7 @@ public class WorkbenchBackupMgr
             // Clear the status bar message about successful 'export'? - but what if error during
             // backup?,
             // and remove old backups if necessary.
-            UICacheManager.getStatusBar().setText("");
+            UIRegistry.getStatusBar().setText("");
             cleanupBackups(workbench);
         }
         catch (Exception ex)

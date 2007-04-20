@@ -15,7 +15,7 @@
 package edu.ku.brc.specify.tests;
 
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -62,7 +62,7 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.tests.forms.TestDataObj;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.JAutoCompComboBox;
 import edu.ku.brc.ui.db.JAutoCompTextField;
@@ -190,7 +190,7 @@ public class PickListTestApp
         mainFrame = new JFrame("Specify Form Editor");
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        UICacheManager.register(UICacheManager.TOPFRAME, mainFrame);
+        UIRegistry.register(UIRegistry.TOPFRAME, mainFrame);
         
         // Create and set up the content pane.
         contentPane = buildContentPane();

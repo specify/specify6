@@ -34,7 +34,7 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 
 
@@ -126,11 +126,11 @@ public class XMLHelper
                         throw new RuntimeException("The Mac build is incorect, the working path is not set");
                         
                     case Windows :
-                        subDir = UICacheManager.getAppName() + "Win";
+                        subDir = UIRegistry.getAppName() + "Win";
                         break;
                         
                     case Linux :
-                        subDir = UICacheManager.getAppName() + "Linux";
+                        subDir = UIRegistry.getAppName() + "Linux";
                         break;
                         
                 }

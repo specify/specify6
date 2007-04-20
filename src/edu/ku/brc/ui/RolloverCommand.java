@@ -148,7 +148,7 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
                 {
                     isOver = true;
                     repaint();
-                    //UICacheManager.displayStatusBarText(itself.getToolTipText());
+                    //UIRegistry.displayStatusBarText(itself.getToolTipText());
                 }
             }
             @Override
@@ -156,7 +156,7 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
             {
                 isOver = false;
                 repaint();
-                //UICacheManager.displayStatusBarText("");
+                //UIRegistry.displayStatusBarText("");
             }
             @Override
             public void mousePressed(MouseEvent e)
@@ -639,7 +639,7 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
      */
     public void createMouseInputAdapter()
     {
-        mouseDropAdapter = new GhostMouseInputAdapter(UICacheManager.getGlassPane(), "action", this);
+        mouseDropAdapter = new GhostMouseInputAdapter(UIRegistry.getGlassPane(), "action", this);
         addMouseListener(mouseDropAdapter);
         addMouseMotionListener(mouseDropAdapter);
     }

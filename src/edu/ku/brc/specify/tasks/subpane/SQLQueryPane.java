@@ -15,7 +15,7 @@
 
 package edu.ku.brc.specify.tasks.subpane;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIHelper.centerAndShow;
 
 import java.awt.BorderLayout;
@@ -44,7 +44,7 @@ import edu.ku.brc.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.specify.ui.db.ResultSetTableModel;
 import edu.ku.brc.specify.ui.db.ResultSetTableModelDM;
 import edu.ku.brc.specify.ui.db.SaveRecordSetDlg;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 /**
  * A pane with a text field for entring in a query and then the results are displayed in a table.
  * 
@@ -289,7 +289,7 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
         sqlExecutor = null;
         enableUI(true);
         
-        UICacheManager.forceTopFrameRepaint();    
+        UIRegistry.forceTopFrameRepaint();    
         
     }
     

@@ -15,7 +15,7 @@
 
 package edu.ku.brc.specify.tasks.subpane;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.io.File;
@@ -57,7 +57,7 @@ import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 
 
 /**
@@ -348,7 +348,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                     Map<Object, Object> parameters = new HashMap<Object, Object>();
                     
                     // XXX PREF - This will be converted to a Preference
-                    File imageDir = new File(UICacheManager.getDefaultWorkingPath() + File.separator + "report_images");
+                    File imageDir = new File(UIRegistry.getDefaultWorkingPath() + File.separator + "report_images");
                     // XXXX RELEASE - This Reference to demo_files will need to be removed
                     if (!imageDir.exists())
                     {
@@ -415,7 +415,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
      */
     public static File checkAndCreateReportsCache()
     {
-        File path = UICacheManager.getDefaultWorkingPathSubDir("reportsCache", true); 
+        File path = UIRegistry.getDefaultWorkingPathSubDir("reportsCache", true); 
         if (path == null)
         {
             String msg = "The reportsCache directory is empty.";
@@ -510,7 +510,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
             JRViewer jasperViewer = new JRViewer(print);
             add(jasperViewer, BorderLayout.CENTER);
 
-            UICacheManager.forceTopFrameRepaint();
+            UIRegistry.forceTopFrameRepaint();
 
             closeSession();
             

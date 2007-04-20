@@ -37,7 +37,7 @@ import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.JAutoCompTextField;
 import edu.ku.brc.ui.db.PickListDBAdapterIFace;
 
@@ -54,7 +54,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
                                                                 GetSetValueIFace,
                                                                 DocumentListener,
                                                                 AppPrefsChangeListener,
-                                                                UICacheManager.UndoableTextIFace
+                                                                UIRegistry.UndoableTextIFace
 {
     protected UIValidatable.ErrorType valState  = UIValidatable.ErrorType.Valid;
     protected boolean isRequired = false;
@@ -312,24 +312,24 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     }
     
     //--------------------------------------------------------
-    // UICacheManager.UndoableTextIFace
+    // UIRegistry.UndoableTextIFace
     //--------------------------------------------------------
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UICacheManager.UndoableTextIFace#getUndoManager()
+     * @see edu.ku.brc.ui.UIRegistry.UndoableTextIFace#getUndoManager()
      */
     public UndoManager getUndoManager()
     {
         if (undoManager == null)
         {
             undoManager = new UndoManager();
-            UICacheManager.getInstance().hookUpUndoableEditListener(this);
+            UIRegistry.getInstance().hookUpUndoableEditListener(this);
         }
         return undoManager;
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UICacheManager.UndoableTextIFace#getTextComponent()
+     * @see edu.ku.brc.ui.UIRegistry.UndoableTextIFace#getTextComponent()
      */
     public JTextComponent getTextComponent()
     {

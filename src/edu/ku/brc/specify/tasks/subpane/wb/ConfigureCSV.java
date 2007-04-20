@@ -6,7 +6,7 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Frame;
 import java.io.File;
@@ -25,7 +25,7 @@ import com.csvreader.CsvReader;
 
 import edu.ku.brc.specify.exporters.ExportFileConfigurationFactory;
 import edu.ku.brc.ui.ChooseFromListDlg;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -255,7 +255,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase
         Vector<String> list = new Vector<String>();
         list.add(",");
         list.add("TAB");
-        ChooseFromListDlg<String> dlg = new ChooseFromListDlg<String>((Frame)UICacheManager.get(UICacheManager.FRAME), 
+        ChooseFromListDlg<String> dlg = new ChooseFromListDlg<String>((Frame)UIRegistry.get(UIRegistry.FRAME), 
                                                                       "Delimiter?", 
                                                                       null,
                                                                       ChooseFromListDlg.OKCANCELHELP, 
@@ -282,7 +282,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase
         list.add("\"");
         list.add("\'");
         list.add("{none}");
-        ChooseFromListDlg<String> dlg = new ChooseFromListDlg<String>((Frame)UICacheManager.get(UICacheManager.FRAME), 
+        ChooseFromListDlg<String> dlg = new ChooseFromListDlg<String>((Frame)UIRegistry.get(UIRegistry.FRAME), 
                                                                       "Text Qualifier?", 
                                                                       null,
                                                                       ChooseFromListDlg.OKCANCELHELP, 
@@ -318,7 +318,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase
         list.add("US-ASCII");
         list.add("ISO-8859-1");
         list.add("UTF-8");
-        ChooseFromListDlg<String> dlg = new ChooseFromListDlg<String>((Frame)UICacheManager.get(UICacheManager.FRAME), 
+        ChooseFromListDlg<String> dlg = new ChooseFromListDlg<String>((Frame)UIRegistry.get(UIRegistry.FRAME), 
                                                                       "Character Set", 
                                                                       null,
                                                                       ChooseFromListDlg.OKCANCELHELP,
@@ -355,7 +355,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase
         list.add("backslash");
         list.add("doubled");
         
-        ChooseFromListDlg<String> dlg = new ChooseFromListDlg<String>((Frame)UICacheManager.get(UICacheManager.FRAME), 
+        ChooseFromListDlg<String> dlg = new ChooseFromListDlg<String>((Frame)UIRegistry.get(UIRegistry.FRAME), 
                                                                       "Escape Mode?", null,
                                                                       ChooseFromListDlg.OKCANCELHELP,
                                                                       list, "WorkbenchImportCvs"); //XXX I18N

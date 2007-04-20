@@ -9,7 +9,7 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIHelper.createIconBtn;
 
 import java.awt.Component;
@@ -60,7 +60,7 @@ import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
@@ -577,7 +577,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
     {
         if (controlPropsDlg == null)
         {
-            controlPropsDlg = new EditFormControlDlg((Frame)UICacheManager.get(UICacheManager.FRAME), "", selectedInputPanel, this); // I18N
+            controlPropsDlg = new EditFormControlDlg((Frame)UIRegistry.get(UIRegistry.FRAME), "", selectedInputPanel, this); // I18N
         }
         
         if (selectedInputPanel != null) // this shouldn't happen
@@ -867,7 +867,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             InputPanel inputPanel = (InputPanel)src;
             Point offSet   = src.getMouseInputAdapter().getOffsetFromStartPnt();
             Point location = inputPanel.getLocation();
-            Point offset   = ((GhostGlassPane)UICacheManager.get(UICacheManager.GLASSPANE)).getOffset();
+            Point offset   = ((GhostGlassPane)UIRegistry.get(UIRegistry.GLASSPANE)).getOffset();
             location.translate(offSet.x - offset.x, offSet.y - offset.y);
             location.x = Math.max(0, location.x);
             location.y = Math.max(0, location.y);
@@ -1025,12 +1025,12 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             if (!isOK)
             {
                 String msg = String.format(getResourceString("WB_NEWDATA_TOO_LONG"), new Object[] { caption, maxLength } );
-                UICacheManager.getStatusBar().setErrorMessage(msg);
+                UIRegistry.getStatusBar().setErrorMessage(msg);
                 Toolkit.getDefaultToolkit().beep();
                 
             } else
             {
-                UICacheManager.getStatusBar().setText("");
+                UIRegistry.getStatusBar().setText("");
             }
             return isOK;
         }

@@ -15,7 +15,7 @@
 package edu.ku.brc.specify.config;
 
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Frame;
 import java.io.File;
@@ -49,7 +49,7 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.ViewSetObj;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
@@ -70,7 +70,7 @@ import edu.ku.brc.ui.forms.persist.ViewSet;
  * </ol>
  * <p>The SpecifyAppResourceDefaultMgr will place data in a <i>username</i>/<i>databaseName</i> directory in the "application data" directory of the user.
  * On Windows this is <code>\Documents and Settings\&lt;User Name&gt;\Application Data\Specify</code>.
- * On Unix platforms it is <code>/<i>user home</i>/.Specify</code> (Note: the app data dir is created by UICacheManager)</p>
+ * On Unix platforms it is <code>/<i>user home</i>/.Specify</code> (Note: the app data dir is created by UIRegistry)</p>
  * <p>
  * The ViewSetMgrManager needs to load the "backstop" ViewSetMgr and the "user" ViewSetMgr in order for the application to work correctly.
  * So this class uses the "discipline name" to initialize the APPDATA dir with the appropriate data, which includes a "standard" set of
@@ -215,7 +215,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     List<CatalogSeries> list = new Vector<CatalogSeries>();
                     list.addAll(catSeriesHash.values());
 
-                    ToggleButtonChooserDlg<CatalogSeries> dlg = new ToggleButtonChooserDlg<CatalogSeries>((Frame)UICacheManager.get(UICacheManager.FRAME),
+                    ToggleButtonChooserDlg<CatalogSeries> dlg = new ToggleButtonChooserDlg<CatalogSeries>((Frame)UIRegistry.get(UIRegistry.FRAME),
                                                                                                   "Choose a Catalog Series", 
                                                                                                   list); // TODO I18N
                     //dlg.setSelectedObjects(catSeries);
@@ -344,7 +344,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
             // TODO XXX Need to add a Help Btn to this Dialog
             ChooseFromListDlg<CatSeriesColObjDefItem> dlg = 
-                new ChooseFromListDlg<CatSeriesColObjDefItem>((Frame)UICacheManager.get(UICacheManager.FRAME),
+                new ChooseFromListDlg<CatSeriesColObjDefItem>((Frame)UIRegistry.get(UIRegistry.FRAME),
                                                               getResourceString("ChooseCatSeriesColObjDef"), 
                                                               ChooseFromListDlg.OK_BTN, // OK Only
                                                               list); 
@@ -1083,7 +1083,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 Vector<PickListItemIFace> list = new Vector<PickListItemIFace>();
                 list.addAll(pickList.getItems());
                 ChooseFromListDlg<PickListItemIFace> dlg = new ChooseFromListDlg<PickListItemIFace>(null, 
-                        UICacheManager.getLocalizedMessage("CHOOSE_DEFAULT_OBJECT", title), list);
+                        UIRegistry.getLocalizedMessage("CHOOSE_DEFAULT_OBJECT", title), list);
                 dlg.setModal(true);
                 dlg.setVisible(true);
                 if (!dlg.isCancelled())
@@ -1154,7 +1154,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             {
                 try
                 {
-                    ViewBasedSearchDialogIFace dlg = UICacheManager.getViewbasedFactory().createSearchDialog(null, classObj.getSimpleName()+"Search");
+                    ViewBasedSearchDialogIFace dlg = UIRegistry.getViewbasedFactory().createSearchDialog(null, classObj.getSimpleName()+"Search");
                     if (dlg != null)
                     {
                         dlg.setTitle(title);

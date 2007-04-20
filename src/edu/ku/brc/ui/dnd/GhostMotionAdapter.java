@@ -10,7 +10,7 @@ import java.awt.event.MouseMotionAdapter;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * Class for making sure the image gets drawn on the glass pane while the image gets dragged on the glass pane
@@ -74,7 +74,7 @@ public class GhostMotionAdapter extends MouseMotionAdapter
         
         Component c = e.getComponent();
         
-        JComponent rootPane = (JComponent)UICacheManager.get(UICacheManager.MAINPANE);
+        JComponent rootPane = (JComponent)UIRegistry.get(UIRegistry.MAINPANE);
         Point pp = (Point) e.getPoint().clone();
         SwingUtilities.convertPointToScreen(pp, c);
         SwingUtilities.convertPointFromScreen(pp, rootPane);

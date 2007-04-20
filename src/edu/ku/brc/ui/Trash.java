@@ -15,7 +15,7 @@
 
 package edu.ku.brc.ui;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -157,7 +157,7 @@ public class Trash extends JComponent implements GhostActionable
      */
     protected void openTrashCan()
     {
-        TrashCanDlg dlg = new TrashCanDlg((Frame)UICacheManager.get(UICacheManager.TOPFRAME));
+        TrashCanDlg dlg = new TrashCanDlg((Frame)UIRegistry.get(UIRegistry.TOPFRAME));
         dlg.setVisible(true);        
     }
     
@@ -235,7 +235,7 @@ public class Trash extends JComponent implements GhostActionable
      */
     protected void emptyTrash()
     {
-        GhostGlassPane glassPane = UICacheManager.getGlassPane();
+        GhostGlassPane glassPane = UIRegistry.getGlassPane();
         
         Component parent = getParent();
         
@@ -314,7 +314,7 @@ public class Trash extends JComponent implements GhostActionable
      */
     public void createMouseInputAdapter()
     {
-        mouseInputAdapter = new GhostMouseInputAdapter(UICacheManager.getGlassPane(), "action", this);
+        mouseInputAdapter = new GhostMouseInputAdapter(UIRegistry.getGlassPane(), "action", this);
         addMouseListener(mouseInputAdapter);
         addMouseMotionListener(mouseInputAdapter);
     }

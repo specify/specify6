@@ -29,7 +29,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.ui.GetSetValueIFace;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIPluginable;
 import edu.ku.brc.ui.forms.DataObjectGettable;
 import edu.ku.brc.ui.forms.DataObjectGettableFactory;
@@ -97,7 +97,7 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace, UIPlugina
         String[] labels     = new String[formatKeys.length];
         for (int i=0;i<formatKeys.length;i++)
         {
-            labels[i] = UICacheManager.getResourceString(formatKeys[i]);
+            labels[i] = UIRegistry.getResourceString(formatKeys[i]);
         }
         formatSelector = new JComboBox(labels);
         formatSelector.setSelectedIndex(0);

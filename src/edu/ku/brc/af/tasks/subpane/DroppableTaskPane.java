@@ -26,7 +26,7 @@ import java.util.List;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandListener;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
 
@@ -131,7 +131,7 @@ public abstract class DroppableTaskPane extends BaseSubPane implements GhostActi
      */
     public void createMouseInputAdapter()
     {
-        mouseDropAdapter = new GhostMouseInputAdapter(UICacheManager.getGlassPane(), "action", this);
+        mouseDropAdapter = new GhostMouseInputAdapter(UIRegistry.getGlassPane(), "action", this);
         addMouseListener(mouseDropAdapter);
         addMouseMotionListener(mouseDropAdapter);
     }

@@ -6,7 +6,7 @@
  */
 package edu.ku.brc.specify.ui.treetables;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Frame;
@@ -25,7 +25,7 @@ import javax.swing.JPanel;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.FormViewObj;
@@ -75,7 +75,7 @@ public class EditFormDialog<T> extends JDialog implements ActionListener
                                 final EditDialogCallback<T> callback,
                                 final boolean isNewObject) throws HeadlessException
     {
-        super((Frame)UICacheManager.get(UICacheManager.FRAME), title, true);
+        super((Frame)UIRegistry.get(UIRegistry.FRAME), title, true);
         
         this.isNewObject = isNewObject;
         
@@ -83,7 +83,7 @@ public class EditFormDialog<T> extends JDialog implements ActionListener
         
         createUI(viewSetName, viewName, title);
 
-        setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
+        setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         this.setModal(false);
     }

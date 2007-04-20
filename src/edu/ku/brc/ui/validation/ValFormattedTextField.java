@@ -45,7 +45,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatter;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterField;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
@@ -64,7 +64,7 @@ import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 public class ValFormattedTextField extends JTextField implements UIValidatable,
                                                                  GetSetValueIFace,
                                                                  DocumentListener, 
-                                                                 UICacheManager.UndoableTextIFace
+                                                                 UIRegistry.UndoableTextIFace
 {
     private static final Logger log  = Logger.getLogger(ValFormattedTextField.class);
 
@@ -400,24 +400,24 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     }
 
     //--------------------------------------------------------
-    // UICacheManager.UndoableTextIFace
+    // UIRegistry.UndoableTextIFace
     //--------------------------------------------------------
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UICacheManager.UndoableTextIFace#getUndoManager()
+     * @see edu.ku.brc.ui.UIRegistry.UndoableTextIFace#getUndoManager()
      */
     public UndoManager getUndoManager()
     {
         if (undoManager == null)
         {
             undoManager = new UndoManager();
-            UICacheManager.getInstance().hookUpUndoableEditListener(this);
+            UIRegistry.getInstance().hookUpUndoableEditListener(this);
         }
         return undoManager;
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UICacheManager.UndoableTextIFace#getTextComponent()
+     * @see edu.ku.brc.ui.UIRegistry.UndoableTextIFace#getTextComponent()
      */
     public JTextComponent getTextComponent()
     {

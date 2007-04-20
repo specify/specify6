@@ -15,7 +15,7 @@
 
 package edu.ku.brc.ui.forms;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Color;
 import java.awt.Insets;

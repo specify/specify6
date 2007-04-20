@@ -225,7 +225,7 @@ public class LuceneServlet extends HttpServlet implements ExpressSearchIndexerLi
             {
                 //writer.println(ex.toString());
                 ex.printStackTrace();
-                //JOptionPane.showMessageDialog(UICacheManager.get(UICacheManager.FRAME), getResourceString("BadQuery"), getResourceString("BadQueryTitle"), JOptionPane.ERROR_MESSAGE);
+                //JOptionPane.showMessageDialog(UIRegistry.get(UIRegistry.FRAME), getResourceString("BadQuery"), getResourceString("BadQueryTitle"), JOptionPane.ERROR_MESSAGE);
                 //log.error(ex);
 
             } catch (IOException ex)
@@ -233,7 +233,7 @@ public class LuceneServlet extends HttpServlet implements ExpressSearchIndexerLi
                 //writer.println(ex.toString());
                 ex.printStackTrace();
                 // XXX Change message
-                //JOptionPane.showMessageDialog(UICacheManager.get(UICacheManager.FRAME), getResourceString("BadQuery"), getResourceString("BadQueryTitle"), JOptionPane.ERROR_MESSAGE);
+                //JOptionPane.showMessageDialog(UIRegistry.get(UIRegistry.FRAME), getResourceString("BadQuery"), getResourceString("BadQueryTitle"), JOptionPane.ERROR_MESSAGE);
                 //log.error(ex);
             }
         } else

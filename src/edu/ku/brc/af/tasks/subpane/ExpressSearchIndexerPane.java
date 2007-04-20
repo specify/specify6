@@ -15,7 +15,7 @@
 package edu.ku.brc.af.tasks.subpane;
 
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIHelper.createDuplicateJGoodiesDef;
 import static edu.ku.brc.ui.UIHelper.getString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
@@ -83,7 +83,7 @@ import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.forms.persist.FormViewDef;
 
@@ -336,7 +336,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         configureBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
-                JOptionPane.showMessageDialog(UICacheManager.get(UICacheManager.FRAME), "Sorry, not implemented yet.");
+                JOptionPane.showMessageDialog(UIRegistry.get(UIRegistry.FRAME), "Sorry, not implemented yet.");
             }
         });
 

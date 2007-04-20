@@ -40,7 +40,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIPluginable;
 import edu.ku.brc.ui.validation.UIValidatable;
@@ -380,7 +380,7 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
         
         if (typeLabel != null)
         {
-            typeLabel.setText(UICacheManager.getResourceString(typeNamesKeys[currentType.ordinal()]));
+            typeLabel.setText(UIRegistry.getResourceString(typeNamesKeys[currentType.ordinal()]));
         }
     }
     

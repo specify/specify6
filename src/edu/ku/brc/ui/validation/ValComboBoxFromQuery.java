@@ -15,7 +15,7 @@
 
 package edu.ku.brc.ui.validation;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.apache.commons.lang.StringUtils.split;
@@ -61,7 +61,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.ViewBasedDialogFactoryIFace;
 import edu.ku.brc.ui.db.JComboBoxFromQuery;
@@ -348,7 +348,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    ViewBasedSearchDialogIFace dlg = UICacheManager.getViewbasedFactory()
+                    ViewBasedSearchDialogIFace dlg = UIRegistry.getViewbasedFactory()
                             .createSearchDialog(UIHelper.getFrame(searchBtn), searchDialogName);
                     dlg.getDialog().setVisible(true);
                     if (!dlg.isCancelled())
@@ -462,7 +462,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     protected void createEditFrame(final boolean isNewObject)
     {
         String closeBtnTitle = getResourceString(isNewObject ? "Accept" : "Save");
-        frame = UICacheManager.getViewbasedFactory().createDisplay(UIHelper.getFrame(this),
+        frame = UIRegistry.getViewbasedFactory().createDisplay(UIHelper.getFrame(this),
                                                                    displayInfoDialogName,
                                                                    frameTitle,
                                                                    closeBtnTitle,

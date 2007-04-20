@@ -15,7 +15,7 @@
 
 package edu.ku.brc.dbsupport;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

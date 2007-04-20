@@ -13,7 +13,7 @@
  */
 package edu.ku.brc.ui;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Frame;
 import java.awt.HeadlessException;
@@ -177,7 +177,7 @@ public class ChooseFromListDlg<T> extends JDialog
         this.whichBtns   = whichBtns;
         this.helpContext = helpContext;
 
-        setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
+        setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
 
@@ -242,7 +242,7 @@ public class ChooseFromListDlg<T> extends JDialog
         
         setModal(true);
 
-        setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
+        setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
 

@@ -60,7 +60,7 @@ import edu.ku.brc.specify.tests.BuildSampleDatabase;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.BrowseBtnPanel;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -107,18 +107,18 @@ public class SpecifyInitializer
      */
     public static boolean setUseCurrentLocation()
     {
-        File file = new File(UICacheManager.getUserDataDir(true)); // Check current ocation first
+        File file = new File(UIRegistry.getUserDataDir(true)); // Check current ocation first
         //System.err.println(file.getAbsolutePath());
         if (file.exists())
         {
-            UICacheManager.setUseCurrentLocation(true);
+            UIRegistry.setUseCurrentLocation(true);
             
         } else
         {
-            file = new File(UICacheManager.getUserDataDir(false)); // Check user data location
+            file = new File(UIRegistry.getUserDataDir(false)); // Check user data location
             if (file.exists())
             {
-                UICacheManager.setUseCurrentLocation(false);
+                UIRegistry.setUseCurrentLocation(false);
                 
             } else
             {
@@ -139,7 +139,7 @@ public class SpecifyInitializer
     {
         
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-        localPrefs.setDirPath(UICacheManager.getDefaultWorkingPath());
+        localPrefs.setDirPath(UIRegistry.getDefaultWorkingPath());
         
         if (!setUseCurrentLocation() || StringUtils.isEmpty(localPrefs.get("login.dbdriver_selected", null)))
         {
@@ -496,7 +496,7 @@ public class SpecifyInitializer
 
             
             localDirOK = true;
-            File currentPath = new File(UICacheManager.getUserDataDir(true) + File.separator + "specify_tmp.tmp");
+            File currentPath = new File(UIRegistry.getUserDataDir(true) + File.separator + "specify_tmp.tmp");
             try
             {
                 FileUtils.touch(currentPath);
@@ -510,7 +510,7 @@ public class SpecifyInitializer
             //localDirOK = false ; // XXX TESTING
             
             ButtonGroup  grp       = new ButtonGroup();
-            useHomeRB = new JRadioButton("<html>Use your home directory: <b>"+UICacheManager.getUserDataDir(false)+"</b></html>");
+            useHomeRB = new JRadioButton("<html>Use your home directory: <b>"+UIRegistry.getUserDataDir(false)+"</b></html>");
             grp.add(useHomeRB);
             useHomeRB.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e)
@@ -530,7 +530,7 @@ public class SpecifyInitializer
             {
                 header.append("There are three options:</html>");
 
-                useCurrentRB = new JRadioButton("<html>Use your current directory: <b>"+UICacheManager.getUserDataDir(true)+"</b></html>");
+                useCurrentRB = new JRadioButton("<html>Use your current directory: <b>"+UIRegistry.getUserDataDir(true)+"</b></html>");
                 grp.add(useCurrentRB);
                 useCurrentRB.setSelected(true);
                 numRows++;
@@ -675,8 +675,8 @@ public class SpecifyInitializer
             
             lastStep = panels.size();
             
-            cancelBtn  = new JButton(UICacheManager.getResourceString("Cancel"));
-            helpBtn    = new JButton(UICacheManager.getResourceString("Help"));
+            cancelBtn  = new JButton(UIRegistry.getResourceString("Cancel"));
+            helpBtn    = new JButton(UIRegistry.getResourceString("Help"));
             
             JPanel btnBar;
             if (lastStep > 1)
@@ -689,7 +689,7 @@ public class SpecifyInitializer
                 
             } else
             {
-                nextBtn = new JButton(UICacheManager.getResourceString("OK"));
+                nextBtn = new JButton(UIRegistry.getResourceString("OK"));
                 btnBar  = ButtonBarFactory.buildOKCancelHelpBar(nextBtn, cancelBtn, helpBtn);
             }
             
@@ -876,12 +876,12 @@ public class SpecifyInitializer
         {
             // Clear and Reset Everything!
             AppPreferences.shutdownLocalPrefs();
-            UICacheManager.setDefaultWorkingPath(null);
+            UIRegistry.setDefaultWorkingPath(null);
             
-            log.debug("********** WORK["+UICacheManager.getDefaultWorkingPath()+"]");
-            log.debug("********** USER LOC["+stripSpecifyDir(UICacheManager.getUserDataDir(true))+"]");
+            log.debug("********** WORK["+UIRegistry.getDefaultWorkingPath()+"]");
+            log.debug("********** USER LOC["+stripSpecifyDir(UIRegistry.getUserDataDir(true))+"]");
             
-            String baseAppDir = stripSpecifyDir(UICacheManager.getUserDataDir(true));
+            String baseAppDir = stripSpecifyDir(UIRegistry.getUserDataDir(true));
             log.debug("********** Base Dir for App ["+baseAppDir+"]");
             
             String derbyPath;
@@ -893,17 +893,17 @@ public class SpecifyInitializer
             {
                 if (locationPanel.isUseHomeDirectory())
                 {
-                    UICacheManager.setUseCurrentLocation(false);
+                    UIRegistry.setUseCurrentLocation(false);
                     
                     // Copy over the database if we can't use this directory for writing.
                     // if it is being run off of a CD
                     if (!locationPanel.isLocalOKForWriting())
                     {
-                        log.debug("WORKING PATH["+UICacheManager.getDefaultWorkingPath()+"]");
+                        log.debug("WORKING PATH["+UIRegistry.getDefaultWorkingPath()+"]");
                         
-                        derbyPath = UIHelper.stripSubDirs(UICacheManager.getDefaultWorkingPath(), 1) + File.separator + "DerbyDatabases";
+                        derbyPath = UIHelper.stripSubDirs(UIRegistry.getDefaultWorkingPath(), 1) + File.separator + "DerbyDatabases";
                         
-                        String destParentDirStr = UIHelper.stripSubDirs(UICacheManager.getDefaultWorkingPath(), 1);
+                        String destParentDirStr = UIHelper.stripSubDirs(UIRegistry.getDefaultWorkingPath(), 1);
                         
                         String srcDerbyPath = baseAppDir + File.separator + "DerbyDatabases";
                         
@@ -948,12 +948,12 @@ public class SpecifyInitializer
                         }
                     } else
                     {
-                        derbyPath = UICacheManager.getDefaultWorkingPath() + File.separator + "DerbyDatabases";
+                        derbyPath = UIRegistry.getDefaultWorkingPath() + File.separator + "DerbyDatabases";
                     }
                     
                 } else
                 {
-                    UICacheManager.setUseCurrentLocation(true);
+                    UIRegistry.setUseCurrentLocation(true);
                     log.debug((new File(baseAppDir).exists())+" baseAppDir["+baseAppDir+"]");
                     
                     derbyPath = baseAppDir + File.separator + "DerbyDatabases";
@@ -966,8 +966,8 @@ public class SpecifyInitializer
             
             // Now initialize
             AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-            localPrefs.setDirPath(UICacheManager.getDefaultWorkingPath());
-            System.out.println(UICacheManager.getDefaultWorkingPath());
+            localPrefs.setDirPath(UIRegistry.getDefaultWorkingPath());
+            System.out.println(UIRegistry.getDefaultWorkingPath());
 
             if (doLoginOnly && assumeDerby)
             {
@@ -978,7 +978,7 @@ public class SpecifyInitializer
                 
             } else
             {
-                //System.err.println(UICacheManager.getDefaultWorkingPath() + File.separator + "DerbyDatabases");
+                //System.err.println(UIRegistry.getDefaultWorkingPath() + File.separator + "DerbyDatabases");
                 try
                 {
                     final SwingWorker worker = new SwingWorker()

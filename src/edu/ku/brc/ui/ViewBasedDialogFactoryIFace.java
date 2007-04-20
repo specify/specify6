@@ -26,7 +26,7 @@ import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
  *
  * For the search dialogs, the definition contains information about how tro search both in JDBC (straigh SQL) or
  * by using Hibernate. Note: The applicaiton is currently set upto have just one factory and it must be "set" into
- * the UICacheManager before it can be used by everyone.<br><BR>
+ * the UIRegistry before it can be used by everyone.<br><BR>
  *
  * There are not rules for who creates the factory or when the factory should created. Currently, the edu.ku.brc.ui.db
  * package contains refernce implementations of Dialogs/Frame created by the "createDisplay" methods and these can be

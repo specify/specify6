@@ -82,7 +82,7 @@ import edu.ku.brc.util.FileCache;
  * @author rods
  *
  */
-public class UICacheManager
+public class UIRegistry
 {
     // Static Data Members
     protected static final String MISSING_FACTORY_MSG = "The object has not been set for the ViewBasedDialogFactoryIFace. This class can be used without first setting a factory implementing this interface.";
@@ -110,8 +110,8 @@ public class UICacheManager
     
     public static final String LONGTERM_CACHE_MAP = "longterm-cache-map.xml";
 
-    private static final Logger           log      = Logger.getLogger(UICacheManager.class);
-    protected static final UICacheManager instance = new UICacheManager();
+    private static final Logger           log      = Logger.getLogger(UIRegistry.class);
+    protected static final UIRegistry instance = new UIRegistry();
 
     // Data Members
     protected Hashtable<String, Component> components = new Hashtable<String, Component>();
@@ -188,7 +188,7 @@ public class UICacheManager
      * Default private constructor for singleton.
      *
      */
-    private UICacheManager()
+    private UIRegistry()
     {
         if (resourceBundle == null)
         {
@@ -206,7 +206,7 @@ public class UICacheManager
      * Returns the singleton.
      * @return the singleton instance
      */
-    public static UICacheManager getInstance()
+    public static UIRegistry getInstance()
     {
         return instance;
     }
@@ -333,7 +333,7 @@ public class UICacheManager
     {
         if (instance.appName == null)
         {
-            throw new RuntimeException("The AppName has not been set into the UICacheManger!");
+            throw new RuntimeException("The AppName has not been set into the UIRegistry!");
         }
         
         UIHelper.OSTYPE osType = UIHelper.getOSType();
@@ -953,7 +953,7 @@ public class UICacheManager
      */
     public static void clearGlassPaneMsg()
     {
-        Component mainComp = UICacheManager.get(UICacheManager.MAINPANE);
+        Component mainComp = UIRegistry.get(UIRegistry.MAINPANE);
         if (mainComp != null && getGlassPane() != null)
         {
             getGlassPane().setVisible(false);
@@ -1211,7 +1211,7 @@ public class UICacheManager
             super();
         }
 
-        public SelectAllAction(final UICacheManager uic)
+        public SelectAllAction(final UIRegistry uic)
         {
             super();
         }
@@ -1403,7 +1403,7 @@ public class UICacheManager
 
         public void actionPerformed(ActionEvent e)
         {
-            log.debug("Ctrl-f hit from with UICacheManager - passing action onto the SearchReplacePanel");
+            log.debug("Ctrl-f hit from with UIRegistry - passing action onto the SearchReplacePanel");
             if(this.isEnabled())
             {
                 if(searchReplacePanel != null)searchReplacePanel.getLaunchFindAction().actionPerformed(e);

@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.ui.forms;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static org.apache.commons.lang.StringUtils.split;
 
 import java.awt.BorderLayout;
@@ -78,7 +78,7 @@ import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
@@ -648,7 +648,7 @@ public class TableViewObj implements Viewable,
         {
             mvParent.getTopLevel().addDeletedItem(dObj);
             String delMsg = (businessRules != null) ? businessRules.getDeleteMsg(dObj) : "";
-            UICacheManager.getStatusBar().setText(delMsg);
+            UIRegistry.getStatusBar().setText(delMsg);
 
             return;
         }

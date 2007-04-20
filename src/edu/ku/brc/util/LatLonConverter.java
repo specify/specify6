@@ -7,7 +7,7 @@
 
 package edu.ku.brc.util;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;

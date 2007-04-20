@@ -19,7 +19,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -47,25 +47,25 @@ public class AppPreferenceHelper
         //-----------------------------------------------------
         // This is needed for loading views
         //-----------------------------------------------------
-        UICacheManager.getInstance(); // initializes it first thing
-        if (UICacheManager.getAppName() == null) // this is needed because the setUp gets run separately for each test
+        UIRegistry.getInstance(); // initializes it first thing
+        if (UIRegistry.getAppName() == null) // this is needed because the setUp gets run separately for each test
         {
             //System.setProperty("edu.ku.brc.af.core.AppContextMgrFactory",   "edu.ku.brc.specify.config.SpecifyAppContextMgr"); // Needed by AppContextMgr
             //System.setProperty(AppPreferences.factoryName,                  "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
-            //System.setProperty("edu.ku.brc.ui.ViewBasedDialogFactoryIFace", "edu.ku.brc.specify.ui.DBObjDialogFactory");       // Needed By UICacheManager
+            //System.setProperty("edu.ku.brc.ui.ViewBasedDialogFactoryIFace", "edu.ku.brc.specify.ui.DBObjDialogFactory");       // Needed By UIRegistry
             System.setProperty("edu.ku.brc.af.core.AppContextMgrFactory",   "edu.ku.brc.specify.config.SpecifyAppContextMgr"); // Needed by AppContextMgr
             System.setProperty(AppPreferences.factoryName,                  "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
-            System.setProperty("edu.ku.brc.ui.ViewBasedDialogFactoryIFace", "edu.ku.brc.specify.ui.DBObjDialogFactory");       // Needed By UICacheManager
+            System.setProperty("edu.ku.brc.ui.ViewBasedDialogFactoryIFace", "edu.ku.brc.specify.ui.DBObjDialogFactory");       // Needed By UIRegistry
             System.setProperty("edu.ku.brc.ui.forms.DraggableRecordIdentifierFactory", "edu.ku.brc.specify.ui.SpecifyDraggableRecordIdentiferFactory"); // Needed By the Form System
             System.setProperty("edu.ku.brc.dbsupport.AuditInterceptor",     "edu.ku.brc.specify.dbsupport.AuditInterceptor");  // Needed By the Form System for updating Lucene and loggin transactions
             System.setProperty("edu.ku.brc.dbsupport.DataProvider",         "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
           
-            UICacheManager.getInstance(); // initializes it first thing
-            UICacheManager.setAppName("Specify");
+            UIRegistry.getInstance(); // initializes it first thing
+            UIRegistry.setAppName("Specify");
 
             // Load Local Prefs
             AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-            localPrefs.setDirPath(UICacheManager.getDefaultWorkingPath());
+            localPrefs.setDirPath(UIRegistry.getDefaultWorkingPath());
             localPrefs.load();
             
             String hostName = "localhost";

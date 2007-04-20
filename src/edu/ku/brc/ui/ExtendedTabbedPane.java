@@ -75,7 +75,7 @@ public class ExtendedTabbedPane extends JTabbedPane
                 {
                     isOver = false;
                     repaint();
-                    //UICacheManager.displayStatusBarText("");
+                    //UIRegistry.displayStatusBarText("");
                 }
             }
             @Override
@@ -85,7 +85,7 @@ public class ExtendedTabbedPane extends JTabbedPane
                 {
                     isOver = true;
                     repaint();
-                    //UICacheManager.displayStatusBarText(itself.getToolTipText());
+                    //UIRegistry.displayStatusBarText(itself.getToolTipText());
                     
                 } else if (isOver)
                 {

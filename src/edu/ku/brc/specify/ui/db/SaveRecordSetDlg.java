@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.specify.ui.db;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;

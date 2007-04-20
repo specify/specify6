@@ -17,7 +17,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.PrefsPanelIFace;
 import edu.ku.brc.af.prefs.PrefsSavable;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.ViewFactory;
 import edu.ku.brc.ui.forms.Viewable;
@@ -102,7 +102,7 @@ public class FormattingPrefsPanel extends JPanel implements PrefsPanelIFace, Pre
             fontSizes.addItem(Integer.toString(i));
         }
         
-        Font baseFont = UICacheManager.getBaseFont();
+        Font baseFont = UIRegistry.getBaseFont();
         if (baseFont != null)
         {
             fontNames.setSelectedItem(baseFont.getFamily());
@@ -140,7 +140,7 @@ public class FormattingPrefsPanel extends JPanel implements PrefsPanelIFace, Pre
         if (form.getValidator() == null || form.getValidator().hasChanged())
         {
             form.getDataFromUI();
-            UICacheManager.setBaseFont(new Font((String)fontNames.getSelectedItem(), Font.PLAIN, fontSizes.getSelectedIndex()+6));
+            UIRegistry.setBaseFont(new Font((String)fontNames.getSelectedItem(), Font.PLAIN, fontSizes.getSelectedIndex()+6));
         }
     }
 

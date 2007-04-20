@@ -13,7 +13,7 @@
  */
 package edu.ku.brc.ui.db;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Window;
 import java.awt.event.ActionEvent;

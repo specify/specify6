@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.ui;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -131,7 +131,7 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog implements ActionLis
         this.desc   = desc;
         this.uiType = uiType;
 
-        //setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
+        //setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
 

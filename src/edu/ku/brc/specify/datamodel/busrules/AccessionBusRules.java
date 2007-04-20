@@ -20,7 +20,7 @@
 */
 package edu.ku.brc.specify.datamodel.busrules;
 
-import static edu.ku.brc.ui.UICacheManager.getLocalizedMessage;
+import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 
 import java.sql.ResultSet;
 import java.sql.Statement;

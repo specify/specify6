@@ -51,7 +51,7 @@ import edu.ku.brc.specify.ui.treetables.EditFormDialog.EditDialogCallback;
 import edu.ku.brc.ui.DragDropCallback;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -132,7 +132,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		super(name,task);
 		this.treeDef = treeDef;
 		allButtons = new Vector<AbstractButton>();
-		statusBar = UICacheManager.getStatusBar();
+		statusBar = UIRegistry.getStatusBar();
 		popupMenu = new TreeNodePopupMenu(this);
 		
 		getLayout().removeLayoutComponent(progressBarPanel);
@@ -545,7 +545,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		
 		setViewMode(SINGLE_VIEW_MODE);
         
-        UICacheManager.forceTopFrameRepaint();
+        UIRegistry.forceTopFrameRepaint();
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -614,7 +614,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		}
 		
 		repaint();
-    	UICacheManager.forceTopFrameRepaint();
+    	UIRegistry.forceTopFrameRepaint();
 	}
     
 	

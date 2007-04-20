@@ -6,7 +6,7 @@
  */
 package edu.ku.brc.specify.tasks;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -32,7 +32,7 @@ import edu.ku.brc.specify.ui.treetables.TreeNodeFindWidget;
 import edu.ku.brc.specify.ui.treetables.TreeTableViewer;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * A base task that provides functionality in common to all tasks
@@ -261,7 +261,7 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
     	}
     	else
     	{
-    		JStatusBar statusBar = UICacheManager.getStatusBar();
+    		JStatusBar statusBar = UIRegistry.getStatusBar();
     		//TODO localize
     		statusBar.setText("Tree definition editor already open");
     	}

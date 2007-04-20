@@ -78,7 +78,7 @@ public class ProgressDialog extends JDialog
 
         if (includeClose)
         {
-            closeBtn = new JButton(UICacheManager.getResourceString("Cancel"));
+            closeBtn = new JButton(UIRegistry.getResourceString("Cancel"));
             builder.add( closeBtn, cc.xy(1,y));y += 2;
         }
         
@@ -192,7 +192,7 @@ public class ProgressDialog extends JDialog
         
         if (closeBtn != null)
         {
-            closeBtn.setText(UICacheManager.getResourceString("Done"));
+            closeBtn.setText(UIRegistry.getResourceString("Done"));
         }
     }
     

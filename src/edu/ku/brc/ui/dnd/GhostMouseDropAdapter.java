@@ -10,7 +10,7 @@ import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * Implements the mousePressed and release methods to start and stop the drag
@@ -93,7 +93,7 @@ public class GhostMouseDropAdapter extends GhostDropAdapter
 
         glassPane.setPoint(p);
         
-        JComponent rootPane = (JComponent)UICacheManager.get(UICacheManager.MAINPANE);
+        JComponent rootPane = (JComponent)UIRegistry.get(UIRegistry.MAINPANE);
         
         Point pp = (Point) e.getPoint().clone();
         SwingUtilities.convertPointToScreen(pp, c);

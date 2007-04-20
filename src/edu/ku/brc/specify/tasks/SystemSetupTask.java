@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.specify.tasks;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
@@ -58,7 +58,7 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.Trash;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.persist.View;
@@ -458,7 +458,7 @@ public class SystemSetupTask extends BaseTask
             NavBoxMgr.getInstance().invalidate();
             NavBoxMgr.getInstance().doLayout();
             NavBoxMgr.getInstance().repaint();
-            UICacheManager.forceTopFrameRepaint();
+            UIRegistry.forceTopFrameRepaint();
         }
     }
 
@@ -554,7 +554,7 @@ public class SystemSetupTask extends BaseTask
                     NavBoxMgr.getInstance().invalidate();
                     NavBoxMgr.getInstance().doLayout();
                     NavBoxMgr.getInstance().repaint();
-                    UICacheManager.forceTopFrameRepaint();
+                    UIRegistry.forceTopFrameRepaint();
                     pickListNames.add(pickList.getName());
                 }
 

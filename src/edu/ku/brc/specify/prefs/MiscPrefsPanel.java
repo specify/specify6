@@ -26,7 +26,7 @@ import edu.ku.brc.af.prefs.PrefsPanelIFace;
 import edu.ku.brc.af.prefs.PrefsSavable;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.ViewFactory;
 import edu.ku.brc.ui.forms.Viewable;
@@ -70,7 +70,7 @@ public class MiscPrefsPanel extends JPanel implements PrefsSavable, PrefsPanelIF
             log.error("Couldn't load form with name ["+viewSetName+"] Id ["+viewName+"]");
         }
         
-        String luceneLocPref = AppPreferences.getLocalPrefs().get("ui.misc.luceneLocation", UICacheManager.getDefaultWorkingPath());
+        String luceneLocPref = AppPreferences.getLocalPrefs().get("ui.misc.luceneLocation", UIRegistry.getDefaultWorkingPath());
         AppPreferences.getLocalPrefs().put("ui.misc.luceneLocation", luceneLocPref);
 
         form.setDataObj(AppPreferences.getLocalPrefs());

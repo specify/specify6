@@ -39,7 +39,7 @@ import org.dom4j.io.SAXReader;
 
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.util.DatamodelHelper;
 
@@ -611,7 +611,7 @@ public class DBTableIdMgr
 				log.error("Trying to find class: " + className + " but class was not found");
 				e.printStackTrace();
 			}
-            this.objTitle = UICacheManager.getResourceString(this.classObj.getSimpleName());
+            this.objTitle = UIRegistry.getResourceString(this.classObj.getSimpleName());
             relationships = new HashSet<TableRelationship>();
             fields        = new Vector<FieldInfo>();
 		}

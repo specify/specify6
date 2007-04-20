@@ -1,6 +1,6 @@
 package edu.ku.brc.services.biogeomancer;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import javax.swing.table.AbstractTableModel;
 

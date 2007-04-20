@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.specify.ui;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -61,7 +61,7 @@ import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.specify.tasks.subpane.ExpressTableResults;
 import edu.ku.brc.specify.tasks.subpane.ExpressTableResultsBase;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.ViewFactory;
@@ -154,7 +154,7 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
 
            createUI(viewSetName, viewName, title);
            
-           setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
+           setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));
            setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
            
        } else

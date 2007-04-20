@@ -17,7 +17,7 @@
  */
 package edu.ku.brc.specify.config;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -162,7 +162,7 @@ public class LoggerDialog extends JDialog implements ActionListener
         
         setTitle("Configure Log Levels");
         
-        //setLocationRelativeTo(UICacheManager.get(UICacheManager.FRAME));
+        //setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         pack();
     }

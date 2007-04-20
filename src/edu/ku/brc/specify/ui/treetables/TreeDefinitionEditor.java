@@ -6,7 +6,7 @@
  */
 package edu.ku.brc.specify.ui.treetables;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -39,7 +39,7 @@ import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.specify.ui.treetables.EditFormDialog.EditDialogCallback;
 import edu.ku.brc.ui.JStatusBar;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -141,7 +141,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 		
 		Dimension horizSpacer = new Dimension(5,0);
 		
-		statusBar = UICacheManager.getStatusBar();
+		statusBar = UIRegistry.getStatusBar();
 		
 		errorColor = Color.RED;
 		

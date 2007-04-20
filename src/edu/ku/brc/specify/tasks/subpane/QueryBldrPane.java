@@ -9,7 +9,7 @@
  */
 package edu.ku.brc.specify.tasks.subpane;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;

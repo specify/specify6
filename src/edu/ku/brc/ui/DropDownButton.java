@@ -208,7 +208,7 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
                 setBorder(hoverBorder);
                 if (statusBarHintText != null)
                 {
-                    UICacheManager.displayStatusBarText(statusBarHintText);
+                    UIRegistry.displayStatusBarText(statusBarHintText);
                 }
                 
                 arrowBtn.setEnabled(getPopMenuSize() > 0);
@@ -221,7 +221,7 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
                {
                    setBorder(emptyBorder);
                }
-                UICacheManager.displayStatusBarText(null);
+                UIRegistry.displayStatusBarText(null);
                 repaint();
                 
                 if (popupVisible)

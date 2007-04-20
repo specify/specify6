@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIHelper.createDuplicateJGoodiesDef;
 import static edu.ku.brc.ui.UIHelper.createIconBtn;
 
@@ -121,7 +121,7 @@ import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.ProgressDialog;
 import edu.ku.brc.ui.SearchReplacePanel;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.ToggleButtonChooserDlg.Type;
 import edu.ku.brc.ui.forms.FormHelper;
@@ -240,7 +240,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         model.setSpreadSheet(spreadSheet);
         
         findPanel = spreadSheet.getFindReplacePanel();
-        UICacheManager.getLaunchFindReplaceAction().setSearchReplacePanel(findPanel);
+        UIRegistry.getLaunchFindReplaceAction().setSearchReplacePanel(findPanel);
     
         initColumnSizes(spreadSheet);
         spreadSheet.setShowGrid(true);
@@ -267,7 +267,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 UIHelper.centerAndShow(progressDialog);
                 */
 
-                UICacheManager.writeGlassPaneMsg(String.format(getResourceString("WB_SAVING"), new Object[] { workbench.getName()}), 32);
+                UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_SAVING"), new Object[] { workbench.getName()}), 32);
                 
                 final SwingWorker worker = new SwingWorker()
                 {
@@ -282,7 +282,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                          } catch (Exception ex)
                          {
                              log.error(ex);
-                             UICacheManager.getStatusBar().setErrorMessage(getResourceString("WB_ERROR_SAVING"), ex);
+                             UIRegistry.getStatusBar().setErrorMessage(getResourceString("WB_ERROR_SAVING"), ex);
                          }
                         return null;
                     }
@@ -291,7 +291,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                     @Override
                     public void finished()
                     {
-                        UICacheManager.clearGlassPaneMsg();
+                        UIRegistry.clearGlassPaneMsg();
                     }
                 };
                 worker.start();
@@ -401,7 +401,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             {
                 if (!e.getValueIsAdjusting())
                 {
-                    JStatusBar statusBar = UICacheManager.getStatusBar();
+                    JStatusBar statusBar = UIRegistry.getStatusBar();
                     statusBar.setText("");
                     
                     currentRow = spreadSheet.getSelectedRow();
@@ -548,7 +548,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 public void run()
                 {
                     toggleImageFrameVisible();
-                    ((Frame)UICacheManager.get(UICacheManager.FRAME)).toFront();
+                    ((Frame)UIRegistry.get(UIRegistry.FRAME)).toFront();
                 }
             });
         }
@@ -617,7 +617,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         inputMap.put(KeyStroke.getKeyStroke(keyCode, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), actionName);
         actionMap.put(actionName, action);
         
-        //UICacheManager.registerAction(actionName, action);
+        //UIRegistry.registerAction(actionName, action);
         return action;
     }
     
@@ -929,7 +929,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             findPanel.getHideFindPanelAction().hide();
             
             // Disable the ctrl-F from the edit menu
-            UICacheManager.disableFindFromEditMenu();
+            UIRegistry.disableFindFromEditMenu();
 
         }
         
@@ -940,7 +940,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             // Enable the "Find" action in the Edit menu when a spreadsheet is shown
             if (isSpreadsheet)
             {
-                UICacheManager.enableFindinEditMenu(findPanel);
+                UIRegistry.enableFindinEditMenu(findPanel);
             }
             c.setVisible(isSpreadsheet);
         }
@@ -1038,7 +1038,7 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected void showGeoRefConvertDialog()
     {
-        JStatusBar statusBar = UICacheManager.getStatusBar();
+        JStatusBar statusBar = UIRegistry.getStatusBar();
         
         if (!workbench.containsGeoRefData())
         {
@@ -1058,7 +1058,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         final int latColIndex = workbench.getColumnIndex(locTabId,"latitude1");
         final int lonColIndex = workbench.getColumnIndex(locTabId, "longitude1");
 
-        JFrame mainFrame = (JFrame)UICacheManager.get(UICacheManager.TOPFRAME);
+        JFrame mainFrame = (JFrame)UIRegistry.get(UIRegistry.TOPFRAME);
         
         String title = getResourceString("GeoRefConv");
         String description = getResourceString("GeoRefConvDesc");
@@ -1204,7 +1204,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 {
                     errorMsg = "Failed to get map from service";
                 }
-                JStatusBar statusBar = UICacheManager.getStatusBar();
+                JStatusBar statusBar = UIRegistry.getStatusBar();
                 statusBar.setErrorMessage(errorMsg,e);
                 statusBar.setIndeterminate(false);
                 showMapBtn.setEnabled(true);
@@ -1217,11 +1217,11 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         };
         
-        //FileCache imageCache = UICacheManager.getLongTermFileCache();
+        //FileCache imageCache = UIRegistry.getLongTermFileCache();
         //imageCache.clear();
         mapper.getMap(mapperListener);
         
-        JStatusBar statusBar = UICacheManager.getStatusBar();
+        JStatusBar statusBar = UIRegistry.getStatusBar();
         statusBar.setIndeterminate(true);
         statusBar.setText(getResourceString("WB_CREATINGMAP"));
     }
@@ -1232,7 +1232,7 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected void mapImageReceived(final Icon map)
     {
-        JStatusBar statusBar = UICacheManager.getStatusBar();
+        JStatusBar statusBar = UIRegistry.getStatusBar();
         statusBar.setIndeterminate(false);
         statusBar.setText("");
 
@@ -1325,7 +1325,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         Properties props = new Properties();
         props.setProperty("mimetype", ExportFileConfigurationFactory.XLS_MIME_TYPE);
 
-        FileDialog fileDialog = new FileDialog((Frame) UICacheManager.get(UICacheManager.FRAME),
+        FileDialog fileDialog = new FileDialog((Frame) UIRegistry.get(UIRegistry.FRAME),
                                                getResourceString("CHOOSE_WORKBENCH_EXPORT_FILE"), FileDialog.SAVE);
         UIHelper.centerAndShow(fileDialog);
 
@@ -1430,7 +1430,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 //            command.setProperty("iconURL", iconUrl);
 //        }
         CommandDispatcher.dispatch(command);
-        JStatusBar statusBar = UICacheManager.getStatusBar();
+        JStatusBar statusBar = UIRegistry.getStatusBar();
         statusBar.setText("Opening Google Earth");
     }
     
@@ -1499,7 +1499,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         // use a SwingWorker thread to do all of the work, and update the GUI when done
         final SwingWorker bgTask = new SwingWorker()
         {
-            final JStatusBar statusBar = UICacheManager.getStatusBar();
+            final JStatusBar statusBar = UIRegistry.getStatusBar();
             
             @SuppressWarnings("synthetic-access")
             @Override
@@ -1684,7 +1684,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected void displayBioGeomancerResults(List<WorkbenchRow> rows)
     {
         // create the UI for displaying the BG results
-        JFrame topFrame = (JFrame)UICacheManager.get(UICacheManager.TOPFRAME);
+        JFrame topFrame = (JFrame)UIRegistry.get(UIRegistry.TOPFRAME);
         BioGeomancerResultsChooser bgResChooser = new BioGeomancerResultsChooser(topFrame,"BioGeomancer Results Chooser",rows);
         
         List<BioGeomancerResultStruct> results = bgResChooser.getResultsChosen();
@@ -1752,7 +1752,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         TableCellRenderer headerRenderer = tableArg.getTableHeader().getDefaultRenderer();
 
         GridCellEditor cellEditor = new GridCellEditor(new JTextField());
-        //UICacheManager.getInstance().hookUpUndoableEditListener(cellEditor);
+        //UIRegistry.getInstance().hookUpUndoableEditListener(cellEditor);
         
         for (int i = 0; i < tblModel.getColumnCount(); i++) 
         {
@@ -1808,7 +1808,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
         
         Collections.sort(items);
-        ToggleButtonChooserDlg<WorkbenchTemplateMappingItem> dlg = new ToggleButtonChooserDlg<WorkbenchTemplateMappingItem>((Frame)UICacheManager.get(UICacheManager.FRAME),
+        ToggleButtonChooserDlg<WorkbenchTemplateMappingItem> dlg = new ToggleButtonChooserDlg<WorkbenchTemplateMappingItem>((Frame)UIRegistry.get(UIRegistry.FRAME),
                                                                         "WB_CARRYFORWARD",
                                                                         "WB_CHOOSE_CARRYFORWARD", 
                                                                         items,
@@ -1902,7 +1902,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             hasChanged = false;
             
             String msg = String.format(getResourceString("WB_SAVED"), new Object[] { workbench.getName()} );
-            UICacheManager.getStatusBar().setText(msg);
+            UIRegistry.getStatusBar().setText(msg);
 
 
         } catch (StaleObjectException ex) // was StaleObjectStateException
@@ -1911,7 +1911,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             
             // 
             //recoverFromStaleObject("UPDATE_DATA_STALE");
-            UICacheManager.getStatusBar().setErrorMessage(getResourceString("WB_ERROR_SAVING"), ex);
+            UIRegistry.getStatusBar().setErrorMessage(getResourceString("WB_ERROR_SAVING"), ex);
 
             
         } catch (Exception ex)
@@ -1919,7 +1919,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             log.error("******* " + ex);
             ex.printStackTrace();
             session.rollback();
-            UICacheManager.getStatusBar().setErrorMessage(getResourceString("WB_ERROR_SAVING"), ex);
+            UIRegistry.getStatusBar().setErrorMessage(getResourceString("WB_ERROR_SAVING"), ex);
 
         }
         
@@ -1941,7 +1941,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     {
         if (hasChanged)
         {
-            JFrame topFrame = (JFrame)UICacheManager.get(UICacheManager.TOPFRAME);
+            JFrame topFrame = (JFrame)UIRegistry.get(UIRegistry.TOPFRAME);
             int rv = JOptionPane.showConfirmDialog(topFrame,
                         getResourceString("SaveChanges"),
                         getResourceString("SaveChangesTitle"),
@@ -2004,7 +2004,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         boolean retStatus = true;
         if (hasChanged)
         {
-            JFrame topFrame = (JFrame)UICacheManager.get(UICacheManager.TOPFRAME);
+            JFrame topFrame = (JFrame)UIRegistry.get(UIRegistry.TOPFRAME);
             int rv = JOptionPane.showConfirmDialog(topFrame,
                                                    getResourceString("SaveChanges"),
                                                    getResourceString("SaveChangesTitle"),
@@ -2032,7 +2032,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         if (retStatus)
         {
             ((WorkbenchTask)task).closing(this);
-            //UICacheManager.unregisterAction(workbench.getName()+"_AddRow");
+            //UIRegistry.unregisterAction(workbench.getName()+"_AddRow");
         }
         
         return retStatus;
@@ -2054,7 +2054,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             if (imageFrameWasShowing)
             {
                 toggleImageFrameVisible();
-                ((Frame)UICacheManager.get(UICacheManager.FRAME)).toFront();
+                ((Frame)UIRegistry.get(UIRegistry.FRAME)).toFront();
             }
         }
         else
@@ -2187,7 +2187,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
 
         /* (non-Javadoc)
-         * @see edu.ku.brc.ui.UICacheManager.UndoableTextIFace#getUndoManager()
+         * @see edu.ku.brc.ui.UIRegistry.UndoableTextIFace#getUndoManager()
          */
         public UndoManager getUndoManager()
         {
@@ -2195,7 +2195,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
         
         /* (non-Javadoc)
-         * @see edu.ku.brc.ui.UICacheManager.UndoableTextIFace#getText()
+         * @see edu.ku.brc.ui.UIRegistry.UndoableTextIFace#getText()
          */
         public JTextComponent getTextComponent()
         {
@@ -2287,7 +2287,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                     } catch (Exception ex)
                     {
                         log.error(ex);
-                        UICacheManager.getStatusBar().setErrorMessage(getResourceString("WB_ERROR_SAVING"), ex);
+                        UIRegistry.getStatusBar().setErrorMessage(getResourceString("WB_ERROR_SAVING"), ex);
                     }
                     return null;
                 }

@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.ViewSetMgr;
 import edu.ku.brc.ui.forms.ViewSetMgrManager;
 import edu.ku.brc.util.FileCache;
@@ -53,22 +53,22 @@ public class ViewSetMgrTests extends TestCase
         //-----------------------------------------------------
         // This is needed for loading views
         //-----------------------------------------------------
-        UICacheManager.getInstance(); // initializes it first thing
-        if (UICacheManager.getAppName() == null) // this is needed because the setUp gets run separately for each test
+        UIRegistry.getInstance(); // initializes it first thing
+        if (UIRegistry.getAppName() == null) // this is needed because the setUp gets run separately for each test
         {
             System.setProperty("edu.ku.brc.af.core.AppContextMgrFactory",   "edu.ku.brc.specify.config.SpecifyAppContextMgr"); // Needed by AppCOntextMgr
             System.setProperty(AppPreferences.factoryName,                  "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
-            System.setProperty("edu.ku.brc.ui.ViewBasedDialogFactoryIFace", "edu.ku.brc.specify.ui.DBObjDialogFactory");       // Needed By UICacheManager
+            System.setProperty("edu.ku.brc.ui.ViewBasedDialogFactoryIFace", "edu.ku.brc.specify.ui.DBObjDialogFactory");       // Needed By UIRegistry
             
-            UICacheManager.getInstance(); // initializes it first thing
-            UICacheManager.setAppName("Specify");
+            UIRegistry.getInstance(); // initializes it first thing
+            UIRegistry.setAppName("Specify");
 
             // Load Local Prefs
             AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-            localPrefs.setDirPath(UICacheManager.getDefaultWorkingPath());
+            localPrefs.setDirPath(UIRegistry.getDefaultWorkingPath());
             localPrefs.load();
     
-            FileCache.setDefaultPath(UICacheManager.getDefaultWorkingPath());
+            FileCache.setDefaultPath(UIRegistry.getDefaultWorkingPath());
     
         }
         

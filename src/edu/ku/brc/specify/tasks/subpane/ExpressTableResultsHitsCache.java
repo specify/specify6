@@ -25,7 +25,7 @@ import org.apache.lucene.search.Hits;
 import edu.ku.brc.af.core.ExpressSearchResults;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * This is a single set of of results and is derived from a query where all the record numbers where
@@ -115,7 +115,7 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
 
         invalidate();
         doLayout();
-        UICacheManager.forceTopFrameRepaint();
+        UIRegistry.forceTopFrameRepaint();
 
     }
 

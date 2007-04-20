@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.ui;
 
-import static edu.ku.brc.ui.UICacheManager.getResourceString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -173,7 +173,7 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
          */
         public void actionPerformed(ActionEvent e)
         {
-            int returnVal = chooser.showOpenDialog(UICacheManager.get(UICacheManager.TOPFRAME));
+            int returnVal = chooser.showOpenDialog(UIRegistry.get(UIRegistry.TOPFRAME));
             if (returnVal == JFileChooser.APPROVE_OPTION)
             {
                 txtField.setText(chooser.getSelectedFile().getAbsolutePath());

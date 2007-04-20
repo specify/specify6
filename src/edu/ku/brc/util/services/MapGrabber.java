@@ -25,7 +25,7 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.FileCache;
 
 /**
@@ -76,7 +76,7 @@ public class MapGrabber
 	protected int defaultMaxWidth = 2048;
 
 	/** FileCache for caching retrieved maps. */
-	protected static FileCache imageCache = UICacheManager.getLongTermFileCache();
+	protected static FileCache imageCache = UIRegistry.getLongTermFileCache();
 
 	/**
 	 * Constructs a <code>MapGrabber</code> using all default parameters.

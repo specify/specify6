@@ -26,7 +26,7 @@ import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.SQLExecutionListener;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.specify.ui.db.ResultSetTableModelDM;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * This is a single set of of results and is derived from a query where all the record numbers where
@@ -161,7 +161,7 @@ public class ExpressTableResults extends ExpressTableResultsBase implements SQLE
                 sqlExecutor = null;
                 invalidate();
                 doLayout();
-                UICacheManager.forceTopFrameRepaint();
+                UIRegistry.forceTopFrameRepaint();
             }
         } catch (SQLException ex)
         {

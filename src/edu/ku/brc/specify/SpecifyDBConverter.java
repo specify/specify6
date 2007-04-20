@@ -62,7 +62,7 @@ import edu.ku.brc.specify.tests.DataBuilder;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.ProgressFrame;
-import edu.ku.brc.ui.UICacheManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -147,7 +147,7 @@ public class SpecifyDBConverter
                 {
                     old2NewDBNames.put(names[i], names[++i]);
                 }
-                UICacheManager.setAppName("Specify");
+                UIRegistry.setAppName("Specify");
                 
                 dbNamesToConvert = selectedDBsToConvert(names);
                 currentIndex = 0;
@@ -787,7 +787,7 @@ public class SpecifyDBConverter
         
         boolean isNew = false;
         Properties props = new Properties();
-        File propsFile = new File(UICacheManager.getDefaultWorkingPath() + File.separator + "convert.properties");
+        File propsFile = new File(UIRegistry.getDefaultWorkingPath() + File.separator + "convert.properties");
         if (!propsFile.exists())
         {
              isNew = true;
