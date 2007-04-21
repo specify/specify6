@@ -105,7 +105,7 @@ public class Trash extends JComponent implements GhostActionable
         paperIcon     = trashFullIcon;//new ImageIcon(IconManager.getImagePath("trash_paper.gif"));
         imgIcon       = trashIcon;
         
-        // XXX Disabled for OnRamp)
+        // XXX RELEASE - Disabled for stand-alone Workbench
         if (false)
         {
             popupMenu = new JPopupMenu();

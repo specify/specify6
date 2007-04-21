@@ -21,6 +21,8 @@ import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -37,6 +39,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
@@ -74,6 +77,8 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
     protected boolean              overRideButtonBorder = false;
     protected List<JComponent>     menus                = null;
     protected List<ActionListener> listeners            = new ArrayList<ActionListener>();
+    
+    protected boolean              hasFocus             = false; 
     
     protected static ImageIcon dropDownArrow;
     
@@ -162,6 +167,19 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
     protected void init(final String label, final ImageIcon icon, String toolTip)
     {
         mainBtn   = new JButton(label, icon);
+        mainBtn.addFocusListener(new FocusListener() {
+            public void focusGained(FocusEvent arg0)
+            {
+                hasFocus = true;
+                repaint();
+            }
+            public void focusLost(FocusEvent arg0)
+            {
+                hasFocus = false;
+                repaint();
+            }
+            
+        });
         
         if (!overRideButtonBorder)
         {
@@ -438,11 +456,11 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
      * @see java.awt.Component#paint(java.awt.Graphics)
      */
     @Override
-    public void paintComponent(Graphics g) 
+    public void paint(Graphics g) 
     {
         //mainBtn.setMargin(new Insets(0,0,0,0));
         
-        super.paintComponent(g);
+        super.paint(g);
         
         if (getBorder() == hoverBorder && arrowBtn.isVisible())
         {
@@ -466,7 +484,22 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
             g.drawLine(x-1, y1,   x,   y1+1);
             g.drawLine(x,   y1+1, x,   y2-1);
             g.drawLine(x,   y2-1, x-1, y2);
-         }
+        }
+        if (hasFocus)
+        {
+            Color focusColor = UIManager.getColor("Button.focus");
+            System.out.println(focusColor);
+            Dimension size = getSize();
+            g.setColor(new Color(217,236,234));
+            g.drawRect(0,0,size.width-1, size.height-1);
+            g.setColor(new Color(194,213,230));
+            g.drawRect(1,1,size.width-3, size.height-3);
+            g.setColor(new Color(169,199,225));
+            g.drawRect(2,2,size.width-5, size.height-5);
+            g.setColor(new Color(134,155,175));
+            g.drawRect(3,3,size.width-7, size.height-7);
+        }
+        
     }
     
     /**

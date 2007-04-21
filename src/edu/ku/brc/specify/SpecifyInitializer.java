@@ -537,7 +537,7 @@ public class SpecifyInitializer
                 
             } else
             {
-                header.append("<br>The database cannot be stored on the media you are currently running OnRamp from, ");
+                header.append("<br>The database cannot be stored on the media you are currently running Workbench from, ");
                 header.append("so you can allow it to default to your '<i>home</i>' directory. Or choose a different location.</html>");
                 useHomeRB.setSelected(true);
             }

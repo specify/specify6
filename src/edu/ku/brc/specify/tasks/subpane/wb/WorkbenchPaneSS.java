@@ -331,7 +331,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         addAction.setEnabled(true); 
 
 
-        carryForwardBtn = createIconBtn("CarryForward", IconManager.IconSize.Std16, "WB_CARRYFORWARD", true, new ActionListener()
+        carryForwardBtn = createIconBtn("CarryForward", IconManager.IconSize.Std16, "WB_CARRYFORWARD", false, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -340,7 +340,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         });
         carryForwardBtn.setEnabled(true);
 
-        toggleImageFrameBtn = createIconBtn("CardImage", IconManager.IconSize.Std16, "WB_SHOW_IMAGES", true, new ActionListener()
+        toggleImageFrameBtn = createIconBtn("CardImage", IconManager.IconSize.Std16, "WB_SHOW_IMAGES", false, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -349,7 +349,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         });
         toggleImageFrameBtn.setEnabled(true);
         
-        showMapBtn = createIconBtn("ShowMap", IconManager.IconSize.Std16, "WB_SHOW_MAP", true, new ActionListener()
+        showMapBtn = createIconBtn("ShowMap", IconManager.IconSize.Std16, "WB_SHOW_MAP", false, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -359,7 +359,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         // only enable it if the workbench has geo ref data
         showMapBtn.setEnabled(workbench.containsGeoRefData());
 
-        exportKmlBtn = createIconBtn("GoogleEarth", IconManager.IconSize.Std16, "WB_SHOW_IN_GOOGLE_EARTH", true, new ActionListener()
+        exportKmlBtn = createIconBtn("GoogleEarth", IconManager.IconSize.Std16, "WB_SHOW_IN_GOOGLE_EARTH", false, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -368,7 +368,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         });
         exportKmlBtn.setEnabled(workbench.containsGeoRefData());
         
-        biogeomancerBtn = createIconBtn("BioGeoMancer", IconManager.IconSize.Std16, "WB_DO_BIOGEOMANCER_LOOKUP", true, new ActionListener()
+        biogeomancerBtn = createIconBtn("BioGeoMancer", IconManager.IconSize.Std16, "WB_DO_BIOGEOMANCER_LOOKUP", false, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -377,7 +377,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         });
         biogeomancerBtn.setEnabled(isTemplateBGCompatible());
         
-        convertGeoRefFormatBtn = createIconBtn("ConvertGeoRef", IconManager.IconSize.Std16, "WB_CONVERT_GEO_FORMAT", true, new ActionListener()
+        convertGeoRefFormatBtn = createIconBtn("ConvertGeoRef", IconManager.IconSize.Std16, "WB_CONVERT_GEO_FORMAT", false, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -386,7 +386,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         });
         convertGeoRefFormatBtn.setEnabled(workbench.containsGeoRefData());
         
-        exportExcelCsvBtn = createIconBtn("Export", IconManager.IconSize.Std16, "WB_EXPORT_DATA", true, new ActionListener()
+        exportExcelCsvBtn = createIconBtn("Export", IconManager.IconSize.Std16, "WB_EXPORT_DATA", false, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {

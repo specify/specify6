@@ -7,7 +7,7 @@
 		<sql><![CDATA[Select name from workbench]]></sql>
       </box>
       -->
-      <box title="OnRamp Data Sets" valcol="1" valtitle="OnRamp">
+      <box title="Workbench DataSets" valcol="1" valtitle="Workbench">
 		<sql><![CDATA[Select name from workbench]]></sql>
       </box>
   </row>

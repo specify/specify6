@@ -18,6 +18,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -26,7 +27,11 @@ import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -67,6 +72,8 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
+import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -120,6 +127,9 @@ public final class UIHelper
     protected static DateWrapper    scrDateFormat    = null;
 
     protected static UIHelper       instance         = new UIHelper();
+    
+    protected static Border          emptyBorder     = BorderFactory.createEmptyBorder(1, 1, 1, 1);
+    protected static Border          focusBorder     = new LineBorder(Color.GRAY, 1, true);
     
     static {
 
@@ -1358,19 +1368,59 @@ public final class UIHelper
                                         final boolean              withEmptyBorder,
                                         final ActionListener       al)
     {
-        JButton btn = size != null ? new JButton(IconManager.getIcon(iconName, size)) : new JButton(IconManager.getIcon(iconName));
-        //btn.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
-        btn.setToolTipText(getResourceString(toolTipTextKey));
-        btn.setMargin(new Insets(0,0,0,0));
+        JButton btn = new JButton(size != null ? IconManager.getIcon(iconName, size) : IconManager.getIcon(iconName));
+        if (!withEmptyBorder)
+        {
+            btn.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e)
+                {
+                    if (((JButton)e.getSource()).isEnabled())
+                    {
+                        ((JButton)e.getSource()).setBorder(focusBorder);
+                    }
+                    super.mouseEntered(e);
+                }
+                @Override
+                public void mouseExited(MouseEvent e)
+                {
+                    if (((JButton)e.getSource()).isEnabled())
+                    {               
+                        ((JButton)e.getSource()).setBorder(emptyBorder);
+                    }
+                    super.mouseExited(e);
+                }
+                
+            });
+            btn.addFocusListener(new FocusListener() {
+                public void focusGained(FocusEvent e)
+                {
+                    if (((JButton)e.getSource()).isEnabled())
+                    {
+                        ((JButton)e.getSource()).setBorder(focusBorder);
+                    }
+                }
+                public void focusLost(FocusEvent e)
+                {
+                    if (((JButton)e.getSource()).isEnabled())
+                    {               
+                        ((JButton)e.getSource()).setBorder(emptyBorder);
+                    }
+                }
+                
+            });
+            btn.setBorder(emptyBorder);
+        }
+        if (StringUtils.isNotEmpty(toolTipTextKey))
+        {
+            btn.setToolTipText(getResourceString(toolTipTextKey));
+        }
         if (al != null)
         {
             btn.addActionListener(al);
         }
         btn.setEnabled(false);
-        if (withEmptyBorder)
-        {
-            btn.setBorder(BorderFactory.createEmptyBorder());
-        }
+        btn.setMargin(new Insets(0,0,0,0));
         return btn;
     }
 
@@ -1387,6 +1437,22 @@ public final class UIHelper
                                         final Action               action)
     {
         return createIconBtn(iconName, null, toolTipTextKey, false, action);
+    }
+    
+    /**
+     * Creates an icon button with tooltip and action listener.
+     * @param iconName the name of the icon (use default size)
+     * @param toolTipTextKey the tooltip text resource bundle key
+     * @param withEmptyBorder set an empyt border
+     * @param al the action listener
+     * @return the JButton icon button
+     */
+    public static JButton createIconBtn(final String               iconName, 
+                                        final String               toolTipTextKey,
+                                        final boolean              withEmptyBorder,
+                                        final Action               action)
+    {
+        return createIconBtn(iconName, null, toolTipTextKey, withEmptyBorder, action);
     }
     
     /**
@@ -1419,15 +1485,58 @@ public final class UIHelper
                                         final Action               action)
     {
         JButton btn = new JButton(action);
+        if (!withEmptyBorder)
+        {
+            btn.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e)
+                {
+                    if (((JButton)e.getSource()).isEnabled())
+                    {
+                        ((JButton)e.getSource()).setBorder(focusBorder);
+                    }
+                    super.mouseEntered(e);
+                }
+                @Override
+                public void mouseExited(MouseEvent e)
+                {
+                    if (((JButton)e.getSource()).isEnabled())
+                    {               
+                        ((JButton)e.getSource()).setBorder(emptyBorder);
+                    }
+                    super.mouseExited(e);
+                }
+                
+            });
+            btn.addFocusListener(new FocusListener() {
+                public void focusGained(FocusEvent e)
+                {
+                    if (((JButton)e.getSource()).isEnabled())
+                    {
+                        ((JButton)e.getSource()).setBorder(focusBorder);
+                    }
+                }
+                public void focusLost(FocusEvent e)
+                {
+                    if (((JButton)e.getSource()).isEnabled())
+                    {               
+                        ((JButton)e.getSource()).setBorder(emptyBorder);
+                    }
+                }
+                
+            });
+            btn.setBorder(emptyBorder);
+        }
         btn.setIcon(size != null ? IconManager.getIcon(iconName, size) : IconManager.getIcon(iconName));
         btn.setText(null);
-        btn.setToolTipText(getResourceString(toolTipTextKey));
-        btn.setMargin(new Insets(0,0,0,0));
-        btn.setEnabled(false);
-        if (withEmptyBorder)
+        if (StringUtils.isNotEmpty(toolTipTextKey))
         {
-            btn.setBorder(BorderFactory.createEmptyBorder());
+            btn.setToolTipText(getResourceString(toolTipTextKey));
         }
+        btn.setEnabled(false);
+       
+        btn.setFocusable(true);
+        btn.setMargin(new Insets(0,0,0,0));
         return btn;
     }
     
