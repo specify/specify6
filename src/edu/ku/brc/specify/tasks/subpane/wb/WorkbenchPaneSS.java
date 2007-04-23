@@ -356,9 +356,8 @@ public class WorkbenchPaneSS extends BaseSubPane
                 showMapOfSelectedRecords();
             }
         });
-        // only enable it if the workbench has geo ref data
-        showMapBtn.setEnabled(workbench.containsGeoRefData());
-
+        // enable or disable along with Google Earth and Geo Ref Convert buttons
+        
         exportKmlBtn = createIconBtn("GoogleEarth", IconManager.IconSize.Std16, "WB_SHOW_IN_GOOGLE_EARTH", false, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
@@ -366,7 +365,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 showRecordsInGoogleEarth();
             }
         });
-        exportKmlBtn.setEnabled(workbench.containsGeoRefData());
+        // enable or disable along with Show Map and Geo Ref Convert buttons
         
         biogeomancerBtn = createIconBtn("BioGeoMancer", IconManager.IconSize.Std16, "WB_DO_BIOGEOMANCER_LOOKUP", false, new ActionListener()
         {
@@ -380,12 +379,14 @@ public class WorkbenchPaneSS extends BaseSubPane
         if (missingColumnsForBG.length > 0)
         {
             biogeomancerBtn.setEnabled(false);
-            String ttText = "<html><p>" + getResourceString("WB_ADDITIONAL_FIELDS_REQD") + ":<br/>";
+            String ttText = "<p>" + getResourceString("WB_ADDITIONAL_FIELDS_REQD") + ":<ul>";
             for (String reqdField: missingColumnsForBG)
             {
-                ttText += reqdField + "<br>";
+                ttText += "<li>" + reqdField + "</li>";
             }
-            biogeomancerBtn.setToolTipText(ttText);
+            ttText += "</ul>";
+            String origTT = biogeomancerBtn.getToolTipText();
+            biogeomancerBtn.setToolTipText("<html>" + origTT + ttText);
         }
         else
         {
@@ -400,8 +401,34 @@ public class WorkbenchPaneSS extends BaseSubPane
                 showGeoRefConvertDialog();
             }
         });
-        // only enable it if the workbench has geo ref data
-        convertGeoRefFormatBtn.setEnabled(workbench.containsGeoRefData());
+        
+        // now enable/disable the geo ref related buttons
+        String[] missingGeoRefFields = getMissingGeoRefFields();
+        if (missingGeoRefFields.length > 0)
+        {
+            convertGeoRefFormatBtn.setEnabled(false);
+            exportKmlBtn.setEnabled(false);
+            showMapBtn.setEnabled(false);
+            
+            String ttText = "<p>" + getResourceString("WB_ADDITIONAL_FIELDS_REQD") + ":<ul>";
+            for (String reqdField: missingGeoRefFields)
+            {
+                ttText += "<li>" + reqdField + "</li>";
+            }
+            ttText += "</ul>";
+            String origTT1 = convertGeoRefFormatBtn.getToolTipText();
+            convertGeoRefFormatBtn.setToolTipText("<html>" + origTT1 + ttText);
+            String origTT2 = exportKmlBtn.getToolTipText();
+            exportKmlBtn.setToolTipText("<html>" + origTT2 + ttText);
+            String origTT3 = showMapBtn.getToolTipText();
+            showMapBtn.setToolTipText("<html>" + origTT3 + ttText);
+        }
+        else
+        {
+            convertGeoRefFormatBtn.setEnabled(true);
+            exportKmlBtn.setEnabled(true);
+            showMapBtn.setEnabled(true);
+        }
         
         exportExcelCsvBtn = createIconBtn("Export", IconManager.IconSize.Std16, "WB_EXPORT_DATA", false, new ActionListener()
         {
@@ -1529,6 +1556,32 @@ public class WorkbenchPaneSS extends BaseSubPane
         if (workbench.getColumnIndex(geographyTableId, "county") == -1)
         {
             missingCols.add("county");
+        }
+        
+        // convert to a String[]  (toArray() converts to a Object[])
+        String[] reqdFields = new String[missingCols.size()];
+        for (int i = 0; i < missingCols.size(); ++i)
+        {
+            String s = missingCols.get(i);
+            reqdFields[i] = s;
+        }
+        return reqdFields;
+    }
+    
+    protected String[] getMissingGeoRefFields()
+    {
+        List<String> missingCols = new Vector<String>();
+        
+        // check the locality fields
+        int localityTableId = DBTableIdMgr.getInstance().getIdByClassName(Locality.class.getName());
+        
+        if (workbench.getColumnIndex(localityTableId, "latitude1") == -1)
+        {
+            missingCols.add("latitude1");
+        }
+        if (workbench.getColumnIndex(localityTableId, "longitude1") == -1)
+        {
+            missingCols.add("longitude1");
         }
         
         // convert to a String[]  (toArray() converts to a Object[])
