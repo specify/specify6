@@ -375,7 +375,23 @@ public class WorkbenchPaneSS extends BaseSubPane
                 doBioGeomancerLookup();
             }
         });
-        biogeomancerBtn.setEnabled(isTemplateBGCompatible());
+        // only enable it if the workbench has the proper columns in it
+        String[] missingColumnsForBG = getMissingButRequiredColumnsForBioGeomancer();
+        if (missingColumnsForBG.length > 0)
+        {
+            biogeomancerBtn.setEnabled(false);
+            String ttText = "<html><p>" + getResourceString("WB_ADDITIONAL_FIELDS_REQD") + ":<br/>";
+            for (String reqdField: missingColumnsForBG)
+            {
+                ttText += reqdField + "<br>";
+            }
+            biogeomancerBtn.setToolTipText(ttText);
+        }
+        else
+        {
+            biogeomancerBtn.setEnabled(true);
+        }
+        
         
         convertGeoRefFormatBtn = createIconBtn("ConvertGeoRef", IconManager.IconSize.Std16, "WB_CONVERT_GEO_FORMAT", false, new ActionListener()
         {
@@ -384,6 +400,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 showGeoRefConvertDialog();
             }
         });
+        // only enable it if the workbench has geo ref data
         convertGeoRefFormatBtn.setEnabled(workbench.containsGeoRefData());
         
         exportExcelCsvBtn = createIconBtn("Export", IconManager.IconSize.Std16, "WB_EXPORT_DATA", false, new ActionListener()
@@ -1476,6 +1493,52 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
         
         return true;
+    }
+    
+    protected String[] getMissingButRequiredColumnsForBioGeomancer()
+    {
+        List<String> missingCols = new Vector<String>();
+        
+        // check the locality fields
+        int localityTableId = DBTableIdMgr.getInstance().getIdByClassName(Locality.class.getName());
+        
+        if (workbench.getColumnIndex(localityTableId, "localityName") == -1)
+        {
+            missingCols.add("localityName");
+        }
+        if (workbench.getColumnIndex(localityTableId, "latitude1") == -1)
+        {
+            missingCols.add("latitude1");
+        }
+        if (workbench.getColumnIndex(localityTableId, "longitude1") == -1)
+        {
+            missingCols.add("longitude1");
+        }
+        
+        // check the geography fields
+        int geographyTableId = DBTableIdMgr.getInstance().getIdByClassName(Geography.class.getName());
+
+        if (workbench.getColumnIndex(geographyTableId, "country") == -1)
+        {
+            missingCols.add("country");
+        }
+        if (workbench.getColumnIndex(geographyTableId, "state") == -1)
+        {
+            missingCols.add("state");
+        }
+        if (workbench.getColumnIndex(geographyTableId, "county") == -1)
+        {
+            missingCols.add("county");
+        }
+        
+        // convert to a String[]  (toArray() converts to a Object[])
+        String[] reqdFields = new String[missingCols.size()];
+        for (int i = 0; i < missingCols.size(); ++i)
+        {
+            String s = missingCols.get(i);
+            reqdFields[i] = s;
+        }
+        return reqdFields;
     }
     
     /**
