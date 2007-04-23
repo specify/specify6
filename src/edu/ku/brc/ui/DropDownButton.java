@@ -39,7 +39,6 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
@@ -485,6 +484,8 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
             g.drawLine(x,   y1+1, x,   y2-1);
             g.drawLine(x,   y2-1, x-1, y2);
         }
+        
+        /* Experiment
         if (hasFocus)
         {
             Color focusColor = UIManager.getColor("Button.focus");
@@ -498,7 +499,7 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
             g.drawRect(2,2,size.width-5, size.height-5);
             g.setColor(new Color(134,155,175));
             g.drawRect(3,3,size.width-7, size.height-7);
-        }
+        }*/
         
     }
     

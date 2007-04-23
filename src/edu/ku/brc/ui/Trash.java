@@ -278,7 +278,7 @@ public class Trash extends JComponent implements GhostActionable
                 if (((DndDeletable)src).deleteRequest())
                 {
                     items.add((DndDeletable)src);
-                    imgIcon = trashFullIcon;
+                    //imgIcon = trashFullIcon;
                     repaint();
                 }
             }
