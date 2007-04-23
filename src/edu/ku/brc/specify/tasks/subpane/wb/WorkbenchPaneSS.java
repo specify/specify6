@@ -1057,6 +1057,11 @@ public class WorkbenchPaneSS extends BaseSubPane
         final int locTabId = DBTableIdMgr.getInstance().getIdByClassName(Locality.class.getName());
         final int latColIndex = workbench.getColumnIndex(locTabId,"latitude1");
         final int lonColIndex = workbench.getColumnIndex(locTabId, "longitude1");
+        
+        // it's fine if these come back as -1
+        // that results in no backups of the original values
+        final int lat1TextColIndex = workbench.getColumnIndex(locTabId, "Lat1Text");
+        final int long1TextColIndex = workbench.getColumnIndex(locTabId, "Long1Text");
 
         JFrame mainFrame = (JFrame)UIRegistry.get(UIRegistry.TOPFRAME);
         
@@ -1076,20 +1081,20 @@ public class WorkbenchPaneSS extends BaseSubPane
                 {
                     case 0:
                     {
-                        convertColumnContents(latColIndex, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name());
-                        convertColumnContents(lonColIndex, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name());
+                        convertColumnContents(latColIndex, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name(), lat1TextColIndex);
+                        convertColumnContents(lonColIndex, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name(), long1TextColIndex);
                         break;
                     }
                     case 1:
                     {
-                        convertColumnContents(latColIndex, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name());
-                        convertColumnContents(lonColIndex, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name());
+                        convertColumnContents(latColIndex, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name(), lat1TextColIndex);
+                        convertColumnContents(lonColIndex, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name(), long1TextColIndex);
                         break;
                     }
                     case 2:
                     {
-                        convertColumnContents(latColIndex, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name());
-                        convertColumnContents(lonColIndex, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name());
+                        convertColumnContents(latColIndex, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name(), lat1TextColIndex);
+                        convertColumnContents(lonColIndex, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name(), long1TextColIndex);
                         break;
                     }
                 }
@@ -1257,8 +1262,9 @@ public class WorkbenchPaneSS extends BaseSubPane
      * @param columnIndex the index of the column being converted
      * @param converter the converter to use
      * @param outputFormat the format string
+     * @param backupColIndex the column index of the column to store the original value in, or -1 if none
      */
-    protected void convertColumnContents(int columnIndex, StringConverter converter, String outputFormat)
+    protected void convertColumnContents(int columnIndex, StringConverter converter, String outputFormat, int backupColIndex)
     {
         int rowCnt = model.getRowCount();
         for (int rowIndex = 0; rowIndex < rowCnt; ++rowIndex)
@@ -1273,6 +1279,17 @@ public class WorkbenchPaneSS extends BaseSubPane
             try
             {
                 convertedValue = converter.convert(currentValue, outputFormat);
+                
+                // if the caller specified a "backup" column index, copy the original value to it
+                // if the backup column doesn't already have contents
+                if (backupColIndex != -1)
+                {
+                    String currVal = (String)model.getValueAt(rowIndex, backupColIndex);
+                    if (currVal == null || currVal.isEmpty())
+                    {
+                        model.setValueAt(currentValue, rowIndex, backupColIndex);
+                    }
+                }
             }
             catch (Exception e)
             {

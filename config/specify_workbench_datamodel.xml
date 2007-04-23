@@ -131,6 +131,8 @@
     <field column="Longitude1" name="longitude1" type="java.math.BigDecimal"/>
     <field column="Latitude2" name="latitude2" type="java.math.BigDecimal"/>
     <field column="Longitude2" name="longitude2" type="java.math.BigDecimal"/>
+    <field column="Lat1Text" name="lat1Text" type="java.lang.String"/>
+    <field column="Long1Text" name="long1Text" type="java.lang.String"/>
     <field column="Lat Long Method" name="latLongMethod" type="java.lang.String" length="50"/>
     <field column="Lat Long Accuracy" name="latLongAccuracy" type="java.lang.Double"/>
     <field column="Datum" name="datum" type="java.lang.String" length="50"/>

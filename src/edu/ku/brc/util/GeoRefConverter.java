@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 public class GeoRefConverter implements StringConverter
 {
-    public enum GeoRefFormat
+    public static enum GeoRefFormat
     {
         DMS_PLUS_MINUS ("[\\+\\-]?\\d{1,3}\\s\\d{1,2}\\s\\d{0,2}(\\.\\d{0,}\\s*)?")
         {
