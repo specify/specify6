@@ -6,7 +6,7 @@ public class GeoRefConverter implements StringConverter
 {
     public enum GeoRefFormat
     {
-        DMS_PLUS_MINUS ("[\\+\\-]?\\d{1,3}\\s\\d{1,2}\\s\\d{1,2}\\.\\d{0,}\\s*")
+        DMS_PLUS_MINUS ("[\\+\\-]?\\d{1,3}\\s\\d{1,2}\\s\\d{0,2}(\\.\\d{0,}\\s*)?")
         {
             @Override
             public BigDecimal convertToDecimalDegrees(String orig)
@@ -14,7 +14,7 @@ public class GeoRefConverter implements StringConverter
                 return LatLonConverter.convertDDMMSSToDDDD(orig);
             }
         },
-        DM_PLUS_MINUS  ("[\\+\\-]?\\d{0,3}\\s\\d{1,2}\\.\\d{0,}\\s*")
+        DM_PLUS_MINUS  ("[\\+\\-]?\\d{0,3}\\s\\d{0,2}(\\.\\d{0,}\\s*)?")
         {
             @Override
             public BigDecimal convertToDecimalDegrees(String orig)
@@ -22,7 +22,7 @@ public class GeoRefConverter implements StringConverter
                 return LatLonConverter.convertDDMMMMToDDDD(orig);
             }
         },
-        D_PLUS_MINUS   ("[\\+\\-]?\\d{1,3}\\.\\d{0,}\\s*")
+        D_PLUS_MINUS   ("[\\+\\-]?\\d{0,3}(\\.\\d{0,}\\s*)?")
         {
             @Override
             public BigDecimal convertToDecimalDegrees(String orig)
@@ -30,7 +30,7 @@ public class GeoRefConverter implements StringConverter
                 return LatLonConverter.convertDDDDToDDDD(orig);
             }
         },
-        DMS_NSEW       ("\\d{1,3}\\s\\d{2}\\s\\d{1,2}\\.\\d{0,}\\s[NSEW]{1}.*")
+        DMS_NSEW       ("\\d{1,3}\\s\\d{2}\\s\\d{0,2}(\\.\\d{0,})?\\s[NSEW]{1}.*")
         {
             @Override
             public BigDecimal convertToDecimalDegrees(String orig)
@@ -38,7 +38,7 @@ public class GeoRefConverter implements StringConverter
                 return LatLonConverter.convertDirectionalDDMMSSToDDDD(orig);
             }
         },
-        DM_NSEW        ("\\d{1,3}\\s\\d{1,2}\\.\\d{0,}\\s[NSEW]{1}.*")
+        DM_NSEW        ("\\d{1,3}\\s\\d{0,2}(\\.\\d{0,})?\\s[NSEW]{1}.*")
         {
             @Override
             public BigDecimal convertToDecimalDegrees(String orig)
@@ -46,7 +46,7 @@ public class GeoRefConverter implements StringConverter
                 return LatLonConverter.convertDirectionalDDMMMMToDDDD(orig);
             }
         },
-        D_NSEW         ("\\d{1,3}\\.\\d{0,}\\s[NSEW]{1}.*")
+        D_NSEW         ("\\d{0,3}(\\.\\d{0,})?\\s[NSEW]{1}.*")
         {
             @Override
             public BigDecimal convertToDecimalDegrees(String orig)
@@ -130,57 +130,239 @@ public class GeoRefConverter implements StringConverter
         String destFormat = GeoRefFormat.DMS_PLUS_MINUS.name();
         
         String[] inputStrings = new String[] {
+                
+                // +/- Deg Min Sec
+                "//+/- Deg Min Sec",
                 "0 0 0",
                 "0 0 0.",
                 "-32 45 16.8232",
                 "-32 45 16.82",
+                "-32 45 6.8232",
                 "-32 45 6.82",
                 "-32 45 0.82",
+                "-32 45 .8232",
                 "-32 45 .82",
                 "-132 45 16.82151",
                 "-132 45 6.82",
                 "-132 45 .82",
+                "32 45 16.8232",
                 "32 45 16.82",
-                "32 45 16.82",
+                "32 45 6.8232",
                 "32 45 6.82",
                 "32 45 0.82",
+                "32 45 .8232",
                 "32 45 .82",
-                "132 45 16.82",
+                "132 45 16.82151",
                 "132 45 6.82",
                 "132 45 .82",
+                
+                // Deg Min Sec N/S/E/W
+                "//Deg Min Sec N/S/E/W",
+                "32 45 16.8232 N",
+                "32 45 16.82 N",
+                "32 45 6.8232 N",
+                "32 45 6.82 N",
+                "32 45 0.82 N",
+                "32 45 .8232 N",
+                "32 45 .82 N",
+                "132 45 16.82151 N",
+                "132 45 6.82 N",
+                "132 45 .82 N",
+                
                 "32 45 16.8232 S",
                 "32 45 16.82 S",
+                "32 45 6.8232 S",
                 "32 45 6.82 S",
+                "32 45 0.82 S",
+                "32 45 .8232 S",
                 "32 45 .82 S",
+                "132 45 16.82151 S",
+                "132 45 6.82 S",
+                "132 45 .82 S",
+                
+                "32 45 16.8232 E",
+                "32 45 16.82 E",
+                "32 45 6.8232 E",
+                "32 45 6.82 E",
+                "32 45 0.82 E",
+                "32 45 .8232 E",
+                "32 45 .82 E",
+                "132 45 16.82151 E",
+                "132 45 6.82 E",
+                "132 45 .82 E",
+                
+                "32 45 16.8232 W",
+                "32 45 16.82 W",
+                "32 45 6.8232 W",
+                "32 45 6.82 W",
+                "32 45 0.82 W",
+                "32 45 .8232 W",
+                "32 45 .82 W",
                 "132 45 16.82151 W",
                 "132 45 6.82 W",
                 "132 45 .82 W",
-                "32 45 16.82",
-                "32 45 16.82",
-                "32 45 6.82",
-                "32 45 .82",
-                "132 45 16.82",
-                "132 45 6.82",
-                "132 45 .82",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
+                
+                // +/- Deg Min
+                "//+/- Deg Min",
+                "0 0",
+                "0 0.",
+                "-32 16.8232",
+                "-32 16.82",
+                "-32 6.8232",
+                "-32 6.82",
+                "-32 0.82",
+                "-32 .8232",
+                "-32 .82",
+                "-132 16.82151",
+                "-132 6.82",
+                "-132 .82",
+                "32 16.8232",
+                "32 16.82",
+                "32 6.8232",
+                "32 6.82",
+                "32 0.82",
+                "32 .8232",
+                "32 .82",
+                "132 16.82151",
+                "132 6.82",
+                "132 .82",
+                
+                // Deg Min N/S/E/W
+                "//Deg Min N/S/E/W",
+                "32 16.8232 N",
+                "32 16.82 N",
+                "32 6.8232 N",
+                "32 6.82 N",
+                "32 0.82 N",
+                "32 .8232 N",
+                "32 .82 N",
+                "132 16.82151 N",
+                "132 6.82 N",
+                "132 .82 N",
+                
+                "32 16.8232 S",
+                "32 16.82 S",
+                "32 6.8232 S",
+                "32 6.82 S",
+                "32 0.82 S",
+                "32 .8232 S",
+                "32 .82 S",
+                "132 16.82151 S",
+                "132 6.82 S",
+                "132 .82 S",
+                
+                "32 16.8232 E",
+                "32 16.82 E",
+                "32 6.8232 E",
+                "32 6.82 E",
+                "32 0.82 E",
+                "32 .8232 E",
+                "32 .82 E",
+                "132 16.82151 E",
+                "132 6.82 E",
+                "132 .82 E",
+                
+                "32 16.8232 W",
+                "32 16.82 W",
+                "32 6.8232 W",
+                "32 6.82 W",
+                "32 0.82 W",
+                "32 .8232 W",
+                "32 .82 W",
+                "132 16.82151 W",
+                "132 6.82 W",
+                "132 .82 W",
+                
+                // +/- Decimal Degrees
+                "//+/- Decimal Degrees",
+                "0",
+                "0.",
+                "-16.8232",
+                "-16.82",
+                "-6.8232",
+                "-6.82",
+                "-0.82",
+                "-.8232",
+                "-.82",
+                "-116.82151",
+                "-116.82",
+                "-1.82",
+                "16.8232",
+                "16.82",
+                "6.8232",
+                "6.82",
+                "0.82",
+                ".8232",
+                ".82",
+                "116.82151",
+                "116.82",
+                "1.82",
+                
+                // Decimal Degrees N/S/E/W
+                "//Decimal Degrees N/S/E/W",
+                "16.8232 N",
+                "16.82 N",
+                "6.8232 N",
+                "6.82 N",
+                "0.82 N",
+                ".8232 N",
+                ".82 N",
+                "116.82151 N",
+                "116.82 N",
+                "1.82 N",
+                
+                "16.8232 S",
+                "16.82 S",
+                "6.8232 S",
+                "6.82 S",
+                "0.82 S",
+                ".8232 S",
+                ".82 S",
+                "116.82151 S",
+                "116.82 S",
+                "1.82 S",
+                
+                "16.8232 E",
+                "16.82 E",
+                "6.8232 E",
+                "6.82 E",
+                "0.82 E",
+                ".8232 E",
+                ".82 E",
+                "116.82151 E",
+                "116.82 E",
+                "1.82 E",
+                
+                "16.8232 W",
+                "16.82 W",
+                "6.8232 W",
+                "6.82 W",
+                "0.82 W",
+                ".8232 W",
+                ".82 W",
+                "116.82151 W",
+                "116.82 W",
+                "1.82 W",
         };
 
         for (String input: inputStrings)
         {
+            if (input.length()==0)
+            {
+                continue;
+            }
+            
+            if (input.startsWith("//"))
+            {
+                System.out.println();
+                System.out.println("----------------------------------");
+                System.out.println("----------------------------------");
+                System.out.println(input.substring(2));
+                System.out.println("----------------------------------");
+                System.out.println("----------------------------------");
+                continue;
+            }
+            
             System.out.println("Input:             " + input);
             BigDecimal degreesPlusMinus = null;
             for (GeoRefFormat format: GeoRefFormat.values())
