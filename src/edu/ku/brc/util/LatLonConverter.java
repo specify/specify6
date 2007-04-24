@@ -104,7 +104,7 @@ public class LatLonConverter
             
             //System.out.println("["+decFormatter2.format(num)+"]["+minutes+"]["+seconds+"]");
             
-            return decFormatter2.format(num) + " " + decFormatter2.format(minutes) + " " + decFormatter2.format(seconds);
+            return decFormatter2.format(num) + " " + decFormatter2.format(minutes) + " " + decFormatter.format(seconds);
             
         }
         //else
@@ -129,9 +129,10 @@ public class LatLonConverter
         sb.append(' ');
         
         // round to 2 decimal places precision
-        seconds = Math.round(seconds * 100) / 100;
+        seconds = Math.round(seconds * 100);
+        seconds = seconds / 100.00;
         
-        sb.append(StringUtils.stripEnd(String.format("%12.10f", new Object[] {seconds}), "0"));
+        sb.append(StringUtils.stripEnd(decFormatter.format(seconds), "0"));
         
         if (degreesFMT == DEGREES_FORMAT.String)
         {
@@ -209,10 +210,11 @@ public class LatLonConverter
         sb.append(' ');
         
         // round to four decimal places of precision
-        minutes = Math.round(minutes * 10000) / 10000;
+        minutes = Math.round(minutes*10000);
+        minutes = minutes / 10000;
         
         
-        sb.append(StringUtils.stripEnd(String.format("%10.10f", new Object[] {minutes}), "0"));
+        sb.append(StringUtils.strip(String.format("%10.10f", new Object[] {minutes}), "0"));
         
         if (degreesFMT == DEGREES_FORMAT.String)
         {
