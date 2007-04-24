@@ -110,34 +110,24 @@ public class XMLHelper
     {
         if (configDir == null)
         {
-            String path = new File(".").getAbsolutePath();
-            if (path.endsWith("."))
-            {
-                path = UIHelper.stripSubDirs(path, 1);
-            }
-            
-            File cfgDir = new File(path + File.separator + "config");
+        	// Check the working path.
+            File cfgDir = new File(UIRegistry.getDefaultWorkingPath() + File.separator + "config");
+            log.debug("Checking Working Path["+cfgDir.getAbsolutePath()+"]");
             if (!cfgDir.exists())
             {
-                String subDir = "";
-                switch (UIHelper.getOSType())
+            	// Second check to see if the config dir is a child directory
+                String path = new File(".").getAbsolutePath();
+                if (path.endsWith("."))
                 {
-                    case MacOSX :
-                        throw new RuntimeException("The Mac build is incorect, the working path is not set");
-                        
-                    case Windows :
-                        subDir = UIRegistry.getAppName() + "Win";
-                        break;
-                        
-                    case Linux :
-                        subDir = UIRegistry.getAppName() + "Linux";
-                        break;
-                        
+                    path = UIHelper.stripSubDirs(path, 1);
                 }
-                cfgDir = new File(path + File.separator + subDir + File.separator + "config");
+                
+                // If not then check the working path.
+                cfgDir = new File(path + File.separator + "config");
+                log.debug("Checking Working Path["+cfgDir.getAbsolutePath()+"]");
                 if (!cfgDir.exists())
                 {
-                    throw new RuntimeException("Can't find the config dir["+cfgDir.getAbsolutePath()+"]");
+                	throw new RuntimeException("Couldn't find config path["+cfgDir.getAbsolutePath()+"]");
                 }
             }
             configDir = cfgDir;

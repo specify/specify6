@@ -1757,8 +1757,22 @@ public final class UIHelper
         
         for (int i=0;i<numToStrip;i++)
         {
-            int endInx = databasePath.lastIndexOf(File.separator);
-            databasePath = databasePath.substring(0, endInx);
+            int endInx = databasePath.lastIndexOf("/");
+            if (endInx > -1)
+            {
+            	databasePath = databasePath.substring(0, endInx);
+            } else 
+            {
+            	endInx = databasePath.lastIndexOf("\\");
+                if (endInx > -1)
+                {
+                	databasePath = databasePath.substring(0, endInx);
+
+	            } else
+	            {
+	            	log.error("Couldn'f find / in ["+databasePath+"]");
+	            }
+            }
         }
         return databasePath;
     }

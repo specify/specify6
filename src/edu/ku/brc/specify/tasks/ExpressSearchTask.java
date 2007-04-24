@@ -160,7 +160,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
         SpecifyAppContextMgr appContext = (SpecifyAppContextMgr)AppContextMgr.getInstance();
         if (appContext != null)
         {
-            String luceneLocPref = AppPreferences.getLocalPrefs().get("ui.misc.luceneLocation", UIRegistry.getDefaultWorkingPath());
+            String luceneLocPref = AppPreferences.getLocalPrefs().get("ui.misc.luceneLocation", UIRegistry.getAppDataDir());
             AppPreferences.getLocalPrefs().put("ui.misc.luceneLocation", luceneLocPref);
             
             path = new File(luceneLocPref + File.separator + appContext.getDatabaseName() + File.separator + "index-dir");

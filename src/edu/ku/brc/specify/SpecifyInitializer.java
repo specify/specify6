@@ -99,35 +99,7 @@ public class SpecifyInitializer
         this.assumeDerby = assumeDerby;
 
     }
-    
-    /**
-     * Sets whether it is using the the current disk or whether to use the user's home directory.
-     * @return true if a Specify Directory was found, false if a Specify Data directory couldn't be found
-     * and one should be created.
-     */
-    public static boolean setUseCurrentLocation()
-    {
-        File file = new File(UIRegistry.getUserDataDir(true)); // Check current ocation first
-        //System.err.println(file.getAbsolutePath());
-        if (file.exists())
-        {
-            UIRegistry.setUseCurrentLocation(true);
-            
-        } else
-        {
-            file = new File(UIRegistry.getUserDataDir(false)); // Check user data location
-            if (file.exists())
-            {
-                UIRegistry.setUseCurrentLocation(false);
-                
-            } else
-            {
-                file = null;
-            }
-        }
-        return file != null;
-    }
-    
+
     /**
      * Looks for a Specify directory and if not, then gives the user an opportuntity
      * to create a new database. If it finds a directory then it display the Specify login window.
@@ -137,11 +109,10 @@ public class SpecifyInitializer
      */
     public boolean setup(final Specify specify)
     {
-        
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-        localPrefs.setDirPath(UIRegistry.getDefaultWorkingPath());
+        localPrefs.setDirPath(UIRegistry.getAppDataDir());
         
-        if (!setUseCurrentLocation() || StringUtils.isEmpty(localPrefs.get("login.dbdriver_selected", null)))
+        if (StringUtils.isEmpty(localPrefs.get("login.dbdriver_selected", null)))
         {
             final SetupDialog specifyInitFrame = new SetupDialog(specify);
             // I can't believe I have to do the following....
@@ -496,7 +467,7 @@ public class SpecifyInitializer
 
             
             localDirOK = true;
-            File currentPath = new File(UIRegistry.getUserDataDir(true) + File.separator + "specify_tmp.tmp");
+            File currentPath = new File(UIRegistry.getAppDataDir() + File.separator + "specify_tmp.tmp");
             try
             {
                 FileUtils.touch(currentPath);
@@ -510,7 +481,7 @@ public class SpecifyInitializer
             //localDirOK = false ; // XXX TESTING
             
             ButtonGroup  grp       = new ButtonGroup();
-            useHomeRB = new JRadioButton("<html>Use your home directory: <b>"+UIRegistry.getUserDataDir(false)+"</b></html>");
+            useHomeRB = new JRadioButton("<html>Use your home directory: <b>"+UIRegistry.getUserHomeAppDir()+"</b></html>");
             grp.add(useHomeRB);
             useHomeRB.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e)
@@ -530,7 +501,7 @@ public class SpecifyInitializer
             {
                 header.append("There are three options:</html>");
 
-                useCurrentRB = new JRadioButton("<html>Use your current directory: <b>"+UIRegistry.getUserDataDir(true)+"</b></html>");
+                useCurrentRB = new JRadioButton("<html>Use your current directory: <b>"+UIRegistry.getDefaultWorkingPath()+"</b></html>");
                 grp.add(useCurrentRB);
                 useCurrentRB.setSelected(true);
                 numRows++;
@@ -797,10 +768,9 @@ public class SpecifyInitializer
             AppPreferences.getLocalPrefs().put("login.dbdriver_selected", userPanel.getDriver().getName());
             AppPreferences.getLocalPrefs().put("login.databases_selected", userPanel.getDbName());
             
-            AppPreferences.getLocalPrefs().put("derby.location", System.getProperty("derby.system.home"));
-            log.debug(System.getProperty("derby.system.home"));
+            AppPreferences.getLocalPrefs().put("javadb.location", UIRegistry.getJavaDBPath());
+            log.debug(UIRegistry.getJavaDBPath());
 
-            
             if (DO_CHANGE_USERNAME)
             {
                 AppPreferences.getLocalPrefs().put("startup.username",  userPanel.getUsername());
@@ -855,18 +825,13 @@ public class SpecifyInitializer
         
         protected String stripSpecifyDir(final String path)
         {
-            if (UIHelper.getOSType() == UIHelper.OSTYPE.MacOSX)
+            String appPath = path;
+            int endInx = appPath.indexOf("Specify.app");
+            if (endInx > -1)
             {
-                String appPath = path;
-                int endInx = appPath.indexOf("Specify.app");
-                if (endInx > -1)
-                {
-                    appPath = appPath.substring(0, endInx-1);
-                }
-                return appPath;
-                
+                appPath = appPath.substring(0, endInx-1);
             }
-            return path;
+            return appPath;
         }
 
         /**
@@ -876,13 +841,25 @@ public class SpecifyInitializer
         {
             // Clear and Reset Everything!
             AppPreferences.shutdownLocalPrefs();
-            UIRegistry.setDefaultWorkingPath(null);
+            //UIRegistry.setDefaultWorkingPath(null);
             
             log.debug("********** WORK["+UIRegistry.getDefaultWorkingPath()+"]");
-            log.debug("********** USER LOC["+stripSpecifyDir(UIRegistry.getUserDataDir(true))+"]");
+            log.debug("********** USER LOC["+stripSpecifyDir(UIRegistry.getAppDataDir())+"]");
             
-            String baseAppDir = stripSpecifyDir(UIRegistry.getUserDataDir(true));
-            log.debug("********** Base Dir for App ["+baseAppDir+"]");
+            String baseAppDir;
+            if (UIHelper.getOSType() == UIHelper.OSTYPE.MacOSX)
+            {
+            	baseAppDir = stripSpecifyDir(UIRegistry.getAppDataDir());
+            	
+            } else
+            {
+            	baseAppDir = UIRegistry.getDefaultWorkingPath();
+            }
+            
+            baseAppDir = UIHelper.stripSubDirs(baseAppDir, 1);
+            UIRegistry.setDefaultWorkingPath(baseAppDir);
+            
+            log.debug("********** Working path for App ["+baseAppDir+"]");
             
             String derbyPath;
             if (locationPanel.isUsingUserDefinedDirectory())
@@ -893,19 +870,16 @@ public class SpecifyInitializer
             {
                 if (locationPanel.isUseHomeDirectory())
                 {
-                    UIRegistry.setUseCurrentLocation(false);
-                    
                     // Copy over the database if we can't use this directory for writing.
                     // if it is being run off of a CD
                     if (!locationPanel.isLocalOKForWriting())
                     {
                         log.debug("WORKING PATH["+UIRegistry.getDefaultWorkingPath()+"]");
                         
-                        derbyPath = UIHelper.stripSubDirs(UIRegistry.getDefaultWorkingPath(), 1) + File.separator + "DerbyDatabases";
+                        File derbyDestDir = new File(UIRegistry.getUserHomeDir() + File.separator + "DerbyDatabases");
+                        derbyPath = derbyDestDir.getAbsolutePath();
                         
-                        String destParentDirStr = UIHelper.stripSubDirs(UIRegistry.getDefaultWorkingPath(), 1);
-                        
-                        String srcDerbyPath = baseAppDir + File.separator + "DerbyDatabases";
+                        String srcDerbyPath = UIRegistry.getJavaDBPath();
                         
                         log.debug("Derby Source Path["+srcDerbyPath+"] "+StringUtils.isNotEmpty(srcDerbyPath));
                         if (StringUtils.isNotEmpty(srcDerbyPath))
@@ -914,20 +888,20 @@ public class SpecifyInitializer
                             log.debug("Derby Source Path ["+srcDir.getAbsoluteFile()+"] "+srcDir.exists());
                             if (srcDir.exists())
                             {
-                                File destDir = new File(destParentDirStr);
+                                File destDir = new File("");//destParentDirStr);
                                 log.debug("Derby Destination Path ["+destDir.getAbsoluteFile()+"] exists! "+destDir.exists());
                                 if (destDir.exists())
                                 {
-                                    File derbyDestDir = new File(derbyPath);
                                     if (!derbyDestDir.exists())
                                     {
-                                        derbyDestDir.mkdir();
+                                    	derbyDestDir.mkdir();
                                     }
                                     
                                     try
                                     {
                                         log.debug("Copy Derby Databases from["+srcDir.getAbsoluteFile()+"] to["+derbyDestDir.getAbsoluteFile()+"]");
                                         FileUtils.copyDirectory(srcDir, derbyDestDir);
+                                        UIRegistry.setJavaDBDir(derbyDestDir.getAbsolutePath());
                                         
                                     } catch (Exception ex)
                                     {
@@ -948,26 +922,30 @@ public class SpecifyInitializer
                         }
                     } else
                     {
-                        derbyPath = UIRegistry.getDefaultWorkingPath() + File.separator + "DerbyDatabases";
+                        derbyPath = UIRegistry.getJavaDBPath();
                     }
                     
                 } else
                 {
-                    UIRegistry.setUseCurrentLocation(true);
-                    log.debug((new File(baseAppDir).exists())+" baseAppDir["+baseAppDir+"]");
-                    
-                    derbyPath = baseAppDir + File.separator + "DerbyDatabases";
-                    log.debug(" Derby Database Path ["+derbyPath+"]");
+                    //log.debug((new File(baseAppDir).exists())+" baseAppDir["+baseAppDir+"]");
+                    //
+                    //derbyPath = baseAppDir + File.separator + "DerbyDatabases";
+                	derbyPath = UIRegistry.getJavaDBPath();
+                    if (StringUtils.isEmpty(derbyPath))
+                    {
+                        derbyPath = (new File(UIRegistry.getUserHomeDir() + File.separator + "DerbyDatabases")).getAbsolutePath();
+                    }
+                	log.debug(" Derby Database Path ["+derbyPath+"]");
                 }
             }
             
-            System.setProperty("derby.system.home", derbyPath);
-            log.debug("**** derby.system.home="+System.getProperty("derby.system.home"));
+            UIRegistry.setJavaDBDir(derbyPath);
+            log.debug("**** JavaDB Path="+UIRegistry.getJavaDBPath());
             
             // Now initialize
             AppPreferences localPrefs = AppPreferences.getLocalPrefs();
             localPrefs.setDirPath(UIRegistry.getDefaultWorkingPath());
-            System.out.println(UIRegistry.getDefaultWorkingPath());
+            System.out.println(UIRegistry.getDefaultWorkingPath()+" "+doLoginOnly+" "+assumeDerby);
 
             if (doLoginOnly && assumeDerby)
             {
@@ -1016,6 +994,7 @@ public class SpecifyInitializer
                         //Runs on the event-dispatching thread.
                         public void finished()
                         {
+                        	log.debug("isOK "+isOK);
                             if (isOK)
                             {
                                 if (fillPrefs(false))

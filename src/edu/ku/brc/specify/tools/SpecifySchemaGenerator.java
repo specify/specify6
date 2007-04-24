@@ -23,6 +23,7 @@ import org.hibernate.tool.hbm2ddl.SchemaExport;
 
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
+import edu.ku.brc.ui.UIRegistry;
 
 
 /**
@@ -123,7 +124,7 @@ public class SpecifySchemaGenerator
      */
     protected void dropDerbyDatabase(final String databaseName)
     {
-        String derbyDatabasePath = System.getProperty("derby.system.home");
+        String derbyDatabasePath = UIRegistry.getJavaDBPath();
         if (StringUtils.isNotEmpty(derbyDatabasePath))
         {
             if (new File(derbyDatabasePath).exists())
@@ -145,7 +146,7 @@ public class SpecifySchemaGenerator
             }
         } else
         {
-            throw new RuntimeException("derby.system.home System property was null or empty and can't be!");
+            throw new RuntimeException("JavaDB Path System property was null or empty and can't be!");
         }
     }
     

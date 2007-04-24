@@ -42,7 +42,7 @@ public class WorkbenchBackupMgr
 
     protected static Vector<File> getExistingBackups(final Workbench workbench)
     {
-        File[] backups = UIRegistry.getDefaultWorkingPathSubDir(backupSubDir, true).listFiles();
+        File[] backups = UIRegistry.getAppDataSubDir(backupSubDir, true).listFiles();
         Vector<File> result = new Vector<File>(maxBackupCount);
         for (File f : backups)
         {
@@ -128,7 +128,7 @@ public class WorkbenchBackupMgr
 
             Properties props = new Properties();
             props.setProperty("mimetype", ExportFileConfigurationFactory.XLS_MIME_TYPE);
-            props.setProperty("fileName", UIRegistry.getDefaultWorkingPathSubDir(backupSubDir,
+            props.setProperty("fileName", UIRegistry.getAppDataSubDir(backupSubDir,
                     true)
                     + File.separator + fileName);
 

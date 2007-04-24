@@ -372,7 +372,8 @@ public class BioGeomancerMapper
                     mapMinLat, mapMinLong, mapMaxLat, mapMaxLong);
 
             Image overlayImage = getMapFromService("129.237.201.132",
-                    "/cgi-bin/ogc.cgi/specify?service=WMS&request=GetMap&srs=EPSG:4326&version=1.3.1&format=image/png&transparent=true",
+                    //"/cgi-bin/ogc.cgi/specify?service=WMS&request=GetMap&srs=EPSG:4326&version=1.3.1&format=image/png&transparent=true",
+                    "/cgi-bin/mapserv?map=/var/www/maps/specify.map&service=WMS&request=GetMap&srs=EPSG:4326&version=1.3.1&format=image/png&transparent=true",
                     "states,rivers",
                     mapMinLat, mapMinLong, mapMaxLat, mapMaxLong);
 

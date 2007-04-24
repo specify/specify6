@@ -65,7 +65,7 @@ public class ViewSetMgrTests extends TestCase
 
             // Load Local Prefs
             AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-            localPrefs.setDirPath(UIRegistry.getDefaultWorkingPath());
+            localPrefs.setDirPath(UIRegistry.getAppDataDir());
             localPrefs.load();
     
             FileCache.setDefaultPath(UIRegistry.getDefaultWorkingPath());

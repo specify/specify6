@@ -126,6 +126,8 @@ public class WorkbenchTask extends BaseTask
     public static final String     WB_IMPORTCARDS        = "WB_IMPORT_CARDS";
     public static final String     EXPORT_DATA_FILE      = "Export Data";
     public static final String     EXPORT_TEMPLATE       = "Export Template";
+    public static final String     NEW_WORKBENCH_FROM_TEMPLATE = "New WB From Template";
+    
     
     protected static WeakReference<DBTableIdMgr> databasechema = null;
 
@@ -169,6 +171,9 @@ public class WorkbenchTask extends BaseTask
             makeDnDNavBtn(navBox, getResourceString(WB_IMPORTCARDS),  "Import", getResourceString("WB_IMPORTCARDS_TT"), new CommandAction(WORKBENCH, WB_IMPORTCARDS, wbTblId),   null, false, false);// true means make it draggable
             
             makeDnDNavBtn(navBox, getResourceString("WB_NEW_DATASET"),   "PlusSign", getResourceString("WB_NEW_DATASET_TT"), new CommandAction(WORKBENCH, NEW_WORKBENCH, wbTblId),     null, false, false);// true means make it draggable
+            roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_NEW_DS_FROM_TMPL"), "PlusSign", getResourceString("WB_NEW_DS_FROM_TMPL"), new CommandAction(WORKBENCH, NEW_WORKBENCH_FROM_TEMPLATE, wbTblId), null, false, false);// true means make it draggable
+            roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
+            enableNavBoxList.add((NavBoxItemIFace)roc);
             
             roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_EXPORT_DATA"), "Export", getResourceString("WB_EXPORT_DATA_TT"), new CommandAction(WORKBENCH, EXPORT_DATA_FILE, wbTblId), null, true, false);// true means make it draggable
             roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
@@ -912,79 +917,129 @@ public class WorkbenchTask extends BaseTask
                }
            }
        }
-   }
-   
+    }
+    
     /**
      * Exports Workbench Template to xls or csv format.
      * @param cmdAction the incoming command request
      */
     protected void exportWorkbenchTemplate(final CommandAction cmdAction)
     {
-       // Check incoming command for a RecordSet contain the Workbench
-       WorkbenchTemplate workbenchTemplate  = null;
-       Object    data = cmdAction.getData();
-       if (data instanceof CommandAction)
-       {
-           CommandAction subCmd = (CommandAction)data;
-           if (subCmd != cmdAction)
+        // Check incoming command for a RecordSet contain the Workbench
+        WorkbenchTemplate workbenchTemplate  = null;
+        Object    data = cmdAction.getData();
+        if (data instanceof CommandAction)
+        {
+            CommandAction subCmd = (CommandAction)data;
+            if (subCmd != cmdAction)
+            {
+                if (subCmd.getTableId() == cmdAction.getTableId())
+                {
+                    workbenchTemplate = selectWorkbenchTemplate(subCmd, "WorkbenchTemplateExporting");
+                    
+                } else
+                {
+                    return;
+                }
+            }
+        }
+        
+        if (workbenchTemplate == null)
+        {
+            workbenchTemplate = selectWorkbenchTemplate(cmdAction, "WorkbenchTemplateExporting");
+        }
+
+        // The command may have been clicked on so ask for one
+        if (workbenchTemplate != null)
+        {
+            CommandAction command = new CommandAction(ExportTask.EXPORT, ExportTask.EXPORT_LIST);
+            command.setProperty("exporter", ExportToFile.class);
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            try
+            {
+                session.attach(workbenchTemplate);
+                workbenchTemplate.forceLoad();
+                Vector<WorkbenchTemplate> newDataRow = new Vector<WorkbenchTemplate>(1);
+                newDataRow.add(workbenchTemplate);
+                command.setData(newDataRow);
+
+                // rest of this method is copied from WorkbenchPaneSS.doExcelCsvExport()
+                // eventually most of the work will probably be done by Meg's Fancy Configurer UI
+
+                Properties props = new Properties();
+
+                if (!getExportInfo(props))
+                {
+                    return;
+                }
+
+                session.close();
+                session = null;
+                
+                sendExportCommand(props, workbenchTemplate.getWorkbenchTemplateMappingItems(), command);
+                
+            } catch (Exception ex)
+            {
+                log.error(ex);
+            }
+            finally
+            {
+                if (session != null)
+                {
+                    session.close();
+                }
+            }
+        }
+
+    }
+    
+    /**
+     * Creates a new one row Workbench from another workbench's template.
+     * @param cmdAction the incoming command request
+     */
+    protected void createWorkbenchFromTemplate(final CommandAction cmdAction)
+    {
+        
+        Workbench wb = selectWorkbench(cmdAction);
+        if (wb != null)
+        {
+            WorkbenchTemplate workbenchTemplate = wb.getWorkbenchTemplate();
+            if (workbenchTemplate == null)
+            {
+                workbenchTemplate = selectWorkbenchTemplate(cmdAction, "WorkbenchTemplateExporting");
+            }
+    
+           // The command may have been clicked on so ask for one
+           if (workbenchTemplate != null)
            {
-               if (subCmd.getTableId() == cmdAction.getTableId())
+               DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+               try
                {
-                   workbenchTemplate = selectWorkbenchTemplate(subCmd, "WorkbenchTemplateExporting");
-                   
-               } else
-               {
-                   return;
-               }
-           }
-       }
-       
-       if (workbenchTemplate == null)
-       {
-           workbenchTemplate = selectWorkbenchTemplate(cmdAction, "WorkbenchTemplateExporting");
-       }
-
-       // The command may have been clicked on so ask for one
-       if (workbenchTemplate != null)
-       {
-           CommandAction command = new CommandAction(ExportTask.EXPORT, ExportTask.EXPORT_LIST);
-           command.setProperty("exporter", ExportToFile.class);
-           DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-           try
-           {
-               session.attach(workbenchTemplate);
-               workbenchTemplate.forceLoad();
-               Vector<WorkbenchTemplate> newDataRow = new Vector<WorkbenchTemplate>(1);
-               newDataRow.add(workbenchTemplate);
-               command.setData(newDataRow);
-
-               // rest of this method is copied from WorkbenchPaneSS.doExcelCsvExport()
-               // eventually most of the work will probably be done by Meg's Fancy Configurer UI
-
-               Properties props = new Properties();
-
-               if (!getExportInfo(props))
-               {
-                   return;
-               }
-
-               session.close();
-               session = null;
+                   workbenchTemplate = cloneWorkbenchTemplate(workbenchTemplate);
                
-               sendExportCommand(props, workbenchTemplate.getWorkbenchTemplateMappingItems(), command);
-               
-           } catch (Exception ex)
-           {
-               log.error(ex);
-           }
-           finally
-           {
-               if (session != null)
+                   if (workbenchTemplate != null)
+                   {
+                       Workbench workbench = createNewWorkbenchDataObj(null, workbenchTemplate);
+                       if (workbench != null)
+                       {
+                           workbench.setWorkbenchTemplate(workbenchTemplate);
+                           workbenchTemplate.addWorkbenches(workbench);
+                           fillandSaveWorkbench(null, workbench);
+                       }
+                   }
+               } catch (Exception ex)
                {
-                   session.close();
+                   log.error(ex);
+               }
+               finally
+               {
+                   if (session != null)
+                   {
+                       session.close();
+                   }
                }
            }
-       }
+        }
    }
    
     /**
@@ -1187,16 +1242,16 @@ public class WorkbenchTask extends BaseTask
                     // We found the same name and it must be unique
                     if (askUserForInfo("Workbench", getResourceString("WB_DATASET_INFO"), workbench))
                     {
-                        return true;
+                        newWorkbenchName = workbench.getName();
+                        foundWB = workbench;
                         
+                    } else
+                    {
+                        UIRegistry.getStatusBar().setText("");
+                        return false;
                     }
-                    // else
-                    UIRegistry.getStatusBar().setText("");
-                    return false;
                     
                 }
-                // else
-                workbench.setName(newWorkbenchName);
             } while (foundWB != null);
             
         } catch (Exception ex)
@@ -1207,7 +1262,8 @@ public class WorkbenchTask extends BaseTask
         {
             session.close();    
         }
-        return false;
+        UIRegistry.getStatusBar().setText("");
+        return true;
     }
     
     /**
@@ -2375,12 +2431,18 @@ public class WorkbenchTask extends BaseTask
                 importCardImages();
             }
             
+        } else if (cmdAction.isAction(NEW_WORKBENCH_FROM_TEMPLATE))
+        {
+            
+            createWorkbenchFromTemplate(cmdAction);
+            
         } else if (cmdAction.isAction(NEW_WORKBENCH))
         {
             if (isClickedOn)
             {
                 createNewWorkbench(null, null);
             }
+
             
         } else if (cmdAction.isAction(WB_BARCHART))
         {

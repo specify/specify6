@@ -348,7 +348,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                     Map<Object, Object> parameters = new HashMap<Object, Object>();
                     
                     // XXX PREF - This will be converted to a Preference
-                    File imageDir = new File(UIRegistry.getDefaultWorkingPath() + File.separator + "report_images");
+                    File imageDir = UIRegistry.getAppDataSubDir("report_images", false);
                     // XXXX RELEASE - This Reference to demo_files will need to be removed
                     if (!imageDir.exists())
                     {
@@ -415,7 +415,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
      */
     public static File checkAndCreateReportsCache()
     {
-        File path = UIRegistry.getDefaultWorkingPathSubDir("reportsCache", true); 
+        File path = UIRegistry.getAppDataSubDir("reportsCache", true); 
         if (path == null)
         {
             String msg = "The reportsCache directory is empty.";

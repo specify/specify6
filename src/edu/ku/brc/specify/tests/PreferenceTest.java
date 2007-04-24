@@ -53,7 +53,7 @@ public class PreferenceTest extends TestCase
 
             // Load Local Prefs
             AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-            localPrefs.setDirPath(UIRegistry.getDefaultWorkingPath());
+            localPrefs.setDirPath(UIRegistry.getAppDataDir());
             localPrefs.load();
             
             String hostName = "localhost";

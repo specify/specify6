@@ -23,6 +23,8 @@ import java.sql.DriverManager;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.ui.UIRegistry;
+
 /**
  * A singleton that remembers all the information needed for creating a Database connection. 
  * After setting the necessary parameters you can ask it for a connection at anytime.<br><br>
@@ -113,7 +115,7 @@ public class DBConnection
             }
             Class.forName(dbDriver); // load driver
             
-            //log.debug("["+dbConnectionStr+"]["+dbUsername+"]["+dbPassword+"]");
+            log.debug("["+dbConnectionStr+"]["+dbUsername+"]["+dbPassword+"] "+UIRegistry.getJavaDBPath());
             con = DriverManager.getConnection(dbConnectionStr, dbUsername, dbPassword);
             
         } catch (Exception ex)

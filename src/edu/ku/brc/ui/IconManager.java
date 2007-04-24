@@ -35,10 +35,11 @@ import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.helpers.XMLHelper;
 
 /**
- * Caches icon in three sizes (32, 24, 16)
- 
+ * Caches icon in three sizes (32, 24, 16).
+ * NOTE: The AppName in UIRegistry MUST be set first before calling
+ * setApplicationClass.
  * @code_status Beta
- **
+ *
  * @author rods
  *
  */

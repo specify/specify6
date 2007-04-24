@@ -34,4 +34,4 @@ echo $SPECIFY_CLASSPATH
 
 JAVA_HOME=${EXEDIR}/jre
 
-java -classpath "$SPECIFY_CLASSPATH:$CLASSPATH" -Dspecify.home=$SPECIFY_HOME edu.ku.brc.specify.Specify "$@"
+java -classpath "$SPECIFY_CLASSPATH:$CLASSPATH" -Dappdir=$SPECIFY_HOME/SpecifyWin -Dappdatadir=$SPECIFY_HOME -Djavadbdir=$SPECIFY_HOME/DerbyDatabases edu.ku.brc.specify.Specify "$@"

@@ -76,6 +76,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.Encryption;
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.LoggerDialog;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Agent;
@@ -139,7 +140,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
     protected GhostGlassPane     glassPane;
 
-    private boolean              isWorkbenchOnly     = true;
+    private boolean              isWorkbenchOnly     = false;
     private boolean              isRelease           = true;
 
     /**
@@ -155,8 +156,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
      */
     protected void preStartUp()
     {
-        UIRegistry.setUseCurrentLocation(true);
-        
         //UIHelper.attachUnhandledException();
         
         // we simply need to create this class, not use it
@@ -165,9 +164,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
         // Name factories
         setUpSystemProperties();
-        
-        IconManager.setApplicationClass(Specify.class);
-        UIRegistry.setAppName("Specify");        
     }
     
     /**
@@ -193,30 +189,26 @@ public class Specify extends JPanel implements DatabaseLoginListener
      */
     public void startUp()
     {
-        // This sets a global flag to tell Specify to put the User Data directory in the user's
-        // home directory,
-        if (!SpecifyInitializer.setUseCurrentLocation())
-        {
-            UIRegistry.setUseCurrentLocation(false);
-        }
-
+    	log.debug("StartUp");
         // Insurance
-        if (StringUtils.isEmpty( System.getProperty("derby.system.home")))
+        if (StringUtils.isEmpty(UIRegistry.getJavaDBPath()))
         {
-            System.setProperty("derby.system.home", UIRegistry.getDefaultWorkingPath() + File.separator + "DerbyDatabases");
-            log.debug(System.getProperty("derby.system.home"));
+        	File userDataDir = new File(UIRegistry.getAppDataDir() + File.separator + "DerbyDatabases");
+            UIRegistry.setJavaDBDir(userDataDir.getAbsolutePath());
         }
+        log.debug(UIRegistry.getJavaDBPath());
         
         // Attachment related helpers
         Thumbnailer thumb = new Thumbnailer();
+        File thumbnailDir = null;
         try
         {
-            thumb.registerThumbnailers("config/thumbnail_generators.xml");
+            thumbnailDir = XMLHelper.getConfigDir("thumbnail_generators.xml");
+            thumb.registerThumbnailers(thumbnailDir.getAbsolutePath());
         }
         catch (Exception e1)
         {
-            // TODO: fix this up
-            System.exit(-1);
+            throw new RuntimeException("Couldn't find thumbnailer xml ["+thumbnailDir.getAbsolutePath()+"]");
         }
         thumb.setQuality(.5f);
         thumb.setMaxHeight(128);
@@ -224,7 +216,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
         AttachmentManagerIface attachMgr = null;
         
-        File location = UIRegistry.getDefaultWorkingPathSubDir("AttachmentStorage", true);
+        File location = UIRegistry.getAppDataSubDir("AttachmentStorage", true);
         try
         {
             attachMgr = new FileStoreAttachmentManager(location);
@@ -233,7 +225,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         {
             log.warn("Problems setting the FileStoreAttachmentManager at ["+location+"]");
             // TODO RELEASE -  Instead of exiting we need to disable Attchements
-            System.exit(-1);
+            throw new RuntimeException("Problems setting the FileStoreAttachmentManager at ["+location+"]");
         }
         
         AttachmentUtils.setAttachmentManager(attachMgr);
@@ -245,13 +237,13 @@ public class Specify extends JPanel implements DatabaseLoginListener
         
         // Load Local Prefs
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-        localPrefs.setDirPath(UIRegistry.getDefaultWorkingPath());
+        localPrefs.setDirPath(UIRegistry.getAppDataDir());
         //localPrefs.load(); moved to end for not-null constraint
-        String         derbyPath  = localPrefs.get("derby.location", null);
+        String         derbyPath  = localPrefs.get("javadb.location", null);
         if (StringUtils.isNotEmpty(derbyPath))
         {
-            System.setProperty("derby.system.home", derbyPath);
-            log.debug(System.getProperty("derby.system.home"));
+            UIRegistry.setJavaDBDir(derbyPath);
+            log.debug("JavaDB Path: "+UIRegistry.getJavaDBPath());
         }
         
         FileCache.setDefaultPath(UIRegistry.getDefaultWorkingPath()+ File.separator + "cache");
@@ -1127,10 +1119,36 @@ public class Specify extends JPanel implements DatabaseLoginListener
    */
   public static void main(String[] args)
   {
-      // Create Specify Application
+	  log.debug("Current ["+(new File(".").getAbsolutePath())+"]");
+	  for (String s : args)
+	  {
+		  String[] pairs = s.split("=");
+		  if (pairs.length == 2)
+		  {
+			  log.debug("["+pairs[0]+"]["+pairs[1]+"]");
+			  if (pairs[0].equals("-Dappdir") && StringUtils.isNotEmpty(pairs[1]))
+			  {
+				  UIRegistry.setDefaultWorkingPath(pairs[1]);
+				  
+			  } else if (pairs[0].equals("-Dappdatadir") && StringUtils.isNotEmpty(pairs[1]))
+			  {
+				  UIRegistry.setBaseAppDataDir(pairs[1]);
+				  
+			  } else if (pairs[0].equals("-Djavadbdir") && StringUtils.isNotEmpty(pairs[1]))
+			  {
+				  UIRegistry.setJavaDBDir(new File(pairs[1]).getAbsolutePath());
+			  }
+		  }
+	  }
+	  
       SwingUtilities.invokeLater(new Runnable() {
           public void run()
           {
+    	      // Set App Name, MUST be done very first thing!
+              UIRegistry.setAppName("Specify");              
+              // Then set this, which        
+        	  IconManager.setApplicationClass(Specify.class);
+              
               MemoryWarningSystem.setPercentageUsageThreshold(0.75);
 
               MemoryWarningSystem mws = new MemoryWarningSystem();

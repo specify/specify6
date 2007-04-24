@@ -70,7 +70,7 @@ public class MiscPrefsPanel extends JPanel implements PrefsSavable, PrefsPanelIF
             log.error("Couldn't load form with name ["+viewSetName+"] Id ["+viewName+"]");
         }
         
-        String luceneLocPref = AppPreferences.getLocalPrefs().get("ui.misc.luceneLocation", UIRegistry.getDefaultWorkingPath());
+        String luceneLocPref = AppPreferences.getLocalPrefs().get("ui.misc.luceneLocation", UIRegistry.getAppDataDir());
         AppPreferences.getLocalPrefs().put("ui.misc.luceneLocation", luceneLocPref);
 
         form.setDataObj(AppPreferences.getLocalPrefs());

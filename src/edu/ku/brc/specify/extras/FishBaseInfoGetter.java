@@ -71,7 +71,7 @@ public class FishBaseInfoGetter extends HTTPGetter
 
         //tmpDir = System.getProperty("java.io.tmpdir");
         // XXX Will use long term cache in future
-        File path = UIRegistry.getDefaultWorkingPathSubDir("cache", true);
+        File path = UIRegistry.getAppDataSubDir("cache", true);
         if (path.exists())
         {
             tmpDir = path.getAbsolutePath();

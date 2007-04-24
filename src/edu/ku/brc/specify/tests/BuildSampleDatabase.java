@@ -1489,15 +1489,24 @@ public class BuildSampleDatabase
             {
                 throw new RuntimeException("The args MUST be \"empty <derby path>\"");
             }
+            
+            File derbyDir = new File(derbyPath);
+            if (!derbyDir.exists())
+            {
+            	if (derbyDir.mkdirs())
+            	{
+            		System.err.println("Couldn't create Derby Path["+derbyDir.getAbsolutePath()+"]");
+            	}
+            }
         }
         
         UIRegistry.setAppName("Specify");
         
-        System.setProperty("derby.system.home", (derbyPath != null ? derbyPath : UIRegistry.getDefaultWorkingPath()) + File.separator + "DerbyDatabases");
+        UIRegistry.setJavaDBDir(derbyPath != null ? derbyPath : UIRegistry.getDefaultWorkingPath() + File.separator + "DerbyDatabases");
         
         if (hideFrame)
         {
-            System.out.println("Derby Path [ "+System.getProperty("derby.system.home")+" ]");
+            System.out.println("Derby Path [ "+UIRegistry.getJavaDBPath()+" ]");
         }
         
         System.setProperty(AppPreferences.factoryName,          "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
@@ -1711,7 +1720,7 @@ public class BuildSampleDatabase
             thumb.setMaxHeight(128);
             thumb.setMaxWidth(128);
 
-            AttachmentManagerIface attachMgr = new FileStoreAttachmentManager(UIRegistry.getDefaultWorkingPathSubDir("AttachmentStorage", true));
+            AttachmentManagerIface attachMgr = new FileStoreAttachmentManager(UIRegistry.getAppDataSubDir("AttachmentStorage", true));
             AttachmentUtils.setAttachmentManager(attachMgr);
             AttachmentUtils.setThumbnailer(thumb);
             
@@ -1844,7 +1853,7 @@ public class BuildSampleDatabase
                     thumb.setMaxHeight(128);
                     thumb.setMaxWidth(128);
 
-                    AttachmentManagerIface attachMgr = new FileStoreAttachmentManager(UIRegistry.getDefaultWorkingPathSubDir("AttachmentStorage", true));
+                    AttachmentManagerIface attachMgr = new FileStoreAttachmentManager(UIRegistry.getAppDataSubDir("AttachmentStorage", true));
                     
                     AttachmentUtils.setAttachmentManager(attachMgr);
                     AttachmentUtils.setThumbnailer(thumb);

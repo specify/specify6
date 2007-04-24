@@ -128,8 +128,9 @@ public class UIRegistry
     protected JStatusBar     statusBar          = null;
 
     protected String         defaultWorkingPath = null;
+    protected String         userDataDir        = null;
+    protected String         appDataDir         = null;
     protected String         appName            = null;
-    protected boolean        useCurrentLocation = false;
     
     protected boolean        isRelease          = false;
 
@@ -255,25 +256,7 @@ public class UIRegistry
         instance.statusBar = statusBar;
     }
 
-    /**
-     * Returns the "working" directory which is platform specific. It will create one if one is not created
-     * <b>NOTE: The application name must be set first.</b><br>
-     * One Windows it is ...\<i>&lt;user name&gt;</i>\Application Data\&lt;application name&gt;<br>
-     * On Unix based platforms it will create a directory of the "application name" with a "." in front. 
-     * For example: <code>/home/john/.specify</code>
-     * @param useCurrent whether to use the current directory or the user home directory
-     * @return Returns the "working" directory which is platform specific.
-     */
-    public static String getDefaultWorkingPath(final boolean useCurrent)
-    {
-        if (instance.defaultWorkingPath == null)
-        {
-            instance.defaultWorkingPath = getUserDataDir(useCurrent);
-        }
-        return instance.defaultWorkingPath;
-    }
-
-    /**
+	/**
      * Returns the "working" directory which is platform specific. It will create one if one is not created
      * <b>NOTE: The application name must be set first.</b><br>
      * One Windows it is ...\<i>&lt;user name&gt;</i>\Application Data\&lt;application name&gt;<br>
@@ -283,7 +266,14 @@ public class UIRegistry
      */
     public static String getDefaultWorkingPath()
     {
-        return getDefaultWorkingPath(instance.useCurrentLocation);
+    	if (instance.defaultWorkingPath == null)
+    	{
+    		File file = new File(".");
+    		instance.defaultWorkingPath = UIHelper.stripSubDirs(file.getAbsolutePath(), 1);
+    		log.debug("Working Path not set, setting it to["+instance.defaultWorkingPath+"]");
+    	}
+    	log.debug("Def Working Path["+instance.defaultWorkingPath+"]");
+        return instance.defaultWorkingPath;
     }
 
     /**
@@ -293,9 +283,9 @@ public class UIRegistry
      * @param createIt true to create it if it doesn't exist, false doesn't create it
      * @return a File object to the the directory
      */
-    public static File getDefaultWorkingPathSubDir(final String dirName, final boolean createIt)
+    public static File getAppDataSubDir(final String dirName, final boolean createIt)
     {
-        File newDir = new File(getDefaultWorkingPath() + File.separator + dirName);
+        File newDir = new File(getAppDataDir() + File.separator + dirName);
         if (!newDir.exists() && createIt)
         {
             if (!newDir.mkdirs())
@@ -310,78 +300,92 @@ public class UIRegistry
      * Set the working directory. It is not recommended to use this because the working directory will automatically be created.
      * @param defaultWorkingPath the new and different working directory.
      */
-    public static void setDefaultWorkingPath(String defaultWorkingPath)
+    public static void setDefaultWorkingPath(final String defaultWorkingPath)
     {
+    	log.debug("Setting Working Path ["+defaultWorkingPath+"]");
         instance.defaultWorkingPath = defaultWorkingPath;
     }
-    
-    /**
-     * Get the "user" based working directory that is platform specific and requires the "application name" be set first. 
-     * @return the string to a platform specify user data directory for the application name.
-     */
-    public static String getUserDataDir()
-    {
-        return getUserDataDir(instance.useCurrentLocation);
-    }
-    
-    /**
-     * Get the "user" based working directory that is platform specific and requires the "application name" be set first. 
-     * @param useCurrentLoc true use current
-     * @return the string to a platform specify user data directory for the application name.
-     */
-    public static String getUserDataDir(final boolean useCurrentLoc)
-    {
-        if (instance.appName == null)
+	
+	/**
+	 * @param appDataDir
+	 */
+	public static void setBaseAppDataDir(final String appDataDir) 
+	{
+		instance.appDataDir = appDataDir;
+	}
+
+	/**
+	 * @return
+	 */
+	public static String getAppDataDir()
+	{
+		File dir;
+		log.debug("1 AppDataDir["+instance.appDataDir+"]");
+		if (instance.appDataDir == null)
+		{
+			dir = new File(getUserHomeAppDir());
+		} else
+		{
+			log.debug("2 AppDataDir["+instance.appDataDir+"]");
+			if (instance.appDataDir.equals("."))
+			{
+				log.debug("************* dot");
+				dir = new File(UIHelper.stripSubDirs((new File(".").getAbsolutePath()), 1) + File.separator + instance.appName);
+			} else
+			{
+				log.debug("3 AppDataDir["+instance.appDataDir+"]");
+				dir = new File(instance.appDataDir + File.separator + instance.appName);
+			}
+		}
+		log.debug("AppDataDir["+dir.getAbsolutePath()+"]");
+		
+        if (!dir.exists())
         {
-            throw new RuntimeException("The AppName has not been set into the UIRegistry!");
+            if (!dir.mkdir())
+            {
+                throw new RuntimeException("Couldn't create data directory for "+instance.appName+" ["+dir.getAbsolutePath()+"]");
+            }
         }
+		return dir.getAbsolutePath();
+    }
+
+    /**
+     * Get the "user" based working directory that is platform specific and requires the "application name" be set first. 
+     * @return the string to a platform specify user data directory for the application name.
+     */
+    public static String getUserHomeAppDir()
+    {
+        return getUserHomeDir() + File.separator + instance.appName;
+    }
+
+    /**
+     * Get the "user" based working directory that is platform specific. 
+     * @return the string to a platform specify user data directory
+     */
+    public static String getUserHomeDir()
+    {
+        String homeDir = System.getProperty("user.home");
         
         UIHelper.OSTYPE osType = UIHelper.getOSType();
-        String base;
-        if (useCurrentLoc)
+        if (osType == UIHelper.OSTYPE.Windows)
         {
-            File   file     = new File(".");
-            String fullPath = file.getAbsolutePath();
-            fullPath        = UIHelper.stripSubDirs(file.getAbsolutePath(), 2);
-
-            base = fullPath + File.separator  + instance.appName;
+            return System.getenv("APPDATA");
             
-        } else
+        } else if (osType == UIHelper.OSTYPE.MacOSX)
         {
-            String homeDir = System.getProperty("user.home");
-            
-            if (osType == UIHelper.OSTYPE.Windows)
+            String docPath = homeDir + File.separator + "Documents"; // Not Localized
+            if (new File(docPath).exists())
             {
-                base = System.getenv("APPDATA") + File.separator + instance.appName;
+                return docPath;
                 
-            } else if (osType == UIHelper.OSTYPE.MacOSX)
+            } else
             {
-                String docPath = homeDir + File.separator + "Documents"; // Not Localized
-                if (new File(docPath).exists())
-                {
-                    base = docPath + File.separator + instance.appName;
-                    
-                } else
-                {
-                    base = homeDir + File.separator + instance.appName;
-                }
-            } else // Do Linux
-            {
-                base = homeDir + File.separator + instance.appName;
+                return homeDir;
             }
         }
-        
-        File baseDir = new File(base);
-        if (!baseDir.exists())
-        {
-            if (!baseDir.mkdir())
-            {
-                throw new RuntimeException("Couldn't create data directory for "+instance.appName+" ["+baseDir.getAbsolutePath()+"]");
-            }
-        }
-        
-        return base;
-    }
+        // else
+        return homeDir;
+	}
 
     /**
      * Returns the current application name.
@@ -851,15 +855,6 @@ public class UIRegistry
         }
         instance.baseFont = newBaseFont;
     }
-
-    /**
-     * Indicates whether we should use the current location as the default working path.
-     * @param useCurrentLocation true/false.
-     */
-    public static void setUseCurrentLocation(boolean useCurrentLocation)
-    {
-        instance.useCurrentLocation = useCurrentLocation;
-    }
     
     //---------------------------------------------------------------------------------
     //-- Glass Pane Buffered Image
@@ -960,6 +955,22 @@ public class UIRegistry
             mainComp.setVisible(true);
             mainComp.repaint();
         }  
+    }
+    
+    public static void setJavaDBDir(final String path)
+    {
+    	log.debug("Setting JavaDB: "+path);
+        
+        if (StringUtils.isNotEmpty(path))
+        {
+            System.setProperty("derby.system.home", path);
+        }
+    }
+    
+    public static String getJavaDBPath()
+    {
+    	log.debug("JavaDB: "+System.getProperty("derby.system.home"));
+    	return System.getProperty("derby.system.home");
     }
     
     //---------------------------------------------------------
