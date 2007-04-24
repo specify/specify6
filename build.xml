@@ -396,18 +396,24 @@
 		<property name="derby.data.path" value="${dist-linux}/DerbyDatabases" />
 		
 		<antcall target="clean-jar"/>
+		<!-- 
 		<antcall target="dist-linux-clean"/>
+		-->
 	    <antcall target="dist-jar"/>
 		
+		<!--
 		<mkdir dir="${dist-linux}" />
 		<mkdir dir="${appdir}/libs" />
 
+		
 		<antcall target="build-empty-derby-db"/>
+		-->
 		<antcall target="basic-non-mac-dist"/>
 		
+		
 		<!-- Copy info list -->
-		<copy file="${packaging}/linux/specify.sh" todir="${appdir}/." />
-		<chmod file="${appdir}/specify.sh" perm="u+rx"/>
+		<copy file="${packaging}/linux/specify.sh" todir="${dist-linux}/." />
+		<chmod file="${dist-linux}/specify.sh" perm="u+rx"/>
 		
 		<!-- Demo Files -->
 		<copy file="demo_files/workbench/FishCollectingTrip.csv" todir="${dist-linux}/examples" />

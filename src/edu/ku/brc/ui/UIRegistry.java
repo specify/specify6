@@ -346,6 +346,7 @@ public class UIRegistry
                 throw new RuntimeException("Couldn't create data directory for "+instance.appName+" ["+dir.getAbsolutePath()+"]");
             }
         }
+         
 		return dir.getAbsolutePath();
     }
 
@@ -378,10 +379,9 @@ public class UIRegistry
             {
                 return docPath;
                 
-            } else
-            {
-                return homeDir;
             }
+            // else
+            return homeDir;
         }
         // else
         return homeDir;

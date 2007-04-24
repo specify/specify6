@@ -608,7 +608,7 @@ public class WorkbenchTask extends BaseTask
      * Creates a new WorkBenchTemplate from the Column Headers and the Data in a file.
      * @return the new WorkbenchTemplate
      */
-    protected WorkbenchTemplate createTemplate(final TemplateEditor mapper, final String filePath, final String templateName)
+    protected WorkbenchTemplate createTemplate(final TemplateEditor mapper, final String filePath)
     {
         WorkbenchTemplate workbenchTemplate = null;
         try
@@ -1150,8 +1150,7 @@ public class WorkbenchTask extends BaseTask
             if (!dlg.isCancelled())
             {   
                 workbenchTemplate = createTemplate(dlg, 
-                                                   inputFile != null ? inputFile.getAbsolutePath() : "", 
-                                                   "");
+                                                   inputFile != null ? inputFile.getAbsolutePath() : "");
              }
             
         } else if (btnPressed == ChooseFromListDlg.OK_BTN && workbenchTemplate != null)
@@ -2138,7 +2137,7 @@ public class WorkbenchTask extends BaseTask
             TemplateEditor dlg = showColumnMapperDlg(null, null, "WB_MAPPING_EDITOR");
             if (!dlg.isCancelled())
             {   
-                workbenchTemplate = createTemplate(dlg, null, null);
+                workbenchTemplate = createTemplate(dlg, null);
             }
             
         } else if (btnPressed == ChooseFromListDlg.CANCEL_BTN)

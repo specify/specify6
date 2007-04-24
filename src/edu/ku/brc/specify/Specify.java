@@ -61,7 +61,6 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.ExperienceBlue;
-import com.jgoodies.looks.windows.WindowsLookAndFeel;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
@@ -95,8 +94,8 @@ import edu.ku.brc.ui.DefaultClassActionHandler;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.ToolbarLayoutManager;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.DatabaseLoginListener;
 import edu.ku.brc.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
@@ -140,7 +139,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
     protected GhostGlassPane     glassPane;
 
-    private boolean              isWorkbenchOnly     = false;
+    private boolean              isWorkbenchOnly     = true;
     private boolean              isRelease           = true;
 
     /**
@@ -208,7 +207,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         }
         catch (Exception e1)
         {
-            throw new RuntimeException("Couldn't find thumbnailer xml ["+thumbnailDir.getAbsolutePath()+"]");
+            throw new RuntimeException("Couldn't find thumbnailer xml ["+(thumbnailDir != null ? thumbnailDir.getAbsolutePath() : "")+"]");
         }
         thumb.setQuality(.5f);
         thumb.setMaxHeight(128);
@@ -246,7 +245,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
             log.debug("JavaDB Path: "+UIRegistry.getJavaDBPath());
         }
         
-        FileCache.setDefaultPath(UIRegistry.getDefaultWorkingPath()+ File.separator + "cache");
+        FileCache.setDefaultPath(UIRegistry.getAppDataDir()+ File.separator + "cache");
 
         UIRegistry.register(UIRegistry.MAINPANE, this); // important to be done immediately
  
@@ -673,7 +672,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
                             UIHelper.centerAndShow(dialog);
                         }
                     });
-    
+            mi.setEnabled(true);
+            
             JMenu prefsMenu = new JMenu("Prefs Import/Export");
             menu.add(prefsMenu);
             mi = UIHelper.createMenuItem(prefsMenu, "Import", "I", "Import Prefs", false, null);
@@ -702,7 +702,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         
         if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
         {
-            mi = UIHelper.createMenuItem(helpMenu, getResourceString("About"), getResourceString("AboutMneu"), getResourceString("About"), false, null);
+            mi = UIHelper.createMenuItem(helpMenu, getResourceString("About"), getResourceString("AboutMneu"), getResourceString("About"), true, null);
             mi.addActionListener(new ActionListener()
                     {
                         public void actionPerformed(ActionEvent ae)
@@ -1119,28 +1119,40 @@ public class Specify extends JPanel implements DatabaseLoginListener
    */
   public static void main(String[] args)
   {
-	  log.debug("Current ["+(new File(".").getAbsolutePath())+"]");
+      log.debug("********* Current ["+(new File(".").getAbsolutePath())+"]");
+      // This is for Windows and Exe4J, turn the args into System Properties
 	  for (String s : args)
 	  {
 		  String[] pairs = s.split("=");
 		  if (pairs.length == 2)
 		  {
 			  log.debug("["+pairs[0]+"]["+pairs[1]+"]");
-			  if (pairs[0].equals("-Dappdir") && StringUtils.isNotEmpty(pairs[1]))
-			  {
-				  UIRegistry.setDefaultWorkingPath(pairs[1]);
-				  
-			  } else if (pairs[0].equals("-Dappdatadir") && StringUtils.isNotEmpty(pairs[1]))
-			  {
-				  UIRegistry.setBaseAppDataDir(pairs[1]);
-				  
-			  } else if (pairs[0].equals("-Djavadbdir") && StringUtils.isNotEmpty(pairs[1]))
-			  {
-				  UIRegistry.setJavaDBDir(new File(pairs[1]).getAbsolutePath());
-			  }
+              if (pairs[0].startsWith("-D"))
+              {
+				  System.setProperty(pairs[0].substring(2, pairs[0].length()), pairs[1]);
+			  } 
 		  }
 	  }
-	  
+      
+      // Now check the System Properties
+      String appDir = System.getProperty("appdir");
+      if (StringUtils.isNotEmpty(appDir))
+      {
+          UIRegistry.setDefaultWorkingPath(appDir);
+      }
+      
+      String appdatadir = System.getProperty("appdatadir");
+      if (StringUtils.isNotEmpty(appdatadir))
+      {
+          UIRegistry.setBaseAppDataDir(appdatadir);
+      }
+      
+      String javadbdir = System.getProperty("javadbdir");
+      if (StringUtils.isNotEmpty(javadbdir))
+      {
+          UIRegistry.setJavaDBDir(javadbdir);
+      }
+      
       SwingUtilities.invokeLater(new Runnable() {
           public void run()
           {

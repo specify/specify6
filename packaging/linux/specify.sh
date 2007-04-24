@@ -4,7 +4,7 @@
 # add the libraries to the SPECIFY_CLASSPATH.
 # EXEDIR is the directory where this executable is.
 EXEDIR=${0%/*}
-DIRLIBS=${EXEDIR}/libs/*.jar
+DIRLIBS=${EXEDIR}/Specify/libs/*.jar
 for i in ${DIRLIBS}
 do
   if [ -z "$SPECIFY_CLASSPATH" ] ; then
@@ -14,7 +14,7 @@ do
   fi
 done
 
-#DIRLIBS=${EXEDIR}/lib/*.zip
+#DIRLIBS=${EXEDIR}/Specify/lib/*.zip
 #for i in ${DIRLIBS}
 #do
 #  if [ -z "$SPECIFY_CLASSPATH" ] ; then
@@ -24,14 +24,12 @@ done
 #  fi
 #done
 
-SPECIFY_CLASSPATH="${EXEDIR}/classes":$SPECIFY_CLASSPATH:"${EXEDIR}/help"
-#cd ..
+SPECIFY_CLASSPATH="${EXEDIR}/Specify/classes":$SPECIFY_CLASSPATH:"${EXEDIR}/Specify/help"
 SPECIFY_HOME=$(pwd)
-#cd bin
 
 echo $SPECIFY_HOME
-echo $SPECIFY_CLASSPATH
+#echo $SPECIFY_CLASSPATH
 
 JAVA_HOME=${EXEDIR}/jre
 
-java -classpath "$SPECIFY_CLASSPATH:$CLASSPATH" -Dappdir=$SPECIFY_HOME/SpecifyWin -Dappdatadir=$SPECIFY_HOME -Djavadbdir=$SPECIFY_HOME/DerbyDatabases edu.ku.brc.specify.Specify "$@"
+java -classpath "$SPECIFY_CLASSPATH:$CLASSPATH" -Dappdir=$SPECIFY_HOME/Specify -Dappdatadir=$SPECIFY_HOME -Djavadbdir=$SPECIFY_HOME/DerbyDatabases edu.ku.brc.specify.Specify "$@"
