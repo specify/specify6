@@ -60,6 +60,8 @@ import static edu.ku.brc.specify.tests.DataBuilder.createWorkbenchTemplate;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -2034,8 +2036,8 @@ public class BuildSampleDatabase
             builder.add(new JLabel("Driver:", SwingConstants.RIGHT),        cc.xy(1,7));
             builder.add(drivers,                                            cc.xy(3,7));
             
-            JButton okBtn     = new JButton("OK");
-            JButton cancelBtn = new JButton("Cancel");
+            final JButton okBtn     = new JButton("OK");
+            final JButton cancelBtn = new JButton("Cancel");
             builder.add(ButtonBarFactory.buildOKCancelBar(okBtn, cancelBtn), cc.xywh(1,9,3,1));
             
             cancelBtn.addActionListener(new ActionListener() {
@@ -2051,6 +2053,16 @@ public class BuildSampleDatabase
                     closeDlg(false);
                 }
              });
+            
+            // make sure closing the window does the same thing as clicking cancel
+            this.addWindowListener(new WindowAdapter()
+            {
+                @Override
+                public void windowClosed(WindowEvent e)
+                {
+                    cancelBtn.doClick();
+                }
+            });
             
             builder.setDefaultDialogBorder();
             setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
