@@ -290,7 +290,8 @@ public class LatLonConverter
      */
     public static BigDecimal convertDDDDToDDDD(final String str)
     {
-        return new BigDecimal(str);
+        String withoutDegSign = StringUtils.chomp(str, "°");
+        return new BigDecimal(withoutDegSign);
     }
     
     /**
@@ -316,7 +317,7 @@ public class LatLonConverter
      */
     public static BigDecimal convertDDMMSSToDDDD(final String str)
     {
-        String[] parts = StringUtils.split(str);
+        String[] parts = StringUtils.split(str," d°'\"");
         double p0 =  Double.parseDouble(parts[0]);
         boolean neg = false;
         if (p0 < 0)
@@ -359,7 +360,7 @@ public class LatLonConverter
      */
     public static BigDecimal convertDDMMMMToDDDD(final String str)
     {
-        String[] parts = StringUtils.split(str);
+        String[] parts = StringUtils.split(str," d°'\"");
         
         
         double p0 =  Double.parseDouble(parts[0]);
@@ -409,7 +410,7 @@ public class LatLonConverter
             
         }
         // else
-        String newStr = StringUtils.strip(str, "0");
+        String newStr = StringUtils.stripEnd(str, "0");
         if (newStr.endsWith("."))
         {
             return newStr + "0";
@@ -424,7 +425,8 @@ public class LatLonConverter
      */
     public static String format(final BigDecimal bd)
     {
-        return stripZeroes(decFormatter.format(bd));
+        String formatted = decFormatter.format(bd);
+        return stripZeroes(formatted);
     }
 
     
@@ -458,7 +460,7 @@ public class LatLonConverter
     
     public static BigDecimal convertDirectionalDDMMSSToDDDD(final String str)
     {
-        String[] parts = StringUtils.split(str);
+        String[] parts = StringUtils.split(str," d°'\"");
         double p0 =  Double.parseDouble(parts[0]);
         double p1 =  Double.parseDouble(parts[1]);
         double p2 =  Double.parseDouble(parts[2]);
@@ -476,7 +478,7 @@ public class LatLonConverter
 
     public static BigDecimal convertDirectionalDDMMMMToDDDD(final String dm)
     {
-        String[] parts = StringUtils.split(dm);
+        String[] parts = StringUtils.split(dm," d°'\"");
         double p0 =  Double.parseDouble(parts[0]);
         double p1 =  Double.parseDouble(parts[1]);
         String dir = parts[2].substring(0, 1);
@@ -493,7 +495,7 @@ public class LatLonConverter
 
     public static BigDecimal convertDirectionalDDDDToDDDD(final String str)
     {
-        String[] parts = StringUtils.split(str);
+        String[] parts = StringUtils.split(str," d°'\"");
         double p0  = Double.parseDouble(parts[0]);
         String dir = parts[1].substring(0, 1);
         
