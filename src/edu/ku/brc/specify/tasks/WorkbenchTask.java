@@ -1989,17 +1989,24 @@ public class WorkbenchTask extends BaseTask
                 Collection<WorkbenchTemplateMappingItem> newItems     = dlg.getNewItems();
                 //Collection<WorkbenchTemplateMappingItem> updatedItems = dlg.getUpdatedItems();
                 
-                WorkbenchTemplate workbenchTemplate = (WorkbenchTemplate)session.merge(wbTemplate);
                 session.beginTransaction();
                 
+                WorkbenchTemplate workbenchTemplate = (WorkbenchTemplate)session.merge(wbTemplate);
+                
                 Set<WorkbenchTemplateMappingItem> items = workbenchTemplate.getWorkbenchTemplateMappingItems();
-
-                for (WorkbenchTemplateMappingItem wbtmi : unusedItems)
+                for (WorkbenchTemplateMappingItem unusedItem : unusedItems)
                 {
-                    //log.debug("del ["+wbtmi.getCaption()+"]["+wbtmi.getWorkbenchTemplateMappingItemId().longValue()+"]");
-                    wbtmi.setWorkbenchTemplate(null);
-                    items.remove(wbtmi);
-                    session.delete(wbtmi) ;
+                    for (WorkbenchTemplateMappingItem wbtmi : items)
+                    {
+                        if (unusedItem.getWorkbenchTemplateMappingItemId().longValue() == wbtmi.getWorkbenchTemplateMappingItemId().longValue())
+                        {
+                            //log.debug("del ["+wbtmi.getCaption()+"]["+wbtmi.getWorkbenchTemplateMappingItemId().longValue()+"]");
+                            wbtmi.setWorkbenchTemplate(null);
+                            items.remove(wbtmi);
+                            session.delete(wbtmi);
+                            break;
+                        }
+                    }
                 }
                 for (WorkbenchTemplateMappingItem wbtmi : newItems)
                 {
