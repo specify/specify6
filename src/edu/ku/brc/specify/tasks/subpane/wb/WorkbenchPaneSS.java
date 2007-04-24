@@ -1329,7 +1329,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 if (backupColIndex != -1)
                 {
                     String currVal = (String)model.getValueAt(rowIndex, backupColIndex);
-                    if (currVal == null || (currVal.length() == 0))
+                    if (currVal == null || StringUtils.isEmpty(currVal))
                     {
                         model.setValueAt(currentValue, rowIndex, backupColIndex);
                     }
