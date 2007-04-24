@@ -366,18 +366,18 @@
 	     ************************************************************* -->
 	<target name="dist-win">
 		
-		<property name="appdir" value="${dist-win}/SpecifyWin" />
+		<property name="appdir" value="${dist-win}/Specify" />
 		<property name="derby.data.path" value="${dist-win}/DerbyDatabases" />
 		
 		<antcall target="clean-jar"/>
-		<!-- <antcall target="dist-win-clean"/> -->
+		<antcall target="dist-win-clean"/>
 		<antcall target="dist-jar"/>
 		
 		<mkdir dir="${dist-win}" />
 		<mkdir dir="${appdir}/libs" />
 		<mkdir dir="${dist-win}/examples" />
 		
-		<!-- <antcall target="build-empty-derby-db"/> -->
+		<antcall target="build-empty-derby-db"/>
 		<antcall target="basic-non-mac-dist"/>
 		
 		<!-- Demo Files -->
