@@ -1665,7 +1665,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                     BioGeomancerQuerySummaryStruct bgQuerySummary;
                     try
                     {
-                        bgResults = BioGeomancer.getBioGeoMancerResponse(row.getWorkbenchRowId().toString(), country, state, county, localityNameStr);
+                        bgResults = BioGeomancer.getBioGeomancerResponse(row.getWorkbenchRowId().toString(), country, state, county, localityNameStr);
                         bgQuerySummary = BioGeomancer.parseBioGeomancerResponse(bgResults);
                     }
                     catch (IOException ex1)

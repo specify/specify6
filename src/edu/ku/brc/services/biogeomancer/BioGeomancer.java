@@ -50,7 +50,7 @@ public class BioGeomancer
      * @return returns the response body content (as XML)
      * @throws IOException a network error occurred while contacting the BioGeomancer service
      */
-    public static String getBioGeoMancerResponse(final String id,
+    public static String getBioGeomancerResponse(final String id,
                                                  final String country,
                                                  final String adm1,
                                                  final String adm2,
@@ -108,7 +108,7 @@ public class BioGeomancer
                                                          final String localityString)
                                                         throws Exception
     {
-        String responseStr = getBioGeoMancerResponse(id, country, adm1, adm2, localityString);
+        String responseStr = getBioGeomancerResponse(id, country, adm1, adm2, localityString);
         return parseBioGeomancerResponse(responseStr);
     }
     
