@@ -127,7 +127,11 @@ public class LatLonConverter
         sb.append(' ');
         sb.append(minutesWhole);
         sb.append(' ');
-        sb.append(StringUtils.strip(String.format("%12.10f", new Object[] {seconds}), "0"));
+        
+        // round to 2 decimal places precision
+        seconds = Math.round(seconds * 100) / 100;
+        
+        sb.append(StringUtils.stripEnd(String.format("%12.10f", new Object[] {seconds}), "0"));
         
         if (degreesFMT == DEGREES_FORMAT.String)
         {
@@ -203,7 +207,12 @@ public class LatLonConverter
         }
         sb.append(whole);
         sb.append(' ');
-        sb.append(StringUtils.strip(String.format("%10.10f", new Object[] {minutes}), "0"));
+        
+        // round to four decimal places of precision
+        minutes = Math.round(minutes * 10000) / 10000;
+        
+        
+        sb.append(StringUtils.stripEnd(String.format("%10.10f", new Object[] {minutes}), "0"));
         
         if (degreesFMT == DEGREES_FORMAT.String)
         {

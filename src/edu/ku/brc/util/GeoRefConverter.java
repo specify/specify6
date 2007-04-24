@@ -314,6 +314,7 @@ public class GeoRefConverter implements StringConverter
                 "116.82151 W",
                 "116.82 W",
                 "1.82 W",
+                "41 43."
         };
 
         for (String input: inputStrings)
@@ -395,5 +396,34 @@ public class GeoRefConverter implements StringConverter
             String decimalDegrees = converter.convert(input, GeoRefConverter.GeoRefFormat.D_PLUS_MINUS.name());
             System.out.println("Decimal degrees:   " + decimalDegrees);
         }
+        System.out.println("----------------------------------");
+        System.out.println("----------------------------------");
+        System.out.println("----------------------------------");
+        System.out.println("----------------------------------");
+        System.out.println("----------------------------------");
+        System.out.println("----------------------------------");
+        System.out.println("----------------------------------");
+        System.out.println("----------------------------------");
+
+        String problemString = "41 43 18.";
+        System.out.println("input: " + problemString);
+        String d   = converter.convert(problemString, GeoRefFormat.D_PLUS_MINUS.name());
+        String dm  = converter.convert(problemString, GeoRefFormat.DM_PLUS_MINUS.name());
+        String dms = converter.convert(problemString, GeoRefFormat.DMS_PLUS_MINUS.name());
+        System.out.println(d + "   :   " + dm + "   :   " + dms);
+
+        problemString = d;
+        System.out.println("input: " + problemString);
+        String d2   = converter.convert(problemString, GeoRefFormat.D_PLUS_MINUS.name());
+        String dm2  = converter.convert(problemString, GeoRefFormat.DM_PLUS_MINUS.name());
+        String dms2 = converter.convert(problemString, GeoRefFormat.DMS_PLUS_MINUS.name());
+        System.out.println(d2 + "   :   " + dm2 + "   :   " + dms2);
+        
+        problemString = dm;
+        System.out.println("input: " + problemString);
+        String d3   = converter.convert(problemString, GeoRefFormat.D_PLUS_MINUS.name());
+        String dm3  = converter.convert(problemString, GeoRefFormat.DM_PLUS_MINUS.name());
+        String dms3 = converter.convert(problemString, GeoRefFormat.DMS_PLUS_MINUS.name());
+        System.out.println(d3 + "   :   " + dm3 + "   :   " + dms3);
     }
 }
