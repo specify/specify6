@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <VersionInfo>
-        <Module name="Core"      version="pre-release"/>
-        <Module name="Exporter"  version="1.0 beta"/>
-        <Module name="TaxonTree" version="1.0 beta"/>
+        <Module name="Core"           version="pre-release"/>
+       	<Module name="Workbench"      version="pre-release"/>
+        <Module name="Exporter"       version="pre-release"/>
+        <Module name="VersionChecker" version="pre-release"/>
+        <Module name="Labels"         version="pre-release"/>
+        <Module name="RecordSets"     version="pre-release"/>
 </VersionInfo>
 
 
