@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VersionInfo>
+        <Module name="Core"      version="pre-release"/>
+        <Module name="Exporter"  version="1.0 beta"/>
+        <Module name="TaxonTree" version="1.0 beta"/>
+</VersionInfo>
+
+
+
