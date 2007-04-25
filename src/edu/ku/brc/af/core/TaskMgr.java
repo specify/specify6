@@ -211,34 +211,37 @@ public class TaskMgr
         JToolBar toolBar = (JToolBar)UIRegistry.get(UIRegistry.TOOLBAR);
         if (toolBar != null)
         {
-            for (ToolBarItemDesc tbItem : plugin.getToolBarItems())
+            if (plugin.getToolBarItems() != null)
             {
-                Component toolBarComp = tbItem.getComp();
-                if (tbItem.getPos() == ToolBarItemDesc.Position.Insert)
+                for (ToolBarItemDesc tbItem : plugin.getToolBarItems())
                 {
-                    toolBar.add(toolBarComp, tbItem.getIndex());
-
-                } else if (tbItem.getPos() == ToolBarItemDesc.Position.Append)
-                {
-                    toolBar.add(toolBarComp);
-
-                } else if (tbItem.getPos() == ToolBarItemDesc.Position.AdjustRightLastComp)
-                {
-                    toolBar.add(toolBarComp);
-                    LayoutManager layout = toolBar.getLayout();
-                    if (layout instanceof ToolbarLayoutManager)
+                    Component toolBarComp = tbItem.getComp();
+                    if (tbItem.getPos() == ToolBarItemDesc.Position.Insert)
                     {
-                        ((ToolbarLayoutManager)layout).setAdjustRightLastComp(true);
-                    }
+                        toolBar.add(toolBarComp, tbItem.getIndex());
 
-                } else if (tbItem.getPos() == ToolBarItemDesc.Position.AppendNextToLast)
-                {
-                    int inx = toolBar.getComponentCount();
-                    if (inx > 0)
+                    } else if (tbItem.getPos() == ToolBarItemDesc.Position.Append)
                     {
-                        inx -= 1;
+                        toolBar.add(toolBarComp);
+
+                    } else if (tbItem.getPos() == ToolBarItemDesc.Position.AdjustRightLastComp)
+                    {
+                        toolBar.add(toolBarComp);
+                        LayoutManager layout = toolBar.getLayout();
+                        if (layout instanceof ToolbarLayoutManager)
+                        {
+                            ((ToolbarLayoutManager)layout).setAdjustRightLastComp(true);
+                        }
+
+                    } else if (tbItem.getPos() == ToolBarItemDesc.Position.AppendNextToLast)
+                    {
+                        int inx = toolBar.getComponentCount();
+                        if (inx > 0)
+                        {
+                            inx -= 1;
+                        }
+                        toolBar.add(toolBarComp, inx);
                     }
-                    toolBar.add(toolBarComp, inx);
                 }
             }
         } else
