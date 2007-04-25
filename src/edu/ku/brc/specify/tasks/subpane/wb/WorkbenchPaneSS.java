@@ -314,7 +314,9 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             public void actionPerformed(ActionEvent ae)
             {
-                model.clearCells(spreadSheet.getSelectedRowModelIndexes(), spreadSheet.getSelectedColumnModelIndexes());
+                int[] rows = spreadSheet.getSelectedRowModelIndexes();
+                int[] cols = spreadSheet.getSelectedColumnModelIndexes();
+                model.clearCells(rows,cols);
             }
         });
         selectionSensativeButtons.add(clearCellsBtn);

@@ -13,7 +13,6 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.EventObject;
@@ -348,16 +347,16 @@ public class SpreadSheet  extends SearchableJXTable
      */
     protected JPopupMenu createMenuForSelection(final Point pnt)
     {
-        final int row = rowAtPoint(pnt);
+        //final int row = rowAtPoint(pnt);
         
-        Class cellClass = getModel().getColumnClass(columnAtPoint(pnt));
+        Class<?> cellClass = getModel().getColumnClass(convertColumnIndexToModel(columnAtPoint(pnt)));
         boolean isImage =  cellClass == ImageIcon.class || cellClass == Image.class;
         
         JPopupMenu pMenu = new JPopupMenu();
         
         if (getSelectedColumnCount() == 1)
         {
-            final int[] rows = getSelectedRows();
+            final int[] rows = getSelectedRowModelIndexes();
             if (rows.length > 1)
             {
                 //if (row == rows[0])
@@ -368,7 +367,9 @@ public class SpreadSheet  extends SearchableJXTable
                         mi.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent ae)
                             {
-                                model.fill(getSelectedColumn(), rows[0], rows);
+                                int selectedUICol = getSelectedColumn();
+                                int selectedModelCol = convertColumnIndexToModel(selectedUICol);
+                                model.fill(selectedModelCol, rows[0], rows);
                                 popupMenu.setVisible(false);
                             }
                         });
@@ -381,7 +382,9 @@ public class SpreadSheet  extends SearchableJXTable
                         mi.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent ae)
                             {
-                                model.fill(getSelectedColumn(), rows[rows.length-1], rows);
+                                int selectedUICol = getSelectedColumn();
+                                int selectedModelCol = convertColumnIndexToModel(selectedUICol);
+                                model.fill(selectedModelCol, rows[rows.length-1], rows);
                                 popupMenu.setVisible(false);
                             }
                         });
@@ -396,7 +399,10 @@ public class SpreadSheet  extends SearchableJXTable
             mi.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae)
                 {
-                    model.clearCells(getSelectedRows(), getSelectedColumns());
+                    int[] rows = getSelectedRowModelIndexes();
+                    int[] cols = getSelectedColumnModelIndexes();
+
+                    model.clearCells(rows, cols);
                     popupMenu.setVisible(false);
                 }
             });
@@ -423,7 +429,7 @@ public class SpreadSheet  extends SearchableJXTable
     public void processMouseEvent(MouseEvent ev)
     {
         int type = ev.getID();
-        int modifiers = ev.getModifiers();
+        //int modifiers = ev.getModifiers();
         
         mouseDown = type == MouseEvent.MOUSE_PRESSED;
 
