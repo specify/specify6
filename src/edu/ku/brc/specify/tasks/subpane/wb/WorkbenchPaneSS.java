@@ -14,9 +14,10 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import static edu.ku.brc.ui.UIHelper.createDuplicateJGoodiesDef;
 import static edu.ku.brc.ui.UIHelper.createIconBtn;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -77,6 +78,7 @@ import javax.swing.text.Caret;
 import javax.swing.text.JTextComponent;
 import javax.swing.undo.UndoManager;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -122,8 +124,8 @@ import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.ProgressDialog;
 import edu.ku.brc.ui.SearchReplacePanel;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.ToggleButtonChooserDlg.Type;
 import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.ResultSetController;
@@ -1359,7 +1361,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     }
     
     /**
-     * Export to CSV.
+     * Export to XLS .
      */
     protected void doExcelCsvExport()
     {
@@ -1391,21 +1393,13 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         
         Properties props = new Properties();
-        props.setProperty("mimetype", ExportFileConfigurationFactory.XLS_MIME_TYPE);
 
-        FileDialog fileDialog = new FileDialog((Frame) UIRegistry.get(UIRegistry.FRAME),
-                                               getResourceString("CHOOSE_WORKBENCH_EXPORT_FILE"), FileDialog.SAVE);
-        UIHelper.centerAndShow(fileDialog);
-
-        String fileName = fileDialog.getFile();
-        String path     = fileDialog.getDirectory();
-        if (StringUtils.isEmpty(fileName))
+        if (!((WorkbenchTask) task).getExportInfo(props))
         {
             return;
         }
-        props.setProperty("fileName", path + File.separator + fileName);
 
-        ConfigureExternalDataIFace config = ExportFileConfigurationFactory.getConfiguration(props);
+         ConfigureExternalDataIFace config = ExportFileConfigurationFactory.getConfiguration(props);
 
         // Could get config to interactively get props or to look them up from prefs or ???
         // for now hard coding stuff...
@@ -1418,20 +1412,15 @@ public class WorkbenchPaneSS extends BaseSubPane
         String[] heads = new String[colHeads.size()];
         for (int h = 0; h < colHeads.size(); h++)
         {
-          heads[h] = colHeads.get(h).getFieldName();
+            heads[h] = colHeads.get(h).getFieldName();
         }
         config.setHeaders(heads);
         
-        props = config.getProperties();
-        Enumeration<?> keys = props.propertyNames();
-        while (keys.hasMoreElements())
-        {
-            String key = (String) keys.nextElement();
-            command.setProperty(key, props.getProperty(key));
-        }
-
+        command.addProperties(config.getProperties());
+        
+        UsageTracker.incrUsageCount("ExportXLSRowsTool");
         CommandDispatcher.dispatch(command);
-    }
+      }
     
     /**
      * Make a request to the ExportTask to display the selected records in GoogleEarth.

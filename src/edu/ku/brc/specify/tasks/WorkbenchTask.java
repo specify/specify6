@@ -918,9 +918,6 @@ public class WorkbenchTask extends BaseTask
                workbench.forceLoad();
                command.setData(workbench.getWorkbenchRowsAsList());
 
-               // rest of this method is copied from WorkbenchPaneSS.doExcelCsvExport()
-               // eventually most of the work will probably be done by Meg's Fancy Configurer UI
-
                Properties props = new Properties();
 
                if (!getExportInfo(props))
@@ -934,7 +931,6 @@ public class WorkbenchTask extends BaseTask
                workbench.forceLoad();
                
                sendExportCommand(props, workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems(), command);
-               
            } catch (Exception ex)
            {
                log.error(ex);
@@ -1007,7 +1003,7 @@ public class WorkbenchTask extends BaseTask
                 session = null;
                 
                 sendExportCommand(props, workbenchTemplate.getWorkbenchTemplateMappingItems(), command);
-                
+
             } catch (Exception ex)
             {
                 log.error(ex);
@@ -1099,7 +1095,6 @@ public class WorkbenchTask extends BaseTask
         config.setHeaders(heads);
         
         cmdAction.addProperties(config.getProperties());
-        
         CommandDispatcher.dispatch(cmdAction);
     }
 
@@ -1156,7 +1151,12 @@ public class WorkbenchTask extends BaseTask
                 JStatusBar statusBar = UIRegistry.getStatusBar();
                 statusBar.setErrorMessage(String.format(getResourceString("WB_PARSE_FILE_ERROR"), new Object[] { file.getName() }));
             }
-        }
+            //this means correct usage count for ImportXLS will actually be getUsageCount(ImportXLS) - getUsageCount(ImportCSV)...
+            if (dataFileInfo.getConfig().getProperties().getProperty("mimetype","").equals(ExportFileConfigurationFactory.CSV_MIME_TYPE))
+            {
+                UsageTracker.incrUsageCount("ImportCSV");
+            }
+       }
         return null;
     }
 
