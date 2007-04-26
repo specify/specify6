@@ -464,6 +464,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             {
                 // figure out what row is selected
                 int firstRowSelected = spreadSheet.getSelectedRow();
+                firstRowSelected = spreadSheet.convertRowIndexToModel(firstRowSelected);
                 WorkbenchRow row = workbench.getWorkbenchRowsAsList().get(firstRowSelected);
                 // then load a new image for it
                 boolean loaded = loadNewImage(row);
@@ -481,8 +482,11 @@ public class WorkbenchPaneSS extends BaseSubPane
             {
                 // figure out what row is selected
                 int firstRowSelected = spreadSheet.getSelectedRow();
+                firstRowSelected = spreadSheet.convertRowIndexToModel(firstRowSelected);
                 WorkbenchRow row = workbench.getWorkbenchRowsAsList().get(firstRowSelected);
                 row.setCardImage((File)null);
+                showCardImageForSelectedRow();
+                spreadSheet.repaint();
             }
         });
         imageFrame.installCloseActionListener(new ActionListener()
@@ -850,6 +854,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected void showCardImageForSelectedRow()
     {
         int firstRowSelected = spreadSheet.getSelectedRow();
+        firstRowSelected = spreadSheet.convertRowIndexToModel(firstRowSelected);
         if (firstRowSelected == -1)
         {
             // no selection

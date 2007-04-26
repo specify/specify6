@@ -219,7 +219,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         if (imageFile == null)
         {
             setCardImageData(null);
-            setCardImage((String)null);
+            setCardImageFullPath(null);
             return;
         }
         
