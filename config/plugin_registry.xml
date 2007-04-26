@@ -8,7 +8,7 @@
 		<plugin class="edu.ku.brc.specify.tasks.RecordSetTask" visible="false"/>
 		<plugin class="edu.ku.brc.specify.tasks.WorkbenchTask" visible="true" default="true"/>
 	    <plugin class="edu.ku.brc.specify.tasks.ExportTask" visible="false"/>
-	    <plugin class="edu.ku.brc.specify.tasks.VersionCheckerTask" visible="true"/>
+	    <plugin class="edu.ku.brc.af.tasks.VersionCheckerTask" visible="true"/>
 		
 		<!-- 
 			<plugin class="edu.ku.brc.af.tasks.StartUpTask" visible="true" default="true"/>
