@@ -334,7 +334,7 @@ public class WorkbenchTask extends BaseTask
             public void actionPerformed(ActionEvent e)
             {
                 editWorkbenchProps(roc);
-                UsageTracker.getUsageCount("WBShowWorkbenchProps");
+                UsageTracker.incrUsageCount("WBShowWorkbenchProps");
             }
         });
         UIHelper.createMenuItem(popupMenu, getResourceString("WB_EDIT_DATASET_MAPPING"), getResourceString("WB_EDIT_DATASET_MAPPING_MNEU"), null, true, new ActionListener() {
@@ -350,7 +350,7 @@ public class WorkbenchTask extends BaseTask
                         Workbench wb = selectWorkbench(subCmd, ""); // XXX ADD HELP
                         if (wb != null)
                         {
-                            UsageTracker.getUsageCount("WBEditMappings");
+                            UsageTracker.incrUsageCount("WBEditMappings");
                             editTemplate(wb.getWorkbenchTemplate());
                             
                         } else

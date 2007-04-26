@@ -1086,7 +1086,7 @@ public final class UIHelper
             public void uncaughtException(Thread t, Throwable e)
             {
                 //UIHelper.showUnhandledException(e);
-                UsageTracker.getUsageCount("UncaughtException");
+                UsageTracker.incrUsageCount("UncaughtException");
                 e.printStackTrace();
                 
             }
@@ -1097,7 +1097,7 @@ public final class UIHelper
             public void uncaughtException(Thread t, Throwable e)
             {
                 //UIHelper.showUnhandledException(e);
-                UsageTracker.getUsageCount("UncaughtException");
+                UsageTracker.incrUsageCount("UncaughtException");
                 e.printStackTrace();
             }
         });

@@ -136,7 +136,7 @@ public class HelpMgr
             {
                 public void actionPerformed(ActionEvent ae)
                 {
-                    UsageTracker.getUsageCount("ShowHelp");
+                    UsageTracker.incrUsageCount("ShowHelp");
                 }
             }); 
         } else

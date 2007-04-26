@@ -751,6 +751,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
             AttachmentUtils.getAttachmentManager().cleanup();
         }
         
+        AppPreferences.shutdownLocalPrefs();
+        
         if (SubPaneMgr.getInstance().aboutToShutdown())
         {
     		log.info("Application shutdown");

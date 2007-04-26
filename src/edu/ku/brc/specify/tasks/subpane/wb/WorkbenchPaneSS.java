@@ -260,7 +260,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             public void actionPerformed(ActionEvent ae)
             {
-                UsageTracker.getUsageCount("WBSaveDataSet");
+                UsageTracker.incrUsageCount("WBSaveDataSet");
                 
                 UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_SAVING"), new Object[] { workbench.getName()}), 32);
                 
