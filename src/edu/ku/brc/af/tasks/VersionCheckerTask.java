@@ -1,4 +1,4 @@
-package edu.ku.brc.specify.tasks;
+package edu.ku.brc.af.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
@@ -13,6 +13,7 @@ import javax.swing.JOptionPane;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.dom4j.Node;
 
@@ -21,12 +22,18 @@ import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.prefs.AppPreferences;
-import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
+/**
+ * This class provides the basic capability to compare an installed piece of software with the
+ * latest available version and provide some feedback to the user.
+ * 
+ * @author jstewart
+ * @code_status Alpha
+ */
 public class VersionCheckerTask extends BaseTask
 {
     public static final String VERSION_CHECK = "VersionChecker";
@@ -150,12 +157,21 @@ public class VersionCheckerTask extends BaseTask
     protected String getVersionCheckURL(boolean sendUsageDataIfAllowed)
     {
         String baseURL = getResourceString("VERSION_CHECK_URL");
+        //baseURL = "http://redbud.nhm.ku.edu/Specify/versionCheck/check.php";
         if (sendUsageDataIfAllowed)
         {
             // append the usage stats (if we are allowed) as query parameters to the GET request
             // TODO: get a UUID from somewhere that is installation unique
             String UUID = "0x1010";
             baseURL += "?id=" + UUID;
+            
+            // append the OS of the host along with the stats
+            String os = System.getProperty("os.name");
+            os = StringUtils.deleteWhitespace(os);
+            baseURL += "&os=" + os;
+            String version = System.getProperty("os.version");
+            version = StringUtils.deleteWhitespace(version);
+            baseURL += "&ver=" + version;
             
             List<Pair<String,Integer>> stats = UsageTracker.getUsageStats();
             for (Pair<String,Integer> stat: stats)
