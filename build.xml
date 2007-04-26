@@ -301,6 +301,82 @@
 
 	</target>
 
+	<target name="dist-mac-wb" depends="">
+		
+		<property name="appdir" value="${dist-mac}/${app.name}.app" />
+		<property name="derby.data.path" value="${dist-mac}/DerbyDatabases" />
+		
+		<antcall target="clean-jar"/>
+		<antcall target="dist-jar-mac"/>
+		<antcall target="dist-mac-clean"/>
+		
+		<antcall target="build-empty-derby-db"/>
+		
+		<mkdir dir="${dist-mac}" />
+		<mkdir dir="${appdir}" />
+		<mkdir dir="${appdir}/Contents" />
+		<mkdir dir="${appdir}/Contents/MacOS" />
+		<mkdir dir="${appdir}/Contents/Resources" />
+		<mkdir dir="${appdir}/Contents/Resources/Java" />
+		<mkdir dir="${appdir}/Contents/Resources/Java/config" />
+
+		<!-- Copy Application Stub Compile the java source of the project -->
+		<copy file="${packaging}/JavaApplicationStub" todir="${appdir}/Contents/MacOS" />
+		<exec command="chmod 755 ${appdir}/Contents/MacOS/JavaApplicationStub" />
+
+		<!-- Copy info list -->
+		<copy file="${packaging}/WBInfo.plist" todir="${appdir}/Contents" />
+		<rename src="${appdir}/Contents/WBInfo.plist" dest="${appdir}/Contents/Info.plist"/>
+		
+		<!-- Copy PkgInfo -->
+		<copy file="${packaging}/PkgInfo" todir="${appdir}/Contents" />
+
+		<!-- Copy config dir -->
+		<copy todir="${appdir}/Contents/Resources/Java/config">
+			<fileset dir="config">
+				<exclude name="**/*.svn" />
+			</fileset>
+		</copy>
+		
+		<!-- Copy the main app jar -->
+		<copy file="${jar.name}.jar" todir="${appdir}/Contents/Resources/Java" />
+
+		<!-- Copy Icons -->
+		<copy file="${packaging}/specify.icns" todir="${appdir}/Contents/Resources" />
+
+		<copy todir="${appdir}/Contents/Resources/Java">
+			<fileset dir="libs">
+				<include name="*.jar" />
+			</fileset>
+			<fileset dir="${hibernatelib.dir}">
+				<include name="*.jar" />
+			</fileset>
+			<fileset dir="${ireport.dir}">
+				<include name="iReport.jar" />
+			</fileset>
+			<fileset dir="${macnative.dir}">
+				<include name="*.jar" />
+			</fileset>
+		</copy>
+
+		<!-- Tell OS the dir is an App -->
+		<exec command="/Developer/Tools/SetFile -a B ${appdir}" />
+		
+
+		<!-- Copy Help -->
+		<copy todir="${appdir}/Contents/Resources/Java/help">
+			<fileset dir="help">
+				<exclude name="**/.svn" />
+			</fileset>
+		</copy>
+
+		<!-- Demo Files -->
+		<copy file="demo_files/workbench/FishCollectingTrip.csv" todir="${dist-mac}/examples" />
+		<copy file="demo_files/workbench/JohsonCountyTrip.csv" todir="${dist-mac}/examples" />
+	    <copy file="demo_files/workbench/SaipanTrip.xls" todir="${dist-mac}/examples" />
+
+	</target>
+
 		
 	<!-- *************************************************************
 	     Build Empty Derby DB

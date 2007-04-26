@@ -178,7 +178,7 @@ public class WorkbenchTask extends BaseTask
             RolloverCommand roc = null;
             NavBox navBox = new NavBox(getResourceString("Actions"));
             makeDnDNavBtn(navBox, getResourceString("WB_IMPORTDATA"), "Import", getResourceString("WB_IMPORTDATA_TT"), new CommandAction(WORKBENCH, IMPORT_DATA_FILE, wbTblId), null, false, false);// true means make it draggable
-            makeDnDNavBtn(navBox, getResourceString(WB_IMPORTCARDS),  "Import", getResourceString("WB_IMPORTCARDS_TT"), new CommandAction(WORKBENCH, WB_IMPORTCARDS, wbTblId),   null, false, false);// true means make it draggable
+            makeDnDNavBtn(navBox, getResourceString("WB_IMPORT_CARDS"),  "Import", getResourceString("WB_IMPORTCARDS_TT"), new CommandAction(WORKBENCH, WB_IMPORTCARDS, wbTblId),   null, false, false);// true means make it draggable
             
             makeDnDNavBtn(navBox, getResourceString("WB_NEW_DATASET"),   "PlusSign", getResourceString("WB_NEW_DATASET_TT"), new CommandAction(WORKBENCH, NEW_WORKBENCH, wbTblId),     null, false, false);// true means make it draggable
             roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_NEW_DS_FROM_TMPL"), "PlusSign", getResourceString("WB_NEW_DS_FROM_TMPL"), new CommandAction(WORKBENCH, NEW_WORKBENCH_FROM_TEMPLATE, wbTblId), null, false, false);// true means make it draggable

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+
+	<key>CFBundleName</key>
+	<string>Specify</string>
+
+	<key>CFBundleVersion</key>
+	<string>6.0</string>
+	
+    <key>CFBundleGetInfoString</key>
+	<string>Specify 6.0, © 1998-2007 Contributors</string>
+
+	<key>CFBundleAllowMixedLocalizations</key>
+	<string>true</string>
+	
+    <key>CFBundleIdentifier</key>
+	<string>edu.ku.nhm.brc.specify</string>
+
+	<key>CFBundleExecutable</key>
+	<string>JavaApplicationStub</string>
+
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+
+	<key>CFBundleShortVersionString</key>
+	<string>6.0</string>
+
+	<key>CFBundleSignature</key>
+	<string>SPECIFY</string>
+
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+
+	<key>CFBundleIconFile</key>
+	<string>specify.icns</string>
+
+	<key>Java</key>
+	<dict>
+	    <key>WorkingDirectory</key>
+		<string>$APP_PACKAGE/Contents/Resources/Java</string>
+		<key>VMOptions</key>
+		<string>-Xms512m -Xmx764m</string>
+		<key>Arguments</key>
+		<string>-Xms512m -Xmx764m</string>
+		<key>Arguments</key>
+		<string>-Dappdatadir=../../../.. -Djavadbdir=../../../../DerbyDatabases</string>
+		<key>MainClass</key>
+		<string>edu.ku.brc.specify.Specify</string>
+		<key>JVMVersion</key>
+		<string>1.5*</string>
+		<key>ClassPath</key>
+			<array>
+			<string>$JAVAROOT/specify.jar</string>
+			<string>$JAVAROOT/ant-launcher.jar</string>
+			<string>$JAVAROOT/ant.jar</string>
+			<string>$JAVAROOT/commons-beanutils.jar</string>
+			<string>$JAVAROOT/commons-betwixt.jar</string>
+			<string>$JAVAROOT/commons-codec.jar</string>
+			<string>$JAVAROOT/commons-digester.jar</string>
+			<string>$JAVAROOT/commons-httpclient.jar</string>
+			<string>$JAVAROOT/commons-io.jar</string>
+			<string>$JAVAROOT/commons-jexl.jar</string>
+			<string>$JAVAROOT/commons-lang.jar</string>
+			<string>$JAVAROOT/forms.jar</string>
+			<string>$JAVAROOT/itext.jar</string>
+			<string>$JAVAROOT/jasperreports.jar</string>
+			<string>$JAVAROOT/jaxen.jar</string>
+			<string>$JAVAROOT/jcommon.jar</string>
+			<string>$JAVAROOT/jfreechart.jar</string>
+			<string>$JAVAROOT/junit.jar</string>
+			<string>$JAVAROOT/log4j.jar</string>
+			<string>$JAVAROOT/looks.jar</string>
+			<string>$JAVAROOT/lucene.jar</string>
+			<string>$JAVAROOT/mail.jar</string>
+			<string>$JAVAROOT/mysql-connector.jar</string>
+			<string>$JAVAROOT/poi.jar</string>
+			<string>$JAVAROOT/servlet-api.jar</string>
+			<string>$JAVAROOT/TimingFramework.jar</string>
+			<string>$JAVAROOT/antlr.jar</string>
+			<string>$JAVAROOT/asm-attrs.jar</string>
+			<string>$JAVAROOT/asm.jar</string>
+			<string>$JAVAROOT/cglib.jar</string>
+			<string>$JAVAROOT/commons-collections.jar</string>
+			<string>$JAVAROOT/commons-logging.jar</string>
+			<string>$JAVAROOT/dom4j.jar</string>
+			<string>$JAVAROOT/ehcache.jar</string>
+			<string>$JAVAROOT/ejb3-persistence.jar</string>
+			<string>$JAVAROOT/hibernate-annotations.jar</string>
+			<string>$JAVAROOT/hibernate3.jar</string>
+			<string>$JAVAROOT/jdbc2_0-stdext.jar</string>
+			<string>$JAVAROOT/jta.jar</string>
+			<string>$JAVAROOT/activation.jar</string>
+			<string>$JAVAROOT/jdic.jar</string>
+			<string>$JAVAROOT/jdic_stub.jar</string>
+			<string>$JAVAROOT/derby.jar</string>
+			<string>$JAVAROOT/MacAttachmentUtils.jar</string>
+			<string>$JAVAROOT/jh.jar</string>
+			<string>$JAVAROOT/iReport.jar</string>
+			<string>$JAVAROOT/javacsv.jar</string>
+			<string>$JAVAROOT/swingx.jar</string>
+			<string>$JAVAROOT/help</string>
+			</array>
+		<key>Properties</key>
+		<dict>
+			<key>apple.laf.useScreenMenuBar</key>
+			<string>true</string>
+		</dict>
+	</dict>
+</dict>
+</plist>
