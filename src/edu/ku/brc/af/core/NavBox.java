@@ -97,7 +97,9 @@ public class NavBox extends JPanel implements NavBoxIFace
         if (scrollable)
         {
             itemsPanel = new JPanel();
-            itemsPanel.setLayout(new BoxLayout(itemsPanel, BoxLayout.PAGE_AXIS));
+            //itemsPanel.setLayout(new BoxLayout(itemsPanel, BoxLayout.PAGE_AXIS));
+            itemsPanel.setLayout(new NavBoxLayoutManager(0,1));
+
             itemsPanel.setBorder(null);
             itemsPanel.setBackground(Color.WHITE);
             itemsPanel.setOpaque(true);
@@ -357,7 +359,7 @@ public class NavBox extends JPanel implements NavBoxIFace
             size.height = minHeight;
         }
         
-        log.debug("NavBox preferred size: " + size);
+        //log.debug("NavBox preferred size: " + size);
         
         return size;
     }

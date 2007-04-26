@@ -42,9 +42,10 @@ public class SimpleDescPane extends BaseSubPane
     protected Image splashImage = null;
 
     /**
-     * @param name
-     * @param task
-     * @param desc
+     * Constrcutor with string to be cetnered.
+     * @param name name of pane
+     * @param task the task
+     * @param desc  a description that displays in the center
      */
     public SimpleDescPane(final String name,
                           final Taskable task,
@@ -60,9 +61,10 @@ public class SimpleDescPane extends BaseSubPane
     }
 
     /**
-     * @param name
-     * @param task
-     * @param panel
+     * Constructor with a panel component to be centered
+     * @param name name of panel
+     * @param task the owning task
+     * @param panel a panel to place in the center
      */
     public SimpleDescPane(final String name,
                           final Taskable task,

@@ -511,14 +511,19 @@ public class ViewFactory
     /**
      * Makes adjusts to the border and the colors to make it "flat" for diaply mode.
      * @param textField the text field to be flattened
+     * @param isTransparent make the background transparent instead of using the viewFieldColor
      */
-    public static void changeTextFieldUIForDisplay(final JTextField textField)
+    public static void changeTextFieldUIForDisplay(final JTextField textField, final boolean isTransparent)
     {
         Insets insets = textField.getBorder().getBorderInsets(textField);
         textField.setBorder(BorderFactory.createEmptyBorder(insets.top, insets.left, insets.bottom, insets.bottom));
         textField.setForeground(Color.BLACK);
         textField.setEditable(false);
-        if (viewFieldColor != null)
+        if (isTransparent)
+        {
+            textField.setOpaque(false);
+            
+        } else if (viewFieldColor != null)
         {
             textField.setBackground(viewFieldColor.getColor());
         }
@@ -573,7 +578,7 @@ public class ViewFactory
         JTextField textField = textFieldInfo.getTextField();
         textField.setColumns(cellField.getCols());
        
-        changeTextFieldUIForDisplay(textField);
+        changeTextFieldUIForDisplay(textField, false);
         return textFieldInfo;
     }
     
@@ -852,7 +857,7 @@ public class ViewFactory
                             if (StringUtils.isEmpty(cellField.getPickListName()))
                             {
                                 JTextField text = new JTextField(cellField.getCols());
-                                changeTextFieldUIForDisplay(text);
+                                changeTextFieldUIForDisplay(text, cellField.getPropertyAsBoolean("transparent", false));
                                 compToAdd = text;
                             } else
                             {
@@ -1013,7 +1018,7 @@ public class ViewFactory
 
                         case textpl:
                             JTextField txt = new TextFieldFromPickListTable(adapter);
-                            changeTextFieldUIForDisplay(txt);
+                            changeTextFieldUIForDisplay(txt, cellField.getPropertyAsBoolean("transparent", false));
                             compToAdd = txt;
                             break;
                         

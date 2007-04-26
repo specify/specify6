@@ -65,7 +65,7 @@ public class TableInfoListRenderer implements ListCellRenderer
 
     public Component getListCellRendererComponent(JList list, Object value, // value to display
                                                   int index, // cell index
-                                                  boolean iss, // is the cell selected
+                                                  boolean isSelected, // is the cell selected
                                                   boolean chf) // the list and the cell have the
                                                                 // focus
     {
@@ -84,12 +84,11 @@ public class TableInfoListRenderer implements ListCellRenderer
         }
         label.setText(ti.getText());
         
-        if (iss)
+        if (isSelected)
         {
             display.setOpaque(true);
             display.setBackground(list.getSelectionBackground());
             display.setForeground(list.getSelectionForeground());
-            list.setSelectedIndex(index);
 
         } else
         {

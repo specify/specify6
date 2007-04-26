@@ -16,7 +16,9 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.Dimension;
 import java.awt.FileDialog;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
@@ -37,6 +39,7 @@ import java.util.Vector;
 
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
@@ -45,6 +48,10 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
@@ -59,8 +66,8 @@ import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.BarChartPane;
 import edu.ku.brc.af.tasks.subpane.ChartPane;
-import edu.ku.brc.af.tasks.subpane.HtmlDescPane;
 import edu.ku.brc.af.tasks.subpane.PieChartPane;
+import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -92,13 +99,14 @@ import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.Trash;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.forms.MultiView;
 
@@ -336,7 +344,7 @@ public class WorkbenchTask extends BaseTask
                     CommandAction subCmd = (CommandAction)cmdData;
                     if (subCmd.getTableId() == Workbench.getClassTableId())
                     {
-                        Workbench         wb = selectWorkbench(subCmd);
+                        Workbench wb = selectWorkbench(subCmd, ""); // XXX ADD HELP
                         if (wb != null)
                         {
                             WorkbenchTemplate template  = wb.getWorkbenchTemplate();
@@ -495,7 +503,7 @@ public class WorkbenchTask extends BaseTask
     @Override
     public SubPaneIFace getStarterPane()
     {
-        File htmlFile = new File(getResourceString("WB_INITIAL_HTML"));
+        /*File htmlFile = new File(getResourceString("WB_INITIAL_HTML"));
         if (htmlFile.exists())
         {
             try
@@ -509,8 +517,17 @@ public class WorkbenchTask extends BaseTask
             {
                 // no op
             }
-        }
-        return starterPane = new WorkbenchPaneSS(title, this, null, false);
+        }*/
+        //return starterPane = new WorkbenchPaneSS(title, this, null, false);
+        PanelBuilder    display = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "f:p:g,p,5px,p,100px,f:p:g"));
+        CellConstraints cc      = new CellConstraints();
+
+        JLabel label = new JLabel(getResourceString("WB_WELCOME"));
+        Font font = label.getFont();
+        label.setFont(new Font(font.getName(), Font.PLAIN, font.getSize()+4));
+        display.add(new JLabel(IconManager.getIcon("SpecifyLargeIcon")), cc.xy(2, 2));
+        display.add(label, cc.xy(2, 4));
+        return starterPane = new SimpleDescPane(title, this, display.getPanel());
     }
     
     /* (non-Javadoc)
@@ -599,6 +616,16 @@ public class WorkbenchTask extends BaseTask
         } else
         {
             mapper = new TemplateEditor((Frame)UIRegistry.get(UIRegistry.FRAME), getResourceString(titleKey), dataFileInfo);
+            // When creating a mapping from scratch we need to expand the dialog to 
+            // make sure it is wide enough for the icon in the bottom list
+            if (dataFileInfo == null)
+            {
+                Dimension size = mapper.getSize();
+                // this is an arbitrary size, intended to make 
+                // it wide enough to also show the icon on the right
+                size.width  += 120;
+                mapper.setSize(size);
+            }
         }
         UIHelper.centerAndShow(mapper);
         return mapper;
@@ -857,8 +884,8 @@ public class WorkbenchTask extends BaseTask
     protected void exportWorkbench(final CommandAction cmdAction)
     {
        // Check incoming command for a RecordSet contain the Workbench
-       Workbench workbench  = null;
-       Object    data = cmdAction.getData();
+       Workbench workbench = null;
+       Object    data      = cmdAction.getData();
        if (data instanceof CommandAction)
        {
            CommandAction subCmd = (CommandAction)data;
@@ -866,7 +893,7 @@ public class WorkbenchTask extends BaseTask
            {
                if (subCmd.getTableId() == cmdAction.getTableId())
                {
-                   workbench = selectWorkbench(subCmd);
+                   workbench = selectWorkbench(subCmd, ""); // XXX ADD HELP
                }
            }
        }
@@ -874,7 +901,7 @@ public class WorkbenchTask extends BaseTask
        // The command may have been clicked on so ask for one
        if (workbench == null)
        {
-           workbench = selectWorkbench(cmdAction);
+           workbench = selectWorkbench(cmdAction, ""); // XXX ADD HELP
        }
 
        if (workbench != null)
@@ -935,7 +962,7 @@ public class WorkbenchTask extends BaseTask
             {
                 if (subCmd.getTableId() == cmdAction.getTableId())
                 {
-                    workbenchTemplate = selectWorkbenchTemplate(subCmd, "WorkbenchTemplateExporting");
+                    workbenchTemplate = selectWorkbenchTemplate(subCmd, "WB_EXPORT_DATA", null, ""); // XXX ADD HELP
                     
                 } else
                 {
@@ -946,7 +973,7 @@ public class WorkbenchTask extends BaseTask
         
         if (workbenchTemplate == null)
         {
-            workbenchTemplate = selectWorkbenchTemplate(cmdAction, "WorkbenchTemplateExporting");
+            workbenchTemplate = selectWorkbenchTemplate(cmdAction, "WB_EXPORT_DATA", null, ""); // XXX ADD HELP
         }
 
         // The command may have been clicked on so ask for one
@@ -1000,13 +1027,13 @@ public class WorkbenchTask extends BaseTask
     protected void createWorkbenchFromTemplate(final CommandAction cmdAction)
     {
         
-        Workbench wb = selectWorkbench(cmdAction);
+        Workbench wb = selectWorkbench(cmdAction, "WB_CHOOSE_DATASET_REUSE_TITLE", "WB_CHOOSE_DATASET_REUSE", ""); // XXX ADD HELP
         if (wb != null)
         {
             WorkbenchTemplate workbenchTemplate = wb.getWorkbenchTemplate();
             if (workbenchTemplate == null)
             {
-                workbenchTemplate = selectWorkbenchTemplate(cmdAction, "WorkbenchTemplateExporting");
+                workbenchTemplate = selectWorkbenchTemplate(cmdAction, "WB_CHOOSE_DATASET_REUSE_TITLE", "WB_CHOOSE_DATASET_REUSE", ""); // XXX ADD HELP
             }
     
            // The command may have been clicked on so ask for one
@@ -1638,7 +1665,7 @@ public class WorkbenchTask extends BaseTask
      */
     protected void doReport(final CommandAction cmdAction)
     {
-        Workbench workbench = selectWorkbench(cmdAction);
+        Workbench workbench = selectWorkbench(cmdAction, ""); // XXX ADD HELP
         if (workbench == null)
         {
             return;
@@ -1710,10 +1737,28 @@ public class WorkbenchTask extends BaseTask
     /**
      * Returns the Workbench referenced in the CommandAction or asks for one instead.
      * @param cmdAction the CommandAction being executed
+     * @param helpContext the help context
+     * @return a workbench object or null
+     */
+    protected Workbench selectWorkbench(final CommandAction cmdAction,
+                                        final String helpContext)
+    {
+        return selectWorkbench(cmdAction, "WB_CHOOSE_DATASET", null, helpContext);
+    }
+    
+    /**
+     * Returns the Workbench referenced in the CommandAction or asks for one instead.
+     * @param cmdAction the CommandAction being executed
+     * @param titleKey resource key for dialog title
+     * @param labelKey resource key for the label on top of the list (null hides the label)
+     * @param helpContext the help context
      * @return a workbench object or null
      */
     @SuppressWarnings("unchecked")
-    protected Workbench selectWorkbench(final CommandAction cmdAction)
+    protected Workbench selectWorkbench(final CommandAction cmdAction, 
+                                        final String titleKey,
+                                        final String labelKey,
+                                        final String helpContext)
     {
         Workbench workbench = null;
 
@@ -1736,6 +1781,7 @@ public class WorkbenchTask extends BaseTask
             
             if (recordSet != null && recordSet.getDbTableId() != Workbench.getClassTableId())
             {
+                UIRegistry.getStatusBar().setText("");
                 return null;
             }
             
@@ -1745,6 +1791,7 @@ public class WorkbenchTask extends BaseTask
                 if (list.size() == 0)
                 {
                     // XXX Probably should have a dialog here.
+                    UIRegistry.getStatusBar().setText("");
                     return null;
                     
                 } else if (list.size() == 1)
@@ -1756,18 +1803,24 @@ public class WorkbenchTask extends BaseTask
                 session = null;
                 
                 ChooseFromListDlg<Workbench> dlg = new ChooseFromListDlg<Workbench>((Frame)UIRegistry.get(UIRegistry.FRAME),
-                                                                                    getResourceString("WB_CHOOSE_DATASET"), list);
+                            StringUtils.isNotEmpty(titleKey) ? getResourceString(titleKey) : null, 
+                            StringUtils.isNotEmpty(labelKey) ? getResourceString(labelKey) : null, 
+                            ChooseFromListDlg.OKCANCELHELP, 
+                            list, 
+                            helpContext);
+                
                 dlg.setModal(true);
                 UIHelper.centerAndShow(dlg);
                 if (!dlg.isCancelled())
                 {
-                    session = DataProviderFactory.getInstance().createSession();
+                    session   = DataProviderFactory.getInstance().createSession();
                     workbench = dlg.getSelectedObject();
                     session.attach(workbench);
                     workbench.getWorkbenchTemplate().forceLoad();
                     
                 } else
                 {
+                    UIRegistry.getStatusBar().setText("");
                     return null;
                 }
             } else
@@ -1799,68 +1852,25 @@ public class WorkbenchTask extends BaseTask
     /**
      * Returns the Workbench referenced in the CommandAction or asks for one instead.
      * @param cmdAction the CommandAction being executed
-     * @param helpContext the help Context
-     * @return a workbench object or null
+     * @param titleKey resource key for dialog title
+     * @param labelKey resource key for the label on top of the list (null hides the label)
+     * @param helpContext the help context
+     * @return a workbench template object or null
      */
-    @SuppressWarnings("unchecked")
-    protected WorkbenchTemplate selectWorkbenchTemplate(final CommandAction cmdAction, final String helpContext)
+    protected WorkbenchTemplate selectWorkbenchTemplate(final CommandAction cmdAction, 
+                                                        final String titleKey,
+                                                        final String labelKey,
+                                                        final String helpContext)
     {
-        DataProviderSessionIFace session   = DataProviderFactory.getInstance().createSession();
-        
-        RecordSet recordSet = (RecordSet)cmdAction.getProperty("template");
-        if (recordSet == null)
+        Workbench workbench = selectWorkbench(cmdAction,
+                                              titleKey,
+                                              labelKey,
+                                              helpContext); // false means it's for templates
+        if (workbench != null)
         {
-            Object data = cmdAction.getData();
-            if (data instanceof CommandAction)
-            {
-                recordSet = (RecordSet)((CommandAction)data).getProperty("template");
-            }  else if (data instanceof RecordSet)
-            {
-                recordSet = (RecordSet)data;
-            }
+            return workbench.getWorkbenchTemplate();
         }
-        
-        if (recordSet != null && recordSet.getDbTableId() != WorkbenchTemplate.getClassTableId())
-        {
-            return null;
-        }
-        
-        WorkbenchTemplate workbenchTemplate = null;
-        if (recordSet == null)
-        {
-            List<WorkbenchTemplate> list = (List<WorkbenchTemplate>)session.getDataList("From WorkbenchTemplate where SpecifyUserID = "+SpecifyUser.getCurrentUser().getSpecifyUserId());
-            if (list.size() == 0)
-            {
-                // XXX Probably should have a dialog here.
-                return null;
-                
-            } else if (list.size() == 1)
-            {
-                session.close();
-                return list.get(0);
-            }
-            ChooseFromListDlg<WorkbenchTemplate> dlg = new ChooseFromListDlg<WorkbenchTemplate>((Frame)UIRegistry.get(UIRegistry.FRAME),
-                                                                                getResourceString("WB_CHOOSE_DATASET_REUSE_TITLE"), 
-                                                                                getResourceString("WB_CHOOSE_DATASET_REUSE"), 
-                                                                                ChooseFromListDlg.OKCANCELHELP, 
-                                                                                list, 
-                                                                                helpContext);
-            dlg.setModal(true);
-            UIHelper.centerAndShow(dlg);
-            if (!dlg.isCancelled())
-            {
-                workbenchTemplate = dlg.getSelectedObject();
-            } else
-            {
-                session.close();
-                return null;
-            }
-        } else
-        {
-            workbenchTemplate = session.get(WorkbenchTemplate.class, recordSet.getItems().iterator().next().getRecordId());
-        }
-        session.close();
-        return workbenchTemplate;
+        return null;
     }
     
     /**
@@ -1894,7 +1904,7 @@ public class WorkbenchTask extends BaseTask
      */
     protected void doChart(final CommandAction cmdAction, final boolean doBarChart)
     {
-        Workbench workbench = selectWorkbench(cmdAction);
+        Workbench workbench = selectWorkbench(cmdAction, ""); // XXX ADD HELP
         if (workbench == null)
         {
             return;
@@ -2063,6 +2073,7 @@ public class WorkbenchTask extends BaseTask
                         }
                     }
                 }
+                
                 for (WorkbenchTemplateMappingItem wbtmi : newItems)
                 {
                     wbtmi.setWorkbenchTemplate(workbenchTemplate);
@@ -2070,41 +2081,13 @@ public class WorkbenchTask extends BaseTask
                     //log.debug("new ["+wbtmi.getCaption()+"]["+wbtmi.getViewOrder().shortValue()+"]");
                     session.saveOrUpdate(wbtmi) ;
                 }
-                //for (WorkbenchTemplateMappingItem wbtmi : updatedItems)
-                //{
-                    //log.debug("ext ["+wbtmi.getCaption()+"]["+wbtmi.getViewOrder().shortValue()+"]");
-                //}
+                
                 session.saveOrUpdate(workbenchTemplate);
                 session.commit();
                 session.flush();
                 
-                /*
-                for (Workbench workbench : workbenchTemplate.getWorkbenches())
-                {
-                    session.attach(workbench);
-                    session.beginTransaction();
-   
-                    for (WorkbenchRow row : workbench.getWorkbenchRowsAsList())
-                    {
-                        Vector<WorkbenchDataItem> rowItems = new Vector<WorkbenchDataItem>(row.getWorkbenchDataItems());
-                        for (WorkbenchDataItem item : rowItems)
-                        {
-                            System.out.println("["+item.getCellData()+"] ["+item.getWorkbenchTemplateMappingItem().getWorkbenchTemplateMappingItemId()+"]");
-                            if (delHash.get(item.getWorkbenchTemplateMappingItem().getWorkbenchTemplateMappingItemId().longValue()) != null)
-                            {
-                                row.delete(item);
-                                session.delete(item);
-                            }
-                        }
-                        session.saveOrUpdate(row);
-                    }
-                    session.saveOrUpdate(workbench);
-                    session.commit();
-                    session.flush();
-                    session.evict(workbench);
-                }*/
-                
                 UIRegistry.getStatusBar().setText(getResourceString("WB_SAVED_MAPPINGS"));
+                
             } catch (Exception ex)
             {
                 log.error(ex);
@@ -2127,6 +2110,16 @@ public class WorkbenchTask extends BaseTask
      */
     protected void importCardImages()
     {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.setMultiSelectionEnabled(true);
+        
+        if (chooser.showOpenDialog(UIRegistry.get(UIRegistry.FRAME)) != JFileChooser.APPROVE_OPTION)
+        {
+            UIRegistry.getStatusBar().setText("");
+            return;
+        }
+        
         int               btnPressed        = selectExistingTemplate(null, "WorkbenchImportImages");
         WorkbenchTemplate workbenchTemplate = selectedTemplate;
         selectedTemplate  = null;
@@ -2147,60 +2140,49 @@ public class WorkbenchTask extends BaseTask
         
         if (workbenchTemplate != null)
         {
-            Workbench workbench = createNewWorkbenchDataObj("", cloneWorkbenchTemplate(workbenchTemplate));
+            Workbench workbench = createNewWorkbenchDataObj("", selectedTemplate != null ? cloneWorkbenchTemplate(workbenchTemplate) : workbenchTemplate);
             if (workbench != null)
             {
-                JFileChooser chooser = new JFileChooser();
-                chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-                chooser.setMultiSelectionEnabled(true);
-                
-                if (chooser.showOpenDialog(UIRegistry.get(UIRegistry.FRAME)) == JFileChooser.APPROVE_OPTION)
+                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                try
                 {
-
-                    DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                    try
+                    session.beginTransaction();
+                    
+                    for (File file : chooser.getSelectedFiles())
                     {
-                        session.beginTransaction();
-                        
-                        for (File file : chooser.getSelectedFiles())
+                        WorkbenchRow row = workbench.addRow();
+                        row.setCardImage(file);
+                        if (row.getLoadStatus() != WorkbenchRow.LoadStatus.Successful)
                         {
-                            WorkbenchRow row = workbench.addRow();
-                            row.setCardImage(file);
-                            if (row.getLoadStatus() != WorkbenchRow.LoadStatus.Successful)
+                            if (!showLoadStatus(row))
                             {
-                                if (!showLoadStatus(row))
-                                {
-                                    // Shoud we still save or return?
-                                    break; 
-                                }
+                                // Shoud we still save or return?
+                                break; 
                             }
                         }
-                        session.saveOrUpdate(workbench);
-                        session.commit();
-                        session.flush();
-                        
-                        addWorkbenchToNavBox(workbench);
-                        
-                        createEditorForWorkbench(workbench, session, true);
-    
-                        
+                    }
+                    session.saveOrUpdate(workbench);
+                    session.commit();
+                    session.flush();
+                    
+                    addWorkbenchToNavBox(workbench);
+                    
+                    createEditorForWorkbench(workbench, session, true);
+
+                    
+                } catch (Exception ex)
+                {
+                    log.error(ex);
+                    
+                } finally
+                {
+                    try
+                    {
+                        session.close();
                     } catch (Exception ex)
                     {
                         log.error(ex);
-                        
-                    } finally
-                    {
-                        try
-                        {
-                            session.close();
-                        } catch (Exception ex)
-                        {
-                            log.error(ex);
-                        }
                     }
-                } else
-                {
-                    UIRegistry.getStatusBar().setText("");
                 }
             } 
         }
