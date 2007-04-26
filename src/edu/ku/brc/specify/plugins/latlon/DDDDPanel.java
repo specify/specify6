@@ -129,8 +129,8 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
         {
             latitudeDirTxt  = new JTextField(2);
             longitudeDirTxt = new JTextField(2);
-            ViewFactory.changeTextFieldUIForDisplay(latitudeDirTxt);
-            ViewFactory.changeTextFieldUIForDisplay(longitudeDirTxt);
+            ViewFactory.changeTextFieldUIForDisplay(latitudeDirTxt, false);
+            ViewFactory.changeTextFieldUIForDisplay(longitudeDirTxt, false);
             latDir = latitudeDirTxt;
             lonDir = longitudeDirTxt;   
             
@@ -242,7 +242,7 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
         
         if (isViewMode)
         {
-            ViewFactory.changeTextFieldUIForDisplay(textField);
+            ViewFactory.changeTextFieldUIForDisplay(textField, false);
 
         } else
         {
