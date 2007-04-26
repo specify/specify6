@@ -141,7 +141,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         Action closeAll = UIRegistry.getAction("CloseAll");
         if (closeAll != null)
         {
-            closeAll.setEnabled(panes.size() > 1  || TaskMgr.getVisibleTaskCount() > 1);
+            closeAll.setEnabled(panes.size() > 1  || TaskMgr.getToolbarTaskCount() > 1);
         }
     }
     
@@ -433,7 +433,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             Vector<SubPaneIFace> paneList = new Vector<SubPaneIFace>(panes.values()); // Not sure we need to create a new list
             for (SubPaneIFace pane : paneList)
             {
-                if (panes.size() == 1  && TaskMgr.getVisibleTaskCount() == 1)
+                if (panes.size() == 1  && TaskMgr.getToolbarTaskCount() == 1)
                 {
                     return false;
                 }
@@ -463,7 +463,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         {
             // If there is only one pane left and there is only one tasks that provides UI
             // then we cannot let it close.
-            boolean  wasLastPane = panes.size() == 1  && TaskMgr.getVisibleTaskCount() == 1;
+            boolean  wasLastPane = panes.size() == 1  && TaskMgr.getToolbarTaskCount() == 1;
 
             Taskable task = subPane.getTask();
             if (!this.removePane(subPane))

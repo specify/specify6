@@ -49,7 +49,11 @@ import edu.ku.brc.ui.UIHelper;
 
 /**
  * Manages all the tasks as described in the plugin registry. 
- * The Tasks (Plugins) are read in and then created. Their toolbar items and menu items areinserted into the UI.
+ * The Tasks (Plugins) are read in and then created. Their toolbar items and menu items areinserted into the UI.<br>
+ * Tasks can indicate via the plugin_registry.xml file whether there UI should be added or not. The UI consists of 
+ * toolbar items or menu items. The TaskMgr tracks whether the task offers up toolbar items, because in some scenarios 
+ * an application may be configured for a single "visible" task and there wants to hide the toolbar, but it also means that
+ * there always needs to be a pne showing in order to get the left side nav Panel UI.
  * 
  * @code_status Beta
  * 
@@ -64,7 +68,7 @@ public class TaskMgr
 
     // Data Members
     protected Hashtable<String, Taskable> tasks          = new Hashtable<String, Taskable>();
-    protected Vector<Taskable>            visibleTasks   = new Vector<Taskable>();
+    protected Vector<Taskable>            toolbarTasks   = new Vector<Taskable>();
     protected Element                     commandDOMRoot = null;
     protected Taskable                    defaultTask    = null;
 
@@ -99,9 +103,9 @@ public class TaskMgr
      * Returns the number of tasks that provide UI.
      * @return Returns the number of tasks that provide UI.
      */
-    public static int getVisibleTaskCount()
+    public static int getToolbarTaskCount()
     {
-        return instance.visibleTasks.size();
+        return instance.toolbarTasks.size();
     }
     
     /**
@@ -134,9 +138,9 @@ public class TaskMgr
     /**
      * Registers a plugin into the applications.
      * @param plugin the plugin to be registered
-     * @param isVisible true if plugin should add UI components, false if it should be "hidden"
+     * @param shouldAddUI true if plugin should add UI components, false if the UI should be "hidden"
      */
-    public static void register(final Taskable plugin, final boolean isVisible)
+    public static void register(final Taskable plugin, final boolean shouldAddUI)
     {
         if (plugin != null)
         {
@@ -144,7 +148,7 @@ public class TaskMgr
             {
                 instance.tasks.put(plugin.getName(), plugin);
 
-                if (isVisible)
+                if (shouldAddUI)
                 {
                     registerWithUI(plugin);
                 }
@@ -171,9 +175,9 @@ public class TaskMgr
             if (tp != null)
             {
                 instance.tasks.remove(taskable.getName());
-                if (instance.visibleTasks.indexOf(tp) > -1)
+                if (instance.toolbarTasks.indexOf(tp) > -1)
                 {
-                    instance.visibleTasks.remove(tp);
+                    instance.toolbarTasks.remove(tp);
                 }
                 if (taskable == instance.defaultTask)
                 {
@@ -269,7 +273,7 @@ public class TaskMgr
         
         if (isVisible)
         {
-            instance.visibleTasks.add(plugin);
+            instance.toolbarTasks.add(plugin);
         }
     }
 
@@ -358,7 +362,7 @@ public class TaskMgr
         for (Enumeration<Taskable> e=instance.tasks.elements();e.hasMoreElements();)
         {
             Taskable taskablePlugin = e.nextElement();
-            int index = instance.visibleTasks.indexOf(taskablePlugin);
+            int index = instance.toolbarTasks.indexOf(taskablePlugin);
             taskablePlugin.initialize(getCommandDefinitions(taskablePlugin.getTaskClass()), index > -1);
         }
     }
@@ -426,7 +430,7 @@ public class TaskMgr
                             }
                         }
                         
-                        register(tp, getAttr(pluginElement, "visible", false));
+                        register(tp, getAttr(pluginElement, "addui", false));
 
                     } else
                     {
