@@ -208,12 +208,16 @@ public class TaskMgr
      */
     protected static void registerWithUI(final Taskable plugin)
     {
+        boolean isVisible = false;
+        
         JToolBar toolBar = (JToolBar)UIRegistry.get(UIRegistry.TOOLBAR);
         if (toolBar != null)
         {
-            if (plugin.getToolBarItems() != null)
+            List<ToolBarItemDesc> toolBarItems = plugin.getToolBarItems();
+            if (toolBarItems != null && toolBarItems.size() > 0)
             {
-                for (ToolBarItemDesc tbItem : plugin.getToolBarItems())
+                isVisible = true;
+                for (ToolBarItemDesc tbItem : toolBarItems)
                 {
                     Component toolBarComp = tbItem.getComp();
                     if (tbItem.getPos() == ToolBarItemDesc.Position.Insert)
@@ -242,7 +246,7 @@ public class TaskMgr
                         }
                         toolBar.add(toolBarComp, inx);
                     }
-                }
+                } // for
             }
         } else
         {
@@ -261,6 +265,11 @@ public class TaskMgr
         } else
         {
             throw new NullPointerException("The MenuBar component cannot be null!");
+        }
+        
+        if (isVisible)
+        {
+            instance.visibleTasks.add(plugin);
         }
     }
 
@@ -417,13 +426,7 @@ public class TaskMgr
                             }
                         }
                         
-                        boolean isVisible = getAttr(pluginElement, "visible", true);
-                        if (isVisible)
-                        {
-                            instance.visibleTasks.add(tp);
-                        }
-                        
-                        register(tp, isVisible);
+                        register(tp, getAttr(pluginElement, "visible", false));
 
                     } else
                     {
