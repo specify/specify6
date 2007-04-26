@@ -30,6 +30,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.specify.Specify;
 
 /**
@@ -131,6 +132,13 @@ public class HelpMgr
             {
                 CSH.setHelpIDString(component, getDefaultID());
             }
+            component.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent ae)
+                {
+                    UsageTracker.getUsageCount("ShowHelp");
+                }
+            }); 
         } else
         {
             component.addActionListener(new ActionListener()

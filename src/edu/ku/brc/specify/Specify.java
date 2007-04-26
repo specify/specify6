@@ -67,6 +67,7 @@ import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MainPanel;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskMgr;
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsEditor;
 import edu.ku.brc.af.prefs.PrefMainPanel;
@@ -148,6 +149,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     public Specify()
     {
         UIRegistry.setRelease(isRelease);
+        
     }
     
     /**
@@ -244,6 +246,11 @@ public class Specify extends JPanel implements DatabaseLoginListener
             UIRegistry.setJavaDBDir(derbyPath);
             log.debug("JavaDB Path: "+UIRegistry.getJavaDBPath());
         }
+        
+        UsageTracker.incrUsageCount("RunCount");
+        
+        UIHelper.attachUnhandledException();
+
         
         FileCache.setDefaultPath(UIRegistry.getAppDataDir()+ File.separator + "cache");
 

@@ -54,6 +54,7 @@ import javax.swing.text.JTextComponent;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
@@ -175,6 +176,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
                 
                 if (e.getClickCount() == 2 && (controlPropsDlg == null || !controlPropsDlg.isVisible()))
                 {
+                    UsageTracker.getUsageCount("WBFormPropsTool");
                     showControlProps();
                 }
                 
@@ -261,6 +263,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         {
             public void actionPerformed(ActionEvent ae)
             {
+                UsageTracker.getUsageCount("WBFormPropsTool");
                 showControlProps();
             }
         });
@@ -886,6 +889,8 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             wbtmi.setXCoord((short)location.x);
             wbtmi.setYCoord((short)location.y);
             workbenchPane.setChanged(true);
+            
+            UsageTracker.getUsageCount("WBLayoutFormDrop");
         }
     }
     

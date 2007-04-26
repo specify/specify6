@@ -85,6 +85,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -202,10 +203,10 @@ public class WorkbenchPaneSS extends BaseSubPane
      * @param workbench the workbench to be editted
      * @param showImageView shows image window when first showing the window
      */
-    public WorkbenchPaneSS(final String name,
-                           final Taskable task,
+    public WorkbenchPaneSS(final String    name,
+                           final Taskable  task,
                            final Workbench workbench,
-                           final boolean showImageView)
+                           final boolean   showImageView)
     {
         super(name, task);
         
@@ -259,14 +260,8 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             public void actionPerformed(ActionEvent ae)
             {
-                /*
-                SaveProgressDialog progressDialog = new SaveProgressDialog(getResourceString("Save"), false, false);
-                progressDialog.setAlwaysOnTop(true);
-                progressDialog.getProcessProgress().setString("");
-                progressDialog.getProcessProgress().setIndeterminate(true);
-                UIHelper.centerAndShow(progressDialog);
-                */
-
+                UsageTracker.getUsageCount("WBSaveDataSet");
+                
                 UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_SAVING"), new Object[] { workbench.getName()}), 32);
                 
                 final SwingWorker worker = new SwingWorker()
@@ -337,6 +332,8 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             public void actionPerformed(ActionEvent ae)
             {
+                UsageTracker.getUsageCount("WBCarryForward");
+
                 configCarryFoward();
             }
         });
@@ -641,6 +638,9 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
     }
     
+    /**
+     * Update enaabled state of buttons effected by the spreadsheet selection.
+     */
     protected void updateBtnUI()
     {
         boolean enable = spreadSheet.getSelectedRow() > -1;

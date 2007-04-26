@@ -63,6 +63,7 @@ import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskCommandDef;
 import edu.ku.brc.af.core.ToolBarItemDesc;
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.BarChartPane;
 import edu.ku.brc.af.tasks.subpane.ChartPane;
@@ -125,16 +126,17 @@ public class WorkbenchTask extends BaseTask
 	public static final DataFlavor WORKBENCH_FLAVOR      = new DataFlavor(WorkbenchTask.class, "Workbench");
     public static final String     WORKBENCH             = "Workbench";
     public static final String     WORKBENCHTEMPLATE     = "WorkbenchTemplate";
-    public static final String     NEW_WORKBENCH         = "New Workbench";
-    public static final String     IMPORT_DATA_FILE      = "New Template From File";
-    public static final String     SELECTED_WORKBENCH    = "Selected Workbench";
-    public static final String     WB_BARCHART           = "WB_BARCHART";
-    public static final String     PRINT_REPORT          = "PrintReport";
-    public static final String     WB_TOP10_REPORT       = "WB_TOP10_REPORT";
-    public static final String     WB_IMPORTCARDS        = "WB_IMPORT_CARDS";
-    public static final String     EXPORT_DATA_FILE      = "Export Data";
-    public static final String     EXPORT_TEMPLATE       = "Export Template";
-    public static final String     NEW_WORKBENCH_FROM_TEMPLATE = "New WB From Template";
+    
+    public static final String     NEW_WORKBENCH         = "WBNewWorkbench";
+    public static final String     IMPORT_DATA_FILE      = "WBImportFile";
+    public static final String     SELECTED_WORKBENCH    = "WBSelectedWorkbench";
+    public static final String     WB_BARCHART           = "WBCreateBarChart";
+    public static final String     PRINT_REPORT          = "WBPrintReport";
+    public static final String     WB_TOP10_REPORT       = "WBTop10Report";
+    public static final String     WB_IMPORTCARDS        = "WBImportCardImages";
+    public static final String     EXPORT_DATA_FILE      = "WBExportData";
+    public static final String     EXPORT_TEMPLATE       = "WBExportTemplate";
+    public static final String     NEW_WORKBENCH_FROM_TEMPLATE = "WBNewDataSetFromTemplate";
     
     
     protected static WeakReference<DBTableIdMgr> databasechema = null;
@@ -332,6 +334,7 @@ public class WorkbenchTask extends BaseTask
             public void actionPerformed(ActionEvent e)
             {
                 editWorkbenchProps(roc);
+                UsageTracker.getUsageCount("WBShowWorkbenchProps");
             }
         });
         UIHelper.createMenuItem(popupMenu, getResourceString("WB_EDIT_DATASET_MAPPING"), getResourceString("WB_EDIT_DATASET_MAPPING_MNEU"), null, true, new ActionListener() {
@@ -347,8 +350,8 @@ public class WorkbenchTask extends BaseTask
                         Workbench wb = selectWorkbench(subCmd, ""); // XXX ADD HELP
                         if (wb != null)
                         {
-                            WorkbenchTemplate template  = wb.getWorkbenchTemplate();
-                            editTemplate(template);
+                            UsageTracker.getUsageCount("WBEditMappings");
+                            editTemplate(wb.getWorkbenchTemplate());
                             
                         } else
                         {
@@ -2384,6 +2387,9 @@ public class WorkbenchTask extends BaseTask
     protected void processWorkbenchCommands(final CommandAction cmdAction)
     {
         boolean isClickedOn = cmdAction.getData() instanceof CommandAction && cmdAction.getData() == cmdAction;
+        
+        UsageTracker.incrUsageCount(cmdAction.getAction());
+
 
         if (cmdAction.isAction(SELECTED_WORKBENCH))
         {
@@ -2423,7 +2429,6 @@ public class WorkbenchTask extends BaseTask
             {
                 createNewWorkbench(null, null);
             }
-
             
         } else if (cmdAction.isAction(WB_BARCHART))
         {

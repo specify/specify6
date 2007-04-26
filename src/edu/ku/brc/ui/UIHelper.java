@@ -87,6 +87,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.dbsupport.DBConnection;
@@ -1084,7 +1085,10 @@ public final class UIHelper
         {
             public void uncaughtException(Thread t, Throwable e)
             {
-                UIHelper.showUnhandledException(e);
+                //UIHelper.showUnhandledException(e);
+                UsageTracker.getUsageCount("UncaughtException");
+                e.printStackTrace();
+                
             }
         });
         
@@ -1092,7 +1096,9 @@ public final class UIHelper
         {
             public void uncaughtException(Thread t, Throwable e)
             {
-                UIHelper.showUnhandledException(e);
+                //UIHelper.showUnhandledException(e);
+                UsageTracker.getUsageCount("UncaughtException");
+                e.printStackTrace();
             }
         });
     }
