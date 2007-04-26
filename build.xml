@@ -387,6 +387,18 @@
 
 	</target>
 
+	<target name="dist-win-jar">
+		
+		<property name="appdir" value="${dist-win}/Specify" />
+		<property name="derby.data.path" value="${dist-win}/DerbyDatabases" />
+		
+		<antcall target="clean-jar"/>
+		<antcall target="dist-jar"/>
+		
+		<copy file="${jar.name}.jar" todir="${appdir}/libs" />
+		
+	</target>
+
 	<!-- *************************************************************
 	     Linux Distribution
 	     ************************************************************* -->
