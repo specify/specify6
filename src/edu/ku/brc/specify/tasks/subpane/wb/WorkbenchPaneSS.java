@@ -1745,7 +1745,10 @@ public class WorkbenchPaneSS extends BaseSubPane
                 int numRecordsWithResults = rowsWithResults.size();
                 if (numRecordsWithResults == 0)
                 {
-                    statusBar.setWarningMessage("BioGeomancer returned 0 results");
+                    JOptionPane.showMessageDialog(UIRegistry.get(UIRegistry.TOPFRAME),
+                                                  getResourceString("NO_BG_RESULTS"),
+                                                  getResourceString("NO_RESULTS"),
+                                                  JOptionPane.INFORMATION_MESSAGE);
                     return;
                 }
 

@@ -79,6 +79,7 @@ public class ImageFrame extends JFrame
     protected JMenuItem         clearMI;
     protected JCheckBoxMenuItem origMI;
     protected JCheckBoxMenuItem reduceMI;
+    protected JCheckBoxMenuItem alwaysOnTopMI;
     
     /** This hash keeps track of the size that a given image was last displayed as.  If an image is displayed as full size, we add an entry
      * to this hash where the key is row.hashCode() and the value is 1.  If the image is displayed as reduced size, the value is -1.  (We
@@ -131,6 +132,17 @@ public class ImageFrame extends JFrame
             public void actionPerformed(ActionEvent e)
             {
                 showOriginalSizeImage();
+            }
+        });
+        
+        viewMenu.addSeparator();
+        
+        alwaysOnTopMI = UIHelper.createCheckBoxMenuItem(viewMenu, "WB_ALWAYS_ON_TOP", null, "", true, null);
+        alwaysOnTopMI.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                ImageFrame.this.setAlwaysOnTop(alwaysOnTopMI.isSelected());
             }
         });
         
@@ -244,7 +256,6 @@ public class ImageFrame extends JFrame
      */
     protected void enableMenus(final boolean enable)
     {
-        viewMenu.setEnabled(enable);
         imageMenu.setEnabled(enable);
         clearMI.setEnabled(enable);
         replaceMI.setEnabled(enable);
