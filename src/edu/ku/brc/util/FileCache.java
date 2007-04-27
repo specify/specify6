@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
  * @code_status Complete
  * @author jstewart
  */
-public class FileCache implements DataCache
+public class FileCache implements DataCacheIFace
 {
 	private static final Logger log = Logger.getLogger(FileCache.class);
 	private static String mappingFileComment = "edu.ku.brc.util.FileCache Name Mapping File";
@@ -643,7 +643,7 @@ public class FileCache implements DataCache
 	}
 
     /////////////////////////////////
-    // Implementation of DataCache
+    // Implementation of DataCacheIFace
     /////////////////////////////////
     
     public void shutdown() throws Exception

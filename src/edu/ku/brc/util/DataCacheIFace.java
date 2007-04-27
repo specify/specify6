@@ -1,6 +1,6 @@
 package edu.ku.brc.util;
 
-public interface DataCache
+public interface DataCacheIFace
 {
     public void shutdown() throws Exception;
     public void clear();

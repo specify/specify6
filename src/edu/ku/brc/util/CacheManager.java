@@ -13,19 +13,19 @@ public class CacheManager
 {
     private static final Logger log = Logger.getLogger(CacheManager.class);
     
-    protected Vector<DataCache> registeredCaches;
+    protected Vector<DataCacheIFace> registeredCaches;
     
     public CacheManager()
     {
-        this.registeredCaches = new Vector<DataCache>();
+        this.registeredCaches = new Vector<DataCacheIFace>();
     }
     
-    public void registerCache(DataCache cache)
+    public void registerCache(DataCacheIFace cache)
     {
         registeredCaches.add(cache);
     }
     
-    public void unregisterCache(DataCache cache)
+    public void unregisterCache(DataCacheIFace cache)
     {
         registeredCaches.remove(cache);
     }
@@ -34,7 +34,7 @@ public class CacheManager
     {
         synchronized (registeredCaches)
         {
-            for (DataCache cache: registeredCaches)
+            for (DataCacheIFace cache: registeredCaches)
             {
                 try
                 {
@@ -54,7 +54,7 @@ public class CacheManager
     {
         synchronized (registeredCaches)
         {
-            for (DataCache cache: registeredCaches)
+            for (DataCacheIFace cache: registeredCaches)
             {
                 cache.clear();
             }
