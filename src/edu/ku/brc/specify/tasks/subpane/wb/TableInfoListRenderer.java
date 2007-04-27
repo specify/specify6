@@ -14,6 +14,9 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
+import javax.swing.UIManager;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -33,6 +36,9 @@ import edu.ku.brc.ui.IconManager;
  */
 public class TableInfoListRenderer implements ListCellRenderer
 {
+    protected static Border noFocusBorder = new EmptyBorder(1, 1, 1, 1);
+    private static final Border SAFE_NO_FOCUS_BORDER = new EmptyBorder(1, 1, 1, 1);
+    
     protected IconManager.IconSize iconSize;
     
     protected JPanel               display;
@@ -56,6 +62,7 @@ public class TableInfoListRenderer implements ListCellRenderer
         builder.add(label = new JLabel(), cc.xy(5, 1));
         display = builder.getPanel();
         display.setBorder(BorderFactory.createEmptyBorder(2, 1, 2, 1));
+        display.setOpaque(true);
     }
     
     public int getTextOffset()
@@ -66,7 +73,7 @@ public class TableInfoListRenderer implements ListCellRenderer
     public Component getListCellRendererComponent(JList list, Object value, // value to display
                                                   int index, // cell index
                                                   boolean isSelected, // is the cell selected
-                                                  boolean chf) // the list and the cell have the
+                                                  boolean cellHasFocus) // the list and the cell have the
                                                                 // focus
     {
         TableListItemIFace ti   = (TableListItemIFace)value;
@@ -86,17 +93,38 @@ public class TableInfoListRenderer implements ListCellRenderer
         
         if (isSelected)
         {
-            display.setOpaque(true);
             display.setBackground(list.getSelectionBackground());
-            display.setForeground(list.getSelectionForeground());
+            label.setForeground(list.getSelectionForeground());
 
         } else
         {
-            display.setOpaque(false);
             display.setBackground(list.getBackground());
-            display.setForeground(list.getForeground());
+            label.setForeground(list.getForeground());
         }
+        
+        display.setEnabled(list.isEnabled());
+        display.setFont(list.getFont());
 
+            Border border = null;
+            if (cellHasFocus) {
+                if (isSelected) {
+                    border = UIManager.getBorder("List.focusSelectedCellHighlightBorder");
+                }
+                if (border == null) {
+                    border = UIManager.getBorder("List.focusCellHighlightBorder");
+                }
+            } else {
+                border = getNoFocusBorder();
+            }
+            display.setBorder(border);
         return display;
+    }
+    
+    private static Border getNoFocusBorder() {
+        if (System.getSecurityManager() != null) {
+            return SAFE_NO_FOCUS_BORDER;
+        } else {
+            return noFocusBorder;
+        }
     }
 }
