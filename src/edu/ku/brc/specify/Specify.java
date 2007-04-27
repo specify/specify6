@@ -102,6 +102,7 @@ import edu.ku.brc.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
+import edu.ku.brc.util.CacheManager;
 import edu.ku.brc.util.FileCache;
 import edu.ku.brc.util.FileStoreAttachmentManager;
 import edu.ku.brc.util.MemoryWarningSystem;
@@ -142,6 +143,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
     private boolean              isWorkbenchOnly     = true;
     private boolean              isRelease           = true;
+    
+    protected static CacheManager       cacheManager        = new CacheManager();
 
     /**
      * Constructor.
@@ -254,6 +257,10 @@ public class Specify extends JPanel implements DatabaseLoginListener
         
         FileCache.setDefaultPath(UIRegistry.getAppDataDir()+ File.separator + "cache");
 
+        cacheManager.registerCache(UIRegistry.getLongTermFileCache());
+        cacheManager.registerCache(UIRegistry.getShortTermFileCache());
+        
+        
         UIRegistry.register(UIRegistry.MAINPANE, this); // important to be done immediately
  
         specifyApp = this;
@@ -1086,6 +1093,14 @@ public class Specify extends JPanel implements DatabaseLoginListener
     public static Specify getSpecify()
     {
         return specifyApp;
+    }
+    
+    /**
+     * @return the cache manager
+     */
+    public static CacheManager getCacheManager()
+    {
+        return cacheManager;
     }
 
 

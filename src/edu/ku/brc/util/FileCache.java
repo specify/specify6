@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
  * @code_status Complete
  * @author jstewart
  */
-public class FileCache
+public class FileCache implements DataCache
 {
 	private static final Logger log = Logger.getLogger(FileCache.class);
 	private static String mappingFileComment = "edu.ku.brc.util.FileCache Name Mapping File";
@@ -29,9 +29,6 @@ public class FileCache
 	private static String defaultSuffix = ".cache";
     private static String defaultPath   = System.getProperty("java.io.tmpdir");
 
-	/** HttpClient used for grabbing web resources. */
-	protected HttpClient httpClient;
-	
 	/** Directory to use for cached files and the mapping files. */
 	protected File cacheDir;
 
@@ -121,7 +118,6 @@ public class FileCache
 			loadCacheAccessTimesFile();
 			calculateTotalCacheSize();
 		}
-		httpClient = new HttpClient();
 		prefix = defaultPrefix;
 		suffix = defaultSuffix;
 
@@ -580,6 +576,7 @@ public class FileCache
 	 */
 	public String cacheWebResource( String url ) throws HttpException, IOException
 	{
+        HttpClient httpClient = new HttpClient();
 		GetMethod get = new GetMethod(url);
 		get.setFollowRedirects(true);
 		int result = httpClient.executeMethod(get);
@@ -644,6 +641,17 @@ public class FileCache
 	{
 		return totalCacheSize;
 	}
+
+    /////////////////////////////////
+    // Implementation of DataCache
+    /////////////////////////////////
+    
+    public void shutdown() throws Exception
+    {
+        saveCacheMapping();
+    }
+    
+    
 
 //	public static void main(String[] args) throws IOException
 //	{
