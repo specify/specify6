@@ -679,7 +679,7 @@ public class TemplateEditor extends CustomDialog
             mapToBtn.setEnabled(false);
             addBtn.setEnabled(false);
         }
-        
+
         delBtn.setEnabled(mapInx > -1 && isNewItem);
         
         if (okBtn != null && hasChanged)
@@ -912,7 +912,7 @@ public class TemplateEditor extends CustomDialog
                                                             null);
         FieldMappingPanel fmp = addMappingItem(colInfo, IconManager.getIcon(fieldInfo.getTableinfo().getObjTitle(), IconManager.IconSize.Std24), wbtmi);
         fmp.setFieldInfo(fieldInfo);
-        fmp.setNew(fieldInfoArg == null); // new Items that was not in the data file.
+        fmp.setNew(wbtmi == null); // new Items that was not in the data file.
         
         setChanged(true);
         
