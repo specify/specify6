@@ -92,10 +92,10 @@ public class LabelsTask extends BaseTask
     protected NavBoxItemIFace         oneNbi           = null;
 
     //iReport MainFrame
-    private static MainFrameSpecify iReportMainFrame   = null;   
+    private static MainFrameSpecify iReportMainFrame   = null;
+    
     /**
-     *
-     *
+     * Constructor.
      */
     public LabelsTask()
     {
@@ -227,7 +227,7 @@ public class LabelsTask extends BaseTask
     {
         //starterPane = new SimpleDescPane(name, this, "Welcome to Specify's Label Maker");
         LabelsPane labelsPane = new LabelsPane(name, this, null);
-        labelsPane.setLabelText("Welcome to Specify's Label Maker");
+        labelsPane.setLabelText("Welcome to Specify's Label Maker"); // XXX I18N
         starterPane = labelsPane;
         return starterPane;
     }

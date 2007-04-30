@@ -1026,7 +1026,7 @@ public class WorkbenchTask extends BaseTask
     protected void createWorkbenchFromTemplate(final CommandAction cmdAction)
     {
         
-        Workbench wb = selectWorkbench(cmdAction, "WB_CHOOSE_DATASET_REUSE_TITLE", "WB_CHOOSE_DATASET_REUSE", ""); // XXX ADD HELP
+        Workbench wb = selectWorkbench(cmdAction, "WB_CHOOSE_DATASET_REUSE_TITLE", "WB_CHOOSE_DATASET_REUSE", "", true); // XXX ADD HELP
         if (wb != null)
         {
             WorkbenchTemplate workbenchTemplate = wb.getWorkbenchTemplate();
@@ -1435,6 +1435,7 @@ public class WorkbenchTask extends BaseTask
                                  log.error(ex);
                              }
                          }
+                         updateNavBoxUI(null);
                      }
 
                     return null;
@@ -1471,6 +1472,7 @@ public class WorkbenchTask extends BaseTask
                 {
                     log.error("Couldn't find RolloverCommand for WorkbenchId ["+workbench.getWorkbenchId()+"]");
                 }
+                updateNavBoxUI(null);
             }
         }
     }
@@ -1746,7 +1748,7 @@ public class WorkbenchTask extends BaseTask
     protected Workbench selectWorkbench(final CommandAction cmdAction,
                                         final String helpContext)
     {
-        return selectWorkbench(cmdAction, "WB_CHOOSE_DATASET", null, helpContext);
+        return selectWorkbench(cmdAction, "WB_CHOOSE_DATASET", null, helpContext, false);
     }
     
     /**
@@ -1755,13 +1757,15 @@ public class WorkbenchTask extends BaseTask
      * @param titleKey resource key for dialog title
      * @param labelKey resource key for the label on top of the list (null hides the label)
      * @param helpContext the help context
+     * @param showAll show all the workbenches whether they ar ein use or not
      * @return a workbench object or null
      */
     @SuppressWarnings("unchecked")
     protected Workbench selectWorkbench(final CommandAction cmdAction, 
                                         final String titleKey,
                                         final String labelKey,
-                                        final String helpContext)
+                                        final String helpContext,
+                                        final boolean showAll)
     {
         Workbench workbench = null;
 
@@ -1802,6 +1806,35 @@ public class WorkbenchTask extends BaseTask
                     list.get(0).getWorkbenchTemplate().forceLoad();
                     return list.get(0);
                 }
+                
+                if (showAll)
+                {
+                    for (SubPaneIFace sbi : SubPaneMgr.getInstance().getSubPanes())
+                    {
+                        if (sbi instanceof WorkbenchPaneSS)
+                        {
+                            WorkbenchPaneSS wbp = (WorkbenchPaneSS)sbi;
+                            for (Workbench wb : list)
+                            {
+                                if (wb.getWorkbenchId().intValue() == wbp.getWorkbench().getWorkbenchId().intValue())
+                                {
+                                    list.remove(wb);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                if (list.size() == 0)
+                {
+                    log.error("All workbenches are open.");
+                    return null;
+                    
+                }
+                
+                Collections.sort(list);
+                
                 session.close();
                 session = null;
                 
@@ -1868,7 +1901,8 @@ public class WorkbenchTask extends BaseTask
         Workbench workbench = selectWorkbench(cmdAction,
                                               titleKey,
                                               labelKey,
-                                              helpContext); // false means it's for templates
+                                              helpContext,
+                                              true); // false means it's for templates
         if (workbench != null)
         {
             return workbench.getWorkbenchTemplate();
@@ -2032,11 +2066,23 @@ public class WorkbenchTask extends BaseTask
             session.close();            
         }
         
-        boolean enabled = count != null && count.intValue() > 0;
+        boolean enabled = count != null && count.intValue() > 0 && !areAllOpen();
         for (NavBoxItemIFace nbi : enableNavBoxList)
         {
             nbi.setEnabled(enabled);
         }
+    }
+    
+    protected boolean areAllOpen()
+    {
+        for (NavBoxItemIFace nbi : workbenchNavBox.getItems())
+        {
+            if (((RolloverCommand)nbi).isEnabled())
+            {
+                return false;
+            }
+        }
+        return true;
     }
     
     /**

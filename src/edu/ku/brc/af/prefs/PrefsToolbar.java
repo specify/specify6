@@ -55,22 +55,26 @@ public class PrefsToolbar extends JPanel
     public static final String PANEL_CLASS = "panelClass";
     public static final String ICON_PATH   = "iconPath";
 
-    protected PrefMainPanel mainPanel;
+    protected PreferencesDlg prefsDlg;
     protected int           iconSize = 24;  // XXX PREF (Possible???)
-
+    protected int           numPrefs = 0;
      /**
      * Constructor with the main panel so the icon know how to show their pane.
      *
-     * @param mainPanel the main pane that houses all the preference panes
+     * @param prefsDlg the main pane that houses all the preference panes
      */
-    public PrefsToolbar(final PrefMainPanel mainPanel)
+    public PrefsToolbar(final PreferencesDlg prefsDlg)
     {
         super(new ToolbarLayoutManager(2,5));
 
-        this.mainPanel = mainPanel;
+        this.prefsDlg = prefsDlg;
 
         init();
-
+    }
+    
+    public int getNumPrefs()
+    {
+        return numPrefs;
     }
 
     /**
@@ -114,10 +118,10 @@ public class PrefsToolbar extends JPanel
      */
     protected void loadSectionPrefs(final Element sectionElement)
     {
-        
         try
         {
             List<?> prefs = sectionElement.selectNodes("pref");
+            numPrefs = prefs.size();
             for ( Iterator<?> iterPrefs = prefs.iterator(); iterPrefs.hasNext(); )
             {
                 org.dom4j.Element pref = (org.dom4j.Element)iterPrefs.next();
@@ -157,7 +161,7 @@ public class PrefsToolbar extends JPanel
                     {
                         Class<?> panelClassObj = Class.forName(panelClass);
                         Component comp = (Component)panelClassObj.newInstance();
-                        mainPanel.addPanel(prefTitle, comp);
+                        prefsDlg.addPanel(prefTitle, comp);
 
                         add(btn.getUIComponent());
 
@@ -183,14 +187,13 @@ public class PrefsToolbar extends JPanel
      */
     protected void showPanel(final String panelName)
     {
-        mainPanel.showPanel(panelName);
+        prefsDlg.showPanel(panelName);
     }
 
 
     //--------------------------------------------------------------
     // Inner Classes
     //--------------------------------------------------------------
-
 
     /**
      *

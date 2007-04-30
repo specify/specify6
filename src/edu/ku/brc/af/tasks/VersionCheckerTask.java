@@ -268,6 +268,6 @@ public class VersionCheckerTask extends BaseTask
             popupMessage += "</ul>";
         }
         
-        JOptionPane.showMessageDialog(UIRegistry.get(UIRegistry.TOPFRAME), popupMessage);
+        JOptionPane.showMessageDialog(UIRegistry.get(UIRegistry.TOPFRAME), popupMessage, getResourceString("VER_CHK_TITLE"), JOptionPane.INFORMATION_MESSAGE);
     }
 }

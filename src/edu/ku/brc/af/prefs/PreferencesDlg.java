@@ -21,6 +21,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Rectangle;
@@ -36,7 +37,6 @@ import java.util.prefs.BackingStoreException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -49,6 +49,9 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.validation.DataChangeListener;
 import edu.ku.brc.ui.validation.DataChangeNotifier;
 
@@ -66,14 +69,12 @@ import edu.ku.brc.ui.validation.DataChangeNotifier;
  *
  */
 @SuppressWarnings("serial")
-public class PrefMainPanel extends JPanel implements DataChangeListener
+public class PreferencesDlg extends CustomDialog implements DataChangeListener
 {
-    protected static final Logger log = Logger.getLogger(PrefMainPanel.class);
+    protected static final Logger log = Logger.getLogger(PreferencesDlg.class);
     
-    protected JDialog       dialog;
     protected JTextField    searchText;
     protected JButton       searchBtn;
-    protected JButton       okButton;
 
     protected PrefsToolbar  prefsToolbar  = null;
     protected PrefsToolbar  prefsPane     = null;
@@ -88,80 +89,77 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
 
     protected List<PrefsPanelIFace>        prefPanels = new ArrayList<PrefsPanelIFace>();
 
-
     /**
      * Constructor.
      * @param dialog the parent frame (dialog)
      */
-    public PrefMainPanel(JDialog dialog)
+    public PreferencesDlg()
     {
-        super(new BorderLayout());
+        super((Frame)UIRegistry.get(UIRegistry.TOPFRAME), getResourceString("preferences"), true, null);
 
-        this.dialog = dialog;
-
+        createUI();
         initAsToolbar();
-
-        dialog.setTitle(getResourceString("preferences"));
-
+        pack();
+        okBtn.setEnabled(false);
+        
     }
-
+    
     /**
-     * Configure as a toolbar
+     * Configure as a toolbar.
      */
     protected void initAsToolbar()
     {
-
         Color gray = new Color(230,230,230);
         int   delta = 8;
         Color lighter = new Color(gray.getRed()+delta, gray.getRed()+delta, gray.getRed()+delta);
 
-        PanelBuilder    builder    = new PanelBuilder(new FormLayout("l:p, p, r:p:g", "p,"));
-        CellConstraints cc         = new CellConstraints();
-
         prefsToolbar = new PrefsToolbar(this);
         prefsToolbar.setBackground(lighter);
 
-
-        builder.add( prefsToolbar, cc.xy(1,1));
-        builder.add( createSearchPanel(), cc.xy(3,1));
-
-        builder.getPanel().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        builder.getPanel().setBackground(lighter);
-        add(builder.getPanel(), BorderLayout.NORTH);
-
-        okButton = new JButton("OK");
-        okButton.setEnabled(false);
-
-        JButton cancelButton = new javax.swing.JButton ("Cancel");
-        Component buttonBar = com.jgoodies.forms.factories.ButtonBarFactory.buildRightAlignedBar(new JButton[] {okButton, cancelButton});
-
-        okButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e)
-            {
-                saveChangedPrefs();
-                dialog.setVisible(false);
-                try
-                {
-                    AppPreferences.getRemote().flush();
-                } catch (BackingStoreException ex)
-                {
-                    log.error(ex);
-                }
-            }
-        });
-
-        cancelButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e)
-            {
-                removeDataChangeListeners();
-                dialog.setVisible(false);
-                //cleanUp();
-            }
-        });
-        add(buttonBar, BorderLayout.SOUTH);
+        if (prefsToolbar.getNumPrefs() > 1)
+        {
+            PanelBuilder    builder    = new PanelBuilder(new FormLayout("l:p, p, r:p:g", "p,"));
+            CellConstraints cc         = new CellConstraints();
+    
+            builder.add( prefsToolbar, cc.xy(1,1));
+            builder.add( createSearchPanel(), cc.xy(3,1));
+    
+            builder.getPanel().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+            builder.getPanel().setBackground(lighter);
+            mainPanel.add(builder.getPanel(), BorderLayout.NORTH);
+        }
         
         showPanel(firstPanelName);
 
+    }
+    
+    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CustomDialog#cancelButtonPressed()
+     */
+    @Override
+    protected void cancelButtonPressed()
+    {
+        removeDataChangeListeners();
+        super.cancelButtonPressed();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CustomDialog#okButtonPressed()
+     */
+    @Override
+    protected void okButtonPressed()
+    {
+        saveChangedPrefs();
+        try
+        {
+            AppPreferences.getRemote().flush();
+        } catch (BackingStoreException ex)
+        {
+            log.error(ex);
+        }
+        super.okButtonPressed();
     }
 
     /**
@@ -171,7 +169,10 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
     {
         for (PrefsPanelIFace pp : prefPanels)
         {
-            pp.getValidator().removeDataChangeListener(this);
+            if (pp.getValidator() != null)
+            {
+                pp.getValidator().removeDataChangeListener(this);
+            }
         }
     }
 
@@ -215,7 +216,7 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
         builder.add( createSearchPanel(), cc.xy(3,1));
 
         builder.getPanel().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        add(builder.getPanel(), BorderLayout.NORTH);
+        mainPanel.add(builder.getPanel(), BorderLayout.NORTH);
 
         prefsPane = new PrefsToolbar(this);
 
@@ -233,7 +234,7 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
     }
 
     /**
-     * Show a named panel
+     * Show a named panel.
      * @param name the name of the panel to be shown
      */
     public void showPanel(final String name)
@@ -261,18 +262,18 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
             if (comp != null)
             {
                 comp.setVisible(makeVis);
-                add(comp, BorderLayout.CENTER);
+                mainPanel.add(comp, BorderLayout.CENTER);
                 comp.invalidate();
                 doLayout();
                 repaint();
                 currentComp = comp;
                 if (oldSize != null)
                 {
-                    Dimension winDim = dialog.getSize();
+                    Dimension winDim = getSize();
                     winDim.width += currentComp.getPreferredSize().width - oldSize.width;
-                    dialog.setSize(winDim);
+                    setSize(winDim);
                     currentComp.setSize(new Dimension(currentComp.getPreferredSize().width, oldSize.height));
-                    startAnimation(dialog, comp, currentComp.getPreferredSize().height - oldSize.height, false);
+                    startAnimation(this, comp, currentComp.getPreferredSize().height - oldSize.height, false);
                 }
             }
         }
@@ -297,7 +298,10 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
         if (comp instanceof PrefsPanelIFace)
         {
             PrefsPanelIFace pp = (PrefsPanelIFace)comp;
-            pp.getValidator().addDataChangeListener(this);
+            if (pp.getValidator() != null)
+            {
+                pp.getValidator().addDataChangeListener(this);
+            }
             prefPanels.add(pp);
         }
 
@@ -307,6 +311,25 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
         }
 
         return true;
+    }
+    
+    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CustomDialog#setVisible(boolean)
+     */
+    @Override
+    public void setVisible(boolean visible)
+    {
+        if (visible)
+        {
+            pack();
+            doLayout();
+            setPreferredSize(getPreferredSize());
+            setSize(getPreferredSize());
+            UIHelper.centerWindow(this);
+        }
+        super.setVisible(visible);
     }
 
     /**
@@ -412,7 +435,7 @@ public class PrefMainPanel extends JPanel implements DataChangeListener
                 break;
             }
         }
-        okButton.setEnabled(okToEnable);
+        okBtn.setEnabled(okToEnable);
     }
 
     //------------------------------------------------------------

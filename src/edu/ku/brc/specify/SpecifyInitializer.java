@@ -81,7 +81,7 @@ public class SpecifyInitializer
 {
     private static final Logger log                = Logger.getLogger(SpecifyInitializer.class);
     
-    private static final boolean DO_DEBUG           = true;
+    private static final boolean DO_DEBUG           = false;
     private static final boolean DO_CHANGE_USERNAME = false;
     
     protected final String HOSTNAME = "localhost";

@@ -70,7 +70,7 @@ import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsEditor;
-import edu.ku.brc.af.prefs.PrefMainPanel;
+import edu.ku.brc.af.prefs.PreferencesDlg;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -85,6 +85,7 @@ import edu.ku.brc.specify.datamodel.CatalogSeries;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
+import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.specify.tests.SpecifyAppPrefs;
 import edu.ku.brc.specify.ui.CollectorActionListener;
 import edu.ku.brc.specify.ui.HelpMgr;
@@ -254,11 +255,11 @@ public class Specify extends JPanel implements DatabaseLoginListener
         
         UIHelper.attachUnhandledException();
 
-        
         FileCache.setDefaultPath(UIRegistry.getAppDataDir()+ File.separator + "cache");
 
         cacheManager.registerCache(UIRegistry.getLongTermFileCache());
         cacheManager.registerCache(UIRegistry.getShortTermFileCache());
+        cacheManager.registerCache(JasperReportsCache.getInstance());
         
         
         UIRegistry.register(UIRegistry.MAINPANE, this); // important to be done immediately
@@ -447,16 +448,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
      */
     public void preferences()
     {
-
-        JDialog dlg = new JDialog();
-        dlg.setModal(true);
-        PrefMainPanel pane = new PrefMainPanel(dlg);
-        dlg.setContentPane(pane);
-        dlg.pack();
-        dlg.doLayout();
-        dlg.setPreferredSize(dlg.getPreferredSize());
-        dlg.setSize(dlg.getPreferredSize());
-        UIHelper.centerAndShow(dlg);
+        PreferencesDlg dlg = new PreferencesDlg();
+        dlg.setVisible(true);
     }
 
     /**
@@ -507,7 +500,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
                         }
                     }
                 });
-
+        mi.setEnabled(!isWorkbenchOnly);
+        
         if (!isWorkbenchOnly)
         {
             // Add Menu for switching CatalogSeries

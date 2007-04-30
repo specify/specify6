@@ -23,7 +23,6 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.FileDialog;
 import java.awt.FontMetrics;
 import java.awt.Frame;
 import java.awt.Toolkit;
@@ -37,7 +36,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.ConnectException;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.EventObject;
 import java.util.List;
 import java.util.Properties;
@@ -78,7 +76,6 @@ import javax.swing.text.Caret;
 import javax.swing.text.JTextComponent;
 import javax.swing.undo.UndoManager;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 

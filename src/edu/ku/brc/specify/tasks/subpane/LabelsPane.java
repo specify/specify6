@@ -19,10 +19,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.io.File;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
@@ -42,7 +39,6 @@ import net.sf.jasperreports.engine.query.JRHibernateQueryExecuterFactory;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.view.JRViewer;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
@@ -55,8 +51,6 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.RecordSetIFace;
-import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.ui.UIRegistry;
 
 
@@ -75,8 +69,6 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
     // Static Data Members
     private static final Logger log = Logger.getLogger(LabelsPane.class);
     
-    private static boolean reportsCacheWasCleared = false;
-
     // Data Members
     protected AsynchronousFillHandle asyncFillHandler = null;
     protected JLabel                 label            = null;
@@ -104,11 +96,11 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
         
         this.params = params;
        
-        cachePath = checkAndCreateReportsCache();
+        cachePath = JasperReportsCache.checkAndCreateReportsCache();
         
-        refreshCacheFromDatabase("jrxml/label");
-        refreshCacheFromDatabase("jrxml/report");
-        refreshCacheFromDatabase("jrxml/subreport");
+        // Checks for out of date Labels / Reports
+        // and copies them over to the cache for compiling
+        JasperReportsCache.refreshCacheFromDatabase();
     }
 
     /**
@@ -143,86 +135,6 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
     {
         return label != null;
     }
-
-    /**
-     * Checks to see if any files in the database need to be copied to the database. A file may not
-     * exist or be out of date.
-     */
-    protected void refreshCacheFromDatabase(final String mimeType)
-    {
-        Hashtable<String, File> hash = new Hashtable<String, File>();
-        for (File f : cachePath.listFiles())
-        {
-            //log.info("Report Cache File["+f.getName()+"]");
-            hash.put(f.getName(), f);  
-        }
-        
-        for (AppResourceIFace ap : AppContextMgr.getInstance().getResourceByMimeType(mimeType))
-        {
-            
-            boolean updateCache = false;
-            File file = hash.get(ap.getName());
-            if (file == null)
-            {
-                updateCache = true;
-                
-            } else
-            {
-                Date fileDate = new Date(file.lastModified());
-                updateCache = fileDate.getTime() < ap.getTimestampModified().getTime();
-            }
-            
-            log.debug("Report Cache File["+ap.getName()+"]  updateCache["+updateCache+"]");
-            if (updateCache)
-            {
-                File localFilePath = new File(cachePath.getAbsoluteFile() + File.separator + ap.getName());
-                try
-                {
-                    XMLHelper.setContents(localFilePath, ap.getDataAsString());
-                    
-                } catch (Exception ex)
-                {
-                    throw new RuntimeException(ex);
-                }
-            }
-        }
-    }
-    
-    
-    /**
-     * Starts the report creation process
-     * @param fileName the XML file name of the report definition
-     * @param recrdSet the recordset to use to fill the labels
-     */
-    public ReportCompileInfo checkReport(final File file)
-    {
-        String fileName     = file.getName();
-        String compiledName = getFileNameWithoutExt(fileName) + ".jasper";
-        File   compiledPath = new File(cachePath.getAbsoluteFile() + File.separator + compiledName);
-
-        AppResourceIFace appRes = AppContextMgr.getInstance().getResource(fileName);
-
-        File reportPath = new File(cachePath.getAbsoluteFile() + File.separator + fileName);
-        try
-        {
-            XMLHelper.setContents(reportPath, appRes.getDataAsString());
-            
-        } catch (Exception ex)
-        {
-            log.error(ex);
-            throw new RuntimeException(ex);
-        }
-       
-
-        // Check to see if it needs to be recompiled, if it doesn't need compiling then
-        // call "compileComplete" directly to have it start filling the labels
-        // otherswise create the compiler runnable and have it be compiled 
-        // asynchronously
-        boolean needsCompiling = compiledPath.exists() && 
-                                 appRes.getTimestampModified().getTime() < compiledPath.lastModified();
-        
-        return new ReportCompileInfo(reportPath, compiledPath, needsCompiling);
-    }
     
     
     /**
@@ -231,9 +143,9 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
      * @param recrdSet the recordset to use to fill the labels
      * @param paramsArg parameters for the report
     */
-    public void createReport(final String         mainReportName, 
-                             final Object         data, 
-                             final Properties     paramsArg)
+    public void createReport(final String     mainReportName, 
+                             final Object     data, 
+                             final Properties paramsArg)
     {
         if (data instanceof RecordSetIFace)
         {
@@ -247,9 +159,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
         }
         this.params    = paramsArg;
      
-        refreshCacheFromDatabase("jrxml/label");
-        refreshCacheFromDatabase("jrxml/report");
-        refreshCacheFromDatabase("jrxml/subreport");
+        JasperReportsCache.refreshCacheFromDatabase();
         
         Vector<File>   reportFiles = new Vector<File>();
         AppResourceIFace appRes    = AppContextMgr.getInstance().getResource(mainReportName); 
@@ -308,7 +218,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
         Vector<ReportCompileInfo> files = new Vector<ReportCompileInfo>();
         for (File file : reportFiles)
         {
-            ReportCompileInfo info = checkReport(file);
+            ReportCompileInfo info = JasperReportsCache.checkReport(file);
             files.add(info);
             if (!info.isCompiled())
             {
@@ -347,15 +257,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                 {
                     Map<Object, Object> parameters = new HashMap<Object, Object>();
                     
-                    // XXX PREF - This will be converted to a Preference
-                    File imageDir = UIRegistry.getAppDataSubDir("report_images", false);
-                    // XXXX RELEASE - This Reference to demo_files will need to be removed
-                    if (!imageDir.exists())
-                    {
-                        imageDir = new File("demo_files");
-                    }
-
-                    parameters.put("RPT_IMAGE_DIR", imageDir.getAbsolutePath());
+                    parameters.put("RPT_IMAGE_DIR", JasperReportsCache.getImagePath().getAbsolutePath());
                     parameters.put("SUBREPORT_DIR", cachePath.getAbsoluteFile() + File.separator);
                     
                     if (recordSet != null)
@@ -407,53 +309,6 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
             setLabelText(getResourceString("JasperReportCompileError"));
         }
         compiler = null;
-    }
-
-    /**
-     * XXX This really needs to be moved to a more centralized location
-     *
-     */
-    public static File checkAndCreateReportsCache()
-    {
-        File path = UIRegistry.getAppDataSubDir("reportsCache", true); 
-        if (path == null)
-        {
-            String msg = "The reportsCache directory is empty.";
-            log.error(msg);
-            throw new RuntimeException(msg);
-        }
-        
-        // If the JVM version (Major Version) has changed the JasperReports need to be recompiled
-        // so we remove all the ".jasper" files so they can be recompiled.
-        if (SpecifyAppContextMgr.isNewJavaVersionAtAppStart() && !reportsCacheWasCleared)
-        {
-            try
-            {
-                //FileUtils.cleanDirectory(path);
-                for (Iterator iter = FileUtils.iterateFiles(path, new String[] {"jasper"}, false);iter.hasNext();)
-                {
-                    FileUtils.forceDelete((File)iter.next());
-                }
-            } catch (Exception ex)
-            {
-               log.error(ex);
-            }
-            reportsCacheWasCleared = true;
-        }
-        
-        return path;
-
-    }
-
-    /**
-     * Returns just the name part with the path or the extension
-     * @param path the fill path with file name and extension
-     * @return Returns just the name part with the path or the extension
-     */
-    protected String getFileNameWithoutExt(final String path)
-    {
-        int inx = path.indexOf(File.separator);
-        return path.substring(inx+1, path.lastIndexOf('.'));
     }
 
     //------------------------------------------------------------
@@ -591,40 +446,6 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
             files.clear();
             files = null;
         }
-    }
-    
-    
-    
-    class ReportCompileInfo
-    {
-        protected File reportFile;
-        protected File compiledFile;
-        protected boolean needsCompiled;
-        
-        public ReportCompileInfo(File reportFile, File compiledFile, boolean needsCompiled)
-        {
-            super();
-            this.reportFile = reportFile;
-            this.compiledFile = compiledFile;
-            this.needsCompiled = needsCompiled;
-        }
-
-        public File getCompiledFile()
-        {
-            return compiledFile;
-        }
-
-        public boolean isCompiled()
-        {
-            return needsCompiled;
-        }
-
-        public File getReportFile()
-        {
-            return reportFile;
-        }
-        
-        
     }
 
 }

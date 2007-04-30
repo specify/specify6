@@ -85,7 +85,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsEditor;
-import edu.ku.brc.af.prefs.PrefMainPanel;
+import edu.ku.brc.af.prefs.PreferencesDlg;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.EMailHelper;
@@ -101,8 +101,8 @@ import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.tests.forms.TestDataObj;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.DatabaseLoginDlg;
 import edu.ku.brc.ui.db.DatabaseLoginListener;
 import edu.ku.brc.ui.forms.MultiView;
@@ -839,21 +839,12 @@ public class FormEditor implements DatabaseLoginListener
     }
 
     /**
-     * Create menus
+     * Create prefs.
      */
     public void preferences()
     {
-
-        JDialog dlg = new JDialog();
-        dlg.setModal(true);
-        PrefMainPanel pane = new PrefMainPanel(dlg);
-        dlg.setContentPane(pane);
-        dlg.pack();
-        dlg.doLayout();
-        //System.out.println(dlg.getPreferredSize());
-        dlg.setPreferredSize(dlg.getPreferredSize());
-        dlg.setSize(dlg.getPreferredSize());
-        UIHelper.centerAndShow(dlg);
+        PreferencesDlg dlg = new PreferencesDlg();
+        dlg.setVisible(true);
     }
 
 
