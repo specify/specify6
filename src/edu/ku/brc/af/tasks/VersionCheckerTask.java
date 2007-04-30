@@ -68,7 +68,11 @@ public class VersionCheckerTask extends BaseTask
                 checkForUpdatesNow(true,sendStats);
             }
         });
-        MenuItemDesc miDesc = new MenuItemDesc(checkNow, getResourceString("Help"));
+        
+        MenuItemDesc  miDesc = new MenuItemDesc(checkNow, getResourceString("Help"));
+        
+        miDesc.setPosition(MenuItemDesc.Position.Before, getResourceString("About"));
+        miDesc.setSepPosition(MenuItemDesc.Position.After);
         
         List<MenuItemDesc> menuItems = new Vector<MenuItemDesc>();
         menuItems.add(miDesc);

@@ -551,6 +551,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                             preferences();
                         }
                     });
+            mi.setEnabled(true);
         }
                 
 
@@ -705,12 +706,13 @@ public class Specify extends JPanel implements DatabaseLoginListener
                     });
         }
         
-        JMenu helpMenu = new JMenu(getResourceString("Help"));
-        UIRegistry.register("HELPMENU", helpMenu);
-        
+        JMenu helpMenu = UIHelper.createMenu(mb, "Help", "HelpMneu");
+        HelpMgr.createHelpMenuItem(helpMenu, "Specify");
+        helpMenu.addSeparator();
+                
         if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
         {
-            mi = UIHelper.createMenuItem(helpMenu, getResourceString("About"), getResourceString("AboutMneu"), getResourceString("About"), true, null);
+           mi = UIHelper.createMenuItem(helpMenu, getResourceString("About"), getResourceString("AboutMneu"), getResourceString("About"), true, null);
             mi.addActionListener(new ActionListener()
                     {
                         public void actionPerformed(ActionEvent ae)
@@ -719,6 +721,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                         }
                     });
         }
+            
 
 
         return mb;
@@ -869,8 +872,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
     
                 topFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
                 UIRegistry.register(UIRegistry.FRAME, topFrame);
-                
-                ((JMenuBar)UIRegistry.get(UIRegistry.MENUBAR)).add(HelpMgr.createHelpMenuItem((JMenu)UIRegistry.get("HELPMENU"), "Specify"));
             }
             
             initStartUpPanels(databaseNameArg, userNameArg);
@@ -910,6 +911,9 @@ public class Specify extends JPanel implements DatabaseLoginListener
         }
     }
     
+    /**
+     * 
+     */
     protected void importPrefs()
     {
         JFileChooser chooser = new JFileChooser();
@@ -941,6 +945,9 @@ public class Specify extends JPanel implements DatabaseLoginListener
         } 
     }
 
+    /**
+     * 
+     */
     protected void exportPrefs()
     {
         AppPreferences remotePrefs = AppPreferences.getRemote();

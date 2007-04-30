@@ -289,18 +289,50 @@ public class TaskMgr
                                      final int          currIndex)
     {
 
-
         if (currIndex == menuPath.length)
         {
-            MenuElement me = menuItemDesc.getMenuItem();
+            MenuElement me   = menuItemDesc.getMenuItem();
             if (parent instanceof JMenuBar)
             {
                 ((JMenuBar)parent).add((JMenu)me);
 
             } else if (parent instanceof JMenu)
             {
-                ((JMenu)parent).add((JMenuItem)me);
+                MenuElement[] menuElements = parent.getSubElements();
+                if (menuElements.length == 1 && menuElements[0] instanceof JPopupMenu)
+                {
+                    menuElements = ((JPopupMenu)menuElements[0]).getSubElements();
+                }
+                int           insertPos    = menuElements.length;
+                
+                JMenu menu = (JMenu)parent;
+                if (menuItemDesc.getPosition() != MenuItemDesc.Position.None)
+                {
+                    int inx = 0;
+                    for (MenuElement menuEle : menuElements)
+                    {
+                        if (menuEle instanceof JMenuItem && ((JMenuItem)menuEle).getText().equals(menuItemDesc.getPosMenuItemName()))
+                        {
+                            insertPos = inx;
+                            break;
+                        }
+                        inx++;
+                    }
+                }
+                
+                if (menuItemDesc.getSepPosition() == MenuItemDesc.Position.Before)
+                {
+                    menu.add(new JPopupMenu.Separator(), insertPos);
+                    insertPos++;
+                }
+                menu.add((JMenuItem)me, menuItemDesc.getPosition() == MenuItemDesc.Position.Before ? insertPos : insertPos + 1);
+                
+                if (menuItemDesc.getSepPosition() == MenuItemDesc.Position.After)
+                {
+                    menu.add(new JPopupMenu.Separator(), insertPos);
+                }
             }
+            
         } else
         {
             String label = getResourceString(menuPath[currIndex]);

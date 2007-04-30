@@ -27,8 +27,15 @@ import javax.swing.MenuElement;
  */
 public class MenuItemDesc
 {
+    public enum Position {None, Before, After}
+    
     protected MenuElement menuItem;
     protected String      menuPath;
+    
+    protected Position    position = Position.None;
+    protected String      posMenuItemName;
+    
+    protected Position    sepPosition = Position.None;
     
     /**
      * Construct the info oject with the menuitem component
@@ -39,6 +46,44 @@ public class MenuItemDesc
     {
         this.menuItem = menuItem;
         this.menuPath = menuPath;
+    }
+    
+    public void setPosition(final Position position, final String menuItemName)
+    {
+        this.position        = position;
+        this.posMenuItemName = menuItemName;
+    }
+
+    /**
+     * @return the sepPosition
+     */
+    public Position getSepPosition()
+    {
+        return sepPosition;
+    }
+
+    /**
+     * @param sepPosition the sepPosition to set
+     */
+    public void setSepPosition(Position sepPosition)
+    {
+        this.sepPosition = sepPosition;
+    }
+
+    /**
+     * @return the position
+     */
+    public Position getPosition()
+    {
+        return position;
+    }
+
+    /**
+     * @return the posMenuItemName
+     */
+    public String getPosMenuItemName()
+    {
+        return posMenuItemName;
     }
 
     public MenuElement getMenuItem()
