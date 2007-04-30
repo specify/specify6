@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <icons>
     <!--
-    <icon name="AppIcon"    file="specify_icon.gif"   sizes="32"/>
-    <icon name="Specify16"  file="specify_icon16.gif" sizes="16"/>
-    <icon name="SpecifyLargeIcon" file="specify_large_icon.gif" sizes="NonStd"/>
+        <icon name="AppIcon"    file="specify_icon.gif"   sizes="32"/>
+        <icon name="Specify16"  file="specify_icon16.gif" sizes="16"/>
+        <icon name="SpecifyLargeIcon" file="specify_large_icon.gif" sizes="NonStd"/>
     -->
     
     <icon name="AppIcon"    file="specify32.png" sizes="32"/>
@@ -11,20 +11,16 @@
     <icon name="SpecifyLargeIcon" file="specify128.png" sizes="NonStd"/>
     
     
-    <icon name="Save"           file="filesave.png" sizes="all"/>
-    <icon name="Import"         file="Import Data-16x16.png" sizes="16"/>
-    <icon name="ImportImages"   file="Import-Images-16x16.png" sizes="16"/>
-    <icon name="Export"         file="Export-DataSet-16x16.png" sizes="16"/>
-    <icon name="ExportTemplate" file="Export-Excel-Template-16x16.png" sizes="16"/>
-    
+    <icon name="Save"       file="filesave.png" sizes="all"/>
+    <icon name="Import"     file="upload_data.gif" sizes="all"/>
+    <icon name="Export"     file="import.png" sizes="all"/>
     
     <icon name="Configure"  file="configure.gif" sizes="all"/>
     <icon name="Workbench"     file="workbench.gif" sizes="all"/>
     <icon name="Data_Entry" file="form.gif" sizes="all"/>
     <icon name="Taxon_Tree" file="taxon.gif" sizes="all"/>
     <icon name="Labels"     file="labels.gif" sizes="all"/>
-    <icon name="Reports"    file="Reports-20x20.png" sizes="all"/>
-    <icon name="Reports16"   file="Reports-16x16.png" sizes="16"/>
+    <icon name="Reports"    file="reports.gif" sizes="all"/>
     <icon name="Interactions" file="interactions.png" sizes="all"/>
     <icon name="Search"     file="queryIt.gif" sizes="all"/>
     <icon name="Statistics" file="stats.gif" sizes="all"/>
@@ -95,9 +91,9 @@
     <icon name="DiGIR"             file="DigirShovel.png"/>
     
     <icon name="Blue Dot"    file="blue_dot.png" sizes="all"/>
-
+    
     <icon name="UserInterface" file="form.gif" sizes="all"/>
-
+    
     <icon name="DropDownArrow" file="dropdownarrow.gif" sizes="NonStd"/>
     <icon name="UpArrow"       file="up.png"            sizes="16"/>
     <icon name="DownArrow"     file="down.png"          sizes="16"/>
@@ -109,26 +105,26 @@
     <icon name="Eraser"        file="eraser.gif"        sizes="NonStd"/>
     
     <icon name="WebPage"       file="html.png"          sizes="all"/>
-
+    
     <icon name="FirstRec" file="first.gif" sizes="NonStd"/>
     <icon name="PrevRec"  file="prev.gif"  sizes="NonStd"/>
     <icon name="NextRec"  file="next.gif"  sizes="NonStd"/>
     <icon name="LastRec"  file="last.gif"  sizes="NonStd"/>
     <icon name="SmallTrash" file="smalltrash.gif" sizes="NonStd"/>
     <!--
-    <icon name="Save"     file="save_disk.gif"  sizes="all"/>
-    <icon name="FirstRec" file="go-first.png" sizes="NonStd"/>
-    <icon name="PrevRec"  file="go-previous.png"  sizes="NonStd"/>
-    <icon name="NextRec"  file="go-next.png"  sizes="NonStd"/>
-    <icon name="LastRec"  file="go-last.png"  sizes="NonStd"/>
-    <icon name="NewRec"   file="document-new16.png"  sizes="NonStd"/>
+        <icon name="Save"     file="save_disk.gif"  sizes="all"/>
+        <icon name="FirstRec" file="go-first.png" sizes="NonStd"/>
+        <icon name="PrevRec"  file="go-previous.png"  sizes="NonStd"/>
+        <icon name="NextRec"  file="go-next.png"  sizes="NonStd"/>
+        <icon name="LastRec"  file="go-last.png"  sizes="NonStd"/>
+        <icon name="NewRec"   file="document-new16.png"  sizes="NonStd"/>
     -->
-
+    
     <icon name="CreateObj"   file="document-new32.png"  sizes="all"/>
-
+    
     <icon name="NewRec"   file="newrec.gif"  sizes="NonStd"/>
     <!--
-    <icon name="Save"     file="document-save16.png"  sizes="NonStd"/>
+        <icon name="Save"     file="document-save16.png"  sizes="NonStd"/>
     -->
     
     <icon name="EditIcon" file="edit_icon.gif"  sizes="NonStd"/>
@@ -138,12 +134,12 @@
     <icon name="Reload"   file="view-refresh16.png" sizes="16"/>
     <icon name="ViewForm" file="viewform16.gif" sizes="16"/>
     <icon name="ViewForm" file="viewform.gif" sizes="32"/>
-
+    
     <icon name="BGImage"    file="splash.jpg" sizes="NonStd"/>
     <icon name="Close"      file="close.gif" sizes="NonStd"/>
     <icon name="CloseHover" file="closeHover.gif" sizes="NonStd"/>
     <!-- <icon name="BGImage"  file="frogs_bg.gif" sizes="NonStd"/> -->
-
+    
     <icon name="ValidationValid"   file="validation-valid.gif" sizes="NonStd"/>
     <icon name="ValidationWarning" file="validation-warning.gif" sizes="NonStd"/>
     <icon name="ValidationError"   file="validation-error.gif" sizes="NonStd"/>
@@ -164,7 +160,7 @@
     
     <!-- Discipline Icons -->
     <icon name="FishColObj"  file="catobj_fish.gif" sizes="all"/>    
-
+    
     <!--  Plugins -->
     <icon name="FishBase" file="fblogootw32.png" sizes="all"/>
     <icon name="GoogleEarth" file="GoogleEarth16x16.png" sizes="16"/>
@@ -192,7 +188,7 @@
     <icon name="Location_Tree"      file="location.jpg" sizes="all"/>
     <icon name="GeoTimePeriod_Tree" file="clock.png"    sizes="all"/>
     <icon name="Taxon_Tree"         file="taxon.gif"    sizes="all"/>
-
+    
     <icon name="TreeDefEditor"      file="taxon.gif"    sizes="all"/>
     <icon name="TreeViewer"			file="taxon.gif"	sizes="all"/>
     

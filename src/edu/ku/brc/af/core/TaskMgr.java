@@ -21,6 +21,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static org.apache.commons.lang.StringUtils.split;
 
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.LayoutManager;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -298,21 +299,18 @@ public class TaskMgr
 
             } else if (parent instanceof JMenu)
             {
-                MenuElement[] menuElements = parent.getSubElements();
-                if (menuElements.length == 1 && menuElements[0] instanceof JPopupMenu)
-                {
-                    menuElements = ((JPopupMenu)menuElements[0]).getSubElements();
-                }
+                Container menuComp = ((JMenu)parent).getPopupMenu();
                 boolean found     = false;
-                int     insertPos = menuElements.length+1;
+                int     insertPos = menuComp.getComponentCount();
                 
                 JMenu menu = (JMenu)parent;
                 if (menuItemDesc.getPosition() != MenuItemDesc.Position.None)
                 {
                     int inx = 0;
-                    for (MenuElement menuEle : menuElements)
+                    for (int i=0;i<menuComp.getComponentCount();i++)
                     {
-                        if (menuEle instanceof JMenuItem && ((JMenuItem)menuEle).getText().equals(menuItemDesc.getPosMenuItemName()))
+                        Component c = menuComp.getComponent(i);
+                        if (c instanceof JMenuItem && ((JMenuItem)c).getText().equals(menuItemDesc.getPosMenuItemName()))
                         {
                             insertPos = inx;
                             found     = true;
