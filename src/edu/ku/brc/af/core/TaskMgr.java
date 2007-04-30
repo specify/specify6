@@ -303,7 +303,8 @@ public class TaskMgr
                 {
                     menuElements = ((JPopupMenu)menuElements[0]).getSubElements();
                 }
-                int           insertPos    = menuElements.length;
+                boolean found     = false;
+                int     insertPos = menuElements.length+1;
                 
                 JMenu menu = (JMenu)parent;
                 if (menuItemDesc.getPosition() != MenuItemDesc.Position.None)
@@ -314,6 +315,7 @@ public class TaskMgr
                         if (menuEle instanceof JMenuItem && ((JMenuItem)menuEle).getText().equals(menuItemDesc.getPosMenuItemName()))
                         {
                             insertPos = inx;
+                            found     = true;
                             break;
                         }
                         inx++;
@@ -325,11 +327,16 @@ public class TaskMgr
                     menu.add(new JPopupMenu.Separator(), insertPos);
                     insertPos++;
                 }
+                
                 menu.add((JMenuItem)me, menuItemDesc.getPosition() == MenuItemDesc.Position.Before ? insertPos : insertPos + 1);
+                insertPos++;
                 
                 if (menuItemDesc.getSepPosition() == MenuItemDesc.Position.After)
                 {
-                    menu.add(new JPopupMenu.Separator(), insertPos);
+                    if (found)
+                    {
+                        menu.add(new JPopupMenu.Separator(), insertPos);
+                    }
                 }
             }
             

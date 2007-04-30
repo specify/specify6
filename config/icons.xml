@@ -11,16 +11,20 @@
     <icon name="SpecifyLargeIcon" file="specify128.png" sizes="NonStd"/>
     
     
-    <icon name="Save"       file="filesave.png" sizes="all"/>
-    <icon name="Import"     file="upload_data.gif" sizes="all"/>
-    <icon name="Export"     file="import.png" sizes="all"/>
+    <icon name="Save"           file="filesave.png" sizes="all"/>
+    <icon name="Import"         file="Import Data-16x16.png" sizes="16"/>
+    <icon name="ImportImages"   file="Import-Images-16x16.png" sizes="16"/>
+    <icon name="Export"         file="Export-DataSet-16x16.png" sizes="16"/>
+    <icon name="ExportTemplate" file="Export-Excel-Template-16x16.png" sizes="16"/>
+    
     
     <icon name="Configure"  file="configure.gif" sizes="all"/>
     <icon name="Workbench"     file="workbench.gif" sizes="all"/>
     <icon name="Data_Entry" file="form.gif" sizes="all"/>
     <icon name="Taxon_Tree" file="taxon.gif" sizes="all"/>
     <icon name="Labels"     file="labels.gif" sizes="all"/>
-    <icon name="Reports"    file="reports.gif" sizes="all"/>
+    <icon name="Reports"    file="Reports-20x20.png" sizes="all"/>
+    <icon name="Reports16"   file="Reports-16x16.png" sizes="16"/>
     <icon name="Interactions" file="interactions.png" sizes="all"/>
     <icon name="Search"     file="queryIt.gif" sizes="all"/>
     <icon name="Statistics" file="stats.gif" sizes="all"/>
