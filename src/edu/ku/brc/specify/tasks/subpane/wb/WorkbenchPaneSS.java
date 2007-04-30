@@ -244,6 +244,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     
         initColumnSizes(spreadSheet);
         spreadSheet.setShowGrid(true);
+        spreadSheet.getTableHeader().setReorderingAllowed(false); // Turn Off column dragging
         
         model.addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e)
