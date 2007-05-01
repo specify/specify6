@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.ConnectException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EventObject;
 import java.util.List;
@@ -135,7 +136,7 @@ import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
 /**
  * Main class that handles the editing of Workbench data. It creates both a spreasheet and a form pane for editing the data.
  * 
- * @author rods
+ * @author rods, jstewart
  *
  * @code_status Beta
  *
@@ -1090,13 +1091,26 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected void showGeoRefConvertDialog()
     {
         JStatusBar statusBar = UIRegistry.getStatusBar();
-        
+
         if (!workbench.containsGeoRefData())
         {
             statusBar.setErrorMessage(getResourceString("NoGeoRefColumns"));
             return;
         }
-        
+
+        int[] selection = spreadSheet.getSelectedRowModelIndexes();
+        if (selection.length==0)
+        {
+            // if none are selected, map all of them
+            int rowCnt = spreadSheet.getRowCount();
+            selection = new int[rowCnt];
+            for (int i = 0; i < rowCnt; ++i)
+            {
+                selection[i]=spreadSheet.convertRowIndexToModel(i);
+            }
+        }
+        final int[] selRows = Arrays.copyOf(selection, selection.length);
+
         List<String> outputFormats = new Vector<String>();
         String dddddd = getResourceString("DDDDDD");
         String ddmmmm = getResourceString("DDMMMM");
@@ -1132,20 +1146,20 @@ public class WorkbenchPaneSS extends BaseSubPane
                 {
                     case 0:
                     {
-                        convertColumnContents(latColIndex, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name(), lat1TextColIndex);
-                        convertColumnContents(lonColIndex, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name(), long1TextColIndex);
+                        convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name(), lat1TextColIndex);
+                        convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.D_PLUS_MINUS.name(), long1TextColIndex);
                         break;
                     }
                     case 1:
                     {
-                        convertColumnContents(latColIndex, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name(), lat1TextColIndex);
-                        convertColumnContents(lonColIndex, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name(), long1TextColIndex);
+                        convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name(), lat1TextColIndex);
+                        convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DM_PLUS_MINUS.name(), long1TextColIndex);
                         break;
                     }
                     case 2:
                     {
-                        convertColumnContents(latColIndex, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name(), lat1TextColIndex);
-                        convertColumnContents(lonColIndex, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name(), long1TextColIndex);
+                        convertColumnContents(latColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name(), lat1TextColIndex);
+                        convertColumnContents(lonColIndex, selRows, new GeoRefConverter(), GeoRefFormat.DMS_PLUS_MINUS.name(), long1TextColIndex);
                         break;
                     }
                 }
@@ -1315,11 +1329,11 @@ public class WorkbenchPaneSS extends BaseSubPane
      * @param outputFormat the format string
      * @param backupColIndex the column index of the column to store the original value in, or -1 if none
      */
-    protected void convertColumnContents(int columnIndex, StringConverter converter, String outputFormat, int backupColIndex)
+    protected void convertColumnContents(int columnIndex, int[] rows, StringConverter converter, String outputFormat, int backupColIndex)
     {
-        int rowCnt = model.getRowCount();
-        for (int rowIndex = 0; rowIndex < rowCnt; ++rowIndex)
+        for (int index = 0; index < rows.length; ++index)
         {
+            int rowIndex = rows[index];
             String currentValue = (String)model.getValueAt(rowIndex, columnIndex);
             if (StringUtils.isBlank(currentValue))
             {
