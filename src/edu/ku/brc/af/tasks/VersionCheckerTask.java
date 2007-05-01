@@ -344,6 +344,7 @@ public class VersionCheckerTask extends BaseTask
             super((JFrame)UIRegistry.get(UIRegistry.TOPFRAME), getResourceString("VER_CHK_TITLE"), false, CustomDialog.OK_BTN, null);
             content.setContentType("text/html");
             content.setEditable(false);
+            content.setOpaque(false);
             setContentPanel(content);
             
             content.addHyperlinkListener(new HyperlinkListener()
