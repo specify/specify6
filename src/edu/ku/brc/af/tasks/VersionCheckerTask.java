@@ -4,15 +4,17 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.Vector;
 
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.dom4j.Node;
@@ -48,6 +50,36 @@ public class VersionCheckerTask extends BaseTask
         super(name, title);
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#initialize()
+     */
+    @Override
+    public void initialize()
+    {
+        super.initialize();
+        
+        Timer timer = new Timer("VersionCheckingThread", true);
+
+        TimerTask task = new TimerTask()
+        {
+            @Override
+            public void run()
+            {
+                // check for updates
+                //    show popup if updates available
+                //    don't show error popup if we can't contact the server
+                //    send usage stats if allowed
+                checkForUpdatesNow(true);
+            }
+        };
+        
+        timer.schedule(task, 5000);
+    }
+    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#getMenuItems()
+     */
     @Override
     public List<MenuItemDesc> getMenuItems()
     {
@@ -60,12 +92,8 @@ public class VersionCheckerTask extends BaseTask
             {
                 UsageTracker.incrUsageCount("UpdateNow");
                 
-                // see if the user is allowing us to send back usage data
-                AppPreferences appPrefs = AppPreferences.getLocalPrefs();
-                boolean sendStats = appPrefs.getBoolean("sendUsageStats", true);
-                
                 // then perform the check
-                checkForUpdatesNow(true,sendStats);
+                checkForUpdatesNow(false);
             }
         });
         
@@ -80,51 +108,47 @@ public class VersionCheckerTask extends BaseTask
         return menuItems;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#getStarterPane()
+     */
     @Override
     public SubPaneIFace getStarterPane()
     {
         return null;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#getToolBarItems()
+     */
     @Override
     public List<ToolBarItemDesc> getToolBarItems()
     {
         return null;
     }
     
-    protected void checkForUpdatesNow(final boolean showResultsPopup, final boolean sendUsageDataIfAllowed)
+    /**
+     * @param showResultsPopup
+     * @param sendUsageDataIfAllowed
+     */
+    protected void checkForUpdatesNow(final boolean silent)
     {
         SwingWorker workerThread = new SwingWorker()
         {
             @Override
             public Object construct()
             {
-                // check the website for the info about the latest version
-                HttpClient httpClient = new HttpClient();
-                
-                // get the URL of the website to check, with usage info appended, if allowed
-                String versionCheckURL = getVersionCheckURL(sendUsageDataIfAllowed);
-                
-                GetMethod get = new GetMethod(versionCheckURL);
                 try
                 {
-                    httpClient.executeMethod(get);
+                    List<String> availUpdates = getUpdatesList();
+                    return availUpdates;
                 }
                 catch (Exception e)
                 {
                     return e;
                 }
-
-                try
-                {
-                    return get.getResponseBodyAsString();
-                }
-                catch (IOException e)
-                {
-                    return e;
-                }
             }
             
+            @SuppressWarnings("unchecked")
             @Override
             public void finished()
             {
@@ -133,75 +157,118 @@ public class VersionCheckerTask extends BaseTask
                 // if an exception occurred during update check...
                 if (retVal instanceof Exception)
                 {
-                    showError((Exception)retVal, showResultsPopup);
+                    if (!silent)
+                    {
+                        showErrorPopup();
+                    }
                     return;
                 }
                 // else
                
                 // the update check worked, review the results
-                String responseXML = (String)retVal;
-                try
+                List<String> availUpdates = (List<String>)retVal;
+                if (availUpdates.size() > 0 || !silent)
                 {
-                    String[] moduleUpdatesAvailable = getAvailableUpdates(responseXML);
-                    if (moduleUpdatesAvailable.length > 0)
-                    {
-                        displayUpdatesAvailablePopup(moduleUpdatesAvailable);
-                    }
-                }
-                catch (Exception e)
-                {
-                    showError(e, showResultsPopup);
-                    return;
+                    displayUpdatesAvailablePopup(availUpdates);
                 }
             }
         };
         workerThread.start();
     }
     
-    protected String getVersionCheckURL(boolean sendUsageDataIfAllowed)
+    protected List<String> getUpdatesList() throws Exception
+    {
+        // check the website for the info about the latest version
+        HttpClient httpClient = new HttpClient();
+        
+        // get the URL of the website to check, with usage info appended, if allowed
+        String versionCheckURL = getVersionCheckURL();
+        
+        PostMethod postMethod = new PostMethod(versionCheckURL);
+        
+        // see if the user is allowing us to send back usage data
+        AppPreferences appPrefs = AppPreferences.getLocalPrefs();
+        boolean sendStats = appPrefs.getBoolean("sendUsageStats", true);
+        
+        NameValuePair[] postParams = createPostParameters(sendStats);
+        postMethod.setRequestBody(postParams);
+        httpClient.executeMethod(postMethod);
+        String responseString = postMethod.getResponseBodyAsString();
+        List<String> moduleUpdatesAvailable = getAvailableUpdates(responseString);
+        return moduleUpdatesAvailable;
+    }
+    
+    /**
+     * @param sendUsageDataIfAllowed
+     * @return
+     */
+    protected String getVersionCheckURL()
     {
         String baseURL = getResourceString("VERSION_CHECK_URL");
-        //baseURL = "http://redbud.nhm.ku.edu/Specify/versionCheck/check.php";
-        if (sendUsageDataIfAllowed)
-        {
-            // append the usage stats (if we are allowed) as query parameters to the GET request
-            // TODO: get a UUID from somewhere that is installation unique
-            String UUID = "0x1010";
-            baseURL += "?id=" + UUID;
-            
-            // append the OS of the host along with the stats
-            String os = System.getProperty("os.name");
-            os = StringUtils.deleteWhitespace(os);
-            baseURL += "&os=" + os;
-            String version = System.getProperty("os.version");
-            version = StringUtils.deleteWhitespace(version);
-            baseURL += "&ver=" + version;
-            
-            List<Pair<String,Integer>> stats = UsageTracker.getUsageStats();
-            for (Pair<String,Integer> stat: stats)
-            {
-                baseURL += "&" + stat.first + "=" + stat.second;
-            }
-        }
         return baseURL;
     }
     
-    protected void showError(Exception e, boolean showResultsPopup)
+    /**
+     * Creates an array of POST method parameters to send with the version checking request.
+     * 
+     * @param sendUsageStats if true, the POST parameters include usage stats
+     * @return an array of POST parameters
+     */
+    protected NameValuePair[] createPostParameters(boolean sendUsageStats)
     {
-        String updateError = getResourceString("UpdateError");
-        if (showResultsPopup)
+        Vector<NameValuePair> postParams = new Vector<NameValuePair>();
+
+        // get the install ID
+        String installID = UsageTracker.getInstallId();
+        postParams.add(new NameValuePair("id",installID));
+
+        // get the OS name and version
+        String os = System.getProperty("os.name");
+        os = StringUtils.deleteWhitespace(os);
+        postParams.add(new NameValuePair("os",os));
+        String version = System.getProperty("os.version");
+        version = StringUtils.deleteWhitespace(version);
+        postParams.add(new NameValuePair("version",version));
+
+        if (sendUsageStats)
         {
-            JOptionPane.showMessageDialog(UIRegistry.get(UIRegistry.TOPFRAME),
-                                          updateError,
-                                          getResourceString("Error"),
-                                          JOptionPane.ERROR_MESSAGE);
+            // get all of the usage tracking stats
+            List<Pair<String,Integer>> stats = UsageTracker.getUsageStats();
+            for (Pair<String,Integer> stat: stats)
+            {
+                postParams.add(new NameValuePair(stat.first, Integer.toString(stat.second)));
+            }
         }
         
-        UIRegistry.getStatusBar().setWarningMessage(updateError,e);
+        // create an array from the params
+        NameValuePair[] paramArray = new NameValuePair[postParams.size()];
+        for (int i = 0; i < paramArray.length; ++i)
+        {
+            paramArray[i] = postParams.get(i);
+        }
+        return paramArray;
+    }
+    
+    /**
+     * @param e
+     * @param showResultsPopup
+     */
+    protected void showErrorPopup()
+    {
+        String updateError = getResourceString("UpdateError");
+        JOptionPane.showMessageDialog(UIRegistry.get(UIRegistry.TOPFRAME),
+                                      updateError,
+                                      getResourceString("Error"),
+                                      JOptionPane.ERROR_MESSAGE);
         return;
     }
     
-    protected String[] getAvailableUpdates(String latestVersionInfo) throws Exception
+    /**
+     * @param latestVersionInfo
+     * @return
+     * @throws Exception
+     */
+    protected List<String> getAvailableUpdates(String latestVersionInfo) throws Exception
     {
         List<String> availUpdates = new Vector<String>();
         
@@ -243,21 +310,19 @@ public class VersionCheckerTask extends BaseTask
             }
         }
         
-        String[] updates = new String[availUpdates.size()];
-        for (int i = 0; i < updates.length; ++i)
-        {
-            updates[i] = availUpdates.get(i);
-        }
-        return updates;
+        return availUpdates;
     }
     
-    protected void displayUpdatesAvailablePopup(String[] availableUpdates)
+    /**
+     * @param availableUpdates
+     */
+    protected void displayUpdatesAvailablePopup(List<String> availableUpdates)
     {
         // TODO: implement this with production code
         
         String popupMessage = "<html>";
         
-        if (availableUpdates.length == 0)
+        if (availableUpdates.size() == 0)
         {
             // no updates available
             popupMessage += "No updates available";
