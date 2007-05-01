@@ -261,7 +261,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             public void actionPerformed(ActionEvent ae)
             {
-                UsageTracker.incrUsageCount("WBSaveDataSet");
+                UsageTracker.incrUsageCount("WB.SaveDataSet");
                 
                 UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_SAVING"), new Object[] { workbench.getName()}), 32);
                 
@@ -460,6 +460,8 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             public void actionPerformed(ActionEvent ae)
             {
+                UsageTracker.incrUsageCount("WB.EditWBRowImage");
+                
                 // figure out what row is selected
                 int firstRowSelected = spreadSheet.getSelectedRow();
                 firstRowSelected = spreadSheet.convertRowIndexToModel(firstRowSelected);
@@ -1090,6 +1092,8 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected void showGeoRefConvertDialog()
     {
+        UsageTracker.incrUsageCount("WB.ShowGeoRefConverter");
+        
         JStatusBar statusBar = UIRegistry.getStatusBar();
 
         if (!workbench.containsGeoRefData())
@@ -1177,6 +1181,8 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected void showMapOfSelectedRecords()
     {
+        UsageTracker.incrUsageCount("WB.MapRows");
+        
         log.debug("Showing map of selected records");
         showMapBtn.setEnabled(false);
         int[] selection = spreadSheet.getSelectedRowModelIndexes();
@@ -1430,7 +1436,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         command.addProperties(config.getProperties());
         
-        UsageTracker.incrUsageCount("ExportXLSRowsTool");
+        UsageTracker.incrUsageCount("WB.ExportXLSRowsTool");
         CommandDispatcher.dispatch(command);
       }
     
@@ -1439,6 +1445,8 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected void showRecordsInGoogleEarth()
     {
+        UsageTracker.incrUsageCount("WB.GoogleEarthRows");
+        
         log.info("Showing map of selected records");
         int[] selection = spreadSheet.getSelectedRowModelIndexes();
         if (selection.length==0)
@@ -1607,6 +1615,8 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected void doBioGeomancerLookup()
     {
+        UsageTracker.incrUsageCount("WB.BioGeomancerRows");
+        
         log.info("Performing BioGeomancer lookup of selected records");
         
         // get the indexes into the model for all of the selected rows
