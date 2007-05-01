@@ -176,7 +176,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
                 
                 if (e.getClickCount() == 2 && (controlPropsDlg == null || !controlPropsDlg.isVisible()))
                 {
-                    UsageTracker.incrUsageCount("WBFormPropsTool");
+                    UsageTracker.incrUsageCount("WB.FormPropsTool");
                     showControlProps();
                 }
                 

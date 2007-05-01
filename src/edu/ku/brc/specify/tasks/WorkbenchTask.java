@@ -127,16 +127,16 @@ public class WorkbenchTask extends BaseTask
     public static final String     WORKBENCH             = "Workbench";
     public static final String     WORKBENCHTEMPLATE     = "WorkbenchTemplate";
     
-    public static final String     NEW_WORKBENCH         = "WBNewWorkbench";
-    public static final String     IMPORT_DATA_FILE      = "WBImportFile";
-    public static final String     SELECTED_WORKBENCH    = "WBSelectedWorkbench";
-    public static final String     WB_BARCHART           = "WBCreateBarChart";
-    public static final String     PRINT_REPORT          = "WBPrintReport";
-    public static final String     WB_TOP10_REPORT       = "WBTop10Report";
-    public static final String     WB_IMPORTCARDS        = "WBImportCardImages";
-    public static final String     EXPORT_DATA_FILE      = "WBExportData";
-    public static final String     EXPORT_TEMPLATE       = "WBExportTemplate";
-    public static final String     NEW_WORKBENCH_FROM_TEMPLATE = "WBNewDataSetFromTemplate";
+    public static final String     NEW_WORKBENCH         = "WB.NewWorkbench";
+    public static final String     IMPORT_DATA_FILE      = "WB.ImportFile";
+    public static final String     SELECTED_WORKBENCH    = "WB.SelectedWorkbench";
+    public static final String     WB_BARCHART           = "WB.CreateBarChart";
+    public static final String     PRINT_REPORT          = "WB.PrintReport";
+    public static final String     WB_TOP10_REPORT       = "WB.Top10Report";
+    public static final String     WB_IMPORTCARDS        = "WB.ImportCardImages";
+    public static final String     EXPORT_DATA_FILE      = "WB.ExportData";
+    public static final String     EXPORT_TEMPLATE       = "WB.ExportTemplate";
+    public static final String     NEW_WORKBENCH_FROM_TEMPLATE = "WB.NewDataSetFromTemplate";
     
     
     protected static WeakReference<DBTableIdMgr> databasechema = null;
@@ -334,7 +334,7 @@ public class WorkbenchTask extends BaseTask
             public void actionPerformed(ActionEvent e)
             {
                 editWorkbenchProps(roc);
-                UsageTracker.incrUsageCount("WBShowWorkbenchProps");
+                UsageTracker.incrUsageCount("WB.ShowWorkbenchProps");
             }
         });
         UIHelper.createMenuItem(popupMenu, getResourceString("WB_EDIT_DATASET_MAPPING"), getResourceString("WB_EDIT_DATASET_MAPPING_MNEU"), null, true, new ActionListener() {
@@ -350,7 +350,7 @@ public class WorkbenchTask extends BaseTask
                         Workbench wb = selectWorkbench(subCmd, ""); // XXX ADD HELP
                         if (wb != null)
                         {
-                            UsageTracker.incrUsageCount("WBEditMappings");
+                            UsageTracker.incrUsageCount("WB.EditMappings");
                             editTemplate(wb.getWorkbenchTemplate());
                             
                         } else
@@ -1154,7 +1154,7 @@ public class WorkbenchTask extends BaseTask
             //this means correct usage count for ImportXLS will actually be getUsageCount(ImportXLS) - getUsageCount(ImportCSV)...
             if (dataFileInfo.getConfig().getProperties().getProperty("mimetype","").equals(ExportFileConfigurationFactory.CSV_MIME_TYPE))
             {
-                UsageTracker.incrUsageCount("ImportCSV");
+                UsageTracker.incrUsageCount("WB.ImportCSV");
             }
        }
         return null;
