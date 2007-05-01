@@ -43,31 +43,23 @@ public class TableInfoListRenderer implements ListCellRenderer
     
     protected JPanel               display;
     protected JLabel               icon1;
-    protected JLabel               icon2;
     protected JLabel               label;
-    protected ImageIcon            arrowRight = IconManager.getIcon("move_right");
-    protected ImageIcon            arrowDown  = IconManager.getIcon("DownArrow");
+    protected ImageIcon            checkmarkIcon = IconManager.getIcon("Checkmark", IconManager.IconSize.Std16);
+    protected ImageIcon            blankIcon     = IconManager.getIcon("BlankIcon", IconManager.IconSize.Std16);
 
     public TableInfoListRenderer(final IconManager.IconSize iconSize)
     {
         // Don't paint behind the component
         this.iconSize = iconSize;
 
-        int size = iconSize.size();
-        PanelBuilder builder = new PanelBuilder(new FormLayout(arrowRight.getIconWidth()+"px,2px,"+size+"px,2px,f:p:g", "c:p"));
+        PanelBuilder builder = new PanelBuilder(new FormLayout(checkmarkIcon.getIconWidth()+"px,2px,f:p:g", "c:p"));
         CellConstraints cc = new CellConstraints();
 
         builder.add(icon1 = new JLabel(), cc.xy(1, 1));
-        builder.add(icon2 = new JLabel(), cc.xy(3, 1));
-        builder.add(label = new JLabel(), cc.xy(5, 1));
+        builder.add(label = new JLabel(), cc.xy(3, 1));
         display = builder.getPanel();
         display.setBorder(BorderFactory.createEmptyBorder(2, 1, 2, 1));
         display.setOpaque(true);
-    }
-    
-    public int getTextOffset()
-    {
-        return arrowRight.getIconWidth() + 2;
     }
 
     public Component getListCellRendererComponent(JList list, Object value, // value to display
@@ -78,16 +70,14 @@ public class TableInfoListRenderer implements ListCellRenderer
     {
         TableListItemIFace ti   = (TableListItemIFace)value;
         
-        ImageIcon icon = ti.getIcon();
         if (ti.isExpandable())
         {
-            icon1.setIcon(ti.isExpanded() ? arrowDown : arrowRight);
-            icon2.setIcon(icon);
+            icon1.setIcon(ti.getIcon());
             
         } else
         {
             icon1.setIcon(IconManager.getIcon("BlankIcon", iconSize));
-            icon2.setIcon(ti.isChecked() ? icon : null);
+            icon1.setIcon(ti.isChecked() ? checkmarkIcon : blankIcon);
         }
         label.setText(ti.getText());
         
@@ -105,18 +95,22 @@ public class TableInfoListRenderer implements ListCellRenderer
         display.setEnabled(list.isEnabled());
         display.setFont(list.getFont());
 
-            Border border = null;
-            if (cellHasFocus) {
-                if (isSelected) {
-                    border = UIManager.getBorder("List.focusSelectedCellHighlightBorder");
-                }
-                if (border == null) {
-                    border = UIManager.getBorder("List.focusCellHighlightBorder");
-                }
-            } else {
-                border = getNoFocusBorder();
+        Border border = null;
+        if (cellHasFocus)
+        {
+            if (isSelected)
+            {
+                border = UIManager.getBorder("List.focusSelectedCellHighlightBorder");
             }
-            display.setBorder(border);
+            if (border == null)
+            {
+                border = UIManager.getBorder("List.focusCellHighlightBorder");
+            }
+        } else
+        {
+            border = getNoFocusBorder();
+        }
+        display.setBorder(border);
         return display;
     }
     

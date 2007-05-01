@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -24,6 +25,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -385,8 +387,8 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
         this.workbenchTemplate = workbenchTemplate;
     }
     
-    /*
-    @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "workbenchtemplatemappingitem")
+    
+    @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "workbenchTemplateMappingItem")
     public Set<WorkbenchDataItem> getWorkbenchDataItems() 
     {
         return this.workbenchDataItems;
@@ -395,7 +397,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     public void setWorkbenchDataItems(Set<WorkbenchDataItem> workbenchDataItems) 
     {
         this.workbenchDataItems = workbenchDataItems;
-    }*/
+    }
     
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)

@@ -385,7 +385,7 @@ public class WorkbenchTask extends BaseTask
                     session.beginTransaction();
                     Workbench mergedWB = (Workbench)session.merge(workbench);
                     mergedWB.getWorkbenchTemplate().setName(mergedWB.getName());
-                    session.save(mergedWB);
+                    session.saveOrUpdate(mergedWB);
                     session.commit();
                     session.flush();
                     
@@ -650,7 +650,10 @@ public class WorkbenchTask extends BaseTask
             
             Set<WorkbenchTemplateMappingItem> items = workbenchTemplate.getWorkbenchTemplateMappingItems();
             Collection<WorkbenchTemplateMappingItem> newItems     = mapper.getNewItems();
-            
+            for (WorkbenchTemplateMappingItem item : newItems)
+            {
+                log.error(item.getFieldName()+" "+item.getViewOrder()+"  "+item.getOrigImportColumnIndex());
+            }
             for (WorkbenchTemplateMappingItem wbtmi : newItems)
             {
                 wbtmi.setWorkbenchTemplate(workbenchTemplate);
@@ -1179,8 +1182,7 @@ public class WorkbenchTask extends BaseTask
             TemplateEditor dlg = showColumnMapperDlg(dataFileInfo, null, inputFile != null ? "WB_IMPORT_MAPPING_EDITOR" : "WB_NEW_DATASET_MAPPER");
             if (!dlg.isCancelled())
             {   
-                workbenchTemplate = createTemplate(dlg, 
-                                                   inputFile != null ? inputFile.getAbsolutePath() : "");
+                workbenchTemplate = createTemplate(dlg, inputFile != null ? inputFile.getAbsolutePath() : "");
              }
             
         } else if (btnPressed == ChooseFromListDlg.OK_BTN && workbenchTemplate != null)
@@ -2099,23 +2101,29 @@ public class WorkbenchTask extends BaseTask
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             try
             {
-                Collection<WorkbenchTemplateMappingItem> unusedItems  = dlg.getUnusedItems();
+                Collection<WorkbenchTemplateMappingItem> deletedItems = dlg.getDeletedItems();
                 Collection<WorkbenchTemplateMappingItem> newItems     = dlg.getNewItems();
+                
+                for (WorkbenchTemplateMappingItem item : newItems)
+                {
+                    log.error(item.getFieldName());
+                }
                 //Collection<WorkbenchTemplateMappingItem> updatedItems = dlg.getUpdatedItems();
                 
                 session.beginTransaction();
                 
+                // Merge with current session
                 WorkbenchTemplate workbenchTemplate = (WorkbenchTemplate)session.merge(wbTemplate);
                 
                 Set<WorkbenchTemplateMappingItem> items = workbenchTemplate.getWorkbenchTemplateMappingItems();
-                for (WorkbenchTemplateMappingItem unusedItem : unusedItems)
+                for (WorkbenchTemplateMappingItem delItem : deletedItems)
                 {
                     for (WorkbenchTemplateMappingItem wbtmi : items)
                     {
-                        if (unusedItem.getWorkbenchTemplateMappingItemId().longValue() == wbtmi.getWorkbenchTemplateMappingItemId().longValue())
+                        if (delItem.getWorkbenchTemplateMappingItemId().longValue() == wbtmi.getWorkbenchTemplateMappingItemId().longValue())
                         {
                             //log.debug("del ["+wbtmi.getCaption()+"]["+wbtmi.getWorkbenchTemplateMappingItemId().longValue()+"]");
-                            wbtmi.setWorkbenchTemplate(null);
+                            //wbtmi.setWorkbenchTemplate(null);
                             items.remove(wbtmi);
                             session.delete(wbtmi);
                             break;
@@ -2140,6 +2148,7 @@ public class WorkbenchTask extends BaseTask
             } catch (Exception ex)
             {
                 log.error(ex);
+                ex.printStackTrace();
                 
             } finally
             {

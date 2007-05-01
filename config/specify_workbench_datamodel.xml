@@ -14,7 +14,7 @@
     <field column="Remarks" name="remarks" type="text" length="255"/>
     <field column="YesNo1" name="yesNo1" type="boolean"/>
     <field column="YesNo2" name="yesNo2" type="boolean"/>
-    <field column="Accession Agent" name="Accession Agent" type="java.lang.String" length="64"/>
+    <field column="Accession Agent" name="accessionAgent" type="java.lang.String" length="64"/>
     <field column="Permit1" name="Permit1" type="java.lang.String" length="64"/>
     <field column="Permit2" name="Permit2" type="java.lang.String" length="64"/>
   </table>

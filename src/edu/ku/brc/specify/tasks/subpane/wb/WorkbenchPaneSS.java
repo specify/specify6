@@ -2021,7 +2021,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             
             // Delete the cached Items
             Vector<WorkbenchRow> deletedItems = workbench.getDeletedRows();
-            if (deletedItems != null)
+            if (deletedItems != null && deletedItems.size() > 0)
             {
                 session.beginTransaction();
                 for (Object obj : deletedItems)
@@ -2031,9 +2031,22 @@ public class WorkbenchPaneSS extends BaseSubPane
                 deletedItems.clear();
                 session.commit();
                 session.flush();
+                session.close();
+                
+                session = DataProviderFactory.getInstance().createSession();
             }
             
             session.beginTransaction();
+
+            // DEBUG
+            for (WorkbenchRow row : workbench.getWorkbenchRowsAsList())
+            {
+                for (WorkbenchDataItem item : row.getWorkbenchDataItems())
+                {
+                    System.out.println("["+item.getCellData()+"]");
+                }
+            }
+
             
             Object dObj = session.merge(workbench);
             

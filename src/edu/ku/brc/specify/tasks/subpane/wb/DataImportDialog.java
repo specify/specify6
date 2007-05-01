@@ -33,12 +33,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.ButtonGroup;
@@ -65,11 +60,11 @@ import javax.swing.text.PlainDocument;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 
 import com.csvreader.CsvReader;
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -80,15 +75,12 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
-import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
-import edu.ku.brc.specify.tasks.WorkbenchTask;
-import edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalDataIFace.Status;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.MouseOverJLabel;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * Class that provides "fancy" dialog for importing data from csv or XLS,

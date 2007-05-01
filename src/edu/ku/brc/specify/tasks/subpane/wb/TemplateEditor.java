@@ -14,20 +14,15 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIHelper.createIconBtn;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Frame;
-import java.awt.Graphics;
-import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Hashtable;
@@ -36,6 +31,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -47,6 +43,9 @@ import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -80,7 +79,7 @@ import edu.ku.brc.util.Pair;
  *
  * @code_status Beta
  *
- * Created Date: Feb 16, 2007
+ * Created Date: Apr 30, 2007
  *
  */
 public class TemplateEditor extends CustomDialog
@@ -89,21 +88,21 @@ public class TemplateEditor extends CustomDialog
     
     protected JButton                        mapToBtn;
     protected JButton                        unmapBtn;
-    protected JButton                        addBtn            = null;
-    protected JButton                        delBtn            = null;
     protected JButton                        upBtn;
     protected JButton                        downBtn;
     
-    protected JList                                                     unusedList   = null;
-    protected DefaultModifiableListModel<ImportColumnInfo>              unusedModel  = null;
-    protected Hashtable<ImportColumnInfo, WorkbenchTemplateMappingItem> unusedWBTMIs = null;
-
     protected JList                          mapList;
     protected DefaultModifiableListModel<FieldMappingPanel> mapModel;
     protected JScrollPane                    mapScrollPane;
     
     protected JList                          tableList;
-    protected DefaultModifiableListModel<TableListItemIFace> tableModel;
+    protected DefaultModifiableListModel<TableInfo> tableModel;
+    
+    protected JList                          fieldList;
+    protected DefaultModifiableListModel<FieldInfo> fieldModel;
+    
+    protected Vector<WorkbenchTemplateMappingItem> deletedItems = new Vector<WorkbenchTemplateMappingItem>();
+
     
     protected boolean                        hasChanged        = false;
     protected boolean                        doingFill         = false;
@@ -118,9 +117,7 @@ public class TemplateEditor extends CustomDialog
     protected boolean                        isEditMode;
     protected boolean                        ignoreMapListUpdate = false;
     
-    //protected ImageIcon checkMark   = IconManager.getIcon("Checkmark", IconManager.IconSize.Std16);
-    protected ImageIcon blankIcon   = IconManager.getIcon("BlankIcon", IconManager.IconSize.Std24);
-    //protected ImageIcon blankIcon16 = IconManager.getIcon("BlankIcon", IconManager.IconSize.Std16);
+    protected ImageIcon                      blankIcon   = IconManager.getIcon("BlankIcon", IconManager.IconSize.Std24);
     
     protected TableInfoListRenderer          tableInfoListRenderer;
     
@@ -137,7 +134,7 @@ public class TemplateEditor extends CustomDialog
         this.isMappedToAFile = dataFileInfo != null;
         this.isEditMode      = false;
         
-        helpContext = dataFileInfo == null ? "OnRampNewTemplate" : "OnRampImportData";
+        helpContext = dataFileInfo == null ? "WorkBenchNewTemplate" : "WorkBenchImportData";
         
         createUI();
     }
@@ -155,7 +152,7 @@ public class TemplateEditor extends CustomDialog
         this.isMappedToAFile   = StringUtils.isNotEmpty(wbTemplate.getSrcFilePath());
         this.isEditMode        = this.workbenchTemplate != null;
         
-        helpContext = this.isMappedToAFile ? "OnRampImportTemplateEditor" : "OnRampTemplateEditing";
+        helpContext = this.isMappedToAFile ? "WorkBenchImportTemplateEditor" : "WorkBenchTemplateEditing";
         
         createUI();
     }
@@ -193,28 +190,56 @@ public class TemplateEditor extends CustomDialog
         }
         Collections.sort(tableInfoList);
         
-        tableModel = new DefaultModifiableListModel<TableListItemIFace>();
+        fieldModel = new DefaultModifiableListModel<FieldInfo>();
+        tableModel = new DefaultModifiableListModel<TableInfo>();
         for (TableInfo ti : tableInfoList)
         {
             tableModel.add(ti);
-            // Star out Collapsed when start on fro scratch
-            if (!isFromScratch)
+            
+            // only added for layout
+            for (FieldInfo fi : ti.getFieldItems())
             {
-                ti.setExpanded(true);
-                for (FieldInfo fieldInfo : ti.getFieldItems())
-                {
-                    tableModel.add(fieldInfo);
-                }
+                fieldModel.add(fi);
             }
         }
+        
         tableList = new JList(tableModel);
         tableList.setCellRenderer(tableInfoListRenderer = new TableInfoListRenderer(IconManager.IconSize.Std16));
-        tableList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         JScrollPane tableScrollPane = new JScrollPane(tableList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        
+        tableList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e)
+            {
+                if (!e.getValueIsAdjusting())
+                {
+                    Object selObj = tableList.getSelectedValue();
+                    if (selObj != null)
+                    {
+                        fillFieldList((TableInfo)selObj);
+                    }
+                    updateEnabledState();
+                }
+            }
+        });
 
+        fieldList = new JList(fieldModel);
+        fieldList.setCellRenderer(tableInfoListRenderer = new TableInfoListRenderer(IconManager.IconSize.Std16));
+        fieldList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        JScrollPane fieldScrollPane = new JScrollPane(fieldList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        fieldList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e)
+            {
+                if (!e.getValueIsAdjusting())
+                {
+                    updateEnabledState();
+                }
+            }
+        });
+        
         mapModel = new DefaultModifiableListModel<FieldMappingPanel>();
         mapList  = new JList(mapModel);
         mapList.setCellRenderer(new MapCellRenderer());
+        mapList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         mapScrollPane = new JScrollPane(mapList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         
         mapList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -226,64 +251,25 @@ public class TemplateEditor extends CustomDialog
                     if (fmp != null)
                     {
                         ignoreMapListUpdate = true;
-                        tableList.setSelectedValue(fmp.getFieldInfo(), true);
-                        if (unusedList != null)
+                        
+                        FieldInfo fldInfo = (FieldInfo)fmp.getFieldInfo();
+                        if (fldInfo != null)
                         {
-                            unusedList.getSelectionModel().clearSelection();
+                            for (int i=0;i<tableModel.size();i++)
+                            {
+                                TableInfo tblInfo = (TableInfo)tableModel.get(i);
+                                if (fldInfo.getTableinfo() == tblInfo.getTableInfo())
+                                {
+                                    tableList.setSelectedValue(tblInfo, true);
+                                    fillFieldList(tblInfo);
+                                    fieldList.setSelectedValue(fldInfo, true);
+                                    break;
+                                }
+                            }
                         }
                         ignoreMapListUpdate = false;
-
-                    }
-                }
-            }
-        });
-
-        JScrollPane unusedScrollPane = null;
-        if (isEditMode || isMappedToAFile)
-        {
-            unusedWBTMIs = new Hashtable<ImportColumnInfo, WorkbenchTemplateMappingItem>();
-            unusedModel  = new DefaultModifiableListModel<ImportColumnInfo>();
-            unusedList   = new JList(unusedModel);
-            unusedScrollPane = new JScrollPane(unusedList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-            unusedList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-                public void valueChanged(ListSelectionEvent e)
-                {
-                    if (!e.getValueIsAdjusting())
-                    {
-                        if (!ignoreMapListUpdate)
-                        {
-                            mapList.getSelectionModel().clearSelection();
-                        }
                         updateEnabledState();
                     }
-                }
-            });
-        
-        }
-        
-        addBtn = createIconBtn("PlusSign", "WB_ADD_MAPPING_ITEM", new ActionListener()
-        {
-            public void actionPerformed(ActionEvent ae)
-            {
-                addNewMappingItems();
-            }
-        });
-        
-        delBtn = createIconBtn("MinusSign", "WB_REMOVE_MAPPING_ITEM", new ActionListener()
-        {
-            public void actionPerformed(ActionEvent ae)
-            {
-                unmap();
-            }
-        });
-
-        
-        tableList.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
-            public void valueChanged(ListSelectionEvent e)
-            {
-                if (!e.getValueIsAdjusting())
-                {
-                    updateEnabledState();
                 }
             }
         });
@@ -316,33 +302,15 @@ public class TemplateEditor extends CustomDialog
                 setChanged(true);
             }
         });
-        
-        tableList.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
-            public void valueChanged(ListSelectionEvent e)
-            {
-                if (!e.getValueIsAdjusting())
-                {
-                    updateEnabledState();
-                }
-            }
-        });
-        
-        tableList.addMouseListener(new MouseAdapter(){
-            @Override
-            public void mouseClicked(MouseEvent e)
-            {
-                tableListClicked(e);
-            }
-        });
 
-        mapToBtn = createIconBtn("DownArrow", "WB_ADD_MAPPING_ITEM", new ActionListener()
+        mapToBtn = createIconBtn("move_right", "WB_ADD_MAPPING_ITEM", new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
                 map();
             }
         });
-        unmapBtn = createIconBtn("UpArrow", "WB_REMOVE_MAPPING_ITEM", new ActionListener()
+        unmapBtn = createIconBtn("move_left", "WB_REMOVE_MAPPING_ITEM", new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -352,177 +320,76 @@ public class TemplateEditor extends CustomDialog
 
         // Adjust all Labels depending on whether we are creating a new template or not
         // and whether it is from a file or not
-        String columnListLabel;
-        String schemaListLabel;
         String mapListLeftLabel;
         String mapListRightLabel;
         
-        // NOte: if workbenchTemplate is null then it is 
-        schemaListLabel   = getResourceString("WB_SCHEMA");
+        // Note: if workbenchTemplate is null then it is 
+        String dataTypeLabel   = getResourceString("WB_DATA_TYPE");
+        String fieldsLabel     = getResourceString("Fields"); // XXX I18N
         
         if (isMappedToAFile)
         {
             if (isNewTemplate) // New Template being mapped from a file
             {
-                columnListLabel   = getResourceString("WB_IMPORTED_COLUMNS");
-                mapListLeftLabel  = getResourceString("WB_COLUMNS");
-                mapListRightLabel = getResourceString("WB_SCHEMA");
+                mapListLeftLabel  = fieldsLabel;
+                mapListRightLabel = getResourceString("WB_COLUMNS");
 
             } else // Editing a template mapped from a file
             {
-                columnListLabel   = getResourceString("WB_REMOVE_COLUMNS");
-                mapListLeftLabel  = getResourceString("WB_COLUMNS");
-                mapListRightLabel = getResourceString("WB_SCHEMA");
+                mapListLeftLabel  = fieldsLabel;
+                mapListRightLabel = getResourceString("WB_COLUMNS");
             }
             
         } else 
         {
-
             if (isFromScratch) // Creatingd a brand new template from Scratch
             {
-                columnListLabel   = getResourceString("WB_IMPORTED_COLUMNS"); 
-                mapListLeftLabel  = getResourceString("WB_SCHEMA");
-                mapListRightLabel = "";
+                mapListLeftLabel  = fieldsLabel;
+                mapListRightLabel = getResourceString("WB_COLUMNS");
                 
             } else // Editing Template that wasn't mapped
             {
-                columnListLabel   = getResourceString("WB_REMOVE_COLUMNS");
-                mapListLeftLabel  = getResourceString("WB_COLUMNS");
-                mapListRightLabel = getResourceString("WB_SCHEMA");                
+                mapListLeftLabel  = fieldsLabel;
+                mapListRightLabel = getResourceString("WB_COLUMNS");                
             }
         }
         
         CellConstraints cc = new CellConstraints();
         
-        JPanel mainLayoutPanel = new JPanel()
-        {
-           
-            /* (non-Javadoc)
-             * @see java.awt.Container#paintComponents(java.awt.Graphics)
-             */
-            @Override
-            public void paintComponent(Graphics g)
-            {
-                super.paintComponent(g);
-                
-                if (false)
-                {
-                    g.setColor(btnPanelColor);
-                    
-                    
-                    Rectangle btnPanelRect = btnPanel.getBounds();
-                    Rectangle pRect        = btnPanel.getParent().getBounds();
-                    Rectangle schemaRect   = tableList.getParent().getParent().getBounds();
-                    Rectangle mapRect      = mapList.getParent().getParent().getBounds();
-                    
-                    btnPanelRect.translate(pRect.x, pRect.y);
-                    
-                    Point rightSidePnt = new Point(btnPanelRect.x+btnPanelRect.width-10, btnPanelRect.y); 
-                    Point leftSidePnt  = new Point(btnPanelRect.x+10, btnPanelRect.y); 
-                    Point botPnt       = new Point(btnPanelRect.x+(btnPanelRect.width/2), btnPanelRect.y+btnPanelRect.height); 
-    
-                    
-                    if (isEditMode || isMappedToAFile)
-                    {
-                        Rectangle unusedRect = unusedList.getBounds();
-                        
-                        //System.out.println(btnPanelRect.x+" "+btnPanelRect.y+" "+btnPanelRect.x+" "+(schemaRect.y+schemaRect.height));
-                        
-                        if (addBtn.isEnabled() || mapToBtn.isEnabled())
-                        {
-                            g.drawLine(rightSidePnt.x-1, rightSidePnt.y, rightSidePnt.x-1, schemaRect.y+schemaRect.height);
-                            g.drawLine(rightSidePnt.x, rightSidePnt.y,   rightSidePnt.x, schemaRect.y+schemaRect.height);
-                            g.drawLine(rightSidePnt.x+1, rightSidePnt.y, rightSidePnt.x+1, schemaRect.y+schemaRect.height);
-                        }
-                        
-                        if (mapToBtn.isEnabled() || unmapBtn.isEnabled())
-                        {
-                            g.drawLine(leftSidePnt.x-1, leftSidePnt.y, leftSidePnt.x-1, unusedRect.y+unusedRect.height);
-                            g.drawLine(leftSidePnt.x, leftSidePnt.y,   leftSidePnt.x, unusedRect.y+unusedRect.height);
-                            g.drawLine(leftSidePnt.x+1, leftSidePnt.y, leftSidePnt.x+1, unusedRect.y+unusedRect.height);
-                        }
-    
-                        if (addBtn.isEnabled() || mapToBtn.isEnabled() || unmapBtn.isEnabled())
-                        {
-                            g.drawLine(botPnt.x-1, botPnt.y, botPnt.x-1, mapRect.y);
-                            g.drawLine(botPnt.x,   botPnt.y,   botPnt.x, mapRect.y);
-                            g.drawLine(botPnt.x+1, botPnt.y, botPnt.x+1, mapRect.y);
-                        }
-    
-                    } else // from scratch
-                    {
-                        // not implemented yet
-                    }
-                }
-            }
-        };
+        JPanel mainLayoutPanel = new JPanel();
         
-        // This UI is used for importing File and Editing, 
-        if (isMappedToAFile || isEditMode)
-        {
-            PanelBuilder upDownPanel = new PanelBuilder(new FormLayout("p", "f:p:g, p, 2px, p, f:p:g"));        
-            upDownPanel.add(upBtn,    cc.xy(1, 2));
-            upDownPanel.add(downBtn,  cc.xy(1, 4));
-    
-            PanelBuilder outerMiddlePanel = new PanelBuilder(new FormLayout("f:p:g, p, f:p:g", "p"));
-            PanelBuilder middlePanel = new PanelBuilder(new FormLayout("p, 2px, p" + (isEditMode ? ", 20px, p, 2px, p" : ""), "p"));
-            middlePanel.add(unmapBtn, cc.xy(1, 1));
-            middlePanel.add(mapToBtn, cc.xy(3, 1));
-            if (isEditMode)
-            {
-                middlePanel.add(addBtn,   cc.xy(5, 1));
-                middlePanel.add(delBtn,   cc.xy(7, 1));
-            }
-            btnPanel = middlePanel.getPanel();
-            outerMiddlePanel.add(btnPanel, cc.xy(2, 1));
-            
-            // Main Pane Layout
-            PanelBuilder    builder = new PanelBuilder(new FormLayout("f:max(250px;p):g, 5px, p, 5px, f:max(250px;p):g, 2px, p", 
-                                                                      "p, 2px, f:max(150px;p):g, 20px, p, 6px, p, 2px, f:p"), mainLayoutPanel);
-            
-            builder.add(new JLabel(columnListLabel, SwingConstants.CENTER), cc.xy(1, 1));
-            builder.add(new JLabel(schemaListLabel, SwingConstants.CENTER), cc.xy(5, 1));
-            builder.add(unusedScrollPane,        cc.xy(1, 3));
-            builder.add(tableScrollPane,         cc.xy(5, 3));
-            
-            builder.add(outerMiddlePanel.getPanel(),  cc.xywh(1, 5, 5, 1));
-            
-            builder.add(new JLabel(mapListLeftLabel, SwingConstants.CENTER), cc.xy(1, 7));
-            builder.add(new JLabel(mapListRightLabel, SwingConstants.CENTER), cc.xy(5, 7));
-    
-            builder.add(mapScrollPane,                cc.xywh(1, 9, 5, 1));
-            builder.add(upDownPanel.getPanel(), cc.xy(7, 9));
-            
-        } else
-        {
-            // NOTE: When creating a Mapping from scratch, 
-            // it has the Add/Del btns intead of the Map and Unmap btns
-            PanelBuilder upDownPanel = new PanelBuilder(new FormLayout("p", "f:p:g, p, 2px, p, f:p:g"));        
-            upDownPanel.add(upBtn,    cc.xy(1, 2));
-            upDownPanel.add(downBtn,  cc.xy(1, 4));
-    
-            PanelBuilder outerMiddlePanel = new PanelBuilder(new FormLayout("f:p:g, p, f:p:g", "p"));
-            PanelBuilder middlePanel = new PanelBuilder(new FormLayout("f:p:g, p, 4px, p, f:p:g", "p"));
-            middlePanel.add(addBtn, cc.xy(2,1));
-            middlePanel.add(delBtn, cc.xy(4,1));
-            btnPanel = middlePanel.getPanel();
-            outerMiddlePanel.add(btnPanel, cc.xy(2, 1));
-            
-            // Main Pane Layout
-            PanelBuilder    builder = new PanelBuilder(new FormLayout("f:max(250px;p):g, 2px, p", 
-                                                                      "p, 2px, f:max(150px;p):g, 5px, p, 5px, p, 2px, f:p"), mainLayoutPanel);
-            
-            builder.add(new JLabel(schemaListLabel, SwingConstants.CENTER), cc.xy(1, 1));
-            builder.add(tableScrollPane,          cc.xy(1, 3));
-            
-            builder.add(outerMiddlePanel.getPanel(),   cc.xy(1, 5));
-            
-            builder.add(new JLabel(getResourceString("WB_DATASET_COLUMNS"),  SwingConstants.CENTER), cc.xy(1, 7));
-    
-            builder.add(mapScrollPane,          cc.xy(1, 9));
-            builder.add(upDownPanel.getPanel(), cc.xy(3, 9));
-            
-        }
+        PanelBuilder labelsBldr = new PanelBuilder(new FormLayout("p, f:p:g, p", "p"));        
+        labelsBldr.add(new JLabel(mapListLeftLabel, SwingConstants.LEFT), cc.xy(1, 1));
+        labelsBldr.add(new JLabel(mapListRightLabel, SwingConstants.RIGHT), cc.xy(3, 1));
+
+        PanelBuilder upDownPanel = new PanelBuilder(new FormLayout("p", "f:p:g, p, 2px, p, f:p:g"));        
+        upDownPanel.add(upBtn,    cc.xy(1, 2));
+        upDownPanel.add(downBtn,  cc.xy(1, 4));
+
+        PanelBuilder outerMiddlePanel = new PanelBuilder(new FormLayout("p", "f:p:g, p, f:p:g"));
+        PanelBuilder middlePanel = new PanelBuilder(new FormLayout("p", "p, 2px, p"));
+        middlePanel.add(mapToBtn, cc.xy(1, 1));
+        middlePanel.add(unmapBtn, cc.xy(1, 3));
+        
+        btnPanel = middlePanel.getPanel();
+        outerMiddlePanel.add(btnPanel, cc.xy(1, 2));
+        
+        // Main Pane Layout
+        PanelBuilder    builder = new PanelBuilder(new FormLayout("f:max(200px;p):g, 5px, max(200px;p), 5px, p:g, 5px, f:max(250px;p):g, 2px, p", 
+                                                                  "p, 2px, f:max(350px;p):g"), mainLayoutPanel);
+        
+        builder.add(new JLabel(dataTypeLabel, SwingConstants.CENTER), cc.xy(1, 1));
+        builder.add(new JLabel(fieldsLabel,   SwingConstants.CENTER), cc.xy(3, 1));
+        builder.add(labelsBldr.getPanel(),                            cc.xy(7, 1));
+        
+        builder.add(tableScrollPane, cc.xy(1, 3));
+        builder.add(fieldScrollPane, cc.xy(3, 3));
+        
+        builder.add(outerMiddlePanel.getPanel(),  cc.xy(5, 3));
+        
+        builder.add(mapScrollPane,          cc.xy(7, 3));
+        builder.add(upDownPanel.getPanel(), cc.xy(9, 3));
+                    
         mainLayoutPanel.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
         contentPanel = mainLayoutPanel;
         
@@ -550,6 +417,10 @@ public class TemplateEditor extends CustomDialog
         
         mainPanel.add(contentPanel, BorderLayout.CENTER);
         
+        FieldMappingPanel fmp = addMappingItem(null, IconManager.getIcon("BlankIcon", IconManager.IconSize.Std24), null);
+        fmp.setAdded(true);
+        fmp.setNew(true);
+        
         pack();
         
         SwingUtilities.invokeLater(new Runnable() {
@@ -557,12 +428,30 @@ public class TemplateEditor extends CustomDialog
             public void run()
             {
                 cancelBtn.requestFocus();
+                fieldModel.clear();
                 updateEnabledState();
             }
         });
     }
     
     
+    /**
+     * Fill in the JList's model from the list of fields.
+     * @param tableInfo the table who's list we should use
+     */
+    protected void fillFieldList(final TableInfo tableInfo)
+    {
+        DefaultListModel model = (DefaultListModel)fieldList.getModel();
+        model.clear();
+        
+        if (tableInfo != null)
+        {
+            for (FieldInfo fi : tableInfo.getFieldItems())
+            {
+                model.addElement(fi);
+            }
+        }
+    }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.CustomDialog#okButtonPressed()
@@ -574,44 +463,6 @@ public class TemplateEditor extends CustomDialog
         adjustViewOrder();
         
         super.okButtonPressed();
-    }
-
-    /**
-     * Notification the table ist was clicked, so we can determin if the expanded icon was clicked on.
-     * @param e the mouse event
-     */
-    protected void tableListClicked(MouseEvent e)
-    {
-        if (e.getButton() != MouseEvent.BUTTON1)
-        {
-            return;
-        }
-                
-        JList list  = (JList)e.getSource();
-        Point p     = e.getPoint();
-        int   index = list.locationToIndex(p);
-        if (index == -1)
-        {
-            return;
-        }
-        TableListItemIFace ti = tableModel.getElementAt(index);
-
-        // if the user clicked an expansion handle, expand the child nodes
-        if (ti.isExpandable() && tableInfoListRenderer.getTextOffset() > e.getPoint().x)
-        {
-            // toggle the state of child node visibility
-            //boolean visible = listModel.allChildrenAreVisible(t);
-            expand(ti, !ti.isExpanded());
-        }
-        // otherwise, ignore the click
-        else if (!ti.isExpandable() && !ti.isChecked() && e.getClickCount() == 2)
-        {
-            addNewMapItem(null, null);
-            
-        } else
-        {
-            e.consume();
-        }
     }
     
     /**
@@ -634,10 +485,10 @@ public class TemplateEditor extends CustomDialog
                                                final ImageIcon        mappingIcon,
                                                final WorkbenchTemplateMappingItem wbtmi)
     {
-        final FieldMappingPanel fmp = new FieldMappingPanel(colInfo, mappingIcon, !isMappedToAFile && workbenchTemplate == null);
+        FieldMappingPanel fmp = new FieldMappingPanel(colInfo, mappingIcon);
         fmp.setWbtmi(wbtmi);
         
-        fmp.setSchemaLabelVisible(workbenchTemplate != null || isMappedToAFile);
+        //fmp.setSchemaLabelVisible(true);//workbenchTemplate != null || isMappedToAFile);
         
         mapModel.add(fmp);
         
@@ -651,40 +502,53 @@ public class TemplateEditor extends CustomDialog
      */
     protected void updateEnabledState()
     {
-        int     mapInx    = mapList.getSelectedIndex();
-        boolean isNewItem = mapInx > -1 ? mapModel.getElementAt(mapInx).isNew() : false;
-        
-        TableListItemIFace item = (TableListItemIFace)tableList.getSelectedValue();
-        if (item != null)
+        int mapInx = mapList.getSelectedIndex();
+        if (mapInx > -1)
         {
-            boolean hasField = !item.isChecked() && !item.isExpandable();
-            mapToBtn.setEnabled(hasField && !isNewItem && ((unusedList != null && unusedList.getSelectedIndex() > -1) || mapInx > -1));
-            unmapBtn.setEnabled(mapInx > -1 && !isNewItem);
+            FieldMappingPanel  fmp     = mapModel.getElementAt(mapInx);
+            TableListItemIFace tblItem = (TableListItemIFace)tableList.getSelectedValue();
+            TableListItemIFace fldItem = (TableListItemIFace)fieldList.getSelectedValue();
             
-            boolean allChecked = allFieldsChecked();
-            
-            if (isEditMode || isMappedToAFile)
+            if (tblItem != null && fldItem != null)
             {
-                addBtn.setEnabled(unusedList.getSelectedIndex() == -1 && !allChecked);
+                mapToBtn.setEnabled(!fldItem.isChecked());
+                unmapBtn.setEnabled(!fmp.isNew() && fmp.getFieldInfo() != null);
+                
+                //boolean allChecked = allFieldsChecked();
+                
+                if (isEditMode || isMappedToAFile)
+                {
+                    // ZZZ addBtn.setEnabled(unusedList.getSelectedIndex() == -1 && !allChecked);
+                } else
+                {
+                }
+                
+                upBtn.setEnabled(mapInx > 0 && !fmp.isNew());
+                downBtn.setEnabled(mapInx < mapModel.size()-2 && !fmp.isNew());
+                
             } else
             {
-                addBtn.setEnabled(!allChecked);
+                mapToBtn.setEnabled(false);
             }
-            
-            upBtn.setEnabled(mapInx > 0);
-            downBtn.setEnabled(mapInx > -1 && mapInx < mapModel.size()-1);
-            
         } else
         {
             mapToBtn.setEnabled(false);
-            addBtn.setEnabled(false);
+            unmapBtn.setEnabled(false);
         }
-
-        delBtn.setEnabled(mapInx > -1 && isNewItem);
         
         if (okBtn != null && hasChanged)
         {
-            okBtn.setEnabled(mapModel.size() > 0);
+            boolean isOK = false;
+            for (int i=0;i<mapModel.size();i++)
+            {
+                FieldMappingPanel fmp = (FieldMappingPanel)mapModel.get(i);
+                if (fmp.getFieldInfo() != null)
+                {
+                    isOK = true;
+                    break;
+                }
+            }
+            okBtn.setEnabled(isOK);
         }
         
         repaint();
@@ -695,39 +559,17 @@ public class TemplateEditor extends CustomDialog
      */
     protected void adjustViewOrder()
     {
+        short inx = 0;
         for (int i=0;i<mapModel.size();i++)
         {
             FieldMappingPanel fmp = mapModel.getElementAt(i);
-            fmp.setViewOrder((short)i);
+            if (fmp.getFieldInfo() != null)
+            {
+                fmp.setViewOrder((short)inx);
+                inx++;
+            }
             //System.out.println(fmp.getFieldName()+" "+i+" "+fmp.getViewOrder());
         }
-    }
-    
-    /**
-     * Fill in the JList's model from the list of fields.
-     * @param item the table who's list we should use
-     * @param expand tells the table whether to expand or shrink
-     */
-    protected void expand(final TableListItemIFace item, final boolean expand)
-    {
-        TableInfo ti = (TableInfo)item;
-        ti.setExpanded(expand);
-        if (expand)
-        {
-            int index = tableModel.indexOf(item);
-            Vector<FieldInfo> fiItems = ti.getFieldItems();
-            for (int i=fiItems.size()-1;i>=0;i--)
-            {
-                tableModel.insertElementAt(fiItems.get(i), index+1);
-            }
-        } else
-        {
-            for (FieldInfo fi : ti.getFieldItems())
-            {
-                tableModel.remove(fi);
-            } 
-        }
-        tableList.repaint();
     }
     
     /**
@@ -735,37 +577,29 @@ public class TemplateEditor extends CustomDialog
      */
     protected FieldMappingPanel map()
     {
-        ImportColumnInfo colInfo = (ImportColumnInfo)unusedList.getSelectedValue();
-        FieldInfo        fi      = (FieldInfo)tableList.getSelectedValue();
+        FieldMappingPanel fmp     = (FieldMappingPanel)mapList.getSelectedValue();
         
-        FieldMappingPanel fmp;
-        
-        WorkbenchTemplateMappingItem wbtmi = null;
-        if (colInfo != null)
+        if (fmp.isNew())
         {
-            wbtmi = unusedWBTMIs.get(colInfo);
-            unusedModel.remove(colInfo);
-        }
-        
-        if (mapList.getSelectedIndex() > -1)
-        {
-            fmp = (FieldMappingPanel)mapList.getSelectedValue();
-            fmp.getFieldInfo().setChecked(false);
-            fmp.setFieldInfo(fi);
-            fi.setChecked(true);
-            tableList.repaint();
-            mapList.repaint();
+            mapModel.remove(fmp);
+            
+            addNewMappingItems();
+            
+            FieldMappingPanel newFmp = addMappingItem(null, IconManager.getIcon("BlankIcon", IconManager.IconSize.Std24), null);
+            newFmp.setAdded(true);
+            newFmp.setNew(true);
             
         } else
         {
-            fmp = map(colInfo, fi, wbtmi);
+            ImportColumnInfo  colInfo = fmp.getColInfo();
+            FieldInfo         fi      = (FieldInfo)fieldList.getSelectedValue();
+            TableInfo         tblInfo = (TableInfo)tableList.getSelectedValue();
+            
+            map(fmp, colInfo, tblInfo, fi, fmp.getWbtmi());
         }
-        
-        if (wbtmi != null)
-        {
-            unusedWBTMIs.remove(colInfo);
-        }
-        
+
+        updateEnabledState();
+
         return fmp;
     }
     
@@ -776,21 +610,44 @@ public class TemplateEditor extends CustomDialog
      * @param wbtmi the optional template info, which is null for new columns and not null when editting old already saved cols
      * @return the new mapping panel
      */
-    protected FieldMappingPanel map(final ImportColumnInfo colInfo, final FieldInfo fi, final WorkbenchTemplateMappingItem wbtmi)
+    protected FieldMappingPanel map(final FieldMappingPanel  fmpArg,
+                                    final ImportColumnInfo   colInfo, 
+                                    final TableInfo          tableInfo, 
+                                    final FieldInfo          fieldInfo, 
+                                    final WorkbenchTemplateMappingItem wbtmi)
     {
-        FieldMappingPanel fmp;
-        fi.setInUse(true);
-        if (colInfo != null)
+        FieldMappingPanel fmp = fmpArg;
+        if (fmp == null)
         {
-            fmp = addMappingItem(colInfo, IconManager.getIcon(fi.getTableinfo().getObjTitle(), IconManager.IconSize.Std24), wbtmi);
-            fmp.setIcon(IconManager.getIcon(fi.getTableinfo().getObjTitle(), IconManager.IconSize.Std24));
-            fmp.setFieldInfo(fi);
+            fmp = addMappingItem(colInfo, null, wbtmi);
+        }
+        
+        // Clear the old from being used
+        FieldInfo oldFieldInfo = fmp.getFieldInfo();
+        if (oldFieldInfo != null)
+        {
+            oldFieldInfo.setInUse(false);
+        }
+        
+        fieldInfo.setInUse(true);
+        
+        fmp.setColInfo(colInfo);
+        fmp.setFieldInfo(fieldInfo);
+        fmp.setWbtmi(wbtmi);
+        fmp.setIcon(tableInfo.getTableInfo().getIcon(IconManager.IconSize.Std24));
+        
+        fmp.getArrowLabel().setVisible(true);
+        
+        if (colInfo == null && wbtmi == null)
+        {
+            fmp.setColFieldLabel(fieldInfo.getText());
+            fmp.getArrowLabel().setIcon(IconManager.getIcon("LinkedRight"));
             
         } else
         {
-            fmp = addNewMapItem(fi, wbtmi);
+            fmp.getArrowLabel().setIcon(IconManager.getIcon(colInfo != null ? "Linked" : "LinkedRight"));
         }
-
+        
         setChanged(true);
         
         updateEnabledState();
@@ -805,22 +662,23 @@ public class TemplateEditor extends CustomDialog
     {
         FieldMappingPanel fmp = (FieldMappingPanel)mapList.getSelectedValue();
         
-        if (!fmp.isNew())
-        {
-            unusedModel.add(fmp.getColInfo());
-            if (fmp.getWbtmi() != null)
-            {
-                unusedWBTMIs.put(fmp.getColInfo(), fmp.getWbtmi());
-            }
-        }
-        
         FieldInfo fieldInfo = fmp.getFieldInfo();
         if (fieldInfo != null)
         {
             fieldInfo.setChecked(false);
-            tableList.repaint();
+            fieldList.repaint();
         }
-        mapModel.remove(fmp);
+        
+        if (fmp.isAdded())
+        {
+            mapModel.remove(fmp);
+            
+        } else
+        {
+            fmp.setFieldInfo(null);
+            fmp.getArrowLabel().setIcon(null);
+            mapList.repaint();
+        }
         
         setChanged(true);
         
@@ -867,25 +725,17 @@ public class TemplateEditor extends CustomDialog
      */
     protected void addNewMappingItems()
     {
-        Object[] objs = tableList.getSelectedValues();
+        Object[] objs = fieldList.getSelectedValues();
         if (objs != null && objs.length > 0)
         {
             for (Object obj : objs)
             {
                 TableListItemIFace item = (TableListItemIFace)obj;
-                if (item.isExpandable())
+                if (!item.isChecked())
                 {
-                    TableInfo tableInfo = (TableInfo)item;
-                    for (FieldInfo fieldInfo : tableInfo.getFieldItems())
-                    {
-                        if (!fieldInfo.isChecked())
-                        {
-                            addNewMapItem(fieldInfo, null);
-                        }
-                    }
-                } else if (!item.isChecked())
-                {
-                    addNewMapItem((FieldInfo)item, null);
+                    FieldMappingPanel fmp = addNewMapItem((FieldInfo)item, null);
+                    fmp.getArrowLabel().setVisible(true);
+                    fmp.getArrowLabel().setIcon(IconManager.getIcon("LinkedRight"));
                 }
             }
         }
@@ -912,11 +762,11 @@ public class TemplateEditor extends CustomDialog
                                                             null);
         FieldMappingPanel fmp = addMappingItem(colInfo, IconManager.getIcon(fieldInfo.getTableinfo().getObjTitle(), IconManager.IconSize.Std24), wbtmi);
         fmp.setFieldInfo(fieldInfo);
-        fmp.setNew(wbtmi == null); // new Items that was not in the data file.
+        fmp.setAdded(wbtmi == null); // new Items that was not in the data file.
         
         setChanged(true);
         
-        tableList.repaint();
+        fieldList.repaint();
 
         updateEnabledState();
         
@@ -1010,6 +860,7 @@ public class TemplateEditor extends CustomDialog
         // find the mapping that matches this column name
         for (Pair<String,TableFieldPair> mapping: automappings)
         {
+            //System.out.println("["+fieldName+"]["+mapping.first+"]");
             if (fieldName.matches(mapping.first))
             {
                 TableFieldPair tblFldPair = mapping.second;
@@ -1026,11 +877,11 @@ public class TemplateEditor extends CustomDialog
         {
             for (int i=0;i<tableModel.size();i++)
             {
-                TableListItemIFace item = tableModel.getElementAt(i);
-                if (!item.isExpandable())
+                TableInfo tblInfo = (TableInfo)tableModel.getElementAt(i);
+                for (FieldInfo fi : tblInfo.getFieldItems())
                 {
-                    FieldInfo fi           = (FieldInfo)item;
                     String    tblFieldName = fi.getFieldInfo().getName().toLowerCase();
+                    //System.out.println("["+tblFieldName+"]["+fieldNameLower+"]");
                     if (tblFieldName.equals(fieldNameLower) || tblFieldName.startsWith(fieldNameLower))
                     {
                         return fi;
@@ -1104,23 +955,33 @@ public class TemplateEditor extends CustomDialog
             FieldInfo fieldInfo = autoMapFieldName(colInfo.getColName(), automappings);
             if (fieldInfo != null)
             {
+                TableInfo tblInfo = null;
                 // Find the right TableInfo
                 for (int i=0;i<tableModel.size();i++)
                 {
                     TableListItemIFace item = tableModel.getElementAt(i);
                     if (item.isExpandable() && ((TableInfo)item).getTableInfo() == fieldInfo.getTableinfo())
                     {
-                        tablesInUse.put((TableInfo)item, true);
+                        tblInfo = (TableInfo)item;
+                        tablesInUse.put(tblInfo, true);
                         break;
                     }
                 }
                 
-                map(colInfo, fieldInfo, null);
+                if (tblInfo == null)
+                {
+                    throw new RuntimeException("Couldn't find table info for fieldinfo.");
+                }
+                
+                FieldMappingPanel fmp = map(null, colInfo, tblInfo, fieldInfo, null);
+                fmp.setIcon(IconManager.getIcon(fieldInfo.getTableinfo().getObjTitle(), IconManager.IconSize.Std24));
                 
             } else
             {
                 notAllMapped = true; // oops, couldn't find a mapping for something
-                unusedModel.add(colInfo);
+                FieldMappingPanel fmp = new FieldMappingPanel(colInfo, blankIcon);
+                fmp.getArrowLabel().setVisible(false);
+                mapModel.add(fmp);
             }
         }
         
@@ -1128,8 +989,6 @@ public class TemplateEditor extends CustomDialog
         {
             okBtn.setEnabled(false);
         }
-        
-        collapseToUsedTables(tablesInUse);
         
         updateEnabledState();
     }
@@ -1178,48 +1037,18 @@ public class TemplateEditor extends CustomDialog
         
         mapList.getSelectionModel().clearSelection();
         tableList.getSelectionModel().clearSelection();
-        
-        collapseToUsedTables(tablesInUse);
-    }
-    
-    protected void collapseToUsedTables(final Hashtable<TableInfo, Boolean> tablesInUse)
-    {
-        Vector<TableInfo> tables = new Vector<TableInfo>();
-        for (int i=0;i<tableModel.size();i++)   
-        {
-            TableListItemIFace item = tableModel.getElementAt(i);
-            if (item.isExpandable())
-            {
-                tables.add((TableInfo)item);
-            }
-        }
-        
-        for (TableInfo ti : tables)
-        {
-            if (tablesInUse.get(ti) == null)
-            {
-                expand(ti, false);
-            }
-        }
     }
     
     /**
-     * Returns the items that were removed.
-     * @return the items that were removed.
+     * @return
      */
-    public Collection<WorkbenchTemplateMappingItem> getUnusedItems()
-    {
-        return unusedWBTMIs.values();
-    }
-    
-    
     public Collection<WorkbenchTemplateMappingItem> getNewItems()
     {
         Vector<WorkbenchTemplateMappingItem> newItems = new Vector<WorkbenchTemplateMappingItem>();
         for (int i=0;i<mapModel.size();i++)
         {
             FieldMappingPanel fmp = mapModel.getElementAt(i);
-            if (fmp.getWbtmi() == null)
+            if (fmp.getFieldInfo() != null && fmp.getWbtmi() == null)
             {
                 ImportColumnInfo  colInfo   = fmp.getColInfo();
                 FieldInfo         fieldInfo = fmp.getFieldInfo();
@@ -1236,7 +1065,7 @@ public class TemplateEditor extends CustomDialog
                 item.setDataFieldLength(len == -1 ? 15 : len);
                 
                 item.setViewOrder(fmp.getViewOrder());
-                item.setOrigImportColumnIndex(fmp.isNew() ? -1 : colInfo.getColInx());
+                item.setOrigImportColumnIndex(fmp.isAdded() ? -1 : colInfo.getColInx());
                 newItems.add(item);
             }
         }
@@ -1244,20 +1073,24 @@ public class TemplateEditor extends CustomDialog
         return newItems;
     }
     
-    public Collection<WorkbenchTemplateMappingItem> getUpdatedItems()
+    /**
+     * @return
+     */
+    public Collection<WorkbenchTemplateMappingItem> getDeletedItems()
     {
         Vector<WorkbenchTemplateMappingItem> items = new Vector<WorkbenchTemplateMappingItem>();
         for (int i=0;i<mapModel.size();i++)
         {
             FieldMappingPanel fmp = mapModel.getElementAt(i);
             //System.out.println("getUpdatedItems "+fmp.getWbtmi().getCaption()+" "+i+" "+fmp.getViewOrder()+" - "+fmp.getWbtmi().getViewOrder());
-            if (fmp.getWbtmi() != null)
+            if (fmp.getFieldInfo() == null && fmp.getWbtmi() != null)
             {
                 items.add(fmp.getWbtmi());
             }
         }
         return items;
     }
+
     
     /**
      * Returns the WorkbenchTemplate for the Mappings.
@@ -1293,7 +1126,7 @@ public class TemplateEditor extends CustomDialog
             //log.error(tblField.getFieldInfo().getLength()+"  tblID: "+tblField.getTableinfo().getTableId());
             
             item.setViewOrder(order);
-            item.setOrigImportColumnIndex(fmp.isNew() ? -1 : colInfo.getColInx());
+            item.setOrigImportColumnIndex(fmp.isAdded() ? -1 : colInfo.getColInx());
             order++;
             item.setWorkbenchTemplate(wbTemplate);
             
@@ -1313,7 +1146,7 @@ public class TemplateEditor extends CustomDialog
     {
         protected String            noMappingStr = getResourceString("WB_NO_MAPPING");
 
-        protected boolean           hasFocus      = false;
+        protected boolean           isSelected      = false;
         protected Color             bgColor       = null;
         protected JLabel            colFieldLabel;
         protected JLabel            schemaLabel;
@@ -1325,6 +1158,8 @@ public class TemplateEditor extends CustomDialog
         
         protected FieldInfo         fieldInfo     = null;
         protected ImportColumnInfo  colInfo       = null;
+        protected boolean           isAdded       = false;
+        
         protected boolean           isNew         = false;
         
         protected WorkbenchTemplateMappingItem wbtmi = null;
@@ -1336,47 +1171,45 @@ public class TemplateEditor extends CustomDialog
          * @param fromScratch the mapping is from scratch so use the "brief" display
          */
         public FieldMappingPanel(final ImportColumnInfo colInfo, 
-                                 final ImageIcon        mappingIcon,
-                                 final boolean          fromScratch)
+                                 final ImageIcon        mappingIcon)
         {
             this.colInfo = colInfo;
             setBackground(Color.WHITE);
             
-            /*
-            PanelBuilder    builder = new PanelBuilder(new FormLayout("2px, p:g, max(p;150px), p, max(p;150px), p:g, 4px,p,2px", "p:g"), this);
+
+            PanelBuilder    builder = new PanelBuilder(new FormLayout("2px,p,2px,150px, p:g, p, p:g, 150px,2px", "p:g"), this);
             CellConstraints cc      = new CellConstraints();
 
-            colFieldLabel = new JLabel(colInfo.getColName(), SwingConstants.RIGHT);
+            colFieldLabel = new JLabel(colInfo != null ? colInfo.getColName() : "", SwingConstants.RIGHT);
             schemaLabel   = new JLabel(noMappingStr, SwingConstants.LEFT);
             arrowLabel    = new JLabel(IconManager.getIcon("Linked"));
             
             setFocusable(true);
             
-            builder.add(colFieldLabel,                       cc.xy(3,1));
-            builder.add(arrowLabel,                          cc.xy(4,1));
-            builder.add(schemaLabel,                         cc.xy(5,1));
-            builder.add(iconLabel = new JLabel(mappingIcon), cc.xy(8,1));
+            builder.add(iconLabel = new JLabel(mappingIcon), cc.xy(2,1));
             setIcon(mappingIcon);
-             */
-            PanelBuilder    builder = new PanelBuilder(new FormLayout("2px,150px, p:g, p, p:g, 150px,2px,p,2px", "p:g"), this);
-            CellConstraints cc      = new CellConstraints();
-
-            colFieldLabel = new JLabel(colInfo.getColName());
-            schemaLabel   = new JLabel(noMappingStr, SwingConstants.RIGHT);
-            arrowLabel    = new JLabel(IconManager.getIcon("Linked"));
-            
-            setFocusable(true);
-            
-            builder.add(colFieldLabel,                       cc.xy(2,1));
-            if (!fromScratch)
-            {
-                builder.add(arrowLabel,                      cc.xy(4,1));
-            }
-            builder.add(schemaLabel,                         cc.xy(6,1));
-            builder.add(iconLabel = new JLabel(mappingIcon), cc.xy(8,1));
-            setIcon(mappingIcon);
+            builder.add(schemaLabel, cc.xy(4,1));
+            builder.add(arrowLabel, cc.xy(6,1));
+            builder.add(colFieldLabel, cc.xy(8,1));
         }
         
+        /**
+         * @param colInfo the colInfo to set
+         */
+        public void setColInfo(final ImportColumnInfo colInfo)
+        {
+            this.colInfo = colInfo;
+            colFieldLabel.setText(colInfo != null ? colInfo.getColName() : "");
+        }
+        
+        /**
+         * @param text the new text for the label
+         */
+        public void setColFieldLabel(final String text)
+        {
+            colFieldLabel.setText(text);
+        }
+
         /**
          * @return the wbtmi
          */
@@ -1386,11 +1219,19 @@ public class TemplateEditor extends CustomDialog
         }
 
         /**
+         * @return the arrowLabel
+         */
+        public JLabel getArrowLabel()
+        {
+            return arrowLabel;
+        }
+
+        /**
          * @param wbtmi the wbtmi to set
          */
         public void setWbtmi(final WorkbenchTemplateMappingItem wbtmi)
         {
-            setSchemaLabelVisible(wbtmi != null || isMappedToAFile);
+            //setSchemaLabelVisible(wbtmi != null || isMappedToAFile);
             
             if (wbtmi != null && workbenchTemplate != null)
             {
@@ -1434,7 +1275,10 @@ public class TemplateEditor extends CustomDialog
         public void setFieldInfo(final FieldInfo fieldInfoArg) // make this FieldInfo
         {
             fieldInfo = fieldInfoArg;
-            
+            if (fieldInfoArg == null)
+            {
+                iconLabel.setIcon(blankIcon);
+            }
             schemaLabel.setText(fieldInfoArg != null ? fieldInfoArg.getFieldInfo().getColumn() : noMappingStr);
             schemaLabel.repaint();
         }
@@ -1466,23 +1310,23 @@ public class TemplateEditor extends CustomDialog
 
         /**
          * Sets the object to have focus.
-         * @param hasFocus true/false
+         * @param isSelected true/false
          */
-        public void setHasFocus(final boolean hasFocus)
+        public void setSelected(final boolean isSelected)
         {
             if (bgColor == null)
             {
                 bgColor = getBackground();
             }
             
-            this.hasFocus = hasFocus;
+            this.isSelected = isSelected;
             
             if (UIHelper.getOSType() == UIHelper.OSTYPE.Windows)
             {
-                colFieldLabel.setForeground(hasFocus ? Color.WHITE : Color.BLACK);
-                schemaLabel.setForeground(hasFocus ? Color.WHITE : Color.BLACK);
+                colFieldLabel.setForeground(isSelected ? Color.WHITE : Color.BLACK);
+                schemaLabel.setForeground(isSelected ? Color.WHITE : Color.BLACK);
             }
-            setBackground(hasFocus ? tableList.getSelectionBackground() : bgColor);
+            setBackground(isSelected ? tableList.getSelectionBackground() : bgColor);
         }
 
         public void setIcon(ImageIcon mappingIcon)
@@ -1498,7 +1342,6 @@ public class TemplateEditor extends CustomDialog
         {
             return fieldInfo;
         }
-        
         
         /**
          * Returns the ColumnInfo object.
@@ -1522,18 +1365,40 @@ public class TemplateEditor extends CustomDialog
          * Returns whether this is a new item, which means it was NOT in the data file.
          * @return  whether this is a new item, which means it was NOT in the data file.
          */
+        public boolean isAdded()
+        {
+            return isAdded;
+        }
+
+        /**
+         * Sets whether it is a new item, that wasn't in the data file.
+         * @param isAdded true its new, false it was from the data file.
+         */
+        public void setAdded(boolean isAdded)
+        {
+            this.isAdded = isAdded;
+        }
+
+        /**
+         * @return the isNew
+         */
         public boolean isNew()
         {
             return isNew;
         }
 
         /**
-         * Sets whether it is a new item, that wasn't in the data file.
-         * @param isNew true its new, false it was from the data file.
+         * @param isNew the isNew to set
          */
         public void setNew(boolean isNew)
         {
             this.isNew = isNew;
+            if (isNew)
+            {
+                schemaLabel.setText("<New>"); // XXX I18N
+                schemaLabel.setVisible(true);
+                arrowLabel.setVisible(false);
+            }
         }
     }
     
@@ -1542,20 +1407,47 @@ public class TemplateEditor extends CustomDialog
     //------------------------------------------------------------------
     class MapCellRenderer implements ListCellRenderer
     {
-
+        private final Border noFocusBorder        = new EmptyBorder(1, 1, 1, 1);
+        private final Border SAFE_NO_FOCUS_BORDER = new EmptyBorder(1, 1, 1, 1);
+        
         /* (non-Javadoc)
          * @see javax.swing.ListCellRenderer#getListCellRendererComponent(javax.swing.JList, java.lang.Object, int, boolean, boolean)
          */
-        public Component getListCellRendererComponent(JList list,
-                                                      Object value,
-                                                      int index,
+        public Component getListCellRendererComponent(JList   list,
+                                                      Object  value,
+                                                      int     index,
                                                       boolean isSelected,
                                                       boolean cellHasFocus)
         {
             FieldMappingPanel panel = (FieldMappingPanel)value;
-            panel.setHasFocus(isSelected);
+            panel.setSelected(isSelected);
             panel.setToolTipText(panel.getFieldInfo() != null ? panel.getToolTipText() : "");
+            
+            Border border = null;
+            if (cellHasFocus)
+            {
+                if (isSelected)
+                {
+                    border = UIManager.getBorder("List.focusSelectedCellHighlightBorder");
+                }
+                if (border == null)
+                {
+                    border = UIManager.getBorder("List.focusCellHighlightBorder");
+                }
+            } else
+            {
+                border = getNoFocusBorder();
+            }
+            panel.setBorder(border);
             return (Component)value;
+        }
+        
+        private Border getNoFocusBorder() {
+            if (System.getSecurityManager() != null) {
+                return SAFE_NO_FOCUS_BORDER;
+            } else {
+                return noFocusBorder;
+            }
         }
         
     }
