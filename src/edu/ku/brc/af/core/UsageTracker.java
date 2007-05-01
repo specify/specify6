@@ -68,7 +68,7 @@ public class UsageTracker
         long  lastMod = pluginRegFile.lastModified();
         String lastModString = Long.toHexString(lastMod);
         
-        if (installIdEnd != null && !installIdEnd.equals(lastModString))
+        if (installIdEnd == null || !installIdEnd.equals(lastModString))
         {
             // somebody must have copied this install to a new location
             // reset the InstallIdEnd preference
