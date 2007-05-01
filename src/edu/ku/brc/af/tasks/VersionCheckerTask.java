@@ -4,18 +4,25 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URI;
+import java.net.URL;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
 
+import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JTextPane;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.dom4j.Node;
 
@@ -26,7 +33,9 @@ import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -38,6 +47,8 @@ import edu.ku.brc.util.Pair;
  */
 public class VersionCheckerTask extends BaseTask
 {
+    private static final Logger log = Logger.getLogger(VersionCheckerTask.class);
+    
     public static final String VERSION_CHECK = "VersionChecker";
     
     public VersionCheckerTask()
@@ -318,25 +329,72 @@ public class VersionCheckerTask extends BaseTask
      */
     protected void displayUpdatesAvailablePopup(List<String> availableUpdates)
     {
-        // TODO: implement this with production code
+        UpdatesAvailableDialog updatesPopup = new UpdatesAvailableDialog();
+        updatesPopup.setAvailableUpdates(availableUpdates);
+        updatesPopup.setAlwaysOnTop(true);
+        updatesPopup.setVisible(true);
+    }
+    
+    static class UpdatesAvailableDialog extends CustomDialog
+    {
+        protected JTextPane content      = new JTextPane();
         
-        String popupMessage = "<html>";
-        
-        if (availableUpdates.size() == 0)
+        public UpdatesAvailableDialog()
         {
-            // no updates available
-            popupMessage += "No updates available";
-        }
-        else
-        {
-            popupMessage += "Update versions are available for the following modules:<ul>";
-            for (String update: availableUpdates)
+            super((JFrame)UIRegistry.get(UIRegistry.TOPFRAME), getResourceString("VER_CHK_TITLE"), false, CustomDialog.OK_BTN, null);
+            content.setContentType("text/html");
+            content.setEditable(false);
+            setContentPanel(content);
+            
+            content.addHyperlinkListener(new HyperlinkListener()
             {
-                popupMessage += "<li>" + update + "</li>";
-            }
-            popupMessage += "</ul>";
+                @SuppressWarnings("synthetic-access")
+                public void hyperlinkUpdate(HyperlinkEvent e)
+                {
+                    if (e.getEventType() != HyperlinkEvent.EventType.ACTIVATED)
+                    {
+                        return;
+                    }
+                    
+                    URL targetURL = e.getURL();
+                    try
+                    {
+                        URI targetURI = targetURL.toURI();
+                        AttachmentUtils.openURI(targetURI);
+                    }
+                    catch (Exception ex)
+                    {
+                        log.error("Exception occurred while opening update website", ex);
+                    }
+                }
+            });
         }
         
-        JOptionPane.showMessageDialog(UIRegistry.get(UIRegistry.TOPFRAME), popupMessage, getResourceString("VER_CHK_TITLE"), JOptionPane.INFORMATION_MESSAGE);
+        public void setAvailableUpdates(List<String> availableUpdates)
+        {
+            String popupMessage = new String("<html>");
+            
+            if (availableUpdates.size() == 0)
+            {
+                // no updates available
+                popupMessage += "No updates available";
+            }
+            else
+            {
+                popupMessage += "Update versions are available for the following modules:<ul>";
+                for (String update: availableUpdates)
+                {
+                    popupMessage += "<li>" + update + "</li>";
+                }
+                popupMessage += "</ul><br/>";
+                
+                String downloadSiteURL = getResourceString("DOWNLOAD_SITE_URL");
+                popupMessage += "<a href=\"" + downloadSiteURL + "\">" + downloadSiteURL + "</a>";
+                
+                popupMessage += "</html>";
+            }
+            
+            content.setText(popupMessage);
+        }
     }
 }

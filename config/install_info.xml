@@ -3,7 +3,7 @@
         <Module name="Core"           version="pre-release"/>
        	<Module name="Workbench"      version="pre-release"/>
         <Module name="Exporter"       version="pre-release"/>
-        <Module name="VersionChecker" version="pre-release"/>
+        <Module name="VersionChecker" version="beta"/>
         <Module name="Labels"         version="pre-release"/>
         <Module name="RecordSets"     version="pre-release"/>
 </VersionInfo>
