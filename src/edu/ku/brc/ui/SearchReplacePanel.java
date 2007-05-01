@@ -46,9 +46,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jdesktop.swingx.Searchable;
 
@@ -57,6 +59,8 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.Specify;
+import edu.ku.brc.ui.ASearchableCell;
+import edu.ku.brc.ui.tmanfe.SpreadSheet;
 /**
  * @author megkumin
  * 
@@ -68,9 +72,9 @@ import edu.ku.brc.specify.Specify;
 @SuppressWarnings("serial")
 public class SearchReplacePanel extends JPanel
 {
-    private SearchableJXTable table;
+    private SpreadSheet table;
     private Pattern                  pattern;
-    private Searchable               searchable;
+    //private Searchable               searchable;
     @SuppressWarnings("unused")
     private boolean                  isStartOfSearch         = true;
     private boolean                  isSearchDown            = true;
@@ -98,23 +102,22 @@ public class SearchReplacePanel extends JPanel
     private LaunchFindAction         launchFindAction        = null;
 
     CellConstraints                  cc                      = new CellConstraints();
-    FormLayout                       formLayout              = new FormLayout(
-                                                                     "p,1px,p,1px,p,1px,p,1px,p,4px,p,1px,p,1px,p,1px,p,1px,p",
-                                                                     "p,1px,p,1px");
+    FormLayout                       formLayout              = new FormLayout("p,1px,p,1px,p,1px,p,1px,p,4px,p,1px," +
+                                                                "p,1px,p,1px,p,1px,p", "p,1px,p,1px");
     PanelBuilder                     builder                 = new PanelBuilder(formLayout, this);
-     
+
     protected static final Logger    log                     = Logger.getLogger(SearchReplacePanel.class);
-    
+
     /**
      * Constructor for the Find/Replace panel, takes a SearchableJXTable (extended from JXTable)
      * 
      * @param table - a SearchableJXTable table
      */
-    public SearchReplacePanel(SearchableJXTable mytable)
+    public SearchReplacePanel(SpreadSheet mytable)
     {
     	this.table = mytable;
         this.setVisible(false);
-        this.searchable = mytable.getSearchable();
+        //this.searchable = mytable.getSearchable();
         createFindAndReplacePanel();
         handleTableSelections();
     }
@@ -125,15 +128,9 @@ public class SearchReplacePanel extends JPanel
         {
             public void valueChanged(ListSelectionEvent e)
             {
-                //System.out.println("valueChanged");
-                /*
-                ListSelectionModel selModel = table.getSelectionModel();
-                int anchor = selModel.getAnchorSelectionIndex();
-                int lead   = selModel.getLeadSelectionIndex();
-                
-                System.out.println("anchor: "+anchor);
-                System.out.println("lead:   "+lead);
-                 */
+                nextButton.setEnabled(true);
+                previousButton.setEnabled(true);
+                clearLabelFromFailedFind();
             }          
         };
         table.getSelectionModel().addListSelectionListener(lsl);
@@ -326,28 +323,28 @@ public class SearchReplacePanel extends JPanel
      */
     public static void main(String[] args)
     {
-    	log.debug("main");
-        final JDialog dialog = new JDialog();
-        dialog.setLayout(new FlowLayout());
-        dialog.addWindowListener(new WindowAdapter()
-        {
-            public void windowClosing(WindowEvent we)
-            {
-                dialog.dispose();
-            }
-        });
-        log.debug("Creating testtable");
-        SearchableJXTable t = createTestTableFromJTable();
-        
-        t.setColumnSelectionAllowed(true);
-        t.setRowSelectionAllowed(true);
-        t.setCellSelectionEnabled(true);
-        dialog.getContentPane().add( new JScrollPane(t));
-        dialog.getContentPane().add(t.getFindReplacePanel());//getMyPanel());
-        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        dialog.setVisible(true);
-        dialog.setSize(900, 900);
-        UIHelper.centerAndShow(dialog);
+//    	log.debug("main");
+//        final JDialog dialog = new JDialog();
+//        dialog.setLayout(new FlowLayout());
+//        dialog.addWindowListener(new WindowAdapter()
+//        {
+//            public void windowClosing(WindowEvent we)
+//            {
+//                dialog.dispose();
+//            }
+//        });
+//        log.debug("Creating testtable");
+//        SearchableJXTable t = createTestTableFromJTable();
+//        
+//        t.setColumnSelectionAllowed(true);
+//        t.setRowSelectionAllowed(true);
+//        t.setCellSelectionEnabled(true);
+//        dialog.getContentPane().add( new JScrollPane(t));
+//        dialog.getContentPane().add(t.getFindReplacePanel());//getMyPanel());
+//        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+//        dialog.setVisible(true);
+//        dialog.setSize(900, 900);
+//        UIHelper.centerAndShow(dialog);
     }
 
     /**
@@ -382,8 +379,7 @@ public class SearchReplacePanel extends JPanel
      */
     private void setLabelForFailedFind()
     {
-        log.info("NOT FOUND - Findvalue[" + findField.getText() + "]");
-        log.info("displaying statusInfo to the user");
+        log.info("NOT FOUND - Findvalue[" + findField.getText() + "] displaying statusInfo to the user");
     	statusInfo.setHorizontalTextPosition(JLabel.RIGHT);
         statusInfo.setIcon(new ImageIcon(Specify.class.getResource("images/validation-error.gif")));
         statusInfo.setText(getResourceString("PHRASENOTFOUND"));
@@ -399,44 +395,70 @@ public class SearchReplacePanel extends JPanel
         statusInfo.setText("");
     }
     
+    
     /**
      * 
      */
     private void replace()
     {
-		if (!isTableValid())return;
-		
-        int col = table.getSelectedColumn();
-		int row = table.getSelectedRow();
-		
-        if(row == -1 || col ==-1)return;
-		
-        Object o = table.getValueAt(row, col);
-		if (!(o instanceof String))
-		{
-		    if(!(o instanceof Boolean) && !(o instanceof Integer))
+        log.debug("replace called");
+        if (!isTableValid())
+        {
+            setLabelForFailedFind(); 
+            return;
+        }
+
+        int selectedCol = table.getSelectedColumn();
+        int selectedRow = table.getSelectedRow();
+
+        if(selectedRow == -1 || selectedCol ==-1)
+        {
+            setLabelForFailedFind(); 
+            return;
+        }
+
+        Object o = table.getValueAt(selectedRow, selectedCol);
+        if (!(o instanceof String))
+        {
+            if(!(o instanceof Boolean) && !(o instanceof Integer))
             {
-                log.info("The value at row=[" + row + "] col=[" + col+ "] is not a String and cannot be replaced");
+                log.info("The value at row=[" + selectedRow + "] col=[" + selectedCol+ "] is not a String and cannot be replaced");
                 return;
             }
-			
-		}
-        
-		String myStrToReplaceValueIn = o.toString();
-		String myFindValue = findField.getText();
-		String myReplaceValue = replaceField.getText();	     
-		String myNewStr = "";
-        
-		if(getMatchCaseFlag())
-        {
-			myNewStr = Pattern.compile(myFindValue).matcher(myStrToReplaceValueIn).replaceAll(myReplaceValue);
+
         }
-		else
+     
+        String myStrToReplaceValueIn = o.toString();
+        String myReplaceValue = replaceField.getText();	     
+        String myNewStr = "";
+        String myFindValue = findField.getText();
+
+        ArraySearcher as = new ArraySearcher();
+        ASearchableCell cell = as.cellContains(myFindValue, table, table.getModel(), selectedRow, selectedCol,getMatchCaseFlag());
+        boolean found = cell.isFound();
+        if (found)
         {
-			myNewStr = Pattern.compile(myFindValue, Pattern.CASE_INSENSITIVE).matcher(myStrToReplaceValueIn).replaceAll(myReplaceValue);
+            if(getMatchCaseFlag())
+            {
+                 myNewStr = Pattern.compile(myFindValue).matcher(myStrToReplaceValueIn).replaceAll(myReplaceValue);
+            }
+            else
+            {
+                log.error("Need to implement case insensitivity");
+                myNewStr = Pattern.compile(myFindValue, Pattern.CASE_INSENSITIVE).matcher(myStrToReplaceValueIn).replaceAll(myReplaceValue);
+            }  
+            
+            table.setValueAt(myNewStr, selectedRow, selectedCol);   
+            
+            ListSelectionModel rsm = table.getSelectionModel();
+            ListSelectionModel csm = table.getColumnModel().getSelectionModel();
+            rsm.setSelectionInterval(selectedRow, selectedRow);
+            csm.setSelectionInterval(selectedCol, selectedCol);
+        }    
+        else
+        {
+            setLabelForFailedFind(); 
         }
-		log.debug("Replacing FindValue=[" + myStrToReplaceValueIn + "] with ReplaceValue=["+ myReplaceValue + "] " + "Resulting Value=[" + myNewStr + "]");
-		table.setValueAt(myNewStr, row, col);   	
         setCheckAndSetWrapOption();
         find();
     }
@@ -446,60 +468,96 @@ public class SearchReplacePanel extends JPanel
      */
     private boolean replaceAll()
     {
-        log.debug("replaceAll() called");
-    	
-        boolean found = false;
-		
-		if (!isTableValid())return false;
-    	
-        String str = findField.getText();
-        log.debug("replaceAll() - FindValue[" + str + "] SearchingDown[" + !isSearchDown+ "]");
-        lastIndex = searchable.search(getSearchablePattern(str), lastIndex, !isSearchDown);
+         return false;
+    }  
         
-        if(lastIndex>-1)found= true;
-        while(lastIndex!=-1) 
-        {
-        	replace();
-        	lastIndex = searchable.search(getSearchablePattern(str), lastIndex, !isSearchDown);
-        }
-        if (lastIndex == -1)
-        {
-            log.debug("replaceAll() found nothing");
-            if (isSearchDown)
-            {
-                isFinishedSearchingDown = true;
-                if (!wrapSearchButton.isSelected())
-                {
-                    nextButton.setEnabled(false);
-                    previousButton.setEnabled(false);
-                    if(!found)setLabelForFailedFind();
-
-                }
-            } else
-            {
-                isFinishedSearchingUp = true;
-                if (!wrapSearchButton.isSelected())
-                {
-                    previousButton.setEnabled(false);
-                    nextButton.setEnabled(false);
-                    if(!found)setLabelForFailedFind();
-
-                }
-            }
-            return false;
-        }
-        if (isSearchDown)
-        {
-            previousButton.setEnabled(true);
-        }            
-        else
-        {
-            nextButton.setEnabled(true);
-        }
-        clearLabelFromFailedFind();
         
-        return true;
-    }
+//        if (!found)
+//        {
+//            log.debug("repalceall() found nothing");
+//            if (isSearchDown)
+//            {
+//                isFinishedSearchingDown = true;
+//                if (!wrapSearchButton.isSelected())
+//                {
+//                    nextButton.setEnabled(false);
+//                    previousButton.setEnabled(true);
+//                    setLabelForFailedFind();
+//
+//                }
+//            } else
+//            {
+//                isFinishedSearchingUp = true;
+//                if (!wrapSearchButton.isSelected())
+//                {
+//                    previousButton.setEnabled(false);
+//                    nextButton.setEnabled(true);
+//                    setLabelForFailedFind();
+//
+//                }
+//            }
+//            return false;
+//        }
+//        if (isSearchDown)
+//        {
+//            previousButton.setEnabled(true);
+//        }            
+//        else
+//        {
+//            nextButton.setEnabled(true);
+//        }
+//        clearLabelFromFailedFind();
+//        return true;        
+//		if (!isTableValid())return false;
+//    	
+//        String str = findField.getText();
+//        log.debug("replaceAll() - FindValue[" + str + "] SearchingDown[" + !isSearchDown+ "]");
+//        lastIndex = searchable.search(getSearchablePattern(str), lastIndex, !isSearchDown);
+//        
+//        if(lastIndex>-1)found= true;
+//        while(lastIndex!=-1) 
+//        {
+//        	replace();
+//        	lastIndex = searchable.search(getSearchablePattern(str), lastIndex, !isSearchDown);
+//        }
+//        if (lastIndex == -1)
+//        {
+//            log.debug("replaceAll() found nothing");
+//            if (isSearchDown)
+//            {
+//                isFinishedSearchingDown = true;
+//                if (!wrapSearchButton.isSelected())
+//                {
+//                    nextButton.setEnabled(false);
+//                    previousButton.setEnabled(false);
+//                    if(!found)setLabelForFailedFind();
+//
+//                }
+//            } else
+//            {
+//                isFinishedSearchingUp = true;
+//                if (!wrapSearchButton.isSelected())
+//                {
+//                    previousButton.setEnabled(false);
+//                    nextButton.setEnabled(false);
+//                    if(!found)setLabelForFailedFind();
+//
+//                }
+//            }
+//            return false;
+//        }
+//        if (isSearchDown)
+//        {
+//            previousButton.setEnabled(true);
+//        }            
+//        else
+//        {
+//            nextButton.setEnabled(true);
+//        }
+//        clearLabelFromFailedFind();
+//        
+//        return true;
+//    }
     
     /**
      * @return
@@ -519,11 +577,67 @@ public class SearchReplacePanel extends JPanel
      */
     private boolean find()
     { 	
-		if (!isTableValid())return false;
-    	String str = findField.getText();
+         int                      curRow                  = -1;
+         int                      curCol                  = -1;
+        if (!isTableValid())
+        {
+            setLabelForFailedFind();
+            return false;
+        }
+        
+        boolean found = false;
+        String str = findField.getText();
         log.debug("find() - FindValue[" + str + "] SearchingDown[" + !isSearchDown+ "]");
-        lastIndex = searchable.search(getSearchablePattern(str), lastIndex, !isSearchDown);
-        if (lastIndex == -1)
+        
+        ArraySearcher as = new ArraySearcher();
+        curRow = table.getSelectedRow();
+        curCol = table.getSelectedColumn();
+
+        if(isSearchDown){
+            if(curRow == -1) curRow++;
+            if(curCol >= (table.getColumnModel().getColumnCount()-1)) 
+            {
+                curRow++;
+                curCol = -1;
+            }
+            curCol++;
+        }
+        //is previous clicked, reverse direction
+        else
+        {
+            if(curRow == -1) curRow++;
+            if(curCol <= 0 ) 
+            {
+                curRow--;
+                curCol = table.getColumnModel().getColumnCount()-1;
+            }
+            curCol--;     
+        }
+        ASearchableCell cell = as.tableContains(str, table, table.getModel(), curRow, curCol, getMatchCaseFlag(),isSearchDown
+                 );
+        found = cell.isFound();
+        
+        if (found)
+        {
+            curRow = cell.getRow();
+            curCol = cell.getCol();
+            ListSelectionModel rsm = table.getSelectionModel();
+            ListSelectionModel csm = table.getColumnModel().getSelectionModel();
+            rsm.setSelectionInterval(curRow, curRow);
+            csm.setSelectionInterval(curCol, curCol);
+            //table.getG
+            //getModel().fireTableDataChanged(); // notify the model
+            if (isSearchDown)
+            {
+                previousButton.setEnabled(true);
+            }            
+            else
+            {
+                nextButton.setEnabled(true);
+            }
+            clearLabelFromFailedFind();
+        }
+        else
         {
             log.debug("find() found nothing");
             if (isSearchDown)
@@ -534,9 +648,9 @@ public class SearchReplacePanel extends JPanel
                     nextButton.setEnabled(false);
                     previousButton.setEnabled(true);
                     setLabelForFailedFind();
-
                 }
-            } else
+            }
+            else
             {
                 isFinishedSearchingUp = true;
                 if (!wrapSearchButton.isSelected())
@@ -544,20 +658,10 @@ public class SearchReplacePanel extends JPanel
                     previousButton.setEnabled(false);
                     nextButton.setEnabled(true);
                     setLabelForFailedFind();
-
                 }
             }
             return false;
         }
-        if (isSearchDown)
-        {
-            previousButton.setEnabled(true);
-        }            
-        else
-        {
-            nextButton.setEnabled(true);
-        }
-        clearLabelFromFailedFind();
         return true;
     }
     
@@ -570,6 +674,7 @@ public class SearchReplacePanel extends JPanel
         {
             isFinishedSearchingDown = false;
             isFinishedSearchingUp = false;
+            nextButton.setEnabled(true);            
         }
     }
     
@@ -645,14 +750,14 @@ public class SearchReplacePanel extends JPanel
 			if (source == replaceButton)
 			{
 				isSearchDown = true;
+                //moved these two from after the if/else statement
+                setCheckAndSetWrapOption();
+                replace();
 			}
 			else if(source == replaceAllButton)
 			{
 				replaceAll();
 			}
-
-			setCheckAndSetWrapOption();
-			replace();
 		}
 	}
     
@@ -746,15 +851,31 @@ public class SearchReplacePanel extends JPanel
          */
         public void keyReleased(KeyEvent ke)
         {
-        	boolean replaceTextState = false;
-            // make sure the user has entered a text string in teh find box before enabling find buttons
+            boolean replaceTextState = false;
+            // make sure the user has entered a text string in teh find box before enabling find
+            // buttons
             boolean findTextState = (findField.getText().length() > 0);
-            if(replaceField!=null) replaceTextState = (replaceField.getText().length() > 0);
+            if (replaceField != null)
+            {
+                replaceTextState = (replaceField.getText().length() > 0);
+            }
             nextButton.setEnabled(findTextState);
-            //memoryReplaceButton.setEnabled(findTextState && replaceTextState);
-            //make sure the user has entered a text string in teh replace textfield before enabling replace buttons
-            if(replaceButton!=null)replaceButton.setEnabled(findTextState && replaceTextState);
-            if(replaceAllButton!=null)replaceAllButton.setEnabled(findTextState && replaceTextState);
+
+            if (table.getSelectedRow() > 0 || table.getSelectedColumn() > 0)
+            {
+                previousButton.setEnabled(findTextState);
+            }
+            // memoryReplaceButton.setEnabled(findTextState && replaceTextState);
+            // make sure the user has entered a text string in teh replace textfield before enabling
+            // replace buttons
+            if (replaceButton != null)
+            {
+                replaceButton.setEnabled(findTextState && replaceTextState);
+            }
+            if (replaceAllButton != null)
+            {
+                replaceAllButton.setEnabled(findTextState && replaceTextState);
+            }
         }
     }
     /**

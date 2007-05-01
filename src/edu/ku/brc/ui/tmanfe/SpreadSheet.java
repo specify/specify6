@@ -43,6 +43,7 @@ import javax.swing.table.TableColumn;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.ui.SearchReplacePanel;
 import edu.ku.brc.ui.SearchableJXTable;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIHelper.OSTYPE;
@@ -84,6 +85,7 @@ public class SpreadSheet  extends SearchableJXTable
     protected boolean            mouseDown           = false;
     private boolean              rowSelectionStarted = false;
 
+    SearchReplacePanel findPanel = null;//new SearchReplacePanel(this);
     /**
      * Constructor for Spreadsheet from model
      * @param model
@@ -93,8 +95,14 @@ public class SpreadSheet  extends SearchableJXTable
         super(model);
         
         this.model = model;
-        
+        findPanel = new SearchReplacePanel(this);
         buildSpreadsheet();
+    }
+    
+    public SearchReplacePanel getFindReplacePanel()
+    {
+        log.debug("Getting mySearchPanel");
+        return findPanel;
     }
 
     /**
@@ -122,6 +130,12 @@ public class SpreadSheet  extends SearchableJXTable
         // the one used for the table column headers.
         // Also ensure that the row-header labels and the table
         // rows have the same height.
+        
+        //i have no idea WHY this has to be called.  i tried removing
+        //my jxtable code, and when I did, i started getting an array index out of
+        //bounds on teh column header.  tried firing this off, first and it fixed the problem.//meg
+        //this.getModel().fireTableStructureChanged();
+        
         TableColumn       column   = getColumnModel().getColumn(0);
         TableCellRenderer renderer = getTableHeader().getDefaultRenderer();
         if (renderer == null)
@@ -808,5 +822,13 @@ public class SpreadSheet  extends SearchableJXTable
                 log.debug("mouseEntered exited");
             }
         }
+    }
+
+    /**
+     * @return the model
+     */
+    public SpreadSheetModel getModel()
+    {
+        return model;
     }
 }

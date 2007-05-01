@@ -41,19 +41,19 @@ public class SearchableJXTable  extends JXTable
 {
     private static final Logger log                     = Logger.getLogger(SearchableJXTable.class);
 
-    SearchReplacePanel findPanel = new SearchReplacePanel(this);
+    //SearchReplacePanel findPanel = new SearchReplacePanel(this);
 
     public SearchableJXTable(TableModel dm)
     {
         super(dm);
         //setSearchableJXTableProperties();
     }
-    
-    public SearchReplacePanel getFindReplacePanel()
-    {
-        log.debug("Getting mySearchPanel");
-        return findPanel;
-    }
+//    
+//    public SearchReplacePanel getFindReplacePanel()
+//    {
+//        log.debug("Getting mySearchPanel");
+//        return findPanel;
+//    }
     
     public SearchableJXTable()
     {
