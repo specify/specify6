@@ -35,7 +35,6 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.ConnectException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EventObject;
 import java.util.List;
@@ -1113,7 +1112,13 @@ public class WorkbenchPaneSS extends BaseSubPane
                 selection[i]=spreadSheet.convertRowIndexToModel(i);
             }
         }
-        final int[] selRows = Arrays.copyOf(selection, selection.length);
+        
+        // since Arrays.copyOf() isn't in Java SE 5...
+        final int[] selRows = new int[selection.length];
+        for (int i = 0; i < selection.length; ++i)
+        {
+            selRows[i] = selection[i];
+        }
 
         List<String> outputFormats = new Vector<String>();
         String dddddd = getResourceString("DDDDDD");
