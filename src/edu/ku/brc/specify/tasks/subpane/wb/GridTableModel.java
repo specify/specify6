@@ -17,6 +17,7 @@ import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.tmanfe.SpreadSheetModel;
 
 /**
@@ -94,7 +95,7 @@ public class GridTableModel extends SpreadSheetModel
 
                 };
                 imageMappingItem.initialize();
-                imageMappingItem.setCaption("WB_IMAGE");
+                imageMappingItem.setCaption(UIRegistry.getResourceString("WB_IMAGE"));
                 imageMappingItem.setViewOrder((short)headers.size());
             }
             headers.add(imageMappingItem);

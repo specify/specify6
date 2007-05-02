@@ -6,17 +6,19 @@
     <field column="Verbatim Date" name="verbatimDate" type="java.lang.String" length="50"/>
     <field column="Date Accessioned" name="dateAccessioned" type="calendar_date"/>
     <field column="Date Received" name="dateReceived" type="calendar_date"/>
-    <field column="Text1" name="text1" type="text" length="255"/>
-    <field column="Text2" name="text2" type="text" length="255"/>
-    <field column="Text3" name="text3" type="text" length="255"/>
-    <field column="Number1" name="number1" type="java.lang.Float"/>
-    <field column="Number2" name="number2" type="java.lang.Float"/>
+    <field column="Accession Text1" name="accessionText1" type="text" length="255"/>
+    <field column="Accession Text2" name="accessionText2" type="text" length="255"/>
+    <field column="Accession Text3" name="accessionText3" type="text" length="255"/>
+    <field column="Accession Number1" name="accessionNumber1" type="java.lang.Float"/>
+    <field column="Accession Number2" name="accessionNumber2" type="java.lang.Float"/>
     <field column="Remarks" name="remarks" type="text" length="255"/>
     <field column="YesNo1" name="yesNo1" type="boolean"/>
     <field column="YesNo2" name="yesNo2" type="boolean"/>
-    <field column="Accession Agent" name="accessionAgent" type="java.lang.String" length="64"/>
+    <field column="Auth Agent1" name="authAgent1" type="java.lang.String" length="64"/>
+    <field column="Auth Agent2" name="authAgent2" type="java.lang.String" length="64"/>
+    <field column="Auth Agent3" name="authAgent3" type="java.lang.String" length="64"/>
+    <field column="Auth Agent4" name="authAgent4" type="java.lang.String" length="64"/>
     <field column="Permit1" name="Permit1" type="java.lang.String" length="64"/>
-    <field column="Permit2" name="Permit2" type="java.lang.String" length="64"/>
   </table>
   <table classname="edu.ku.brc.specify.datamodel.CollectingEvent" table="collectingevent" tableid="10" lazy="true" >
     <field column="Station Field Number" name="stationFieldNumber" type="java.lang.String" length="50"/>
@@ -32,10 +34,15 @@
     <field column="End Time" name="endTime" type="short"/>
     <field column="Verbatim Locality" name="verbatimLocality" type="text" length="255"/>
     <field column="CollectingEvent Remarks" name="remarks" type="text" length="255"/>
-    <field column="Collector1" name="Collector1" type="java.lang.String" length="64"/>
-    <field column="Collector2" name="Collector2" type="java.lang.String" length="64"/>
-    <field column="Collector3" name="Collector3" type="java.lang.String" length="64"/>
-    <field column="Collector4" name="Collector4" type="java.lang.String" length="64"/>
+    <field column="Collector1" name="collector1" type="java.lang.String" length="64"/>
+    <field column="Collector2" name="collector2" type="java.lang.String" length="64"/>
+    <field column="Collector3" name="collector3" type="java.lang.String" length="64"/>
+    <field column="Collector4" name="collector4" type="java.lang.String" length="64"/>
+    <field column="Collector5" name="collector5" type="java.lang.String" length="64"/>
+    <field column="Collector6" name="collector6" type="java.lang.String" length="64"/>
+    <field column="Collector7" name="collector7" type="java.lang.String" length="64"/>
+    <field column="Collector8" name="collector8" type="java.lang.String" length="64"/>
+    <field column="Collection" name="collection" type="java.lang.String" length="32"/>
   </table>
   <table classname="edu.ku.brc.specify.datamodel.CollectingTrip" table="collectingtrip" tableid="87" lazy="true" >
     <field column="Remarks" name="remarks" type="java.lang.String" length="255"/>
@@ -67,23 +74,38 @@
     <field column="GUID" name="guid" type="java.lang.String" length="255"/>
     <field column="Deaccessioned" name="deaccessioned" type="boolean"/>
     <field column="Catalog Number" name="catalogNumber" type="java.lang.Float"/>
-    <field column="Collection Object Citation" name="Citation" type="java.lang.String" length="64"/>
+    <field column="Collection Object Citation" name="collectionObjectCitation" type="java.lang.String" length="64"/>
   </table>
   <table classname="edu.ku.brc.specify.datamodel.Determination" table="determination" tableid="9" lazy="true" >
-    <field column="Type Status Name" name="typeStatusName" type="java.lang.String" length="50"/>
-    <field column="Determined Date" name="determinedDate" type="calendar_date"/>
-    <field column="Confidence" name="confidence" type="java.lang.String" length="50"/>
-    <field column="Method" name="method" type="java.lang.String" length="50"/>
-    <field column="Feature Or Basis" name="featureOrBasis" type="java.lang.String" length="50"/>
-    <field column="Remarks" name="remarks" type="text" length="255"/>
-    <field column="Text1" name="text1" type="text" length="255"/>
-    <field column="Text2" name="text2" type="text" length="255"/>
-    <field column="Number1" name="number1" type="java.lang.Float" length="24"/>
-    <field column="Number2" name="number2" type="java.lang.Float" length="24"/>
-    <field column="YesNo1" name="yesNo1" type="boolean"/>
-    <field column="YesNo2" name="yesNo2" type="boolean"/>
-    <field column="Determiner" name="Determiner" type="java.lang.String" length="64"/>
-    <field column="Citation" name="Citation" type="java.lang.String" length="64"/>
+
+    <field column="Determined Date1" name="determinedDate1" type="calendar_date"/>
+    <field column="Determined Date2" name="determinedDate2" type="calendar_date"/>
+    <field column="Determined Date3" name="determinedDate3" type="calendar_date"/>
+    <field column="Determined Date4" name="determinedDate4" type="calendar_date"/>
+    <field column="Determined Date5" name="determinedDate5" type="calendar_date"/>
+    <field column="Determined Date6" name="determinedDate6" type="calendar_date"/>
+    <field column="Determined Date7" name="determinedDate7" type="calendar_date"/>
+    <field column="Determined Date8" name="determinedDate8" type="calendar_date"/>
+
+    <field column="Determiner1" name="determiner1" type="java.lang.String" length="64"/>
+    <field column="Determiner2" name="determiner2" type="java.lang.String" length="64"/>
+    <field column="Determiner3" name="determiner3" type="java.lang.String" length="64"/>
+    <field column="Determiner4" name="determiner4" type="java.lang.String" length="64"/>
+    <field column="Determiner5" name="determiner5" type="java.lang.String" length="64"/>
+    <field column="Determiner6" name="determiner6" type="java.lang.String" length="64"/>
+    <field column="Determiner7" name="determiner7" type="java.lang.String" length="64"/>
+    <field column="Determiner8" name="determiner8" type="java.lang.String" length="64"/>
+
+    <field column="Determination1" name="determination1" type="java.lang.String" length="64"/>
+    <field column="Determination2" name="determination2" type="java.lang.String" length="64"/>
+    <field column="Determination3" name="determination3" type="java.lang.String" length="64"/>
+    <field column="Determination4" name="determination4" type="java.lang.String" length="64"/>
+    <field column="Determination5" name="determination5" type="java.lang.String" length="64"/>
+    <field column="Determination6" name="determination6" type="java.lang.String" length="64"/>
+    <field column="Determination7" name="determination7" type="java.lang.String" length="64"/>
+    <field column="Determination8" name="determination8" type="java.lang.String" length="64"/>
+
+    <field column="Determination Citation" name="determinationCitation" type="java.lang.String" length="64"/>
   </table>
   <table classname="edu.ku.brc.specify.datamodel.Geography" table="geography" tableid="3" lazy="true" businessrule="edu.ku.brc.specify.datamodel.busrules.GeographyBusRules">
     <field column="Continent" name="Continent" type="java.lang.String" length="128"/>
@@ -102,11 +124,6 @@
     <field column="End" name="end" type="java.lang.Float" length="24"/>
     <field column="End Uncertainty" name="endUncertainty" type="java.lang.Float" length="24"/>
   </table>
-  <table classname="edu.ku.brc.specify.datamodel.Journal" table="journal" tableid="51" lazy="true" >
-    <field column="Journal Name" name="journalName" type="java.lang.String" length="255"/>
-    <field column="Journal Abbreviation" name="journalAbbreviation" type="java.lang.String" length="50"/>
-    <field column="Remarks" name="remarks" type="text" length="255"/>
-  </table>
   <table classname="edu.ku.brc.specify.datamodel.Locality" table="locality" tableid="2" lazy="true" >
     <display objtitle="Locality" view="Locality" dataobjformatter="Locality" searchdlg="LocalitySearch" newobjdlg="LocalityDisplay"/>
     <field column="Named Place" name="namedPlace" type="java.lang.String" length="255"/>
@@ -120,12 +137,10 @@
     <field column="Section" name="section" type="java.lang.String" length="50"/>
     <field column="Section Part" name="sectionPart" type="java.lang.String" length="50"/>
     <field column="Verbatim Elevation" name="verbatimElevation" type="java.lang.String" length="50"/>
-    <field column="Original Elevation Unit" name="originalElevationUnit" type="java.lang.String" length="50"/>
     <field column="Min Elevation" name="minElevation" type="java.lang.Double"/>
     <field column="Max Elevation" name="maxElevation" type="java.lang.Double"/>
     <field column="Elevation Method" name="elevationMethod" type="java.lang.String" length="50"/>
     <field column="Elevation Accuracy" name="elevationAccuracy" type="java.lang.Double"/>
-    <field column="Original Lat Long Unit" name="originalLatLongUnit" type="java.lang.Integer" length="10"/>
     <field column="LatLong Type" name="latLongType" type="java.lang.String" length="50"/>
     <field column="Latitude1" name="latitude1" type="java.math.BigDecimal"/>
     <field column="Longitude1" name="longitude1" type="java.math.BigDecimal"/>
@@ -148,23 +163,56 @@
     <field column="Island" name="island" type="java.lang.String" length="64"/>
     <field column="Water Body" name="waterBody" type="java.lang.String" length="64"/>
     <field column="Drainage" name="drainage" type="java.lang.String" length="64"/>
-    <field column="Citation" name="Citation" type="java.lang.String" length="64"/>
-  </table>
-  <table classname="edu.ku.brc.specify.datamodel.Location" table="location" tableid="58" businessrule="edu.ku.brc.specify.datamodel.busrules.LocationBusRules">
-    <field column="Building" name="Building" type="java.lang.String" length="64"/>
-    <field column="Floor" name="Floor" type="java.lang.String" length="64"/>
-    <field column="Room" name="Room" type="java.lang.String" length="64"/>
-    <field column="Rack" name="Rack" type="java.lang.String" length="64"/>
-    <field column="Shelf" name="Shelf" type="java.lang.String" length="64"/>
+    <field column="Locality Citation" name="localityCitation" type="java.lang.String" length="64"/>
   </table>
   <table classname="edu.ku.brc.specify.datamodel.Preparation" table="preparation" tableid="63" lazy="true" >
-    <field column="Text1" name="text1" type="text" length="255"/>
-    <field column="Text2" name="text2" type="text" length="255"/>
-    <field column="Count" name="count" type="java.lang.Integer" length="10"/>
-    <field column="Storage Location" name="storageLocation" type="java.lang.String" length="50"/>
-    <field column="Remarks" name="remarks" type="text" length="255"/>
-    <field column="PreparedDate" name="preparedDate" type="calendar_date"/>
-    <field column="PreparedBy" name="Prepared By" type="java.lang.String" length="64"/>
+    <field column="PrepType1" name="prepType1" type="text" length="32"/>
+    <field column="PrepType2" name="prepType2" type="text" length="32"/>
+    <field column="PrepType3" name="prepType3" type="text" length="32"/>
+    <field column="PrepType4" name="prepType4" type="text" length="32"/>
+    <field column="PrepType5" name="prepType5" type="text" length="32"/>
+    <field column="PrepType6" name="prepType6" type="text" length="32"/>
+    <field column="PrepType7" name="prepType7" type="text" length="32"/>
+    <field column="Count1" name="count1" type="java.lang.Integer" length="10"/>
+    <field column="Count2" name="count2" type="java.lang.Integer" length="10"/>
+    <field column="Count3" name="count3" type="java.lang.Integer" length="10"/>
+    <field column="Count4" name="count4" type="java.lang.Integer" length="10"/>
+    <field column="Count5" name="count5" type="java.lang.Integer" length="10"/>
+    <field column="Count6" name="count6" type="java.lang.Integer" length="10"/>
+    <field column="Count7" name="count7" type="java.lang.Integer" length="10"/>
+    <field column="Count8" name="count8" type="java.lang.Integer" length="10"/>
+    <field column="Storage Location1" name="storageLocation1" type="java.lang.String" length="50"/>
+    <field column="Storage Location2" name="storageLocation2" type="java.lang.String" length="50"/>
+    <field column="Storage Location3" name="storageLocation3" type="java.lang.String" length="50"/>
+    <field column="Storage Location4" name="storageLocation4" type="java.lang.String" length="50"/>
+    <field column="Storage Location5" name="storageLocation5" type="java.lang.String" length="50"/>
+    <field column="Storage Location6" name="storageLocation6" type="java.lang.String" length="50"/>
+    <field column="Storage Location7" name="storageLocation7" type="java.lang.String" length="50"/>
+    <field column="Storage Location8" name="storageLocation8" type="java.lang.String" length="50"/>
+    <field column="Prep Remarks1" name="prepRemarks1" type="text" length="255"/>
+    <field column="Prep Remarks2" name="prepRemarks2" type="text" length="255"/>
+    <field column="Prep Remarks3" name="prepRemarks3" type="text" length="255"/>
+    <field column="Prep Remarks4" name="prepRemarks4" type="text" length="255"/>
+    <field column="Prep Remarks5" name="prepRemarks5" type="text" length="255"/>
+    <field column="Prep Remarks6" name="prepRemarks6" type="text" length="255"/>
+    <field column="Prep Remarks7" name="prepRemarks7" type="text" length="255"/>
+    <field column="Prep Remarks8" name="prepRemarks8" type="text" length="255"/>
+    <field column="PreparedDate1" name="preparedDate1" type="calendar_date"/>
+    <field column="PreparedDate2" name="preparedDate2" type="calendar_date"/>
+    <field column="PreparedDate3" name="preparedDate3" type="calendar_date"/>
+    <field column="PreparedDate4" name="preparedDate4" type="calendar_date"/>
+    <field column="PreparedDate5" name="preparedDate5" type="calendar_date"/>
+    <field column="PreparedDate6" name="preparedDate6" type="calendar_date"/>
+    <field column="PreparedDate7" name="preparedDate7" type="calendar_date"/>
+    <field column="PreparedDate8" name="preparedDate8" type="calendar_date"/>
+    <field column="PreparedBy1" name="preparedBy1" type="java.lang.String" length="64"/>
+    <field column="PreparedBy2" name="preparedBy2" type="java.lang.String" length="64"/>
+    <field column="PreparedBy3" name="preparedBy3" type="java.lang.String" length="64"/>
+    <field column="PreparedBy4" name="preparedBy4" type="java.lang.String" length="64"/>
+    <field column="PreparedBy5" name="preparedBy5" type="java.lang.String" length="64"/>
+    <field column="PreparedBy6" name="preparedBy6" type="java.lang.String" length="64"/>
+    <field column="PreparedBy7" name="preparedBy7" type="java.lang.String" length="64"/>
+    <field column="PreparedBy8" name="preparedBy8" type="java.lang.String" length="64"/>
   </table>
   <table classname="edu.ku.brc.specify.datamodel.ReferenceWork" table="referencework" tableid="69" lazy="true" >
     <field column="ReferenceWorkType" name="referenceWorkType" type="byte" length="3"/>
@@ -215,14 +263,41 @@
     <field column="YesNo2" name="yesNo2" type="boolean"/>
   </table>
   <table classname="edu.ku.brc.specify.datamodel.Taxon" table="taxon" tableid="4" businessrule="edu.ku.brc.specify.datamodel.busrules.TaxonBusRules">
-    <field column="Order" name="Order" type="java.lang.String" length="64"/>
-    <field column="Family" name="Family" type="java.lang.String" length="64"/>
-    <field column="Genus" name="Genus" type="java.lang.String" length="64"/>
-    <field column="Sub Genus" name="Sub Genus" type="java.lang.String" length="64"/>
     <field column="Genus Species" name="Genus Species" type="java.lang.String" length="128"/>
+    <field column="Kingdom"      name="Kingdom" type="java.lang.String" length="64"/>
+    <field column="Subkingdom"   name="Subkingdom" type="java.lang.String" length="64"/>
+    <field column="Division"     name="Division" type="java.lang.String" length="64"/>
+    <field column="Phylum"       name="Phylum" type="java.lang.String" length="64"/>
+    <field column="Subphylum"    name="Subphylum" type="java.lang.String" length="64"/>
+    <field column="Superclass" name="Superclass" type="java.lang.String" length="64"/>
+    <field column="Class" name="Class" type="java.lang.String" length="64"/>
+    <field column="Subclass" name="Subclass" type="java.lang.String" length="64"/>
+    <field column="Infraclass" name="Infraclass" type="java.lang.String" length="64"/>
+    <field column="Superorder" name="Superorder" type="java.lang.String" length="64"/>
+    <field column="Order" name="Order" type="java.lang.String" length="64"/>
+    <field column="Suborder" name="Suborder" type="java.lang.String" length="64"/>
+    <field column="Infraorder" name="Infraorder" type="java.lang.String" length="64"/>
+    <field column="Superfamily" name="Superfamily" type="java.lang.String" length="64"/>
+    <field column="Family" name="Family" type="java.lang.String" length="64"/>
+    <field column="Subfamily" name="Subfamily" type="java.lang.String" length="64"/>
+    <field column="Tribe" name="Tribe" type="java.lang.String" length="64"/>
+    <field column="Subtribe" name="Subtribe" type="java.lang.String" length="64"/>
+    <field column="Genus" name="Genus" type="java.lang.String" length="64"/>
+    <field column="Subgenus" name="Subgenus" type="java.lang.String" length="64"/>
+    <field column="Section" name="Section" type="java.lang.String" length="64"/>
+    <field column="Subsection" name="Subsection" type="java.lang.String" length="64"/>
     <field column="Species" name="Species" type="java.lang.String" length="64"/>
-    <field column="Sub Species" name="Sub Species" type="java.lang.String" length="64"/>
+    <field column="Subspecies" name="Subspecies" type="java.lang.String" length="64"/>
+    <field column="Variety" name="Variety" type="java.lang.String" length="64"/>
+    <field column="Subvariety" name="Subvariety" type="java.lang.String" length="64"/>
+    <field column="Forma" name="Forma" type="java.lang.String" length="64"/>
+    <field column="Subforma" name="Subforma" type="java.lang.String" length="64"/>
     <field column="Common Name" name="commonName" type="java.lang.String" length="128"/>
-    <field column="Citation" name="Citation" type="java.lang.String" length="128"/>
+    <field column="Taxon Citation" name="taxonCitation" type="java.lang.String" length="128"/>
+    
+    <field column="Species Author" name="speciesAuthor" type="java.lang.String" length="128"/>
+    <field column="Infraspecific Author" name="infraspecificAuthor" type="java.lang.String" length="128"/>
+    <field column="Infraspecific Rank" name="infraspecificRank" type="java.lang.String" length="128"/>
+    <field column="Infraspecific Name" name="infraspecificName" type="java.lang.String" length="128"/>
   </table>
 </database>
