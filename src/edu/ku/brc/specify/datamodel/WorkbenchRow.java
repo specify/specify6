@@ -72,6 +72,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     protected String                 cardImageFullPath;
     protected String                 bioGeomancerResults;
     protected Set<WorkbenchDataItem> workbenchDataItems;
+    protected Set<WorkbenchRowImage> workbenchRowImages;
     protected Workbench              workbench;
     
     // XXX PREF
@@ -382,6 +383,18 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     public void setWorkbenchDataItems(Set<WorkbenchDataItem> workbenchDataItems)
     {
         this.workbenchDataItems = workbenchDataItems;
+    }
+
+    @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "workbenchRow")
+    // @Cascade( { org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.LOCK })
+    public Set<WorkbenchRowImage> getWorkbenchRowImages()
+    {
+        return workbenchRowImages;
+    }
+
+    public void setWorkbenchRowImages(Set<WorkbenchRowImage> workbenchRowImages)
+    {
+        this.workbenchRowImages = workbenchRowImages;
     }
 
     /**
