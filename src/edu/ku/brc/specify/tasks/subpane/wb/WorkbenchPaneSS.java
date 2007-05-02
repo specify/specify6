@@ -856,7 +856,6 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected void showCardImageForSelectedRow()
     {
         int firstRowSelected = spreadSheet.getSelectedRow();
-        firstRowSelected = spreadSheet.convertRowIndexToModel(firstRowSelected);
         if (firstRowSelected == -1)
         {
             // no selection
@@ -865,6 +864,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             return;
         }
         // else
+        firstRowSelected = spreadSheet.convertRowIndexToModel(firstRowSelected);
 
         log.debug("Showing image for row " + firstRowSelected);
         WorkbenchRow row = workbench.getWorkbenchRowsAsList().get(firstRowSelected);
@@ -1020,10 +1020,21 @@ public class WorkbenchPaneSS extends BaseSubPane
             spreadSheet.getSelectionModel().removeListSelectionListener(workbenchRowChangeListener);
             imageFrame.setVisible(false);
             blockChanges = true;
+
             // get the selection before the changes
             int[] selRows = spreadSheet.getSelectedRows();
+            for (int i = 0; i < selRows.length; ++i)
+            {
+                selRows[i] = spreadSheet.convertRowIndexToModel(selRows[i]);
+            }
             int[] selCols = spreadSheet.getSelectedColumns();
+            for (int i = 0; i < selCols.length; ++i)
+            {
+                selCols[i] = spreadSheet.convertColumnIndexToModel(selCols[i]);
+            }
+
             model.setInImageMode(false);
+            
             // then restore the selection
             for (int selRow: selRows)
             {
@@ -1052,14 +1063,14 @@ public class WorkbenchPaneSS extends BaseSubPane
             
             // get the selection before the changes
             int[] selRows = spreadSheet.getSelectedRows();
-            for (int i: selRows)
+            for (int i = 0; i < selRows.length; ++i)
             {
-                i = spreadSheet.convertRowIndexToModel(i);
+                selRows[i] = spreadSheet.convertRowIndexToModel(selRows[i]);
             }
             int[] selCols = spreadSheet.getSelectedColumns();
-            for (int i: selCols)
+            for (int i = 0; i < selCols.length; ++i)
             {
-                i = spreadSheet.convertColumnIndexToModel(i);
+                selCols[i] = spreadSheet.convertColumnIndexToModel(selCols[i]);
             }
             
             model.setInImageMode(true);
