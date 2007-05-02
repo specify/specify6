@@ -55,7 +55,7 @@ import com.sun.image.codec.jpeg.JPEGImageEncoder;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "workbenchrow")
-@org.hibernate.annotations.Table(appliesTo="taxon", indexes =
+@org.hibernate.annotations.Table(appliesTo="workbenchrow", indexes =
     {   
         @Index (name="RowNumberIDX", columnNames={"RowNumber"})
     })
@@ -86,7 +86,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     protected Exception                                      loadException = null;
     
     /**
-     * Constrcutor (for JPA).
+     * Constructor (for JPA).
      */
     public WorkbenchRow()
     {

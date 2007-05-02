@@ -58,7 +58,7 @@ import edu.ku.brc.dbsupport.DBTableIdMgr;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "workbench")
-@org.hibernate.annotations.Table(appliesTo="taxon", indexes =
+@org.hibernate.annotations.Table(appliesTo="workbench", indexes =
     {   
         @Index (name="WorkbenchNameIDX", columnNames={"name"})
     })

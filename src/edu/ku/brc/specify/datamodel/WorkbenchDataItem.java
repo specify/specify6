@@ -35,7 +35,7 @@ import org.hibernate.annotations.Index;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert = true, dynamicUpdate = true)
 @Table(name = "workbenchdataitem")
-@org.hibernate.annotations.Table(appliesTo="taxon", indexes =
+@org.hibernate.annotations.Table(appliesTo="workbenchdataitem", indexes =
     {   
         @Index (name="DataItemRowNumberIDX", columnNames={"rowNumber"}),
     })
