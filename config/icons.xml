@@ -68,7 +68,7 @@
     
     <icon name="Labels16"      file="Label16x16.png" sizes="16"/>
     <icon name="Reports"       file="Reports32x32.png" sizes="all"/>
-    <icon name="Reports16"     file="Reports-16x16.png" sizes="16"/>
+    <icon name="Reports16"     file="Reports16x16.png" sizes="16"/>
     <icon name="DataSet"       file="DataSet32x32.png" sizes="all"/>
     <icon name="DataSet16"     file="DataSet16x16.png" sizes="16"/>
     
