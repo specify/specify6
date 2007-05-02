@@ -73,6 +73,8 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
 {
     static protected Color           transparentWhite = new Color(255, 255, 255, 180);
     
+    protected static final int       ICON_TEXT_GAP = 4;
+    
     protected JTextField             txtFld     = null;
     protected JLabel                 iconLabel;
     protected boolean                isEditing   = false;
@@ -304,7 +306,7 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
                                        (label != null ? fm.getHeight() : 0) + (imgIcon != null ? (imgIcon.getIconHeight() + 2) : 0);
             } else
             {
-                preferredSize.width  = ins.left + ins.right + insets.left + insets.right +
+                preferredSize.width  = ins.left + ins.right + insets.left + insets.right + ICON_TEXT_GAP + 
                                        ((label != null ? fm.stringWidth(label) : 0)+2) + (imgIcon != null ? imgIcon.getIconWidth() : 0);
                 preferredSize.height = ins.top + ins.bottom + insets.top + insets.bottom +
                                        (Math.max(fm.getHeight(), (imgIcon != null ? (imgIcon.getIconHeight() + 2) : 0)));
@@ -459,7 +461,7 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
                     }
                     g.drawImage(imgIcon.getImage(), x, y + (size.height - imgIcon.getIconHeight())/2,
                                 imgIcon.getIconWidth(), imgIcon.getIconHeight(), null);
-                    xOffset = imgIcon.getIconWidth();
+                    xOffset = imgIcon.getIconWidth() + ICON_TEXT_GAP;
                 }
 
                 if (label != null)

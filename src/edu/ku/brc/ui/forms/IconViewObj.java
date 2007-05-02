@@ -137,7 +137,7 @@ public class IconViewObj implements Viewable
     {
         editButton   = UIHelper.createButton("EditForm", getResourceString("EditRecord"), IconManager.IconSize.Std16, true);
         newButton    = UIHelper.createButton("CreateObj", getResourceString("NewRecord"), IconManager.IconSize.Std16, true);
-        deleteButton = UIHelper.createButton("SmallTrash", getResourceString("DeleteRecord"), IconManager.IconSize.Std16, true);
+        deleteButton = UIHelper.createButton("DeleteRecord", getResourceString("DeleteRecord"), IconManager.IconSize.Std16, true);
 
         altViewsList = new Vector<AltView>();
         switcherUI   = FormViewObj.createMenuSwitcherPanel(mvParent, view, altView, altViewsList);

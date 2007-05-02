@@ -23,7 +23,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
-import org.apache.log4j.Logger;
 import org.jdesktop.swingx.JXTable;
 
 //import edu.ku.brc.ui.xxxTable.FindAllTable.FindAllTableSearchable;
@@ -39,7 +38,7 @@ import org.jdesktop.swingx.JXTable;
 @SuppressWarnings("serial")
 public class SearchableJXTable  extends JXTable
 {
-    private static final Logger log                     = Logger.getLogger(SearchableJXTable.class);
+    //private static final Logger log                     = Logger.getLogger(SearchableJXTable.class);
 
     //SearchReplacePanel findPanel = new SearchReplacePanel(this);
 

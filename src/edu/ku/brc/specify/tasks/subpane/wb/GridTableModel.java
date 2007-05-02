@@ -94,7 +94,7 @@ public class GridTableModel extends SpreadSheetModel
 
                 };
                 imageMappingItem.initialize();
-                imageMappingItem.setCaption("Card Image"); // XXX I18N"
+                imageMappingItem.setCaption("WB_IMAGE");
                 imageMappingItem.setViewOrder((short)headers.size());
             }
             headers.add(imageMappingItem);

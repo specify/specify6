@@ -49,9 +49,9 @@ import com.jgoodies.forms.layout.FormLayout;
  */
 public class JStatusBar extends JPanel
 {
-    private static final Color ERROR_COLOR  = Color.RED;
-    private static final Color NORMAL_COLOR = Color.BLACK;
-    private static final Color WARNING_COLOR = Color.YELLOW;
+    private static final Color ERROR_COLOR   = Color.RED;
+    private static final Color NORMAL_COLOR  = Color.BLACK;
+    private static final Color WARNING_COLOR = Color.ORANGE;
 
     protected JLabel       statusLabel = null;
     protected JLabel[]     labels      = null;

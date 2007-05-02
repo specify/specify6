@@ -907,10 +907,6 @@
                     <cell type="field" id="1" name="name" uitype="text" cols="50" isrequired="true"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="2" label="Institution"/>
-                    <cell type="field" id="2" name="exportInstitutionName" uitype="text" cols="50"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="4" label="Remarks"/>
                     <cell type="field" id="4" name="remarks" uitype="textarea" cols="40"/>
                 </row>

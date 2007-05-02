@@ -178,19 +178,19 @@ public class WorkbenchTask extends BaseTask
             RolloverCommand roc = null;
             NavBox navBox = new NavBox(getResourceString("Actions"));
             makeDnDNavBtn(navBox, getResourceString("WB_IMPORTDATA"), "Import", getResourceString("WB_IMPORTDATA_TT"), new CommandAction(WORKBENCH, IMPORT_DATA_FILE, wbTblId), null, false, false);// true means make it draggable
-            makeDnDNavBtn(navBox, getResourceString("WB_IMPORT_CARDS"),  "Import", getResourceString("WB_IMPORTCARDS_TT"), new CommandAction(WORKBENCH, WB_IMPORTCARDS, wbTblId),   null, false, false);// true means make it draggable
+            makeDnDNavBtn(navBox, getResourceString("WB_IMPORT_CARDS"),  "ImportImages", getResourceString("WB_IMPORTCARDS_TT"), new CommandAction(WORKBENCH, WB_IMPORTCARDS, wbTblId),   null, false, false);// true means make it draggable
             
             makeDnDNavBtn(navBox, getResourceString("WB_NEW_DATASET"),   "PlusSign", getResourceString("WB_NEW_DATASET_TT"), new CommandAction(WORKBENCH, NEW_WORKBENCH, wbTblId),     null, false, false);// true means make it draggable
             roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_NEW_DS_FROM_TMPL"), "PlusSign", getResourceString("WB_NEW_DS_FROM_TMPL"), new CommandAction(WORKBENCH, NEW_WORKBENCH_FROM_TEMPLATE, wbTblId), null, false, false);// true means make it draggable
             roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
             enableNavBoxList.add((NavBoxItemIFace)roc);
             
-            roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_EXPORT_DATA"), "Export", getResourceString("WB_EXPORT_DATA_TT"), new CommandAction(WORKBENCH, EXPORT_DATA_FILE, wbTblId), null, true, false);// true means make it draggable
+            roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_EXPORT_DATA"), "Export16", getResourceString("WB_EXPORT_DATA_TT"), new CommandAction(WORKBENCH, EXPORT_DATA_FILE, wbTblId), null, true, false);// true means make it draggable
             roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
             roc.addDragDataFlavor(new DataFlavor(Workbench.class, EXPORT_DATA_FILE));
             enableNavBoxList.add((NavBoxItemIFace)roc);
             
-            roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_EXPORT_TEMPLATE"), "Export", getResourceString("WB_EXPORT_TEMPLATE_TT"),new CommandAction(WORKBENCH, EXPORT_TEMPLATE, wbTblId), null, true, false);// true means make it draggable
+            roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_EXPORT_TEMPLATE"), "ExportExcel16", getResourceString("WB_EXPORT_TEMPLATE_TT"),new CommandAction(WORKBENCH, EXPORT_TEMPLATE, wbTblId), null, true, false);// true means make it draggable
             roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
             roc.addDragDataFlavor(new DataFlavor(Workbench.class, EXPORT_TEMPLATE));
             enableNavBoxList.add((NavBoxItemIFace)roc);
@@ -246,12 +246,11 @@ public class WorkbenchTask extends BaseTask
                     String tableIdStr = tcd.getParams().get("tableid");
                     if (tableIdStr != null)
                     {
-                        //addToNavBoxAndRegisterAsDroppable(navBox, NavBox.createBtn(tcd.getName(), "Loan", IconManager.IconSize.Std16, new NavBoxAction(tcd, this)), tcd.getParams());
-                        
                         CommandAction cmdAction = new CommandAction(WORKBENCH, PRINT_REPORT, Workbench.getClassTableId());
                         cmdAction.addStringProperties(tcd.getParams());
                         
-                        NavBoxItemIFace nbi = makeDnDNavBtn(reportsNavBox, tcd.getName(), "Reports", cmdAction, null, true, false);// true means make it draggable
+                        String iconName = tcd.getName().indexOf("Label") > -1 ? "Labels16" : "Reports"; // XXX I18n
+                        NavBoxItemIFace nbi = makeDnDNavBtn(reportsNavBox, tcd.getName(), iconName, cmdAction, null, true, false);// true means make it draggable
                         reportsList.add(nbi);
                         enableNavBoxList.add(nbi);
                         
@@ -265,12 +264,12 @@ public class WorkbenchTask extends BaseTask
                     }
                 }
                 
-                roc = (RolloverCommand)makeDnDNavBtn(reportsNavBox, getResourceString("CHART"), "Reports", new CommandAction(WORKBENCH, WB_BARCHART, Workbench.getClassTableId()), null, true, false);
+                roc = (RolloverCommand)makeDnDNavBtn(reportsNavBox, getResourceString("CHART"), "Bar_Chart", new CommandAction(WORKBENCH, WB_BARCHART, Workbench.getClassTableId()), null, true, false);
                 enableNavBoxList.add((NavBoxItemIFace)roc);// true means make it draggable
                 roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
                 roc.addDragDataFlavor(new DataFlavor(Workbench.class, "Report"));
 
-                roc = (RolloverCommand)makeDnDNavBtn(reportsNavBox, getResourceString("WB_TOP10"), "Reports", new CommandAction(WORKBENCH, WB_TOP10_REPORT, Workbench.getClassTableId()), null, true, false);
+                roc = (RolloverCommand)makeDnDNavBtn(reportsNavBox, getResourceString("WB_TOP10"), "Pie_Chart", new CommandAction(WORKBENCH, WB_TOP10_REPORT, Workbench.getClassTableId()), null, true, false);
                 enableNavBoxList.add((NavBoxItemIFace)roc);// true means make it draggable
                 roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
                 roc.addDragDataFlavor(new DataFlavor(Workbench.class, "Report"));
@@ -318,7 +317,7 @@ public class WorkbenchTask extends BaseTask
         RecordSet     rs  = new RecordSet(workbench.getName(), Workbench.getClassTableId());
         rs.addItem(workbench.getWorkbenchId());
         cmd.setProperty("workbench", rs);
-        final RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(workbenchNavBox, workbench.getName(), name, cmd, 
+        final RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(workbenchNavBox, workbench.getName(), "DataSet16", cmd, 
                                                                    new CommandAction(WORKBENCH, DELETE_CMD_ACT, rs), 
                                                                    true, true);// true means make it draggable
         roc.setToolTip(getResourceString("WB_CLICK_EDIT_DATA_TT"));
@@ -964,7 +963,7 @@ public class WorkbenchTask extends BaseTask
             {
                 if (subCmd.getTableId() == cmdAction.getTableId())
                 {
-                    workbenchTemplate = selectWorkbenchTemplate(subCmd, "WB_EXPORT_DATA", null, ""); // XXX ADD HELP
+                    workbenchTemplate = selectWorkbenchTemplate(subCmd, "WB_EXPORT_TEMPLATE", "WB_CHOOSE_DATASET", ""); // XXX ADD HELP
                     
                 } else
                 {
@@ -975,7 +974,7 @@ public class WorkbenchTask extends BaseTask
         
         if (workbenchTemplate == null)
         {
-            workbenchTemplate = selectWorkbenchTemplate(cmdAction, "WB_EXPORT_DATA", null, ""); // XXX ADD HELP
+            workbenchTemplate = selectWorkbenchTemplate(cmdAction, "WB_EXPORT_TEMPLATE", "WB_CHOOSE_DATASET", ""); // XXX ADD HELP
         }
 
         // The command may have been clicked on so ask for one
@@ -1147,17 +1146,19 @@ public class WorkbenchTask extends BaseTask
             ImportDataFileInfo dataFileInfo = new ImportDataFileInfo();
             if (dataFileInfo.load(file))
             {
-                return createNewWorkbench(dataFileInfo, file);
+                Workbench workbench =  createNewWorkbench(dataFileInfo, file);
+                
+                // This means correct usage count for ImportXLS will actually be getUsageCount(ImportXLS) - getUsageCount(ImportCSV)...
+                if (dataFileInfo.getConfig().getProperties().getProperty("mimetype","").equals(ExportFileConfigurationFactory.CSV_MIME_TYPE))
+                {
+                    UsageTracker.incrUsageCount("WB.ImportCSV");
+                }
+                return workbench;
                 
             } else if (dataFileInfo.getConfig().getStatus() != ConfigureExternalDataIFace.Status.Cancel)
             {
                 JStatusBar statusBar = UIRegistry.getStatusBar();
                 statusBar.setErrorMessage(String.format(getResourceString("WB_PARSE_FILE_ERROR"), new Object[] { file.getName() }));
-            }
-            //this means correct usage count for ImportXLS will actually be getUsageCount(ImportXLS) - getUsageCount(ImportCSV)...
-            if (dataFileInfo.getConfig().getProperties().getProperty("mimetype","").equals(ExportFileConfigurationFactory.CSV_MIME_TYPE))
-            {
-                UsageTracker.incrUsageCount("WB.ImportCSV");
             }
        }
         return null;
@@ -1750,7 +1751,7 @@ public class WorkbenchTask extends BaseTask
     protected Workbench selectWorkbench(final CommandAction cmdAction,
                                         final String helpContext)
     {
-        return selectWorkbench(cmdAction, "WB_CHOOSE_DATASET", null, helpContext, false);
+        return selectWorkbench(cmdAction, "WB_EXPORT_DATA", "WB_CHOOSE_DATASET", helpContext, false);
     }
     
     /**
@@ -2169,6 +2170,7 @@ public class WorkbenchTask extends BaseTask
     protected void importCardImages()
     {
         JFileChooser chooser = new JFileChooser();
+        chooser.setDialogTitle(getResourceString("WB_CHOOSE_IMAGES"));
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         chooser.setMultiSelectionEnabled(true);
         

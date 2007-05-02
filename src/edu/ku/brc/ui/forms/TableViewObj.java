@@ -291,7 +291,7 @@ public class TableViewObj implements Viewable,
                     {
                         editButton   = UIHelper.createButton("EditForm", getResourceString("EditRecord"), IconManager.IconSize.Std16, true);
                         newButton    = UIHelper.createButton("CreateObj", getResourceString("NewRecord"), IconManager.IconSize.Std16, true);
-                        deleteButton = UIHelper.createButton("SmallTrash", getResourceString("DeleteRecord"), IconManager.IconSize.Std16, true);
+                        deleteButton = UIHelper.createButton("DeleteRecord", getResourceString("DeleteRecord"), IconManager.IconSize.Std16, true);
                         
                         editButton.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent e)

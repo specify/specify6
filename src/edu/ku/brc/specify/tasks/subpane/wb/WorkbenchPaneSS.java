@@ -328,7 +328,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         addAction.setEnabled(true); 
 
 
-        carryForwardBtn = createIconBtn("CarryForward", IconManager.IconSize.Std16, "WB_CARRYFORWARD", false, new ActionListener()
+        carryForwardBtn = createIconBtn("Configure", IconManager.IconSize.Std16, "WB_CARRYFORWARD", false, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -339,7 +339,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         });
         carryForwardBtn.setEnabled(true);
 
-        toggleImageFrameBtn = createIconBtn("CardImage", IconManager.IconSize.Std16, "WB_SHOW_IMAGES", false, new ActionListener()
+        toggleImageFrameBtn = createIconBtn("CardImage", IconManager.IconSize.Std16, "WB_SHOW_IMG_WIN", false, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -517,7 +517,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         // start putting together the visible UI
         CellConstraints cc = new CellConstraints();
 
-        JComponent[] comps      = {addRowsBtn, clearCellsBtn, deleteRowsBtn, showMapBtn, exportKmlBtn, biogeomancerBtn, convertGeoRefFormatBtn, exportExcelCsvBtn};
+        JComponent[] comps      = {addRowsBtn, deleteRowsBtn, clearCellsBtn, showMapBtn, exportKmlBtn, biogeomancerBtn, convertGeoRefFormatBtn, exportExcelCsvBtn};
         PanelBuilder spreadSheetControlBar = new PanelBuilder(new FormLayout("f:p:g,4px,"+createDuplicateJGoodiesDef("p", "4px", comps.length)+",4px,", "p:g"));
         
         spreadSheetControlBar.add(findPanel, cc.xy(1, 1));
@@ -894,10 +894,10 @@ public class WorkbenchPaneSS extends BaseSubPane
         Vector<DropDownMenuInfo> menuItems = new Vector<DropDownMenuInfo>();
         menuItems.add(new DropDownMenuInfo(getResourceString("Form"), 
                                             IconManager.getImage("EditForm", IconManager.IconSize.Std16), 
-                                            getResourceString("ShowEditViewTT")));
+                                            getResourceString("WB_SHOW_FORM_VIEW")));
         menuItems.add(new DropDownMenuInfo(getResourceString("Grid"), 
-                                            IconManager.getImage("Spreadsheet", IconManager.IconSize.Std16), 
-                                            getResourceString("ShowSpreadsheetTT")));
+                                            IconManager.getImage("Spreadsheet16", IconManager.IconSize.Std16), 
+                                            getResourceString("WB_SHOW_GRID_VIEW")));
         final DropDownButtonStateful switcher = new DropDownButtonStateful(menuItems);
         switcher.setCurrentIndex(1);
         switcher.setToolTipText(getResourceString("SwitchViewsTT"));
@@ -946,7 +946,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         if (imageFrame != null)
         {
-            imageFrame.setHelpContext(panelType == PanelType.Spreadsheet ? "OnRampGridImageWindow" : "OnRampFormImageWindow");
+            imageFrame.setHelpContext(panelType == PanelType.Spreadsheet ? "WorkBenchGridImageWindow" : "WorkBenchFormImageWindow");
         }
         
         cardLayout.show(mainPanel, currentPanelType.toString());
@@ -987,7 +987,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
         
              
-        JComponent[] comps = { addRowsBtn, clearCellsBtn, deleteRowsBtn};
+        JComponent[] comps = { addRowsBtn, deleteRowsBtn, clearCellsBtn};
         for (JComponent c : comps)
         {
             // Enable the "Find" action in the Edit menu when a spreadsheet is shown
@@ -1015,7 +1015,8 @@ public class WorkbenchPaneSS extends BaseSubPane
                 imageFrame.setState(Frame.NORMAL);
             }
             
-            toggleImageFrameBtn.setToolTipText(getResourceString("WB_SHOW_IMAGES"));
+            toggleImageFrameBtn.setToolTipText(getResourceString("WB_SHOW_IMG_WIN"));
+
             spreadSheet.getSelectionModel().removeListSelectionListener(workbenchRowChangeListener);
             imageFrame.setVisible(false);
             blockChanges = true;
@@ -1041,9 +1042,9 @@ public class WorkbenchPaneSS extends BaseSubPane
             // when a user hits the "show image" button, for some reason the selection gets nullified
             // so we'll grab it here, then set it at the end of this method
 
-            toggleImageFrameBtn.setToolTipText(getResourceString("WB_HIDE_IMAGES"));
+            toggleImageFrameBtn.setToolTipText(getResourceString("WB_HIDE_IMG_WIN"));
             spreadSheet.getSelectionModel().addListSelectionListener(workbenchRowChangeListener);
-            imageFrame.setHelpContext(currentPanelType == PanelType.Spreadsheet ? "OnRampGridImageWindow" : "OnRampFormImageWindow");
+            imageFrame.setHelpContext(currentPanelType == PanelType.Spreadsheet ? "WorkBenchGridImageWindow" : "WorkBenchFormImageWindow");
             imageFrame.setVisible(true);
             
             // tell the table model to show the image column
@@ -1995,7 +1996,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                                                                         CustomDialog.OKCANCELHELP,
                                                                         ToggleButtonChooserDlg.Type.Checkbox);
         
-        dlg.setHelpContext(currentPanelType == PanelType.Spreadsheet ? "OnRampGridEditingCF" : "OnRampFormEditingCF");
+        dlg.setHelpContext(currentPanelType == PanelType.Spreadsheet ? "WorkBenchGridEditingCF" : "WorkBenchFormEditingCF");
         dlg.setAddSelectAll(true);
         dlg.setSelectedObjects(selectedObjects);
         dlg.setModal(true);
@@ -2059,14 +2060,13 @@ public class WorkbenchPaneSS extends BaseSubPane
             session.beginTransaction();
 
             // DEBUG
-            for (WorkbenchRow row : workbench.getWorkbenchRowsAsList())
+            /*for (WorkbenchRow row : workbench.getWorkbenchRowsAsList())
             {
                 for (WorkbenchDataItem item : row.getWorkbenchDataItems())
                 {
                     System.out.println("["+item.getCellData()+"]");
                 }
-            }
-
+            }*/
             
             Object dObj = session.merge(workbench);
             
@@ -2290,7 +2290,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     @Override
     public String getHelpTarget()
     {
-        return currentPanelType == PanelType.Spreadsheet ? "OnRampGridEditing" : "OnRampFormEditing";
+        return currentPanelType == PanelType.Spreadsheet ? "WorkBenchGridEditing" : "WorkBenchFormEditing";
     }
 
     //------------------------------------------------------------

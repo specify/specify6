@@ -135,7 +135,7 @@ public class ResultSetController implements ValidationListener
                                      final boolean addDelBtn, 
                                      final String  objTitle)
     {
-        String colDef = "p,2dlu,p,2dlu,max(50dlu;p):grow,2dlu,p,2dlu,p" + (addNewBtn ? ",2dlu,p" : "") + (addDelBtn ? ",2dlu,p" : "");
+        String colDef = "p,2dlu,p,2dlu,max(50dlu;p):grow,2dlu,p,2dlu,p" + (addNewBtn ? ",12px,p" : "") + (addDelBtn ? ",2dlu,p" : "");
         Insets insets = new Insets(1,1,1,1);
         DefaultFormBuilder rowBuilder = new DefaultFormBuilder(new FormLayout(colDef, "p"));
         
@@ -172,7 +172,7 @@ public class ResultSetController implements ValidationListener
         
         if (addNewBtn)
         {
-            newRecBtn = UIHelper.createIconBtn("NewRec", null, new ActionListener() {
+            newRecBtn = UIHelper.createIconBtn("NewRecord", null, new ActionListener() {
                 public void actionPerformed(ActionEvent ae)
                 {
                     for (ResultSetControllerListener rscl : listeners)
@@ -190,7 +190,7 @@ public class ResultSetController implements ValidationListener
         
         if (addDelBtn)
         {
-            delRecBtn = UIHelper.createIconBtn("SmallTrash", null, null);
+            delRecBtn = UIHelper.createIconBtn("DeleteRecord", null, null);
             delRecBtn.setToolTipText(createTooltip("RemoveRecordTT", objTitle));
             delRecBtn.setMargin(insets);
             rowBuilder.add(delRecBtn, cc.xy(row++,1));

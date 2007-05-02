@@ -166,7 +166,8 @@ public class IconManager
 
         }
         // else
-        throw new RuntimeException("Can't register null icon name["+iconName+"] Size:"+id.toString());
+        log.error("Can't register null icon name["+iconName+"] Size:"+id.toString());
+        return null;
     }
 
     public static IconSize getIconSize(int size, boolean bw, boolean faded)
@@ -311,9 +312,11 @@ public class IconManager
                     {
                         //log.info("["+name+"]["+sizes+"]["+file+"]");
                         IconEntry entry = register(name, file, IconManager.IconSize.Std32);
-
-                        entry.addScaled(IconSize.Std32, IconSize.Std24);
-                        entry.addScaled(IconSize.Std32, IconSize.Std16);
+                        if (entry != null)
+                        {
+                            entry.addScaled(IconSize.Std32, IconSize.Std24);
+                            entry.addScaled(IconSize.Std32, IconSize.Std16);
+                        }
 
                     } else if (sizes.toLowerCase().equals("nonstd"))
                     {

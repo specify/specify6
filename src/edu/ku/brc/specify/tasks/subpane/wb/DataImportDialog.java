@@ -38,7 +38,6 @@ import java.util.Vector;
 
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -73,11 +72,11 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.prefs.AppPrefsCache;
-import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.DateWrapper;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.MouseOverJLabel;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -1407,7 +1406,7 @@ public class DataImportDialog extends JDialog implements ActionListener
 			PanelBuilder builder = new PanelBuilder(formLayout, this);
 			MouseOverJLabel statusInfoLabel = new MouseOverJLabel();
 			statusInfoLabel.setHorizontalTextPosition(JLabel.RIGHT);
-			statusInfoLabel.setIcon(new ImageIcon(Specify.class.getResource("images/validation-error.gif")));
+			statusInfoLabel.setIcon(IconManager.getIcon("Error", IconManager.IconSize.Std16));
 			statusInfoLabel.setText(getResourceString("DATA_IMPORT_ERROR"));
 			statusInfoLabel.setActivatedTextColor(Color.RED);
 			statusInfoLabel.addActionListener(new ActionListener() {

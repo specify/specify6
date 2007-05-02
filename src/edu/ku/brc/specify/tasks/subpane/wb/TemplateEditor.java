@@ -274,7 +274,7 @@ public class TemplateEditor extends CustomDialog
             }
         });
         
-        upBtn = createIconBtn("UpArrow", "WB_MOVE_UP", new ActionListener()
+        upBtn = createIconBtn("ReorderUp", "WB_MOVE_UP", new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -288,7 +288,7 @@ public class TemplateEditor extends CustomDialog
                 setChanged(true);
             }
         });
-        downBtn = createIconBtn("DownArrow", "WB_MOVE_DOWN", new ActionListener()
+        downBtn = createIconBtn("ReorderDown", "WB_MOVE_DOWN", new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -303,14 +303,14 @@ public class TemplateEditor extends CustomDialog
             }
         });
 
-        mapToBtn = createIconBtn("move_right", "WB_ADD_MAPPING_ITEM", new ActionListener()
+        mapToBtn = createIconBtn("Map", "WB_ADD_MAPPING_ITEM", new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
                 map();
             }
         });
-        unmapBtn = createIconBtn("move_left", "WB_REMOVE_MAPPING_ITEM", new ActionListener()
+        unmapBtn = createIconBtn("Unmap", "WB_REMOVE_MAPPING_ITEM", new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -325,7 +325,7 @@ public class TemplateEditor extends CustomDialog
         
         // Note: if workbenchTemplate is null then it is 
         String dataTypeLabel   = getResourceString("WB_DATA_TYPE");
-        String fieldsLabel     = getResourceString("Fields"); // XXX I18N
+        String fieldsLabel     = getResourceString("WB_FIELDS");
         
         if (isMappedToAFile)
         {

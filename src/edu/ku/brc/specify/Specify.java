@@ -423,7 +423,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
         int[] sections = {30, 50};
         statusField = new JStatusBar(sections);
-        statusField.setErrorIcon(IconManager.getIcon("Error",IconManager.IconSize.Std16));
+        statusField.setErrorIcon(IconManager.getIcon("Error", IconManager.IconSize.Std16));
         statusField.setWarningIcon(IconManager.getIcon("Warning", IconManager.IconSize.Std16));
         UIRegistry.setStatusBar(statusField);
 

@@ -126,9 +126,9 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
     protected JButton      closeBtn;
     protected JCheckBox    forceChkbx;
 
-    protected ImageIcon    checkIcon     = new ImageIcon(IconManager.getImagePath("check.gif"));  // Move to icons.xml
-    protected ImageIcon    exclaimIcon   = new ImageIcon(IconManager.getImagePath("exclaim.gif"));
-    protected ImageIcon    exclaimYWIcon = new ImageIcon(IconManager.getImagePath("exclaim_yellow.gif"));
+    protected ImageIcon    checkIcon     = IconManager.getIcon("Checkmark", IconManager.IconSize.Std24);
+    protected ImageIcon    exclaimIcon   = IconManager.getIcon("Error", IconManager.IconSize.Std24);
+    protected ImageIcon    exclaimYWIcon = IconManager.getIcon("Warning", IconManager.IconSize.Std24);
 
     protected PairsMultipleQueryResultsHandler handler = null;
 
