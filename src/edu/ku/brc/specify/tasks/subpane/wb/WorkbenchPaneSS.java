@@ -1009,6 +1009,12 @@ public class WorkbenchPaneSS extends BaseSubPane
         boolean visible = imageFrame.isVisible();
         if (visible)
         {
+            // if the image frame is minimized or iconified, set it to fully visible before doing anything else
+            if (imageFrame.getState() == Frame.ICONIFIED)
+            {
+                imageFrame.setState(Frame.NORMAL);
+            }
+            
             toggleImageFrameBtn.setToolTipText(getResourceString("WB_SHOW_IMAGES"));
             spreadSheet.getSelectionModel().removeListSelectionListener(workbenchRowChangeListener);
             imageFrame.setVisible(false);
@@ -1045,7 +1051,15 @@ public class WorkbenchPaneSS extends BaseSubPane
             
             // get the selection before the changes
             int[] selRows = spreadSheet.getSelectedRows();
+            for (int i: selRows)
+            {
+                i = spreadSheet.convertRowIndexToModel(i);
+            }
             int[] selCols = spreadSheet.getSelectedColumns();
+            for (int i: selCols)
+            {
+                i = spreadSheet.convertColumnIndexToModel(i);
+            }
             
             model.setInImageMode(true);
             
@@ -1059,6 +1073,12 @@ public class WorkbenchPaneSS extends BaseSubPane
                 spreadSheet.getColumnModel().getSelectionModel().addSelectionInterval(selCol, selCol);
             }
             blockChanges = false;
+
+            // if the image frame is minimized or iconified, set it to fully visible before doing anything else
+            if (imageFrame.getState() == Frame.ICONIFIED)
+            {
+                imageFrame.setState(Frame.NORMAL);
+            }
 
             showCardImageForSelectedRow();
             
