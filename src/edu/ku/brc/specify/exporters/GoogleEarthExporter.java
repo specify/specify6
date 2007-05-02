@@ -163,6 +163,10 @@ public class GoogleEarthExporter implements RecordSetExporter
                 String htmlDesc = pm.getHtmlContent();
                 kmlGenerator.addPlacemark(geoRef, name, htmlDesc);
             }
+            else
+            {
+                log.warn("Placemark returned a null georef point");
+            }
         }
 
         kmlGenerator.generateKML(outputFile);

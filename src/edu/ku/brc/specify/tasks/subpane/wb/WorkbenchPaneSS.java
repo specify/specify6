@@ -1258,7 +1258,10 @@ public class WorkbenchPaneSS extends BaseSubPane
             BigDecimal longitude = null;
             try
             {
+                GeoRefConverter converter = new GeoRefConverter();
+                lat1 = converter.convert(lat1, GeoRefFormat.D_PLUS_MINUS.name());
                 latitude = new BigDecimal(lat1);
+                lon1 = converter.convert(lon1, GeoRefFormat.D_PLUS_MINUS.name());
                 longitude = new BigDecimal(lon1);
             }
             catch (Exception e)
@@ -1389,8 +1392,9 @@ public class WorkbenchPaneSS extends BaseSubPane
                 convertedValue = converter.convert(currentValue, outputFormat);
                 
                 // if the caller specified a "backup" column index, copy the original value to it
-                // if the backup column doesn't already have contents
-                if (backupColIndex != -1)
+                // if the backup column doesn't already have contents and the converted value is actually
+                // different from the current value
+                if (backupColIndex != -1 && !convertedValue.equals(currentValue))
                 {
                     String currVal = (String)model.getValueAt(rowIndex, backupColIndex);
                     if (currVal == null || StringUtils.isEmpty(currVal))

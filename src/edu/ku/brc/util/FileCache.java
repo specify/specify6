@@ -588,8 +588,13 @@ public class FileCache implements DataCacheIFace
 
 		byte[] response = get.getResponseBody();
 
-		cacheData(url, response);
-		return url;
+        if (response.length > 0)
+        {
+            cacheData(url, response);
+            return url;
+        }
+        
+        throw new HttpException("Web request returned zero length response");
 	}
 
 	/**
