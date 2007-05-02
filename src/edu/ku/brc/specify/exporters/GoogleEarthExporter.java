@@ -90,9 +90,21 @@ public class GoogleEarthExporter implements RecordSetExporter
                     Component parentFrame = UIRegistry.get(UIRegistry.TOPFRAME);
                     String notAllMappedMsg = getResourceString("NOT_ALL_MAPPED");
                     String title = getResourceString("Warning");
-                    JOptionPane.showMessageDialog(parentFrame, notAllMappedMsg, getDescription(), JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(parentFrame, notAllMappedMsg, title, JOptionPane.WARNING_MESSAGE);
                 }
-                openExternalViewer(tmpFile);
+                
+                try
+                {
+                	openExternalViewer(tmpFile);
+                }
+                catch (Exception e)
+                {
+                	log.warn("Failed to start external viewer (e.g. Google Earth) for KML file", e);
+                    Component parentFrame = UIRegistry.get(UIRegistry.TOPFRAME);
+                    String errorMessage = getResourceString("GOOGLE_EARTH_ERROR");
+                    String title = getResourceString("Error");
+                    JOptionPane.showMessageDialog(parentFrame, errorMessage, title, JOptionPane.ERROR_MESSAGE);
+                }
             }
             catch (Exception e)
             {
