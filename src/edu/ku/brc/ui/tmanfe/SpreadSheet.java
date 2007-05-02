@@ -131,10 +131,12 @@ public class SpreadSheet  extends SearchableJXTable
         // Also ensure that the row-header labels and the table
         // rows have the same height.
         
-        //i have no idea WHY this has to be called.  i tried removing
-        //my jxtable code, and when I did, i started getting an array index out of
-        //bounds on teh column header.  tried firing this off, first and it fixed the problem.//meg
-        //this.getModel().fireTableStructureChanged();
+        //i have no idea WHY this has to be called.  i rearranged
+        //the table and find replace panel, 
+        // i started getting an array index out of
+        //bounds on teh column header ON MAC ONLY.  
+        //tried firing this off, first and it fixed the problem.//meg
+        this.getModel().fireTableStructureChanged();
         
         TableColumn       column   = getColumnModel().getColumn(0);
         TableCellRenderer renderer = getTableHeader().getDefaultRenderer();
