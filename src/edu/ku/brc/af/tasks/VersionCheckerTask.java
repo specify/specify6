@@ -387,7 +387,7 @@ public class VersionCheckerTask extends BaseTask
                 {
                     popupMessage += "<li>" + update + "</li>";
                 }
-                popupMessage += "</ul><br/>";
+                popupMessage += "</ul><br>";
                 
                 String downloadSiteURL = getResourceString("DOWNLOAD_SITE_URL");
                 popupMessage += "<a href=\"" + downloadSiteURL + "\">" + downloadSiteURL + "</a>";
