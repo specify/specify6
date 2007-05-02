@@ -94,7 +94,7 @@ public abstract class ConfigureExternalDataBase implements ConfigureExternalData
     {
         if (headers == null) 
         { 
-            return null; 
+            return ""; 
         }
         StringWriter sw = new StringWriter();
         CsvWriter csv = new CsvWriter(sw, ',');
@@ -175,6 +175,7 @@ public abstract class ConfigureExternalDataBase implements ConfigureExternalData
     {
         log.debug("ConfigureExternalDataBase getConfig(File)" + file.toString());
         externalFile = file;
+        fileName = externalFile.getName();
         if (interactive)
         {
             interactiveConfig();
