@@ -30,7 +30,7 @@ import javax.persistence.Transient;
 public class WorkbenchRowImage implements java.io.Serializable
 {
     protected Long         workbenchRowImageId;
-    protected Integer      order;
+    protected Integer      imageOrder;
     protected byte[]       cardImageData;
     protected String       cardImageFullPath;
     protected WorkbenchRow workbenchRow;
@@ -46,7 +46,7 @@ public class WorkbenchRowImage implements java.io.Serializable
     public void initialize()
     {
         workbenchRowImageId = null;
-        order               = null;
+        imageOrder          = null;
         cardImageData       = null;
         cardImageFullPath   = null;
         workbenchRow        = null;
@@ -98,15 +98,15 @@ public class WorkbenchRowImage implements java.io.Serializable
         this.cardImageFullPath = cardImageFullPath;
     }
 
-    @Column(name = "Order")
-    public Integer getOrder()
+    @Column(name = "ImageOrder")
+    public Integer getImageOrder()
     {
-        return order;
+        return imageOrder;
     }
 
-    public void setOrder(Integer order)
+    public void setImageOrder(Integer imageOrder)
     {
-        this.order = order;
+        this.imageOrder = imageOrder;
     }
 
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
