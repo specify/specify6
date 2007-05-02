@@ -154,10 +154,10 @@
     <icon name="Error"      alias="ValidationError"/>
     
     
-    <icon name="Green Arrow Down" file="green_arrow_down.gif" sizes="16"/>
-    <icon name="Green Arrow Up"   file="green_arrow_up.gif"   sizes="16"/>
-    <icon name="Linked"           file="LinksTo24x24.png"     sizes="24"/>
-    <icon name="LinkedRight"      file="linked_right.png"     sizes="NonStd"/>
+    <icon name="Green Arrow Down" file="green_arrow_down.gif"   sizes="16"/>
+    <icon name="Green Arrow Up"   file="green_arrow_up.gif"     sizes="16"/>
+    <icon name="Linked"           file="LinksTo32.png"          sizes="NonStd"/>
+    <icon name="LinkedRight"      file="LinksToRight32.png"     sizes="NonStd"/>
     <icon name="CardImage"        file="ToggleImageFrame16x16.png" sizes="16"/>
     
     <icon name="Down"             file="down.png" sizes="NonStd"/>
