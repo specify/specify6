@@ -8,10 +8,12 @@ package edu.ku.brc.specify.exporters;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.Component;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
+import java.util.Vector;
 
 import javax.swing.Icon;
 import javax.swing.JFrame;
@@ -65,7 +67,7 @@ public class GoogleEarthExporter implements RecordSetExporter
 	}
     
     @SuppressWarnings("unchecked")
-    public void exportList(List<?> data, Properties reqParams)
+    public void exportList(List<?> data, Properties reqParams) throws Exception
     {
         log.info("Exporting data list");
         if (data==null || data.size()==0)
@@ -78,8 +80,19 @@ public class GoogleEarthExporter implements RecordSetExporter
         {
             try
             {
-                File output = exportPlacemarkList((List<GoogleEarthPlacemarkIFace>)data, reqParams);
-                openExternalViewer(output);
+                File tmpFile = File.createTempFile("sp6export", ".kml");
+                tmpFile.deleteOnExit();
+                log.info("Writing KML output to " + tmpFile.getAbsolutePath());
+
+                List<GoogleEarthPlacemarkIFace> mappedPlacemarks = exportPlacemarkList((List<GoogleEarthPlacemarkIFace>)data, reqParams, tmpFile);
+                if (mappedPlacemarks.size() != data.size())
+                {
+                    Component parentFrame = UIRegistry.get(UIRegistry.TOPFRAME);
+                    String notAllMappedMsg = getResourceString("NOT_ALL_MAPPED");
+                    String title = getResourceString("Warning");
+                    JOptionPane.showMessageDialog(parentFrame, notAllMappedMsg, getDescription(), JOptionPane.WARNING_MESSAGE);
+                }
+                openExternalViewer(tmpFile);
             }
             catch (Exception e)
             {
@@ -118,8 +131,19 @@ public class GoogleEarthExporter implements RecordSetExporter
         }
     }
     
-    protected File exportPlacemarkList(List<GoogleEarthPlacemarkIFace> placemarks, Properties reqParams) throws IOException
+    /**
+     * Generates a KML file representing the given list of placemarks.
+     * 
+     * @param placemarks a List of placemarks to be mapped
+     * @param reqParams request parameters
+     * @param outputFile the file to put the KML into
+     * @return a List of placemarks that were mapped (does not include any passed in placemarks that couldn't be mapped for some reason)
+     * @throws IOException an error occurred while writing the KML to the file
+     */
+    protected List<GoogleEarthPlacemarkIFace> exportPlacemarkList(List<GoogleEarthPlacemarkIFace> placemarks, Properties reqParams, File outputFile) throws IOException
     {
+        List<GoogleEarthPlacemarkIFace> mappedPlacemarks = new Vector<GoogleEarthPlacemarkIFace>();
+        
         GenericKmlGenerator kmlGenerator = new GenericKmlGenerator();
 
         // see if an icon URL was specified
@@ -133,15 +157,16 @@ public class GoogleEarthExporter implements RecordSetExporter
         {
             String name = pm.getTitle();
             Pair<Double,Double> geoRef = pm.getLatLon();
-            String htmlDesc = pm.getHtmlContent();
-            kmlGenerator.addPlacemark(geoRef, name, htmlDesc);
+            if (geoRef != null)
+            {
+                mappedPlacemarks.add(pm);
+                String htmlDesc = pm.getHtmlContent();
+                kmlGenerator.addPlacemark(geoRef, name, htmlDesc);
+            }
         }
 
-        File tmpFile = File.createTempFile("sp6export", ".kml");
-        log.info("Writing KML output to " + tmpFile.getAbsolutePath());
-        kmlGenerator.generateKML(tmpFile);
-        tmpFile.deleteOnExit();
-        return tmpFile;
+        kmlGenerator.generateKML(outputFile);
+        return mappedPlacemarks;
     }
     
     protected void openExternalViewer(File f) throws Exception
