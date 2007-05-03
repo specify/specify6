@@ -164,9 +164,15 @@ public class GoogleEarthExporter implements RecordSetExporter
         
         GenericKmlGenerator kmlGenerator = new GenericKmlGenerator();
         
-        //kmlGenerator.setBalloonStyleBgColor("AA94590B");
-        //kmlGenerator.setBalloonStyleTextColor("FFFFFFFF");
-        //kmlGenerator.setBalloonStyleText("<b><font size=\"+3\"><center>$[name]</center></font></b><br/><hr><br/>$[description]<br/><br/><center><b><a style=\"color: white\" href=\"http://www.specifysoftware.org/\">http://www.specifysoftware.org</a></b></center>");
+        kmlGenerator.setBalloonStyleBgColor("AA94590B");
+        String textColor = "FFFFFF";
+        kmlGenerator.setBalloonStyleTextColor("FF" + textColor);
+        kmlGenerator.setBalloonStyleText(
+                "<b><font size=\"+3\"><center>$[name]</center></font></b>"
+                + "<br/><hr><br/>"
+                + "$[description]<br/><br/>"
+                + "<center><b><a style=\"color: #" + textColor + "\" href=\"http://www.specifysoftware.org/\">http://www.specifysoftware.org</a></b></center>"
+                );
 
         // see if an icon URL was specified
         Object iconURL = reqParams.getProperty("iconURL");

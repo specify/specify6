@@ -76,6 +76,7 @@ import javax.swing.text.Caret;
 import javax.swing.text.JTextComponent;
 import javax.swing.undo.UndoManager;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -864,6 +865,8 @@ public class WorkbenchPaneSS extends BaseSubPane
             // no selection
             log.debug("No selection, so removing the card image");
             imageFrame.setRow(null);
+            imageFrame.setTitle(getResourceString("WB_NO_ROW_SELECTED"));
+            imageFrame.setStatusBarText(null);
             return;
         }
         // else
@@ -874,9 +877,12 @@ public class WorkbenchPaneSS extends BaseSubPane
         imageFrame.setRow(row);
 
         // XXX Change later - Assuming first Row
-        WorkbenchDataItem firstColItem = row.getItems().get(0);
-        String firstColCellData = (firstColItem != null) ? firstColItem.getCellData() : "";
-        imageFrame.setTitle("Row " + (spreadSheet.getSelectedRow()+1) + ": " + firstColCellData);
+        //WorkbenchDataItem firstColItem = row.getItems().get((short)0);
+        //String firstColCellData = (firstColItem != null) ? firstColItem.getCellData() : "";
+        String fullFilePath = row.getCardImageFullPath();
+        String filename = FilenameUtils.getName(fullFilePath);
+        imageFrame.setTitle("Row " + (spreadSheet.getSelectedRow()+1) + ((filename != null) ? ": " + filename : ""));
+        imageFrame.setStatusBarText(fullFilePath);
     }
     
     /**

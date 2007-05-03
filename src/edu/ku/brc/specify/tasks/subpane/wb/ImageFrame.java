@@ -46,6 +46,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.ui.HelpMgr;
+import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -71,6 +72,7 @@ public class ImageFrame extends JFrame
     protected JButton      loadImgBtn                 = null;
     protected JPanel       mainPane;
     protected JScrollPane  scrollPane;
+    protected JStatusBar   statusBar;
 
     protected JMenu             viewMenu;
     protected JMenu             imageMenu;
@@ -111,7 +113,16 @@ public class ImageFrame extends JFrame
         mainPane.setMinimumSize(minSize);
         mainPane.add(cardImageLabel, BorderLayout.CENTER);
         scrollPane = new JScrollPane(mainPane, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        setContentPane(scrollPane);
+        
+        statusBar = new JStatusBar();
+        statusBar.setText("hello");
+
+        JPanel basePanel = new JPanel();
+        basePanel.setLayout(new BorderLayout());
+        basePanel.add(scrollPane,BorderLayout.CENTER);
+        basePanel.add(statusBar,BorderLayout.SOUTH);
+        
+        setContentPane(basePanel);
         
         JMenuBar  menuBar   = new JMenuBar();
         JMenu     fileMenu  = UIHelper.createMenu(menuBar, "File", "FileMneu");
@@ -160,6 +171,11 @@ public class ImageFrame extends JFrame
         pack();
         
         //HelpMgr.setHelpID(this, "OnRampImageWindow");
+    }
+    
+    public void setStatusBarText(final String text)
+    {
+        statusBar.setText(text);
     }
     
     public void setHelpContext(final String helpContext)
@@ -318,7 +334,8 @@ public class ImageFrame extends JFrame
             }
             
             cardImage = null;
-            cardImageLabel.setText("No row selected"); // XXX I18N
+            cardImageLabel.setIcon(null);
+            cardImageLabel.setText(getResourceString("WB_NO_ROW_SELECTED"));
         }
         validate();
         repaint();
