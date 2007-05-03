@@ -2512,10 +2512,6 @@ public class WorkbenchTask extends BaseTask
 
         throw new RuntimeException("Could not find [" + wbtmi.getFieldName()+"]");
     }
-
-    //-------------------------------------------------------
-    // CommandListener Interface
-    //-------------------------------------------------------
     
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#getImageIcon()
@@ -2523,8 +2519,12 @@ public class WorkbenchTask extends BaseTask
     @Override
     public ImageIcon getImageIcon()
     {
-        return IconManager.getIcon("DataSet");
+        return IconManager.getIcon("DataSet", IconManager.IconSize.Std16);
     }
+
+    //-------------------------------------------------------
+    // CommandListener Interface
+    //-------------------------------------------------------
 
     /**
      * Processes all Commands of type WORKBENCH.
