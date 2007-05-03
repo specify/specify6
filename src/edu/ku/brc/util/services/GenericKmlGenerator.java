@@ -50,6 +50,10 @@ public class GenericKmlGenerator
     /** A URL to an image file to be used as the placemark icon. */
     protected String placemarkIconURL;
     
+    protected String balloonStyleBgColor;
+    protected String balloonStyleTextColor;
+    protected String balloonStyleText;
+    
     /**
      * Constructs an instance.
      */
@@ -99,6 +103,36 @@ public class GenericKmlGenerator
         this.placemarkIconURL = placemarkIconURL;
     }
 
+    public String getBalloonStyleBgColor()
+    {
+        return balloonStyleBgColor;
+    }
+
+    public void setBalloonStyleBgColor(String balloonStyleBgColor)
+    {
+        this.balloonStyleBgColor = balloonStyleBgColor;
+    }
+
+    public String getBalloonStyleText()
+    {
+        return balloonStyleText;
+    }
+
+    public void setBalloonStyleText(String balloonStyleText)
+    {
+        this.balloonStyleText = balloonStyleText;
+    }
+
+    public String getBalloonStyleTextColor()
+    {
+        return balloonStyleTextColor;
+    }
+
+    public void setBalloonStyleTextColor(String balloonStyleTextColor)
+    {
+        this.balloonStyleTextColor = balloonStyleTextColor;
+    }
+
     /**
      * Generates KML output based on the current points, names and descriptions given to the generator.
      * 
@@ -112,16 +146,36 @@ public class GenericKmlGenerator
         kmlBuilder.append("<Document>\n");
 
         // setup the custom icon, if any
-        if (placemarkIconURL!=null)
+        if (placemarkIconURL != null || balloonStyleBgColor != null || balloonStyleTextColor != null || balloonStyleText != null)
         {
-            kmlBuilder.append("<Style id=\"customPlacemark\">\n");
-            kmlBuilder.append("<IconStyle>\n");
-            kmlBuilder.append("<Icon>\n");
-            kmlBuilder.append("<href>");
-            kmlBuilder.append(placemarkIconURL);
-            kmlBuilder.append("</href>\n");
-            kmlBuilder.append("</Icon>\n");
-            kmlBuilder.append("</IconStyle>\n");
+            kmlBuilder.append("<Style id=\"custom\">\n");
+            if (placemarkIconURL != null)
+            {
+                kmlBuilder.append("<IconStyle>\n");
+                kmlBuilder.append("<Icon>\n");
+                kmlBuilder.append("<href>");
+                kmlBuilder.append(placemarkIconURL);
+                kmlBuilder.append("</href>\n");
+                kmlBuilder.append("</Icon>\n");
+                kmlBuilder.append("</IconStyle>\n");
+            }
+            if (balloonStyleBgColor != null || balloonStyleTextColor != null || balloonStyleText != null)
+            {
+                kmlBuilder.append("<BalloonStyle>\n");
+                if (balloonStyleBgColor != null)
+                {
+                    kmlBuilder.append("<bgColor>" + balloonStyleBgColor + "</bgColor>\n");
+                }
+                if (balloonStyleTextColor != null)
+                {
+                    kmlBuilder.append("<textColor>" + balloonStyleTextColor + "</textColor>\n");
+                }
+                if (balloonStyleText != null)
+                {
+                    kmlBuilder.append("<text><![CDATA[" + balloonStyleText + "]]></text>\n");
+                }
+                kmlBuilder.append("</BalloonStyle>\n");
+            }
             kmlBuilder.append("</Style>\n"); 
         }
         
@@ -145,7 +199,7 @@ public class GenericKmlGenerator
         sb.append(generateXmlElement("name", name));
         if (placemarkIconURL!=null)
         {
-            sb.append(generateXmlElement("styleUrl", "#customPlacemark"));
+            sb.append(generateXmlElement("styleUrl", "#custom"));
             sb.append("\n");
         }
         sb.append(generateXmlElement("description", "<![CDATA[" + htmlDesc + "]]>"));
