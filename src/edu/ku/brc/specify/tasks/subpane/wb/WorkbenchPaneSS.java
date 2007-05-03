@@ -650,6 +650,9 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             btn.setEnabled(enable);
         }
+        enable = workbench.getWorkbenchRows().size() < WorkbenchTask.MAX_ROWS;
+        addRowsBtn.setEnabled(enable);
+        resultsetController.getNewRecBtn().setEnabled(enable);
     }
     
     

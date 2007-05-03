@@ -126,6 +126,8 @@ public class WorkbenchTask extends BaseTask
 {
 	private static final Logger log = Logger.getLogger(WorkbenchTask.class);
     
+    public static final int        MAX_ROWS              = 200;
+
 	public static final DataFlavor WORKBENCH_FLAVOR      = new DataFlavor(WorkbenchTask.class, "Workbench");
     public static final String     WORKBENCH             = "Workbench";
     public static final String     WORKBENCHTEMPLATE     = "WorkbenchTemplate";
