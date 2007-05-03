@@ -11,30 +11,32 @@
 		<plugin class="edu.ku.brc.af.tasks.VersionCheckerTask" addui="true"/>
 		
 		<!-- 
-			<plugin class="edu.ku.brc.af.tasks.StartUpTask" visible="true" default="true"/>
-			
-			<plugin class="edu.ku.brc.specify.tasks.DataEntryTask" visible="true"/>
-			<plugin class="edu.ku.brc.specify.tasks.TaxonTreeTask" visible="true"/>
-			<plugin class="edu.ku.brc.specify.tasks.LocationTreeTask" visible="true"/>
-			<plugin class="edu.ku.brc.specify.tasks.GeographyTreeTask" visible="true"/>
-			<plugin class="edu.ku.brc.specify.tasks.GtpTreeTask" visible="true"/>
-			
-			<plugin class="edu.ku.brc.specify.tasks.LabelsTask" visible="true"/>
-			
-			<plugin class="edu.ku.brc.specify.tasks.ReportsTask" visible="true"/>
-			<plugin class="edu.ku.brc.specify.tasks.InteractionsTask" visible="true"/>
-			<plugin class="edu.ku.brc.af.tasks.StatsTask" visible="true"/>
-			<plugin class="edu.ku.brc.specify.tasks.QueryTask" visible="true"/>
-			
-			<plugin class="edu.ku.brc.specify.tasks.RecordSetTask" visible="false"/>
-			
-			<plugin class="edu.ku.brc.specify.tasks.InfoRequestTask" visible="false"/>
-			<plugin class="edu.ku.brc.specify.tasks.SystemSetupTask" visible="true"/>
-			
-			<plugin class="edu.ku.brc.specify.tasks.WorkbenchTask" visible="true" default="true"/>
-			<plugin class="edu.ku.brc.specify.tasks.ExportTask" visible="false"/>
-			
-			<plugin class="edu.ku.brc.specify.tasks.ExpressSearchTask" visible="true"/>
+		<plugin class="edu.ku.brc.af.tasks.StartUpTask" addui="true" default="true"/>
+		
+		<plugin class="edu.ku.brc.specify.tasks.DataEntryTask" addui="true"/>
+		<plugin class="edu.ku.brc.specify.tasks.TaxonTreeTask" addui="true"/>
+		<plugin class="edu.ku.brc.specify.tasks.LocationTreeTask" addui="true"/>
+		<plugin class="edu.ku.brc.specify.tasks.GeographyTreeTask" addui="true"/>
+		<plugin class="edu.ku.brc.specify.tasks.GtpTreeTask" addui="true"/>
+		
+		<plugin class="edu.ku.brc.specify.tasks.LabelsTask" addui="true"/>
+		
+		<plugin class="edu.ku.brc.specify.tasks.ReportsTask" addui="true"/>
+		<plugin class="edu.ku.brc.specify.tasks.InteractionsTask" addui="true"/>
+		<plugin class="edu.ku.brc.af.tasks.StatsTask" addui="true"/>
+		<plugin class="edu.ku.brc.specify.tasks.QueryTask" addui="true"/>
+		
+		<plugin class="edu.ku.brc.specify.tasks.RecordSetTask" addui="false"/>
+		
+		<plugin class="edu.ku.brc.specify.tasks.InfoRequestTask" addui="false"/>
+		<plugin class="edu.ku.brc.specify.tasks.SystemSetupTask" addui="true"/>
+		
+		<plugin class="edu.ku.brc.specify.tasks.WorkbenchTask" addui="true"/>
+		<plugin class="edu.ku.brc.specify.tasks.ExportTask" addui="false"/>
+		
+		<plugin class="edu.ku.brc.specify.tasks.ExpressSearchTask" addui="true"/>
+		
+		<plugin class="edu.ku.brc.af.tasks.VersionCheckerTask" addui="true"/>
 		-->
 	</core>
 	

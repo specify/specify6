@@ -354,9 +354,11 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
         boolean exists = doesIndexExist();
         
         //log.debug(lucenePath.getAbsoluteFile() + " has index " + (lucenePath.list().length > 0));
-        
-        searchBtn.setEnabled(exists);
-        searchText.setEnabled(exists);
+        if (searchBtn != null)
+        {
+            searchBtn.setEnabled(exists);
+            searchText.setEnabled(exists);
+        }
     }
 
     /**

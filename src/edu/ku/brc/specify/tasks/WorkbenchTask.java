@@ -37,6 +37,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -111,7 +112,6 @@ import edu.ku.brc.ui.Trash;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
-import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 
 /**
@@ -970,7 +970,7 @@ public class WorkbenchTask extends BaseTask
             {
                 if (subCmd.getTableId() == cmdAction.getTableId())
                 {
-                    workbenchTemplate = selectWorkbenchTemplate(subCmd, "WB_EXPORT_TEMPLATE", "WB_CHOOSE_DATASET", ""); // XXX ADD HELP
+                    workbenchTemplate = selectWorkbenchTemplate(subCmd, "WB_EXPORT_TEMPLATE", null, ""); // XXX ADD HELP
                     
                 } else
                 {
@@ -981,7 +981,7 @@ public class WorkbenchTask extends BaseTask
         
         if (workbenchTemplate == null)
         {
-            workbenchTemplate = selectWorkbenchTemplate(cmdAction, "WB_EXPORT_TEMPLATE", "WB_CHOOSE_DATASET", ""); // XXX ADD HELP
+            workbenchTemplate = selectWorkbenchTemplate(cmdAction, "WB_EXPORT_TEMPLATE", null, ""); // XXX ADD HELP
         }
 
         // The command may have been clicked on so ask for one
@@ -1318,51 +1318,70 @@ public class WorkbenchTask extends BaseTask
      * @param workbench the Workbench
      * @return the new Workbench data object
      */
-    protected Workbench fillandSaveWorkbench(final ImportDataFileInfo dataFileInfo, 
-                                             final Workbench          workbench)
+    protected void fillandSaveWorkbench(final ImportDataFileInfo dataFileInfo, 
+                                        final Workbench          workbench)
     {
         if (workbench != null)
         {
-            if (dataFileInfo != null)
+            UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_LOADING_DATASET"), new Object[] {workbench.getName()}), 32);
+            
+            final SwingWorker worker = new SwingWorker()
             {
-                if (dataFileInfo.loadData(workbench) == DataImportIFace.Status.Error)
+                @SuppressWarnings("synthetic-access")
+                @Override
+                public Object construct()
                 {
+                     if (dataFileInfo != null)
+                     {
+                         if (dataFileInfo.loadData(workbench) == DataImportIFace.Status.Error)
+                         {
+                             return null;
+                         }
+                         
+                     } else
+                     {
+                         workbench.addRow();
+                     }
+                     
+                     DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                     
+                     try
+                     {
+                         session.beginTransaction();
+                         session.save(workbench);
+                         session.commit();
+                         session.flush();
+                         
+                         addWorkbenchToNavBox(workbench);
+                         
+                         updateNavBoxUI(null);
+                         
+                     } catch (Exception ex)
+                     {
+                         ex.printStackTrace();
+                     } finally
+                     {
+                         session.close();
+                     }
+                     
                     return null;
                 }
-                
-            } else
-            {
-                workbench.addRow();
-            }
-            
-            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            
-            try
-            {
-                session.beginTransaction();
-                session.save(workbench);
-                session.commit();
-                session.flush();
-                
-                addWorkbenchToNavBox(workbench);
-                
-                updateNavBoxUI(null);
-                
-            } catch (Exception ex)
-            {
-                ex.printStackTrace();
-            }
-            
-            createEditorForWorkbench(workbench, session, false);
-            
-            session.close();
+
+                //Runs on the event-dispatching thread.
+                @Override
+                public void finished()
+                {
+                    UIRegistry.clearGlassPaneMsg();
+                    
+                    createEditorForWorkbench(workbench, null, false);
+                }
+            };
+            worker.start();
             
         } else
         {
             UIRegistry.getStatusBar().setText("");
         }
-        return workbench;
-        
     }
     
     /**
@@ -1400,17 +1419,15 @@ public class WorkbenchTask extends BaseTask
     {
         if (workbench != null)
         {
+            UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_LOADING_DATASET"), new Object[] {workbench.getName()}), 32);
+            
             // Make sure we have a session but use an existing one if it is passed in
             DataProviderSessionIFace tmpSession = session;
             if (session == null)
             {
                 tmpSession = DataProviderFactory.getInstance().createSession();
-                tmpSession.attach(workbench);
             }
             
-            workbench.forceLoad();
-            
-            UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_LOADING_DATASET"), new Object[] {workbench.getName()}), 32);
             
             final WorkbenchTask            thisTask    = this;
             final DataProviderSessionIFace finiSession = tmpSession;
@@ -1422,6 +1439,13 @@ public class WorkbenchTask extends BaseTask
                 {
                      try
                      {
+                         if (session == null)
+                         {
+                             finiSession.attach(workbench);
+                         }
+                         
+                         workbench.forceLoad();
+
                          WorkbenchPaneSS workbenchPane = new WorkbenchPaneSS(workbench.getName(), thisTask, workbench, showImageView);
                          addSubPaneToMgr(workbenchPane);
                          
@@ -1807,7 +1831,7 @@ public class WorkbenchTask extends BaseTask
     protected Workbench selectWorkbench(final CommandAction cmdAction,
                                         final String helpContext)
     {
-        return selectWorkbench(cmdAction, "WB_EXPORT_DATA", "WB_CHOOSE_DATASET", helpContext, false);
+        return selectWorkbench(cmdAction, "WB_EXPORT_DATA", null, helpContext, false);
     }
     
     /**
@@ -2493,6 +2517,15 @@ public class WorkbenchTask extends BaseTask
     // CommandListener Interface
     //-------------------------------------------------------
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#getImageIcon()
+     */
+    @Override
+    public ImageIcon getImageIcon()
+    {
+        return IconManager.getIcon("DataSet");
+    }
+
     /**
      * Processes all Commands of type WORKBENCH.
      * @param cmdAction the command to be processed

@@ -301,7 +301,7 @@ public class TaskMgr
             {
                 Container menuComp = ((JMenu)parent).getPopupMenu();
                 boolean found     = false;
-                int     insertPos = menuComp.getComponentCount();
+                int     insertPos = -1;
                 
                 JMenu menu = (JMenu)parent;
                 if (menuItemDesc.getPosition() != MenuItemDesc.Position.None)
@@ -326,7 +326,14 @@ public class TaskMgr
                     insertPos++;
                 }
                 
-                menu.add((JMenuItem)me, menuItemDesc.getPosition() == MenuItemDesc.Position.Before ? insertPos : insertPos + 1);
+                if (insertPos == -1)
+                {
+                    menu.add((JMenuItem)me);
+                } else
+                {
+                    menu.add((JMenuItem)me, menuItemDesc.getPosition() == MenuItemDesc.Position.Before ? insertPos : insertPos + 1);    
+                }
+                
                 insertPos++;
                 
                 if (menuItemDesc.getSepPosition() == MenuItemDesc.Position.After)
@@ -463,7 +470,7 @@ public class TaskMgr
                                 instance.defaultTask = tp;
                             } else
                             {
-                                log.error("More than one plaugin thinks it is the default["+tp.getName()+"]");
+                                log.error("More than one plugin thinks it is the default["+tp.getName()+"]");
                             }
                         }
                         

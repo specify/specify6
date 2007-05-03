@@ -21,9 +21,7 @@
     <icon name="Configure"        file="configure.gif" sizes="all"/>
     <icon name="Workbench16"      file="Workbench16x16.png" sizes="16"/>
     <icon name="Workbench"        file="Workbench32x32.png" sizes="all"/>
-    <icon name="Data_Entry"       file="form.gif" sizes="all"/>
     <icon name="Taxon_Tree"       file="taxon.gif" sizes="all"/>
-    <icon name="Labels"           file="labels.gif" sizes="all"/>
     <icon name="Interactions"     file="interactions.png" sizes="all"/>
     <icon name="Search"           file="queryIt.gif" sizes="all"/>
     <icon name="Statistics"       file="stats.gif" sizes="all"/>
@@ -38,7 +36,6 @@
     <icon name="CollectionObject" file="catobj_fish32x32.gif" sizes="all"/>
     <icon name="Series"     file="series.gif" sizes="all"/>
     <icon name="Taxon"      file="taxon.gif" sizes="all"/>
-    <icon name="Form"       file="form.gif" sizes="all"/>
     <icon name="Geography"  file="earth.png" sizes="all"/>
     <icon name="Locality"   file="locality.gif" sizes="all"/>
     <icon name="ColObj"     file="catobj_fish.gif" sizes="all"/>
@@ -74,7 +71,10 @@
     <icon name="DataSet16"     file="DataSet16x16.png" sizes="16"/>
     <icon name="Trash"         file="TrashEmpty32x32.png" sizes="all"/>
     <icon name="TrashFull"     file="TrashFull32x32.png" sizes="all"/>
-    <icon name="NewDataSet"     file="NewDataSet16x16.png" sizes="16"/>
+    <icon name="NewDataSet"    file="NewDataSet16x16.png" sizes="16"/>
+    <icon name="Labels"        file="Label32x32.png" sizes="all"/>
+    <icon name="Form"          file="Form32x32.png" sizes="all"/>
+    <icon name="Data_Entry"    file="Form32x32.png" sizes="all"/>
     
     <!-- Aliases -->
     <icon name="Accession Agent"   alias="AccessionAgent"/>
