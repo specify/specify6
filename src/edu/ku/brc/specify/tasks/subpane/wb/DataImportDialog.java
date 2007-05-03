@@ -436,33 +436,33 @@ public class DataImportDialog extends JDialog implements ActionListener
         //Object source = e.g
         String str = (String)cb.getSelectedItem();
         log.debug("actionPerformed");
-        if(str.equals("\""))
+        if (str.equals("\""))
         {
             stringQualifierChar = '\"';         
         }
-        else if(str.equals("\'"))
+        else if (str.equals("\'"))
         {
             stringQualifierChar = '\'';
         }
-        else if(str.equals("{"+getResourceString("NONE")+"}" ))
+        else if (str.equals("{"+getResourceString("NONE")+"}" ))
         {
             
         }
-        else if(str.equals("US-ASCII") || 
+        else if (str.equals("US-ASCII") || 
         		str.equals("ISO-8859-1") || 
         		str.equals("UTF-8"))
         {
         	charset = Charset.forName(str);      	
         }
-        else if(str.equals(getResourceString("DEFAULT")))
+        else if (str.equals(getResourceString("DEFAULT")))
         {
         	charset = Charset.defaultCharset(); 
         }
-        else if(str.equals(getResourceString("BACKSLASH")))
+        else if (str.equals(getResourceString("BACKSLASH")))
         {
         	escapeMode = CsvReader.ESCAPE_MODE_BACKSLASH;        	
         }
-        else if(str.equals(getResourceString("DOUBLED")))
+        else if (str.equals(getResourceString("DOUBLED")))
         {
         	escapeMode = CsvReader.ESCAPE_MODE_DOUBLED;
         }
@@ -538,7 +538,7 @@ public class DataImportDialog extends JDialog implements ActionListener
      */
     private void updateTableDisplay()
     {
-        if(config instanceof ConfigureCSV)
+        if (config instanceof ConfigureCSV)
         {
             setCSVTableData(myDisplayTable);
         }
@@ -588,11 +588,11 @@ public class DataImportDialog extends JDialog implements ActionListener
     private boolean checkForErrors(String[]headers, String[][]data)
     {
         JList listOfErrors = genListOfErrorWhereTableDataDefiesSizeConstraints(headers, data);
-        if(listOfErrors == null)
+        if (listOfErrors == null)
             {
             return false;
             }
-        if(listOfErrors.getModel().getSize()>0)
+        if (listOfErrors.getModel().getSize()>0)
         {
            return true;
         }  
@@ -674,11 +674,11 @@ public class DataImportDialog extends JDialog implements ActionListener
      */
     private boolean isStringShorterThan(int length, String colName)
     {
-        if(colName==null)
+        if (colName==null)
         {
             return true;
         }
-        if(colName.length()<= length)
+        if (colName.length()<= length)
         {
             return true;
         }
@@ -779,7 +779,7 @@ public class DataImportDialog extends JDialog implements ActionListener
                     headerVector = rowData;
                     headers = new String[rowData.size()];
                 }
-                else if(!doesFirstRowHaveHeaders && firstRow){
+                else if (!doesFirstRowHaveHeaders && firstRow){
                     //headers = createDummyHeaders(rowData.size());
                     headerVector = createDummyHeadersAsVector(rowData.size());
                     headers = new String[rowData.size()];
@@ -907,7 +907,7 @@ public class DataImportDialog extends JDialog implements ActionListener
 				printArray(tableData[i]);
 			}
 
-            if(checkForErrors(headers, tableData)) 
+            if (checkForErrors(headers, tableData)) 
                 {
                 errorPanel.showDataImportStatusPanel(true);
                 }
@@ -962,7 +962,7 @@ public class DataImportDialog extends JDialog implements ActionListener
         JList listOfImportDataErrors = new JList();
         for(int i=0; i<headers.length; i++)
          {
-            if(!isStringShorterThan(WorkbenchTemplateMappingItem.getImportedColNameMaxLength(), headers[i]))
+            if (!isStringShorterThan(WorkbenchTemplateMappingItem.getImportedColNameMaxLength(), headers[i]))
             {
                 String msg = "Column at index=" + i + " is too long to be inserted into the database.  It will be truncated.\n"
                 + "Current Value:\n" + headers[i]+ "\nTruncated Value:\n" 
@@ -976,7 +976,7 @@ public class DataImportDialog extends JDialog implements ActionListener
             {
             	//WorkbenchDataItem.class.getDeclaredMethod("getCellData", null).getDeclaredAnnotations();
                 String str = data[i][j];
-                if(!isStringShorterThan(WorkbenchDataItem.getCellDataLength(), str))
+                if (!isStringShorterThan(WorkbenchDataItem.getCellDataLength(), str))
                 {
                     String msg = "The value in cell Row=" + i + ", Column=" + headers[j] + " is too long to be inserted into the database.  It will be truncated.\n"
                     + "Current Value:\n" + str+ "\nTruncated Value:\n" + str.substring(0, WorkbenchDataItem.getCellDataLength()-1);
@@ -1075,7 +1075,7 @@ public class DataImportDialog extends JDialog implements ActionListener
 	{
 		for (int i = 0; i < arrayList.length; i++)
 		{
-			if(log.isDebugEnabled())System.out.print("[" + (i) + "]" + arrayList[i] + " ");
+			if (log.isDebugEnabled())System.out.print("[" + (i) + "]" + arrayList[i] + " ");
 		}
 		log.debug("");
 	}
@@ -1175,13 +1175,13 @@ public class DataImportDialog extends JDialog implements ActionListener
          */
         public void keyReleased(KeyEvent ke)
         {
-            if(otherText.getText().length() == 1)
+            if (otherText.getText().length() == 1)
             {                
                 delimChar = otherText.getText().toCharArray()[0];
                 configCSV.setDelimiter(delimChar);
                 log.debug("Other value selected for delimiter: ["+ delimChar +"]" );
             }            
-            else if(otherText.getText().length()>1)
+            else if (otherText.getText().length()>1)
             {
                 log.error("Other field should not allow more that one character as a delimiter");
             }
@@ -1461,36 +1461,36 @@ public class DataImportDialog extends JDialog implements ActionListener
 		 */
         public void itemStateChanged(ItemEvent e)
         {
-            if(other==null)return;
+            if (other==null)return;
             if (other.isSelected())
             {
                 otherText.setEditable(true);
                 otherText.requestFocus();
                 otherText.setEnabled(true);
-                if(otherText.getText().length() == 1)
+                if (otherText.getText().length() == 1)
                 {                
                     delimChar = otherText.getText().toCharArray()[0];
                     configCSV.setDelimiter(delimChar);
                 }  
             } 
-            else if(tab.isSelected())
+            else if (tab.isSelected())
             {
                 delimChar = '\t';
                 otherText.setEnabled(false);
             }
-            else if(space.isSelected())
+            else if (space.isSelected())
             {
                 delimChar = ' ';
                 otherText.setEditable(false);
                 otherText.setEnabled(false);
             }
-            else if(semicolon.isSelected())
+            else if (semicolon.isSelected())
             {
                 delimChar = ';';
                 otherText.setEditable(false);
                 otherText.setEnabled(false);
             }
-            else if(comma.isSelected())
+            else if (comma.isSelected())
             {
                 delimChar = ',';
                 otherText.setEditable(false);

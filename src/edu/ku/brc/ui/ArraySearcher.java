@@ -28,7 +28,7 @@ public class ArraySearcher
     {
         System.out.println("cellContains - searchString: " + searchString + " Current row: " + curRowPos + " Current col: " + curColPos);
         boolean found = false;
-        if(theTable.getValueAt(curRowPos,curColPos) != null)
+        if (theTable.getValueAt(curRowPos,curColPos) != null)
           {
             String valueInTable = theTable.getValueAt(curRowPos,curColPos).toString();
             System.out.println("checking to replace valueInTable: " + valueInTable.getClass());
@@ -67,17 +67,17 @@ public class ArraySearcher
             }
           for(int j = columPos; j > -1; j--) 
           {
-              if(theTable.getValueAt(i,j) != null)
+              if (theTable.getValueAt(i,j) != null)
               {
                     String valueInTable = theTable.getValueAt(i,j).toString();
                               
-                    if(!matchCase)
+                    if (!matchCase)
                     {
                         valueInTable = valueInTable.toLowerCase();
                         searchString = searchString.toLowerCase();
                     }
                     printMatching( searchString,  valueInTable,  i,  j,  matchCase);
-                    if(valueInTable.contains(searchString))
+                    if (valueInTable.contains(searchString))
                     {
                         System.out.println("Found!");
                         found = true;
@@ -94,7 +94,7 @@ public class ArraySearcher
 
 	public ASearchableCell tableContains(String search, JTable theTable, TableModel model, int rowPos, int columPos, boolean matchCase, boolean forwards)
 	{
-        if(!forwards)
+        if (!forwards)
         {
             return tableContainsBackwards(search, theTable, model,  rowPos,  columPos,matchCase); 
         }
@@ -107,20 +107,20 @@ public class ArraySearcher
 
 		for (int i = rowPos; i < rowCnt; i++) 
 		{
-          if(!firstRun)columPos = 0;
+          if (!firstRun)columPos = 0;
 		  for(int j = columPos; j < colCnt; j++) 
 		  {
-			  if(theTable.getValueAt(i,j) != null)
+			  if (theTable.getValueAt(i,j) != null)
 			  {
 				  	String valueInTable = theTable.getValueAt(i,j).toString();
                               
-				  	if(!matchCase)
+				  	if (!matchCase)
 				  	{
 				  		valueInTable = valueInTable.toLowerCase();
 				  		search = search.toLowerCase();
 				  	}
                     printMatching( search,  valueInTable,  i,  j,  matchCase);
-                    if(valueInTable.contains(search))
+                    if (valueInTable.contains(search))
 				  	{
 				  		System.out.println("Found!");
 						found = true;
