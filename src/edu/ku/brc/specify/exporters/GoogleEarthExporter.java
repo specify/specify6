@@ -10,15 +10,21 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Component;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.swing.Icon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
@@ -80,7 +86,7 @@ public class GoogleEarthExporter implements RecordSetExporter
         {
             try
             {
-                File tmpFile = File.createTempFile("sp6export", ".kml");
+                File tmpFile = File.createTempFile("sp6export", ".kmz");
                 tmpFile.deleteOnExit();
                 log.info("Writing KML output to " + tmpFile.getAbsolutePath());
 
@@ -164,6 +170,10 @@ public class GoogleEarthExporter implements RecordSetExporter
         {
             kmlGenerator.setPlacemarkIconURL((String)iconURL);
         }
+        else
+        {
+            kmlGenerator.setPlacemarkIconURL("files/specify32.png");
+        }
         
         for (GoogleEarthPlacemarkIFace pm: placemarks)
         {
@@ -182,6 +192,63 @@ public class GoogleEarthExporter implements RecordSetExporter
         }
 
         kmlGenerator.generateKML(outputFile);
+        
+        // now we have the KML in outputFile
+        // we need to create a KMZ (zip file containing doc.kml and other files)
+        
+        // get a copy of the icon file
+        URL icon = IconManager.getImagePath("specify32.png");
+        File iconFile = File.createTempFile("sp6-export-icon-", ".png");
+        FileUtils.copyURLToFile(icon, iconFile);
+        
+        // create a buffer for reading the files
+        byte[] buf = new byte[1024];
+        int len;
+        
+        // create the KMZ file
+        File outputKMZ = File.createTempFile("sp6-export-", ".kmz");
+        ZipOutputStream out = new ZipOutputStream(new FileOutputStream(outputKMZ));
+        
+        // add the doc.kml file to the ZIP
+        FileInputStream in = new FileInputStream(outputFile);
+        // add ZIP entry to output stream
+        out.putNextEntry(new ZipEntry("doc.kml"));
+        // copy the bytes
+        while ((len = in.read(buf)) > 0)
+        {
+            out.write(buf, 0, len);
+        }
+        // complete the entry
+        out.closeEntry();
+        in.close();
+        
+        // add a "files" directory to the KMZ file
+        ZipEntry filesDir = new ZipEntry("files/");
+        out.putNextEntry(filesDir);
+        out.closeEntry();
+        
+        // add the specify32.png file to the ZIP (in the "files" directory)
+        in = new FileInputStream(iconFile);
+        // add ZIP entry to output stream
+        out.putNextEntry(new ZipEntry("files/specify32.png"));
+        // copy the bytes
+        while ((len = in.read(buf)) > 0)
+        {
+            out.write(buf, 0, len);
+        }
+        // complete the entry
+        out.closeEntry();
+        in.close();
+        
+        // complete the ZIP file
+        out.close();
+        
+        // now put the KMZ file where the KML output was
+        FileUtils.copyFile(outputKMZ, outputFile);
+        
+        iconFile.delete();
+        outputKMZ.delete();
+        
         return mappedPlacemarks;
     }
     
