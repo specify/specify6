@@ -50,7 +50,7 @@ public class ArraySearcher
         return new ASearchableCell(-1, -1, found);
     }
     
-    public ASearchableCell tableContainsBackwards(String searchString, JTable theTable, TableModel model, int rowPos, int columPos, boolean matchCase)
+    private ASearchableCell tableContainsBackwards(String searchString, JTable theTable, TableModel model, int rowPos, int columPos, boolean matchCase, boolean isWrapOn)
     {
         System.out.println("tableContainsBackwards: + searchString: " + searchString + " Current row: " + rowPos + " Current col: " + columPos);
         boolean found = false;
@@ -87,16 +87,21 @@ public class ArraySearcher
               firstRun = false;
           }
         }  
+       
+        if(isWrapOn)
+        {
+            return tableContainsBackwards( searchString,  theTable,  model, (rowCnt-1), (colCnt-1),  matchCase,  isWrapOn);
+        }
         found = false;
         return new ASearchableCell(-1, -1, found);
     }
 
 
-	public ASearchableCell tableContains(String search, JTable theTable, TableModel model, int rowPos, int columPos, boolean matchCase, boolean forwards)
+	public ASearchableCell tableContains(String search, JTable theTable, TableModel model, int rowPos, int columPos, boolean matchCase, boolean forwards, boolean isWrapOn)
 	{
         if (!forwards)
         {
-            return tableContainsBackwards(search, theTable, model,  rowPos,  columPos,matchCase); 
+            return tableContainsBackwards(search, theTable, model,  rowPos,  columPos,matchCase, isWrapOn); 
         }
 
         System.out.println("tableContains: + searchString: " + search + " Current row: " + rowPos + " Current col: " + columPos);
@@ -130,7 +135,12 @@ public class ArraySearcher
               firstRun = false;
 		  }
 		}  
-		found = false;
+		
+        if(isWrapOn)
+        {
+            return tableContains( search,  theTable,  model, 0, 0,  matchCase,  forwards,  isWrapOn);
+        }
+        found = false;
 		return new ASearchableCell(-1, -1, found);
 	}
     
