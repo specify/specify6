@@ -182,8 +182,8 @@ public class WorkbenchTask extends BaseTask
             makeDnDNavBtn(navBox, getResourceString("WB_IMPORTDATA"), "Import", getResourceString("WB_IMPORTDATA_TT"), new CommandAction(WORKBENCH, IMPORT_DATA_FILE, wbTblId), null, false, false);// true means make it draggable
             makeDnDNavBtn(navBox, getResourceString("WB_IMPORT_CARDS"),  "ImportImages", getResourceString("WB_IMPORTCARDS_TT"), new CommandAction(WORKBENCH, WB_IMPORTCARDS, wbTblId),   null, false, false);// true means make it draggable
             
-            makeDnDNavBtn(navBox, getResourceString("WB_NEW_DATASET"),   "PlusSign", getResourceString("WB_NEW_DATASET_TT"), new CommandAction(WORKBENCH, NEW_WORKBENCH, wbTblId),     null, false, false);// true means make it draggable
-            roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_NEW_DS_FROM_TMPL"), "PlusSign", getResourceString("WB_NEW_DS_FROM_TMPL"), new CommandAction(WORKBENCH, NEW_WORKBENCH_FROM_TEMPLATE, wbTblId), null, false, false);// true means make it draggable
+            makeDnDNavBtn(navBox, getResourceString("WB_NEW_DATASET"),   "NewDataSet", getResourceString("WB_NEW_DATASET_TT"), new CommandAction(WORKBENCH, NEW_WORKBENCH, wbTblId),     null, false, false);// true means make it draggable
+            roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_NEW_DS_FROM_TMPL"), "NewDataSet", getResourceString("WB_NEW_DS_FROM_TMPL"), new CommandAction(WORKBENCH, NEW_WORKBENCH_FROM_TEMPLATE, wbTblId), null, false, false);// true means make it draggable
             roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
             enableNavBoxList.add((NavBoxItemIFace)roc);
             

@@ -19,7 +19,7 @@
     <icon name="ExportExcel16"  file="ExportExcelTemplate16x16.png" sizes="16"/>
     
     <icon name="Configure"        file="configure.gif" sizes="all"/>
-    <icon name="Workbench16"      file="Workbench-16x16.png" sizes="16"/>
+    <icon name="Workbench16"      file="Workbench16x16.png" sizes="16"/>
     <icon name="Workbench"        file="Workbench32x32.png" sizes="all"/>
     <icon name="Data_Entry"       file="form.gif" sizes="all"/>
     <icon name="Taxon_Tree"       file="taxon.gif" sizes="all"/>
@@ -74,6 +74,7 @@
     <icon name="DataSet16"     file="DataSet16x16.png" sizes="16"/>
     <icon name="Trash"         file="TrashEmpty32x32.png" sizes="all"/>
     <icon name="TrashFull"     file="TrashFull32x32.png" sizes="all"/>
+    <icon name="NewDataSet"     file="NewDataSet16x16.png" sizes="16"/>
     
     <!-- Aliases -->
     <icon name="Accession Agent"   alias="AccessionAgent"/>
