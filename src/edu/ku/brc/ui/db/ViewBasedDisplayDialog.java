@@ -118,6 +118,14 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
         }
     }
     
+    /**
+     * Enables the caller to have the UI pre=created before the setVisible 
+     */
+    public void preCreateUI()
+    {
+        createUI();
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.CustomDialog#createUI()
      */

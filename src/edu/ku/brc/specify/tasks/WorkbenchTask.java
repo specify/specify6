@@ -112,6 +112,7 @@ import edu.ku.brc.ui.Trash;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
+import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 
 /**
@@ -126,7 +127,7 @@ public class WorkbenchTask extends BaseTask
 {
 	private static final Logger log = Logger.getLogger(WorkbenchTask.class);
     
-    public static final int        MAX_ROWS              = 200;
+    public static final int        MAX_ROWS              = 2000;
 
 	public static final DataFlavor WORKBENCH_FLAVOR      = new DataFlavor(WorkbenchTask.class, "Workbench");
     public static final String     WORKBENCH             = "Workbench";
@@ -594,7 +595,9 @@ public class WorkbenchTask extends BaseTask
                 true, // isEdit,
                 MultiView.HIDE_SAVE_BTN);
         
+        editorDlg.preCreateUI();
         editorDlg.setData(workbench);
+        editorDlg.getMultiView().preValidate();
         editorDlg.setModal(true);
         editorDlg.setVisible(true);
 
@@ -1230,12 +1233,11 @@ public class WorkbenchTask extends BaseTask
         Workbench workbench = new Workbench();
         workbench.initialize();
         workbench.setSpecifyUser(SpecifyUser.getCurrentUser());
-        // XXX Can't do this because the Form system doesn't recognize when a form is valid 
-        // for it displays
-        //if (StringUtils.isNotEmpty(wbName))
-        //{
-        //    workbench.setName(wbName);
-        //}
+        
+        if (StringUtils.isNotEmpty(wbName))
+        {
+            workbench.setName(wbName);
+        }
         
         if (workbenchTemplate != null)
         {
@@ -1725,8 +1727,9 @@ public class WorkbenchTask extends BaseTask
                 null, // idFieldName,
                 true, // isEdit,
                 MultiView.HIDE_SAVE_BTN);
-        
+        editorDlg.preCreateUI();
         editorDlg.setData(AppPreferences.getLocalPrefs());
+        editorDlg.getMultiView().preValidate();
         editorDlg.setModal(true);
         editorDlg.setVisible(true);
 

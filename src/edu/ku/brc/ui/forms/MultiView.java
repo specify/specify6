@@ -177,6 +177,19 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     }
     
     /**
+     * Sometimes the caller may wish to have the form validated after being initialized. 
+     */
+    public void preValidate()
+    {
+        FormViewObj formViewObj = getCurrentViewAsFormViewObj();
+        if (formViewObj != null)
+        {
+            formViewObj.getValidator().setHasChanged(true);
+            formViewObj.getValidator().wasValidated(null);
+        }
+    }
+    
+    /**
      * Shows Parent Form's Context Menu.
      * @param e the mouse event
      */

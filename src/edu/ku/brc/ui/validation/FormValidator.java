@@ -613,14 +613,10 @@ public class FormValidator implements ValidationListener, DataChangeListener
      * @param type if validateAll is false, then validate only the fields with a
      * validator of this type.
      */
-    protected void validateForm(boolean validateAll)
+    protected void validateForm(final boolean validateAll)
     {
         log.debug("validateForm ["+name+"]");
-        if (name.equals("LoanItems"))
-        {
-            int x = 0;
-            x++;
-        }
+
         ignoreValidationNotifications = true;
 
         processRulesAreOK = processFormRules();
