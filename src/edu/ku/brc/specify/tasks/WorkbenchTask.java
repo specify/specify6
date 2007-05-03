@@ -1187,7 +1187,7 @@ public class WorkbenchTask extends BaseTask
         
         if (btnPressed == ChooseFromListDlg.APPLY_BTN)
         {
-            TemplateEditor dlg = showColumnMapperDlg(dataFileInfo, null, inputFile != null ? "WB_IMPORT_MAPPING_EDITOR" : "WB_NEW_DATASET_MAPPER");
+            TemplateEditor dlg = showColumnMapperDlg(dataFileInfo, null, "WB_MAPPING_EDITOR");
             if (!dlg.isCancelled())
             {   
                 workbenchTemplate = createTemplate(dlg, inputFile != null ? inputFile.getAbsolutePath() : "");

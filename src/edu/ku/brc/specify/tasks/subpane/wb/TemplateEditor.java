@@ -252,7 +252,7 @@ public class TemplateEditor extends CustomDialog
                     {
                         ignoreMapListUpdate = true;
                         
-                        FieldInfo fldInfo = (FieldInfo)fmp.getFieldInfo();
+                        FieldInfo fldInfo = fmp.getFieldInfo();
                         if (fldInfo != null)
                         {
                             for (int i=0;i<tableModel.size();i++)
@@ -565,7 +565,7 @@ public class TemplateEditor extends CustomDialog
             FieldMappingPanel fmp = mapModel.getElementAt(i);
             if (fmp.getFieldInfo() != null)
             {
-                fmp.setViewOrder((short)inx);
+                fmp.setViewOrder(inx);
                 inx++;
             }
             //System.out.println(fmp.getFieldName()+" "+i+" "+fmp.getViewOrder());
@@ -877,7 +877,7 @@ public class TemplateEditor extends CustomDialog
         {
             for (int i=0;i<tableModel.size();i++)
             {
-                TableInfo tblInfo = (TableInfo)tableModel.getElementAt(i);
+                TableInfo tblInfo = tableModel.getElementAt(i);
                 for (FieldInfo fi : tblInfo.getFieldItems())
                 {
                     String    tblFieldName = fi.getFieldInfo().getName().toLowerCase();
@@ -1019,7 +1019,7 @@ public class TemplateEditor extends CustomDialog
         for (WorkbenchTemplateMappingItem  wbtmi : items)
         {
             int       inx = tblIdToListIndex.get(wbtmi.getSrcTableId());
-            TableInfo ti  = (TableInfo)tableModel.getElementAt(inx);
+            TableInfo ti  = tableModel.getElementAt(inx);
             
             int fieldNum = 0;
             for (FieldInfo fi : ti.getFieldItems())
@@ -1442,12 +1442,14 @@ public class TemplateEditor extends CustomDialog
             return (Component)value;
         }
         
-        private Border getNoFocusBorder() {
-            if (System.getSecurityManager() != null) {
+        private Border getNoFocusBorder() 
+        {
+            if (System.getSecurityManager() != null) 
+            {
                 return SAFE_NO_FOCUS_BORDER;
-            } else {
-                return noFocusBorder;
             }
+            // else
+            return noFocusBorder;
         }
         
     }

@@ -147,8 +147,8 @@ public class ImageFrame extends JFrame
         });
         
         imageMenu = UIHelper.createMenu(menuBar, "Image", "ImageMneu");
-        clearMI   = UIHelper.createMenuItem(imageMenu, "WB_DEL_IMG_LINK", "ClearMneu", "", true, null);
-        replaceMI = UIHelper.createMenuItem(imageMenu, "WB_REPLACE_IMG", "ReplaceMneu", "", true, null);
+        clearMI   = UIHelper.createMenuItem(imageMenu, getResourceString("WB_DEL_IMG_LINK"), getResourceString("WB_DEL_IMG_LINK_MNEU"), "", true, null);
+        replaceMI = UIHelper.createMenuItem(imageMenu, getResourceString("WB_REPLACE_IMG"), getResourceString("WB_REPLACE_IMG_MNEU"), "", true, null);
         
         JMenu helpMenu = new JMenu(getResourceString("Help"));
         menuBar.add(HelpMgr.createHelpMenuItem(helpMenu, getResourceString("WB_IMAGE_WINDOW")));
