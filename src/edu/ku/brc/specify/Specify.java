@@ -1264,7 +1264,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
               Specify specify = new Specify();
               
               
-              boolean startAsWorkBench = true; // XXX Workbench Testing (start up testing)
+              boolean startAsWorkBench = false; // XXX Workbench Testing (start up testing)
               if (startAsWorkBench)
               {
                   // For a WorkBench Only Release  
