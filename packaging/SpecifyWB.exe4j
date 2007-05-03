@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<exe4j version="4.0.3" transformSequenceNumber="1">
+  <directoryPresets config="C:/workspace/Specify/win-dist/Specify" />
+  <application name="SpecifyWB" distributionSourceDir="C:/workspace/Specify/win-dist">
+    <languages>
+      <principalLanguage id="en" customLocalizationFile="" />
+    </languages>
+  </application>
+  <executable name="SpecifyWB" type="1" iconSet="true" iconFile="C:/Documents and Settings/Administrator/My Documents/specify.ico" executableDir="" redirectStderr="true" stderrFile="error.log" redirectStdout="true" stdoutFile="output.log" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" amd64="false">
+    <messageSet />
+    <versionInfo include="true" fileVersion="" fileDescription="" legalCopyright="" internalName="OnRamp" companyName="University of Kansas" productVersion="6.0.0.0" />
+  </executable>
+  <splashScreen show="true" autoOff="true" alwaysOnTop="true" width="600" height="129" bitmapFile="C:/workspace/Specify/packaging/specify-splash.bmp">
+    <text>
+      <statusLine x="269" y="106" text="" font="Arial" fontSize="8" fontColor="0,0,0" fontWeight="500" />
+      <versionLine x="456" y="103" text="WorkBench Preview" font="Arial" fontSize="8" fontColor="255,255,255" fontWeight="500" />
+    </text>
+  </splashScreen>
+  <java mainClass="edu.ku.brc.specify.Specify" vmParameters="-Xmx256m" arguments="&quot;-Dappdir=Specify&quot; &quot;-Dappdatadir=.&quot; &quot;-Djavadbdir=DerbyDatabases&quot;" allowVMPassthroughParameters="true" preferredVM="" minVersion="1.6" maxVersion="1.6" allowBetaVM="false" jdkOnly="false">
+    <searchSequence>
+      <registry />
+      <envVar name="JAVA_HOME" />
+      <envVar name="JDK_HOME" />
+      <directory location="./winjre" />
+    </searchSequence>
+    <classPath>
+      <scanDirectory location="./Specify/libs" failOnError="true" />
+      <directory location="./Specify/help" failOnError="true" />
+    </classPath>
+    <nativeLibraryDirectories />
+  </java>
+  <includedFiles />
+  <unextractableFiles />
+</exe4j>
+
