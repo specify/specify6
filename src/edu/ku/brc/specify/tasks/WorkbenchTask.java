@@ -93,6 +93,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalDataIFace;
 import edu.ku.brc.specify.tasks.subpane.wb.DataImportIFace;
 import edu.ku.brc.specify.tasks.subpane.wb.ImportColumnInfo;
 import edu.ku.brc.specify.tasks.subpane.wb.ImportDataFileInfo;
+import edu.ku.brc.specify.tasks.subpane.wb.SelectNewOrExistingDlg;
 import edu.ku.brc.specify.tasks.subpane.wb.TemplateEditor;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchJRDataSource;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
@@ -109,6 +110,7 @@ import edu.ku.brc.ui.Trash;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
+import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 
 /**
@@ -575,7 +577,7 @@ public class WorkbenchTask extends BaseTask
      */
     public static boolean askUserForInfo(final String viewSetName, 
                                          final String dlgTitle,
-                                         final Object data)
+                                         final Workbench workbench)
     {
         ViewBasedDisplayDialog editorDlg = new ViewBasedDisplayDialog(
                 (Frame)UIRegistry.get(UIRegistry.TOPFRAME),
@@ -589,10 +591,10 @@ public class WorkbenchTask extends BaseTask
                 true, // isEdit,
                 MultiView.HIDE_SAVE_BTN);
         
-        editorDlg.setData(data);
+        editorDlg.setData(workbench);
         editorDlg.setModal(true);
         editorDlg.setVisible(true);
-        
+
         if (!editorDlg.isCancelled())
         {
             editorDlg.getMultiView().getDataFromUI();
@@ -758,28 +760,32 @@ public class WorkbenchTask extends BaseTask
         // Ask the user to choose an existing template.
         if (matchingTemplates.size() > 0)
         {
-            ChooseFromListDlg<WorkbenchTemplate> dlg = new ChooseFromListDlg<WorkbenchTemplate>((Frame)UIRegistry.get(UIRegistry.FRAME), 
-                    getResourceString("WB_CHOOSE_DATASET_REUSE_TITLE"), 
-                    getResourceString("WB_CHOOSE_DATASET_REUSE"), 
-                    ChooseFromListDlg.OKCANCELAPPLYHELP,
-                    matchingTemplates,
-                    helpContext);
-            dlg.setCloseOnApply(true);
-            dlg.setOkLabel(getResourceString(colInfo != null ? "WB_REUSE" : "OK"));
-            dlg.setApplyLabel(getResourceString("WB_NEW_DATASET_MAPPINGS"));
-            dlg.setModal(true);
+            SelectNewOrExistingDlg<WorkbenchTemplate> dlg = new SelectNewOrExistingDlg<WorkbenchTemplate>((Frame)UIRegistry.get(UIRegistry.FRAME), 
+                    "WB_CHOOSE_DATASET_REUSE_TITLE", 
+                    "WB_CREATE_NEW_MAPPING",
+                    "WB_USE_EXISTING_MAPPING",
+                    helpContext, 
+                    matchingTemplates);
+            
             UIHelper.centerAndShow(dlg);
             
             if (dlg.getBtnPressed() == ChooseFromListDlg.OK_BTN)
             {
-                selectedTemplate = dlg.getSelectedObject();
-                loadTemplateFromData(selectedTemplate);
+                if (!dlg.isCreateNew())
+                {
+                    selectedTemplate = dlg.getSelectedObject();
+                    loadTemplateFromData(selectedTemplate);
+                    
+                    return CustomDialog.OK_BTN; // means reuse an existing one
+                }
+
+                return CustomDialog.APPLY_BTN; // means create a new one
             }
             
-            return dlg.getBtnPressed();
+            return CustomDialog.CANCEL_BTN;
         }
 
-        return ChooseFromListDlg.APPLY_BTN;
+        return ChooseFromListDlg.APPLY_BTN; // means create a new one
     }
     
     /**
@@ -1149,10 +1155,10 @@ public class WorkbenchTask extends BaseTask
                 Workbench workbench =  createNewWorkbench(dataFileInfo, file);
                 
                 // This means correct usage count for ImportXLS will actually be getUsageCount(ImportXLS) - getUsageCount(ImportCSV)...
-                if (dataFileInfo.getConfig().getProperties().getProperty("mimetype","").equals(ExportFileConfigurationFactory.CSV_MIME_TYPE))
-                {
-                    UsageTracker.incrUsageCount("WB.ImportCSV");
-                }
+                //if (dataFileInfo.getConfig().getProperties().getProperty("mimetype","").equals(ExportFileConfigurationFactory.CSV_MIME_TYPE))
+                //{
+                //    UsageTracker.incrUsageCount("WB.ImportCSV");
+                //}
                 return workbench;
                 
             } else if (dataFileInfo.getConfig().getStatus() != ConfigureExternalDataIFace.Status.Cancel)
@@ -1221,6 +1227,12 @@ public class WorkbenchTask extends BaseTask
         Workbench workbench = new Workbench();
         workbench.initialize();
         workbench.setSpecifyUser(SpecifyUser.getCurrentUser());
+        // XXX Can't do this because the Form system doesn't recognize when a form is valid 
+        // for it displays
+        //if (StringUtils.isNotEmpty(wbName))
+        //{
+        //    workbench.setName(wbName);
+        //}
         
         if (workbenchTemplate != null)
         {
@@ -1264,6 +1276,7 @@ public class WorkbenchTask extends BaseTask
                     if (foundWB != null)
                     {
                         UIRegistry.getStatusBar().setErrorMessage(String.format(getResourceString("WB_DATASET_EXISTS"), new Object[] { newWorkbenchName}));
+                        workbench.setName("");
                     }
                 }
                 

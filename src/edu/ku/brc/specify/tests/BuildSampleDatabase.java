@@ -446,13 +446,13 @@ public class BuildSampleDatabase
         ////////////////////////////////
         log.info("Creating agents and addresses");
 
-        if (!lastName.equals("Stewart")) agents.add(createAgent("Mr.", "Joshua", "D", "Stewart", "js", "jds@ku.edu"));
-        if (!lastName.equals("Beach")) agents.add(createAgent("Mr.", "James", "H", "Beach", "jb", "beach@ku.edu"));
-        if (!lastName.equals("Kumin")) agents.add(createAgent("Mrs.", "Mary Margaret", "H", "Kumin", "mk", "megkumin@ku.edu"));
-        if (!lastName.equals("Spears")) agents.add(createAgent("Mr.", "Rod", "C", "Spears", "rcs", "rods@ku.edu"));
-        if (!lastName.equals("Bentley")) agents.add(createAgent("Mr.", "Andy", "D", "Bentley", "AB", "abentley@ku.edu"));
-        if (!lastName.equals("Timmons")) agents.add(createAgent("Sir", "Dudley", "X", "Timmons", "dxt", ""));
-        if (!lastName.equals("Carew")) agents.add(createAgent("Mr.", "Rod", "A", "Carew", "rc", ""));
+        if (!lastName.equals("Smith")) agents.add(createAgent("Mr.", "David", "D", "Smith", "ds", "ds@net.edu"));
+        if (!lastName.equals("Burk")) agents.add(createAgent("Mr.", "Robert", "H", "Burk", "rb", "beach@net.edu"));
+        if (!lastName.equals("Johnson")) agents.add(createAgent("Mrs.", "Margaret", "H", "Johnson", "jm", "jm@net.edu"));
+        if (!lastName.equals("Spencer")) agents.add(createAgent("Mr.", "Kip", "C", "Spencer", "kcs", "rods@ku.edu"));
+        if (!lastName.equals("Byrn")) agents.add(createAgent("Mr.", "John", "D", "Byrn", "jb", "jb@net.edu"));
+        if (!lastName.equals("Thompson")) agents.add(createAgent("Sir", "Dudley", "X", "Thompson", "dxt", ""));
+        if (!lastName.equals("Campbell")) agents.add(createAgent("Mr.", "Joe", "A", "Campbell", "jb", ""));
         agents.add(userAgent);
 
         
@@ -460,8 +460,8 @@ public class BuildSampleDatabase
         ku.initialize();
         ku.setAbbreviation("KU");
         ku.setAgentType(Agent.ORG);
-        ku.setName("University of Kansas");
-        ku.setEmail("webadmin@ku.edu");
+        ku.setName("University of Swaledale");
+        ku.setEmail("webadmin@sd.edu");
         ku.setTimestampCreated(new Date());
         ku.setTimestampModified(ku.getTimestampCreated());
         agents.add(ku);

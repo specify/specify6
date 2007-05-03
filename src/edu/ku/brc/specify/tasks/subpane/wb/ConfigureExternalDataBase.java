@@ -192,7 +192,10 @@ public abstract class ConfigureExternalDataBase implements ConfigureExternalData
         addBoolProperty(result, "interactive", interactive);
         addBoolProperty(result, "firstRowHasHeaders", firstRowHasHeaders);
         addBoolProperty(result, "appendData", appendData);
-        result.setProperty("fileName", fileName);
+        if (fileName != null)
+        {
+            result.setProperty("fileName", fileName);
+        }
         result.setProperty("headers", this.getHeaderString());
         return result;
     }

@@ -18,17 +18,18 @@
     <icon name="Export16"       file="ExportDataSet16x16.png" sizes="16"/>
     <icon name="ExportExcel16"  file="ExportExcelTemplate16x16.png" sizes="16"/>
     
-    <icon name="Configure"  file="configure.gif" sizes="all"/>
-    <icon name="Workbench"     file="workbench.gif" sizes="all"/>
-    <icon name="Data_Entry" file="form.gif" sizes="all"/>
-    <icon name="Taxon_Tree" file="taxon.gif" sizes="all"/>
-    <icon name="Labels"     file="labels.gif" sizes="all"/>
-    <icon name="Interactions" file="interactions.png" sizes="all"/>
-    <icon name="Search"     file="queryIt.gif" sizes="all"/>
-    <icon name="Statistics" file="stats.gif" sizes="all"/>
-    <icon name="Pie_Chart"  file="piechart.gif" sizes="all"/>
-    <icon name="Bar_Chart"  file="barchart.gif" sizes="all"/>
-    <icon name="Record_Set" file="bundle.png" sizes="all"/>
+    <icon name="Configure"        file="configure.gif" sizes="all"/>
+    <icon name="Workbench16"      file="Workbench-16x16.png" sizes="16"/>
+    <icon name="Workbench"        file="Workbench32x32.png" sizes="all"/>
+    <icon name="Data_Entry"       file="form.gif" sizes="all"/>
+    <icon name="Taxon_Tree"       file="taxon.gif" sizes="all"/>
+    <icon name="Labels"           file="labels.gif" sizes="all"/>
+    <icon name="Interactions"     file="interactions.png" sizes="all"/>
+    <icon name="Search"           file="queryIt.gif" sizes="all"/>
+    <icon name="Statistics"       file="stats.gif" sizes="all"/>
+    <icon name="Pie_Chart"        file="PieChart32x32.png" sizes="all"/>
+    <icon name="Bar_Chart"        file="BarGraph32x32.png" sizes="all"/>
+    <icon name="Record_Set"       file="bundle.png" sizes="all"/>
     <icon name="Agent"            file="agent.gif" sizes="all"/>
     <icon name="Person"           file="emblem-personal.png" sizes="all"/>
     <icon name="People"           file="emblem-people.png" sizes="all"/>
@@ -71,7 +72,8 @@
     <icon name="Reports16"     file="Reports16x16.png" sizes="16"/>
     <icon name="DataSet"       file="DataSet32x32.png" sizes="all"/>
     <icon name="DataSet16"     file="DataSet16x16.png" sizes="16"/>
-    
+    <icon name="Trash"         file="TrashEmpty32x32.png" sizes="all"/>
+    <icon name="TrashFull"     file="TrashFull32x32.png" sizes="all"/>
     
     <!-- Aliases -->
     <icon name="Accession Agent"   alias="AccessionAgent"/>

@@ -369,4 +369,35 @@ public class CustomDialog extends JDialog
         super.setVisible(visible);
     }
 
+    /**
+     * @return the applyBtn
+     */
+    public JButton getApplyBtn()
+    {
+        return applyBtn;
+    }
+
+    /**
+     * @return the cancelBtn
+     */
+    public JButton getCancelBtn()
+    {
+        return cancelBtn;
+    }
+
+    /**
+     * @return the helpBtn
+     */
+    public JButton getHelpBtn()
+    {
+        return helpBtn;
+    }
+
+    /**
+     * @return the okBtn
+     */
+    public JButton getOkBtn()
+    {
+        return okBtn;
+    }
 }

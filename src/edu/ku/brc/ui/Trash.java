@@ -100,8 +100,8 @@ public class Trash extends JComponent implements GhostActionable
     {
         dropFlavors.add(TRASH_FLAVOR);
         
-        trashIcon     = new ImageIcon(IconManager.getImagePath("trash.png"));
-        trashFullIcon = new ImageIcon(IconManager.getImagePath("trash_full.png"));
+        trashIcon     = IconManager.getIcon("Trash");
+        trashFullIcon = IconManager.getIcon("TrashFull");
         paperIcon     = trashFullIcon;//new ImageIcon(IconManager.getImagePath("trash_paper.gif"));
         imgIcon       = trashIcon;
         
