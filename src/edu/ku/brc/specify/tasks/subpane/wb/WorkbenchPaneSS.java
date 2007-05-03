@@ -1517,7 +1517,8 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             int index = selection[i];
             WorkbenchRow row = rows.get(index);
-            selectedRows.add(new WorkbenchRowPlacemarkWrapper(row));
+            int visibleRowNumber = spreadSheet.convertRowIndexToView(index);
+            selectedRows.add(new WorkbenchRowPlacemarkWrapper(row, "Row " + (visibleRowNumber+1)));
         }
         
 //        // get an icon URL that is specific to the current context

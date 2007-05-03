@@ -23,12 +23,14 @@ import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
 public class WorkbenchRowPlacemarkWrapper implements GoogleEarthPlacemarkIFace
 {
     protected WorkbenchRow wbRow;
+    protected String label;
     protected Hashtable<Short, WorkbenchTemplateMappingItem> mappings = null;
     protected Vector<WorkbenchDataItem>                      dataList = null;
 
-    public WorkbenchRowPlacemarkWrapper( WorkbenchRow row )
+    public WorkbenchRowPlacemarkWrapper( WorkbenchRow row, String label )
     {
         this.wbRow = row;
+        this.label = label;
     }
     
     protected void initExportData()
@@ -138,7 +140,7 @@ public class WorkbenchRowPlacemarkWrapper implements GoogleEarthPlacemarkIFace
     public String getTitle()
     {
         initExportData();
-        return Integer.toString(wbRow.getRowNumber()+1);
+        return label;
     }
 
 }

@@ -164,9 +164,12 @@ public class GoogleEarthExporter implements RecordSetExporter
         
         GenericKmlGenerator kmlGenerator = new GenericKmlGenerator();
         
-        kmlGenerator.setBalloonStyleBgColor("AA94590B");
-        String textColor = "FFFFFF";
-        kmlGenerator.setBalloonStyleTextColor("FF" + textColor);
+        kmlGenerator.setBalloonStyleBgColor("AAB36600");
+        String red   = "FF";
+        String green = "FF";
+        String blue  = "FF";
+        String textColor = red + green + blue;
+        kmlGenerator.setBalloonStyleTextColor("FF" + blue + green + red);
         kmlGenerator.setBalloonStyleText(
                 "<b><font size=\"+3\"><center>$[name]</center></font></b>"
                 + "<br/><hr><br/>"
