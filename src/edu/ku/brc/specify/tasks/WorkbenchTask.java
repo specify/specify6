@@ -64,6 +64,7 @@ import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskCommandDef;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.core.UsageTracker;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.BarChartPane;
 import edu.ku.brc.af.tasks.subpane.ChartPane;
@@ -1681,6 +1682,37 @@ public class WorkbenchTask extends BaseTask
     }
     
     /**
+     * Ask the user for information needed to fill in the data object.
+     * @param data the data object
+     * @return true if OK, false if cancelled
+     */
+    public static boolean askUserForReportProps()
+    {
+        ViewBasedDisplayDialog editorDlg = new ViewBasedDisplayDialog(
+                (Frame)UIRegistry.get(UIRegistry.TOPFRAME),
+                "Global",
+                "ReportProperties",
+                null,
+                getResourceString("WB_BASIC_LABEL_PROPERTIES"),
+                getResourceString("OK"),
+                null, // className,
+                null, // idFieldName,
+                true, // isEdit,
+                MultiView.HIDE_SAVE_BTN);
+        
+        editorDlg.setData(AppPreferences.getLocalPrefs());
+        editorDlg.setModal(true);
+        editorDlg.setVisible(true);
+
+        if (!editorDlg.isCancelled())
+        {
+            editorDlg.getMultiView().getDataFromUI();
+        }
+        
+        return !editorDlg.isCancelled();
+    }
+
+    /**
      * Creates a report.
      * @param cmdAction the command that initiated it
      */
@@ -1703,31 +1735,42 @@ public class WorkbenchTask extends BaseTask
         String actionStr = cmdAction.getPropertyAsString("action");
         if (StringUtils.isNotEmpty(actionStr) && actionStr.equals("PrintBasicLabel")) // Research into JRDataSources 
         {
-            RecordSet rs = new RecordSet();
-            rs.initialize();
-            rs.setDbTableId(Workbench.getClassTableId());
-            rs.addItem(workbench.getWorkbenchId());
-            
-            session = DataProviderFactory.getInstance().createSession();
-            session.attach(workbench);
-            
-            workbench.forceLoad();            
-            WorkbenchJRDataSource dataSrc = new WorkbenchJRDataSource(workbench, workbench.getWorkbenchRowsAsList());
-            session.close();
-            
-            final CommandAction cmd = new CommandAction(LabelsTask.LABELS, LabelsTask.PRINT_LABEL, dataSrc);
-            cmd.setProperty("title",  "Labels");
-            cmd.setProperty("file",   "basic_label.jrxml");
-            //params hard-coded for harvard demo:
-            cmd.setProperty("params", "title=PLANTS OF CONNECTICUT, U.S.A.;subtitle=Hartford County;footer=HARVARD UNIVERSITY HERBARIA");
-            cmd.setProperty(NavBoxAction.ORGINATING_TASK, this);
-            
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run()
+            if (askUserForReportProps())
+            {
+                RecordSet rs = new RecordSet();
+                rs.initialize();
+                rs.setDbTableId(Workbench.getClassTableId());
+                rs.addItem(workbench.getWorkbenchId());
+
+                session = DataProviderFactory.getInstance().createSession();
+                session.attach(workbench);
+
+                workbench.forceLoad();
+                WorkbenchJRDataSource dataSrc = new WorkbenchJRDataSource(workbench, workbench
+                        .getWorkbenchRowsAsList());
+                session.close();
+
+                final CommandAction cmd = new CommandAction(LabelsTask.LABELS,
+                        LabelsTask.PRINT_LABEL, dataSrc);
+                cmd.setProperty("title", "Labels");
+                cmd.setProperty("file", "basic_label.jrxml");
+                // params hard-coded for harvard demo:
+                cmd.setProperty("params", "title="
+                        + AppPreferences.getLocalPrefs().get("reportProperties.title", "")
+                        + ";subtitle="
+                        + AppPreferences.getLocalPrefs().get("reportProperties.subTitle", "")
+                        + ";footer="
+                        + AppPreferences.getLocalPrefs().get("reportProperties.footer", ""));
+                cmd.setProperty(NavBoxAction.ORGINATING_TASK, this);
+
+                SwingUtilities.invokeLater(new Runnable()
                 {
-                    CommandDispatcher.dispatch(cmd);
-                }
-            });
+                    public void run()
+                    {
+                        CommandDispatcher.dispatch(cmd);
+                    }
+                });
+            }
             return;
         }
         

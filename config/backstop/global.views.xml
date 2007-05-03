@@ -194,6 +194,18 @@
                 <altview name="Workbench Edit" viewdef="Workbench" label="Edit" mode="edit" validated="true" default="true"/>                
             </altviews>
         </view>
+
+  		<view
+			name="ReportProperties"
+			class="java.util.prefs.Preferences"
+			useresourcelabels="false">
+			<desc><![CDATA[Report Properties Form.]]></desc>
+			<altviews>
+				<altview name="Report Properties" viewdef="ReportProperties" label="Properties" mode="edit" validated="true"/>
+			</altviews>
+		</view>
+  
+  
     </views>
 
     <!-- #############################################################################################
@@ -916,6 +928,34 @@
                 </row>
             </rows>
         </viewdef>
+
+		<viewdef
+			type="form"
+			name="ReportProperties"
+			class="java.util.prefs.Preferences"
+			gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
+			settable="edu.ku.brc.af.prefs.PrefsSettableImpl">
+			
+			<desc><![CDATA[Report Properties Form.]]></desc>
+			
+			<columnDef>p,2px,p</columnDef>
+			<rowDef auto="true" cell="p" sep="4dlu"/>
+			
+			<rows>
+				<row>
+					<cell type="label" name="title" labelfor="title" label="Title"/>
+					<cell type="field" uitype="text" cols="40" id="title" name="reportProperties.title" isrequired="true"/>
+				</row>
+				<row>
+					<cell type="label" name="subTitle" labelfor="subTitle" label="Subtitle"/>
+					<cell type="field" uitype="text" cols="40" id="subTitle" name="reportProperties.subTitle" isrequired="true"/>
+				</row>
+				<row>
+					<cell type="label" name="footer" labelfor="footer" label="Footer"/>
+					<cell type="field" uitype="text" cols="40" id="footer" name="reportProperties.footer" isrequired="true"/>
+				</row>
+			</rows>
+		</viewdef>
         
     </viewdefs>
 </viewset>
