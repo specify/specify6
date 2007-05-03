@@ -873,7 +873,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         // XXX Change later - Assuming first Row
         WorkbenchDataItem firstColItem = row.getItems().get(0);
         String firstColCellData = (firstColItem != null) ? firstColItem.getCellData() : "";
-        imageFrame.setTitle("Row " + (firstRowSelected+1) + ": " + firstColCellData);
+        imageFrame.setTitle("Row " + (spreadSheet.getSelectedRow()+1) + ": " + firstColCellData);
     }
     
     /**
