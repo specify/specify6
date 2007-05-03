@@ -403,7 +403,7 @@ public class SearchReplacePanel extends JPanel
         int selectedCol = table.getSelectedColumn();
         int selectedRow = table.getSelectedRow();
 
-        if(selectedRow == -1 || selectedCol ==-1)
+        if (selectedRow == -1 || selectedCol ==-1)
         {
             setLabelForFailedFind(); 
             return;
@@ -412,7 +412,7 @@ public class SearchReplacePanel extends JPanel
         Object o = table.getValueAt(selectedRow, selectedCol);
         if (!(o instanceof String))
         {
-            if(!(o instanceof Boolean) && !(o instanceof Integer))
+            if (!(o instanceof Boolean) && !(o instanceof Integer))
             {
                 log.info("The value at row=[" + selectedRow + "] col=[" + selectedCol+ "] is not a String and cannot be replaced");
                 return;
@@ -430,7 +430,7 @@ public class SearchReplacePanel extends JPanel
         boolean found = cell.isFound();
         if (found)
         {
-            if(getMatchCaseFlag())
+            if (getMatchCaseFlag())
             {
                  myNewStr = Pattern.compile(myFindValue).matcher(myStrToReplaceValueIn).replaceAll(myReplaceValue);
             }
@@ -506,7 +506,7 @@ public class SearchReplacePanel extends JPanel
 //        log.debug("replaceAll() - FindValue[" + str + "] SearchingDown[" + !isSearchDown+ "]");
 //        lastIndex = searchable.search(getSearchablePattern(str), lastIndex, !isSearchDown);
 //        
-//        if(lastIndex>-1)found= true;
+//        if (lastIndex>-1)found= true;
 //        while(lastIndex!=-1) 
 //        {
 //        	replace();
@@ -522,7 +522,7 @@ public class SearchReplacePanel extends JPanel
 //                {
 //                    nextButton.setEnabled(false);
 //                    previousButton.setEnabled(false);
-//                    if(!found)setLabelForFailedFind();
+//                    if (!found)setLabelForFailedFind();
 //
 //                }
 //            } else
@@ -532,7 +532,7 @@ public class SearchReplacePanel extends JPanel
 //                {
 //                    previousButton.setEnabled(false);
 //                    nextButton.setEnabled(false);
-//                    if(!found)setLabelForFailedFind();
+//                    if (!found)setLabelForFailedFind();
 //
 //                }
 //            }
@@ -585,9 +585,9 @@ public class SearchReplacePanel extends JPanel
         curRow = table.getSelectedRow();
         curCol = table.getSelectedColumn();
 
-        if(isSearchDown){
-            if(curRow == -1) curRow++;
-            if(curCol >= (table.getColumnModel().getColumnCount()-1)) 
+        if (isSearchDown){
+            if (curRow == -1) curRow++;
+            if (curCol >= (table.getColumnModel().getColumnCount()-1)) 
             {
                 curRow++;
                 curCol = -1;
@@ -597,8 +597,8 @@ public class SearchReplacePanel extends JPanel
         //is previous clicked, reverse direction
         else
         {
-            if(curRow == -1) curRow++;
-            if(curCol <= 0 ) 
+            if (curRow == -1) curRow++;
+            if (curCol <= 0 ) 
             {
                 curRow--;
                 curCol = table.getColumnModel().getColumnCount()-1;
@@ -746,7 +746,7 @@ public class SearchReplacePanel extends JPanel
                 setCheckAndSetWrapOption();
                 replace();
 			}
-			else if(source == replaceAllButton)
+			else if (source == replaceAllButton)
 			{
 				replaceAll();
 			}
