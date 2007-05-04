@@ -91,14 +91,14 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
 
     /**
      * Constructor.
-     * @param dialog the parent frame (dialog)
+     * @param addSearchUI  true adds the search ui
      */
-    public PreferencesDlg()
+    public PreferencesDlg(final boolean addSearchUI)
     {
         super((Frame)UIRegistry.get(UIRegistry.TOPFRAME), getResourceString("preferences"), true, null);
 
         createUI();
-        initAsToolbar();
+        initAsToolbar(addSearchUI);
         pack();
         okBtn.setEnabled(false);
         
@@ -106,8 +106,9 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
     
     /**
      * Configure as a toolbar.
+     * @param addSearchUI  true adds the search ui
      */
-    protected void initAsToolbar()
+    protected void initAsToolbar(final boolean addSearchUI)
     {
         Color gray = new Color(230,230,230);
         int   delta = 8;
@@ -122,7 +123,10 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
             CellConstraints cc         = new CellConstraints();
     
             builder.add( prefsToolbar, cc.xy(1,1));
-            builder.add( createSearchPanel(), cc.xy(3,1));
+            if (addSearchUI)
+            {
+                builder.add( createSearchPanel(), cc.xy(3,1));
+            }
     
             builder.getPanel().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
             builder.getPanel().setBackground(lighter);
@@ -132,8 +136,6 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
         showPanel(firstPanelName);
 
     }
-    
-    
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.CustomDialog#cancelButtonPressed()
@@ -203,8 +205,9 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
 
     /**
      * Congigure as a multi-row grid
+     * @param addSearchUI  true adds the search ui
      */
-    protected void initAsGrid()
+    protected void initAsGrid(final boolean addSearchUI)
     {
 
         PanelBuilder    builder    = new PanelBuilder(new FormLayout("l:p, p:g, r:p:g", "p"));
@@ -213,7 +216,10 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
         JButton showAllBtn = new JButton(getResourceString("showall"));
 
         builder.add(showAllBtn, cc.xy(1,1));
-        builder.add( createSearchPanel(), cc.xy(3,1));
+        if (addSearchUI)
+        {
+            builder.add( createSearchPanel(), cc.xy(3,1));
+        }
 
         builder.getPanel().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         mainPanel.add(builder.getPanel(), BorderLayout.NORTH);
@@ -341,7 +347,7 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
     }
 
     /**
-     * Creates a search panel for the prefs
+     * Creates a search panel for the prefs.
      * @return a JPanel
      */
     protected JPanel createSearchPanel()

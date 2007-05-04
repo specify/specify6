@@ -448,7 +448,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
      */
     public void preferences()
     {
-        PreferencesDlg dlg = new PreferencesDlg();
+        PreferencesDlg dlg = new PreferencesDlg(false);
         dlg.setVisible(true);
     }
 

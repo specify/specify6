@@ -139,8 +139,8 @@ public class ResultSetController implements ValidationListener
         Insets insets = new Insets(1,1,1,1);
         DefaultFormBuilder rowBuilder = new DefaultFormBuilder(new FormLayout(colDef, "p"));
         
-        firstBtn = UIHelper.createIconBtn("FirstRec", "GotoFirstRecordTT", null);
-        prevBtn  = UIHelper.createIconBtn("PrevRec", "GotoPreviousRecordTT", null);
+        firstBtn = UIHelper.createIconBtn("FirstRec", null, null);
+        prevBtn  = UIHelper.createIconBtn("PrevRec", null, null);
         
         recDisp  = new JLabel("  ");
         recDisp.setHorizontalAlignment(SwingConstants.CENTER);
@@ -149,18 +149,13 @@ public class ResultSetController implements ValidationListener
         recDisp.setBorder(enabledBorder);
 
         
-        nextBtn  = UIHelper.createIconBtn("NextRec", "GotoNextRecordTT", null);
-        lastBtn  = UIHelper.createIconBtn("LastRec", "GotoLastRecordTT", null);
+        nextBtn  = UIHelper.createIconBtn("NextRec", null, null);
+        lastBtn  = UIHelper.createIconBtn("LastRec", null, null);
         
-        //firstBtn.setMargin(insets);
-        //prevBtn.setMargin(insets);
-        //nextBtn.setMargin(insets);
-        //lastBtn.setMargin(insets);
-        
-        //firstBtn.setToolTipText(createTooltip("GotoFirstRecordTT", objTitle));
-        //prevBtn.setToolTipText(createTooltip("GotoPreviousRecordTT", objTitle));
-        //nextBtn.setToolTipText(createTooltip("GotoNextRecordTT", objTitle));
-        //lastBtn.setToolTipText(createTooltip("GotoLastRecordTT", objTitle));
+        firstBtn.setToolTipText(createTooltip("GotoFirstRecordTT", objTitle));
+        prevBtn.setToolTipText(createTooltip("GotoPreviousRecordTT", objTitle));
+        nextBtn.setToolTipText(createTooltip("GotoNextRecordTT", objTitle));
+        lastBtn.setToolTipText(createTooltip("GotoLastRecordTT", objTitle));
         
         CellConstraints cc = new CellConstraints();
         rowBuilder.add(firstBtn, cc.xy(1,1));

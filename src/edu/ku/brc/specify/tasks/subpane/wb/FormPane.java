@@ -489,6 +489,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         }
         
         JComponent comp;
+        Component focusComp;
         
         // handle dates
         if (dbFieldType.equals(Calendar.class) || dbFieldType.equals(Date.class))
@@ -497,30 +498,34 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             //txt.setColumns(columns == -1 ? DEFAULT_TEXTFIELD_COLS : columns);
             ValTextField txt = new ValTextField(columns);
             txt.getDocument().addDocumentListener(this);
-            comp = txt;
+            comp      = txt;
+            focusComp = comp;
             
         }
         else if (dbFieldType.equals(Boolean.class)) // strings
         {
             ValCheckBox checkBox = new ValCheckBox(caption, false, false);
             checkBox.addChangeListener(this);
-            comp = checkBox;
+            comp      = checkBox;
+            focusComp = comp;
         }
         else if (useTextField(fieldName, fieldType, fieldLength))
         {
             ValTextField txt = new ValTextField(columns);
             txt.getDocument().addDocumentListener(this);
             txt.setInputVerifier(new LengthVerifier(caption, fieldLength));
-            comp = txt;
+            comp      = txt;
+            focusComp = comp;
         }
         else
         {
             JScrollPane taScrollPane = createTextArea(columns, rows);
             ((JTextArea)taScrollPane.getViewport().getView()).setInputVerifier(new LengthVerifier(caption, fieldLength));
             comp = taScrollPane;
+            focusComp = taScrollPane.getViewport().getView();
         }
         
-        comp.addFocusListener(new FocusListener() {
+        focusComp.addFocusListener(new FocusListener() {
             public void focusGained(FocusEvent e)
             {
                 selectControl(e.getSource());

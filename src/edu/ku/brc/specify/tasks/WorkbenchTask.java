@@ -155,6 +155,9 @@ public class WorkbenchTask extends BaseTask
     protected Vector<NavBoxItemIFace>     enableNavBoxList = new Vector<NavBoxItemIFace>();
     
     protected WorkbenchTemplate           selectedTemplate = null; // Transient set by selectExistingTemplate
+    
+    // Temporary until we get a Workbench Icon
+    protected boolean                     doingStarterPane = false;
 
 	/**
 	 * Constructor. 
@@ -262,6 +265,7 @@ public class WorkbenchTask extends BaseTask
                         roc = (RolloverCommand)nbi;
                         roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
                         roc.addDragDataFlavor(new DataFlavor(Workbench.class, "Report"));
+                        roc.setToolTip(getResourceString("WB_PRINTREPORT_TT"));
 
                     } else
                     {
@@ -273,11 +277,13 @@ public class WorkbenchTask extends BaseTask
                 enableNavBoxList.add((NavBoxItemIFace)roc);// true means make it draggable
                 roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
                 roc.addDragDataFlavor(new DataFlavor(Workbench.class, "Report"));
+                roc.setToolTip(getResourceString("WB_BARCHART_TT"));
 
                 roc = (RolloverCommand)makeDnDNavBtn(reportsNavBox, getResourceString("WB_TOP10"), "Pie_Chart", new CommandAction(WORKBENCH, WB_TOP10_REPORT, Workbench.getClassTableId()), null, true, false);
                 enableNavBoxList.add((NavBoxItemIFace)roc);// true means make it draggable
                 roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
                 roc.addDragDataFlavor(new DataFlavor(Workbench.class, "Report"));
+                roc.setToolTip(getResourceString("WB_TOP10_TT"));
             }
             
             // Add these last and in order
@@ -534,6 +540,7 @@ public class WorkbenchTask extends BaseTask
         label.setFont(new Font(font.getName(), Font.PLAIN, font.getSize()+4));
         display.add(new JLabel(IconManager.getIcon("SpecifyLargeIcon")), cc.xy(2, 2));
         display.add(label, cc.xy(2, 4));
+        doingStarterPane = true;
         return starterPane = new SimpleDescPane(title, this, display.getPanel());
     }
     
@@ -2523,6 +2530,11 @@ public class WorkbenchTask extends BaseTask
     @Override
     public ImageIcon getImageIcon()
     {
+        if (doingStarterPane)
+        {
+            doingStarterPane = false;
+            return null;
+        }
         return IconManager.getIcon("DataSet", IconManager.IconSize.Std16);
     }
 
