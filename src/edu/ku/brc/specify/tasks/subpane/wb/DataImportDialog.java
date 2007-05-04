@@ -745,10 +745,10 @@ public class DataImportDialog extends JDialog implements ActionListener
         {
             log.debug("setXLSTableData - file - " + configXLS.getFile().toString());
 
-            InputStream input = new FileInputStream(configXLS.getFile());
-            POIFSFileSystem fs = new POIFSFileSystem(input);
-            HSSFWorkbook workBook = new HSSFWorkbook(fs);
-            HSSFSheet sheet = workBook.getSheetAt(0);
+            InputStream     input    = new FileInputStream(configXLS.getFile());
+            POIFSFileSystem fs       = new POIFSFileSystem(input);
+            HSSFWorkbook    workBook = new HSSFWorkbook(fs);
+            HSSFSheet       sheet    = workBook.getSheetAt(0);
 
             boolean firstRow = true;
 
@@ -759,7 +759,7 @@ public class DataImportDialog extends JDialog implements ActionListener
                 numCols = 0;
                 rowData = new Vector<String>();
                 HSSFRow row = (HSSFRow) rows.next();
-                while (numCols < row.getLastCellNum())
+                while (numCols <= row.getLastCellNum())
                 {
                     HSSFCell cell = (HSSFCell) row.getCell(numCols);
                     String value = null;

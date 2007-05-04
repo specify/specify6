@@ -155,13 +155,14 @@ public class ConfigureXLS extends ConfigureExternalDataBase
                             //System.out.println("Cell #" + cellNum + " " + type+"  "+value);
                             if (firstRowHasHeaders)
                             {
-                                colInfo.add(new ImportColumnInfo(cellNum, colType, value, null));
+                                colInfo.add(new ImportColumnInfo(cellNum, colType, value, value, null));
                                 colTracker.put(cellNum, true);
 
                             } else
                             {
                                 //colInfo.add(new ImportColumnInfo(cellNum, type, null, value));
-                                colInfo.add(new ImportColumnInfo(cellNum, colType, getResourceString("DEFAULT_COLUMN_NAME") + " " + cellNum + 1, null));
+                                String colName = getResourceString("DEFAULT_COLUMN_NAME") + " " + cellNum + 1;
+                                colInfo.add(new ImportColumnInfo(cellNum, colType, colName, colName, null));
                                 colTracker.put(cellNum, true);
 
                             }

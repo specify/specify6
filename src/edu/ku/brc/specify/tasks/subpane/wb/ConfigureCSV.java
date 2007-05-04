@@ -460,7 +460,7 @@ public class ConfigureCSV extends ConfigureExternalDataBase
     
                     for (int h = 0; h < csv.getHeaderCount(); h++)
                     {
-                        colInfo.add(new ImportColumnInfo((short)h, getCellType(h), csv.getHeader(h), null));
+                        colInfo.add(new ImportColumnInfo((short)h, getCellType(h), csv.getHeader(h), csv.getHeader(h), null));
                     }
                     Collections.sort(colInfo);
                     

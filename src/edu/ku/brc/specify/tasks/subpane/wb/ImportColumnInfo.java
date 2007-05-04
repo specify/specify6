@@ -26,12 +26,14 @@ public class ImportColumnInfo  implements Comparable<ImportColumnInfo>
     
     protected Short      colInx;
     protected ColumnType colType;
-    protected String     colName;
+    protected String     colName; // the name of the column (this may include the table name in parens)
+    protected String     colTitle; // name without parens
     protected String     data;
     
     public ImportColumnInfo(final short      colInx, 
                             final ColumnType colType, 
-                            final String     colName, 
+                            final String     colName,
+                            final String     colTitle,
                             final String     data)
     {
         super();
@@ -39,6 +41,7 @@ public class ImportColumnInfo  implements Comparable<ImportColumnInfo>
         this.colInx  = colInx;
         this.colType = colType;
         this.colName = colName;
+        this.colTitle = colTitle;
         this.data    = data;
     }
 
@@ -65,6 +68,14 @@ public class ImportColumnInfo  implements Comparable<ImportColumnInfo>
     public Short getColInx()
     {
         return colInx;
+    }
+
+    /**
+     * @return the colTitle
+     */
+    public String getColTitle()
+    {
+        return colTitle;
     }
 
     /* (non-Javadoc)

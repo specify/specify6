@@ -759,6 +759,7 @@ public class TemplateEditor extends CustomDialog
         ImportColumnInfo  colInfo    = new ImportColumnInfo((short)-1, 
                                                             ImportColumnInfo.getType(tableClass), 
                                                             fieldInfo.getFieldInfo().getColumn(), 
+                                                            fieldInfo.getText(), 
                                                             null);
         FieldMappingPanel fmp = addMappingItem(colInfo, IconManager.getIcon(fieldInfo.getTableinfo().getObjTitle(), IconManager.IconSize.Std24), wbtmi);
         fmp.setFieldInfo(fieldInfo);
@@ -952,7 +953,7 @@ public class TemplateEditor extends CustomDialog
         boolean notAllMapped = false;  // assume we can auto map everything
         for (ImportColumnInfo colInfo: colInfos)
         {
-            FieldInfo fieldInfo = autoMapFieldName(colInfo.getColName(), automappings);
+            FieldInfo fieldInfo = autoMapFieldName(colInfo.getColTitle(), automappings);
             if (fieldInfo != null)
             {
                 TableInfo tblInfo = null;
@@ -1180,7 +1181,7 @@ public class TemplateEditor extends CustomDialog
             PanelBuilder    builder = new PanelBuilder(new FormLayout("2px,p,2px,150px, p:g, p, p:g, 150px,2px", "p:g"), this);
             CellConstraints cc      = new CellConstraints();
 
-            colFieldLabel = new JLabel(colInfo != null ? colInfo.getColName() : "", SwingConstants.RIGHT);
+            colFieldLabel = new JLabel(colInfo != null ? colInfo.getColTitle() : "", SwingConstants.RIGHT);
             schemaLabel   = new JLabel(noMappingStr, SwingConstants.LEFT);
             arrowLabel    = new JLabel(IconManager.getIcon("Linked"));
             
@@ -1199,7 +1200,7 @@ public class TemplateEditor extends CustomDialog
         public void setColInfo(final ImportColumnInfo colInfo)
         {
             this.colInfo = colInfo;
-            colFieldLabel.setText(colInfo != null ? colInfo.getColName() : "");
+            colFieldLabel.setText(colInfo != null ? colInfo.getColTitle() : "");
         }
         
         /**
@@ -1279,7 +1280,7 @@ public class TemplateEditor extends CustomDialog
             {
                 iconLabel.setIcon(blankIcon);
             }
-            schemaLabel.setText(fieldInfoArg != null ? fieldInfoArg.getFieldInfo().getColumn() : noMappingStr);
+            schemaLabel.setText(fieldInfoArg != null ? fieldInfoArg.getText() : noMappingStr);
             schemaLabel.repaint();
         }
         

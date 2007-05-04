@@ -11,14 +11,14 @@
     <field column="Accession Text3" name="accessionText3" type="text" length="255"/>
     <field column="Accession Number1" name="accessionNumber1" type="java.lang.Float"/>
     <field column="Accession Number2" name="accessionNumber2" type="java.lang.Float"/>
-    <field column="Remarks" name="remarks" type="text" length="255"/>
-    <field column="YesNo1" name="yesNo1" type="boolean"/>
-    <field column="YesNo2" name="yesNo2" type="boolean"/>
+    <field column="Remarks (Accession)" name="accessionRemarks" type="text" length="255"/>
+    <field column="YesNo1 (Accession)" name="accessionYesNo1" type="boolean"/>
+    <field column="YesNo2 (Accession)" name="accessionYesNo2" type="boolean"/>
     <field column="Auth Agent1" name="authAgent1" type="java.lang.String" length="64"/>
     <field column="Auth Agent2" name="authAgent2" type="java.lang.String" length="64"/>
     <field column="Auth Agent3" name="authAgent3" type="java.lang.String" length="64"/>
     <field column="Auth Agent4" name="authAgent4" type="java.lang.String" length="64"/>
-    <field column="Permit1" name="Permit1" type="java.lang.String" length="64"/>
+    <field column="Permit" name="Permit" type="java.lang.String" length="64"/>
   </table>
   <table classname="edu.ku.brc.specify.datamodel.CollectingEvent" table="collectingevent" tableid="10" lazy="true" >
     <field column="Station Field Number" name="stationFieldNumber" type="java.lang.String" length="50"/>
@@ -33,7 +33,7 @@
     <field column="Start Time" name="startTime" type="short"/>
     <field column="End Time" name="endTime" type="short"/>
     <field column="Verbatim Locality" name="verbatimLocality" type="text" length="255"/>
-    <field column="CollectingEvent Remarks" name="remarks" type="text" length="255"/>
+    <field column="Remarks (Collecting Event)" name="collectingEventRemarks" type="text" length="255"/>
     <field column="Collector1" name="collector1" type="java.lang.String" length="64"/>
     <field column="Collector2" name="collector2" type="java.lang.String" length="64"/>
     <field column="Collector3" name="collector3" type="java.lang.String" length="64"/>
@@ -59,12 +59,12 @@
     <display objtitle="Collection Object" view="CollectionObject" dataobjformatter="CollectionObject"/>
     <field column="Field Number" name="fieldNumber" type="java.lang.String" length="50"/>
     <field column="Description" name="description" type="java.lang.String" length="50"/>
-    <field column="Text1" name="text1" type="text" length="255"/>
-    <field column="Text2" name="text2" type="text" length="255"/>
-    <field column="Number1" name="number1" type="java.lang.Float" length="24"/>
-    <field column="Number2" name="number2" type="java.lang.Float" length="24"/>
-    <field column="YesNo1" name="yesNo1" type="boolean"/>
-    <field column="YesNo2" name="yesNo2" type="boolean"/>
+    <field column="Text1 (CollectionObject)" name="collectionObjectText1" type="text" length="255"/>
+    <field column="Text2 (CollectionObject)" name="collectionObjectText2" type="text" length="255"/>
+    <field column="Number1 (CollectionObject)" name="collectionObjectNumber1" type="java.lang.Float" length="24"/>
+    <field column="Number2 (CollectionObject)" name="collectionObjectNumber2" type="java.lang.Float" length="24"/>
+    <field column="YesNo1 (CollectionObject)" name="collectionObjectYesNo1" type="boolean"/>
+    <field column="YesNo2 (CollectionObject)" name="collectionObjectYesNo2" type="boolean"/>
     <field column="Count" name="countAmt" type="java.lang.Integer" length="10"/>
     <field column="Remarks" name="remarks" type="text" length="255"/>
     <field column="Name" name="name" type="java.lang.String" length="64"/>
@@ -74,7 +74,7 @@
     <field column="GUID" name="guid" type="java.lang.String" length="255"/>
     <field column="Deaccessioned" name="deaccessioned" type="boolean"/>
     <field column="Catalog Number" name="catalogNumber" type="java.lang.Float"/>
-    <field column="Collection Object Citation" name="collectionObjectCitation" type="java.lang.String" length="64"/>
+    <field column="Citation (CollectionObject)" name="collectionObjectCitation" type="java.lang.String" length="64"/>
   </table>
   <table classname="edu.ku.brc.specify.datamodel.Determination" table="determination" tableid="9" lazy="true" >
 
@@ -104,8 +104,7 @@
     <field column="Determination6" name="determination6" type="java.lang.String" length="64"/>
     <field column="Determination7" name="determination7" type="java.lang.String" length="64"/>
     <field column="Determination8" name="determination8" type="java.lang.String" length="64"/>
-
-    <field column="Determination Citation" name="determinationCitation" type="java.lang.String" length="64"/>
+    <field column="Citation (Determination)" name="determinationCitation" type="java.lang.String" length="64"/>
   </table>
   <table classname="edu.ku.brc.specify.datamodel.Geography" table="geography" tableid="3" lazy="true" businessrule="edu.ku.brc.specify.datamodel.busrules.GeographyBusRules">
     <field column="Continent" name="Continent" type="java.lang.String" length="128"/>
@@ -152,18 +151,18 @@
     <field column="Lat Long Accuracy" name="latLongAccuracy" type="java.lang.Double"/>
     <field column="Datum" name="datum" type="java.lang.String" length="50"/>
     <field column="Remarks" name="remarks" type="text" length="255"/>
-    <field column="Text1" name="text1" type="text" length="255"/>
-    <field column="Text2" name="text2" type="text" length="255"/>
-    <field column="Number1" name="number1" type="java.lang.Double"/>
-    <field column="Number2" name="number2" type="java.lang.Double"/>
-    <field column="YesNo1" name="yesNo1" type="boolean"/>
-    <field column="YesNo2" name="yesNo2" type="boolean"/>
+    <field column="Text1 (Locality)" name="localityText1" type="text" length="255"/>
+    <field column="Text2 (Locality)" name="localityText2" type="text" length="255"/>
+    <field column="Number1 (Locality)" name="localityNumber1" type="java.lang.Double"/>
+    <field column="Number2 (Locality)" name="localityNumber2" type="java.lang.Double"/>
+    <field column="YesNo1 (Locality)" name="localityYesNo1" type="boolean"/>
+    <field column="YesNo2 (Locality)" name="localityYesNo2" type="boolean"/>
     <field column="National Park Name" name="nationalParkName" type="java.lang.String" length="64"/>
     <field column="Island Group" name="islandGroup" type="java.lang.String" length="64"/>
     <field column="Island" name="island" type="java.lang.String" length="64"/>
     <field column="Water Body" name="waterBody" type="java.lang.String" length="64"/>
     <field column="Drainage" name="drainage" type="java.lang.String" length="64"/>
-    <field column="Locality Citation" name="localityCitation" type="java.lang.String" length="64"/>
+    <field column="Citation (Locality)" name="localityCitation" type="java.lang.String" length="64"/>
   </table>
   <table classname="edu.ku.brc.specify.datamodel.Preparation" table="preparation" tableid="63" lazy="true" >
     <field column="PrepType1" name="prepType1" type="text" length="32"/>
@@ -224,15 +223,16 @@
     <field column="Pages" name="pages" type="java.lang.String" length="50"/>
     <field column="URL" name="url" type="text" length="255"/>
     <field column="Library Number" name="libraryNumber" type="java.lang.String" length="50"/>
-    <field column="Remarks" name="remarks" type="text" length="255"/>
-    <field column="Text1" name="text1" type="text" length="255"/>
-    <field column="Text2" name="text2" type="text" length="255"/>
-    <field column="Number1" name="number1" type="java.lang.Float" length="24"/>
-    <field column="Number2" name="number2" type="java.lang.Float" length="24"/>
+    <field column="Remarks (ReferenceWork)" name="referenceWorkRemarks" type="text" length="255"/>
+    <field column="Text1 (ReferenceWork)" name="referenceWorkText1" type="text" length="255"/>
+    <field column="Text2 (ReferenceWork)" name="referenceWorkText2" type="text" length="255"/>
+    <field column="Number1 (ReferenceWork)" name="referenceWorkNumber1" type="java.lang.Float" length="24"/>
+    <field column="Number2 (ReferenceWork)" name="referenceWorkNumber2" type="java.lang.Float" length="24"/>
     <field column="Is Published" name="isPublished" type="boolean"/>
-    <field column="YesNo1" name="yesNo1" type="boolean"/>
-    <field column="YesNo2" name="yesNo2" type="boolean"/>
+    <field column="YesNo1 (ReferenceWork)" name="referenceWorkYesNo1" type="boolean"/>
+    <field column="YesNo2 (ReferenceWork)" name="referenceWorkYesNo2" type="boolean"/>
   </table>
+  <!--
   <table classname="edu.ku.brc.specify.datamodel.RepositoryAgreement" table="repositoryagreement" tableid="70" lazy="true" >
     <field column="Number" name="number" type="java.lang.String" length="60"/>
     <field column="Status" name="status" type="java.lang.String" length="32"/>
@@ -248,19 +248,20 @@
     <field column="YesNo1" name="yesNo1" type="boolean"/>
     <field column="YesNo2" name="yesNo2" type="boolean"/>
   </table>
+  -->
   <table classname="edu.ku.brc.specify.datamodel.Stratigraphy" table="stratigraphy" tableid="73" >
     <field column="Super Group" name="superGroup" type="java.lang.String" length="50"/>
     <field column="Litho Group" name="lithoGroup" type="java.lang.String" length="50"/>
     <field column="Formation" name="formation" type="java.lang.String" length="50"/>
     <field column="Member" name="member" type="java.lang.String" length="50"/>
     <field column="Bed" name="bed" type="java.lang.String" length="50"/>
-    <field column="Remarks" name="remarks" type="text" length="255"/>
-    <field column="Text1" name="text1" type="text" length="255"/>
-    <field column="Text2" name="text2" type="text" length="255"/>
-    <field column="Number1" name="number1" type="java.lang.Float" length="24"/>
-    <field column="Number2" name="number2" type="java.lang.Float" length="24"/>
-    <field column="YesNo1" name="yesNo1" type="boolean"/>
-    <field column="YesNo2" name="yesNo2" type="boolean"/>
+    <field column="Remarks (Stratigraphy)" name="stratigraphyRemarks" type="text" length="255"/>
+    <field column="Text1 (Stratigraphy)" name="stratigraphyText1" type="text" length="255"/>
+    <field column="Text2 (Stratigraphy)" name="stratigraphyText2" type="text" length="255"/>
+    <field column="Number1 (Stratigraphy)" name="stratigraphyNumber1" type="java.lang.Float" length="24"/>
+    <field column="Number2 (Stratigraphy)" name="stratigraphyNumber2" type="java.lang.Float" length="24"/>
+    <field column="YesNo1 (Stratigraphy)" name="stratigraphyYesNo1" type="boolean"/>
+    <field column="YesNo2 (Stratigraphy)" name="stratigraphyYesNo2" type="boolean"/>
   </table>
   <table classname="edu.ku.brc.specify.datamodel.Taxon" table="taxon" tableid="4" businessrule="edu.ku.brc.specify.datamodel.busrules.TaxonBusRules">
     <field column="Genus Species" name="Genus Species" type="java.lang.String" length="128"/>
@@ -293,7 +294,7 @@
     <field column="Forma" name="Forma" type="java.lang.String" length="64"/>
     <field column="Subforma" name="Subforma" type="java.lang.String" length="64"/>
     <field column="Common Name" name="commonName" type="java.lang.String" length="128"/>
-    <field column="Taxon Citation" name="taxonCitation" type="java.lang.String" length="128"/>
+    <field column="Citation (Taxon)" name="taxonCitation" type="java.lang.String" length="128"/>
     
     <field column="Species Author" name="speciesAuthor" type="java.lang.String" length="128"/>
     <field column="Infraspecific Author" name="infraspecificAuthor" type="java.lang.String" length="128"/>
