@@ -84,7 +84,14 @@ public class VersionCheckerTask extends BaseTask
             }
         };
         
-        timer.schedule(task, 5000);
+        // see if the user is allowing us to check for updates
+        AppPreferences appPrefs = AppPreferences.getLocalPrefs();
+        boolean checkForUpdates = appPrefs.getBoolean("AutoUpdateCheck", true);
+
+        if (checkForUpdates)
+        {
+            timer.schedule(task, 5000);
+        }
     }
     
 
@@ -200,7 +207,7 @@ public class VersionCheckerTask extends BaseTask
         
         // see if the user is allowing us to send back usage data
         AppPreferences appPrefs = AppPreferences.getLocalPrefs();
-        boolean sendStats = appPrefs.getBoolean("sendUsageStats", true);
+        boolean sendStats = appPrefs.getBoolean("SendUsageStats", true);
         
         NameValuePair[] postParams = createPostParameters(sendStats);
         postMethod.setRequestBody(postParams);
