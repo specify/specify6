@@ -191,6 +191,7 @@ public class VersionCheckerTask extends BaseTask
     {
         // check the website for the info about the latest version
         HttpClient httpClient = new HttpClient();
+        httpClient.getParams().setParameter("http.useragent", getClass().getName());
         
         // get the URL of the website to check, with usage info appended, if allowed
         String versionCheckURL = getVersionCheckURL();
