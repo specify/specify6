@@ -43,6 +43,7 @@ import javax.swing.table.TableColumn;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.ui.SearchReplacePanel;
 import edu.ku.brc.ui.SearchableJXTable;
 import edu.ku.brc.ui.UIHelper;
@@ -369,7 +370,7 @@ public class SpreadSheet  extends SearchableJXTable
         boolean isImage =  cellClass == ImageIcon.class || cellClass == Image.class;
         
         JPopupMenu pMenu = new JPopupMenu();
-        
+        UsageTracker.incrUsageCount("WB.SpreadsheetContextMenu");
         if (getSelectedColumnCount() == 1)
         {
             final int[] rows = getSelectedRowModelIndexes();

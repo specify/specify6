@@ -51,6 +51,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.ui.tmanfe.SpreadSheet;
 /**
@@ -144,6 +145,7 @@ public class SearchReplacePanel extends JPanel
         	log.debug("showing Find/replace panel");
             this.setVisible(true);
             findField.requestFocusInWindow();
+            UsageTracker.incrUsageCount("WB.ShowFindReplace");
         }
         return this;
     }
@@ -846,10 +848,12 @@ public class SearchReplacePanel extends JPanel
                 //moved these two from after the if/else statement
                 setCheckAndSetWrapOption();
                 replace();
+                UsageTracker.incrUsageCount("WB.ReplaceButton");
 			}
 			else if (source == replaceAllButton)
 			{
 				replaceAll();
+				UsageTracker.incrUsageCount("WB.ReplaceAllButton");
 			}
 		}
 	}
@@ -891,9 +895,10 @@ public class SearchReplacePanel extends JPanel
                 isSearchDown = false;
             } 
 
-
+            UsageTracker.incrUsageCount("WB.FindButton");
             setCheckAndSetWrapOption();
             find();
+            
         }
     }
 
