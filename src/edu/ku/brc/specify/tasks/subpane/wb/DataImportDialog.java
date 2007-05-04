@@ -635,7 +635,7 @@ public class DataImportDialog extends JDialog implements ActionListener
             //String newline = "\n";
             //for (int i = 0; i < listOfErrors.getModel().getSize(); i++)
             //{
-                textArea.append("The imported file is in the incorrect format and cannot be imported.");//TODO i8n
+                textArea.append(getResourceString("WB_PARSE_FILE_ERROR2"));
             //}
             textArea.setLineWrap(true);
             textArea.setWrapStyleWord(true);
@@ -644,7 +644,7 @@ public class DataImportDialog extends JDialog implements ActionListener
             JScrollPane pane = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                     JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
             JOptionPane.showMessageDialog(UIRegistry.get(UIRegistry.TOPFRAME), pane,getResourceString("DATA_IMPORT_ISSUES"),JOptionPane.WARNING_MESSAGE);
-             	
+            okBtn.setEnabled(false); 	
         }
         else if (listOfErrors.getModel().getSize() > 0)
         {
@@ -862,6 +862,8 @@ public class DataImportDialog extends JDialog implements ActionListener
             {
             	showTooManyRowsErrorDialog();
             }
+            log.debug(headers);
+            log.debug(tableData);
             model = new PreviewTableModel(headers, tableData);
             t.setModel(model);
             t.setColumnSelectionAllowed(false);
@@ -876,11 +878,24 @@ public class DataImportDialog extends JDialog implements ActionListener
 
         } catch (IOException ex)
         {
+        	String[] columnNames = {};
+        	String[][] blankData = {{}};
+            model = new PreviewTableModel(columnNames, blankData);
+            t.setModel(model);
+            t.setColumnSelectionAllowed(false);
+            t.setRowSelectionAllowed(false);
+            t.setCellSelectionEnabled(false);
+            t.getTableHeader().setReorderingAllowed(false);
+            t.setPreferredScrollableViewportSize(new Dimension(500, 100));
+            t.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+            model.fireTableDataChanged();
+            model.fireTableStructureChanged();
+            return t;
             //log.error("Error attempting to parse input xls file:" + ex);
             //ex.printStackTrace();
         }
 
-        return null;       
+        //return null;       
     }
     
     private void showTooManyRowsErrorDialog()
