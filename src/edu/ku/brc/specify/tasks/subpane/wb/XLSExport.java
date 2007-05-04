@@ -12,6 +12,7 @@ package edu.ku.brc.specify.tasks.subpane.wb;
 import java.io.FileOutputStream;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -181,35 +182,42 @@ public class XLSExport implements DataExport
         {
             writeHeaders(workSheet);
             rowNum++;
+            
+            String[] headers = config.getHeaders();
+            for (short i=0;i<headers.length;i++)
+            {
+                workSheet.setColumnWidth(i, (short)(StringUtils.isNotEmpty(headers[i]) ? (256 * headers[i].length()) : 2560));
+            }
         }
+        
         if (data.size() > 0)
         {
-                int[] colTypes;
-                if (data.get(0).getClass() == WorkbenchTemplate.class)
+            int[] colTypes;
+            if (data.get(0).getClass() == WorkbenchTemplate.class)
+            {
+                colTypes = bldColTypes((WorkbenchTemplate) data.get(0));
+                // now set up cell types and formats for a bunch of empty rows....
+                
+            }
+            else
+            {
+                WorkbenchRow wbRow     = (WorkbenchRow) data.get(0);
+                Workbench    workBench = wbRow.getWorkbench();
+                
+                colTypes = bldColTypes(workBench.getWorkbenchTemplate());
+                for (Object rowObj : data)
                 {
-                    colTypes = bldColTypes((WorkbenchTemplate) data.get(0));
-                    // now set up cell types and formats for a bunch of empty rows....
+                    WorkbenchRow row     = (WorkbenchRow)rowObj;
+                    HSSFRow      hssfRow = workSheet.createRow(rowNum++);
                     
-                }
-                else
-                {
-                    WorkbenchRow wbRow     = (WorkbenchRow) data.get(0);
-                    Workbench    workBench = wbRow.getWorkbench();
-                    
-                    colTypes = bldColTypes(workBench.getWorkbenchTemplate());
-                    for (Object rowObj : data)
+                    for (short colNum = 0; colNum < row.getWorkbenchDataItems().size(); colNum++)
                     {
-                        WorkbenchRow row     = (WorkbenchRow)rowObj;
-                        HSSFRow      hssfRow = workSheet.createRow(rowNum++);
-                        
-                        for (short colNum = 0; colNum < row.getWorkbenchDataItems().size(); colNum++)
-                        {
-                            HSSFCell cell = hssfRow.createCell(colNum);
-                            cell.setCellType(colTypes[colNum]);
-                            setCellValue(cell, row.getData(colNum));
-                        }
+                        HSSFCell cell = hssfRow.createCell(colNum);
+                        cell.setCellType(colTypes[colNum]);
+                        setCellValue(cell, row.getData(colNum));
                     }
                 }
+            }
         }
         try
         {

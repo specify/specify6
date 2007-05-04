@@ -759,7 +759,8 @@ public class DataImportDialog extends JDialog implements ActionListener
                 numCols = 0;
                 rowData = new Vector<String>();
                 HSSFRow row = (HSSFRow) rows.next();
-                while (numCols <= row.getLastCellNum())
+                //log.debug(row.getLastCellNum()+"  "+row.getPhysicalNumberOfCells());
+                while (numCols < row.getPhysicalNumberOfCells())
                 {
                     HSSFCell cell = (HSSFCell) row.getCell(numCols);
                     String value = null;
