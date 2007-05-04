@@ -21,6 +21,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -74,7 +75,9 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
+import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.ui.HelpMgr;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.MouseOverJLabel;
@@ -131,6 +134,7 @@ public class DataImportDialog extends JDialog implements ActionListener
 	private JCheckBox containsHeaders;
 
 	private boolean isCancelled = false;
+	private boolean hasTooManyRows = false;
 
 	private String fileName;
 	private File file;
@@ -199,8 +203,15 @@ public class DataImportDialog extends JDialog implements ActionListener
      */
     private void initForCSV()
     {
-    	setContentPane(createConfigPanelForCSV());
-    	init(getResourceString("IMPORT_CVS"));    
+    	setContentPane(createConfigPanelForCSV());  
+    	if(!hasTooManyRows)
+    	{
+    		init(getResourceString("IMPORT_CVS"));    
+    	}
+    	else
+    	{
+    		isCancelled = true;
+    	}
     }
       
 
@@ -213,7 +224,14 @@ public class DataImportDialog extends JDialog implements ActionListener
     private void initForXLS()
     {
     	setContentPane(createConfigPanelForXLS());
-    	init(getResourceString("IMPORT_XLS"));   
+    	if(!hasTooManyRows)
+    	{
+    		init(getResourceString("IMPORT_XLS"));    
+    	}
+    	else
+    	{
+    		isCancelled = true;
+    	}
     }
     
     /**
@@ -817,6 +835,11 @@ public class DataImportDialog extends JDialog implements ActionListener
             {
                 errorPanel.showDataImportStatusPanel(false);
             }
+            
+            if(numRows >= WorkbenchTask.MAX_ROWS)
+            {
+            	showTooManyRowsErrorDialog();
+            }
             model = new PreviewTableModel(headers, tableData);
             t.setModel(model);
             t.setColumnSelectionAllowed(false);
@@ -835,6 +858,31 @@ public class DataImportDialog extends JDialog implements ActionListener
         }
 
         return null;       
+    }
+    
+    private void showTooManyRowsErrorDialog()
+    {
+        PanelBuilder    builder = new PanelBuilder(new FormLayout("p", "c:p:g"));
+        CellConstraints cc      = new CellConstraints();
+
+        //builder.add(new JLabel(IconManager.getIcon("SpecifyLargeIcon")), cc.xy(1,1));
+        builder.add(new JLabel("<html>"
+        		+"The preview release of the Specify 6.0 Workbench"
+        		+"<br>"
+        		+"can only import 2000 rows of data.  The file you "
+        		+"<br>"
+        		+"are attempting to import contains too many rows."
+        		+"<br>"
+        		+"Please select another file."
+        		+"</html>"), cc.xy(1,1)); //TODO i8n
+
+        CustomDialog maxRowExceededMsg = new CustomDialog((Frame)UIRegistry.get(UIRegistry.FRAME), getResourceString("WB_MAXROWS") , true, CustomDialog.OK_BTN, builder.getPanel());
+        maxRowExceededMsg.setOkLabel(getResourceString("Close"));
+        UIHelper.centerAndShow(maxRowExceededMsg);
+    	
+        hasTooManyRows = true;
+        
+        //okBtn.setEnabled(false);   	
     }
     
     /**
@@ -913,6 +961,11 @@ public class DataImportDialog extends JDialog implements ActionListener
                 }
             else{
                 errorPanel.showDataImportStatusPanel(false);
+            }
+            
+            if(tableDataVector.size() >= WorkbenchTask.MAX_ROWS)
+            {
+            	showTooManyRowsErrorDialog();
             }
 			model = new PreviewTableModel(headers, tableData);
 			t.setModel(model);
