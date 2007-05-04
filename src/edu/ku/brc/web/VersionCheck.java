@@ -35,6 +35,15 @@ public class VersionCheck extends HttpServlet
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException
     {
+        // check the user agent string to see if this is a legit request
+        String userAgent = request.getHeader("User-Agent");
+        if (userAgent.indexOf("VersionChecker") == -1)
+        {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.getWriter().close();
+            return;
+        }
+        
         response.setContentType("text/xml;charset=UTF-8");
         PrintWriter out = response.getWriter();
         
@@ -51,11 +60,21 @@ public class VersionCheck extends HttpServlet
         while(paramNames.hasMoreElements())
         {
             String paramName = (String)paramNames.nextElement();
+            // limit the parameter name to 32 characters
+            if (paramName != null && paramName.length() > 32)
+            {
+                paramName = paramName.substring(0,32);
+            }
             String[] valueArray = request.getParameterValues(paramName);
             String value = null;
             if (valueArray.length>0)
             {
                 value = valueArray[0];
+                // limit value to 32 characters
+                if (value != null && value.length() > 32)
+                {
+                    value = value.substring(0,32);
+                }
             }
             
             if (paramName.equalsIgnoreCase("id"))
