@@ -175,7 +175,7 @@ public class DataImportDialog extends JDialog implements ActionListener
         highestColumnCount = 0;
         myDisplayTable = new JTable();
         model = new PreviewTableModel();
-        initForCSV();
+        createUiForCSV();
     }
     
     /**
@@ -193,7 +193,7 @@ public class DataImportDialog extends JDialog implements ActionListener
         this.doesFirstRowHaveHeaders = doesHaveHeaders;
         myDisplayTable = new JTable();
         model = new PreviewTableModel();
-        initForXLS();
+        createUiForXLS();
 	}
 
     /**
@@ -201,9 +201,10 @@ public class DataImportDialog extends JDialog implements ActionListener
      * 
      * void
      */
-    private void initForCSV()
+    private void createUiForCSV()
     {
-    	setContentPane(createConfigPanelForCSV());  
+    	JPanel p = createConfigPanelForCSV();
+    	setContentPane(p);  
     	if(!hasTooManyRows)
     	{
     		init(getResourceString("IMPORT_CVS"));    
@@ -221,9 +222,10 @@ public class DataImportDialog extends JDialog implements ActionListener
      * void
      */
     @SuppressWarnings("unused")
-    private void initForXLS()
+    private void createUiForXLS()
     {
-    	setContentPane(createConfigPanelForXLS());
+    	JPanel p = createConfigPanelForXLS();
+    	setContentPane(p);
     	if(!hasTooManyRows)
     	{
     		init(getResourceString("IMPORT_XLS"));    
@@ -283,7 +285,7 @@ public class DataImportDialog extends JDialog implements ActionListener
 
         builder.addSeparator(getResourceString("DATA_IMPORT_OPS"),  cc.xyw(2,2,4)); 
         builder.add         (createDelimiterPanel(),                cc.xy (3,4));        
-        builder.add         (createOtherControlsPanel(),            cc.xy (5,4));       
+        builder.add         (createOtherControlsForCSVPanel(),            cc.xy (5,4));       
           
         builder.addSeparator(getResourceString("FILE_IMPORT"),      cc.xyw(2,6,4));
         builder.add         (fileInfo,                              cc.xyw(3,8,4));
@@ -405,7 +407,7 @@ public class DataImportDialog extends JDialog implements ActionListener
      * @return
      * JPanel - the panel to display
      */
-    private JPanel createOtherControlsPanel()
+    private JPanel createOtherControlsForCSVPanel()
     {
         JPanel myPanel = new JPanel();
         CellConstraints cc = new CellConstraints();
@@ -606,25 +608,45 @@ public class DataImportDialog extends JDialog implements ActionListener
     private boolean checkForErrors(String[]headers, String[][]data)
     {
         JList listOfErrors = genListOfErrorWhereTableDataDefiesSizeConstraints(headers, data);
-        if (listOfErrors == null)
-            {
-            return false;
-            }
-        if (listOfErrors.getModel().getSize()>0)
-        {
-           return true;
-        }  
-        return false;
+		if (listOfErrors == null)
+		{
+			return false;
+		}
+		if (listOfErrors.getModel().getSize() > 0)
+		{
+			return true;
+		}
+		return false;
     }
     /**
-     * Takes the list of data import errors and displays then to the user
-     * 
-     * void
-     */
+	 * Takes the list of data import errors and displays then to the user
+	 * 
+	 * void
+	 */
     private void showErrors()
     {
         JList listOfErrors = genListOfErrorWhereTableDataDefiesSizeConstraints(model.getColumnNames(), model.data);
-        if (listOfErrors.getModel().getSize() > 0)
+        
+        if ((model.getColumnNames() ==null )|| (model.data == null) || (listOfErrors==null) || (listOfErrors.getModel().getSize() == 0))
+        {
+            JTextArea textArea = new JTextArea();
+            textArea.setRows(25);
+            textArea.setColumns(60);
+            //String newline = "\n";
+            //for (int i = 0; i < listOfErrors.getModel().getSize(); i++)
+            //{
+                textArea.append("The imported file is in the incorrect format and cannot be imported.");//TODO i8n
+            //}
+            textArea.setLineWrap(true);
+            textArea.setWrapStyleWord(true);
+            textArea.setEditable(false);
+            textArea.setCaretPosition(0);
+            JScrollPane pane = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                    JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+            JOptionPane.showMessageDialog(UIRegistry.get(UIRegistry.TOPFRAME), pane,getResourceString("DATA_IMPORT_ISSUES"),JOptionPane.WARNING_MESSAGE);
+             	
+        }
+        else if (listOfErrors.getModel().getSize() > 0)
         {
             JTextArea textArea = new JTextArea();
             textArea.setRows(25);
@@ -854,7 +876,8 @@ public class DataImportDialog extends JDialog implements ActionListener
 
         } catch (IOException ex)
         {
-            log.error("Error attempting to parse input xls file:" + ex);
+            //log.error("Error attempting to parse input xls file:" + ex);
+            //ex.printStackTrace();
         }
 
         return null;       
@@ -956,10 +979,10 @@ public class DataImportDialog extends JDialog implements ActionListener
 			}
 
             if (checkForErrors(headers, tableData)) 
-                {
+            {
                 errorPanel.showDataImportStatusPanel(true);
-                }
-            else{
+            }
+            else {
                 errorPanel.showDataImportStatusPanel(false);
             }
             
