@@ -86,7 +86,7 @@ public class VersionCheckerTask extends BaseTask
         
         // see if the user is allowing us to check for updates
         AppPreferences appPrefs = AppPreferences.getLocalPrefs();
-        boolean checkForUpdates = appPrefs.getBoolean("AutoUpdateCheck", true);
+        boolean checkForUpdates = appPrefs.getBoolean("version_check.auto", true);
 
         if (checkForUpdates)
         {
@@ -207,7 +207,7 @@ public class VersionCheckerTask extends BaseTask
         
         // see if the user is allowing us to send back usage data
         AppPreferences appPrefs = AppPreferences.getLocalPrefs();
-        boolean sendStats = appPrefs.getBoolean("SendUsageStats", true);
+        boolean sendStats = appPrefs.getBoolean("usage_tracking.send_stats", true);
         
         NameValuePair[] postParams = createPostParameters(sendStats);
         postMethod.setRequestBody(postParams);
