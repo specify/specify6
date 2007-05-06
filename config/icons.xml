@@ -40,7 +40,7 @@
     <icon name="Locality"   file="locality.gif" sizes="all"/>
     <icon name="ColObj"     file="catobj_fish.gif" sizes="all"/>
     <icon name="Address"    file="address.gif" sizes="all"/>
-    <icon name="Location"   file="location.jpg" sizes="all"/>
+    <icon name="Location"   file="location.gif" sizes="all"/>
     <icon name="Geologic Time Period" file="clock.png" sizes="all"/>
     <icon name="CollectingEvent" file="collevent.gif" sizes="all"/>
     <icon name="Accession"  file="accession.gif" sizes="all"/>
@@ -145,7 +145,6 @@
     <icon name="ViewForm"      file="viewform16.gif" sizes="16"/>
     <icon name="ViewForm"      file="viewform.gif" sizes="32"/>
     
-    <icon name="BGImage"       file="splash.jpg" sizes="NonStd"/>
     <icon name="Close"         file="close.gif" sizes="NonStd"/>
     <icon name="CloseHover"    file="closeHover.gif" sizes="NonStd"/>
     <!-- <icon name="BGImage"  file="frogs_bg.gif" sizes="NonStd"/> -->
@@ -159,8 +158,8 @@
     
     <icon name="Green Arrow Down" file="green_arrow_down.gif"   sizes="16"/>
     <icon name="Green Arrow Up"   file="green_arrow_up.gif"     sizes="16"/>
-    <icon name="Linked"           file="LinksTo32.png"          sizes="NonStd"/>
-    <icon name="LinkedRight"      file="LinksToRight32.png"     sizes="NonStd"/>
+    <icon name="Linked"           file="linked.png"          sizes="NonStd"/>
+    <icon name="LinkedRight"      file="linked_right.png"     sizes="NonStd"/>
     <icon name="CardImage"        file="ToggleImageFrame16x16.png" sizes="16"/>
     
     <icon name="Down"             file="down.png" sizes="NonStd"/>
@@ -202,7 +201,8 @@
     
     <!-- Tree Task icons -->
     <icon name="Geography_Tree"     file="earth.png"    sizes="all"/>
-    <icon name="Location_Tree"      file="location.jpg" sizes="all"/>
+    <!-- <icon name="Location_Tree"      file="location.gif" sizes="all"/> -->
+    <icon name="Location_Tree"      alias="Location"/>
     <icon name="GeoTimePeriod_Tree" file="clock.png"    sizes="all"/>
     <icon name="Taxon_Tree"         file="taxon.gif"    sizes="all"/>
     

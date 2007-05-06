@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <database>
-  <table classname="edu.ku.brc.specify.datamodel.Accession" table="accession" tableid="7" lazy="true" businessrule="edu.ku.brc.specify.datamodel.busrules.AccessionBusRules">
+  <table classname="edu.ku.brc.specify.datamodel.Accession" table="accession" tableid="7" lazy="true">
     <field column="Status" name="status" type="java.lang.String" length="32"/>
     <field column="Number" name="number" type="java.lang.String" length="60"/>
     <field column="Verbatim Date" name="verbatimDate" type="java.lang.String" length="50"/>
@@ -55,7 +55,7 @@
     <field column="Start Time" name="startTime" type="java.lang.Short"/>
     <field column="End Time" name="endTime" type="java.lang.Short"/>
   </table>
-  <table classname="edu.ku.brc.specify.datamodel.CollectionObject" table="collectionobject" tableid="1" lazy="true" businessrule="edu.ku.brc.specify.datamodel.busrules.CollectionObjectBusRules">
+  <table classname="edu.ku.brc.specify.datamodel.CollectionObject" table="collectionobject" tableid="1" lazy="true">
     <display objtitle="Collection Object" view="CollectionObject" dataobjformatter="CollectionObject"/>
     <field column="Field Number" name="fieldNumber" type="java.lang.String" length="50"/>
     <field column="Description" name="description" type="java.lang.String" length="50"/>
@@ -106,13 +106,13 @@
     <field column="Determination8" name="determination8" type="java.lang.String" length="64"/>
     <field column="Citation (Determination)" name="determinationCitation" type="java.lang.String" length="64"/>
   </table>
-  <table classname="edu.ku.brc.specify.datamodel.Geography" table="geography" tableid="3" lazy="true" businessrule="edu.ku.brc.specify.datamodel.busrules.GeographyBusRules">
+  <table classname="edu.ku.brc.specify.datamodel.Geography" table="geography" tableid="3" lazy="true">
     <field column="Continent" name="Continent" type="java.lang.String" length="128"/>
     <field column="Country" name="Country" type="java.lang.String" length="128"/>
     <field column="State" name="State" type="java.lang.String" length="128"/>
     <field column="County" name="County" type="java.lang.String" length="128"/>
   </table>
-  <table classname="edu.ku.brc.specify.datamodel.GeologicTimePeriod" table="geologictimeperiod" tableid="46" lazy="true" businessrule="edu.ku.brc.specify.datamodel.busrules.GeologicTimePeriodBusRules">
+  <table classname="edu.ku.brc.specify.datamodel.GeologicTimePeriod" table="geologictimeperiod" tableid="46" lazy="true">
     <display objtitle="Geologic Time Period"/>
     <field column="Name" name="name" type="java.lang.String" length="64"/>
     <field column="Full Name" name="fullName" type="java.lang.String" length="255"/>
@@ -263,7 +263,7 @@
     <field column="YesNo1 (Stratigraphy)" name="stratigraphyYesNo1" type="boolean"/>
     <field column="YesNo2 (Stratigraphy)" name="stratigraphyYesNo2" type="boolean"/>
   </table>
-  <table classname="edu.ku.brc.specify.datamodel.Taxon" table="taxon" tableid="4" businessrule="edu.ku.brc.specify.datamodel.busrules.TaxonBusRules">
+  <table classname="edu.ku.brc.specify.datamodel.Taxon" table="taxon" tableid="4">
     <field column="Genus Species" name="Genus Species" type="java.lang.String" length="128"/>
     <field column="Kingdom"      name="Kingdom" type="java.lang.String" length="64"/>
     <field column="Subkingdom"   name="Subkingdom" type="java.lang.String" length="64"/>

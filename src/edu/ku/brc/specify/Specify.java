@@ -630,7 +630,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         if (!isRelease)
         {
             menu = UIHelper.createMenu(mb, "DebugMenu", "DebugMneu");
-            mi = UIHelper.createMenuItem(menu, "Show Local Prefs", "L", "Show Local Prefs", false, null);
+            mi = UIHelper.createMenuItem(menu, "Show Local Prefs", "L", "Show Local Prefs", true, null);
             mi.addActionListener(new ActionListener()
                     {
                         @SuppressWarnings("synthetic-access")
@@ -644,7 +644,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                         }
                     });
     
-            mi = UIHelper.createMenuItem(menu, "Show Remote Prefs", "R", "Show Remote Prefs", false, null);
+            mi = UIHelper.createMenuItem(menu, "Show Remote Prefs", "R", "Show Remote Prefs", true, null);
             mi.addActionListener(new ActionListener()
                     {
                         @SuppressWarnings("synthetic-access")
@@ -671,7 +671,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                             ((JMenuItem)ae.getSource()).setSelected(isReload);
                         }});
     
-            mi = UIHelper.createMenuItem(menu, "Config Loggers", "C", "Config Logger", false, null);
+            mi = UIHelper.createMenuItem(menu, "Config Loggers", "C", "Config Logger", true, null);
             mi.addActionListener(new ActionListener()
                     {
                         @SuppressWarnings("synthetic-access")
@@ -681,11 +681,10 @@ public class Specify extends JPanel implements DatabaseLoginListener
                             UIHelper.centerAndShow(dialog);
                         }
                     });
-            mi.setEnabled(true);
             
             JMenu prefsMenu = new JMenu("Prefs Import/Export");
             menu.add(prefsMenu);
-            mi = UIHelper.createMenuItem(prefsMenu, "Import", "I", "Import Prefs", false, null);
+            mi = UIHelper.createMenuItem(prefsMenu, "Import", "I", "Import Prefs", true, null);
             mi.addActionListener(new ActionListener()
                     {
                         @SuppressWarnings("synthetic-access")
@@ -695,7 +694,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                         }
                     });
     
-            mi = UIHelper.createMenuItem(prefsMenu, "Export", "E", "Export Prefs", false, null);
+            mi = UIHelper.createMenuItem(prefsMenu, "Export", "E", "Export Prefs", true, null);
             mi.addActionListener(new ActionListener()
                     {
                         @SuppressWarnings("synthetic-access")
@@ -704,6 +703,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                             exportPrefs();
                         }
                     });
+
         }
         
         JMenu helpMenu = UIHelper.createMenu(mb, "Help", "HelpMneu");
@@ -721,9 +721,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
                         }
                     });
         }
-            
-
-
         return mb;
     }
 
@@ -1103,7 +1100,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
     {
         return cacheManager;
     }
-
 
   // *******************************************************
   // ******************   Runnables  ***********************

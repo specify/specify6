@@ -532,7 +532,7 @@ public class DBTableIdMgr
             
         } catch (Exception ex)
         {
-            log.error(ex);
+            //log.error(ex); // this isn't an error
         }
         return null;
     }
@@ -556,7 +556,7 @@ public class DBTableIdMgr
                     
                 } catch (Exception ex)
                 {
-                    log.error("Bad Busniess Rule class name["+br+"]");
+                    log.error("Bad Business Rule class name["+br+"]");
                     log.error(ex);
                 }
             }
