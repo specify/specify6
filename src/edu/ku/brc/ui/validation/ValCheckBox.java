@@ -201,7 +201,7 @@ public class ValCheckBox extends JCheckBox implements UIValidatable, GetSetValue
                  
             } else if (value instanceof String)
             {
-                if (StringUtils.isNotEmpty(defaultValue))
+                if (StringUtils.isNotEmpty(value.toString()))
                 {
                     currentValue = ((String)value).toLowerCase().equals("true");
                 }
