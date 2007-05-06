@@ -9,6 +9,7 @@ package edu.ku.brc.specify.tasks.subpane.wb;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -18,6 +19,7 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFDataFormat;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -75,7 +77,8 @@ public class XLSImport extends DataImport implements DataImportIFace
     
                 Set<WorkbenchTemplateMappingItem>    wbtmiSet  = workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems();
                 Vector<WorkbenchTemplateMappingItem> wbtmiList = new Vector<WorkbenchTemplateMappingItem>();
-                
+                NumberFormat nf = NumberFormat.getInstance();
+                nf.setMinimumFractionDigits(0);
                 wbtmiList.addAll(wbtmiSet);
                 
                 Collections.sort(wbtmiList);
@@ -95,7 +98,7 @@ public class XLSImport extends DataImport implements DataImportIFace
                     }
     
                     WorkbenchRow wbRow = workbench.addRow();
-    
+                    
                     for (WorkbenchTemplateMappingItem wbtmi : wbtmiList)
                     {
                         short cellNum = wbtmi.getOrigImportColumnIndex().shortValue();
@@ -135,8 +138,8 @@ public class XLSImport extends DataImport implements DataImportIFace
                                     } else
                                     {
                                         double numeric = cell.getNumericCellValue();
-                                        value = Double.toString(numeric);
-                                    }
+                                         value = nf.format(numeric);
+                                     }
                                 }
                                 break;
                             }
