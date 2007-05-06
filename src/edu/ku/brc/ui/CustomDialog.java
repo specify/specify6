@@ -31,7 +31,10 @@ import javax.swing.JPanel;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.ButtonBarFactory;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.ui.HelpMgr;
 
@@ -144,7 +147,7 @@ public class CustomDialog extends JDialog
     protected void createUI()
     {
         mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(0, 2, 5, 2));
 
         if (contentPanel != null)
         {
@@ -234,8 +237,18 @@ public class CustomDialog extends JDialog
         {
             bb = ButtonBarFactory.buildOKBar(okBtn);
         }
+        
+        Component bbComp = bb;
+        if (UIHelper.getOSType() == UIHelper.OSTYPE.MacOSX) // adjust for intruding resizer on Mac OS X
+        {
+            PanelBuilder    builder    = new PanelBuilder(new FormLayout("p:g,15px", "p"));
+            CellConstraints cc         = new CellConstraints();
+            builder.add(bb, cc.xy(1,1));
+            
+            bbComp = builder.getPanel();
+        }
 
-        mainPanel.add(bb, BorderLayout.SOUTH);
+        mainPanel.add(bbComp, BorderLayout.SOUTH);
 
 
         setContentPane(mainPanel);
