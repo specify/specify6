@@ -11,12 +11,18 @@ import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.EventObject;
 import java.util.Hashtable;
+import java.util.StringTokenizer;
 
 import javax.swing.Action;
 import javax.swing.ImageIcon;
@@ -28,6 +34,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JViewport;
+import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
@@ -47,6 +54,7 @@ import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.ui.SearchReplacePanel;
 import edu.ku.brc.ui.SearchableJXTable;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper.OSTYPE;
 
 
@@ -59,7 +67,7 @@ import edu.ku.brc.ui.UIHelper.OSTYPE;
  * @author Thierry Manf, Rod Spears
  * 
  **************************************************************************************************/
-public class SpreadSheet  extends SearchableJXTable
+public class SpreadSheet  extends SearchableJXTable implements ActionListener
 {
     private static final Logger log = Logger.getLogger(SpreadSheet.class);
     
@@ -194,6 +202,18 @@ public class SpreadSheet  extends SearchableJXTable
         scrollPane.setRowHeader(viewPort);
 
         resizeAndRepaint();
+        
+        // Taken from a JavaWorld Example (But it works)
+        KeyStroke cut   = KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(), false);
+        KeyStroke copy  = KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(), false);
+        KeyStroke paste = KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(), false);
+        registerKeyboardAction(this, "Cut",   cut,   JComponent.WHEN_FOCUSED);
+        registerKeyboardAction(this, "Copy",  copy,  JComponent.WHEN_FOCUSED);
+        registerKeyboardAction(this, "Paste", paste, JComponent.WHEN_FOCUSED);
+        
+        ((JMenuItem)UIRegistry.get(UIRegistry.COPY)).addActionListener(this);
+        ((JMenuItem)UIRegistry.get(UIRegistry.CUT)).addActionListener(this);
+        ((JMenuItem)UIRegistry.get(UIRegistry.PASTE)).addActionListener(this);
     }
     
     /**
@@ -477,8 +497,111 @@ public class SpreadSheet  extends SearchableJXTable
         }
         super.processMouseEvent(ev);
     }
-
-
+    
+    /* (non-Javadoc)
+     * @see javax.swing.JTable#processKeyBinding(javax.swing.KeyStroke, java.awt.event.KeyEvent, int, boolean)
+     */
+    @Override
+    protected boolean processKeyBinding(KeyStroke ks, 
+                                        KeyEvent  e,
+                                        int       condition, 
+                                        boolean   pressed)
+    {
+        if (e.getKeyCode() == KeyEvent.VK_META)
+        {
+            return false;
+        }
+        return super.processKeyBinding(ks, e, condition, pressed);
+    }
+    
+    /* (non-Javadoc)
+     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+     */
+    public void actionPerformed(final ActionEvent e)
+    {
+        if (!hasFocus()) // bail
+        {
+            return;
+        }
+        
+        //
+        // The code in this method was tken from a JavaWorld Example
+        //
+        boolean isCut = e.getActionCommand().compareTo("Cut") == 0;
+        System.out.println("hasFocus "+hasFocus());
+        if (e.getActionCommand().compareTo("Copy") == 0 || isCut)
+        {
+            StringBuffer sbf = new StringBuffer();
+            // Check to ensure we have selected only a contiguous block of
+            // cells
+            int   numcols      = getSelectedColumnCount();
+            int   numrows      = getSelectedRowCount();
+            int[] rowsselected = getSelectedRows();
+            int[] colsselected = getSelectedColumns();
+            if (!((numrows - 1 == rowsselected[rowsselected.length - 1] - rowsselected[0] && numrows == rowsselected.length) && (numcols - 1 == colsselected[colsselected.length - 1]
+                    - colsselected[0] && numcols == colsselected.length)))
+            {
+                //JOptionPane.showMessageDialog(null, "Invalid Copy Selection",
+                //        "Invalid Copy Selection", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            for (int i = 0; i < numrows; i++)
+            {
+                for (int j = 0; j < numcols; j++)
+                {
+                    sbf.append(getValueAt(rowsselected[i], colsselected[j]));
+                    if (j < numcols - 1)
+                    {
+                        sbf.append("\t");
+                    }
+                    if (isCut)
+                    {
+                        setValueAt("", rowsselected[i], colsselected[j]);
+                    }
+                }
+                sbf.append("\n");
+            }
+            StringSelection stsel  = new StringSelection(sbf.toString());
+            Clipboard       sysClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+            sysClipboard.setContents(stsel, stsel);
+            
+        } else if (e.getActionCommand().compareTo("Paste") == 0)
+        {
+            //System.out.println("Trying to Paste");
+            int startRow = (getSelectedRows())[0];
+            int startCol = (getSelectedColumns())[0];
+            try
+            {
+                Clipboard sysClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                String trstring = (String) (sysClipboard.getContents(this).getTransferData(DataFlavor.stringFlavor));
+                //System.out.println("String is:" + trstring);
+                StringTokenizer st1 = new StringTokenizer(trstring, "\n");
+                for (int i = 0; st1.hasMoreTokens(); i++)
+                {
+                    String rowstring = st1.nextToken();
+                    StringTokenizer st2 = new StringTokenizer(rowstring, "\t");
+                    for (int j = 0; st2.hasMoreTokens(); j++)
+                    {
+                        String value = (String) st2.nextToken();
+                        if (startRow + i < getRowCount() && startCol + j < getColumnCount())
+                        {
+                            setValueAt(value, startRow + i, startCol + j);
+                        }
+                        //System.out.println("Putting " + value + "at row=" + startRow + i
+                        //        + "column=" + startCol + j);
+                    }
+                }
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#setVisible(boolean)
+     */
     @Override
     public void setVisible(boolean flag)
     {

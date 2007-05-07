@@ -189,10 +189,12 @@ public class WorkbenchTask extends BaseTask
             makeDnDNavBtn(navBox, getResourceString("WB_IMPORTDATA"), "Import", getResourceString("WB_IMPORTDATA_TT"), new CommandAction(WORKBENCH, IMPORT_DATA_FILE, wbTblId), null, false, false);// true means make it draggable
             makeDnDNavBtn(navBox, getResourceString("WB_IMPORT_CARDS"),  "ImportImages", getResourceString("WB_IMPORTCARDS_TT"), new CommandAction(WORKBENCH, WB_IMPORTCARDS, wbTblId),   null, false, false);// true means make it draggable
             
-            makeDnDNavBtn(navBox, getResourceString("WB_NEW_DATASET"),   "NewDataSet", getResourceString("WB_NEW_DATASET_TT"), new CommandAction(WORKBENCH, NEW_WORKBENCH, wbTblId),     null, false, false);// true means make it draggable
+            roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_NEW_DATASET"),   "NewDataSet", getResourceString("WB_NEW_DATASET_TT"), new CommandAction(WORKBENCH, NEW_WORKBENCH, wbTblId),     null, false, false);// true means make it draggable
+            roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
+            enableNavBoxList.add((NavBoxItemIFace)roc);
+
             //roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_NEW_DS_FROM_TMPL"), "NewDataSet", getResourceString("WB_NEW_DS_FROM_TMPL"), new CommandAction(WORKBENCH, NEW_WORKBENCH_FROM_TEMPLATE, wbTblId), null, false, false);// true means make it draggable
-            //roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
-            //enableNavBoxList.add((NavBoxItemIFace)roc);
+
             
             roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_EXPORT_DATA"), "Export16", getResourceString("WB_EXPORT_DATA_TT"), new CommandAction(WORKBENCH, EXPORT_DATA_FILE, wbTblId), null, true, false);// true means make it draggable
             roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
@@ -543,7 +545,7 @@ public class WorkbenchTask extends BaseTask
         display.add(label, cc.xy(2, 4));
         doingStarterPane = true;
         
-        display.getPanel().setBackground(Color.WHITE); // for screen shots
+        display.getPanel().setBackground(Color.WHITE); // XXX RELEASE (For screen shots only)
         
         return starterPane = new SimpleDescPane(title, this, display.getPanel());
     }
@@ -1846,7 +1848,7 @@ public class WorkbenchTask extends BaseTask
     protected Workbench selectWorkbench(final CommandAction cmdAction,
                                         final String helpContext)
     {
-        return selectWorkbench(cmdAction, "WB_EXPORT_DATA", null, helpContext, false);
+        return selectWorkbench(cmdAction, "WB_CHOOSE_DATASET", null, helpContext, false);
     }
     
     /**
@@ -2594,6 +2596,9 @@ public class WorkbenchTask extends BaseTask
             if (isClickedOn)
             {
                 createNewWorkbench(null, null);
+            } else
+            {
+                createWorkbenchFromTemplate(cmdAction);
             }
             
         } else if (cmdAction.isAction(WB_BARCHART))

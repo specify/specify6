@@ -177,8 +177,6 @@ public class UIRegistry
                         undoAction.updateUndoState();
                         redoAction.updateRedoState();
                     }
-                    
-
                 } 
             } 
         );
@@ -1059,18 +1057,18 @@ public class UIRegistry
                                             "Undo",
                                             null,
                                             null,
-                                            new Integer(KeyEvent.VK_U),
+                                            new Integer(KeyEvent.VK_Z),
                                             KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-       menu.add(undoAction);
+       register(UNDO, menu.add(undoAction));
        actionMap.put(UNDO, undoAction);
        redoAction = (RedoAction) makeAction(RedoAction.class,
                                             this,
                                             "Redo",
                                             null,
                                             null,
-                                            new Integer(KeyEvent.VK_R),
+                                            new Integer(KeyEvent.VK_Y),
                                             KeyStroke.getKeyStroke(KeyEvent.VK_Y, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-       menu.add(redoAction);
+       register(REDO, menu.add(redoAction));
        actionMap.put(REDO, redoAction);
        
        menu.addSeparator();
@@ -1083,7 +1081,7 @@ public class UIRegistry
                                      "Cut selection to clipboard",
                                      new Integer(KeyEvent.VK_X),
                                      KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-       menu.add(cutAction);
+       register(CUT, menu.add(cutAction));
        cutAction.setEnabled(false);
        actionMap.put(CUT, cutAction);
        
@@ -1094,7 +1092,7 @@ public class UIRegistry
                                       "Copy selection to clipboard",
                                       new Integer(KeyEvent.VK_C),
                                       KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-       menu.add(copyAction);
+       register(COPY, menu.add(copyAction));
        copyAction.setEnabled(false);
        actionMap.put(COPY, copyAction);
        
@@ -1103,11 +1101,12 @@ public class UIRegistry
                                        "Paste",
                                        null,
                                        "Paste contents of clipboard",
-                                       new Integer(KeyEvent.VK_P),
-                                       KeyStroke.getKeyStroke(KeyEvent.VK_P, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+                                       new Integer(KeyEvent.VK_V),
+                                       KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
        pasteAction.setEnabled(false);
-       menu.add(pasteAction);
+       register(PASTE, menu.add(pasteAction));
        actionMap.put(PASTE, pasteAction);
+       
        /*
        menu.addSeparator();
        Action selectAllAction = makeAction(SelectAllAction.class,

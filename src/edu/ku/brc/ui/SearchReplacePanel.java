@@ -95,8 +95,8 @@ public class SearchReplacePanel extends JPanel
     private LaunchFindAction         launchFindAction        = null;
 
     CellConstraints                  cc                      = new CellConstraints();
-    FormLayout                       formLayout              = new FormLayout("p,1px,p,1px,p,1px,p,1px,p,4px,p,1px," +
-                                                                "p,1px,p,1px,p,1px,p", "p,1px,p,1px");
+    FormLayout                       formLayout              = new FormLayout("p,4px,p,1px,p,1px,p,1px,p,4px,p,1px," +
+                                                                              "p,1px,p,1px,p,1px,p", "p,1px,p,1px");
     PanelBuilder                     builder                 = new PanelBuilder(formLayout, this);
 
     protected static final Logger    log                     = Logger.getLogger(SearchReplacePanel.class);
@@ -295,6 +295,7 @@ public class SearchReplacePanel extends JPanel
     /**
      * Creates a table for testing. 
      */
+    @SuppressWarnings("unused")
     private static SearchableJXTable createTestTableFromJTable()
     {
         Object[] columnNames = { "First Name", "Last Name", "Sport", "# of Years", "Vegetarian" };

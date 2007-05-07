@@ -110,8 +110,9 @@ import edu.ku.brc.util.MemoryWarningSystem;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
 /**
  * Specify Main Application Class
-
- * @code_status Unknown (auto-generated)
+ *
+ * @code_status Beta
+ * 
  * @author rods
  */
 @SuppressWarnings("serial")

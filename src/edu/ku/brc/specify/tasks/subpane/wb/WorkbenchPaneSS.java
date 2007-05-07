@@ -28,6 +28,8 @@ import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -251,6 +253,17 @@ public class WorkbenchPaneSS extends BaseSubPane
             public void tableChanged(TableModelEvent e)
             {
                 setChanged(true);
+            }
+        });
+        
+        spreadSheet.addFocusListener(new FocusAdapter() {
+            public void focusGained(FocusEvent e)
+            {
+                UIRegistry.enableCutCopyPaste(true);
+            }
+            public void focusLost(FocusEvent e)
+            {
+                UIRegistry.enableCutCopyPaste(true);
             }
         });
         
