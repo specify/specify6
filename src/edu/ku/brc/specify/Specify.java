@@ -146,6 +146,10 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private boolean              isWorkbenchOnly     = true;
     private boolean              isRelease           = true;
     
+    private String               appName             = "Specify";
+    private String               appVersion          = "6.0";
+    private String               appBuildVersion     = "200705091402";
+    
     protected static CacheManager       cacheManager        = new CacheManager();
 
     /**
@@ -735,9 +739,12 @@ public class Specify extends JPanel implements DatabaseLoginListener
         CellConstraints cc      = new CellConstraints();
 
         builder.add(new JLabel(IconManager.getIcon("SpecifyLargeIcon")), cc.xy(1,1));
-        builder.add(new JLabel("<html>Specify 6.0<br><br>Biodiversity Research Center Informatics<br>University of Kansas<br>Lawrence, KS 66045</html>"), cc.xy(3,1));
+        builder.add(new JLabel("<html>"+appName+" " + appVersion + 
+                "<br><br>Biodiversity Research Center Informatics<br>University of Kansas<br>Lawrence, KS 66045" + 
+                "<br><br>Build: " + appBuildVersion + 
+                "</html>"), cc.xy(3,1));
 
-        CustomDialog aboutDlg = new CustomDialog(topFrame, getResourceString("About") + " Specify 6.0", true, CustomDialog.OK_BTN, builder.getPanel());
+        CustomDialog aboutDlg = new CustomDialog(topFrame, getResourceString("About") + " " +appName+" " + appVersion, true, CustomDialog.OK_BTN, builder.getPanel());
         aboutDlg.setOkLabel(getResourceString("Close"));
         UIHelper.centerAndShow(aboutDlg);
     }
