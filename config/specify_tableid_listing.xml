@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last Used Id is 90 or 502
+    Last Used Id is 93 or 502
     
     PLEASE Keep this file in alphabetical order! 
 
@@ -58,6 +58,7 @@
             <businessrule>edu.ku.brc.specify.datamodel.busrules.CollectionObjectBusRules</businessrule>          
         </table>
         <table name="edu.ku.brc.specify.datamodel.CollectionObjectAttr" id="28"/>
+        <table name="edu.ku.brc.specify.datamodel.ColObjAttributes" id="93"/>
         <table name="edu.ku.brc.specify.datamodel.CollectionObjectCitation" id="29" query="true"/>
         <table name="edu.ku.brc.specify.datamodel.Collector" id="30"/>
         <table name="edu.ku.brc.specify.datamodel.Container" id="31"/>
@@ -95,6 +96,7 @@
             <businessrule>edu.ku.brc.specify.datamodel.busrules.GeologicTimePeriodBusRules</businessrule>          
         </table>
         <table name="edu.ku.brc.specify.datamodel.GroupPerson" id="49"/>
+        <table name="edu.ku.brc.specify.datamodel.HabitatAttributes" id="92"/>
         <table name="edu.ku.brc.specify.datamodel.InfoRequest" id="50">
             <display view="InfoRequest"/>
         </table>
@@ -134,6 +136,8 @@
             <display objtitle="Preparation" view="Preparation" newobjdlg="PreparationDisplay"/>
 		</table>
         <table name="edu.ku.brc.specify.datamodel.PreparationAttr" id="64"/>
+        <table name="edu.ku.brc.specify.datamodel.PreparationAttributes" id="91"/>
+        
         <table name="edu.ku.brc.specify.datamodel.PrepType" id="65" query="true">
             <display objtitle="Preparation Type" view="PrepType" searchdlg="PrepTypeSearch" newobjdlg="PrepTypeDisplay"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.PrepTypeBusRules</businessrule>                        

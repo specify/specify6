@@ -898,7 +898,7 @@ public class BuildSampleDatabase
         WorkbenchTemplateMappingItem wbtmi2 = createWorkbenchMappingItem("CollectionObject", 
                                                                         1, "catalogNumber", "Catalog Number", 25, 2, 2, wbTemplate);
         WorkbenchTemplateMappingItem wbtmi3 = createWorkbenchMappingItem("CollectionObject", 
-                                                                        1, "yesNo1", "Yes/No 1", 8, 3, 3, wbTemplate);
+                                                                        1, "collectionObjectYesNo1", "Yes/No", 8, 3, 3, wbTemplate);
 
         dataObjects.add(wbTemplate);
         dataObjects.add(wbtmi0);

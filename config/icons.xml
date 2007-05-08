@@ -18,7 +18,7 @@
     <icon name="Export16"       file="ExportDataSet16x16.png" sizes="16"/>
     <icon name="ExportExcel16"  file="ExportExcelTemplate16x16.png" sizes="16"/>
     
-    <icon name="Configure"        file="configure.gif" sizes="all"/>
+    <icon name="Configure"        file="Configure16x16.png" sizes="16"/>
     <icon name="Workbench16"      file="Workbench16x16.png" sizes="16"/>
     <icon name="Workbench"        file="Workbench32x32.png" sizes="all"/>
     <icon name="Taxon_Tree"       file="taxon.gif" sizes="all"/>

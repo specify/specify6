@@ -59,7 +59,6 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
-import edu.ku.brc.af.core.NavBoxAction;
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
@@ -149,8 +148,8 @@ public class WorkbenchTask extends BaseTask
 
     // Data Members
     protected NavBox                      workbenchNavBox;
-    protected Vector<ToolBarDropDownBtn>  tbList         = new Vector<ToolBarDropDownBtn>();
-    protected Vector<JComponent>          menus          = new Vector<JComponent>();
+    protected Vector<ToolBarDropDownBtn>  tbList           = new Vector<ToolBarDropDownBtn>();
+    protected Vector<JComponent>          menus            = new Vector<JComponent>();
     
     protected Vector<NavBoxItemIFace>     reportsList      = new Vector<NavBoxItemIFace>();
     protected Vector<NavBoxItemIFace>     enableNavBoxList = new Vector<NavBoxItemIFace>();
@@ -1787,8 +1786,7 @@ public class WorkbenchTask extends BaseTask
                 session.attach(workbench);
 
                 workbench.forceLoad();
-                WorkbenchJRDataSource dataSrc = new WorkbenchJRDataSource(workbench, workbench
-                        .getWorkbenchRowsAsList());
+                WorkbenchJRDataSource dataSrc = new WorkbenchJRDataSource(workbench, workbench.getWorkbenchRowsAsList());
                 session.close();
 
                 final CommandAction cmd = new CommandAction(LabelsTask.LABELS,
@@ -1802,7 +1800,7 @@ public class WorkbenchTask extends BaseTask
                         + AppPreferences.getLocalPrefs().get("reportProperties.subTitle", "")
                         + ";footer="
                         + AppPreferences.getLocalPrefs().get("reportProperties.footer", ""));
-                cmd.setProperty(NavBoxAction.ORGINATING_TASK, this);
+                //cmd.setProperty(NavBoxAction.ORGINATING_TASK, this);
 
                 SwingUtilities.invokeLater(new Runnable()
                 {
@@ -1828,7 +1826,7 @@ public class WorkbenchTask extends BaseTask
             cmd.setProperty("title",  selectMappingItem.getCaption());
             cmd.setProperty("file",   "wb_items.jrxml");
             cmd.setProperty("params", "colnum="+selectMappingItem.getWorkbenchTemplateMappingItemId()+";"+"title="+selectMappingItem.getCaption());
-            cmd.setProperty(NavBoxAction.ORGINATING_TASK, this);
+            //cmd.setProperty(NavBoxAction.ORGINATING_TASK, this);
             
             SwingUtilities.invokeLater(new Runnable() {
                 public void run()

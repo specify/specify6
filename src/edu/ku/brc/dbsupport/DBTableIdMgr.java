@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -213,7 +212,7 @@ public class DBTableIdMgr
                                 len);
                         tblInfo.addField(fieldInfo);
                     }
-                    Collections.sort(tblInfo.getFields());
+                    //Collections.sort(tblInfo.getFields());
 				}
 			} else
 			{
@@ -609,7 +608,7 @@ public class DBTableIdMgr
 			} catch (ClassNotFoundException e)
 			{
 				log.error("Trying to find class: " + className + " but class was not found");
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
             this.objTitle = UIRegistry.getResourceString(this.classObj.getSimpleName());
             relationships = new HashSet<TableRelationship>();

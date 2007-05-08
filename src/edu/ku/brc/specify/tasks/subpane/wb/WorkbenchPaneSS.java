@@ -532,15 +532,15 @@ public class WorkbenchPaneSS extends BaseSubPane
         CellConstraints cc = new CellConstraints();
 
         JComponent[] comps      = {addRowsBtn, deleteRowsBtn, clearCellsBtn, showMapBtn, exportKmlBtn, biogeomancerBtn, convertGeoRefFormatBtn, exportExcelCsvBtn};
-        PanelBuilder spreadSheetControlBar = new PanelBuilder(new FormLayout("f:p:g,4px,"+createDuplicateJGoodiesDef("p", "4px", comps.length)+",4px,", "p:g"));
+        PanelBuilder spreadSheetControlBar = new PanelBuilder(new FormLayout("f:p:g,4px,"+createDuplicateJGoodiesDef("p", "4px", comps.length)+",4px,", "p,2px,p:g"));
         
-        spreadSheetControlBar.add(findPanel, cc.xy(1, 1));
         int x = 3;
         for (JComponent c : comps)
         {
             spreadSheetControlBar.add(c, cc.xy(x,1));
             x += 2;
         }
+        spreadSheetControlBar.add(findPanel, cc.xywh(1, 3, x-1, 1));
         
         // Create the main panel that uses card layout for the form and spreasheet
         mainPanel = new JPanel(cardLayout = new CardLayout());
@@ -575,7 +575,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             // This is the main layout panel it has two rows (really 3 but the middle is just a spacer)
             // one row for the mainPanel which is a CardLayout for the Form and Spreadsheet
-            FormLayout      formLayout = new FormLayout("f:p:g,4px,p,4px,p,4px,p,4px,p", "f:p:g, 5px, p");
+            FormLayout      formLayout = new FormLayout("f:p:g,4px,p,4px,p,4px,p,4px,p", "f:p:g, 5px, top:p");
             PanelBuilder    builder    = new PanelBuilder(formLayout, this);
     
             builder.add(mainPanel,          cc.xywh(1,1,9,1)); // Row #1
@@ -588,16 +588,16 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             // This works
             setLayout(new BorderLayout());
-            FormLayout      formLayout = new FormLayout("f:p:g,4px,p,4px,p,4px,p,4px,p", "f:p:g, 5px, p");
+            FormLayout      formLayout = new FormLayout("f:p:g,4px,p,4px,p,4px,p,4px,p", "top:p:g");
             PanelBuilder    builder    = new PanelBuilder(formLayout);
 
             add(mainPanel, BorderLayout.CENTER);
             
-            builder.add(controllerPane,     cc.xy(1,3));
-            builder.add(toggleImageFrameBtn, cc.xy(3,3));
-            builder.add(carryForwardBtn,    cc.xy(5,3));
-            builder.add(saveBtn,            cc.xy(7,3));
-            builder.add(createSwitcher(),   cc.xy(9,3));
+            builder.add(controllerPane,     cc.xy(1,1));
+            builder.add(toggleImageFrameBtn, cc.xy(3,1));
+            builder.add(carryForwardBtn,    cc.xy(5,1));
+            builder.add(saveBtn,            cc.xy(7,1));
+            builder.add(createSwitcher(),   cc.xy(9,1));
             add(builder.getPanel(), BorderLayout.SOUTH);
         }
         

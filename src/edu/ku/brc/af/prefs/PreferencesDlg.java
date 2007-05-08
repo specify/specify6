@@ -41,6 +41,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.Timer;
+import javax.swing.border.BevelBorder;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -101,7 +102,7 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
         initAsToolbar(addSearchUI);
         pack();
         okBtn.setEnabled(false);
-        
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
     }
     
     /**
@@ -119,7 +120,7 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
 
         if (prefsToolbar.getNumPrefs() > 1)
         {
-            PanelBuilder    builder    = new PanelBuilder(new FormLayout("l:p, p, r:p:g", "p,"));
+            PanelBuilder    builder    = new PanelBuilder(new FormLayout("l:p, p, r:p:g", "p"));
             CellConstraints cc         = new CellConstraints();
     
             builder.add( prefsToolbar, cc.xy(1,1));
@@ -128,8 +129,8 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
                 builder.add( createSearchPanel(), cc.xy(3,1));
             }
     
-            builder.getPanel().setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-            builder.getPanel().setBackground(lighter);
+            builder.getPanel().setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));//.createEmptyBorder(1,1,0,1));
+            builder.getPanel().setBackground(Color.WHITE);
             mainPanel.add(builder.getPanel(), BorderLayout.NORTH);
         }
         

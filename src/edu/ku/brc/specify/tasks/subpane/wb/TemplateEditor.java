@@ -184,7 +184,7 @@ public class TemplateEditor extends CustomDialog
                 {
                     fldList.add(new FieldInfo(ti, fi));
                 }
-                Collections.sort(fldList);
+                //Collections.sort(fldList);
                 tableInfo.setFieldItems(fldList);
             }
         }
@@ -430,6 +430,11 @@ public class TemplateEditor extends CustomDialog
                 cancelBtn.requestFocus();
                 fieldModel.clear();
                 updateEnabledState();
+                
+                if (mapModel.size() > 1)
+                {
+                    mapList.clearSelection();
+                }
             }
         });
     }
