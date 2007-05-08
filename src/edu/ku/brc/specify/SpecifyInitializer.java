@@ -360,14 +360,14 @@ public class SpecifyInitializer
             {
                 usernameTxt.setText("guest");
                 passwordTxt.setText("guest");
-                dbNameTxt.setText("workbench");  
+                dbNameTxt.setText("WorkBench");  
             }
             
             if (DO_DEBUG) // XXX Debug
             {
                 usernameTxt.setText("rods");
                 passwordTxt.setText("rods");
-                dbNameTxt.setText("workbench");
+                dbNameTxt.setText("WorkBench");
                 drivers.setSelectedIndex(0);
             }
             updateBtnUI();

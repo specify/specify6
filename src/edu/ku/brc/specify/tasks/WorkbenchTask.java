@@ -544,7 +544,7 @@ public class WorkbenchTask extends BaseTask
         display.add(label, cc.xy(2, 4));
         doingStarterPane = true;
         
-        display.getPanel().setBackground(Color.WHITE); // XXX RELEASE (For screen shots only)
+        //display.getPanel().setBackground(Color.WHITE); // XXX RELEASE (For screen shots only)
         
         return starterPane = new SimpleDescPane(title, this, display.getPanel());
     }
