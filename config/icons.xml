@@ -63,6 +63,8 @@
     <icon name="Author"        file="author.png" sizes="all"/>
     <icon name="GeologicTimePeriod" file="geologictime.png" sizes="all"/>
     <icon name="Template"      file="template.png" sizes="all"/>
+    <icon name="ColObjAttributes" file="newworkbench.gif" sizes="32"/>
+    
     
     <icon name="Labels16"      file="Label16x16.png" sizes="16"/>
     <icon name="Reports"       file="Reports32x32.png" sizes="all"/>
@@ -77,28 +79,33 @@
     <icon name="Data_Entry"    file="Form32x32.png" sizes="all"/>
     
     <!-- Aliases -->
-    <icon name="Accession Agent"   alias="AccessionAgent"/>
-    <icon name="Attachment"        alias="unknown"/>
-    <icon name="Collecting Event"  alias="CollectingEvent"/>
-    <icon name="Collecting Trip"   alias="CollectingTrip"/>
-    <icon name="Collection Object" alias="CollectionObject"/>
-    <icon name="Preparation"       alias="cs"/>
-    <icon name="Preparation Type"  alias="PrepType"/>
-    <icon name="CatalogSeries"     alias="Collection"/>
-    <icon name="DeterminationCitation" alias="CollectionObjectCitation"/>
-    <icon name="LocalityCitation"  alias="CollectionObjectCitation"/>
-    <icon name="TaxonCitation"     alias="CollectionObjectCitation"/>
-    <icon name="DeterminationCitaton" alias="CollectionObjectCitation"/>
-    <icon name="LocalityCitation"  alias="CollectionObjectCitation"/>
-    <icon name="TaxonCitation"     alias="CollectionObjectCitation"/>
-    <icon name="ShowMap"		   alias="LocalityMapper"/>
-    <icon name="RepositoryAgreement" alias="Accession"/>
-    <icon name="Repository Agreement" alias="Accession"/>
-    <icon name="Reference Work"    alias="ReferenceWork"/>
+    <icon name="Accession Agent"        alias="AccessionAgent"/>
+    <icon name="Attachment"             alias="unknown"/>
+    <icon name="Collecting Event"       alias="CollectingEvent"/>
+    <icon name="Collecting Trip"        alias="CollectingTrip"/>
+    <icon name="Collection Object"      alias="CollectionObject"/>
+    <icon name="Preparation"            alias="cs"/>
+    <icon name="Preparation Type"       alias="PrepType"/>
+    <icon name="CatalogSeries"          alias="Collection"/>
+    <icon name="DeterminationCitation"  alias="CollectionObjectCitation"/>
+    <icon name="LocalityCitation"       alias="CollectionObjectCitation"/>
+    <icon name="TaxonCitation"          alias="CollectionObjectCitation"/>
+    <icon name="DeterminationCitaton"   alias="CollectionObjectCitation"/>
+    <icon name="LocalityCitation"       alias="CollectionObjectCitation"/>
+    <icon name="TaxonCitation"          alias="CollectionObjectCitation"/>
+    <icon name="ShowMap"		        alias="LocalityMapper"/>
+    <icon name="RepositoryAgreement"    alias="Accession"/>
+    <icon name="Repository Agreement"   alias="Accession"/>
+    <icon name="Reference Work"         alias="ReferenceWork"/>
+    <icon name="HabitatAttributes"      alias="ColObjAttributes"/>
+    <icon name="PreparationAttributes"  alias="ColObjAttributes"/>
+    <icon name="Collection Object Attributes" alias="ColObjAttributes"/>
+    <icon name="Habitat Attributes"     alias="ColObjAttributes"/>
+    <icon name="Preparation Attributes" alias="ColObjAttributes"/>
     
-    <icon name="Startup"	   alias="AppIcon"/>
+    <icon name="Startup"	            alias="AppIcon"/>
     
-    <icon name="DiGIR"             file="DigirShovel.png"/>
+    <icon name="DiGIR"                  file="DigirShovel.png"/>
     
     <icon name="UserInterface" file="form.gif" sizes="all"/>
     
