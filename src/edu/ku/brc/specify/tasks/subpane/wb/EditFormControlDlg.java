@@ -137,31 +137,31 @@ public class EditFormControlDlg extends CustomDialog implements ChangeListener, 
             Dimension canvasSize  = formPane.getSize();
             Dimension controlSize = inputPanel.getSize();
             
-            panelBlder.add(new JLabel("X:", SwingConstants.RIGHT), cc.xy(1, y));
+            panelBlder.add(new JLabel(getResourceString("WB_X")+":", SwingConstants.RIGHT), cc.xy(1, y));
             panelBlder.add(xCoord = new ValSpinner(0, canvasSize.width-controlSize.width, false, false), cc.xy(3, y));
             y += 2;
             
-            panelBlder.add(new JLabel("Y:", SwingConstants.RIGHT), cc.xy(1, y));
+            panelBlder.add(new JLabel(getResourceString("WB_Y")+":", SwingConstants.RIGHT), cc.xy(1, y));
             panelBlder.add(yCoord = new ValSpinner(0, canvasSize.height-controlSize.height, false, false), cc.xy(3, y));
             y += 2;
             
-            panelBlder.add(new JLabel("Label:", SwingConstants.RIGHT), cc.xy(1, y));
+            panelBlder.add(new JLabel(getResourceString("WB_LABEL")+":", SwingConstants.RIGHT), cc.xy(1, y));
             panelBlder.add(labelTF = new JTextField(25), cc.xywh(3, y, 2, 1));
             y += 2;
             
             if (isTextField)
             {
-                panelBlder.add(new JLabel("Field Columns:", SwingConstants.RIGHT), cc.xy(1, y));
+                panelBlder.add(new JLabel(getResourceString("WB_FIELD_LEN")+":", SwingConstants.RIGHT), cc.xy(1, y));
                 panelBlder.add(fieldWidth = new ValSpinner(0, 100, false, false), cc.xy(3, y));
                 y += 2;
  
                 if (!isFormattedText)
                 {
-                    panelBlder.add(rowsLabels = new JLabel("Number of Rows:", SwingConstants.RIGHT), cc.xy(1, y));
+                    panelBlder.add(rowsLabels = new JLabel(getResourceString("WB_NUM_ROWS")+":", SwingConstants.RIGHT), cc.xy(1, y));
                     panelBlder.add(numRows = new ValSpinner(1, 25, false, false), cc.xy(3, y));
                     y += 2;
      
-                    panelBlder.add(typeLabel = new JLabel("Field Type:", SwingConstants.RIGHT), cc.xy(1, y));
+                    panelBlder.add(typeLabel = new JLabel(getResourceString("WB_FIELD_TYPE")+":", SwingConstants.RIGHT), cc.xy(1, y));
                     panelBlder.add(textFieldType = new JComboBox(new Object[] { getResourceString("WB_TEXTFIELD"), getResourceString("WB_TEXTAREA")}), cc.xy(3, y));
                     y += 2;
                 }
