@@ -18,7 +18,6 @@
           <tocitem text="WorkBench"target="WorkbenchOverview"> 
  				<tocitem text="DataSets" target="WorkbenchDataSetOverview">
               		<tocitem text="New DataSet" target="WorkbenchNewDataSet"/>
-              		<tocitem text="Reuse DataSet Mapping" target="WorkbenchReuseDataSet"/>
               		<tocitem text="Importing Data" target="WorkbenchImportData">
               			<tocitem text="CSV Import" target="WorkbenchImportCSV"/>
               			<tocitem text="XLS Import" target="WorkbenchImportXLS"/>
