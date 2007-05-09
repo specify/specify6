@@ -3,7 +3,9 @@
 span.code { font:"Courier New", Courier, monospace 11pt; }
 span.index {color: red; font-style:italic; }
 
-span.title { font: serif 18pt bold; }
+span.title { font: sans-serif 18pt bold; }
+span.imgcaption { font: sans-serif; font-size:10pt; font-style:italic; }
+p.imgcaption { font: sans-serif; font-size:10pt; font-style:italic; }
 
 body { font-family: sans-serif;}
 
