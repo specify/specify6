@@ -398,7 +398,7 @@ public class FormPane extends DroppableTaskPane
         if (multiView != null)
         {
             Viewable viewable = multiView.getCurrentView();
-            if (viewable instanceof FormViewObj)
+            if (viewable != null && viewable instanceof FormViewObj)
             {
                 return ((FormViewObj)viewable).checkForChanges();
             }

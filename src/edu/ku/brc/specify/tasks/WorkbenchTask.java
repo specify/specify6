@@ -127,6 +127,7 @@ public class WorkbenchTask extends BaseTask
 	private static final Logger log = Logger.getLogger(WorkbenchTask.class);
     
     public static final int        MAX_ROWS              = 2000;
+    public static final int        GLASSPANE_FONT_SIZE   = 20;
 
 	public static final DataFlavor WORKBENCH_FLAVOR      = new DataFlavor(WorkbenchTask.class, "Workbench");
     public static final String     WORKBENCH             = "Workbench";
@@ -1366,7 +1367,7 @@ public class WorkbenchTask extends BaseTask
     {
         if (workbench != null)
         {
-            UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_LOADING_DATASET"), new Object[] {workbench.getName()}), 32);
+            UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_LOADING_DATASET"), new Object[] {workbench.getName()}), GLASSPANE_FONT_SIZE);
             
             final SwingWorker worker = new SwingWorker()
             {
@@ -1462,7 +1463,7 @@ public class WorkbenchTask extends BaseTask
     {
         if (workbench != null)
         {
-            UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_LOADING_DATASET"), new Object[] {workbench.getName()}), 32);
+            UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_LOADING_DATASET"), new Object[] {workbench.getName()}), GLASSPANE_FONT_SIZE);
             
             // Make sure we have a session but use an existing one if it is passed in
             DataProviderSessionIFace tmpSession = session;
@@ -1674,7 +1675,7 @@ public class WorkbenchTask extends BaseTask
             return;
         }
         
-        UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_DELETING_DATASET"), new Object[] {workbench.getName()}), 32);
+        UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_DELETING_DATASET"), new Object[] {workbench.getName()}), GLASSPANE_FONT_SIZE);
         
         final SwingWorker worker = new SwingWorker()
         {

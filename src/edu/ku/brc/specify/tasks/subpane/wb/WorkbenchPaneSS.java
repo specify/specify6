@@ -276,7 +276,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             {
                 UsageTracker.incrUsageCount("WB.SaveDataSet");
                 
-                UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_SAVING"), new Object[] { workbench.getName()}), 32);
+                UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_SAVING"), new Object[] { workbench.getName()}), WorkbenchTask.GLASSPANE_FONT_SIZE);
                 
                 final SwingWorker worker = new SwingWorker()
                 {
@@ -1027,31 +1027,37 @@ public class WorkbenchPaneSS extends BaseSubPane
             spreadSheet.getSelectionModel().removeListSelectionListener(workbenchRowChangeListener);
             imageFrame.setVisible(false);
             blockChanges = true;
-
-            // get the selection before the changes
-            int[] selRows = spreadSheet.getSelectedRows();
-            for (int i = 0; i < selRows.length; ++i)
+            // XXX Temporary Fix for Bug 4409
+            try
             {
-                selRows[i] = spreadSheet.convertRowIndexToModel(selRows[i]);
-            }
-            int[] selCols = spreadSheet.getSelectedColumns();
-            for (int i = 0; i < selCols.length; ++i)
+                // get the selection before the changes
+                int[] selRows = spreadSheet.getSelectedRows();
+                for (int i = 0; i < selRows.length; ++i)
+                {
+                    selRows[i] = spreadSheet.convertRowIndexToModel(selRows[i]);
+                }
+                int[] selCols = spreadSheet.getSelectedColumns();
+                for (int i = 0; i < selCols.length; ++i)
+                {
+                    selCols[i] = spreadSheet.convertColumnIndexToModel(selCols[i]);
+                }
+    
+                model.setInImageMode(false);
+                
+                // then restore the selection
+                for (int selRow: selRows)
+                {
+                    spreadSheet.getSelectionModel().addSelectionInterval(selRow, selRow);
+                }
+                for (int selCol: selCols)
+                {
+                    spreadSheet.getColumnModel().getSelectionModel().addSelectionInterval(selCol, selCol);
+                }
+                
+            } catch (Exception ex)
             {
-                selCols[i] = spreadSheet.convertColumnIndexToModel(selCols[i]);
+                log.error(ex);
             }
-
-            model.setInImageMode(false);
-            
-            // then restore the selection
-            for (int selRow: selRows)
-            {
-                spreadSheet.getSelectionModel().addSelectionInterval(selRow, selRow);
-            }
-            for (int selCol: selCols)
-            {
-                spreadSheet.getColumnModel().getSelectionModel().addSelectionInterval(selCol, selCol);
-            }
-
             blockChanges = false;
 
         }
@@ -1068,28 +1074,36 @@ public class WorkbenchPaneSS extends BaseSubPane
             // tell the table model to show the image column
             blockChanges = true;
             
-            // get the selection before the changes
+            // XXX Temporary Fix for Bug Bug 4409
             int[] selRows = spreadSheet.getSelectedRows();
-            for (int i = 0; i < selRows.length; ++i)
+            try
             {
-                selRows[i] = spreadSheet.convertRowIndexToModel(selRows[i]);
-            }
-            int[] selCols = spreadSheet.getSelectedColumns();
-            for (int i = 0; i < selCols.length; ++i)
+                // get the selection before the changes
+                for (int i = 0; i < selRows.length; ++i)
+                {
+                    selRows[i] = spreadSheet.convertRowIndexToModel(selRows[i]);
+                }
+                int[] selCols = spreadSheet.getSelectedColumns();
+                for (int i = 0; i < selCols.length; ++i)
+                {
+                    selCols[i] = spreadSheet.convertColumnIndexToModel(selCols[i]);
+                }
+                
+                model.setInImageMode(true);
+                
+                // then restore the selection
+                for (int selRow: selRows)
+                {
+                    spreadSheet.getSelectionModel().addSelectionInterval(selRow, selRow);
+                }
+                for (int selCol: selCols)
+                {
+                    spreadSheet.getColumnModel().getSelectionModel().addSelectionInterval(selCol, selCol);
+                }
+                
+            } catch (Exception ex)
             {
-                selCols[i] = spreadSheet.convertColumnIndexToModel(selCols[i]);
-            }
-            
-            model.setInImageMode(true);
-            
-            // then restore the selection
-            for (int selRow: selRows)
-            {
-                spreadSheet.getSelectionModel().addSelectionInterval(selRow, selRow);
-            }
-            for (int selCol: selCols)
-            {
-                spreadSheet.getColumnModel().getSelectionModel().addSelectionInterval(selCol, selCol);
+                log.error(ex);
             }
             blockChanges = false;
 

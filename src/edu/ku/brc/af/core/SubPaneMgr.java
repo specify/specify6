@@ -465,12 +465,13 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             // then we cannot let it close.
             boolean  wasLastPane = panes.size() == 1  && TaskMgr.getToolbarTaskCount() == 1;
 
-            Taskable task = subPane.getTask();
-            if (!this.removePane(subPane))
+            if (!this.removePane(subPane) && panes.size() > 0)
             {
                 return;
             }
-            if (wasLastPane)
+            
+            Taskable task = subPane.getTask();
+            if (task != null && wasLastPane)
             {
                 subPane = task.getStarterPane();
                 addPane(subPane);

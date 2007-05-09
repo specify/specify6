@@ -919,7 +919,7 @@ public class UIRegistry
             g2.translate(0, -y);
             
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setColor(new Color(255, 255, 255, 128));
+            g2.setColor(new Color(255, 255, 255, 150));
             g2.fillRect(0, 0, size.width, size.height);
             
             

@@ -56,8 +56,8 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.GhostActionableDropManager;
 import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
@@ -171,14 +171,14 @@ public class LabelsTask extends BaseTask
      * @param recordSet the recordSet to be turned into labels
      * @param params parameters for the report
      * @param originatingTask the Taskable requesting the the labels be made
-     * @param icon the icon of the pane(if it is null then it uses the Task's icon)
+     * @param paneIcon the icon of the pane(if it is null then it uses the Task's icon)
      */
     public void doLabels(final String              labelName, 
                          final String              labelTitle, 
                          final Object              data, 
                          final Properties          params,
                          final Taskable            originatingTask,
-                         final ImageIcon           icon)
+                         final ImageIcon           paneIcon)
     {
         int startPaneIndex = starterPane != null ? SubPaneMgr.getInstance().indexOfComponent((LabelsPane)starterPane) : -1;
         
@@ -186,7 +186,7 @@ public class LabelsTask extends BaseTask
         if (startPaneIndex == -1)
         {
             labelsPane = new LabelsPane(labelTitle, originatingTask != null ? originatingTask : this, params);
-            labelsPane.setIcon(icon);
+            labelsPane.setIcon(paneIcon);
             addSubPaneToMgr(labelsPane);
             
         } else
