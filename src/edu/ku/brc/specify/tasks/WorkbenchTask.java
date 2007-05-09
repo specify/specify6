@@ -143,7 +143,10 @@ public class WorkbenchTask extends BaseTask
     public static final String     EXPORT_TEMPLATE       = "WB.ExportTemplate";
     public static final String     NEW_WORKBENCH_FROM_TEMPLATE = "WB.NewDataSetFromTemplate";
     
-    
+    public static final String     IMAGES_FILE_PATH      = "wb.imagepath";
+    public static final String     IMPORT_FILE_PATH      = "wb.importfilepath";
+    public static final String     EXPORT_FILE_PATH      = "wb.exportfilepath";
+       
     protected static WeakReference<DBTableIdMgr> databasechema = null;
 
     // Data Members
@@ -893,8 +896,16 @@ public class WorkbenchTask extends BaseTask
         
         FileDialog fileDialog = new FileDialog((Frame) UIRegistry.get(UIRegistry.FRAME),
                                                getResourceString("CHOOSE_WORKBENCH_EXPORT_FILE"), FileDialog.SAVE);
+        fileDialog.setDirectory(getDefaultDirPath(EXPORT_FILE_PATH));
         UIHelper.centerAndShow(fileDialog);
-
+        
+        String path = fileDialog.getDirectory();
+        if (StringUtils.isNotEmpty(path))
+        {
+            AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+            localPrefs.put(IMPORT_FILE_PATH, path);
+        }
+        
         String fileName = fileDialog.getFile();
         if (StringUtils.isEmpty(fileName))
         {
@@ -907,7 +918,6 @@ public class WorkbenchTask extends BaseTask
             fileName += (fileName.endsWith(".") ? "" : ".") + extension;
         }
 
-        String path = fileDialog.getDirectory();
         if (StringUtils.isEmpty(fileName)) 
         { 
             return false;
@@ -1147,7 +1157,7 @@ public class WorkbenchTask extends BaseTask
         FileDialog fileDialog = new FileDialog((Frame)UIRegistry.get(UIRegistry.FRAME), 
                                                getResourceString("CHOOSE_WORKBENCH_IMPORT_FILE"), 
                                                FileDialog.LOAD);
-        
+        fileDialog.setDirectory(getDefaultDirPath(IMPORT_FILE_PATH));
         fileDialog.setFilenameFilter(new java.io.FilenameFilter()
         {
             public boolean accept(File dir, String filename)
@@ -1168,6 +1178,12 @@ public class WorkbenchTask extends BaseTask
         
         String fileName = fileDialog.getFile();
         String path     = fileDialog.getDirectory();
+        if (StringUtils.isNotEmpty(path))
+        {
+            AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+            localPrefs.put(IMPORT_FILE_PATH, path);
+        }
+
         if (StringUtils.isNotEmpty(fileName) && StringUtils.isNotEmpty(path))
         {
             file = new File(path + File.separator + fileName);
@@ -1839,10 +1855,10 @@ public class WorkbenchTask extends BaseTask
             cmd.setProperty("file",   "wb_items.jrxml");
             cmd.setProperty("params", "colnum="+selectMappingItem.getWorkbenchTemplateMappingItemId()+";"+"title="+selectMappingItem.getCaption());
             cmd.setProperty(NavBoxAction.ORGINATING_TASK, this);
-            ImageIcon icon = (ImageIcon)cmdAction.getProperty("icon");
-            if (icon != null)
+            ImageIcon cmdIcon = (ImageIcon)cmdAction.getProperty("icon");
+            if (cmdIcon != null)
             {
-                cmd.getProperties().put("icon", icon);
+                cmd.getProperties().put("icon", cmdIcon);
             }
             SwingUtilities.invokeLater(new Runnable() {
                 public void run()
@@ -2276,11 +2292,28 @@ public class WorkbenchTask extends BaseTask
     }
     
     /**
+     * Returns a path from the prefs and if it isn't valid then it return the User's Home Directory.
+     * @param prefKey the Preferences key to look up
+     * @return the path as a string
+     */
+    protected String getDefaultDirPath(final String prefKey)
+    {
+        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        String path = localPrefs.get(prefKey, UIRegistry.getUserHomeDir());
+        File pathDir = new File(path);
+        if (pathDir.exists() && pathDir.isDirectory())
+        {
+            return path;
+        }
+        return UIRegistry.getUserHomeDir();
+    }
+    
+    /**
      * Imports a list if images.
      */
     protected void importCardImages()
     {
-        JFileChooser chooser = new JFileChooser();
+        JFileChooser chooser = new JFileChooser(getDefaultDirPath(IMAGES_FILE_PATH));
         chooser.setDialogTitle(getResourceString("WB_CHOOSE_IMAGES"));
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         chooser.setMultiSelectionEnabled(true);
@@ -2290,6 +2323,9 @@ public class WorkbenchTask extends BaseTask
             UIRegistry.getStatusBar().setText("");
             return;
         }
+        
+        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        localPrefs.put(IMAGES_FILE_PATH, chooser.getCurrentDirectory().getAbsolutePath());
         
         int               btnPressed        = selectExistingTemplate(null, "WorkbenchImportImages");
         WorkbenchTemplate workbenchTemplate = selectedTemplate;
