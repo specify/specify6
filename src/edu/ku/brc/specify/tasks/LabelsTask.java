@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
 
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
@@ -170,12 +171,14 @@ public class LabelsTask extends BaseTask
      * @param recordSet the recordSet to be turned into labels
      * @param params parameters for the report
      * @param originatingTask the Taskable requesting the the labels be made
+     * @param icon the icon of the pane(if it is null then it uses the Task's icon)
      */
     public void doLabels(final String              labelName, 
                          final String              labelTitle, 
                          final Object              data, 
                          final Properties          params,
-                         final Taskable            originatingTask)
+                         final Taskable            originatingTask,
+                         final ImageIcon           icon)
     {
         int startPaneIndex = starterPane != null ? SubPaneMgr.getInstance().indexOfComponent((LabelsPane)starterPane) : -1;
         
@@ -183,6 +186,7 @@ public class LabelsTask extends BaseTask
         if (startPaneIndex == -1)
         {
             labelsPane = new LabelsPane(labelTitle, originatingTask != null ? originatingTask : this, params);
+            labelsPane.setIcon(icon);
             addSubPaneToMgr(labelsPane);
             
         } else
@@ -350,7 +354,7 @@ public class LabelsTask extends BaseTask
 
             if (fileName != null)
             {
-                doLabels(fileName, "Labels", data, null, this);
+                doLabels(fileName, "Labels", data, null, this, null);
             }
         }
     }
@@ -483,7 +487,7 @@ public class LabelsTask extends BaseTask
                 if (StringUtils.isNotEmpty(labelFileName))
                 {
                     Taskable originatingTask = (Taskable)cmdAction.getProperty(NavBoxAction.ORGINATING_TASK);
-                    doLabels(labelFileName, cmdAction.getPropertyAsString("title"), recordSet, params, originatingTask);
+                    doLabels(labelFileName, cmdAction.getPropertyAsString("title"), recordSet, params, originatingTask, (ImageIcon)cmdAction.getProperty("icon"));
                 }
             }
             
@@ -499,7 +503,7 @@ public class LabelsTask extends BaseTask
             if (StringUtils.isNotEmpty(labelFileName))
             {
                 Taskable originatingTask = (Taskable)cmdAction.getProperty(NavBoxAction.ORGINATING_TASK);
-                doLabels(labelFileName, cmdAction.getPropertyAsString("title"), cmdAction.getData(), params, originatingTask);
+                doLabels(labelFileName, cmdAction.getPropertyAsString("title"), cmdAction.getData(), params, originatingTask, (ImageIcon)cmdAction.getProperty("icon"));
             }
             
             
@@ -511,7 +515,7 @@ public class LabelsTask extends BaseTask
                 RecordSetIFace recordSet = askForRecordSet(Integer.parseInt(tableIDStr));
                 if (recordSet != null)
                 {
-                    doLabels(cmdAction.getPropertyAsString("file"), cmdAction.getPropertyAsString("title"), recordSet, params, this);
+                    doLabels(cmdAction.getPropertyAsString("file"), cmdAction.getPropertyAsString("title"), recordSet, params, this, (ImageIcon)cmdAction.getProperty("icon"));
                 }
             }
             

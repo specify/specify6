@@ -273,6 +273,10 @@ public class CommandAction
     
     public Properties getProperties()
     {
+        if (properties == null)
+        {
+            properties = new Properties();
+        }
         return this.properties;
     }
 }

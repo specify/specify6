@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -81,6 +83,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
     protected Properties             params           = null;
     protected boolean                requiresHibernate = false;
     protected Session                session           = null;
+    protected ImageIcon              icon              = null;
 
     /**
      * Constructor.
@@ -101,6 +104,23 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
         // Checks for out of date Labels / Reports
         // and copies them over to the cache for compiling
         JasperReportsCache.refreshCacheFromDatabase();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.subpane.BaseSubPane#getIcon()
+     */
+    @Override
+    public Icon getIcon()
+    {
+        return icon != null ? icon : super.getIcon();
+    }
+
+    /**
+     * @param icon the icon to set
+     */
+    public void setIcon(ImageIcon icon)
+    {
+        this.icon = icon;
     }
 
     /**

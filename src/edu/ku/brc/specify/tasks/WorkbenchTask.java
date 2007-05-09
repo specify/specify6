@@ -16,7 +16,6 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Font;
@@ -59,6 +58,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
+import edu.ku.brc.af.core.NavBoxAction;
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
@@ -245,9 +245,14 @@ public class WorkbenchTask extends BaseTask
                         params.put("title", ap.getDescription());
                         params.put("file", ap.getName());
                         //log.info("["+ap.getDescription()+"]["+ap.getName()+"]");
-                        
-                        commands.add(new TaskCommandDef(ap.getDescription(), name, params));
+                        String iconName = params.get("icon");
+                        if (StringUtils.isEmpty(iconName))
+                        {
+                            iconName = name;
+                        }                        
+                        commands.add(new TaskCommandDef(ap.getDescription(), iconName, params));
                     }
+
                 }
                 
                 for (TaskCommandDef tcd : commands)
@@ -258,9 +263,10 @@ public class WorkbenchTask extends BaseTask
                     {
                         CommandAction cmdAction = new CommandAction(WORKBENCH, PRINT_REPORT, Workbench.getClassTableId());
                         cmdAction.addStringProperties(tcd.getParams());
+                        cmdAction.getProperties().put("icon", IconManager.getIcon(tcd.getIconName()));
                         
-                        String iconName = tcd.getName().indexOf("Label") > -1 ? "Labels16" : "Reports"; // XXX I18n
-                        NavBoxItemIFace nbi = makeDnDNavBtn(reportsNavBox, tcd.getName(), iconName, cmdAction, null, true, false);// true means make it draggable
+                        //String iconName = tcd.getName().indexOf("Label") > -1 ? "Labels16" : "Reports"; // XXX I18n
+                        NavBoxItemIFace nbi = makeDnDNavBtn(reportsNavBox, tcd.getName(), tcd.getIconName(), cmdAction, null, true, false);// true means make it draggable
                         reportsList.add(nbi);
                         enableNavBoxList.add(nbi);
                         
@@ -275,13 +281,19 @@ public class WorkbenchTask extends BaseTask
                     }
                 }
                 
-                roc = (RolloverCommand)makeDnDNavBtn(reportsNavBox, getResourceString("CHART"), "Bar_Chart", new CommandAction(WORKBENCH, WB_BARCHART, Workbench.getClassTableId()), null, true, false);
+                CommandAction cmdAction = new CommandAction(WORKBENCH, WB_BARCHART, Workbench.getClassTableId());
+                cmdAction.getProperties().put("icon", IconManager.getIcon("Bar_Chart", IconManager.IconSize.Std16));
+                
+                roc = (RolloverCommand)makeDnDNavBtn(reportsNavBox, getResourceString("CHART"), "Bar_Chart", cmdAction, null, true, false);
                 enableNavBoxList.add((NavBoxItemIFace)roc);// true means make it draggable
                 roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
                 roc.addDragDataFlavor(new DataFlavor(Workbench.class, "Report"));
                 roc.setToolTip(getResourceString("WB_BARCHART_TT"));
 
-                roc = (RolloverCommand)makeDnDNavBtn(reportsNavBox, getResourceString("WB_TOP10"), "Pie_Chart", new CommandAction(WORKBENCH, WB_TOP10_REPORT, Workbench.getClassTableId()), null, true, false);
+                cmdAction = new CommandAction(WORKBENCH, WB_TOP10_REPORT, Workbench.getClassTableId());
+                cmdAction.getProperties().put("icon", IconManager.getIcon("Pie_Chart", IconManager.IconSize.Std16));
+
+                roc = (RolloverCommand)makeDnDNavBtn(reportsNavBox, getResourceString("WB_TOP10"), "Pie_Chart", cmdAction, null, true, false);
                 enableNavBoxList.add((NavBoxItemIFace)roc);// true means make it draggable
                 roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
                 roc.addDragDataFlavor(new DataFlavor(Workbench.class, "Report"));
@@ -1789,8 +1801,7 @@ public class WorkbenchTask extends BaseTask
                 WorkbenchJRDataSource dataSrc = new WorkbenchJRDataSource(workbench, workbench.getWorkbenchRowsAsList());
                 session.close();
 
-                final CommandAction cmd = new CommandAction(LabelsTask.LABELS,
-                        LabelsTask.PRINT_LABEL, dataSrc);
+                final CommandAction cmd = new CommandAction(LabelsTask.LABELS, LabelsTask.PRINT_LABEL, dataSrc);
                 cmd.setProperty("title", "Labels");
                 cmd.setProperty("file", "basic_label.jrxml");
                 // params hard-coded for harvard demo:
@@ -1800,8 +1811,9 @@ public class WorkbenchTask extends BaseTask
                         + AppPreferences.getLocalPrefs().get("reportProperties.subTitle", "")
                         + ";footer="
                         + AppPreferences.getLocalPrefs().get("reportProperties.footer", ""));
-                //cmd.setProperty(NavBoxAction.ORGINATING_TASK, this);
-
+                cmd.setProperty(NavBoxAction.ORGINATING_TASK, this);
+                cmd.setProperty("icon", IconManager.getIcon("Labels16"));
+                
                 SwingUtilities.invokeLater(new Runnable()
                 {
                     public void run()
@@ -1826,8 +1838,12 @@ public class WorkbenchTask extends BaseTask
             cmd.setProperty("title",  selectMappingItem.getCaption());
             cmd.setProperty("file",   "wb_items.jrxml");
             cmd.setProperty("params", "colnum="+selectMappingItem.getWorkbenchTemplateMappingItemId()+";"+"title="+selectMappingItem.getCaption());
-            //cmd.setProperty(NavBoxAction.ORGINATING_TASK, this);
-            
+            cmd.setProperty(NavBoxAction.ORGINATING_TASK, this);
+            ImageIcon icon = (ImageIcon)cmdAction.getProperty("icon");
+            if (icon != null)
+            {
+                cmd.getProperties().put("icon", icon);
+            }
             SwingUtilities.invokeLater(new Runnable() {
                 public void run()
                 {

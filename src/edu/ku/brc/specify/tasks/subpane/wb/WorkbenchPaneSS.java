@@ -571,35 +571,20 @@ public class WorkbenchPaneSS extends BaseSubPane
         controllerPane.add(spreadSheetControlBar.getPanel(), PanelType.Spreadsheet.toString());
         controllerPane.add(outerRSPanel.getPanel(), PanelType.Form.toString());
         
-        if (false) // This does work JGoodies is messing something up
-        {
-            // This is the main layout panel it has two rows (really 3 but the middle is just a spacer)
-            // one row for the mainPanel which is a CardLayout for the Form and Spreadsheet
-            FormLayout      formLayout = new FormLayout("f:p:g,4px,p,4px,p,4px,p,4px,p", "f:p:g, 5px, top:p");
-            PanelBuilder    builder    = new PanelBuilder(formLayout, this);
-    
-            builder.add(mainPanel,          cc.xywh(1,1,9,1)); // Row #1
-            builder.add(controllerPane,     cc.xy(1,3));       // Row #2
-            builder.add(toggleImageFrameBtn, cc.xy(3,3));
-            builder.add(carryForwardBtn,    cc.xy(5,3));
-            builder.add(saveBtn,            cc.xy(7,3));
-            builder.add(createSwitcher(),   cc.xy(9,3));
-        } else
-        {
-            // This works
-            setLayout(new BorderLayout());
-            FormLayout      formLayout = new FormLayout("f:p:g,4px,p,4px,p,4px,p,4px,p", "top:p:g");
-            PanelBuilder    builder    = new PanelBuilder(formLayout);
 
-            add(mainPanel, BorderLayout.CENTER);
-            
-            builder.add(controllerPane,     cc.xy(1,1));
-            builder.add(toggleImageFrameBtn, cc.xy(3,1));
-            builder.add(carryForwardBtn,    cc.xy(5,1));
-            builder.add(saveBtn,            cc.xy(7,1));
-            builder.add(createSwitcher(),   cc.xy(9,1));
-            add(builder.getPanel(), BorderLayout.SOUTH);
-        }
+        // This works
+        setLayout(new BorderLayout());
+        FormLayout      formLayout = new FormLayout("f:p:g,4px,p,4px,p,4px,p,4px,p", "2px,top:p:g");
+        PanelBuilder    builder    = new PanelBuilder(formLayout);
+
+        add(mainPanel, BorderLayout.CENTER);
+        
+        builder.add(controllerPane,     cc.xy(1,2));
+        builder.add(toggleImageFrameBtn, cc.xy(3,2));
+        builder.add(carryForwardBtn,    cc.xy(5,2));
+        builder.add(saveBtn,            cc.xy(7,2));
+        builder.add(createSwitcher(),   cc.xy(9,2));
+        add(builder.getPanel(), BorderLayout.SOUTH);
         
         // See if we need to make the Image Frame visible
         // Commenting this out for now because it is so annoying.
