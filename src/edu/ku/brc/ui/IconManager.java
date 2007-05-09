@@ -235,7 +235,7 @@ public class IconManager
     public static ImageIcon getIcon(final String iconName, final IconSize id)
     {
         ImageIcon icon = getIcon(iconName);
-        if (icon==null)
+        if (icon == null)
         {
             return null;
         }

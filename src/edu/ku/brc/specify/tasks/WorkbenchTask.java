@@ -2299,8 +2299,10 @@ public class WorkbenchTask extends BaseTask
      */
     protected String getDefaultDirPath(final String prefKey)
     {
+        String homeDir = System.getProperty("user.home");
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-        String path = localPrefs.get(prefKey, UIRegistry.getUserHomeDir());
+        //log.info(homeDir);
+        String path = localPrefs.get(prefKey, homeDir);
         File pathDir = new File(path);
         if (pathDir.exists() && pathDir.isDirectory())
         {

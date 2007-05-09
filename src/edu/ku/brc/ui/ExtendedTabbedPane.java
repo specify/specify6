@@ -1,5 +1,6 @@
 package edu.ku.brc.ui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -10,8 +11,12 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.Icon;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingConstants;
 import javax.swing.event.MouseInputAdapter;
+
+import edu.ku.brc.af.core.SubPaneMgr;
 
 /**
  * Adds a close "X" in the bottom right of the TabbedPane for closing tabs and adds a Close btn to each tab.
@@ -126,7 +131,7 @@ public class ExtendedTabbedPane extends JTabbedPane
             @Override
             public void mouseClicked(MouseEvent e)
             {
-                remove(comp);
+                SubPaneMgr.getInstance().closeCurrent();
             }
             @Override
             public void mouseEntered(MouseEvent e)
@@ -146,11 +151,8 @@ public class ExtendedTabbedPane extends JTabbedPane
         // XXX Java 6.0
         /*
         JPanel tabPanel = new JPanel(new BorderLayout());
-        if (icon != null)
-        {
-            tabPanel.add(new JLabel(title, icon, SwingConstants.RIGHT), BorderLayout.WEST);
-            tabPanel.add(new JLabel(" "), BorderLayout.CENTER);
-        }
+        tabPanel.add(new JLabel(title, icon, SwingConstants.RIGHT), BorderLayout.WEST);
+        tabPanel.add(new JLabel(" "), BorderLayout.CENTER);
         tabPanel.add(closeBtn, BorderLayout.EAST);
         
         setTabComponentAt(getTabCount()-1, tabPanel);
