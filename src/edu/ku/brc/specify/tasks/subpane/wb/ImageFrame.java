@@ -184,6 +184,18 @@ public class ImageFrame extends JFrame
     }
     
     /**
+     * Clear the has so when when it is displayed later without an image it calls the reduced one. 
+     */
+    public void clearImage()
+    {
+        if (row != null)
+        {
+            rowToImageSizeHash.remove(row.hashCode());
+        }
+        showNoCardImages();
+    }
+    
+    /**
      * Displays the card image in a reduced size.
      */
     public void showReducedImage()
@@ -280,6 +292,21 @@ public class ImageFrame extends JFrame
     }
     
     /**
+     *  Displays the UI for no images.
+     */
+    protected void showNoCardImages()
+    {
+        // swap out the cardImageLabel for the noCardImageMessagePanel
+        mainPane.remove(cardImageLabel);
+        mainPane.add(noCardImageMessagePanel, BorderLayout.CENTER);
+        showingCardImageLabel = false;
+        
+        enableMenus(false);
+        validate();
+        repaint();
+    }
+    
+    /**
      * Sests the row into the frame.
      * @param row the row
      */
@@ -303,12 +330,11 @@ public class ImageFrame extends JFrame
             {
                 if (showingCardImageLabel)
                 {
-                    // swap out the cardImageLabel for the noCardImageMessagePanel
-                    mainPane.remove(cardImageLabel);
-                    mainPane.add(noCardImageMessagePanel, BorderLayout.CENTER);
-                    showingCardImageLabel = false;
+                    showNoCardImages();
+                } else
+                {
+                    enableMenus(false);
                 }
-                enableMenus(false);
             }
             else
             {

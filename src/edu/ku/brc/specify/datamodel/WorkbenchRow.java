@@ -179,7 +179,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     @Transient
     public ImageIcon getCardImage()
     {
-        if (cardImageData==null || cardImageData.length==0)
+        if (cardImageData == null || cardImageData.length == 0)
         {
             return null;
         }
@@ -221,6 +221,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         {
             setCardImageData(null);
             setCardImageFullPath(null);
+            fullSizeImageWR = null;
             return;
         }
         
@@ -517,36 +518,40 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     @Transient
     public ImageIcon getFullSizeImage()
     {
-        ImageIcon fullSizeImage = null;
-        
-        if (fullSizeImageWR != null)
+        if (cardImageData != null && StringUtils.isNotEmpty(cardImageFullPath))
         {
-            fullSizeImage = fullSizeImageWR.get();
-        }
-        
-        if (fullSizeImage == null)
-        {
-            try
+            ImageIcon fullSizeImage = null;
+            
+            if (fullSizeImageWR != null)
             {
-                ImageIcon iconImage = new ImageIcon(cardImageFullPath);
-                fullSizeImageWR = new WeakReference<ImageIcon>(iconImage);
-                
-            } catch (java.lang.OutOfMemoryError memEx)
-            {
-                loadStatus = LoadStatus.OutOfMemory;
-                loadException = new Exception("Out of Memory");
-                log.error(memEx);
-                return null;
+                fullSizeImage = fullSizeImageWR.get();
             }
-            catch (Exception ex)
+            
+            if (fullSizeImage == null)
             {
-                log.error(ex);
-                loadStatus    = LoadStatus.Error;
-                loadException = ex;
-                return null;
+                try
+                {
+                    ImageIcon iconImage = new ImageIcon(cardImageFullPath);
+                    fullSizeImageWR = new WeakReference<ImageIcon>(iconImage);
+                    
+                } catch (java.lang.OutOfMemoryError memEx)
+                {
+                    loadStatus = LoadStatus.OutOfMemory;
+                    loadException = new Exception("Out of Memory");
+                    log.error(memEx);
+                    return null;
+                }
+                catch (Exception ex)
+                {
+                    log.error(ex);
+                    loadStatus    = LoadStatus.Error;
+                    loadException = ex;
+                    return null;
+                }
             }
+            
+            return fullSizeImageWR.get();
         }
-        
-        return fullSizeImageWR.get();
+        return null;
     }
 }
