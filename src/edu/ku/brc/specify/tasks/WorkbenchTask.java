@@ -1228,7 +1228,6 @@ public class WorkbenchTask extends BaseTask
         String wbName  = inputFile != null ? FilenameUtils.getBaseName(inputFile.getName()) : null;
         int btnPressed = selectExistingTemplate(dataFileInfo != null ? dataFileInfo.getColInfo() : null, "WorkbenchImportData");
         WorkbenchTemplate workbenchTemplate = selectedTemplate;
-        selectedTemplate  = null;
         
         if (btnPressed == ChooseFromListDlg.APPLY_BTN)
         {
@@ -1701,10 +1700,8 @@ public class WorkbenchTask extends BaseTask
                     {
                         session.attach(workbench);
                         session.beginTransaction();
-                        WorkbenchTemplate template = workbench.getWorkbenchTemplate();
                         session.delete(workbench);
-                        session.delete(template);
-                        
+                  
                         session.commit();
                         session.flush();
                         
@@ -2332,7 +2329,6 @@ public class WorkbenchTask extends BaseTask
         
         int               btnPressed        = selectExistingTemplate(null, "WorkbenchImportImages");
         WorkbenchTemplate workbenchTemplate = selectedTemplate;
-        selectedTemplate  = null;
         
         if (btnPressed == ChooseFromListDlg.APPLY_BTN)
         {
