@@ -683,7 +683,7 @@ public class WorkbenchTask extends BaseTask
             workbenchTemplate.setSpecifyUser(SpecifyUser.getCurrentUser());
             
             Set<WorkbenchTemplateMappingItem> items = workbenchTemplate.getWorkbenchTemplateMappingItems();
-            Collection<WorkbenchTemplateMappingItem> newItems     = mapper.getNewItems();
+            Collection<WorkbenchTemplateMappingItem> newItems     = mapper.updateAndGetNewItems();
             for (WorkbenchTemplateMappingItem item : newItems)
             {
                 log.error(item.getFieldName()+" "+item.getViewOrder()+"  "+item.getOrigImportColumnIndex());
@@ -2228,7 +2228,7 @@ public class WorkbenchTask extends BaseTask
             try
             {
                 Collection<WorkbenchTemplateMappingItem> deletedItems = dlg.getDeletedItems();
-                Collection<WorkbenchTemplateMappingItem> newItems     = dlg.getNewItems();
+                Collection<WorkbenchTemplateMappingItem> newItems     = dlg.updateAndGetNewItems();
                 
                 for (WorkbenchTemplateMappingItem item : newItems)
                 {

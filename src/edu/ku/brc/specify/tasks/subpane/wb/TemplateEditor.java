@@ -27,7 +27,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -60,7 +59,6 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
@@ -1046,33 +1044,47 @@ public class TemplateEditor extends CustomDialog
     }
     
     /**
-     * @return
+     * XXX FIX me currently updates everything, not just the changed ones.
+     * @return updates all the templates for changes and returns the new template items.
      */
-    public Collection<WorkbenchTemplateMappingItem> getNewItems()
+    public Collection<WorkbenchTemplateMappingItem> updateAndGetNewItems()
     {
         Vector<WorkbenchTemplateMappingItem> newItems = new Vector<WorkbenchTemplateMappingItem>();
         for (int i=0;i<mapModel.size();i++)
         {
             FieldMappingPanel fmp = mapModel.getElementAt(i);
-            if (fmp.getFieldInfo() != null && fmp.getWbtmi() == null)
+            if (fmp.getFieldInfo() != null)
             {
-                ImportColumnInfo  colInfo   = fmp.getColInfo();
-                FieldInfo         fieldInfo = fmp.getFieldInfo();
+                WorkbenchTemplateMappingItem item;
+                FieldInfo                    fieldInfo  = fmp.getFieldInfo();
+                short                        origColNum = -1;
+                if (fmp.getWbtmi() == null)
+                {
+                    ImportColumnInfo colInfo = fmp.getColInfo();
+                    item = new WorkbenchTemplateMappingItem();
+                    item.initialize();
                 
-                WorkbenchTemplateMappingItem item = new WorkbenchTemplateMappingItem();
-                item.initialize();
+                    item.setCaption(colInfo.getColName());
+                    item.setImportedColName(colInfo.getColName());
+                    origColNum = fmp.isAdded() ? -1 : colInfo.getColInx();
+                    newItems.add(item);
+                    
+                } else
+                {
+                    item = fmp.getWbtmi();
+                    item.setCaption(fieldInfo.getTitle());
+                    item.setImportedColName(null);
+                }
                 
-                item.setCaption(colInfo.getColName());
                 item.setFieldName(fieldInfo.getFieldInfo().getName());
-                item.setImportedColName(colInfo.getColName());
                 item.setSrcTableId(fieldInfo.getTableinfo().getTableId());
                 item.setTableName(fieldInfo.getTableinfo().getTableName());
                 short len = (short)fieldInfo.getFieldInfo().getLength();
                 item.setDataFieldLength(len == -1 ? 15 : len);
                 
                 item.setViewOrder(fmp.getViewOrder());
-                item.setOrigImportColumnIndex(fmp.isAdded() ? -1 : colInfo.getColInx());
-                newItems.add(item);
+                item.setOrigImportColumnIndex(origColNum);
+                
             }
         }
 
@@ -1102,7 +1114,7 @@ public class TemplateEditor extends CustomDialog
      * Returns the WorkbenchTemplate for the Mappings.
      * @return the WorkbenchTemplate for the Mappings.
      */
-    public WorkbenchTemplate createWorkbenchTemplate()
+    /*public WorkbenchTemplate createWorkbenchTemplate()
     {
         WorkbenchTemplate wbTemplate = new WorkbenchTemplate();
         wbTemplate.initialize();
@@ -1141,7 +1153,7 @@ public class TemplateEditor extends CustomDialog
         }
         
         return wbTemplate;
-    }
+    }*/
 
     
     //------------------------------------------------------------
