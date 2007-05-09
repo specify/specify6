@@ -1,0 +1,219 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<head>
+<link rel="StyleSheet" href="../../main.css" rel="stylesheet" type="text/css" media="screen">
+ <link href="../../main.css" rel="stylesheet" type="text/css" media="screen"></link>
+<title>Grid Editing</title>
+</head>
+<body>
+<h2>Grid Editing</h2>
+<hr>
+<font size="-2"><br></font>
+<p>Grid Editing  enables the Data Set to be displayed and edited much like a spreadsheet. Although very similar to most spreadsheet applicaitons (i.e. MS-Excel&#174;) it is not considered a replacement for  users who take advantage of many of their advanced features. Yet the grid editing feature wihtin the WorkBench provides many tools more specific to handling collections management data. For example, it can be usd to Georeference locality names and output KML files for Google Earth to name a few. </p>
+<p>It is important to note that WorkBench is not merely a substitute for MS-Excel&#174;, but   includes many enhanced features that are specific to  Collection's data. </p>
+<p>Values within a DataSet are easily manipulated using the icons in the Workspace Item Bar:</p>
+<table width="100%" border="1">
+  <tr>
+    <td><div align="center"><img src="../images/AddNewRecord16x16.png" width="16" height="16"></div></td>
+    <td>Insert a Row </td>
+    <td>Adds one new row under the active row. If no rows are active a new is inserted after the last record. </td>
+  </tr>
+  
+  <tr>
+    <td><div align="center"><img src="../images/Clear16x16.png" width="16" height="16"></div></td>
+    <td>Clear Cells</td>
+    <td>Clears the cells that are selected</td>
+  </tr>
+  <tr>
+    <td><div align="center"><img src="../images/RemoveRecord16x16.png" width="16" height="16"></div></td>
+    <td>Delete A Row(s)</td>
+    <td>Deletes the entire row</td>
+  </tr>
+  <tr>
+    <td><div align="center"><img src="../images/configure.gif" alt="Carry Forward" width="16" height="16"></div></td>
+    <td>Carry Forward</td>
+    <td>Opens the 'Carry Forward' configuration dialog. See <a href="#Carry_Forward">Carry Forward</a>. </td>
+  </tr>
+  <tr>
+    <td><div align="center"><img src="../images/map.png" alt="Map" width="16" height="16"></div></td>
+    <td>Mapping</td>
+    <td>Plots the locality on a map. The locality is shown using this icon (pushpin). Selecting the icon displays all the collection object information. </td>
+  </tr>
+  <tr>
+    <td><div align="center"><img src="../images/GoogleEarth16x16.png" alt="Google Earth" width="16" height="16"></div></td>
+    <td>Google Earth</td>
+    <td>Plots the locality using Google Earth. The locality is shown using this icon (pushpin). Selecting the icon displays all the collection object information.</td>
+  </tr>
+  <tr>
+    <td><div align="center"><img src="../images/biogeomancer.png" alt="BioGeoMancer" width="16" height="16"></div></td>
+    <td>BioGeomancer</td>
+    <td>Calls BioGeomancer with the current locality string to geo-reference the entry. </td>
+  </tr>
+  <tr>
+    <td><div align="center"><img src="../images/export.png" alt="Export" width="16" height="16"></div></td>
+    <td>Export</td>
+    <td>Exports selected rows or all the rows to an Excel or CSV file. </td>
+  </tr>
+  <tr>
+    <td><div align="center"><img src="../images/ToggleImageFrame16x16.png" alt="Export" width="16" height="16"></div></td>
+    <td>Display Image  </td>
+    <td><p>Toggles the Image Window on and off. </p>    </td>
+  </tr>
+  <tr>
+    <td><div align="center">Save</div></td>
+    <td>Save</td>
+    <td>Saves the DataSet</td>
+  </tr>
+  <tr>
+    <td><div align="center"><img src="../images/gridedit.png" alt="Grid Edit" width="60" height="21"></div></td>
+    <td>Grid Editing </td>
+    <td>Displays the data in Grid Editing mode .  DataSets always open in this view. </td>
+  </tr>
+  <tr>
+    <td><div align="center"><img src="../images/formedit.png" alt="Form Edit" width="68" height="21"></div></td>
+    <td>Form Editing </td>
+    <td><p>Displays the data in <a href="FormEditing.html">Form Editing</a> mode. </p>    </td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<h3><u>Editing Cell Values </u></h3>
+<p>To edit text in a cell, click on the cell and then:</p>
+<ul>
+  <li>Begin Typing</li>
+  <li>Press the &lt;esc&gt; or F2 buttons and type  </li>
+</ul>
+<p>To complete editing in a cell:</p>
+<ul>
+  <li>Press the &lt;esc&gt; or F2 button</li>
+  <li>Press an arrow key, the &lt;tab&gt; key, or ht the &lt;return&gt; key to move to a different cell.</li>
+  <li>Click on a different cell * </li>
+</ul>
+<p><strong>* For Mac OS X Users </strong>: The grid editing contains a bug in that you MUST complete editing a cell by before clicking on a different cell. The currently edited cell does not lose focus until the &lt;esc&gt; or F2 keys have been pressed.<br>
+</p>
+<h3><u><a name="Carry_Forward"></a>Carry Forward</u></h3>
+<p>Carry Forward enables the value in one or more columns (or fields) to be 'carried forward' or copied to the next new row of data. Clicking on the <img src="../images/configure.gif" width="16" height="16"> button displays a configuration window that enables the desired columns of information to be selected. </p>
+<p align="center"><img src="../images/carryforwardscr.png" alt="Carry Forward"><br>
+Configure Carry Forward </p>
+<p>The values in the selected column(s) are 'carried forward' into a new row when clicking on the insert row <img src="../images/AddNewRecord16x16.png" width="16" height="16"> button. </p>
+<p>NOTE: Selecting Carry Forward <img src="../images/configure.gif" alt="carryforward" width="16" height="16"> is much like asking WorkBench to make a copy of the selected data and pasting it into the new  record. </p>
+<p>&nbsp;</p>
+<h3><u>More Controls </u></h3>
+<p>In addition to the buttons in the Workspace the context menu provides additional actions, simply select one or more cells and then right click to display the context menu. (On a single button mouse this may be a &lt;ctrl&gt; click): </p>
+<table width="100%" border="1">
+  <tr>
+    <td>Clear Cell</td>
+    <td>Clears the cells that are selected. </td>
+  </tr>
+  <tr>
+    <td>Delete Row</td>
+    <td>Deletes the rows (<em>Note</em>: one one cell per needs to be selected for the row to be included in the delete action). </td>
+  </tr>
+  <tr>
+    <td>Fill Up</td>
+    <td>Fills the selected cells  with the value from the bottom selected cell. Use this tool to copy a value into one or more cells from the bottom cell upward. </td>
+  </tr>
+  <tr>
+    <td>Fill Down</td>
+    <td>Fills the selected rows  with a value from the top selected cell downward. Use this tool to copy the correct value into one or more cells below. Simply sweep the correct cell along with the cells to be filled, right click on the correct cell and choose &lsquo;Fill Up&rsquo; in the pop up window. The correct value will be pasted into the selected cells.</td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<h3><u>Find Panel </u></h3>
+<p>Grid editing provides  Find and a Find/Replace functionality. To display the &quot;Find&quot; panel you can:</p>
+<ul>
+  <li>Click on the Edit menu and then on Find</li>
+  <li>Use the keyboard shortcut for your operating system: &lt;ctrl&gt; + F on MS Windows and Linux, Command + F on the Mac. </li>
+</ul>
+<p align="center"><img src="../images/findpanel.png" alt="find panel"></p>
+<p align="center">Find Panel </p>
+<p>The Panel areas are described below:</p>
+<table width="100%" border="1">
+  <tr>
+    <td>Top Text Box </td>
+    <td>The search string </td>
+  </tr>
+  <tr>
+    <td>Bottom Text Box </td>
+    <td>The replacement string </td>
+  </tr>
+  <tr>
+    <td>Next</td>
+    <td>Finds the next matching value </td>
+  </tr>
+  <tr>
+    <td>Previous</td>
+    <td>Finds the previous matching value </td>
+  </tr>
+  <tr>
+    <td>Replace</td>
+    <td>Replaces the top box value with the bottom box value </td>
+  </tr>
+  <tr>
+    <td>Replace All </td>
+    <td>Replaces all matching values within the Data Set </td>
+  </tr>
+  <tr>
+    <td>Match Case </td>
+    <td>Match upper and lower case values exactly </td>
+  </tr>
+  <tr>
+    <td>Wrap  </td>
+    <td>Searches the entire Data Set starting with the active record and wrapping from the bottom to the top of the Data Set and continuing. </td>
+  </tr>
+</table>
+<p>To search for a value:</p>
+<ol>
+  <li>Enter the value in the Top Text Box </li>
+  <li>Click the 'Next' button </li>
+</ol>
+<p>To replace a value:</p>
+<ol>
+  <li>Enter the search value in the Find Text Box</li>
+  <li>Enter the replacement value in the Replace Text Box</li>
+  <li>Click 'Next' to find the value</li>
+  <li>Click 'Replace' to replace the value in the active cell</li>
+  <li>Click 'Replace All' to replace all search values   </li>
+</ol>
+<p>Note: The Find Panel is ONLY availble when Grid Editing, it is not available when Form Editing. </p>
+<p>&nbsp;</p>
+<h3><u>Grid Editing Quick Tips </u></h3>
+<p><u>Quick Tips for Entering Data</u></p>
+<ol start="1" type="1">
+  <li>Click      on the Data Set to open it</li>
+  <li>Click      in a particular field to enter data</li>
+  <li>Click      the <img src="../images/AddNewRecord16x16.png" width="16" height="16"> button or type &lt;Cntl&gt; + n to create a new row</li>
+  <li>Save      the Data Set</li>
+</ol>
+<p><u>Quick Tip for Deleting a Row(s):</u></p>
+<ol>
+  <li>Click on a row number or sweep multiple numbers to select them</li>
+  <li>Either right click on a cell in the row(s) and choose &lsquo;Delete Row&rsquo; from the pop up window</li>
+</ol>
+<p>OR&nbsp; click on the <img src="../images/RemoveRecord16x16.png" width="16" height="16">  at the bottom of the widow</p>
+<p><u>Quick Tips for Clearing a Cell:</u></p>
+<ol start="1" type="1">
+  <li>Click      on a cell or sweep multiple cells to select them</li>
+  <li>Either      right click on a cell and choose &lsquo;Clear Cells' from the pop up window</li>
+</ol>
+<p>OR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </p>
+<p>Click on the <img src="../images/Clear16x16.png" width="16" height="16"> button at the bottom of the window</p>
+<p><u>Quick Tips for Adding Rows:</u></p>
+<ol start="1" type="1">
+  <li>To add      a Row after the currently selected row click the  <img src="../images/AddNewRecord16x16.png" width="16" height="16"> button </li>
+</ol>
+<p><u>Quick Tips for Copying the Same Value into Multiple Cells: </u></p>
+<ol start="1" type="1">
+  <li>Select more than one cell in a column </li>
+  <li>Click to display the context menu   </li>
+  <li>Choose      'Fill up' to fill the bottom value upward, or 'Fill Down' to fill the top value  downward </li>
+</ol>
+<p>&nbsp;</p>
+<p><u>Quick Tips for Adding a Row with Preset Values:</u></p>
+<ol>
+  <li>Click on the <img src="../images/configure.gif" width="16" height="16"> button</li>
+  <li>Select the fields that hold values to be copied into the new row</li>
+  <li>Click the 'OK' button at the bottom of the Carry Forward window</li>
+  <li>Select the row that contains the data to be copied into the new row</li>
+  <li>Click on the <img src="../images/AddNewRecord16x16.png" width="16" height="16"> button </li>
+</ol>
+</body>
+</html>

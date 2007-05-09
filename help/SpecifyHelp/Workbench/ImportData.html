@@ -1,85 +1,17 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-<title>Importing Data</title>
- <link href="../../main.css" rel="stylesheet" type="text/css" media="screen"></link>
+<link href="../../main.css" rel="stylesheet" type="text/css" media="screen"></link>
+<title>Import Data Overview</title>
+
 </head>
 
 <body>
-<h1>Creating a Template and DataSet by Importing Data</H1>
-<p>OnRamp can easily import data from  MS-Excel&#174; or CSV files and convert it to a 'normalized' stateby reading  each column in the import file, or column, and 'mapping' it to an appropriate field in the schema.  These maps are saved as Templates and can be changed at any time. In fact, fields within a column remain de-normalized and can be renamed, but schema fields being 'normalized' can not. To rename a column field see 'Form Editing'. </p>
-<p>To start importing data and mapping fields, click on the &lsquo;Import Data&rsquo; button on the side bar. A File Dialog will appear enabling an import file to be chosen. </p>
-<h2>Importing data from a Spreadsheet </h2>
-<p>When a data file is imported from a spreadsheet additional information is needed about the file. A configuration dialog will appear: </p>
-<p>(This screenshot should be of the yet to be created import dialog) <br />
-  <img src="../images/spreadsheetquestion.png" width="384" height="157" alt="question"></p>
-<p>If the first row of the spreadsheet does contain column names OnRamp will try to 'automap' field names in the spreadsheet file to  field names within the Specify 6 schema. Any field names that are the same will be automatically mapped, those that are not will display as having 'no mapping':<br />
-</p>
-<p><img src="../images/mostmapping.png" width="504" height="436" alt="most mapped"> </p>
-<p>&nbsp;</p>
-<p>If the first row of the spreadsheet does not contain column names answer a window similar to this will appear:</p>
-<p><img src="../images/nomapping.png" width="504" height="433" alt="no mapping"></p>
-<p>&nbsp;</p>
-<h2>Importing Data from a cvs file </h2>
-<p>When importing data from a CSV file OnRamp must be told how the data was saved in order to properly import it. The following windows ask questions to uncover this valuable information:</p>
-<table width="852" border="1">
-  <tr>
-    <td><img src="../images/delimiterscreen.png" alt="delimiter" width="216" height="192"></td>
-    <td><img src="../images/characterscreen.png" alt="character" width="216" height="192"></td>
-    <td><img src="../images/escapescreen.png" alt="escape" width="216" height="192"></td>
-  </tr>
-</table>
-<p><img src="../images/columnames.png" alt="columnnames" width="360" height="149"></p>
-<p>&nbsp;</p>
-<p>If the first row of the file does contain column names OnRamp will try to 'automap' field names in the spreadsheet file to field names in the schema. Any field names that are the same will be automatically mapped, those that are not will display as having 'no mapping':<br />
-</p>
-<p><img src="../images/mostmapping.png" width="504" height="436" alt="most mapped"> </p>
-<p>&nbsp;</p>
-<p>If the first row of the file does not contain column names a window similar to this will appear:</p>
-<p><img src="../images/nomapping.png" width="504" height="433" alt="no mapping"></p>
-<h2><strong>Using Column Mapper </strong></h2>
-<p>The Column Mapper window is divided into three sections: Mappings, Data Objects and Fields.</p>
-<p><em>Mappings</em> refers to the relationship between the spreadsheet fields and the DataSet fields and tells OnRamp how values will be interchanged between the two files. More specifically, the field name on the left, Import, side of the window will supply values for the right, Database, side of the window. If a Database field shows 'no mapping' then no values will be transferred to the DataSet unless a relationship is created. </p>
-<p><em>Data Objects</em> lists the type of data that is available.</p>
-<p><em>Fields</em> are the names of the fields available for each Data Object. </p>
-<p>To view available fields for the DataSet first select a Data Object. </p>
-<p>Editing the Mappings</p>
-<p>New fields can be added to the map or changed in the DataSet by using the following buttons:</p>
-<table width="796" border="1">
-  <tr>
-    <td width="19"><img src="../images/plussign.gif" width="16" height="16"></td>
-    <td width="761">adds a field name to both the DataSet and Data</td>
-  </tr>
-  <tr>
-    <td><img src="../images/minussign.gif" width="16" height="16"></td>
-    <td>Deletes the field name in both the DataSet and File</td>
-  </tr>
-  <tr>
-    <td>&lt;</td>
-    <td>Remaps the existing DataSet field name to the selected File field name by replacing the existing File field name </td>
-  </tr>
-  <tr>
-    <td>&gt;</td>
-    <td>Deletes the File field name and remaps the DataSet field name to &lsquo;unmapped&rsquo;. This will result in blank cells within the DataSet </td>
-  </tr>
-</table>
-<p>To add a new field first choose the new Field name from within a Data Object, then use the (+) button at the bottom of the window. The new field name will be added to both the columns and schema. </p>
-<p>To change a particular schema Field that is already mapped to a Column field first select the Column field name to be changed, then choose the correct Field name from a Data Object and use the &lt; icon to move the field name. </p>
-<p>When the desired fields in the File are correctly mapped to the DataSet Fields select the &lsquo;ok&rsquo; button in the bottom right of the window. The new Template and DataSet will appear in the workbench window. It will automatically be named the same name as the File that was imported. </p>
-<p>Quick Tip for Creating a Template and DataSet by Importing a File</p>
-<ol>
-  <ol>
-    <li>Choose &lsquo;Import Data&rsquo; from the Sidebar</li>
-    <li>Select the file name from the pop up window</li>
-    <li>Answer the questions about the file in the next pop up window(s)</li>
-    <li>Carefully review the map shown in the &lsquo;mappings &rsquo; window</li>
-    <li>Add schema and import fields by choosing fields within the Data Objects provided and selecting (+)</li>
-    <li>Change mapped import fields by selecting new fields within the Data Objects provided and clicking &lt;</li>
-    <li>&nbsp;Change mapped DataSet fields to &lsquo;no mapping&rsquo; by selecting the mapped DataSet Field and clicking &gt;</li>
-    <li>Delete mapped DataSet and Import fields by selecting them and clicking (-)</li>
-  </ol>
-</ol>
-<p>&nbsp;</p>
+<h2>Import Data Overview</h2>
+<hr>
+<p>WorkBench can easily import  data from a <a href="ImportXLS.html">MS-Excel spreadsheet</a> or <a href="ImportCSV.html">CSV</a> file and use the information to create a DataSet. </p>
+<p>The WorkBench not only imports the data, but also maps the existing column headings to fields in Specify 6. This is not only necessary for other features in the WorkBench to function properly, but also ensures that the data will upload correctly into Specify 6.The WorkBench includes an 'automapper' that reads the import column headings and automatically maps them to any matching fields in Specify 6. Any remaining column headings can be manually mapped. The column headings can be mapped to different Specify fields by <a href="EditMapping.html">editing the Data Set Mapping</a>. </p>
+<p>The Data Set will display the imported field names rather than the Schema names, as these are more familiar. </p>
+<p>If data exists on several scanned card images or field notes, it is very helpful to create a Data Set by <a href="ImportImages.html">importing the images</a>. </p>
 <p>&nbsp;</p>
 </body>
 </html>
