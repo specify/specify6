@@ -141,7 +141,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         Action closeAll = UIRegistry.getAction("CloseAll");
         if (closeAll != null)
         {
-            closeAll.setEnabled(panes.size() > 1  || TaskMgr.getToolbarTaskCount() > 1);
+            closeAll.setEnabled(panes.size() > 1);//  || TaskMgr.getToolbarTaskCount() > 1);
         }
     }
     
@@ -433,10 +433,10 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             Vector<SubPaneIFace> paneList = new Vector<SubPaneIFace>(panes.values()); // Not sure we need to create a new list
             for (SubPaneIFace pane : paneList)
             {
-                if (panes.size() == 1  && TaskMgr.getToolbarTaskCount() == 1)
-                {
-                    return false;
-                }
+                //if (panes.size() == 1  && TaskMgr.getToolbarTaskCount() == 1)
+                //{
+                //    return false;
+                //}
 
                 if (!removePane(pane))
                 {
@@ -448,6 +448,15 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         }
         
         this.removeAll(); // insurance
+        
+        if (TaskMgr.getToolbarTaskCount() == 1)
+        {
+            Taskable defaultTask = TaskMgr.getDefaultTaskable();
+            if (defaultTask != null)
+            {
+                addPane(defaultTask.getStarterPane());
+            }
+        }
         
         return true;
     }
@@ -463,7 +472,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         {
             // If there is only one pane left and there is only one tasks that provides UI
             // then we cannot let it close.
-            boolean  wasLastPane = panes.size() == 1  && TaskMgr.getToolbarTaskCount() == 1;
+            boolean wasLastPane = panes.size() == 1  && TaskMgr.getToolbarTaskCount() == 1;
 
             if (!this.removePane(subPane) && panes.size() > 0)
             {
