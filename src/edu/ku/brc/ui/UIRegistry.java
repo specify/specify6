@@ -919,15 +919,25 @@ public class UIRegistry
             g2.translate(0, -y);
             
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setColor(new Color(255, 255, 255, 150));
+            g2.setColor(new Color(255, 255, 255, 128));
             g2.fillRect(0, 0, size.width, size.height);
             
             
             g2.setFont(new Font((new JLabel()).getFont().getName(), Font.BOLD, pointSize));
             FontMetrics fm = g2.getFontMetrics();
-            g2.setColor(Color.BLACK);
             
-            g2.drawString(msg, (size.width-fm.stringWidth(msg))/2, (size.height-fm.getHeight())/2);
+            int tw = fm.stringWidth(msg);
+            int th = fm.getHeight();
+            int tx = (size.width - tw) / 2;
+            int ty = (size.height - th) / 2;
+            
+            int expand = 20;
+            int arc    = expand * 2;
+            g2.setColor(Color.WHITE);
+            g2.fillRoundRect(tx-(expand / 2), ty-fm.getAscent()-(expand / 2), tw+expand, th+expand, arc, arc);
+            
+            g2.setColor(Color.BLACK);
+            g2.drawString(msg, tx, ty);
             g2.dispose();
             
             glassPane.setImage(buffer);

@@ -38,6 +38,7 @@ import java.util.prefs.BackingStoreException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.BorderFactory;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -56,9 +57,6 @@ import javax.swing.WindowConstants;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 
@@ -734,17 +732,18 @@ public class Specify extends JPanel implements DatabaseLoginListener
      */
     protected void doAbout()
     {
-
-        PanelBuilder    builder = new PanelBuilder(new FormLayout("l:p:g,30px,r:p:g", "c:p:g"));
-        CellConstraints cc      = new CellConstraints();
-
-        builder.add(new JLabel(IconManager.getIcon("SpecifyLargeIcon")), cc.xy(1,1));
-        builder.add(new JLabel("<html>"+appName+" " + appVersion + 
-                "<br><br>Biodiversity Research Center Informatics<br>University of Kansas<br>Lawrence, KS 66045" + 
-                "<br><br>Build: " + appBuildVersion + 
-                "</html>"), cc.xy(3,1));
-
-        CustomDialog aboutDlg = new CustomDialog(topFrame, getResourceString("About") + " " +appName+" " + appVersion, true, CustomDialog.OK_BTN, builder.getPanel());
+        JPanel panel = new JPanel(new BorderLayout());
+        JLabel iconLabel = new JLabel(IconManager.getIcon("SpecifyLargeIcon"));
+        iconLabel.setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 8));
+        panel.add(iconLabel, BorderLayout.WEST);
+        panel.add(new JLabel("<html>"+appName+" " + appVersion + 
+                "<br><br>Biodiversity Research Center<br>University of Kansas<br>Lawrence, KS  USA 66045" + 
+                "<br><br>www.specifysoftware.org<br>specify@ku.edu" + 
+                "<br><br><p>The Specify Software Project is funded by the Biological Databases and <br>Informatics Program of the U.S. National Science Foundation <br>(Award DBI-0446544)</P>" +
+                "<br>Build: " + appBuildVersion + 
+                "</html>"), BorderLayout.EAST);
+        panel.setBorder(BorderFactory.createEmptyBorder(6,6,0,6));
+        CustomDialog aboutDlg = new CustomDialog(topFrame, getResourceString("About") + " " +appName, true, CustomDialog.OK_BTN, panel);
         aboutDlg.setOkLabel(getResourceString("Close"));
         UIHelper.centerAndShow(aboutDlg);
     }

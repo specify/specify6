@@ -247,7 +247,7 @@ public class WorkbenchTask extends BaseTask
                     {
                         params.put("title", ap.getDescription());
                         params.put("file", ap.getName());
-                        //log.info("["+ap.getDescription()+"]["+ap.getName()+"]");
+                        //log.debug("["+ap.getDescription()+"]["+ap.getName()+"]");
                         String iconName = params.get("icon");
                         if (StringUtils.isEmpty(iconName))
                         {
@@ -268,7 +268,6 @@ public class WorkbenchTask extends BaseTask
                         cmdAction.addStringProperties(tcd.getParams());
                         cmdAction.getProperties().put("icon", IconManager.getIcon(tcd.getIconName()));
                         
-                        //String iconName = tcd.getName().indexOf("Label") > -1 ? "Labels16" : "Reports"; // XXX I18n
                         NavBoxItemIFace nbi = makeDnDNavBtn(reportsNavBox, tcd.getName(), tcd.getIconName(), cmdAction, null, true, false);// true means make it draggable
                         reportsList.add(nbi);
                         enableNavBoxList.add(nbi);
@@ -288,7 +287,7 @@ public class WorkbenchTask extends BaseTask
                 cmdAction.getProperties().put("icon", IconManager.getIcon("Bar_Chart", IconManager.IconSize.Std16));
                 
                 roc = (RolloverCommand)makeDnDNavBtn(reportsNavBox, getResourceString("CHART"), "Bar_Chart", cmdAction, null, true, false);
-                enableNavBoxList.add((NavBoxItemIFace)roc);// true means make it draggable
+                enableNavBoxList.add((NavBoxItemIFace)roc);
                 roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
                 roc.addDragDataFlavor(new DataFlavor(Workbench.class, "Report"));
                 roc.setToolTip(getResourceString("WB_BARCHART_TT"));
@@ -1073,13 +1072,13 @@ public class WorkbenchTask extends BaseTask
     protected void createWorkbenchFromTemplate(final CommandAction cmdAction)
     {
         
-        Workbench wb = selectWorkbench(cmdAction, "WB_CHOOSE_DATASET_REUSE_TITLE", "WB_CHOOSE_DATASET_REUSE", "WorkbenchEditMapping", true); // XXX ADD HELP
+        Workbench wb = selectWorkbench(cmdAction, "WB_CHOOSE_DATASET_REUSE_TITLE", null, "WorkbenchEditMapping", true); // XXX ADD HELP
         if (wb != null)
         {
             WorkbenchTemplate workbenchTemplate = wb.getWorkbenchTemplate();
             if (workbenchTemplate == null)
             {
-                workbenchTemplate = selectWorkbenchTemplate(cmdAction, "WB_CHOOSE_DATASET_REUSE_TITLE", "WB_CHOOSE_DATASET_REUSE", "WorkbenchEditMapping"); // XXX ADD HELP
+                workbenchTemplate = selectWorkbenchTemplate(cmdAction, "WB_CHOOSE_DATASET_REUSE_TITLE", null, "WorkbenchEditMapping"); // XXX ADD HELP
             }
     
            // The command may have been clicked on so ask for one
@@ -1402,6 +1401,8 @@ public class WorkbenchTask extends BaseTask
                      } catch (Exception ex)
                      {
                          ex.printStackTrace();
+                         UIRegistry.clearGlassPaneMsg();
+                         
                      } finally
                      {
                          session.close();
@@ -2635,7 +2636,7 @@ public class WorkbenchTask extends BaseTask
                 importCardImages();
             }
             
-        } else if (cmdAction.isAction(NEW_WORKBENCH_FROM_TEMPLATE))
+        } else if (cmdAction.isAction(NEW_WORKBENCH_FROM_TEMPLATE)) // XXX This can be removed
         {
             
             createWorkbenchFromTemplate(cmdAction);
