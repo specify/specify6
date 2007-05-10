@@ -148,6 +148,7 @@ public class ExtendedTabbedPane extends JTabbedPane
             }
         });
 
+        /*
         // XXX Java 6.0
         
         JPanel tabPanel = new JPanel(new BorderLayout());
@@ -156,7 +157,7 @@ public class ExtendedTabbedPane extends JTabbedPane
         tabPanel.add(closeBtn, BorderLayout.EAST);
         
         setTabComponentAt(index, tabPanel);
-        
+        */
     }
     
     /* (non-Javadoc)

@@ -43,6 +43,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.io.FilenameUtils;
@@ -551,10 +552,10 @@ public class WorkbenchTask extends BaseTask
         PanelBuilder    display = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "f:p:g,p,5px,p,100px,f:p:g"));
         CellConstraints cc      = new CellConstraints();
 
-        JLabel label = new JLabel(getResourceString("WB_WELCOME"));
+        JLabel label = new JLabel(getResourceString("WB_WELCOME"), SwingConstants.CENTER);
         Font font = label.getFont();
         label.setFont(new Font(font.getName(), Font.PLAIN, font.getSize()+4));
-        display.add(new JLabel(IconManager.getIcon("SpecifyLargeIcon")), cc.xy(2, 2));
+        display.add(new JLabel(IconManager.getIcon("SpecifySplash")), cc.xy(2, 2));
         display.add(label, cc.xy(2, 4));
         doingStarterPane = true;
         

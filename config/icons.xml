@@ -9,6 +9,7 @@
     <icon name="AppIcon"    file="specify32.png" sizes="32"/>
     <icon name="Specify16"  file="specify16.png" sizes="16"/>
     <icon name="SpecifyLargeIcon" file="specify128.png" sizes="NonStd"/>
+    <icon name="SpecifySplash" file="SpecifyBigSplash.png" sizes="NonStd"/>
     
     
     <icon name="Save"           file="filesave.png" sizes="all"/>
