@@ -85,9 +85,14 @@ public class VersionCheckerTask extends BaseTask
         };
         
         // see if the user is allowing us to check for updates
-        AppPreferences appPrefs = AppPreferences.getRemote();
-        boolean checkForUpdates = appPrefs.getBoolean("version_check.auto", true);
-
+        AppPreferences appPrefs        = AppPreferences.getRemote();
+        Boolean        checkForUpdates = appPrefs.getBoolean("version_check.auto", null);
+        if (checkForUpdates == null)
+        {
+            checkForUpdates = true;
+            appPrefs.putBoolean("version_check.auto", checkForUpdates);
+        }
+        
         if (checkForUpdates)
         {
             timer.schedule(task, 5000);
@@ -171,23 +176,25 @@ public class VersionCheckerTask extends BaseTask
             public void finished()
             {
                 Object retVal = getValue();
-                
-                // if an exception occurred during update check...
-                if (retVal instanceof Exception)
+                if (retVal != null)
                 {
-                    if (!silent)
+                    // if an exception occurred during update check...
+                    if (retVal instanceof Exception)
                     {
-                        showErrorPopup();
+                        if (!silent)
+                        {
+                            showErrorPopup();
+                        }
+                        return;
                     }
-                    return;
-                }
-                // else
-               
-                // the update check worked, review the results
-                List<String> availUpdates = (List<String>)retVal;
-                if (availUpdates.size() > 0 || !silent)
-                {
-                    displayUpdatesAvailablePopup(availUpdates);
+                    // else
+                   
+                    // the update check worked, review the results
+                    List<String> availUpdates = (List<String>)retVal;
+                    if (availUpdates.size() > 0 || !silent)
+                    {
+                        displayUpdatesAvailablePopup(availUpdates);
+                    }
                 }
             }
         };
@@ -206,14 +213,23 @@ public class VersionCheckerTask extends BaseTask
         PostMethod postMethod = new PostMethod(versionCheckURL);
         
         // see if the user is allowing us to send back usage data
-        AppPreferences appPrefs = AppPreferences.getRemote();
-        boolean sendStats = appPrefs.getBoolean("usage_tracking.send_stats", true);
+        AppPreferences appPrefs  = AppPreferences.getRemote();
+        Boolean        sendStats = appPrefs.getBoolean("usage_tracking.send_stats", null);
+        if (sendStats == null)
+        {
+            sendStats = true;
+            appPrefs.putBoolean("usage_tracking.send_stats", sendStats);
+        }
         
-        NameValuePair[] postParams = createPostParameters(sendStats);
-        postMethod.setRequestBody(postParams);
-        httpClient.executeMethod(postMethod);
-        String responseString = postMethod.getResponseBodyAsString();
-        List<String> moduleUpdatesAvailable = getAvailableUpdates(responseString);
+        List<String> moduleUpdatesAvailable = null;
+        if (sendStats)
+        {
+            NameValuePair[] postParams = createPostParameters(sendStats);
+            postMethod.setRequestBody(postParams);
+            httpClient.executeMethod(postMethod);
+            String responseString = postMethod.getResponseBodyAsString();
+            moduleUpdatesAvailable = getAvailableUpdates(responseString);
+        }
         return moduleUpdatesAvailable;
     }
     
