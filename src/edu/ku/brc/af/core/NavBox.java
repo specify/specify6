@@ -496,6 +496,12 @@ public class NavBox extends JPanel implements NavBoxIFace
         //box.setSize(box.getPreferredSize());
         box.repaint();
         
+        if (box.itemsPanel != null)
+        {
+            box.itemsPanel.validate();
+            box.itemsPanel.invalidate();
+        }
+        
         NavBoxMgr.getInstance().invalidate();
         NavBoxMgr.getInstance().doLayout();
         NavBoxMgr.getInstance().repaint();
