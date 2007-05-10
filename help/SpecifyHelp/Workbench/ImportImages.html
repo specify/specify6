@@ -1,49 +1,65 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
 <head>
-<link rel="StyleSheet" href="../../main.css" rel="stylesheet" type="text/css" media="screen"></link>
+<link href="../../main.css" rel="stylesheet" type="text/css" media="screen"></link>
 <title>Untitled Document</title>
 </head>
 
 <body>
 <h2>Import  Images</h2>
 <hr>
-<p>The WorkBench can  create a new Data Set,  read in a group of images and link each image to a record inside the Data Set, all in one action.  The linked images can then be viewed while entering data into the Data Set.</p>
-<p>Addition batches of images cannot be imported into an existing Data Set, but individual images can be added to exisint data rows.</p>
+<p>The Import Images action creates a new Data Set,  reads in a group of images, and creates a record that links to each of the images inside the Data Set.  The linked images can be viewed while entering data into the DataSet.</p>
 <p><em>Note</em>: The 'Import Images' action is best used when entering data from scanned cards or field notes. Descriptive images can also be linked to existing Data Set records using the 'Image Toggle' button. This is described in the <a href="ImageWindow.html">Image Window</a> section of  Help. </p>
-<p>The WorkBench allows images in jpg, tif, png, gif and bmp formats to be linked within Data Sets. </p>
-<p>Create a Data Set from images by first clicking the &lsquo;Import  Images&rsquo; action. The following dialog will appear which allows the images to be selected:</p>
-<p><img src="../images/chooseimages.png" alt="choose images" width="551" height="425"></p>
-<p>Choose the images to be imported and click 'open'. </p>
-<p>The following dialog will appear allowing Columns to be chosen for the new Data Set:</p>
-<p><img src="../images/choosecolumns.png" alt="Choose Columns" width="305" height="441"> <br>
-</p>
-<p>To dialog will open with a list of Data Objects in the 'Fields' window. To view the available Fields for a particular Data Object click on the (arrow) button. </p>
-<p>To add a Column:</p>
-<ol>
-  <li>Select a Field</li>
-  <li>Click the (+) button</li>
-</ol>
+<p>The WorkBench allows images in jpg, tif, png, gif and bmp formats to be linked within DataSets. </p>
+<p>Click the &lsquo;Import  Images&rsquo; action to create a new Data Set from images. </p>
+<p>A file dialog will appear that allows multiple images to be selected. Select the images to import and click 'Open'. </p>
+<p>The following dialog gives the the choice of  copying column headings from an existing Data Set or choosing them from a list of Specify fields:</p>
 <p>&nbsp;</p>
-<p>To remove a Column:</p>
-<ol>
-  <li>Select the Column</li>
-  <li>Click the (-) button     </li>
-</ol>
+<p align="center"><img src="../images/newcolumnheadings.png" ></p>
+<p align="center" class="imgcaption">Data Set Column Headings </p>
 <p>&nbsp;</p>
-<p>Once the list of Columns is complete click the 'ok' button. The Data Set Properties dialog will display which allows the new Data Set to be named and described:</p>
-<p><img src="../images/Data Setproperties.png" alt="Data Set properties" width="761" height="251"> </p>
-<p>Once the Data Set has been named, it will open in the Workspace. To view an image click on the (icon) button. An image window will appear displaying the linked image. </p>
-<p>Image Controls are described in the <a href="ImageWindow.html">Image Window</a> section of help. </p>
-<p>Note: It is important to understand that WorkBench does not relocate or store  image files within Data Sets. WorkBench merely creates a link to the image by remembering where the image is located. WorkBench does create a smaller version, or thumbnail, of the image, but it is not a replacement for the original image and the original image should never be deleted.</p>
-<p>To display the images that are linked to the records simply use the xx button to open an image window, then select a record to display its linked image in the image window. Selecting the xx button again will close the image window. </p>
-<p><img src="../images/quicktip.png" alt="quicktip" width="32" height="32" align="middle" />Quick Tip for Creating a Data Set that includes Images</p>
-<ol start="1" type="1">
-  <li>Click      on &lsquo;Import Card Images&rsquo; </li>
-  <li>Choose an existing template or create a new one </li>
-  <li>Choose      the image(s) to be included</li>
-  <li>Display the Data Set in 'grid' view </li>
+<p>To copy column headings from an existing Data Set select the 'Use an existing Data Set mapping' button and choose the Data Set from the list provided. The Data Set Properties dialog will then open to name and describe the new Data Set. </p>
+<p>To choose new column headings for the new Data Set select the 'Create new Data Set mapping' button and click 'OK'. The Data Set Mapping Editor will appear:</p>
+<p align="center"><img src="../images/DataSetMappingEditorClear.png" alt="Data Set Mapping Editor" width="1001" height="468"></p>
+<p align="center" class="imgcaption">Data Set Mapping Editor</p>
+<p align="left">The Data Set Mapping Editor allows columns to be mapped, unmapped and reordered using the following buttons:</p>
+<table width="75%" border="0" cellspacing="1" cellpadding="6">
+  <tr>
+    <td width="8%"><img src="../images/Map16x16.png" alt="map" width="16" height="16"></td>
+    <td width="14%">map</td>
+    <td width="78%">adds the field to the column list </td>
+  </tr>
+  <tr>
+    <td><img src="../images/Unmap16x16.png" alt="unmap" width="16" height="16"></td>
+    <td>unmap</td>
+    <td>removes the field from the list of columns </td>
+  </tr>
+  <tr>
+    <td><img src="../images/ReorderUp16x16.png" alt="reorder up" width="16" height="16"></td>
+    <td>reorder up </td>
+    <td>moves the selected field up </td>
+  </tr>
+  <tr>
+    <td><img src="../images/ReorderDown16x16.png" alt="reorder" width="16" height="16"></td>
+    <td>reorder down </td>
+    <td>moves the selected field down </td>
+  </tr>
+</table>
+<p align="left">&nbsp; </p>
+<p align="left">The WorkBench provides a list of Specify fields to use as column headings in the new Data Set. This list is organized by Data Types. </p>
+<p align="left">To add a column heading:</p>
+<ol>
+  <li> Select a Data Type, the available fields will appear in the 'Specify Fields' window. </li>
+  <li>Select a field</li>
+  <li>Click the <img src="../images/Map16x16.png" alt="map" width="16" height="16"> (map) button</li>
+  <li>The new column heading will appear under both Data Set Columns and  Specify Fields(as shown below) </li>
 </ol>
-<h2>&nbsp;</h2>
+<p align="left">A <img src="../images/linked_right.png" alt="link" width="32" height="16"> (link) icon identifies that the Specify field is mapped to the Data Set column. </p>
+<p align="center"><img src="../images/DataSetMappingEditor2.png" alt="Map Editor" ></p>
+<p align="center" class="imgcaption">Data Set Mapping Editor with one column added </p>
+<p align="left">&nbsp;</p>
+<p align="left">Continue adding fields/columns until the 'Data Set Columns' list is complete, then click 'OK'. </p>
+<p align="left">The Data Set Properties dialog will appear, which allows the new Data Set to be named and described. </p>
+<p align="left">To edit the Data Set Mapping, see <a href="EditMapping.html">Edit Data Set Mapping</a>. </p>
 <p>&nbsp;</p>
 </body>
 </html>

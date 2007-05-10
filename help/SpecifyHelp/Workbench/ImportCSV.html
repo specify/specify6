@@ -7,100 +7,148 @@
 <body>
 <h2>Importing Data from a CSV file </h2>
 <hr>
-<p>The WorkBench can easily import data from an MS Excel file into a new Data Set. </p>
-<p>To begin, click on the Import Data action on the Sidebar. A file dialog will appear to select the import file. </p>
-<p>To properly import the data from an MS Excel file, the WorkBench must first determine if the data includes column headings. The following information dialog appears after the file dialog:</p>
-<p>&nbsp;</p>
-<p><img src="../images/importbad.png" alt="bad import dialog" width="616" height="492"></p>
-<p>This dialog has incorrect information selected in the 'Data Import Options' section. This is obvious in both the 'Data Preview' window, which shows sporadic data, as well as in the warning icon and message shown under the 'Data Preview' window. </p>
+<p>The WorkBench can easily import data from a CSV file into a new Data Set. </p>
+<p>To begin, click on the Import Data action on the Sidebar and choose the import file in the dialog that opens. </p>
+<p>The following information dialog will open: </p>
+<p align="center"><img src="../images/badcsvimport.png" alt="Bad Import"></p>
+<p align="center" class="imgcaption">Bad Delimiter Selections </p>
+<p>This dialog enables  the WorkBench to properly import the file by determining if the import file inlcudes column headings and setting the proper file delimiters. </p>
+<p>The Data Preview window reads and displays a sample of the column headings and data from the import file. If the file does not contain column headings, then none will display. Check the 'First row contains column headings' box according to how the file displays in the Data Preview window. </p>
+<p>The Data Preview display is also used to discover the delimiter settings for the import file. The 'Bad Delimiter Selections' image above shows a dialog with incorrect information selected in the 'Data Import Options'. This is obvious in both the 'Data Preview' window, which shows sporadic data, as well as in the warning icon and message shown under the 'Data Preview' window. </p>
 <p>To correct the information,   choose different selections  in the 'Data Import Options' section of the dialog. When the 'Data Import Options' are correct the 'Data Preview' window will display the CSV file correctly and the warning icon will disappear. The corrected dialog is shown below: </p>
+<p align="center"><img src="../images/gooddelimiters.png" alt="Good Delimiters"></p>
+<p align="center" class="imgcaption">Good Delimiters </p>
 <p>&nbsp;</p>
-<p><img src="../images/importwindow.png" alt="import window" width="615" height="492"></p>
 <p>&nbsp;</p>
-<p>The next step requires the Columns from the import file to be 'mapped' to the Fields in Specify. </p>
-<p>A file with Column names will map differently in the Editor than a file without Column names. Both instances are described below. </p>
-<h3>File includes  Column Names </h3>
-<p>The Workbench includes an 'automapper' which  identifies matching Column and  Field names and maps them together. If all the Column names are matched to Field names the ??? will appear much like this:</p>
-<p><img src="../images/allautomapped.png" alt="all mapped" width="563" height="500"> </p>
-<p>The 'Unmapped Imported Columns' window is empty because all the Columns have been automapped. The Field names that have been mapped will appear with a (check) beside their name, indicating that they are unavailable for reuse. </p>
-<p>To  unmap a Column to a Field:</p>
-<ol>
-  <li>Select the Column/Field map </li>
-  <li>click the (down arrow) button</li>
-</ol>
-<p>The Column name will then appear in the 'Unmapped Imported Columns' window and the Field name will become available in the Specify window. </p>
-<p>To remap a Column to a Field:</p>
-<ol>
-  <li>Select the Column name in the 'Unmapped Imported Columns' window</li>
-  <li>Select a Field name in the Specify window</li>
-  <li>click the (down arrow) button   </li>
-</ol>
-<p>To Reorder the Columns</p>
-<ol>
-  <li>Select the Column/Field map</li>
-  <li>click the (up arrow) or (down arrow) key until the Column appears in the correct order  </li>
-</ol>
-<p>If all the Column and Field names match AND are exactly the same as an existing Data Set, the WorkBench allows the import file to copy the existing Data Set mappings rather than choose them in the ???. A dialog will appear to either choose  the existing mappings or create new ones: </p>
-<p><img src="../images/templatematch.png" alt="Matching Data Set structure" width="493" height="260"> </p>
-<p>To reuse the Existing Data Set structure simply select the Data Set name and click 'Reuse'. To view and edit the Columns in the import file click 'New Mapping' and the ??? dialog will appear.</p>
-<p>&nbsp;</p>
-<p>If the import Column names do not match the Specify Field names, a dialog similar to the following one will appear: <br>
-</p>
-<p><img src="../images/mostmapping.png" alt="most mapped"> </p>
-<p>Unmapped Column names appear in the 'Unmapped Imported Columns' window of the dialog. These will need to be mapped to Fields in Specify or they will be deleted. </p>
-<p>To map a Column to a Field:</p>
-<ol>
-  <li>Select the Column name in the 'Unmapped Imported Columns' window</li>
-  <li>Select a Field name in the Specify window</li>
-  <li>click the (down arrow) button </li>
-</ol>
-<p>To  unmap a Column to a Field:</p>
-<ol>
-  <li>Select the Column/Field map </li>
-  <li>click the (down arrow) button</li>
-</ol>
-<p>To Reorder the Columns</p>
-<ol>
-  <li>Select the Column/Field map</li>
-  <li>click the (up arrow) or (down arrow) key until the Column appears in the correct order</li>
-</ol>
-<p>&nbsp;</p>
-<p>When all the Columns are mapped and ordered correctly click the 'ok' button. The following dialog will appear to name and describe the Data Set that will contain the imported data:</p>
-<p><img src="../images/DataSetproperties.png" alt="Data Set Properties" width="761" height="251"> </p>
-<p>&nbsp;</p>
-<h3>No Column Names </h3>
-<p>If the first row of the file does not contain Column names the ??? will simply name the columns by their order number and the Schema will contain 'No Mapping':</p>
-<p><img src="../images/nomapping.png" alt="no mapping"></p>
-<p>The Column names will need to be manually mapped to Specify Fields using the following instructions:</p>
-<p><u>To map a Column to a Field:</u></p>
-<ol>
-  <li>Select the Column name in the 'Unmapped Imported Columns' window</li>
-  <li>Select a Field name in the Specify window</li>
-  <li>click the (down arrow) button </li>
-  <li></li>
-</ol>
-<p><u>To  unmap a Column to a Field:</u></p>
-<ol>
-  <li>Select the Column/Field map </li>
-  <li>click the (down arrow) button</li>
-  <li></li>
-</ol>
-<p><u>To Reorder the Columns</u></p>
-<ol>
-  <li>Select the Column/Field map</li>
-  <li>click the (up arrow) or (down arrow) key until the Column appears in the correct order</li>
-</ol>
-<p>To rename the Columns see <a href="FormEditing.html">FormEditing</a>. </p>
-<h3>Bad Imports </h3>
-<p>CSV files that are corrupt or have not been saved incorrectly will not import into the WorkBench. When this happens no column names will show in either the 'Unmapped Imported Columns' or Mappings window OR a Warning will appear at the bottom of the WorkBench. Examples of these indicators are shown below:</p>
-<p><img src="../images/badfileeditor.png" alt="bad file no Columns" width="566" height="437"></p>
-<p>&nbsp;</p>
-<p><img src="../images/wrongfilewarning.png" alt="Wrong File Warning" width="673" height="68"></p>
-<p></p>
+<p>The next dialog(s) will enable the column headings from the import file to be mapped to the fields in Specify. </p>
+<p>A file with column headings will map differently  than a file without column headings. Both instances are described below.</p>
 <p>&nbsp; </p>
+<h3><u>File includes  Column Headings </u> </h3>
+<p>The Workbench includes an 'auto-mapping' feature which  first identifies  column headings and compares them to existing Data Sets. If the column headings in the import file match those in an existing Data Set the following dialog will open:</p>
+<p align="center"><img src="../images/newdataset2.png" alt="New Data Set" ></p>
+<p align="center" class="imgcaption">New Data Set Columns </p>
+<p>To copy column headings from an existing Data Set select the 'Use an existing Data Set mapping' button and choose the Data Set from the list provided. The Data Set Properties dialog will then open, to name and describe the new Data Set. </p>
+<p>To choose  column headings for the new Data Set select the 'Create new Data Set mapping' button and click 'OK'.</p>
+<p>The 'automapper' then compare the import column headings to the Specify fields and 'maps' the columns to matching fields. If most of the column headings  match  Specify fields the map will appear much like the following example:</p>
+<p align="center"><img src="../images/automappededitor.png" alt="automapped" ></p>
+<p align="center" class="imgcaption">Column Headings Automapped in the Data Set Mapping Editor </p>
 <p>&nbsp;</p>
-<h2>&nbsp;</h2>
-<h2>&nbsp;</h2>
+<p>The column headings from the import file appear under 'Data Set Columns' on the right side of the dialog and the 'Specify Fields' appear on the left. </p>
+<p>Column headings that map to Specify fields are identifed by a <img src="../images/linked.png" alt="Linked" > (linked) icon. </p>
+<p>Column headings that have not been automapped will map to 'To Be Discarded' in 'Specify Fields'. Unmapped column headings will be deleted if they are not mapped to a Specify field before clicking 'OK'.</p>
+<p>The buttons in the dialog enable columns to be mapped, unmapped, added, deleted and reordered . The function of each button is described below:</p>
+<table width="75%" border="0" cellspacing="1" cellpadding="6">
+  <tr>
+    <td width="8%"><img src="../images/Map16x16.png" alt="map" width="16" height="16"></td>
+    <td width="14%">map</td>
+    <td width="78%">adds the field to the column list </td>
+  </tr>
+  <tr>
+    <td><img src="../images/Unmap16x16.png" alt="unmap" width="16" height="16"></td>
+    <td>unmap</td>
+    <td>removes the field from the list of columns </td>
+  </tr>
+  <tr>
+    <td><img src="../images/ReorderUp16x16.png" alt="reorderup" width="16" height="16"></td>
+    <td>reorder up </td>
+    <td>moves the selected field up </td>
+  </tr>
+  <tr>
+    <td><img src="../images/ReorderDown16x16.png" alt="reorderdown" width="16" height="16"></td>
+    <td>reorder down </td>
+    <td>moves the selected field down </td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<p>To map an unmapped Data Set Column to a Specify Field:</p>
+<ol>
+  <li>Click on the column to select it</li>
+  <li>Click on the Data Type to show the Specify fields in the 'Fields' window </li>
+  <li>Click on the Specify field to select it</li>
+  <li>Click the <img src="../images/Map16x16.png" alt="map" width="16" height="16"> (map) button </li>
+</ol>
+<p>To  unmap a Column to a Field:</p>
+<ol>
+  <li>Click on the column to select it </li>
+  <li>Click the <img src="../images/Unmap16x16.png" alt="unmap" width="16" height="16"> (unmap) button </li>
+</ol>
+<p>To add a column </p>
+<ol>
+  <li>Click on the Data Type to show the Specify fields in the 'Fields' window </li>
+  <li>Click on the Specify field</li>
+  <li>Click the <img src="../images/Map16x16.png" alt="map" width="16" height="16"> (map) button</li>
+</ol>
+<p>A <img src="../images/linked_right.png" alt="link" width="32" height="16"> (link) icon will appear identifying that the column and field are the same heading. </p>
+<p><em><strong>Note:</strong></em> A field may only map once. Specify fields that are mapped display a green check in the window to identify that they are in use. </p>
+<p>&nbsp;</p>
+<p>When all the Columns are mapped and ordered correctly click the 'OK' button. The following dialog will appear to name and describe the new Data Set:</p>
+<p align="center"><img src="../images/datasetproperties.png" alt="data set properties" ></p>
+<p align="center" class="imgcaption">Data Set Properties </p>
+<p>&nbsp;</p>
+<h3><u>No Column Headings </u></h3>
+<p>Import files that do not contain column headings will not map to fields in Specify and will need to be manually mapped. The following image is an example of the map of a file that does not contain column headings:</p>
+<p align="center"><img src="../images/nonamesmap.png" alt="no names mapped" ></p>
+<p align="center" class="imgcaption">Map of Import File with No Column Headings </p>
+<p align="left">&nbsp;</p>
+<p align="left">The unmapped columns will map to 'To Be Discarded' in  'Specify Fields'. Unmapped column headings will be deleted if they are not mapped to a Specify field before clicking 'OK'.</p>
+<p align="left">&nbsp;</p>
+<p>The buttons in the dialog enable columns to be mapped, unmapped, added, deleted and reordered . The function of each button is described below:</p>
+<table width="75%" border="0" cellspacing="1" cellpadding="6">
+  <tr>
+    <td width="8%"><img src="../images/Map16x16.png" alt="map" width="16" height="16"></td>
+    <td width="14%">map</td>
+    <td width="78%">adds the field to the column list </td>
+  </tr>
+  <tr>
+    <td><img src="../images/Unmap16x16.png" alt="unmap" width="16" height="16"></td>
+    <td>unmap</td>
+    <td>removes the field from the list of columns </td>
+  </tr>
+  <tr>
+    <td><img src="../images/ReorderUp16x16.png" alt="reorderup" width="16" height="16"></td>
+    <td>reorder up </td>
+    <td>moves the selected field up </td>
+  </tr>
+  <tr>
+    <td><img src="../images/ReorderDown16x16.png" alt="reorderdown" width="16" height="16"></td>
+    <td>reorder down </td>
+    <td>moves the selected field down </td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<p>To map an unmapped Data Set Column to a Specify Field:</p>
+<ol>
+  <li>Click on the column to select it</li>
+  <li>Click on the Data Type to show the Specify fields in the 'Fields' window </li>
+  <li>Click on the Specify field to select it</li>
+  <li>Click the <img src="../images/Map16x16.png" alt="map" width="16" height="16"> (map) button </li>
+</ol>
+<p>To  unmap a Column to a Field:</p>
+<ol>
+  <li>Click on the column to select it </li>
+  <li>Click the <img src="../images/Unmap16x16.png" alt="unmap" width="16" height="16"> (unmap) button </li>
+</ol>
+<p>To add a column </p>
+<ol>
+  <li>Click on the Data Type to show the Specify fields in the 'Fields' window </li>
+  <li>Click on the Specify field</li>
+  <li>Click the <img src="../images/Map16x16.png" alt="map" width="16" height="16"> (map) button</li>
+</ol>
+<p>A <img src="../images/linked_right.png" alt="link" width="32" height="16"> (link) icon will appear identifying that the column and field are the same heading. </p>
+<p><em><strong>Note:</strong></em> A field may only map once. Specify fields that are mapped display a green check in the window to identify that they are in use. </p>
+<p>&nbsp;</p>
+<p>When all the Columns are mapped and ordered correctly click the 'OK' button. The following dialog will appear to name and describe the new Data Set:</p>
+<p align="center"><img src="../images/datasetproperties.png" alt="data set properties" ></p>
+<p align="center" class="imgcaption">Data Set Properties </p>
+<p align="left">&nbsp;</p>
+<p>To rename the columns headings see <a href="FormEditing.html">Form Editing</a>. </p>
+<p>&nbsp;</p>
+<h3><u>Bad Imports </u></h3>
+<p>XLS files that are corrupt or have not been saved correctly will not import correctly into the WorkBench. A bad file may appear in the Data Set Mapping Editor with parial or no column headings, or it will display a warning at the bottom of the WorkBench window much like the following: </p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><img src="../images/wrongfilewarning.png" alt="Wrong File Warning" ></p>
+<h2></h2>
 </body>
 
 </html>
