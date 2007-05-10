@@ -21,6 +21,7 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.PrefsPanelIFace;
 import edu.ku.brc.af.prefs.PrefsSavable;
 import edu.ku.brc.specify.Specify;
+import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.ViewFactory;
 import edu.ku.brc.ui.forms.Viewable;
@@ -69,6 +70,15 @@ public class CachePrefs extends JPanel implements PrefsSavable, PrefsPanelIFace
             public void actionPerformed(ActionEvent e)
             {
                 Specify.getCacheManager().clearAll();
+                
+                // Tell the OK btn a change has occurred and update the OK btn
+                FormValidator validator = ((FormViewObj)form).getValidator();
+                if (validator != null)
+                {
+                    validator.setHasChanged(true);
+                    validator.wasValidated(null);
+                    validator.dataChanged(null, null, null);
+                }
             }
         });
     }

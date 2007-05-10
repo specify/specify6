@@ -111,13 +111,9 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
      */
     protected void initAsToolbar(final boolean addSearchUI)
     {
-        Color gray = new Color(230,230,230);
-        int   delta = 8;
-        Color lighter = new Color(gray.getRed()+delta, gray.getRed()+delta, gray.getRed()+delta);
-
         prefsToolbar = new PrefsToolbar(this);
-        prefsToolbar.setBackground(lighter);
-
+        prefsToolbar.setOpaque(false);
+        
         if (prefsToolbar.getNumPrefs() > 1)
         {
             PanelBuilder    builder    = new PanelBuilder(new FormLayout("l:p, p, r:p:g", "p"));
@@ -158,6 +154,7 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
         try
         {
             AppPreferences.getRemote().flush();
+            
         } catch (BackingStoreException ex)
         {
             log.error(ex);
@@ -437,7 +434,7 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
             // but check all the forms
             if (!pp.getValidator().isFormValid())
             {
-                log.debug("false!"+pp);
+                log.debug("false="+pp);
                 okToEnable = false;
                 break;
             }

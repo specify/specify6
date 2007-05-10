@@ -249,6 +249,21 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
         }*/
     }
 
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#setBackground(java.awt.Color)
+     */
+    @Override
+    public void setBackground(Color bg)
+    {
+        // TODO Auto-generated method stub
+        super.setBackground(bg);
+        
+        if (iconLabel != null)
+        {
+            iconLabel.setBackground(bg);
+        }
+    }
+
     /**
      * Sets the popup menu
      * @param popupMenu the pm
