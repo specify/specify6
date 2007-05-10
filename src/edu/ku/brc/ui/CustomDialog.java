@@ -180,7 +180,7 @@ public class CustomDialog extends JDialog
         
         if ((whichBtns & HELP_BTN) == HELP_BTN)
         {
-            helpBtn = new JButton(StringUtils.isNotEmpty(cancelLabel) ? cancelLabel : getResourceString("Help"));
+            helpBtn = new JButton(StringUtils.isNotEmpty(helpLabel) ? helpLabel : getResourceString("Help"));
             if (StringUtils.isNotEmpty(helpContext))
             {
                 HelpMgr.registerComponent(helpBtn, helpContext);
@@ -223,15 +223,15 @@ public class CustomDialog extends JDialog
             
         } else if (whichBtns == OKHELP)
         {
-            bb = ButtonBarFactory.buildHelpOKBar(helpBtn, okBtn);
+            bb = ButtonBarFactory.buildOKHelpBar(okBtn, helpBtn);
             
         } else if (whichBtns == OKCANCELHELP)
         {
-            bb = ButtonBarFactory.buildHelpOKCancelBar(helpBtn, okBtn, cancelBtn);
+            bb = ButtonBarFactory.buildOKCancelHelpBar(okBtn, cancelBtn, helpBtn);
             
         } else if (whichBtns == OKCANCELAPPLYHELP)
         {
-            bb = ButtonBarFactory.buildHelpOKCancelApplyBar(helpBtn, okBtn, cancelBtn, applyBtn);
+            bb = ButtonBarFactory.buildOKCancelApplyHelpBar(okBtn, cancelBtn, applyBtn, helpBtn);
             
         } else
         {

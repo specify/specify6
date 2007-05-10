@@ -27,9 +27,9 @@
               		<tocitem text="Edit Properties" target="WorkbenchDataSetProperties"/>    
               		<tocitem text="Grid Editing" target="WorkbenchGridEditing"/>
               		<tocitem text="Form Editing" target="WorkbenchFormEditing"/>
-              		<tocitem text="Exporting Data" target="WorkbenchExportingData">
-						<tocitem text="Exporting DataSet" target="WorkbenchExportDataSet"/>
-              			<tocitem text="Exporting Excel Template" target="WorkbenchExportExcelTemplate"/>
+              		<tocitem text="Exporting Data" target="WorkbenchExportData">
+						<tocitem text="Export DataSet" target="WorkbenchExportDataSet"/>
+              			<tocitem text="Export Excel Template" target="WorkbenchExportExcelTemplate"/>
               		</tocitem>	
               		<tocitem text="ImageWindow" target="WorkbenchWorkingWithImages"/>
           		</tocitem>  

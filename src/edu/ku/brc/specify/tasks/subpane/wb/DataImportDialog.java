@@ -263,7 +263,7 @@ public class DataImportDialog extends JDialog implements ActionListener
         JPanel configPanel = new JPanel();
         CellConstraints cc = new CellConstraints();
         PanelBuilder builder = new PanelBuilder(new FormLayout(
-                "5px, 15px,p,30px , p:g,15px,", // columns
+                "5px, 15px, p, 30px, p:g, 15px", // columns
                 
                 "5px," + 		//padding
                 "p,3px, " +		//separator     
@@ -271,7 +271,7 @@ public class DataImportDialog extends JDialog implements ActionListener
                 "p,3px, " +		//file info separator
                 "p,3px, " +		//file info lable
                 "p,10px, " +	//row header
-                "p, 3px,"+		//previe separator
+                "p, 3px,"+		//preview separator
                 "f:p:g,5px," + 	//tablePreview
                 "30px,3px,"+    //data import status error panel
                 "p,10px" 		//buttongs
@@ -285,7 +285,7 @@ public class DataImportDialog extends JDialog implements ActionListener
 
         builder.addSeparator(getResourceString("DATA_IMPORT_OPS"),  cc.xyw(2,2,4)); 
         builder.add         (createDelimiterPanel(),                cc.xy (3,4));        
-        builder.add         (createOtherControlsForCSVPanel(),            cc.xy (5,4));       
+        builder.add         (createOtherControlsForCSVPanel(),      cc.xy (5,4));       
           
         builder.addSeparator(getResourceString("FILE_IMPORT"),      cc.xyw(2,6,4));
         builder.add         (fileInfo,                              cc.xyw(3,8,4));
@@ -314,7 +314,7 @@ public class DataImportDialog extends JDialog implements ActionListener
         JPanel configPanel = new JPanel();
         CellConstraints cc = new CellConstraints();
         PanelBuilder builder = new PanelBuilder(new FormLayout(
-                "5px, 15px,p,30px , p:g,15px,", // columns               
+                "5px, 15px, p, 30px, p:g, 15px", // columns               
                 "5px," + 		//padding      
                 "p,3px, " +		//file info separator
                 "p,3px, " +		//file info lable
@@ -352,8 +352,8 @@ public class DataImportDialog extends JDialog implements ActionListener
     private JPanel buildButtons()
     {
         cancelBtn = new JButton(getResourceString("Cancel"));
-        okBtn = new JButton(getResourceString("OK"));
-        helpBtn = new JButton(getResourceString("Help"));
+        okBtn     = new JButton(getResourceString("OK"));
+        helpBtn   = new JButton(getResourceString("Help"));
 
         cancelBtn.addActionListener(new ActionListener()
         {
@@ -389,15 +389,14 @@ public class DataImportDialog extends JDialog implements ActionListener
         {
             public void actionPerformed(ActionEvent e)
             {
-                log.debug("User okayed DataImportDialog");
+                log.debug("User pressed help");
                 isCancelled = false;
                 btnPressed  = HELP_BTN;
-                setVisible(false);
             }
         });
 
         getRootPane().setDefaultButton(okBtn);
-        HelpMgr.registerComponent(helpBtn, "configcsv");
+        HelpMgr.registerComponent(helpBtn, "WorkbenchImportCSV");
         return  ButtonBarFactory.buildOKCancelHelpBar(okBtn, cancelBtn, helpBtn);
     }
     

@@ -195,15 +195,15 @@ public class CustomFrame extends JFrame
             
         } else if (whichBtns == OKHELP)
         {
-            bb = ButtonBarFactory.buildHelpOKBar(helpBtn, okBtn);
+            bb = ButtonBarFactory.buildOKHelpBar(okBtn, helpBtn);
             
         } else if (whichBtns == OKCANCELHELP)
         {
-            bb = ButtonBarFactory.buildHelpOKCancelBar(helpBtn, okBtn, cancelBtn);
+            bb = ButtonBarFactory.buildOKCancelHelpBar(okBtn, cancelBtn, helpBtn);
             
         } else if (whichBtns == OKCANCELAPPLYHELP)
         {
-            bb = ButtonBarFactory.buildHelpOKCancelApplyBar(helpBtn, okBtn, cancelBtn, applyBtn);
+            bb = ButtonBarFactory.buildOKCancelApplyHelpBar(okBtn, cancelBtn, applyBtn, helpBtn);
             
         } else
         {

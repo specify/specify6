@@ -952,11 +952,6 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         currentPanelType = panelType;
         
-        if (imageFrame != null)
-        {
-            imageFrame.setHelpContext(panelType == PanelType.Spreadsheet ? "WorkBenchGridImageWindow" : "WorkBenchFormImageWindow");
-        }
-        
         cardLayout.show(mainPanel, currentPanelType.toString());
         cpCardLayout.show(controllerPane, currentPanelType.toString());
         
@@ -1069,7 +1064,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 
             toggleImageFrameBtn.setToolTipText(getResourceString("WB_HIDE_IMG_WIN"));
             spreadSheet.getSelectionModel().addListSelectionListener(workbenchRowChangeListener);
-            imageFrame.setHelpContext(currentPanelType == PanelType.Spreadsheet ? "WorkBenchGridImageWindow" : "WorkBenchFormImageWindow");
+            imageFrame.setHelpContext("WorkbenchWorkingWithImages");
             imageFrame.setVisible(true);
             
             // tell the table model to show the image column
@@ -2034,7 +2029,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                                                                         CustomDialog.OKCANCELHELP,
                                                                         ToggleButtonChooserDlg.Type.Checkbox);
         
-        dlg.setHelpContext(currentPanelType == PanelType.Spreadsheet ? "WorkBenchGridEditingCF" : "WorkBenchFormEditingCF");
+        dlg.setHelpContext(currentPanelType == PanelType.Spreadsheet ? "WorkbenchGridEditingCF" : "WorkbenchFormEditingCF");
         dlg.setAddSelectAll(true);
         dlg.setSelectedObjects(selectedObjects);
         dlg.setModal(true);
@@ -2328,7 +2323,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     @Override
     public String getHelpTarget()
     {
-        return currentPanelType == PanelType.Spreadsheet ? "WorkBenchGridEditing" : "WorkBenchFormEditing";
+        return currentPanelType == PanelType.Spreadsheet ? "WorkbenchGridEditing" : "WorkbenchFormEditing";
     }
 
     //------------------------------------------------------------

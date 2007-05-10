@@ -194,7 +194,6 @@ public class WorkbenchTask extends BaseTask
             
             roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_NEW_DATASET"),   "NewDataSet", getResourceString("WB_NEW_DATASET_TT"), new CommandAction(WORKBENCH, NEW_WORKBENCH, wbTblId),     null, false, false);// true means make it draggable
             roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
-            enableNavBoxList.add((NavBoxItemIFace)roc);
 
             //roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_NEW_DS_FROM_TMPL"), "NewDataSet", getResourceString("WB_NEW_DS_FROM_TMPL"), new CommandAction(WORKBENCH, NEW_WORKBENCH_FROM_TEMPLATE, wbTblId), null, false, false);// true means make it draggable
 
@@ -375,7 +374,7 @@ public class WorkbenchTask extends BaseTask
                     CommandAction subCmd = (CommandAction)cmdData;
                     if (subCmd.getTableId() == Workbench.getClassTableId())
                     {
-                        Workbench wb = selectWorkbench(subCmd, ""); // XXX ADD HELP
+                        Workbench wb = selectWorkbench(subCmd, "WorkbenchEditMapping"); // XXX ADD HELP
                         if (wb != null)
                         {
                             UsageTracker.incrUsageCount("WB.EditMappings");
@@ -944,7 +943,7 @@ public class WorkbenchTask extends BaseTask
            {
                if (subCmd.getTableId() == cmdAction.getTableId())
                {
-                   workbench = selectWorkbench(subCmd, ""); // XXX ADD HELP
+                   workbench = selectWorkbench(subCmd, "WorkbenchExportDataSet"); // XXX ADD HELP
                }
            }
        }
@@ -952,7 +951,7 @@ public class WorkbenchTask extends BaseTask
        // The command may have been clicked on so ask for one
        if (workbench == null)
        {
-           workbench = selectWorkbench(cmdAction, ""); // XXX ADD HELP
+           workbench = selectWorkbench(cmdAction, "WorkbenchExportDataSet"); // XXX ADD HELP
        }
 
        if (workbench != null)
@@ -1009,7 +1008,7 @@ public class WorkbenchTask extends BaseTask
             {
                 if (subCmd.getTableId() == cmdAction.getTableId())
                 {
-                    workbenchTemplate = selectWorkbenchTemplate(subCmd, "WB_EXPORT_TEMPLATE", null, ""); // XXX ADD HELP
+                    workbenchTemplate = selectWorkbenchTemplate(subCmd, "WB_EXPORT_TEMPLATE", null, "WorkbenchExportExcelTemplate"); // XXX ADD HELP
                     
                 } else
                 {
@@ -1020,7 +1019,7 @@ public class WorkbenchTask extends BaseTask
         
         if (workbenchTemplate == null)
         {
-            workbenchTemplate = selectWorkbenchTemplate(cmdAction, "WB_EXPORT_TEMPLATE", null, ""); // XXX ADD HELP
+            workbenchTemplate = selectWorkbenchTemplate(cmdAction, "WB_EXPORT_TEMPLATE", null, "WorkbenchExportExcelTemplate"); // XXX ADD HELP
         }
 
         // The command may have been clicked on so ask for one
@@ -1074,13 +1073,13 @@ public class WorkbenchTask extends BaseTask
     protected void createWorkbenchFromTemplate(final CommandAction cmdAction)
     {
         
-        Workbench wb = selectWorkbench(cmdAction, "WB_CHOOSE_DATASET_REUSE_TITLE", "WB_CHOOSE_DATASET_REUSE", "", true); // XXX ADD HELP
+        Workbench wb = selectWorkbench(cmdAction, "WB_CHOOSE_DATASET_REUSE_TITLE", "WB_CHOOSE_DATASET_REUSE", "WorkbenchEditMapping", true); // XXX ADD HELP
         if (wb != null)
         {
             WorkbenchTemplate workbenchTemplate = wb.getWorkbenchTemplate();
             if (workbenchTemplate == null)
             {
-                workbenchTemplate = selectWorkbenchTemplate(cmdAction, "WB_CHOOSE_DATASET_REUSE_TITLE", "WB_CHOOSE_DATASET_REUSE", ""); // XXX ADD HELP
+                workbenchTemplate = selectWorkbenchTemplate(cmdAction, "WB_CHOOSE_DATASET_REUSE_TITLE", "WB_CHOOSE_DATASET_REUSE", "WorkbenchEditMapping"); // XXX ADD HELP
             }
     
            // The command may have been clicked on so ask for one
@@ -1224,9 +1223,10 @@ public class WorkbenchTask extends BaseTask
     protected Workbench createNewWorkbench(final ImportDataFileInfo dataFileInfo, 
                                            final File   inputFile)
     {
-        
-        String wbName  = inputFile != null ? FilenameUtils.getBaseName(inputFile.getName()) : null;
-        int btnPressed = selectExistingTemplate(dataFileInfo != null ? dataFileInfo.getColInfo() : null, "WorkbenchImportData");
+        boolean hasDataFile = inputFile != null;
+        String wbName  = hasDataFile ? FilenameUtils.getBaseName(inputFile.getName()) : null;
+        int btnPressed = selectExistingTemplate(hasDataFile ? dataFileInfo.getColInfo() : null, 
+                                                hasDataFile ? "WorkbenchImportData" : "WorkbenchNewDataSet");
         WorkbenchTemplate workbenchTemplate = selectedTemplate;
         
         if (btnPressed == ChooseFromListDlg.APPLY_BTN)
@@ -1234,7 +1234,7 @@ public class WorkbenchTask extends BaseTask
             TemplateEditor dlg = showColumnMapperDlg(dataFileInfo, null, "WB_MAPPING_EDITOR");
             if (!dlg.isCancelled())
             {   
-                workbenchTemplate = createTemplate(dlg, inputFile != null ? inputFile.getAbsolutePath() : "");
+                workbenchTemplate = createTemplate(dlg, hasDataFile ? inputFile.getAbsolutePath() : "");
              }
             
         } else if (btnPressed == ChooseFromListDlg.OK_BTN && workbenchTemplate != null)
@@ -1784,7 +1784,7 @@ public class WorkbenchTask extends BaseTask
      */
     protected void doReport(final CommandAction cmdAction)
     {
-        Workbench workbench = selectWorkbench(cmdAction, ""); // XXX ADD HELP
+        Workbench workbench = selectWorkbench(cmdAction, "WorkbenchReporting"); // XXX ADD HELP
         if (workbench == null)
         {
             return;
@@ -2069,7 +2069,7 @@ public class WorkbenchTask extends BaseTask
      */
     protected void doChart(final CommandAction cmdAction, final boolean doBarChart)
     {
-        Workbench workbench = selectWorkbench(cmdAction, ""); // XXX ADD HELP
+        Workbench workbench = selectWorkbench(cmdAction, "WorkbenchChart"); // XXX ADD HELP
         if (workbench == null)
         {
             return;

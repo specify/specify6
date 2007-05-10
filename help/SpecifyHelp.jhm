@@ -18,43 +18,27 @@
 	<mapID target="Statistics"          url="SpecifyHelp/Statistics/Statistics.html" />
 	<mapID target="ConfiguringDatabase" url="SpecifyHelp/ConfiguringDatabase.html" />
 
-	<mapID target="OnRampOverview"      url="SpecifyHelp/OnRamp/Overview.html" />
-	<mapID target="OnRampImportData"    url="SpecifyHelp/OnRamp/ImportData.html" />
-	<mapID target="OnRampImportCSV"     url="SpecifyHelp/OnRamp/ImportCSV.html" />
-	<mapID target="OnRampColMapping"    url="SpecifyHelp/OnRamp/ColumnMapping.html" />
-	<mapID target="OnRampImportXLS"     url="SpecifyHelp/OnRamp/ImportXLS.html" />
-	<mapID target="OnRampImportImage"   url="SpecifyHelp/OnRamp/ImportCardImages.html" />
-	<mapID target="OnRampDataSets"      url="SpecifyHelp/OnRamp/DataSets.html" />
-	<mapID target="OnRampEditing"       url="SpecifyHelp/OnRamp/Editing.html" />
-	<mapID target="OnRampReporting"     url="SpecifyHelp/OnRamp/Reporting.html" />
-	<mapID target="OnRampSpecialTools"  url="SpecifyHelp/OnRamp/SpecialTools.html" />
-	<mapID target="OnRampExporting"     url="SpecifyHelp/OnRamp/Exporting.html" />
-	<mapID target="OnRampTemplates"     url="SpecifyHelp/OnRamp/Templates.html" />
-	<mapID target="OnRampGridEditing"   url="SpecifyHelp/OnRamp/GridEditing.html" />
-	<mapID target="OnRampFormEditing"   url="SpecifyHelp/OnRamp/FormEditing.html" />
-	<mapID target="ColumnMappingDlg"    url="SpecifyHelp/OnRamp/ColumnMapping.html" />
 	-->
 	
 	<mapID target="Workbench"                  url="SpecifyHelp/Workbench/Overview.html"/>
 	
 	<mapID target="WorkbenchDataSetProperties" url="SpecifyHelp/Workbench/EditProperties.html"/>
 	<mapID target="WorkbenchNewDataSet"        url="SpecifyHelp/Workbench/NewDataSet.html"/>
+	<mapID target="WorkbenchNewMapping"        url="SpecifyHelp/Workbench/NewDataSet.html#NewDataSetMapping"/>
 	<mapID target="WorkbenchDataSetOverview"   url="SpecifyHelp/Workbench/DataSetOverview.html"/>
 	<mapID target="WorkbenchGridEditing"       url="SpecifyHelp/Workbench/GridEditing.html"/>
 	<mapID target="WorkbenchFormEditing"       url="SpecifyHelp/Workbench/FormEditing.html"/>
 	<mapID target="WorkbenchGridEditingCF"     url="SpecifyHelp/Workbench/GridEditing.html#Carry_Forward"/>
 	<mapID target="WorkbenchFormEditingCF"     url="SpecifyHelp/Workbench/FormEditing.html#Carry_Forward"/>
-	<mapID target="WorkbenchExportingDataSet"  url="SpecifyHelp/Workbench/ExportingDataSet.html"/>
-	<mapID target="WorkbenchGridImageWindow"   url="SpecifyHelp/Workbench/WorkingWithImages.html"/>
-	<mapID target="WorkbenchFormImageWindow"   url="SpecifyHelp/Workbench/WorkingWithImages.html"/>
+	<mapID target="WorkbenchWorkingWithImages" url="SpecifyHelp/Workbench/WorkingWithImages.html"/>
 	
-	<mapID target="WorkbenchExportData"  url="SpecifyHelp/Workbench/ExportingDataSet.html"/>
-	<mapID target="WorkbenchEditMapping"   url="SpecifyHelp/Workbench/EditMapping.html"/>                         <!-- ColMapperPanel -->
-	<mapID target="WorkbenchExportDataSet" url="SpecifyHelp/Workbench/ExportDataSet"/> 
-	<mapID target="WorkbenchExportExcelTemplate"       url="SpecifyHelp/Workbench/ExportExcelTemplate.html"/>                             
-	<mapID target="WorkbenchDataSetSummary" url="SpecifyHelp/Workbench/DataSetSummary.html"/>
-	<mapID target="WorkbenchTop10" url="SpecifyHelp/Workbench/Top10.html"/>
-	<mapID target="WorkbenchChart" url="SpecifyHelp/Workbench/Chart.html"/>
+	<mapID target="WorkbenchExportData"        url="SpecifyHelp/Workbench/ExportingData.html"/>
+	<mapID target="WorkbenchEditMapping"       url="SpecifyHelp/Workbench/EditMapping.html"/>                         <!-- ColMapperPanel -->
+	<mapID target="WorkbenchExportDataSet"     url="SpecifyHelp/Workbench/ExportDataSet.html"/>
+	<mapID target="WorkbenchExportExcelTemplate" url="SpecifyHelp/Workbench/ExportExcelTemplate.html"/>                             
+	<mapID target="WorkbenchDataSetSummary"    url="SpecifyHelp/Workbench/DataSetSummary.html"/>
+	<mapID target="WorkbenchTop10"             url="SpecifyHelp/Workbench/Top10.html"/>
+	<mapID target="WorkbenchChart"             url="SpecifyHelp/Workbench/Chart.html"/>
 	
 	<mapID target="WorkbenchImportCSV"         url="SpecifyHelp/Workbench/ImportCSV.html"/>
 	<mapID target="WorkbenchImportImages"      url="SpecifyHelp/Workbench/ImportImages.html"/>
@@ -63,7 +47,7 @@
 	
 	<mapID target="WorkbenchReporting"         url="SpecifyHelp/Workbench/Reporting.html"/>
 	<mapID target="WorkbenchSpecialTools"      url="SpecifyHelp/Workbench/SpecialTools.html"/>
-	<mapID target="WorkbenchLatLongConverter"      url="SpecifyHelp/Workbench/LatLongConverter.html"/>
+	<mapID target="WorkbenchLatLongConverter"  url="SpecifyHelp/Workbench/LatLongConverter.html"/>
 	
 	
 	<mapID target="GlossMouse"          url="SpecifyHelp/Glossary/GlossMouse.html" />

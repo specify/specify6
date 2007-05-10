@@ -132,7 +132,7 @@ public class TemplateEditor extends CustomDialog
         this.isMappedToAFile = dataFileInfo != null;
         this.isEditMode      = false;
         
-        helpContext = dataFileInfo == null ? "WorkBenchNewTemplate" : "WorkBenchImportData";
+        helpContext = dataFileInfo == null ? "WorkbenchNewMapping" : "WorkbenchEditMapping";
         
         createUI();
     }
@@ -150,7 +150,7 @@ public class TemplateEditor extends CustomDialog
         this.isMappedToAFile   = StringUtils.isNotEmpty(wbTemplate.getSrcFilePath());
         this.isEditMode        = this.workbenchTemplate != null;
         
-        helpContext = this.isMappedToAFile ? "WorkBenchImportTemplateEditor" : "WorkBenchTemplateEditing";
+        helpContext = "WorkbenchEditMapping";
         
         createUI();
     }
