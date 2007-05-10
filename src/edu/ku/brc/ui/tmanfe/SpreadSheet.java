@@ -519,8 +519,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
      */
     public void actionPerformed(final ActionEvent e)
     {
-        System.out.println("hasFocus "+hasFocus());
-        if (!hasFocus()) // bail
+        if (UIRegistry.getPermanentFocusOwner() != this) // bail
         {
             return;
         }
@@ -583,7 +582,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
                     StringTokenizer st2 = new StringTokenizer(rowstring, "\t");
                     for (int j = 0; st2.hasMoreTokens(); j++)
                     {
-                        String value = (String) st2.nextToken();
+                        String value = st2.nextToken();
                         if (startRow + i < getRowCount() && startCol + j < getColumnCount())
                         {
                             setValueAt(value, startRow + i, startCol + j);

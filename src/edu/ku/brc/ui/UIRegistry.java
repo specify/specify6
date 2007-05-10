@@ -147,6 +147,10 @@ public class UIRegistry
     
     protected HashMap<Object, Action> actions = null;
     
+    // XXX Doing the whole permanentFocusOwner owner thing is a kludge until 
+    // we really understand the right way to do Cut Copy Paste
+    protected static Component permanentFocusOwner = null;
+    
     static 
     {
         final KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager(); 
@@ -154,9 +158,13 @@ public class UIRegistry
             new PropertyChangeListener() { 
                 public void propertyChange(PropertyChangeEvent e) 
                 {
-                    String prop = e.getPropertyName(); 
-                    //System.out.println(prop+"  "+focusManager.getFocusOwner()+" "+focusManager.getFocusedWindow());
-                    if (("focusOwner".equals(prop)) && undoAction != null && redoAction != null) 
+                    String propName = e.getPropertyName(); 
+                    if (propName.equals("permanentFocusOwner"))
+                    {
+                        permanentFocusOwner = focusManager.getFocusOwner();
+                    }
+                    System.out.println(propName+"  "+focusManager.getFocusOwner()+" "+focusManager.getFocusedWindow());
+                    if (("focusOwner".equals(propName)) && undoAction != null && redoAction != null) 
                     { 
                         if (focusManager.getFocusOwner() instanceof UndoableTextIFace)
                         {
@@ -219,6 +227,14 @@ public class UIRegistry
         return instance.getResourceBundle();
     }
 
+
+    /**
+     * @return the getPermanentFocusOwner
+     */
+    public static Component getPermanentFocusOwner()
+    {
+        return permanentFocusOwner;
+    }
 
     /**
      * Returns whether this is a release.
