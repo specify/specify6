@@ -519,6 +519,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
      */
     public void actionPerformed(final ActionEvent e)
     {
+        System.out.println("hasFocus "+hasFocus());
         if (!hasFocus()) // bail
         {
             return;
@@ -528,7 +529,6 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         // The code in this method was tken from a JavaWorld Example
         //
         boolean isCut = e.getActionCommand().compareTo("Cut") == 0;
-        System.out.println("hasFocus "+hasFocus());
         if (e.getActionCommand().compareTo("Copy") == 0 || isCut)
         {
             StringBuffer sbf = new StringBuffer();

@@ -234,7 +234,7 @@
 		<antcall target="dist-mac-clean"/>
 		
 		
-		<antcall target="build-empty-derby-db"/>
+		<!-- <antcall target="build-empty-derby-db"/> -->
 		
 		
 		<mkdir dir="${dist-mac}" />
@@ -293,6 +293,11 @@
 				<exclude name="**/.svn" />
 			</fileset>
 		</copy>
+		
+		
+		<!-- Testing Alt Help 
+		<property name="alt.help.img.dir" value="AltHelpImages/Windows"/>
+		<antcall target="copy-alt-help-images"/> -->
 
 		<!-- Demo Files -->
 		<copy file="demo_files/workbench/FishCollectingTrip.csv" todir="${dist-mac}/examples" />
@@ -456,6 +461,10 @@
 		<antcall target="build-empty-derby-db"/>
 		<antcall target="basic-non-mac-dist"/>
 		
+		<!-- Copy Alt Help Image Files -->
+		<property name="alt.help.img.dir" value="AltHelpImages/Windows"/>
+	    <antcall target="copy-alt-help-images"/>
+		
 		<!-- Demo Files -->
 		<copy file="demo_files/workbench/FishCollectingTrip.csv" todir="${dist-win}/examples" />
 		<copy file="demo_files/workbench/JohsonCountyTrip.csv" todir="${dist-win}/examples" />
@@ -509,6 +518,25 @@
 	    <copy file="demo_files/workbench/SaipanTrip.xls" todir="${dist-linux}/examples" />
 		
 	</target>
+	
+	<!--*************************************************************
+	     Copy Alternate Help Images
+	    ************************************************************* -->
+	<target name="copy-alt-help-images">
+		
+		<!-- <property name="appdir" value="${dist-mac}/${app.name}.app" />
+		<property name="alt.help.img.dir" value="AltHelpImages/Windows"/>
+		<copy todir="${appdir}/Contents/Resources/Java/help/SpecifyHelp/images" flatten="true" overwrite="true"> -->
+		<copy todir="${appdir}/help/SpecifyHelp/images" flatten="true" overwrite="true">
+			<fileset dir="${alt.help.img.dir}">
+				<exclude name="**/.svn" />
+				<include name="**/*.png" />
+			</fileset>
+		</copy>
+		
+	</target>
+
+
 
 	<!--*************************************************************
 	     Clean Distributions

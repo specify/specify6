@@ -130,12 +130,14 @@ public class XLSExport implements DataExport
      * @param cell
      * @param value
      */
-    protected void setCellValue(final HSSFCell cell, String value)
+    protected void setCellValue(final HSSFCell cell, final String value)
     {
+        int type = cell.getCellType();
+        
         boolean valueSet = true;
         try
         {
-            if (cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC)
+            if (type == HSSFCell.CELL_TYPE_NUMERIC)
             {
                 cell.setCellValue(Double.parseDouble(value));
             }
@@ -148,7 +150,7 @@ public class XLSExport implements DataExport
             // But we probably shouldn't even with bother with CELL_TYPE_BOOLEAN since Specify6
             // booleans arent' true booleans anyway so
             // why bother?
-            else if (cell.getCellType() == HSSFCell.CELL_TYPE_BOOLEAN
+            else if (type == HSSFCell.CELL_TYPE_BOOLEAN
                     && (value == "true" || value == "false"))
             {
                 cell.setCellValue(Boolean.parseBoolean(value));
@@ -162,8 +164,13 @@ public class XLSExport implements DataExport
         {
             valueSet = false;
         }
+        
         if (!valueSet)
         {
+            if (type != HSSFCell.CELL_TYPE_STRING)
+            {
+                cell.setCellType(HSSFCell.CELL_TYPE_STRING);
+            }
             cell.setCellValue(value);
         }
     }
@@ -201,21 +208,24 @@ public class XLSExport implements DataExport
             }
             else
             {
-                WorkbenchRow wbRow     = (WorkbenchRow) data.get(0);
-                Workbench    workBench = wbRow.getWorkbench();
+                WorkbenchRow      wbRow     = (WorkbenchRow) data.get(0);
+                Workbench         workBench = wbRow.getWorkbench();
+                WorkbenchTemplate template  = workBench.getWorkbenchTemplate();
+                short             numCols   = (short)template.getWorkbenchTemplateMappingItems().size();
                 
-                colTypes = bldColTypes(workBench.getWorkbenchTemplate());
+                colTypes = bldColTypes(template);
                 for (Object rowObj : data)
                 {
                     WorkbenchRow row     = (WorkbenchRow)rowObj;
                     HSSFRow      hssfRow = workSheet.createRow(rowNum++);
-                    
-                    for (short colNum = 0; colNum < row.getWorkbenchDataItems().size(); colNum++)
+
+                    for (short colNum = 0; colNum < numCols; colNum++)
                     {
                         HSSFCell cell = hssfRow.createCell(colNum);
                         cell.setCellType(colTypes[colNum]);
                         setCellValue(cell, row.getData(colNum));
                     }
+                    
                 }
             }
         }

@@ -43,7 +43,10 @@ public class MemoryWarningSystem
     
     private static double thresholdPercentage = 0.6;
     private static double thresholdStep       = 0.1;
-    
+    private static long   maxMemory           = 0;
+    private static long   usedMemory          = 0;
+
+
     public interface Listener
     {
         public void memoryUsageLow(long usedMemory, long maxMemory);
@@ -52,14 +55,14 @@ public class MemoryWarningSystem
 
     public MemoryWarningSystem()
     {
-        MemoryMXBean        mbean   = ManagementFactory.getMemoryMXBean();
+         MemoryMXBean        mbean   = ManagementFactory.getMemoryMXBean();
         NotificationEmitter emitter = (NotificationEmitter) mbean;
         emitter.addNotificationListener(new NotificationListener()
         {
             public void handleNotification(Notification n, Object hb)
             {
-                long   maxMemory  = tenuredGenPool.getUsage().getMax();
-                long   usedMemory = tenuredGenPool.getUsage().getUsed();
+                maxMemory  = tenuredGenPool.getUsage().getMax();
+                usedMemory = tenuredGenPool.getUsage().getUsed();
                 double percentageUsed = ((double) usedMemory) / maxMemory;
                 if (thresholdStep < 0.9 && percentageUsed > thresholdStep)
                 {
@@ -119,6 +122,22 @@ public class MemoryWarningSystem
     public static void setThresholdPercentage(double thresholdPercentage)
     {
         MemoryWarningSystem.thresholdPercentage = thresholdPercentage;
+    }
+
+    /**
+     * @return the maxMemory
+     */
+    public static long getMaxMemory()
+    {
+        return maxMemory;
+    }
+
+    /**
+     * @return the usedMemory
+     */
+    public static long getUsedMemory()
+    {
+        return usedMemory;
     }
 
     /**
