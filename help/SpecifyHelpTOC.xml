@@ -4,9 +4,10 @@
          "http://java.sun.com/products/javahelp/toc_1_0.dtd">
 <toc version="1.0">
     <tocitem text="Specify" target="specify">
+<!--
       <tocitem text="Configuring a Database" target="ConfiguringDatabase"/>
       <tocitem text="Logging In" target="login"/>
-<!--
+
       <tocitem text="Getting Started" target="Startup"/>
       <tocitem text="Data Entry" target="Data_Entry"/>
       <tocitem text="Labels" target="Labels"/>
