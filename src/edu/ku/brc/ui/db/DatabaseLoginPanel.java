@@ -133,11 +133,8 @@ public class DatabaseLoginPanel extends JPanel
 
     /**
      * Constructor that has the form created from the view system
-     * 
-     * @param dbListener
-     *            listener to the panel (usually the frame or dialog)
-     * @param isDlg
-     *            whether the parent is a dialog (false mean JFrame)
+     * @param dbListener listener to the panel (usually the frame or dialog)
+     * @param isDlg whether the parent is a dialog (false mean JFrame)
      */
     public DatabaseLoginPanel(final DatabaseLoginListener dbListener, final boolean isDlg)
     {
@@ -149,9 +146,7 @@ public class DatabaseLoginPanel extends JPanel
 
     /**
      * Sets a window to be resized for extra options
-     * 
-     * @param window
-     *            the window
+     * @param window the window
      */
     public void setWindow(Window window)
     {
@@ -160,7 +155,6 @@ public class DatabaseLoginPanel extends JPanel
 
     /**
      * Returns the owning window.
-     * 
      * @return the owning window.
      */
     public Window getWindow()
@@ -178,7 +172,6 @@ public class DatabaseLoginPanel extends JPanel
 
     /**
      * Returns the statusbar.
-     * 
      * @return the statusbar.
      */
     public JStatusBar getStatusBar()
@@ -189,16 +182,11 @@ public class DatabaseLoginPanel extends JPanel
     /**
      * Creates a line in the form.
      * 
-     * @param label
-     *            JLabel text
-     * @param comp
-     *            the component to be added
-     * @param pb
-     *            the PanelBuilder to use
-     * @param cc
-     *            the CellConstratins to use
-     * @param y
-     *            the 'y' coordinate in the layout of the form
+     * @param label JLabel text
+     * @param comp the component to be added
+     * @param pb the PanelBuilder to use
+     * @param cc the CellConstratins to use
+     * @param y the 'y' coordinate in the layout of the form
      * @return return an incremented by 2 'y' position
      */
     protected int addLine(final String label,
@@ -217,9 +205,7 @@ public class DatabaseLoginPanel extends JPanel
 
     /**
      * Creates the UI for the login and hooks up any listeners.
-     * 
-     * @param isDlg
-     *            whether the parent is a dialog (false mean JFrame)
+     * @param isDlg  whether the parent is a dialog (false mean JFrame)
      */
     protected void createUI(final boolean isDlg)
     {
@@ -290,12 +276,9 @@ public class DatabaseLoginPanel extends JPanel
             addKeyListenerFor(loginBtn, true);
         }
 
-        autoLoginCBX.setSelected(AppPreferences.getLocalPrefs()
-                .getBoolean("login.autologin", false));
-        rememberUsernameCBX.setSelected(AppPreferences.getLocalPrefs().getBoolean(
-                "login.rememberuser", false));
-        rememberPasswordCBX.setSelected(AppPreferences.getLocalPrefs().getBoolean(
-                "login.rememberpassword", false));
+        autoLoginCBX.setSelected(AppPreferences.getLocalPrefs().getBoolean("login.autologin", false));
+        rememberUsernameCBX.setSelected(AppPreferences.getLocalPrefs().getBoolean("login.rememberuser", false));
+        rememberPasswordCBX.setSelected(AppPreferences.getLocalPrefs().getBoolean("login.rememberpassword", false));
 
         if (autoLoginCBX.isSelected())
         {
@@ -418,8 +401,7 @@ public class DatabaseLoginPanel extends JPanel
 
         // Layout the form
 
-        PanelBuilder formBuilder = new PanelBuilder(new FormLayout("p,3dlu,max(220px;p)", UIHelper
-                .createDuplicateJGoodiesDef("p", "2dlu", 11)));
+        PanelBuilder formBuilder = new PanelBuilder(new FormLayout("p,3dlu,max(220px;p):g", UIHelper.createDuplicateJGoodiesDef("p", "2dlu", 11)));
         CellConstraints cc = new CellConstraints();
         formBuilder.addSeparator(getResourceString("logintitle"), cc.xywh(1, 1, 3, 1));
 
@@ -432,8 +414,7 @@ public class DatabaseLoginPanel extends JPanel
         y = addLine(null, rememberPasswordCBX, formBuilder, cc, y);
         y = addLine(null, autoLoginCBX, formBuilder, cc, y);
 
-        PanelBuilder extraPanelBlder = new PanelBuilder(new FormLayout("p,3dlu,max(220px;p)",
-                "p,2dlu,p,2dlu,p"));
+        PanelBuilder extraPanelBlder = new PanelBuilder(new FormLayout("p,3dlu,max(220px;p):g", "p,2dlu,p,2dlu,p"));
         extraPanel = extraPanelBlder.getPanel();
         extraPanel.setBorder(BorderFactory.createEmptyBorder(2, 2, 4, 2));
 
@@ -446,15 +427,14 @@ public class DatabaseLoginPanel extends JPanel
 
         formBuilder.add(extraPanelBlder.getPanel(), cc.xywh(1, y, 3, 1));
 
-        PanelBuilder outerPanel = new PanelBuilder(new FormLayout("p,3dlu,p", "p,2dlu,p,2dlu,p"), this);
+        PanelBuilder outerPanel = new PanelBuilder(new FormLayout("p,3dlu,p:g", "p,2dlu,p,2dlu,p"), this);
         ImageDisplay icon = new ImageDisplay(IconManager.getIcon("SpecifyLargeIcon"), false, false);
 
         formBuilder.getPanel().setBorder(BorderFactory.createEmptyBorder(5, 5, 0, 5));
 
         outerPanel.add(icon, cc.xy(1, 1));
         outerPanel.add(formBuilder.getPanel(), cc.xy(3, 1));
-        outerPanel.add(ButtonBarFactory.buildOKCancelHelpBar(loginBtn, cancelBtn, helpBtn), cc
-                .xywh(1, 3, 3, 1));
+        outerPanel.add(ButtonBarFactory.buildOKCancelHelpBar(loginBtn, cancelBtn, helpBtn), cc.xywh(1, 3, 3, 1));
         outerPanel.add(statusBar, cc.xywh(1, 5, 3, 1));
 
         updateUIControls();
@@ -462,9 +442,7 @@ public class DatabaseLoginPanel extends JPanel
 
     /**
      * Creates a focus listener so the UI is updated when the focus leaves
-     * 
-     * @param textField
-     *            the text field to be changed
+     * @param textField  the text field to be changed
      */
     protected void addFocusListenerForTextComp(final JTextComponent textField)
     {
@@ -480,9 +458,7 @@ public class DatabaseLoginPanel extends JPanel
 
     /**
      * Creates a Document listener so the UI is updated when the doc changes
-     * 
-     * @param textField
-     *            the text field to be changed
+     * @param textField the text field to be changed
      */
     protected void addDocListenerForTextComp(final JTextComponent textField)
     {
@@ -507,9 +483,7 @@ public class DatabaseLoginPanel extends JPanel
 
     /**
      * Creates a Document listener so the UI is updated when the doc changes
-     * 
-     * @param textField
-     *            the text field to be changed
+     * @param textField the text field to be changed
      */
     protected void addKeyListenerFor(final JComponent comp, final boolean checkForRet)
     {
@@ -577,11 +551,8 @@ public class DatabaseLoginPanel extends JPanel
 
     /**
      * Sets a string into the status bar
-     * 
-     * @param msg
-     *            the msg for the status bar
-     * @param isError
-     *            whether the text should be shown in the error color
+     * @param msg the msg for the status bar
+     * @param isError whether the text should be shown in the error color
      */
     public void setMessage(final String msg, final boolean isError)
     {
@@ -589,9 +560,8 @@ public class DatabaseLoginPanel extends JPanel
         {
             if (isError)
             {
-                statusBar.setErrorMessage(msg,null);
-            }
-            else
+                statusBar.setErrorMessage(msg, null);
+            } else
             {
                 statusBar.setText(msg);
             }
@@ -606,17 +576,14 @@ public class DatabaseLoginPanel extends JPanel
         databases.getDBAdapter().save();
         servers.getDBAdapter().save();
 
-        AppPreferences.getLocalPrefs().putBoolean("login.rememberuser",
-                rememberUsernameCBX.isSelected());
-        AppPreferences.getLocalPrefs().putBoolean("login.rememberpassword",
-                rememberPasswordCBX.isSelected());
+        AppPreferences.getLocalPrefs().putBoolean("login.rememberuser", rememberUsernameCBX.isSelected());
+        AppPreferences.getLocalPrefs().putBoolean("login.rememberpassword", rememberPasswordCBX.isSelected());
         AppPreferences.getLocalPrefs().putBoolean("login.autologin", autoLoginCBX.isSelected());
 
         if (autoLoginCBX.isSelected())
         {
             AppPreferences.getLocalPrefs().put("login.username", username.getText());
-            AppPreferences.getLocalPrefs().put("login.password",
-                    Encryption.encrypt(new String(password.getPassword())));
+            AppPreferences.getLocalPrefs().put("login.password", Encryption.encrypt(new String(password.getPassword())));
 
         } else
         {
@@ -631,16 +598,14 @@ public class DatabaseLoginPanel extends JPanel
 
             if (rememberPasswordCBX.isSelected())
             {
-                AppPreferences.getLocalPrefs().put("login.password",
-                        Encryption.encrypt(new String(password.getPassword())));
+                AppPreferences.getLocalPrefs().put("login.password",  Encryption.encrypt(new String(password.getPassword())));
 
             } else if (AppPreferences.getLocalPrefs().exists("login.password"))
             {
                 AppPreferences.getLocalPrefs().remove("login.password");
             }
         }
-        AppPreferences.getLocalPrefs().put("login.dbdriver_selected",
-                dbDrivers.get(dbDriverCBX.getSelectedIndex()).getName());
+        AppPreferences.getLocalPrefs().put("login.dbdriver_selected", dbDrivers.get(dbDriverCBX.getSelectedIndex()).getName());
 
     }
 
@@ -659,20 +624,16 @@ public class DatabaseLoginPanel extends JPanel
     /**
      * Tells it whether the parent (frame or dialog) should be auto closed when it is logged in
      * successfully.
-     * 
-     * @param isAutoClose
-     *            true / false
+     * @param isAutoClose true / false
      */
-    public void setAutoClose(boolean isAutoClose)
+    public void setAutoClose(final boolean isAutoClose)
     {
         this.isAutoClose = isAutoClose;
     }
 
     /**
      * Helper to enable all the UI components.
-     * 
-     * @param enable
-     *            true or false
+     * @param enable true or false
      */
     protected void enableUI(final boolean enable)
     {
@@ -911,7 +872,6 @@ public class DatabaseLoginPanel extends JPanel
 
     /**
      * Returns true if doing auto login
-     * 
      * @return true if doing auto login
      */
     public boolean doingAutoLogin()
@@ -921,7 +881,6 @@ public class DatabaseLoginPanel extends JPanel
 
     /**
      * Return whether dialog was cancelled
-     * 
      * @return whether dialog was cancelled
      */
     public boolean isCancelled()

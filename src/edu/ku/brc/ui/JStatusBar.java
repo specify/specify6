@@ -153,6 +153,7 @@ public class JStatusBar extends JPanel
         statusLabel.setForeground(NORMAL_COLOR);
         this.lastException = null;
         statusLabel.setText(text);
+        statusLabel.setToolTipText(text);
         statusLabel.setIcon(null);
         statusLabel.repaint();
     }

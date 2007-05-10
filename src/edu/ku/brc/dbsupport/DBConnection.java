@@ -19,6 +19,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -118,6 +119,17 @@ public class DBConnection
             log.debug("["+dbConnectionStr+"]["+dbUsername+"]["+dbPassword+"] "+UIRegistry.getJavaDBPath());
             con = DriverManager.getConnection(dbConnectionStr, dbUsername, dbPassword);
             
+        } catch (SQLException sqlEX)
+        {
+            //log.error("Error in getConnection", ex);
+            if (sqlEX.getNextException() != null)
+            {
+                errMsg = sqlEX.getNextException().getMessage();
+            } else
+            {
+                errMsg = sqlEX.getMessage();
+            }
+                
         } catch (Exception ex)
         {
             //log.error("Error in getConnection", ex);

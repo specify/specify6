@@ -116,11 +116,11 @@ public class ExtendedTabbedPane extends JTabbedPane
     
     /**
      * Adds a Close Btn to the Tab.
-     * @param index the index of the tab
      * @param title the title of the tab
      * @param icon the icon for the tab (can be null)
+     * @param index the index of the tab to be fixed
      */
-    protected void adjustTab(final String title, final Icon icon, final Component comp)
+    protected void adjustTab(final String title, final Icon icon, final int index)
     {
         final JLabel closeBtn = new JLabel(IconManager.getIcon("Close"));
         closeBtn.setBorder(null);
@@ -149,14 +149,14 @@ public class ExtendedTabbedPane extends JTabbedPane
         });
 
         // XXX Java 6.0
-        /*
+        
         JPanel tabPanel = new JPanel(new BorderLayout());
         tabPanel.add(new JLabel(title, icon, SwingConstants.RIGHT), BorderLayout.WEST);
         tabPanel.add(new JLabel(" "), BorderLayout.CENTER);
         tabPanel.add(closeBtn, BorderLayout.EAST);
         
-        setTabComponentAt(getTabCount()-1, tabPanel);
-        */
+        setTabComponentAt(index, tabPanel);
+        
     }
     
     /* (non-Javadoc)
@@ -167,7 +167,7 @@ public class ExtendedTabbedPane extends JTabbedPane
     {
         super.addTab(title, component);
         
-        adjustTab(title, null, component);
+        adjustTab(title, null, getTabCount()-1);
     }
 
     /* (non-Javadoc)
@@ -178,7 +178,7 @@ public class ExtendedTabbedPane extends JTabbedPane
     {
         super.addTab(title, icon, component, tip);
         
-        adjustTab(title, icon, component);
+        adjustTab(title, icon, getTabCount()-1);
     }
 
     /* (non-Javadoc)
@@ -189,7 +189,7 @@ public class ExtendedTabbedPane extends JTabbedPane
     {
         super.addTab(title, icon, component);
         
-        adjustTab(title, icon, component);
+        adjustTab(title, icon, getTabCount()-1);
     }
 
     /* (non-Javadoc)
@@ -200,7 +200,7 @@ public class ExtendedTabbedPane extends JTabbedPane
     {
         super.insertTab(title, icon, component, tip, index);
         
-        adjustTab(title, icon, component);
+        adjustTab(title, icon, index);
     }
 
     /**

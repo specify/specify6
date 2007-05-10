@@ -493,20 +493,24 @@
 		<property name="derby.data.path" value="${dist-linux}/DerbyDatabases" />
 		
 		<antcall target="clean-jar"/>
-		<!-- 
+		
 		<antcall target="dist-linux-clean"/>
-		-->
+		
 	    <antcall target="dist-jar"/>
 		
-		<!--
+		
 		<mkdir dir="${dist-linux}" />
 		<mkdir dir="${appdir}/libs" />
 
 		
 		<antcall target="build-empty-derby-db"/>
-		-->
+		
 		<antcall target="basic-non-mac-dist"/>
 		
+		<!-- Copy Alt Help Image Files -->
+		<property name="alt.help.img.dir" value="AltHelpImages/Windows"/>
+	    <antcall target="copy-alt-help-images"/>
+				
 		
 		<!-- Copy info list -->
 		<copy file="${packaging}/linux/specify.sh" todir="${dist-linux}/." />

@@ -1521,7 +1521,7 @@ public class BuildSampleDatabase
         {
             Discipline         discipline = Discipline.getDiscipline("fish");
             DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver("Derby");
-            buildEmptyDatabase(driverInfo, "localhost", "workbench", "guest", "guest", "guest", "guest", "guest@ku.edu", discipline);
+            buildEmptyDatabase(driverInfo, "localhost", "WorkBench", "guest", "guest", "guest", "guest", "guest@ku.edu", discipline);
 
         } else
         {
