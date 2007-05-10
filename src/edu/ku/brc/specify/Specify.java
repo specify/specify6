@@ -737,10 +737,13 @@ public class Specify extends JPanel implements DatabaseLoginListener
         iconLabel.setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 8));
         panel.add(iconLabel, BorderLayout.WEST);
         panel.add(new JLabel("<html>"+appName+" " + appVersion + 
-                "<br><br>Biodiversity Research Center<br>University of Kansas<br>Lawrence, KS  USA 66045" + 
-                "<br><br>www.specifysoftware.org<br>specify@ku.edu" + 
-                "<br><br><p>The Specify Software Project is funded by the Biological Databases and <br>Informatics Program of the U.S. National Science Foundation <br>(Award DBI-0446544)</P>" +
-                "<br>Build: " + appBuildVersion + 
+                "<br><br>Biodiversity Research Center<br>University of Kansas<br>Lawrence, KS  USA 66045<br><br>" + 
+                "www.specifysoftware.org<br>specify@ku.edu<br><br>" + 
+                "<p>The Specify Software Project is<br>"+
+                "funded by the Biological Databases<br>"+
+                "and Informatics Program of the<br>"+
+                "U.S. National Science Foundation <br>(Award DBI-0446544)</P><br>" +
+                "Build: " + appBuildVersion + 
                 "</html>"), BorderLayout.EAST);
         panel.setBorder(BorderFactory.createEmptyBorder(6,6,0,6));
         CustomDialog aboutDlg = new CustomDialog(topFrame, getResourceString("About") + " " +appName, true, CustomDialog.OK_BTN, panel);
