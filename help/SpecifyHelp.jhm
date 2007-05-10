@@ -21,8 +21,9 @@
 	-->
 	
 	<mapID target="Workbench"                  url="SpecifyHelp/Workbench/Overview.html"/>
+	<mapID target="WorkbenchOverview"          url="SpecifyHelp/Workbench/Overview.html"/>
 	
-	<mapID target="WorkbenchDataSetProperties" url="SpecifyHelp/Workbench/EditProperties.html"/>
+	<mapID target="WorkbenchDataSetProperties" url="SpecifyHelp/Workbench/DataSetProperties.html"/>
 	<mapID target="WorkbenchNewDataSet"        url="SpecifyHelp/Workbench/NewDataSet.html"/>
 	<mapID target="WorkbenchNewMapping"        url="SpecifyHelp/Workbench/NewDataSet.html#NewDataSetMapping"/>
 	<mapID target="WorkbenchDataSetOverview"   url="SpecifyHelp/Workbench/DataSetOverview.html"/>

@@ -16,12 +16,12 @@
       <tocitem text="Statistics" target="Statistics"/>
       <tocitem text="Search" target="Search"/>
 -->
-          <tocitem text="WorkBench"target="WorkbenchOverview"> 
+          <tocitem text="WorkBench" target="WorkbenchOverview"> 
  				<tocitem text="DataSets" target="WorkbenchDataSetOverview">
               		<tocitem text="New DataSet" target="WorkbenchNewDataSet"/>
               		<tocitem text="Importing Data" target="WorkbenchImportData">
               			<tocitem text="CSV Import" target="WorkbenchImportCSV"/>
-              			<tocitem text="XLS Import" target="WorkbenchImportXLS"/>
+              			<tocitem text="MS Excel Import" target="WorkbenchImportXLS"/>
               			<tocitem text="Importing Images" target="WorkbenchImportImages"/>  
           	  		</tocitem>
           	  		<tocitem text="Edit Data Set Mapping" target="WorkbenchEditMapping"/>
