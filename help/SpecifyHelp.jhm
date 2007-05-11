@@ -48,7 +48,7 @@
 	
 	<mapID target="WorkbenchReporting"         url="SpecifyHelp/Workbench/Reporting.html"/>
 	<mapID target="WorkbenchSpecialTools"      url="SpecifyHelp/Workbench/SpecialTools.html"/>
-	<mapID target="WorkbenchLatLongConverter"  url="SpecifyHelp/Workbench/LatLongConverter.html"/>
+	<mapID target="WorkbenchLatLongConverter"  url="SpecifyHelp/Workbench/LatLongConvert.html"/>
 	
 	
 	<mapID target="GlossMouse"          url="SpecifyHelp/Glossary/GlossMouse.html" />

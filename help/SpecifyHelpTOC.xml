@@ -17,22 +17,22 @@
       <tocitem text="Search" target="Search"/>
 -->
           <tocitem text="WorkBench" target="WorkbenchOverview"> 
- 				<tocitem text="DataSets" target="WorkbenchDataSetOverview">
-              		<tocitem text="New DataSet" target="WorkbenchNewDataSet"/>
-              		<tocitem text="Importing Data" target="WorkbenchImportData">
+ 				<tocitem text="Data Sets" target="WorkbenchDataSetOverview">
+              		<tocitem text="New Data Set" target="WorkbenchNewDataSet"/>
+              		<tocitem text="Import Data" target="WorkbenchImportData">
               			<tocitem text="CSV Import" target="WorkbenchImportCSV"/>
               			<tocitem text="MS Excel Import" target="WorkbenchImportXLS"/>
-              			<tocitem text="Importing Images" target="WorkbenchImportImages"/>  
+              			<tocitem text="Import Images" target="WorkbenchImportImages"/>  
           	  		</tocitem>
           	  		<tocitem text="Edit Data Set Mapping" target="WorkbenchEditMapping"/>
               		<tocitem text="Edit Properties" target="WorkbenchDataSetProperties"/>    
               		<tocitem text="Grid Editing" target="WorkbenchGridEditing"/>
               		<tocitem text="Form Editing" target="WorkbenchFormEditing"/>
               		<tocitem text="Exporting Data" target="WorkbenchExportData">
-						<tocitem text="Export DataSet" target="WorkbenchExportDataSet"/>
+						<tocitem text="Export Data Set" target="WorkbenchExportDataSet"/>
               			<tocitem text="Export Excel Template" target="WorkbenchExportExcelTemplate"/>
               		</tocitem>	
-              		<tocitem text="ImageWindow" target="WorkbenchWorkingWithImages"/>
+              		<tocitem text="Image Window" target="WorkbenchWorkingWithImages"/>
           		</tocitem>  
           <tocitem text="Reports" target="WorkbenchReporting">
           		<tocitem text="DataSet Summary" target="WorkbenchDataSetSummary"/>
@@ -41,9 +41,9 @@
           		<tocitem text="Top 10" target="WorkbenchTop10"/>
           </tocitem>		
           <tocitem text="Special Tools" target="WorkbenchSpecialTools">
-          		<tocitem text="BioGiomancer" target="WorkbenchBioGiomancer"/>
-          		<tocitem text="GeoReference" target="GeoReference"/>
-          		<tocitem text="Google Earth" target="WorkbenchGoogleEarth"/>
+          		<tocitem text="BioGiomancer" target="WorkbenchSpecialTools"/>
+          		<tocitem text="GeoReference" target="WorkbenchSpecialTools"/>
+          		<tocitem text="Google Earth" target="WorkbenchSpecialTools"/>
           		<tocitem text="Lat Long Converter" target="WorkbenchLatLongConverter"/>
           </tocitem>
       </tocitem>
