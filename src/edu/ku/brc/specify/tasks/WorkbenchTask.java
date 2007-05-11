@@ -16,6 +16,7 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Font;
@@ -559,7 +560,10 @@ public class WorkbenchTask extends BaseTask
         display.add(label, cc.xy(2, 4));
         doingStarterPane = true;
         
-        //display.getPanel().setBackground(Color.WHITE); // XXX RELEASE (For screen shots only)
+        if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
+        {
+            display.getPanel().setBackground(Color.WHITE);
+        }
         
         return starterPane = new SimpleDescPane(title, this, display.getPanel());
     }

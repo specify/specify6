@@ -427,17 +427,16 @@ public class DatabaseLoginPanel extends JPanel
 
         formBuilder.add(extraPanelBlder.getPanel(), cc.xywh(1, y, 3, 1));
 
-        PanelBuilder outerPanel = new PanelBuilder(new FormLayout("10px,p,3dlu,p:g", "p,2dlu,p,2dlu,p"), this);
+        PanelBuilder outerPanel = new PanelBuilder(new FormLayout("p,3dlu,p:g", "p,2dlu,p,2dlu,p"), this);
         ImageDisplay icon = new ImageDisplay(IconManager.getIcon("SpecifyLargeIcon"), false, false);
+        setBorder(BorderFactory.createEmptyBorder(10, 2, 2, 2));
 
         formBuilder.getPanel().setBorder(BorderFactory.createEmptyBorder(5, 5, 0, 5));
 
-        outerPanel.add(icon, cc.xy(2, 1));
-        outerPanel.add(formBuilder.getPanel(), cc.xy(4, 1));
-        outerPanel.add(ButtonBarFactory.buildOKCancelHelpBar(loginBtn, cancelBtn, helpBtn), cc.xywh(2, 3, 3, 1));
-        outerPanel.add(statusBar, cc.xywh(2, 5, 3, 1));
-
-        //setBorder(BorderFactory.createEmptyBorder(8, 2, 2, 2));
+        outerPanel.add(icon, cc.xy(1, 1));
+        outerPanel.add(formBuilder.getPanel(), cc.xy(3, 1));
+        outerPanel.add(ButtonBarFactory.buildOKCancelHelpBar(loginBtn, cancelBtn, helpBtn), cc.xywh(1, 3, 3, 1));
+        outerPanel.add(statusBar, cc.xywh(1, 5, 3, 1));
         
         updateUIControls();
     }

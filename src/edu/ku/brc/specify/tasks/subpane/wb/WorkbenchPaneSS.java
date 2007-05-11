@@ -533,7 +533,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         CellConstraints cc = new CellConstraints();
 
         JComponent[] comps      = {addRowsBtn, deleteRowsBtn, clearCellsBtn, showMapBtn, exportKmlBtn, biogeomancerBtn, convertGeoRefFormatBtn, exportExcelCsvBtn};
-        PanelBuilder spreadSheetControlBar = new PanelBuilder(new FormLayout("f:p:g,4px,"+createDuplicateJGoodiesDef("p", "4px", comps.length)+",4px,", "p,2px,p:g"));
+        PanelBuilder spreadSheetControlBar = new PanelBuilder(new FormLayout("f:p:g,4px,"+createDuplicateJGoodiesDef("p", "4px", comps.length)+",4px,", "c:p:g"));
         
         int x = 3;
         for (JComponent c : comps)
@@ -541,50 +541,73 @@ public class WorkbenchPaneSS extends BaseSubPane
             spreadSheetControlBar.add(c, cc.xy(x,1));
             x += 2;
         }
-        spreadSheetControlBar.add(findPanel, cc.xywh(1, 3, x-1, 1));
         
-        // Create the main panel that uses card layout for the form and spreasheet
-        mainPanel = new JPanel(cardLayout = new CardLayout());
+        //spreadSheetControlBar.getPanel().setBackground(Color.MAGENTA); // DEBUG
+        //spreadSheetControlBar.getPanel().setOpaque(true);
         
         // Create the Form Pane
         formPane = new FormPane(this, workbench);
         
-        // This panel is a single row containing the ResultSetContoller and the other controls for the Form Panel  
-        PanelBuilder outerRSPanel = new PanelBuilder(new FormLayout("f:p:g, p, f:p:g, p", "p"));
-        
         // This panel contains just the ResultSetContoller, it's needed so the RSC gets centered
-        PanelBuilder rsPanel = new PanelBuilder(new FormLayout("c:p:g", "p"));
+        PanelBuilder rsPanel = new PanelBuilder(new FormLayout("c:p:g", "c:p:g"));
         resultsetController  = new ResultSetController(null, true, true, getResourceString("Record"), model.getRowCount());
         resultsetController.addListener(formPane);
         resultsetController.getDelRecBtn().addActionListener(delAction);
         rsPanel.add(resultsetController.getPanel(), cc.xy(1,1));
         
+        //rsPanel.getPanel().setBackground(Color.YELLOW); // DEBUG
+        //rsPanel.getPanel().setOpaque(true);
+        
+        // This panel is a single row containing the ResultSetContoller and the other controls for the Form Panel  
+        PanelBuilder resultSetPanel = new PanelBuilder(new FormLayout("f:p:g, p, f:p:g, p", "c:p:g"));
         // Now put the two panel into the single row panel
-        outerRSPanel.add(rsPanel.getPanel(), cc.xy(2,1));
-        outerRSPanel.add(formPane.getControlPropsBtn(), cc.xy(4,1));
+        resultSetPanel.add(rsPanel.getPanel(), cc.xy(2,1));
+        resultSetPanel.add(formPane.getControlPropsBtn(), cc.xy(4,1));
+        
+        //resultSetPanel.getPanel().setBackground(Color.ORANGE); // DEBUG
+        //resultSetPanel.getPanel().setOpaque(true);
+        
+        // Create the main panel that uses card layout for the form and spreasheet
+        mainPanel = new JPanel(cardLayout = new CardLayout());
         
         // Add the Form and Spreadsheet to the CardLayout
         mainPanel.add(spreadSheet.getScrollPane(), PanelType.Spreadsheet.toString());
-        mainPanel.add(formPane.getScrollPane(), PanelType.Form.toString());
+        mainPanel.add(formPane.getScrollPane(),    PanelType.Form.toString());
         
         // The controllerPane is a CardLayout that switches between the Spreadsheet control bar and the Form Control Bar
         controllerPane = new JPanel(cpCardLayout = new CardLayout());
         controllerPane.add(spreadSheetControlBar.getPanel(), PanelType.Spreadsheet.toString());
-        controllerPane.add(outerRSPanel.getPanel(), PanelType.Form.toString());
+        controllerPane.add(resultSetPanel.getPanel(),        PanelType.Form.toString());
         
-
+        //controllerPane.setBackground(Color.BLUE); // DEBUG
+        //controllerPane.setOpaque(true);
+        
+        JLabel sep1 = new JLabel(IconManager.getIcon("Separator"));
+        JLabel sep2 = new JLabel(IconManager.getIcon("Separator"));
+        
         // This works
         setLayout(new BorderLayout());
-        FormLayout      formLayout = new FormLayout("f:p:g,4px,p,4px,p,4px,p,4px,p", "2px,top:p:g");
-        PanelBuilder    builder    = new PanelBuilder(formLayout);
-
+        PanelBuilder    ctrlBtns   = new PanelBuilder(new FormLayout("p,4px,p,6px,6px,6px,p,7px,6px,p", "c:p:g"));
+        ctrlBtns.add(toggleImageFrameBtn, cc.xy(1,1));
+        ctrlBtns.add(carryForwardBtn,     cc.xy(3,1));
+        ctrlBtns.add(sep1,                cc.xy(5,1));
+        ctrlBtns.add(saveBtn,             cc.xy(7,1));
+        ctrlBtns.add(sep2,                cc.xy(9,1));
+        ctrlBtns.add(createSwitcher(),    cc.xy(10,1));
+        
+        //ctrlBtns.getPanel().setBackground(Color.GREEN); // DEBUG
+        //ctrlBtns.getPanel().setOpaque(true);
+        
         add(mainPanel, BorderLayout.CENTER);
         
-        builder.add(controllerPane,     cc.xy(1,2));
-        builder.add(toggleImageFrameBtn, cc.xy(3,2));
-        builder.add(carryForwardBtn,    cc.xy(5,2));
-        builder.add(saveBtn,            cc.xy(7,2));
-        builder.add(createSwitcher(),   cc.xy(9,2));
+        FormLayout      formLayout = new FormLayout("f:p:g,4px,p", "2px,f:p:g,p:g");
+        PanelBuilder    builder    = new PanelBuilder(formLayout);
+
+        builder.add(controllerPane,      cc.xy(1,2));
+        builder.add(ctrlBtns.getPanel(), cc.xy(3,2));
+        builder.add(findPanel,           cc.xywh(1, 3, 3, 1));
+
+
         add(builder.getPanel(), BorderLayout.SOUTH);
         
         // See if we need to make the Image Frame visible
