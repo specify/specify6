@@ -64,7 +64,6 @@ import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.ImageDisplay;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 
@@ -428,10 +427,10 @@ public class DatabaseLoginPanel extends JPanel
         formBuilder.add(extraPanelBlder.getPanel(), cc.xywh(1, y, 3, 1));
 
         PanelBuilder outerPanel = new PanelBuilder(new FormLayout("p,3dlu,p:g", "p,2dlu,p,2dlu,p"), this);
-        ImageDisplay icon = new ImageDisplay(IconManager.getIcon("SpecifyLargeIcon"), false, false);
-        setBorder(BorderFactory.createEmptyBorder(10, 2, 2, 2));
+        JLabel icon = new JLabel(IconManager.getIcon("SpecifyLargeIcon"));
+        icon.setBorder(BorderFactory.createEmptyBorder(2, 10, 2, 2));
 
-        formBuilder.getPanel().setBorder(BorderFactory.createEmptyBorder(5, 5, 0, 5));
+        formBuilder.getPanel().setBorder(BorderFactory.createEmptyBorder(2, 5, 0, 5));
 
         outerPanel.add(icon, cc.xy(1, 1));
         outerPanel.add(formBuilder.getPanel(), cc.xy(3, 1));

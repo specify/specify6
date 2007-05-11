@@ -69,18 +69,17 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
     protected JFileChooser chooser;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * @param imgWidth the desired image width
 	 * @param imgHeight the desired image height
 	 * @param isEditMode whether it is in browse mode or edit mode
 	 * @param hasBorder whether it has a border
 	 */
-	public ImageDisplay(final int imgWidth, final int imgHeight,
-			boolean isEditMode, boolean hasBorder)
+	public ImageDisplay(final int imgWidth, final int imgHeight, boolean isEditMode, boolean hasBorder)
 	{
 		super(new BorderLayout());
-		setBorder(hasBorder ? new EtchedBorder(EtchedBorder.LOWERED)
-				: BorderFactory.createEmptyBorder());
+        
+		setBorder(hasBorder ? new EtchedBorder(EtchedBorder.LOWERED) : BorderFactory.createEmptyBorder());
 
 		setPreferredSize(new Dimension(imgWidth, imgHeight));
 
@@ -89,16 +88,14 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 	}
 
 	/**
-	 * Constructor with ImageIcon
+	 * Constructor with ImageIcon.
 	 * @param imgIcon the icon to be displayed
 	 * @param isEditMode whether it is in browse mode or edit mode
 	 * @param hasBorder whether it has a border
 	 */
-	public ImageDisplay(final ImageIcon imgIcon, boolean isEditMode,
-			boolean hasBorder)
+	public ImageDisplay(final ImageIcon imgIcon, boolean isEditMode, boolean hasBorder)
 	{
-		this(imgIcon.getIconWidth(), imgIcon.getIconHeight(), isEditMode,
-				hasBorder);
+		this(imgIcon.getIconWidth(), imgIcon.getIconHeight(), isEditMode, hasBorder);
 		setImage(imgIcon);
 	}
 

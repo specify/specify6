@@ -2364,13 +2364,12 @@ public class WorkbenchPaneSS extends BaseSubPane
             super(textField);
             this.textField = textField;
             textField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-            setClickCountToStart (1); 
         }
 
         @Override
         public boolean stopCellEditing()
         {
-            if (textField.getText().length() > 255)
+            if (textField.getText().length() > WorkbenchDataItem.cellDataLength)
             {
                 return false;
             }

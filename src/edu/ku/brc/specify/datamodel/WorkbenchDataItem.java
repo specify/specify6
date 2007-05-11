@@ -135,7 +135,7 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
         this.workbenchDataItemId = workbenchDataItemId;
     }
 
-    private static int cellDataLength = 512;
+    public static int cellDataLength = 512;
     /**
      * 
      */

@@ -23,6 +23,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JList;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -93,7 +94,7 @@ public class SelectNewOrExistingDlg<T> extends CustomDialog
         CellConstraints cc = new CellConstraints();
         panel.add(createNewRB,   cc.xy(1,1));
         panel.add(useExistingRB,  cc.xy(1,3));
-        panel.add(new JScrollPane(list, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), cc.xy(1,5));
+        panel.add(new JScrollPane(list, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER), cc.xy(1,5));
         
         createNewRB.setSelected(true);
         list.setEnabled(false);
