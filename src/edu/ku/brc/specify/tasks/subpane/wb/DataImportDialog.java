@@ -52,6 +52,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.text.AttributeSet;
@@ -640,8 +642,8 @@ public class DataImportDialog extends JDialog implements ActionListener
             textArea.setWrapStyleWord(true);
             textArea.setEditable(false);
             textArea.setCaretPosition(0);
-            JScrollPane pane = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                    JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+            JScrollPane pane = new JScrollPane(textArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+                                                         ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
             JOptionPane.showMessageDialog(UIRegistry.get(UIRegistry.TOPFRAME), pane,getResourceString("DATA_IMPORT_ISSUES"),JOptionPane.WARNING_MESSAGE);
             okBtn.setEnabled(false); 	
         }
@@ -660,8 +662,8 @@ public class DataImportDialog extends JDialog implements ActionListener
             textArea.setWrapStyleWord(true);
             textArea.setEditable(false);
             textArea.setCaretPosition(0);
-            JScrollPane pane = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                    JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+            JScrollPane pane = new JScrollPane(textArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+                                                         ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
             JOptionPane.showMessageDialog(UIRegistry.get(UIRegistry.TOPFRAME), pane,getResourceString("DATA_IMPORT_ISSUES"),JOptionPane.WARNING_MESSAGE);
         }
     }
@@ -680,22 +682,22 @@ public class DataImportDialog extends JDialog implements ActionListener
 			CsvReader csv = new CsvReader(new FileInputStream(configCSV.getFile()), configCSV.getDelimiter(), configCSV.getCharset());
 			csv.setEscapeMode(configCSV.getEscapeMode());
 			csv.setTextQualifier(configCSV.getTextQualifier());
-			int curRowColumnCount = 0;
-			int highestColumnCount = 0;
+			int curRowColCount  = 0;
+			int highestColCount = 0;
 			//seeing how many columns are defined
 			if (configCSV.getFirstRowHasHeaders())
 			{
 				csv.readHeaders();
-				highestColumnCount = Math.max(highestColumnCount, csv.getHeaders().length);
+				highestColCount = Math.max(highestColCount, csv.getHeaders().length);
 			}
 			//see what the largest number of columns is per row of data
 			while (csv.readRecord())
 			{
-				curRowColumnCount = csv.getColumnCount();
-				highestColumnCount = Math.max(highestColumnCount, curRowColumnCount);
+				curRowColCount = csv.getColumnCount();
+				highestColCount = Math.max(highestColCount, curRowColCount);
 
 			}
-			return highestColumnCount;
+			return highestColCount;
 		} 
     	catch (Exception e)
 		{
@@ -762,7 +764,7 @@ public class DataImportDialog extends JDialog implements ActionListener
                 int maxSize = Math.max(row.getPhysicalNumberOfCells(), row.getLastCellNum());
                 while (numCols < maxSize)
                 {
-                    HSSFCell cell = (HSSFCell) row.getCell(numCols);
+                    HSSFCell cell = row.getCell(numCols);
                     String value = null;
                     //if cell is blank, set value to ""
                     if (cell == null)
@@ -836,7 +838,7 @@ public class DataImportDialog extends JDialog implements ActionListener
             }
             for (int i = 0; i < headerVector.size(); i++)
             {
-                headers[i] = (String) headerVector.elementAt(i);
+                headers[i] = headerVector.elementAt(i);
 
             }
             printArray(headers);
@@ -990,7 +992,7 @@ public class DataImportDialog extends JDialog implements ActionListener
 			String[][] tableData = new String[tableDataVector.size()][rowColumnCount];
 			for (int i = 0; i < tableData.length; i++)
 			{
-				tableData[i] = (String[]) tableDataVector.elementAt(i);
+				tableData[i] = tableDataVector.elementAt(i);
 				printArray(tableData[i]);
 			}
 
@@ -1034,8 +1036,8 @@ public class DataImportDialog extends JDialog implements ActionListener
     private JScrollPane addtoScroll(JTable t)
     {
     	JScrollPane pane = new JScrollPane(t, 
-                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
-                JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, 
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
        return pane;
     }
     
@@ -1497,7 +1499,7 @@ public class DataImportDialog extends JDialog implements ActionListener
 			FormLayout formLayout = new FormLayout("p,5px,p", "d");
 			PanelBuilder builder = new PanelBuilder(formLayout, this);
 			MouseOverJLabel statusInfoLabel = new MouseOverJLabel();
-			statusInfoLabel.setHorizontalTextPosition(JLabel.RIGHT);
+			statusInfoLabel.setHorizontalTextPosition(SwingConstants.RIGHT);
 			statusInfoLabel.setIcon(IconManager.getIcon("Error", IconManager.IconSize.Std16));
 			statusInfoLabel.setText(getResourceString("DATA_IMPORT_ERROR"));
 			statusInfoLabel.setActivatedTextColor(Color.RED);
