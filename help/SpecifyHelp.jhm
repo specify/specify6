@@ -40,6 +40,7 @@
 	<mapID target="WorkbenchDataSetSummary"    url="SpecifyHelp/Workbench/DataSetSummary.html"/>
 	<mapID target="WorkbenchTop10"             url="SpecifyHelp/Workbench/Top10.html"/>
 	<mapID target="WorkbenchChart"             url="SpecifyHelp/Workbench/Chart.html"/>
+	<mapID target="WorkbenchBasicLabel"             url="SpecifyHelp/Workbench/BasicLabel.html"/>
 	
 	<mapID target="WorkbenchImportCSV"         url="SpecifyHelp/Workbench/ImportCSV.html"/>
 	<mapID target="WorkbenchImportImages"      url="SpecifyHelp/Workbench/ImportImages.html"/>
