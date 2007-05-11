@@ -26,6 +26,7 @@ import java.util.StringTokenizer;
 
 import javax.swing.Action;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -51,6 +52,7 @@ import javax.swing.table.TableColumn;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.UsageTracker;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.SearchReplacePanel;
 import edu.ku.brc.ui.SearchableJXTable;
 import edu.ku.brc.ui.UIHelper;
@@ -126,6 +128,18 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         
         scrollPane = new JScrollPane(this, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        
+        final SpreadSheet ss = this;
+        JButton cornerBtn = UIHelper.createIconBtn("Blank", IconManager.IconSize.Std16, 
+                                                    UIRegistry.getResourceString("SelectAll"), 
+                                                    new ActionListener() {
+            public void actionPerformed(ActionEvent ae)
+            {
+                ss.selectAll();
+            }
+        });
+        cornerBtn.setEnabled(true);
+        scrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER, cornerBtn);
         
         // Allows row and collumn selections to exit at the same time
         setCellSelectionEnabled(true);
