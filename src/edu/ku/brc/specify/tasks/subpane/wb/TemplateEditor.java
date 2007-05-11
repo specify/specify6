@@ -260,6 +260,7 @@ public class TemplateEditor extends CustomDialog
                                 {
                                     tableList.setSelectedValue(tblInfo, true);
                                     fillFieldList(tblInfo);
+                                    //System.out.println(fldInfo.hashCode()+" "+fldInfo.getFieldInfo().hashCode());
                                     fieldList.setSelectedValue(fldInfo, true);
                                     break;
                                 }
@@ -862,34 +863,43 @@ public class TemplateEditor extends CustomDialog
         FieldInfo fieldInfo  = null;
         
         // find the mapping that matches this column name
-        for (Pair<String,TableFieldPair> mapping: automappings)
+        for (Pair<String, TableFieldPair> mapping: automappings)
         {
             //System.out.println("["+fieldName+"]["+mapping.first+"]");
             if (fieldName.matches(mapping.first))
             {
                 TableFieldPair tblFldPair = mapping.second;
-                fieldInfo = new FieldInfo(tblFldPair.getTableinfo(),tblFldPair.getFieldInfo());
+                //fieldInfo = new FieldInfo(tblFldPair.getTableinfo(),tblFldPair.getFieldInfo());
+                //System.out.println("["+fieldInfo.hashCode()+"]["+tblFldPair.getTableinfo().hashCode()+"]["+tblFldPair.getFieldInfo().hashCode()+"]");
                 log.debug("Mapping incoming column name '" + fieldNameArg +
                         "' to " + tblFldPair.getTableinfo().getTableName() +
                         "." + tblFldPair.getFieldInfo().getName());
-                break;
+                for (int i=0;i<tableModel.size();i++)
+                {
+                    TableInfo tblInfo = tableModel.getElementAt(i);
+                    for (FieldInfo fi : tblInfo.getFieldItems())
+                    {
+                        if (fi.getFieldInfo() == tblFldPair.getFieldInfo())
+                        {
+                            //System.out.println("["+fi.hashCode()+"]["+tblFldPair.getTableinfo().hashCode()+"]["+tblFldPair.getFieldInfo().hashCode()+"]");
+                            return fi;
+                        }
+                    }
+                }
             }
         }
         
         // If we had no luck then just loop through everything looking for it.
-        if (fieldInfo == null)
+        for (int i=0;i<tableModel.size();i++)
         {
-            for (int i=0;i<tableModel.size();i++)
+            TableInfo tblInfo = tableModel.getElementAt(i);
+            for (FieldInfo fi : tblInfo.getFieldItems())
             {
-                TableInfo tblInfo = tableModel.getElementAt(i);
-                for (FieldInfo fi : tblInfo.getFieldItems())
+                String    tblFieldName = fi.getFieldInfo().getName().toLowerCase();
+                //System.out.println("["+tblFieldName+"]["+fieldNameLower+"]");
+                if (tblFieldName.equals(fieldNameLower) || tblFieldName.startsWith(fieldNameLower))
                 {
-                    String    tblFieldName = fi.getFieldInfo().getName().toLowerCase();
-                    //System.out.println("["+tblFieldName+"]["+fieldNameLower+"]");
-                    if (tblFieldName.equals(fieldNameLower) || tblFieldName.startsWith(fieldNameLower))
-                    {
-                        return fi;
-                    }
+                    return fi;
                 }
             }
         }
