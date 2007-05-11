@@ -15,6 +15,8 @@
 
 package edu.ku.brc.ui.forms;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Component;
@@ -295,7 +297,7 @@ public class CarryForwardSetUp extends JComponent
     {
         protected BufferedImage bufferedImg;
         protected String        title      = "Carry Forward Setup";                    // XXX I18N
-        protected String[]      buttonStrs = {"Select All", "Select None", "Close"};   // XXX I18N
+        protected String[]      buttonStrs = {getResourceString("SelectAll"), getResourceString("SelectNone"), getResourceString("Close")};
         protected int[]         widths     = new int[buttonStrs.length];
         protected int           maxWidth   = 0;
         protected int           vertGap    = 5;

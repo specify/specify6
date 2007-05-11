@@ -191,7 +191,7 @@ public class LoanReturnDlg extends JDialog
 
         }
         
-        JButton selectAllBtn = new JButton("Select All"); // I18N
+        JButton selectAllBtn = new JButton(getResourceString("SelectAll"));
         okBtn = new JButton(getResourceString("OK"));
         JButton cancel = new JButton(getResourceString("Cancel"));
         
