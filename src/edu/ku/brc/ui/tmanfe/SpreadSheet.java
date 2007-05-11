@@ -40,6 +40,7 @@ import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
@@ -165,7 +166,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
                     //System.out.println(e.getPoint()+" "+ss.getEditorComponent().getBounds());
                     if (ss.getEditorComponent() instanceof JTextComponent)
                     {
-                        JTextComponent txtComp = (JTextComponent)ss.getEditorComponent();
+                        final JTextComponent txtComp = (JTextComponent)ss.getEditorComponent();
                         String         txt     = txtComp.getText();
                         FontMetrics    fm      = txtComp.getFontMetrics(txtComp.getFont());
                         int x = e.getPoint().x - ss.getEditorComponent().getBounds().x;
@@ -175,7 +176,17 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
                             //System.out.println(x + " " + width);
                             if (width > x)
                             {
-                                txtComp.setCaretPosition(i);
+                                // Clearing the selection is needed for Window for some reason
+                                final int inx = i;
+                                SwingUtilities.invokeLater(new Runnable() {
+                                    @SuppressWarnings("synthetic-access")
+                                    public void run()
+                                    {
+                                        txtComp.setSelectionStart(0);
+                                        txtComp.setSelectionEnd(0);
+                                        txtComp.setCaretPosition(inx);
+                                    }
+                                });
                                 break;
                             }
                         }
