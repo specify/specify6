@@ -120,6 +120,8 @@
     <icon name="Eraser"        file="Clear16x16.png"   sizes="16"/>
     <icon name="NewRecord"     alias="PlusSign"/>
     <icon name="DeleteRecord"  alias="MinusSign"/>
+    <icon name="Separator"     file="separator16.gif" sizes="16"/>
+    
     
     
     <icon name="WebPage"       file="html.png"          sizes="all"/>
