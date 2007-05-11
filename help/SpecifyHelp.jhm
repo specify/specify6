@@ -34,7 +34,7 @@
 	<mapID target="WorkbenchWorkingWithImages" url="SpecifyHelp/Workbench/WorkingWithImages.html"/>
 	
 	<mapID target="WorkbenchExportData"        url="SpecifyHelp/Workbench/ExportingData.html"/>
-	<mapID target="WorkbenchEditMapping"       url="SpecifyHelp/Workbench/EditMapping.html"/>                         <!-- ColMapperPanel -->
+	<mapID target="WorkbenchEditMapping"       url="SpecifyHelp/Workbench/EditMapping.html"/>                       
 	<mapID target="WorkbenchExportDataSet"     url="SpecifyHelp/Workbench/ExportDataSet.html"/>
 	<mapID target="WorkbenchExportExcelTemplate" url="SpecifyHelp/Workbench/ExportExcelTemplate.html"/>                             
 	<mapID target="WorkbenchDataSetSummary"    url="SpecifyHelp/Workbench/DataSetSummary.html"/>
@@ -46,7 +46,7 @@
 	<mapID target="WorkbenchImportData"        url="SpecifyHelp/Workbench/ImportData.html"/>                             
 	<mapID target="WorkbenchImportXLS"         url="SpecifyHelp/Workbench/ImportXLS.html"/>
 	
-	<mapID target="WorkbenchReporting"         url="SpecifyHelp/Workbench/Reporting.html"/>
+	<mapID target="WorkbenchReporting"         url="SpecifyHelp/Workbench/Reports.html"/>
 	<mapID target="WorkbenchSpecialTools"      url="SpecifyHelp/Workbench/SpecialTools.html"/>
 	<mapID target="WorkbenchLatLongConverter"  url="SpecifyHelp/Workbench/LatLongConvert.html"/>
 	
