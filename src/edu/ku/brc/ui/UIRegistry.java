@@ -952,6 +952,9 @@ public class UIRegistry
             g2.setColor(Color.WHITE);
             g2.fillRoundRect(tx-(expand / 2), ty-fm.getAscent()-(expand / 2), tw+expand, th+expand, arc, arc);
             
+            g2.setColor(Color.DARK_GRAY);
+            g2.drawRoundRect(tx-(expand / 2), ty-fm.getAscent()-(expand / 2), tw+expand, th+expand, arc, arc);
+            
             g2.setColor(Color.BLACK);
             g2.drawString(msg, tx, ty);
             g2.dispose();
