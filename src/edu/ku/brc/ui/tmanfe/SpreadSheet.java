@@ -17,6 +17,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -48,6 +49,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.text.JTextComponent;
 
 import org.apache.log4j.Logger;
 
@@ -214,6 +216,28 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         viewPort.setViewSize(dim);
         viewPort.setView(rowHeaderPanel);
         scrollPane.setRowHeader(viewPort);
+        
+        // Experimental from the web, but I think it does the trick.
+        addKeyListener(new KeyAdapter()
+        {
+            public void keyPressed(KeyEvent e)
+            {
+                if (!ss.isEditing() && !e.isActionKey() && !e.isControlDown()
+                        && !e.isAltDown() && e.getKeyCode() != KeyEvent.VK_SHIFT)
+                {
+                    int rowIndexStart = getSelectedRow();
+                    int colIndexStart = getSelectedColumn();
+
+                    if (rowIndexStart == -1 || colIndexStart == -1)
+                        return;
+
+                    ss.editCellAt(rowIndexStart, colIndexStart);
+                    Component c = ss.getEditorComponent();
+                    if (c instanceof JTextComponent)
+                        ((JTextComponent) c).setText("");
+                }
+            }
+        });
 
         resizeAndRepaint();
         
