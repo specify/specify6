@@ -45,8 +45,6 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.text.JTextComponent;
@@ -141,13 +139,50 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
             }
         });
         cornerBtn.setEnabled(true);
-        scrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER, cornerBtn);
+        scrollPane.setCorner(ScrollPaneConstants.UPPER_LEFT_CORNER, cornerBtn);
         
         // Allows row and collumn selections to exit at the same time
         setCellSelectionEnabled(true);
 
         setRowSelectionAllowed(true);
         setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        
+        addMouseListener(new MouseAdapter() {
+            /* (non-Javadoc)
+             * @see java.awt.event.MouseAdapter#mousePressed(java.awt.event.MouseEvent)
+             */
+            @SuppressWarnings("synthetic-access")
+            @Override
+            public void mouseReleased(MouseEvent e) 
+            {
+                if (e.getClickCount() == 2)
+                {
+                    int rowIndexStart = getSelectedRow();
+                    int colIndexStart = getSelectedColumn();
+                    
+                    ss.editCellAt(rowIndexStart, colIndexStart);
+                    ss.getEditorComponent().requestFocus();
+                    //System.out.println(e.getPoint()+" "+ss.getEditorComponent().getBounds());
+                    if (ss.getEditorComponent() instanceof JTextComponent)
+                    {
+                        JTextComponent txtComp = (JTextComponent)ss.getEditorComponent();
+                        String         txt     = txtComp.getText();
+                        FontMetrics    fm      = txtComp.getFontMetrics(txtComp.getFont());
+                        int x = e.getPoint().x - ss.getEditorComponent().getBounds().x;
+                        for (int i=0;i<txt.length();i++)
+                        {
+                            int width = fm.stringWidth(txt.substring(0, i));
+                            //System.out.println(x + " " + width);
+                            if (width > x)
+                            {
+                                txtComp.setCaretPosition(i);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        });
 
         // Create a row-header to display row numbers.
         // This row-header is made of labels whose Borders,
@@ -189,20 +224,6 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         Dimension dim  = new Dimension(rowLabelWidth, rowHeight * numRows);
         rowHeaderPanel.setPreferredSize(dim); // need to call this when no layout manager is used.
 
-        //final JTable table = this;
-        getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e)
-            {
-                /*
-                ListSelectionModel selModel = table.getSelectionModel();
-                int anchor = selModel.getAnchorSelectionIndex();
-                int lead   = selModel.getLeadSelectionIndex();
-                
-                System.out.println("anchor: "+anchor);
-                System.out.println("lead:   "+lead);
-                 */
-            }
-        });
         rhCellMouseAdapter = new RHCellMouseAdapter(this);
         
         // Adding the row header labels
