@@ -18,27 +18,28 @@
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 -->
-<H2>Welcome to the WorkBench </H2>
+<H2>Welcome to the  </H2>
 <hr>
-<p>The Specify 6 team spoke with many Collection Managers while designing the new Specify 6. While conducting interviews and reading evaluations it became clear that the community needed a seperate tool for working with data <em>before</em> it was cataloged into Specify. Some collections require this for entering legacy data, others want something small that they could take in  the field and others need to manipulate their  data before cataloging it in Specify and  enter it into a spreadsheet first, then Specify. </p>
+<p>The Specify 6 team spoke with many Collection Managers while designing the new Specify 6. While conducting interviews and reading evaluations it became clear that the community needed a seperate tool for working with data <em>before</em> it was cataloged into Specify. Some collections require such a tool for entering legacy data, others want a small, standalone tool to take in  the field and still others need to manipulate their  data before cataloging it in Specify without having to  enter it into a spreadsheet first, and then re-enter it into Specify. </p>
 <p>The WorkBench was created to meet these specific needs within the community. It is the pre-catalog data manipulation component of Specify 6. It offers the following features: </p>
 <ul>
   <li>Import from CSV or MS Excel files</li>
   <li>Link an image to a record</li>
   <li>Create labels and reports</li>
   <li>View and edit in either a grid or form view </li>
+  <li>Visualize georeferenced object information on a map or in Google Earth </li>
   <li>Convert Latitude and Longitude formats</li>
   <li>Georeference</li>
 </ul>
 <h3><u>Introducing Data Sets</u></h3>
 <p>Data is entered, edited, organized and stored in a  Data Set. The WorkBench offers many features for manipulating the data within Data Sets before it is cataloged into Specify 6. </p>
-<p>One of the most important of these features is the organization of the data within the Specify fields. This is not only necessary for other features in the WorkBench to function properly, but also ensures that the data will upload correctly into Specify 6. The column headings for new Data Sets are chosen from a list of Specify fields. The column headings can then be renamed, but will still maintain a link to the original Specify field. These links are referred to as 'maps'. The maps can also be edited. </p>
-<p>When data is imported from a CSV or MS Excel file the WorkBench will read the existing column headings and map them to Specify fields with a built-in 'automapper' program. Any columns headings that the WorkBench does not recognize and 'automap' can be manually mapped and edited. </p>
+<p>One of the most important of these features is the organization of the data into Specify fields. This is not only necessary for other features in the WorkBench to function correctly, but also ensures that the data will upload correctly into Specify 6. The column headings for new Data Sets are chosen from a list of Specify fields corresponding to the Specify data model. The column headings can  be renamed, but will still maintain a link to the original Specify field. These links are referred to as 'maps'. These maps can also be edited. </p>
+<p>When data is imported from a CSV or MS Excel file the WorkBench will read the existing column headings and map them to Specify fields with a built-in 'automapper'. Any column headings that the WorkBench does not recognize and 'automap' can be manually mapped and edited. </p>
 <p>Data Sets can be displayed as either a grid or a form. </p>
-<p>The WorkBench  also enables  each record to link to an image within a Data Set. The linked images display in an image window that can be toggled on or off. This is particularly useful when entering data from a scanned catalog card. <br>
+<p>The WorkBench  also enables  each record to link to an image within a Data Set. The linked images display in an image window that can be toggled on or off. This is particularly useful when entering data from  scanned catalog cards or specimen labels. <br>
 </p>
 <h3><u>Using the WorkBench </u></h3>
-<p>Before using The WorkBench, it is important to understand its components and how they interact with each other. As the diagram below shows, the two major components of the WorkBench are the Sidebar and  Workspace. </p>
+<p>Before using The WorkBench, it is important to understand its components and how they interact with each other. The two major components of the WorkBench are the Sidebar and  Workspace. </p>
 <p><img src="../images/openscreen1.png" alt="open screen"></p>
 <br>
 <h3><u>Sidebar</u></h3>
@@ -54,53 +55,62 @@
 <br>
 <h3><u><a name="DragAndDrop"></a>Drag and Drop </u></h3>
 <p> Every Sidebar item, except Import Data and Import Images, takes advantage of the 'drag and drop' functionality. For instance, dragging a Data Set item  onto Export Data Set will export that Data Set. Dragging Export Data Set onto a Data Set item will produce the same result.</p>
-<p>Drag and drop items are identified by a green band when moused over. Non-drag and drop items are identified by a blue band. Also, grabbing a Data Set and dragging it downward will produce a green band around all the Action items that the Data Set can be dropped onto. <br>
+<p>Drag and drop items are identified by a green outline when moused over. Non-drag and drop items are identified by a blue band. Also, grabbing a Data Set and dragging it downward will produce a green band around all the Action items that the Data Set can be dropped onto. <br>
 </p>
 <h3><u>SideBar Items </u></h3>
-<p>Sidebar items are further categorized by what they are; i.e. Actions, Reports, Templates and Data Sets. <br>
+<p>Sidebar items are further categorized by function; i.e. Actions, Reports, Templates and Data Sets. <br>
 </p>
-<p>An explanation of each of these individual items is below: </p>
-<table width="100%" border="1">
+<table width="95%" border="1">
   <tr>
-    <td><span class="style1">Import Data </span></td>
-    <td>Click this to import data from an MS Excel or CSV file.</td>
+    <td width="8%">Actions: </td>
+    <td width="11%"><span class="style1">Import Data </span></td>
+    <td width="81%">Click this to import data from an MS Excel or CSV file.</td>
   </tr>
   <tr>
+    <td>&nbsp;</td>
     <td><span class="style1">Import  Images </span></td>
     <td>Click this to import images for data entry.</td>
   </tr>
   
   <tr>
+    <td>&nbsp;</td>
     <td><span class="style1">New Data Set </span></td>
     <td>Click this to create a new Data Set.</td>
   </tr>
   <tr>
+    <td>&nbsp;</td>
     <td><span class="style1">Export Data Set </span></td>
     <td>Click this to create an MS-Excel document from a Data Set.</td>
   </tr>
   <tr>
+    <td>&nbsp;</td>
     <td><em>Export Excel Template </em></td>
     <td>Click this to create an  MS-Excel document with the column headings  from a Data Set.</td>
   </tr>
   <tr>
+    <td valign="top">Reports:</td>
     <td><span class="style1">Data Set Summary</span></td>
     <td>Displays a summary of occurrence counts for one field (Column) within the Data Set. This is particularly useful when editing data to validate the input. </td>
   </tr>
   <tr>
+    <td>&nbsp;</td>
     <td><em>Basic Label </em></td>
     <td>Creates a label from predefined column headings.</td>
   </tr>
   <tr>
+    <td>&nbsp;</td>
     <td><span class="style1">Chart</span></td>
     <td>Displays a Bar Chart summary of occurrence counts for one field (Column) within the Data Set.</td>
   </tr>
   <tr>
+    <td>&nbsp;</td>
     <td><span class="style1">Top 10 </span></td>
     <td>Displays a Pie Chart of the top 10 occurrence counts for one field (Column) within the Data Set.</td>
   </tr>
   
   <tr>
-    <td><span class="style1">Data Sets </span></td>
+    <td valign="top">Data Sets </td>
+    <td valign="top"><span class="style1">(Data Set names) </span></td>
     <td><p>Provides a list of the available Data Sets. Click the name to open the Data Set in the Workspace. </p>
         <p>Note: When a Data Set is in use it becomes disabled on the Sidebar. This ensures that the Data Set can not change while it is in use. </p></td>
   </tr>
@@ -129,18 +139,18 @@
   </tr>
   <tr>
     <td>I have data in an Excel spreadsheet</td>
-    <td> The &quot;Import Data&quot; action will import the data into a Data Set and map the existing Columns into the Specify Fields.</td>
+    <td> The &quot;Import Data&quot; action will import the data into a Data Set and map the existing Columns to the Specify fields.</td>
   </tr>
   <tr>
     <td>I have data in a database </td>
     <td>Export the data as a CSV file and use the &quot;Import Data&quot; action to import the data into a Data Set and map the existing Columns into Specify Fields. </td>
   </tr>
   <tr>
-    <td>I have legacy data on scanned cards </td>
+    <td>I have legacy data (cards, labels, catalog pages) as images </td>
     <td>The &quot;Import Images&quot; action will create a Data Set with each card image linked to a single record. </td>
   </tr>
   <tr>
-    <td>I have legacy data on cards </td>
+    <td>I have legacy data on physical cards, labels or catalogs </td>
     <td>The &quot;New Data Set&quot; action will create an empty Data Set for entering data from the cards. </td>
   </tr>
   <tr>
@@ -152,25 +162,22 @@
     <td>Use the &quot;New Data Set&quot; action to create an empty Data Set to enter the field notebook information, then create the labels by dragging and dropping the Data Set onto the Basic Label.</td>
   </tr>
   <tr>
-    <td>I will be going into the field and want to enter (Andy what might be entered in the field?) </td>
+    <td>I will be going into the field and want to enter information about specimens collected </td>
     <td>&nbsp;</td>
   </tr>
   <tr>
     <td>I will be visiting a collaborating Institution and want to take my data with me </td>
-    <td>Save the entire WorkBench Component and accompanying Data Sets onto a USB key. </td>
+    <td>Save the entire WorkBench Component and accompanying Data Sets onto a portable medium (USB key, CD, etc). </td>
   </tr>
   <tr>
     <td>I will be visiting a collaborating Institution and want to take my data with me but they use a Mac and I use a PC </td>
-    <td>No problem! The WorkBench works the same on systems using Windows, Mac OS X as well as Linux. Simply save the entire WorkBench Component and accompanying Data Sets onto a USB key and run the entire WorkBench on your associate's Macintosh.</td>
+    <td>No problem! The WorkBench works the same on systems using Windows, Mac OS X as well as Linux. Simply save the entire WorkBench Component and accompanying Data Sets onto a USB key and run the  WorkBench on your associate's Macintosh.</td>
   </tr>
   <tr>
     <td>I will be visiting a collaborating Institution and want to  merge our data but their data is in Excel </td>
     <td>The &quot;Export Data Set&quot; action will export your data into an Excel spreadsheet. If you make changes to the data (not the Columns) while it is in the spreadsheet use &quot;Import Data&quot; to bring it back into the Workbench. </td>
   </tr>
-  <tr>
-    <td>I have data in Specify 5 that I would like to use in Specify 6 </td>
-    <td>The WorkBench is a component of Specify 6 and  cannot be used for converting data from Specify 5 to Specify 6. </td>
-  </tr>
+  
   <tr>
     <td>I want to verify my data that exists in a non-Specify database </td>
     <td><p>Export the data as a CSV file from your database and then use the &quot;Import Data&quot; action to import the data into a WorkBench Data Set by mapping the existing columns into Specify fields. Then you can use the reporting features to verify your data. </p></td>
@@ -181,11 +188,11 @@
   </tr>
   <tr>
     <td>I would like to Georeference my data </td>
-    <td>Data in the WorkBench  can be Georeferenced using BioGiomancer. (must list the neccesary fields here) </td>
+    <td>Data in the WorkBench  can be Georeferenced using BioGeomancer. (must list the neccesary fields here) </td>
   </tr>
   <tr>
-    <td>The latitude and longitude references in my data exist in different formats and I would like make them all the same. </td>
-    <td>The WorkBench includes a Lat/Long Converter. OPen the Data Set and click on the Converter button in the Grid View. </td>
+    <td>The latitude and longitude references in my data exist in different formats and I would like to make them all the same. </td>
+    <td>The WorkBench includes a Lat/Long Converter. Open the Data Set and click on the Converter button in the Grid View. </td>
   </tr>
   <tr>
     <td>My data is in Specify 5 but I want to take advantage of the special features in the Workbench </td>
