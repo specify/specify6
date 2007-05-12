@@ -245,7 +245,7 @@ public class ImageFrame extends JFrame
             }
         } else
         {
-            WorkbenchTask.showLoadStatus(row);
+            WorkbenchTask.showLoadStatus(row, false);
         }
         mainPane.repaint();
     }

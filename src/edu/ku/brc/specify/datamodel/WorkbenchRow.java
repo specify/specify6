@@ -84,6 +84,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     protected Hashtable<Short, WorkbenchDataItem>            items         = new Hashtable<Short, WorkbenchDataItem>();
     protected LoadStatus                                     loadStatus    = LoadStatus.None;
     protected Exception                                      loadException = null;
+    protected ImageIcon                                      imgIcon       = null;
     
     /**
      * Constructor (for JPA).
@@ -173,6 +174,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
 
     public void setCardImageData(byte[] cardImageData)
     {
+        imgIcon = null;
         this.cardImageData = cardImageData;
     }
     
@@ -185,8 +187,11 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         }
         // otherwise
         
-        ImageIcon imageIcon = new ImageIcon(cardImageData);
-        return imageIcon;
+        if (imgIcon == null)
+        {
+            imgIcon = new ImageIcon(cardImageData);
+        }
+        return imgIcon;
     }
     
     /**
@@ -214,6 +219,8 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
      */
     public void setCardImage(final File imageFile)
     {
+        imgIcon       = null;
+        
         loadStatus    = LoadStatus.None;
         loadException = null;
         

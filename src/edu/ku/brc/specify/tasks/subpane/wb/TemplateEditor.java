@@ -365,12 +365,13 @@ public class TemplateEditor extends CustomDialog
         upDownPanel.add(upBtn,    cc.xy(1, 2));
         upDownPanel.add(downBtn,  cc.xy(1, 4));
 
-        PanelBuilder outerMiddlePanel = new PanelBuilder(new FormLayout("p", "f:p:g, p, f:p:g"));
-        PanelBuilder middlePanel = new PanelBuilder(new FormLayout("p", "p, 2px, p"));
+        PanelBuilder middlePanel = new PanelBuilder(new FormLayout("c:p:g", "p, 2px, p"));
         middlePanel.add(mapToBtn, cc.xy(1, 1));
         middlePanel.add(unmapBtn, cc.xy(1, 3));
         
         btnPanel = middlePanel.getPanel();
+        
+        PanelBuilder outerMiddlePanel = new PanelBuilder(new FormLayout("c:p:g", "f:p:g, p, f:p:g"));
         outerMiddlePanel.add(btnPanel, cc.xy(1, 2));
         
         // Main Pane Layout

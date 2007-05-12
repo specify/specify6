@@ -83,6 +83,7 @@ import edu.ku.brc.dbsupport.QueryResultsHandlerIFace;
 import edu.ku.brc.dbsupport.QueryResultsListener;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.dbsupport.DBTableIdMgr.TableInfo;
+import edu.ku.brc.helpers.ImageFilter;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.RecordSet;
@@ -2300,7 +2301,7 @@ public class WorkbenchTask extends BaseTask
      * @param prefKey the Preferences key to look up
      * @return the path as a string
      */
-    protected String getDefaultDirPath(final String prefKey)
+    public static  String getDefaultDirPath(final String prefKey)
     {
         String homeDir = System.getProperty("user.home");
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
@@ -2323,6 +2324,8 @@ public class WorkbenchTask extends BaseTask
         chooser.setDialogTitle(getResourceString("WB_CHOOSE_IMAGES"));
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         chooser.setMultiSelectionEnabled(true);
+        chooser.setFileFilter(new ImageFilter());
+
         
         if (chooser.showOpenDialog(UIRegistry.get(UIRegistry.FRAME)) != JFileChooser.APPROVE_OPTION)
         {
@@ -2360,13 +2363,14 @@ public class WorkbenchTask extends BaseTask
                 {
                     session.beginTransaction();
                     
-                    for (File file : chooser.getSelectedFiles())
+                    File[] files = chooser.getSelectedFiles();
+                    for (int i=0;i<files.length;i++)
                     {
                         WorkbenchRow row = workbench.addRow();
-                        row.setCardImage(file);
+                        row.setCardImage(files[i]);
                         if (row.getLoadStatus() != WorkbenchRow.LoadStatus.Successful)
                         {
-                            if (!showLoadStatus(row))
+                            if (!showLoadStatus(row, i < files.length-1))
                             {
                                 // Shoud we still save or return?
                                 break; 
@@ -2406,7 +2410,7 @@ public class WorkbenchTask extends BaseTask
      * @param loadException the excpetion that occurred.
      * @return true to continue, false to stop
      */
-    public static boolean showLoadStatus(final WorkbenchRow row)
+    public static boolean showLoadStatus(final WorkbenchRow row, final boolean hasMoreFiles)
     {
         String key = "WB_ERROR_IMAGE_GENERIC";
         switch (row.getLoadStatus())
@@ -2424,8 +2428,13 @@ public class WorkbenchTask extends BaseTask
         
         JStatusBar statusBar = UIRegistry.getStatusBar();
         statusBar.setErrorMessage(getResourceString(key), row.getLoadException());
+        if (hasMoreFiles)
+        {
+            return UIRegistry.displayConfirmLocalized("WB_ERROR_LOAD_IMAGE", key,  getResourceString("Continue"), "WB_STOP_LOADING", JOptionPane.ERROR_MESSAGE);
+        }
+        JOptionPane.showMessageDialog(UIRegistry.get(UIRegistry.TOPFRAME), getResourceString(key), getResourceString("WB_ERROR_LOAD_IMAGE"), JOptionPane.ERROR_MESSAGE);
+        return false;
         
-        return UIRegistry.displayConfirmLocalized("WB_ERROR_LOAD_IMAGE", key, "Continue", "WB_STOP_LOADING", JOptionPane.ERROR_MESSAGE);
     }
     
     /**

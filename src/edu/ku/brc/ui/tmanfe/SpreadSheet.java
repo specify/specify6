@@ -162,10 +162,10 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
                     int colIndexStart = getSelectedColumn();
                     
                     ss.editCellAt(rowIndexStart, colIndexStart);
-                    ss.getEditorComponent().requestFocus();
-                    //System.out.println(e.getPoint()+" "+ss.getEditorComponent().getBounds());
-                    if (ss.getEditorComponent() instanceof JTextComponent)
+                    if (ss.getEditorComponent() != null && ss.getEditorComponent() instanceof JTextComponent)
                     {
+                        ss.getEditorComponent().requestFocus();
+                        
                         final JTextComponent txtComp = (JTextComponent)ss.getEditorComponent();
                         String         txt     = txtComp.getText();
                         FontMetrics    fm      = txtComp.getFontMetrics(txtComp.getFont());

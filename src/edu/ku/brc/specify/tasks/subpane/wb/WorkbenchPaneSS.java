@@ -88,12 +88,14 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.UsageTracker;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.StaleObjectException;
+import edu.ku.brc.helpers.ImageFilter;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.services.biogeomancer.BioGeomancer;
 import edu.ku.brc.services.biogeomancer.BioGeomancerQuerySummaryStruct;
@@ -1150,17 +1152,31 @@ public class WorkbenchPaneSS extends BaseSubPane
     
     /**
      * Loads a new Image into a WB Row.
+     * XXX Note this needs to to be refactored so both the WorkbenchTask and this class use the same image olad method.
+     * 
      * @param row the row of the new card image
      * @return true if the row was set
      */
     protected boolean loadNewImage(final WorkbenchRow row)
     {
-        JFileChooser fileChooser = new JFileChooser();
+        JFileChooser fileChooser = new JFileChooser(WorkbenchTask.getDefaultDirPath(WorkbenchTask.IMAGES_FILE_PATH));
+        fileChooser.setFileFilter(new ImageFilter());
+        
         int          userAction  = fileChooser.showOpenDialog(this);
+        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        
+        localPrefs.put(WorkbenchTask.IMAGES_FILE_PATH, fileChooser.getCurrentDirectory().getAbsolutePath());
         if (userAction == JFileChooser.APPROVE_OPTION)
         {
             String chosenFile = fileChooser.getSelectedFile().getAbsolutePath();
             row.setCardImage(chosenFile);
+            if (row.getLoadStatus() != WorkbenchRow.LoadStatus.Successful)
+            {
+                if (!WorkbenchTask.showLoadStatus(row, false))
+                {
+                    return false;
+                }
+            }
             return true;
         }
         return false;
