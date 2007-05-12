@@ -989,6 +989,14 @@ public class WorkbenchPaneSS extends BaseSubPane
                 spreadSheet.setRowSelectionInterval(currentRow, currentRow);
                 spreadSheet.setColumnSelectionInterval(0, model.getColumnCount()-1);
                 spreadSheet.scrollToRow(Math.min(currentRow+4, model.getRowCount()));
+                
+                SwingUtilities.invokeLater(new Runnable()
+                {
+                    public void run()
+                    {            
+                        spreadSheet.requestFocus();
+                    }
+                });
             }
 
         } else
