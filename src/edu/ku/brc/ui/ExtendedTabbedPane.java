@@ -16,6 +16,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
 import javax.swing.event.MouseInputAdapter;
 
+import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 
 /**
@@ -118,19 +119,28 @@ public class ExtendedTabbedPane extends JTabbedPane
      * Adds a Close Btn to the Tab.
      * @param title the title of the tab
      * @param icon the icon for the tab (can be null)
+     * @param comp the component tab
      * @param index the index of the tab to be fixed
      */
-    protected void adjustTab(final String title, final Icon icon, final int index)
+    protected void adjustTab(final String title, final Icon icon, Component comp, final int index)
     {
+        /*
         final JLabel closeBtn = new JLabel(IconManager.getIcon("Close"));
         closeBtn.setBorder(null);
-
-        closeBtn.setOpaque(false);
-        closeBtn.addMouseListener(new MouseAdapter() 
+        
+        class TabMouseAdapter extends MouseAdapter
         {
+            protected Component tabComp;
+            
+            public TabMouseAdapter(final Component tabComp) 
+            {
+                this.tabComp = tabComp;
+            }
             @Override
             public void mouseClicked(MouseEvent e)
             {
+                SubPaneIFace subPane = (SubPaneIFace)tabComp;
+                SubPaneMgr.getInstance().showPane(subPane);
                 SubPaneMgr.getInstance().closeCurrent();
             }
             @Override
@@ -146,9 +156,11 @@ public class ExtendedTabbedPane extends JTabbedPane
                 closeBtn.setIcon(IconManager.getIcon("Close"));
                 closeBtn.repaint();
             }
-        });
+        }
 
-        /*
+        closeBtn.setOpaque(false);
+        closeBtn.addMouseListener(new TabMouseAdapter(comp));
+          
         // XXX Java 6.0
         
         JPanel tabPanel = new JPanel(new BorderLayout());
@@ -168,7 +180,7 @@ public class ExtendedTabbedPane extends JTabbedPane
     {
         super.addTab(title, component);
         
-        adjustTab(title, null, getTabCount()-1);
+        adjustTab(title, null, component, getTabCount()-1);
     }
 
     /* (non-Javadoc)
@@ -179,7 +191,7 @@ public class ExtendedTabbedPane extends JTabbedPane
     {
         super.addTab(title, icon, component, tip);
         
-        adjustTab(title, icon, getTabCount()-1);
+        adjustTab(title, icon, component, getTabCount()-1);
     }
 
     /* (non-Javadoc)
@@ -190,7 +202,7 @@ public class ExtendedTabbedPane extends JTabbedPane
     {
         super.addTab(title, icon, component);
         
-        adjustTab(title, icon, getTabCount()-1);
+        adjustTab(title, icon, component, getTabCount()-1);
     }
 
     /* (non-Javadoc)
@@ -201,7 +213,7 @@ public class ExtendedTabbedPane extends JTabbedPane
     {
         super.insertTab(title, icon, component, tip, index);
         
-        adjustTab(title, icon, index);
+        adjustTab(title, icon, component, index);
     }
 
     /**
