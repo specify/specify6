@@ -116,7 +116,8 @@ public class JasperReportsCache implements DataCacheIFace
         // XXX isNewJavaVersionAtAppStart should be moved to a more generic place
         if (SpecifyAppContextMgr.isNewJavaVersionAtAppStart() && !reportsCacheWasCleared)
         {
-            clearJasperFilesOnly(path);
+            // XXX WORKBENCH RELEASE Related to Bug 4442
+            //clearJasperFilesOnly(path);
             
             reportsCacheWasCleared = true;
         }
