@@ -132,7 +132,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         
         final SpreadSheet ss = this;
         JButton cornerBtn = UIHelper.createIconBtn("Blank", IconManager.IconSize.Std16, 
-                                                    UIRegistry.getResourceString("SelectAll"), 
+                                                    "SelectAll", 
                                                     new ActionListener() {
             public void actionPerformed(ActionEvent ae)
             {
