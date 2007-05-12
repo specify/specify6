@@ -167,10 +167,10 @@ public class XLSExport implements DataExport
         
         if (!valueSet)
         {
-            if (type != HSSFCell.CELL_TYPE_STRING)
-            {
-                cell.setCellType(HSSFCell.CELL_TYPE_STRING);
-            }
+            //if (type != HSSFCell.CELL_TYPE_STRING)
+            //{
+            //    cell.setCellType(HSSFCell.CELL_TYPE_STRING);
+            //}
             cell.setCellValue(value);
         }
     }

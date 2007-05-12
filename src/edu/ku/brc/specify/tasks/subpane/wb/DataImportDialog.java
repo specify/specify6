@@ -37,6 +37,7 @@ import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -903,24 +904,27 @@ public class DataImportDialog extends JDialog implements ActionListener
     
     private void showTooManyRowsErrorDialog()
     {
-        PanelBuilder    builder = new PanelBuilder(new FormLayout("p", "c:p:g"));
+        PanelBuilder    builder = new PanelBuilder(new FormLayout("p:g", "c:p:g"));
         CellConstraints cc      = new CellConstraints();
 
         //builder.add(new JLabel(IconManager.getIcon("SpecifyLargeIcon")), cc.xy(1,1));
+        // XXX I18N 
         builder.add(new JLabel("<html>"
-        		+"The preview release of the Specify 6.0 Workbench"
-        		+"<br>"
-        		+"can only import 2000 rows of data.  The file you "
-        		+"<br>"
+        		+"<p>The preview release of the Specify 6.0 Workbench"
+        		//+"<br>"
+        		+"can only import 2000 rows of data.<br>The file you "
+        		//+"<br>"
         		+"are attempting to import contains too many rows."
-        		+"<br>"
-        		+"Please select another file."
-        		+"</html>"), cc.xy(1,1)); //TODO i8n
-
-        CustomDialog maxRowExceededMsg = new CustomDialog((Frame)UIRegistry.get(UIRegistry.FRAME), getResourceString("WB_MAXROWS") , true, CustomDialog.OK_BTN, builder.getPanel());
-        maxRowExceededMsg.setOkLabel(getResourceString("Close"));
-        UIHelper.centerAndShow(maxRowExceededMsg);
-    	
+        		//+"<br>"
+        		+"<br><br>Please select another file or split the larger file."
+        		+"</p></html>"), cc.xy(1,1)); //TODO i8n
+        builder.setBorder(BorderFactory.createEmptyBorder(4, 4, 0, 4));
+        CustomDialog maxRowExceededDlg = new CustomDialog((Frame)UIRegistry.get(UIRegistry.FRAME), getResourceString("WB_MAXROWS") , true, CustomDialog.OK_BTN, builder.getPanel());
+        //maxRowExceededDlg.createUI();
+        UIHelper.centerAndShow(maxRowExceededDlg);
+        //Dimension size = maxRowExceededDlg.getPreferredSize();
+        //maxRowExceededDlg.setSize(Math.min(size.width, 300), size.height+20);
+    	//maxRowExceededDlg.setVisible(true);
         hasTooManyRows = true;
         
         //okBtn.setEnabled(false);   	
