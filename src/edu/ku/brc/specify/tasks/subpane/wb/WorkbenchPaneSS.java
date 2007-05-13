@@ -1750,7 +1750,6 @@ public class WorkbenchPaneSS extends BaseSubPane
         final ProgressDialog progressDialog = new ProgressDialog("BioGeomancer Progress", false, true);
         progressDialog.getCloseBtn().setText(getResourceString("Cancel"));
         progressDialog.setModal(true);
-        progressDialog.setAlwaysOnTop(true);
         progressDialog.setProcess(0, selection.length);
 
         // use a SwingWorker thread to do all of the work, and update the GUI when done
