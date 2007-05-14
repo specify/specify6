@@ -540,10 +540,9 @@ public class SearchReplacePanel extends JPanel
               if (!wrapSearchButton.isSelected())
               {
                   nextButton.setEnabled(false);
-                  previousButton.setEnabled(true);
-                  setStatusLabelWithFailedFind();
-
+                  previousButton.setEnabled(true);                 
               }
+              setStatusLabelWithFailedFind();
           } else
           {
               isFinishedSearchingUp = true;
@@ -551,10 +550,9 @@ public class SearchReplacePanel extends JPanel
               {
                   previousButton.setEnabled(false);
                   log.debug("seeting next button to true");
-                  nextButton.setEnabled(true);
-                  setStatusLabelWithFailedFind();
-
+                  nextButton.setEnabled(true);                
               }
+              setStatusLabelWithFailedFind();
           }
           return false;         
         }
@@ -777,8 +775,9 @@ public class SearchReplacePanel extends JPanel
                     log.debug("=======" + isSearchDown);
                     nextButton.setEnabled(false);
                     previousButton.setEnabled(true);
-                    setStatusLabelWithFailedFind();
+                    
                 }
+                setStatusLabelWithFailedFind();
             }
             else
             {
@@ -788,8 +787,9 @@ public class SearchReplacePanel extends JPanel
                     previousButton.setEnabled(false);
                     log.debug("seeting next button to true");
                     nextButton.setEnabled(true);
-                    setStatusLabelWithFailedFind();
+                    
                 }
+                setStatusLabelWithFailedFind();
             }
             return false;
         }
