@@ -264,8 +264,12 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
             public void keyPressed(KeyEvent e)
             {
                 if (!ss.isEditing() && !e.isActionKey() && !e.isControlDown() && !e.isMetaDown() &&
-                    !e.isAltDown() && e.getKeyCode() != KeyEvent.VK_SHIFT)
+                    !e.isAltDown() && 
+                    e.getKeyCode() != KeyEvent.VK_SHIFT &&
+                    e.getKeyCode() != KeyEvent.VK_TAB)
                 {
+                    log.error("Grabbed the event as input");
+                    
                     int rowIndexStart = getSelectedRow();
                     int colIndexStart = getSelectedColumn();
 
