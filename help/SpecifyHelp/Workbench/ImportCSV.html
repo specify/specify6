@@ -12,13 +12,13 @@
 <p>The following information dialog will open: </p>
 <p align="center"><img src="../images/badcsvimport.png" alt="Bad Import"></p>
 <p align="center" class="imgcaption">Incorrect Delimiter Selections </p>
+<p>&nbsp;</p>
 <p>This dialog enables  the WorkBench to properly import the file by determining if the import file inlcudes column headings and setting the proper file delimiters. </p>
 <p>The Data Preview window reads and displays a sample of the column headings and data from the import file. If the file does not contain column headings the columns will be named by the numerical order (Column 1, Column 2, etc.). Check the 'First row contains column headings' box according to how the file displays in the Data Preview window. </p>
 <p>The Data Preview display is also used to discover the delimiter settings for the import file. The 'Bad Delimiter Selections' image above shows a dialog with incorrect information selected in the 'Data Import Options'. This is obvious in both the 'Data Preview' window, which shows sporadic data, as well as in the warning icon and message shown under the 'Data Preview' window. </p>
 <p>To correct the information displayed,   choose different selections  in the 'Data Import Options' section of the dialog. When the 'Data Import Options' are correct the 'Data Preview' window will display the CSV file correctly and the warning icon will disappear. The corrected dialog is shown below: </p>
 <p align="center"><img src="../images/gooddelimiters.png" alt="Good Delimiters"></p>
 <p align="center" class="imgcaption">Correct Delimiter Selections </p>
-<p>&nbsp;</p>
 <p>&nbsp;</p>
 <p>The next step in the import process is to 'map' the  column headings from the import file to  Specify fields. </p>
 <p>A file with column headings will map differently  than a file without column headings. Both instances are described below.</p>
@@ -27,6 +27,7 @@
 <p>The Workbench includes an 'auto-mapping' feature which  first identifies  column headings and compares them to existing Data Sets. If the column headings in the import file match those in an existing Data Set the following dialog will open:</p>
 <p align="center"><img src="../images/newdataset.png" alt="New Data Set" ></p>
 <p align="center" class="imgcaption">New Data Set Column Headings </p>
+<p>&nbsp;</p>
 <p>To copy the 'map' from an existing Data Set select the 'Use an existing Data Set mapping' button and choose the Data Set from the list provided. The Data Set Properties dialog will then open, to name and describe the new Data Set. </p>
 <p>To create a new map for the new Data Set select the 'Create new Data Set mapping' button and click 'OK'.</p>
 <p>The 'automapper' then compares the import column headings to the Specify fields and 'maps' the columns to matching fields. If most of the column headings  match  Specify fields the map will appear much like the following example:</p>
@@ -94,7 +95,7 @@
 <p align="left"> Columns without headings display  'To Be Discarded' rather than mapping to Specify fields. Unmapped column headings will be deleted if they are not mapped to a Specify field before clicking 'OK'.</p>
 <p align="left">&nbsp;</p>
 <p>The buttons in the dialog enable columns to be mapped, unmapped, added, deleted and reordered . The function of each button is described below:</p>
-<table width="75%" border="0" cellspacing="1" cellpadding="6">
+<table width="75%" border="1" cellspacing="1" cellpadding="6">
   <tr>
     <td width="8%"><img src="../images/Map16x16.png" alt="map" width="16" height="16"></td>
     <td width="14%">map</td>
