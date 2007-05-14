@@ -758,6 +758,7 @@ public class DataImportDialog extends JDialog implements ActionListener
             //quick fix to prevent ".0" at end of catalog numbers etc
             NumberFormat nf = NumberFormat.getInstance();
             nf.setMinimumFractionDigits(0);
+            nf.setGroupingUsed(false); //gets rid of commas
             
             // Iterate over each row in the sheet
             Iterator rows = sheet.rowIterator();
