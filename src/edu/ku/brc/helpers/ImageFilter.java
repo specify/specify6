@@ -61,10 +61,10 @@ public class ImageFilter extends FileFilter implements java.io.FilenameFilter
         String extension = FilenameUtils.getExtension(filename);
         if (extension != null)
         {
-            if (extension.equals(gif) ||
-                extension.equals(jpeg) || 
-                extension.equals(jpg) || 
-                extension.equals(png)
+            if (extension.equalsIgnoreCase(gif) ||
+                extension.equalsIgnoreCase(jpeg) || 
+                extension.equalsIgnoreCase(jpg) || 
+                extension.equalsIgnoreCase(png)
                 //extension.equals(tiff) || 
                 //extension.equals(tif) ||
                 //extension.equals(BMP)
