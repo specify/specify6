@@ -98,6 +98,11 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
     private boolean              rowSelectionStarted = false;
 
     SearchReplacePanel findPanel = null;//new SearchReplacePanel(this);
+    
+    // XXX Fix for Mac OS X Java 5 Bug
+    protected int prevRowSelInx = -1;
+    protected int prevColSelInx = -1;
+    
     /**
      * Constructor for Spreadsheet from model
      * @param model
@@ -156,6 +161,10 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
             @Override
             public void mouseReleased(MouseEvent e) 
             {
+                // XXX For Java 5 Bug
+                prevRowSelInx = getSelectedRow();
+                prevColSelInx = getSelectedColumn();
+                
                 if (e.getClickCount() == 2)
                 {
                     int rowIndexStart = getSelectedRow();
@@ -254,8 +263,8 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         {
             public void keyPressed(KeyEvent e)
             {
-                if (!ss.isEditing() && !e.isActionKey() && !e.isControlDown()
-                        && !e.isAltDown() && e.getKeyCode() != KeyEvent.VK_SHIFT)
+                if (!ss.isEditing() && !e.isActionKey() && !e.isControlDown() && !e.isMetaDown() &&
+                    !e.isAltDown() && e.getKeyCode() != KeyEvent.VK_SHIFT)
                 {
                     int rowIndexStart = getSelectedRow();
                     int colIndexStart = getSelectedColumn();
@@ -539,6 +548,20 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         //int modifiers = ev.getModifiers();
         
         mouseDown = type == MouseEvent.MOUSE_PRESSED;
+        
+        // XXX For Java 5 Bug
+        if (mouseDown && UIHelper.getOSType() == UIHelper.OSTYPE.MacOSX)
+        {
+            int rowIndexStart = rowAtPoint(ev.getPoint());
+            int colIndexStart = columnAtPoint(ev.getPoint());
+            
+            //System.out.println(isEditing()+"  "+rowIndexStart+" "+colIndexStart+" "+prevRowSelInx+" "+prevColSelInx+" ");
+            if (isEditing() && (prevRowSelInx != rowIndexStart || prevColSelInx != colIndexStart))
+            {
+                getCellEditor().stopCellEditing();
+            }
+        }
+        // Done - For Java 5 Bug
 
         if (ev.isPopupTrigger())
         {
