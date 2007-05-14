@@ -1752,7 +1752,9 @@ public class WorkbenchPaneSS extends BaseSubPane
         progressDialog.getCloseBtn().setText(getResourceString("Cancel"));
         progressDialog.setModal(true);
         progressDialog.setProcess(0, selection.length);
-        progressDialog.setIconImage( IconManager.getImage("AppIcon").getImage());
+        
+        // XXX Java 6
+        //progressDialog.setIconImage( IconManager.getImage("AppIcon").getImage());
 
         // use a SwingWorker thread to do all of the work, and update the GUI when done
         final SwingWorker bgTask = new SwingWorker()
