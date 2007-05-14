@@ -81,6 +81,7 @@ public class CustomDialog extends JDialog
 
     // Needed for delayed building of Dialog
     protected int               whichBtns        = OK_BTN;
+    protected int               defaultBtn       = OK_BTN;
     protected String            helpContext      = null;
     protected Component         contentPanel     = null;
     
@@ -129,6 +130,28 @@ public class CustomDialog extends JDialog
      * @param contentPanel the contentpane
      * @throws HeadlessException
      */
+    public CustomDialog(final Frame     frame, 
+                        final String    title, 
+                        final boolean   isModal,
+                        final int       whichBtns,
+                        final Component contentPanel,
+                        final int defaultBtn) throws HeadlessException
+    {
+        super(frame, title, isModal);
+        
+        this.whichBtns    = whichBtns;
+        this.contentPanel = contentPanel;
+        this.defaultBtn = defaultBtn;
+    }
+
+    /**
+     * @param frame parent frame
+     * @param title the title of the dialog
+     * @param isModal whether or not it is model
+     * @param whichBtns which button to use for the dialog
+     * @param contentPanel the contentpane
+     * @throws HeadlessException
+     */
     public CustomDialog(final Dialog    dialog, 
                         final String    title, 
                         final boolean   isModal,
@@ -141,6 +164,26 @@ public class CustomDialog extends JDialog
         this.contentPanel = contentPanel;
     }
 
+    /**
+     * gets JButton corresponding to defaultBtn value.
+     */
+    protected JButton findDefaultBtn()
+    {
+        if (defaultBtn == CANCEL_BTN)
+        {
+            return cancelBtn;
+        }
+        if (defaultBtn == HELP_BTN)
+        {
+            return helpBtn;
+        }
+        if (defaultBtn == APPLY_BTN)
+        {
+            return applyBtn;
+        }
+        return okBtn;
+    }
+    
     /**
      * Create the UI for the dialog.
      */
@@ -163,7 +206,6 @@ public class CustomDialog extends JDialog
                 okButtonPressed();
             }
         });
-        getRootPane().setDefaultButton(okBtn);
         
         
         if ((whichBtns & CANCEL_BTN) == CANCEL_BTN)
@@ -207,6 +249,8 @@ public class CustomDialog extends JDialog
                 }
             });
         }
+        
+        getRootPane().setDefaultButton(findDefaultBtn());
         
         JPanel bb;
         if (whichBtns == OK_BTN)

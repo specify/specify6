@@ -38,6 +38,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -926,6 +927,26 @@ public class WorkbenchTask extends BaseTask
         if (StringUtils.isEmpty(fileName)) 
         { 
             return false;
+        }
+        
+        File testFile = new File(path + File.separator + fileName);
+        if (testFile.exists())
+        {
+            PanelBuilder    builder = new PanelBuilder(new FormLayout("p:g", "c:p:g"));
+            CellConstraints cc      = new CellConstraints();
+
+            builder.add(new JLabel("<html>"
+                    +"<p>" + getResourceString("WB_FILE_EXISTS")
+                    +"<br><br>" + getResourceString("WB_OK_TO_OVERWRITE") + "<br>      "
+                    +"</p></html>"), cc.xy(1,1)); 
+            builder.setBorder(BorderFactory.createEmptyBorder(4, 4, 0, 4));
+            CustomDialog confirmer = new CustomDialog((Frame)UIRegistry.get(UIRegistry.FRAME), 
+                    getResourceString("WB_FILE_EXISTS_TITLE"), true, CustomDialog.OKCANCEL, builder.getPanel(), CustomDialog.CANCEL_BTN);
+            UIHelper.centerAndShow(confirmer);
+            if (confirmer.isCancelled())
+            {
+                return false;
+            }
         }
         props.setProperty("fileName", path + File.separator + fileName);
 
