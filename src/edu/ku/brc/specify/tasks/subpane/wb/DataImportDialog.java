@@ -34,6 +34,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.text.NumberFormat;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -754,6 +755,10 @@ public class DataImportDialog extends JDialog implements ActionListener
 
             boolean firstRow = true;
 
+            //quick fix to prevent ".0" at end of catalog numbers etc
+            NumberFormat nf = NumberFormat.getInstance();
+            nf.setMinimumFractionDigits(0);
+            
             // Iterate over each row in the sheet
             Iterator rows = sheet.rowIterator();
             while (rows.hasNext())
@@ -792,7 +797,8 @@ public class DataImportDialog extends JDialog implements ActionListener
                                             cell.getDateCellValue());
                                 } else
                                 {
-                                    value = Double.toString(cell.getNumericCellValue());
+                                    double numeric = cell.getNumericCellValue();
+                                    value = nf.format(numeric);
                                 }
                                 break;
 

@@ -137,7 +137,7 @@ public class XLSImport extends DataImport implements DataImportIFace
                                     } else
                                     {
                                         double numeric = cell.getNumericCellValue();
-                                         value = nf.format(numeric);
+                                        value = nf.format(numeric);
                                      }
                                 }
                                 break;
