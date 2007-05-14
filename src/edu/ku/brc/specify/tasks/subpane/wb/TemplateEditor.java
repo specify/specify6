@@ -202,6 +202,7 @@ public class TemplateEditor extends CustomDialog
         }
         
         tableList = new JList(tableModel);
+        tableList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tableList.setCellRenderer(tableInfoListRenderer = new TableInfoListRenderer(IconManager.IconSize.Std16));
         JScrollPane tableScrollPane = new JScrollPane(tableList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         
