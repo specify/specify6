@@ -52,29 +52,31 @@
     <td>Opens the 'Carry Forward' configuration dialog. See <a href="#Carry_Forward">Carry Forward</a>. </td>
   </tr>
   <tr>
+    <td>Grid View </td>
     <td><img src="../images/gridedit.png" alt="Grid Edit" width="60" height="21"></td>
-    <td>&nbsp;</td>
-    <td>Allows the data to be shown in a grid view (resembling a spreadsheet). Data Sets always open in this view. </td>
+    <td>Displays the Data Set in a  grid view (resembling a spreadsheet). Data Sets always open in this view. </td>
   </tr>
 </table>
-<p>The Label and Field controls can be moved and repositioned on the form with a left mouse button click and drag. The Tab Order is automatically adjusted depending on the placement of the controls, the tab order is top, down, left to right. </p>
+<p>The Label and UI controls can be moved and repositioned on the form with a left mouse button click and drag. </p>
+<p>UI controls can be activated by clicking in them, or using the tab key. The tab order is automatically adjusted depending on the placement of the controls. The tab order is top - down, left to right. </p>
+<p>&nbsp;</p>
 <h3><u>Edit Form  Properties</u></h3>
-<p>In addition to dragging and dropping the controls on the form the form controls have several properties that can manually updated. Click on the label or the field and then the <img src="../images/EditProperties16x16.png" width="16" height="16"> edit properties button. The following dialog will appear: </p>
+<p>In addition to dragging and dropping the controls, several properties that also be manually updated. Activate the Label or UI control,  then click the <img src="../images/EditProperties16x16.png" width="16" height="16"> (edit properties) button. The following dialog will appear: </p>
 <p align="center"><img src="../images/formproperties.png" alt="form properties"></p>
 <p align="center"><span class="imgcaption">Edit Form Properties</span></p>
 <p>The text fields in the dialog are explained below:</p>
 <table width="100%" border="1">
   <tr>
     <td>X</td>
-    <td>Refers to  the X coordinate where the text area appears within the Form. </td>
+    <td>Refers to  the X coordinateofr text area. </td>
   </tr>
   <tr>
     <td>Y</td>
-    <td>Refers to the Y coordinate where the text area appears within the Form. </td>
+    <td>Refers to the Y coordinate of text area. </td>
   </tr>
   <tr>
     <td>Label</td>
-    <td>Refers to the column name. This is the only place in the WorkBench that allows a Column name to be changed. </td>
+    <td>Refers to the column heading. This is the only place in the WorkBench that allows a Column heading to be changed. </td>
   </tr>
   <tr>
     <td>Number of Rows </td>
@@ -83,7 +85,7 @@
   <tr>
     <td>Field Type </td>
     <td><p>Text Field: limits the text area to one row </p>
-      <p>Text Area:  allows the text area to expand to more than one row -- activates the Number of Rows field </p></td>
+      <p>Text Area:  allows the text area to expand to more than one row and activates the Number of Rows field </p></td>
   </tr>
   <tr>
     <td>Field Columns </td>
@@ -103,43 +105,29 @@
   </tr>
 </table>
 <h3><u><a name="Carry_Forward"></a>Carry Forward</u></h3>
-<p>Carry Forward enables the value in one or more fields (or columns) within the current record to be 'carried forward' or copied to the next new row of data. Clicking on the <img src="../images/Configure16x16.png" alt="briefcase" width="16" height="16"> button displays a configuration window that enables the columns to be selected. </p>
+<p>Carry Forward enables the value in one or more columns  to be 'carried forward', or copied to the next new row of data. To select the columns to be carried forward click  the <img src="../images/Configure16x16.png" alt="configure" width="16" height="16"> (carry forward) button. The following configuration window will open: </p>
 <p align="center"><img src="../images/carryforwardscr.png" alt="Carry Forward"><br>
-  <span class="imgcaption">Configure Carry Forward</span> </p>
-<p>The values in the selected fields for the record are carried forward when a new record is created. </p>
-<p><u>Quick Tips for Entering Data</u></p>
-<ol start="1" type="1">
-  <li>Click      on the Data Set to open it</li>
-  <li>Click      in a particular grid cell to enter data and press the <em>esc</em> or F2 buttons to start editing </li>
-  <li>You      are in Grid View, may choose Form View from the icon at the bottom right of the window</li>
-  <li>You      may click and drag field names to rearrange the window</li>
-  <li>Click      <img src="../images/AddNewRecord16x16.png" width="16" height="16"> or type &lt;cntl&gt; + n to create a new row (or Command + N on the Mac) </li>
-  <li>Click inside the text field to enter data </li>
-  <li>Save      the Data Set</li>
-</ol>
-<p>Note: If the fields are rearranged the WorkBench will not save the new arrangement, the Form . </p>
-<p><u>Quick Tip for Deleting a Record(s):</u></p>
+    <span class="imgcaption">Configure Carry Forward </span></p>
+<p>The values in the selected column(s) are 'carried forward' into  new rows, (new rows are added by clicking the <img src="../images/AddNewRecord16x16.png" alt="add" width="16" height="16"> button), until Carry Forward is reset. </p>
+<p>&nbsp;</p>
+<h3><u>Form Editing Examples</u></h3>
+<p><u>Delete a Record(s):</u></p>
 <ol>
-  <li>Click on the <img src="../images/RemoveRecord16x16.png" width="16" height="16"> button </li>
-</ol>
-<p><u>Quick Tips for Clearing a Cell:</u></p>
-<ol start="1" type="1">
-  <li>Sweep the cell to select the information in it </li>
-  <li>Press the 'backspace' key </li>
-</ol>
-<p><u>Quick Tips for Adding Record(s):</u></p>
-<ol start="1" type="1">
-  <li>Select the <img src="../images/AddNewRecord16x16.png" width="16" height="16"> button; this will add a record</li>
-</ol>
-<p>Note: Records can only be added within a Data Set in Grid View </p>
-<p><u>Quick Tips for copying the Same Value into Multiple Cells:</u></p>
-<p>This can only be accomplished in Grid View</p>
-<p><u>Quick Tips for Adding a Row with Preset Values:</u></p>
+  <li>Click  the <img src="../images/RemoveRecord16x16.png" alt="clear" width="16" height="16"> (delete) button </li>
+  </ol>
+<p>&nbsp;</p>
+<p><u>Add a Record(s):</u></p>
 <ol>
-  <li>Select the record to be carried forward </li>
-  <li>Click <img src="../images/Configure16x16.png" alt="carry forward" width="16" height="16"></li>
-  <li>Select the fields carried into the new row</li>
-  <li>Select  <img src="../images/AddNewRecord16x16.png" width="16" height="16"></li>
+  <li>Click the  <img src="../images/AddNewRecord16x16.png" alt="add" width="16" height="16"> (add) button </li>
+</ol>
+<p>&nbsp;</p>
+<p><u>Add a Record with Preset Values:</u></p>
+<ol>
+  <li>Click  the <img src="../images/Configure16x16.png" alt="configure" width="16" height="16"> button</li>
+  <li>Select the fields  to be copied into the new row</li>
+  <li>Click the 'OK' button at the bottom of the Carry Forward window</li>
+  <li>Select the row  to be copied into the new row</li>
+  <li>Click  the <img src="../images/AddNewRecord16x16.png" alt="add" width="16" height="16"> button </li>
 </ol>
 <p>&nbsp;</p>
 </body>

@@ -8,28 +8,28 @@
 <h2>Importing Data from an XLS file </h2>
 <hr>
 <p>The WorkBench can easily import data from an MS Excel file into a new Data Set. </p>
-<p>To begin, click on the Import Data action on the Sidebar. A file dialog will appear to select the import file. </p>
+<p>To begin, click on the Import Data action on the Sidebar and choose the import file in the file dialog. </p>
 <p>To properly import the data from an MS Excel file, the WorkBench must first determine if the data includes column headings. The following information dialog appears after the file dialog:</p>
 <p align="center"><img src="../images/importdialog.png" ></p>
 <p align="center" class="imgcaption">Import from MS Excel </p>
 <p align="center" class="imgcaption">&nbsp;</p>
-<p>The Data Preview window reads and displays a sample of the column headings and data from the import file. If the file does not contain column headings, then none will display. Check the 'First row contains column headings' box according to how the file displays in the Data Preview window. </p>
-<p>The next dialog(s) will enable the column headings from the import file to be mapped  to the fields in Specify. </p>
+<p>The Data Preview window reads and displays a sample of the column headings and data from the import file. If the file does not contain column headings the columns will be named by the numerical order (Column 1, Column 2, etc.). Check the 'First row contains column headings' box according to how the file displays in the Data Preview window. </p>
+<p>The next step in the import process is to 'map' the  column headings from the import file to  Specify fields. </p>
 <p>A file with column headings will map differently  than a file without column headings. Both instances are described below.</p>
 <p>&nbsp;</p>
 <h3><u>File includes  Column Headings </u> </h3>
 <p>The Workbench includes an 'auto-mapping' feature which  first identifies  column headings and compares them to existing Data Sets. If the column headings in the import file match those in an existing Data Set the following dialog will open:</p>
 <p align="center"><img src="../images/newdataset.png" alt="New Data Set" ></p>
 <p align="center" class="imgcaption">New Data Set Column Headings </p>
-<p>To copy column headings from an existing Data Set select the 'Use an existing Data Set mapping' button and choose the Data Set from the list provided. The Data Set Properties dialog will then open, to name and describe the new Data Set. </p>
-<p>To choose  column headings for the new Data Set select the 'Create new Data Set mapping' button and click 'OK'.</p>
+<p>To copy the 'map' from an existing Data Set select the 'Use an existing Data Set mapping' button and choose the Data Set from the list provided. The Data Set Properties dialog will then open, to name and describe the new Data Set. </p>
+<p>To create a new map for the new Data Set select the 'Create new Data Set mapping' button and click 'OK'.</p>
 <p>The 'automapper' then compare the import column headings to the Specify fields and 'maps' the columns to matching fields. If most of the column headings  match  Specify fields the map will appear much like the following example:</p>
 <p align="center"><img src="../images/automappededitor.png"></p>
 <p align="center" class="imgcaption">Column Headings Automapped in the Data Set Mapping Editor </p>
 <p>&nbsp;</p>
 <p>The column headings from the import file appear under 'Data Set Columns' on the right side of the dialog and the 'Specify Fields' appear on the left. </p>
-<p>Column headings that map to Specify fields are identifed by a <img src="../images/linked.png" alt="Linked" > (linked) icon. </p>
-<p>Column headings that have not been automapped will map to 'To Be Discarded' in 'Specify Fields'. Unmapped column headings will be deleted if they are not mapped to a Specify field before clicking 'OK'.</p>
+<p>Column headings that map to Specify fields display a <img src="../images/linked.png" alt="Linked" > (linked) icon. </p>
+<p>Column headings that have not been automapped will display  'To Be Discarded' rather than mapping to a Specify field. Unmapped column headings will be deleted if they are not mapped to a Specify field before clicking 'OK'.</p>
 <p>The buttons in the dialog enable columns to be mapped, unmapped, added, deleted and reordered . The function of each button is described below:</p>
 <table width="75%" border="0" cellspacing="1" cellpadding="6">
   <tr>
@@ -72,19 +72,20 @@
   <li>Click on the Specify field</li>
   <li>Click the  <img src="../images/Map16x16.png" alt="map" width="16" height="16"> (map) button</li>
 </ol>
-<p>A <img src="../images/linked_right.png" alt="link" width="32" height="16"> (link) icon will appear identifying that the column and field are the same heading. </p>
-<p><em><strong>Note:</strong></em> A field may only map once. Specify fields that are mapped display a green check in the window to identify that they are in use. </p>
+<p>A <img src="../images/linked_right.png" alt="link" width="32" height="16"> (link) icon confirms that the column and field are the same heading. </p>
+<p><em><strong>Note:</strong></em> A field may only map once. Specify fields that are mapped display a green check next to their name in the Specify field list confirming that they are in use. </p>
 <p>&nbsp;</p>
-<p>When all the Columns are mapped and ordered correctly click the 'OK' button. The following dialog will appear to name and describe the new Data Set:</p>
+<p>When all the Columns are mapped and ordered correctly click the 'OK' button. </p>
+<p>Complete the import process by   naming  and describing the new Data Set:</p>
 <p align="center"><img src="../images/datasetproperties.png" ></p>
 <p align="center" class="imgcaption">Data Set Properties </p>
 <p>&nbsp;</p>
 <h3><u>File does NOT include Column Headings </u></h3>
-<p>Import files that do not contain column headings will not map to fields in Specify and will need to be manually mapped. The following image is an example of the map of a file that does not contain column headings:</p>
+<p>Import files that do not contain column headings can not be 'automapped' to fields in Specify, but must be manually mapped. Columns are named according to their numerical order: </p>
 <p align="center"><img src="../images/nonamesmap.png" ></p>
 <p align="center" class="imgcaption">Map of Import File with No Column Headings </p>
 <p align="left">&nbsp;</p>
-<p align="left">The unmapped columns will map to 'To Be Discarded' in  'Specify Fields'. Unmapped column headings will be deleted if they are not mapped to a Specify field before clicking 'OK'.</p>
+<p align="left">Columns that do not include headings  display 'To Be Discarded' rather than mapping to  Specify fields. Unmapped column headings will be deleted if they are not mapped to a Specify field before clicking 'OK'.</p>
 <p align="left">&nbsp;</p>
 <p>The buttons in the dialog enable columns to be mapped, unmapped, added, deleted and reordered . The function of each button is described below:</p>
 <table width="75%" border="0" cellspacing="1" cellpadding="6">
@@ -110,36 +111,36 @@
   </tr>
 </table>
 <p>&nbsp;</p>
-<p>To map an unmapped Data Set Column to a Specify Field:</p>
+<p>To map an unmapped Data Set column to a Specify field:</p>
 <ol>
   <li>Click on the column to select it</li>
-  <li>Click on the Data Type to show the Specify fields in the 'Fields' window </li>
+  <li>Click on the Data Type to show the Specify fields in the 'Specify Fields' window </li>
   <li>Click on the Specify field to select it</li>
   <li>Click the <img src="../images/Map16x16.png" alt="map" width="16" height="16"> (map) button </li>
 </ol>
-<p>To  unmap a Column to a Field:</p>
+<p>To  unmap a column to a field:</p>
 <ol>
   <li>Click on the column to select it </li>
   <li>Click the <img src="../images/Unmap16x16.png" alt="unmap" width="16" height="16"> (unmap) button </li>
 </ol>
 <p>To add a column </p>
 <ol>
-  <li>Click on the Data Type to show the Specify fields in the 'Fields' window </li>
+  <li>Click on the Data Type to show the Specify fields in the 'Specify Fields' window </li>
   <li>Click on the Specify field</li>
   <li>Click the <img src="../images/Map16x16.png" alt="map" width="16" height="16"> (map) button</li>
 </ol>
 <p>A <img src="../images/linked_right.png" alt="link" width="32" height="16"> (link) icon will appear identifying that the column and field are the same heading. </p>
-<p><em><strong>Note:</strong></em> A field may only map once. Specify fields that are mapped display a green check in the window to identify that they are in use. </p>
+<p><em><strong>Note:</strong></em> A field may only map once. Specify fields that are mapped display a green check next to their name in the Specify field list confirming that they are in use. </p>
 <p>&nbsp;</p>
-<p>When all the Columns are mapped and ordered correctly click the 'OK' button. The following dialog will appear to name and describe the new Data Set:</p>
+<p>When all the columns are mapped and ordered correctly click the 'OK' button. </p>
+<p>Complete the import process by   naming  and describing the new Data Set:</p>
 <p align="center"><img src="../images/datasetproperties.png" alt="data set properties"></p>
 <p align="center" class="imgcaption">Data Set Properties </p>
 <p align="left">&nbsp;</p>
-<p>To rename the columns headings see <a href="FormEditing.html">Form Editing</a>. </p>
+<p>To rename columns headings see <a href="FormEditing.html">Form Editing</a>. </p>
 <p>&nbsp;</p>
 <h3><u>Bad Imports </u></h3>
-<p>XLS files that are corrupt or have not been saved correctly will not import correctly into the WorkBench. A bad file may appear in the Data Set Mapping Editor with parial or no column headings, or it will display a warning at the bottom of the WorkBench window much like the following: </p>
-<p>&nbsp;</p>
+<p>XLS files that are corrupt or have not been saved correctly will not import correctly into the WorkBench. A bad file may appear in the Data Set Mapping Editor with partial or no column headings, or  display a warning at the bottom of the WorkBench window: </p>
 <p>&nbsp;</p>
 <p><img src="../images/wrongfilewarning.png" alt="Wrong File Warning" ></p>
 <h2></h2>
