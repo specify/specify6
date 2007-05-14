@@ -161,7 +161,7 @@ public class ConfigureXLS extends ConfigureExternalDataBase
                             } else
                             {
                                 //colInfo.add(new ImportColumnInfo(cellNum, type, null, value));
-                                String colName = getResourceString("DEFAULT_COLUMN_NAME") + " " + cellNum + 1;
+                                String colName = getResourceString("DEFAULT_COLUMN_NAME") + " " + (cellNum + 1);
                                 colInfo.add(new ImportColumnInfo(cellNum, colType, colName, colName, null));
                                 colTracker.put(cellNum, true);
 
