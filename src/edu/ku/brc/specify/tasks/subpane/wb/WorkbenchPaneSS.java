@@ -525,6 +525,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 
         // setup the mapping features
         mapFrame = new JFrame();
+        mapFrame.setIconImage( IconManager.getImage("AppIcon").getImage());
         mapFrame.setTitle(getResourceString("WB_GEO_REF_DATA_MAP"));
         mapImageLabel = new JLabel();
         mapImageLabel.setSize(500,500);
@@ -1747,10 +1748,11 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
         
         // create a progress bar dialog to show the network progress
-        final ProgressDialog progressDialog = new ProgressDialog("BioGeomancer Progress", false, true);
+        final ProgressDialog progressDialog = new ProgressDialog("BioGeomancer Progress", false, true); // I18N
         progressDialog.getCloseBtn().setText(getResourceString("Cancel"));
         progressDialog.setModal(true);
         progressDialog.setProcess(0, selection.length);
+        progressDialog.setIconImage( IconManager.getImage("AppIcon").getImage());
 
         // use a SwingWorker thread to do all of the work, and update the GUI when done
         final SwingWorker bgTask = new SwingWorker()

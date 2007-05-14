@@ -14,6 +14,7 @@ import edu.ku.brc.services.biogeomancer.BioGeomancerResultsDisplay;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 
@@ -32,6 +33,8 @@ public class BioGeomancerResultsChooser extends CustomDialog
         this.rows = rows;
         this.hasBeenShown = false;
         this.baseTitle = title;
+        
+        setIconImage(IconManager.getImage("AppIcon").getImage());
         
         // create a vector for all of the user choices
         chosenResults = new Vector<BioGeomancerResultStruct>(rows.size());

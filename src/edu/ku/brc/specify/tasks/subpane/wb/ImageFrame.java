@@ -46,6 +46,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.ui.HelpMgr;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 
@@ -94,6 +95,8 @@ public class ImageFrame extends JFrame
      */
     public ImageFrame(final int mapSize)
     {
+        setIconImage(IconManager.getImage("AppIcon").getImage());
+        
         Dimension minSize = new Dimension(mapSize, mapSize);
         cardImageLabel.setHorizontalTextPosition(SwingConstants.CENTER);
         
