@@ -23,6 +23,7 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Frame;
 import java.awt.Toolkit;
@@ -2435,6 +2436,19 @@ public class WorkbenchPaneSS extends BaseSubPane
                                                      int     row, 
                                                      int     column)
         {
+            // This is needed for Mac OS X, not Linux and I am not sure about Windows
+            // If the fonts aren't the same then the double click doesn't find the correct
+            // location to insert the cursor
+            if (table.getCellRenderer(row, column) instanceof JComponent)
+            {
+                JComponent jcomp = (JComponent)table.getCellRenderer(row, column);
+                Font cellFont = jcomp.getFont();
+                Font txtFont  = textField.getFont();
+                if (cellFont != txtFont)
+                {
+                    textField.setFont(cellFont);
+                }
+            }            
             
             textField.setText(value != null ? value.toString() : "");
             try
