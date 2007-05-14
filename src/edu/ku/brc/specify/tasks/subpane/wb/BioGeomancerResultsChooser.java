@@ -34,7 +34,8 @@ public class BioGeomancerResultsChooser extends CustomDialog
         this.hasBeenShown = false;
         this.baseTitle = title;
         
-        setIconImage(IconManager.getImage("AppIcon").getImage());
+        // XXX Java 6
+        // setIconImage(IconManager.getImage("AppIcon").getImage());
         
         // create a vector for all of the user choices
         chosenResults = new Vector<BioGeomancerResultStruct>(rows.size());

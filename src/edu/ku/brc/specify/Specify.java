@@ -392,7 +392,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         setPreferredSize(new Dimension(1024, 768)); // For demo
 
         topFrame = new JFrame(gc);
-        topFrame.setIconImage( IconManager.getImage("Specify16", IconManager.IconSize.Std16).getImage() );
+        topFrame.setIconImage(IconManager.getImage("AppIcon").getImage());
         //topFrame.setAlwaysOnTop(true);
         
         topFrame.setGlassPane(glassPane = new GhostGlassPane());
