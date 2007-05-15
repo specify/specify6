@@ -17,9 +17,9 @@ log4j.appender.StdOutAppender.Target=System.out
 log4j.appender.StdOutAppender.layout=org.apache.log4j.PatternLayout
 log4j.appender.StdOutAppender.layout.ConversionPattern=%d{HH:mm:ss} %5p %C{3}:%L - %m%n
 
-### A file appender for 'specify.log' ###
+### A file appender for 'specifyorig.log' ###
 log4j.appender.SpecifyLogFileAppender=org.apache.log4j.FileAppender
-log4j.appender.SpecifyLogFileAppender.File=specify.log
+log4j.appender.SpecifyLogFileAppender.File=specifyorig.log
 log4j.appender.SpecifyLogFileAppender.Append=false
 log4j.appender.SpecifyLogFileAppender.layout=org.apache.log4j.PatternLayout
 log4j.appender.SpecifyLogFileAppender.layout.ConversionPattern=%d{HH:mm:ss} %5p %C{3}:%L - %m%n
@@ -31,14 +31,25 @@ log4j.appender.HibernateLogFileAppender.Append=false
 log4j.appender.HibernateLogFileAppender.layout=org.apache.log4j.PatternLayout
 log4j.appender.HibernateLogFileAppender.layout.ConversionPattern=%d{HH:mm:ss} %5p %C{3}:%L - %m%n
 
+### A file appender for 'specify.log' ###
+log4j.appender.SpecifyLogRoll=org.apache.log4j.RollingFileAppender
+log4j.appender.SpecifyLogRoll.layout=org.apache.log4j.PatternLayout
+log4j.appender.SpecifyLogRoll.layout.ConversionPattern=%d{HH:mm:ss} %5p %C{3}:%L - %m%n
+log4j.appender.SpecifyLogRoll.File=specify.log
+log4j.appender.SpecifyLogRoll.MaxFileSize=25KB
+log4j.appender.SpecifyLogRoll.MaxBackupIndex=3
 
 ############################################
 #####            Loggers               #####
 ############################################
 
-log4j.rootLogger=ERROR, StdOutAppender, SpecifyLogFileAppender
-log4j.logger.edu.ku=INFO
+log4j.rootLogger=WARN, StdOutAppender, SpecifyLogRoll
+#log4j.logger.edu.ku=DEBUG
 log4j.logger.org.hibernate=WARN, HibernateLogFileAppender
+
+#log4j.rootLogger=ERROR, StdOutAppender, SpecifyLogFileAppender
+#log4j.logger.edu.ku=INFO
+#log4j.logger.org.hibernate=WARN, HibernateLogFileAppender
 
 # Other options to consider
 #
