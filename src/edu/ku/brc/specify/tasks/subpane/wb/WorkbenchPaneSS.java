@@ -1747,6 +1747,11 @@ public class WorkbenchPaneSS extends BaseSubPane
 
                 for (WorkbenchRow row: selectedRows)
                 {
+                    if (cancelled)
+                    {
+                        break;
+                    }
+                    
                     // get the locality data
                     String localityNameStr      = row.getData(localityNameColIndex);
                             
