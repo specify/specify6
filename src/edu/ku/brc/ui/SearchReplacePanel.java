@@ -543,7 +543,8 @@ public class SearchReplacePanel extends JPanel
                   previousButton.setEnabled(true);                 
               }
               setStatusLabelWithFailedFind();
-          } else
+          } 
+          else
           {
               isFinishedSearchingUp = true;
               if (!wrapSearchButton.isSelected())
@@ -575,116 +576,15 @@ public class SearchReplacePanel extends JPanel
             curCol++;
             cell = as.tableContains(str, table, table.getModel(), curRow, curCol,getMatchCaseFlag(), isSearchDown, getWrapSearchFlag());
             found = cell.isFound();
-//            if (found)
-//            {
-//                curRow = cell.getRow();
-//                curCol = cell.getCol();
-//                ListSelectionModel rsm = table.getSelectionModel();
-//                ListSelectionModel csm = table.getColumnModel().getSelectionModel();
-//                rsm.setSelectionInterval(curRow, curRow);
-//                csm.setSelectionInterval(curCol, curCol);
-//                replace();
-//            }
-//            else
-//            {
-//                log.debug("repalceallNOT FOUND!!!!!!");
-//            }
         }  
-      nextButton.setEnabled(false);
-      previousButton.setEnabled(false);
-      replaceButton.setEnabled(false);
-      replaceAllButton.setEnabled(false);
-        setStatusLabelEndReached();
-        return true;
-    }  
+        nextButton.setEnabled(false);
+		previousButton.setEnabled(false);
+		replaceButton.setEnabled(false);
+		replaceAllButton.setEnabled(false);
+		setStatusLabelEndReached();
+		return true;
+	}  
         
-        
-//        if (!found)
-//        {
-//            log.debug("repalceall() found nothing");
-//            if (isSearchDown)
-//            {
-//                isFinishedSearchingDown = true;
-//                if (!wrapSearchButton.isSelected())
-//                {
-//                    nextButton.setEnabled(false);
-//                    previousButton.setEnabled(true);
-//                    setLabelForFailedFind();
-//
-//                }
-//            } else
-//            {
-//                isFinishedSearchingUp = true;
-//                if (!wrapSearchButton.isSelected())
-//                {
-//                    previousButton.setEnabled(false);
-//                    nextButton.setEnabled(true);
-//                    setLabelForFailedFind();
-//
-//                }
-//            }
-//            return false;
-//        }
-//        if (isSearchDown)
-//        {
-//            previousButton.setEnabled(true);
-//        }            
-//        else
-//        {
-//            nextButton.setEnabled(true);
-//        }
-//        clearLabelFromFailedFind();
-//        return true;        
-//		if (!isTableValid())return false;
-//    	
-//        String str = findField.getText();
-//        log.debug("replaceAll() - FindValue[" + str + "] SearchingDown[" + !isSearchDown+ "]");
-//        lastIndex = searchable.search(getSearchablePattern(str), lastIndex, !isSearchDown);
-//        
-//        if (lastIndex>-1)found= true;
-//        while(lastIndex!=-1) 
-//        {
-//        	replace();
-//        	lastIndex = searchable.search(getSearchablePattern(str), lastIndex, !isSearchDown);
-//        }
-//        if (lastIndex == -1)
-//        {
-//            log.debug("replaceAll() found nothing");
-//            if (isSearchDown)
-//            {
-//                isFinishedSearchingDown = true;
-//                if (!wrapSearchButton.isSelected())
-//                {
-//                    nextButton.setEnabled(false);
-//                    previousButton.setEnabled(false);
-//                    if (!found)setLabelForFailedFind();
-//
-//                }
-//            } else
-//            {
-//                isFinishedSearchingUp = true;
-//                if (!wrapSearchButton.isSelected())
-//                {
-//                    previousButton.setEnabled(false);
-//                    nextButton.setEnabled(false);
-//                    if (!found)setLabelForFailedFind();
-//
-//                }
-//            }
-//            return false;
-//        }
-//        if (isSearchDown)
-//        {
-//            previousButton.setEnabled(true);
-//        }            
-//        else
-//        {
-//            nextButton.setEnabled(true);
-//        }
-//        clearLabelFromFailedFind();
-//        
-//        return true;
-//    }
     
     /**
      * @return
