@@ -1181,7 +1181,7 @@ public class DataImportDialog extends JDialog implements ActionListener
         String str = "";
 		for (int i = 0; i < arrayList.length; i++)
 		{
-			str = "[" + (i) + "]" + arrayList[i] + " ";
+			str = str + "[" + (i) + "]" + arrayList[i] + " ";
 		}
 		log.debug(str);
 	}
