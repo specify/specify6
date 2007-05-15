@@ -1625,71 +1625,6 @@ public class WorkbenchTask extends BaseTask
     }
     
     /**
-     * Creates a brand new Workbench from a template with one new row of data.
-     * @param workbenchTemplate the template to create the Workbench from
-     * @param wbTemplateIsNew the WorkbenchTemplate is brand new (not reusing an existing template)
-     * @return the new workbench
-     */
-    protected Workbench saveWorkbenchXXX(final WorkbenchTemplate workbenchTemplateArg)
-    {
-        boolean isNewTemplate = workbenchTemplateArg.getWorkbenchTemplateId() == null;
-        
-        Workbench workbench = null;
-        
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        try
-        {
-            WorkbenchTemplate workbenchTemplate;
-            if (!isNewTemplate)
-            {
-                session.attach(workbenchTemplateArg);
-                workbenchTemplateArg.forceLoad();
-                workbenchTemplate = (WorkbenchTemplate)workbenchTemplateArg.clone();
-                
-            } else
-            {
-                workbenchTemplate = workbenchTemplateArg;
-            }
-            
-            workbench = createNewWorkbenchDataObj(null, workbenchTemplate);
-            
-            if (workbench != null)
-            {
-                workbenchTemplate.setName(workbench.getName());
-                
-                workbench.addRow();
-    
-                session.beginTransaction();
-                session.save(workbenchTemplate);
-                session.save(workbench);
-                session.commit();
-                session.flush();
-                
-                addWorkbenchToNavBox(workbench);
-                
-                createEditorForWorkbench(workbench, session, false);
-            }
-            
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-            
-        } finally
-        {
-            try
-            {
-                session.close();
-            } catch (Exception ex)
-            {
-                log.error(ex);
-            }
-        }
-        
-        
-        return workbench;
-    }
-    
-    /**
      * Deletes a workbench.
      * @param workbench the workbench to be deleted
      */
@@ -2418,6 +2353,7 @@ public class WorkbenchTask extends BaseTask
                         } catch (Exception ex)
                         {
                             log.error(ex);
+                            UIRegistry.clearGlassPaneMsg();
                             
                         } finally
                         {
@@ -2427,6 +2363,7 @@ public class WorkbenchTask extends BaseTask
                             } catch (Exception ex)
                             {
                                 log.error(ex);
+                                UIRegistry.clearGlassPaneMsg();
                             }
                         }
 

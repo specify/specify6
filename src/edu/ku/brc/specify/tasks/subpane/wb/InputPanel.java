@@ -237,6 +237,14 @@ public class InputPanel extends JPanel implements GhostActionable
         return wbtmi;
     }
 
+    /**
+     * @param wbtmi the wbtmi to set
+     */
+    public void setWbtmi(final WorkbenchTemplateMappingItem wbtmi)
+    {
+        this.wbtmi = wbtmi;
+    }
+
     /* (non-Javadoc)
      * @see java.awt.Component#setLocation(int, int)
      */

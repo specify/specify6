@@ -191,6 +191,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             }
         };
         
+        /*
         addMouseListener(new MouseAdapter()
         {
             @Override
@@ -200,7 +201,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
                 //selectedInputPanel = null;
                 //controlPropsBtn.setEnabled(false);
             }
-        });
+        });*/
         
         Point topLeftPnt = new Point(Integer.MAX_VALUE, Integer.MAX_VALUE);
 
@@ -348,12 +349,45 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
     }
     
     /**
-     * Sets in a new Workbench.
+     * Sets in a new Workbench and all the WBTMI have different object pointer because of the merge
+     * that was done with the session. So we need to match up Record Ids and replace all the old WBTMIs
+     * with the new ones.
      * @param workbench the new wb
      */
     public void setWorkbench(final Workbench workbench)
     {
         this.workbench = workbench;
+        
+        // Make the new Header List
+        headers.clear();
+        headers.addAll(workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems());
+        Collections.sort(headers);
+        
+        // Now set all the new items into the panels 
+        // by checking the Id
+        Vector<InputPanel> oldItems = new Vector<InputPanel>(uiComps);
+        for (WorkbenchTemplateMappingItem newItem : headers)
+        {
+            InputPanel fndItem = null;
+            for (InputPanel panel : oldItems)
+            {
+                if (newItem.getId().intValue() == panel.getWbtmi().getId().intValue())
+                {
+                    fndItem = panel;
+                    break;
+                }
+            }
+            
+            if (fndItem != null)
+            {
+                oldItems.remove(fndItem);
+                fndItem.setWbtmi(newItem);
+                
+            } else
+            {
+                log.error("Couldn't find panel by ID ["+newItem.getId()+"]");
+            }
+        }
     }
     
     /* (non-Javadoc)
