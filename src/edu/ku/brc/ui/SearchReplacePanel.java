@@ -521,7 +521,7 @@ public class SearchReplacePanel extends JPanel
         }
         
         String str = findField.getText();
-        log.debug("find() - FindValue[" + str + "] SearchingDown[" + !isSearchDown + "]");
+        log.debug("replaceAll() - FindValue[" + str + "] SearchingDown[" + isSearchDown + "]");
         log.debug("tableSize - rowCount: " + table.getRowCount() + " columnCount: " + table.getColumnCount());
 
         int curRow = 0;
@@ -558,6 +558,7 @@ public class SearchReplacePanel extends JPanel
         }
         while (found)
         {
+        	log.debug("repalceall() found value");
             curRow = cell.getRow();
             curCol = cell.getCol();
             ListSelectionModel rsm = table.getSelectionModel();
@@ -566,7 +567,7 @@ public class SearchReplacePanel extends JPanel
             csm.setSelectionInterval(curCol, curCol);
             replace();
             
-            if(curCol >= table.getColumnModel().getColumnCount()) 
+            if(curCol >= (table.getColumnModel().getColumnCount()-1)) 
             {
                 curRow++;
                 curCol = -1;
@@ -715,7 +716,7 @@ public class SearchReplacePanel extends JPanel
         }
         
         String str = findField.getText();
-        log.debug("find() - FindValue[" + str + "] SearchingDown[" + !isSearchDown+ "]");
+        log.debug("find() - FindValue[" + str + "] SearchingDown[" + isSearchDown+ "]");
         
         int curRow = table.getSelectedRow();
         int curCol = table.getSelectedColumn();
