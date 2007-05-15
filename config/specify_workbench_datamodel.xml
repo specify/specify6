@@ -146,27 +146,35 @@
 
     <field column="Determined Date1" name="determinedDate1" type="calendar_date"/>
     <field column="Determiner1" name="determiner1" type="java.lang.String" length="64"/>
+    <field column="TypeStatusName1" name="typeStatusName1" type="java.lang.String" length="50"/>
     
     <field column="Determined Date2" name="determinedDate2" type="calendar_date"/>
     <field column="Determiner2" name="determiner2" type="java.lang.String" length="64"/>
+    <field column="TypeStatusName2" name="typeStatusName2" type="java.lang.String" length="50"/>
     
     <field column="Determined Date3" name="determinedDate3" type="calendar_date"/>
     <field column="Determiner3" name="determiner3" type="java.lang.String" length="64"/>
+    <field column="TypeStatusName3" name="typeStatusName3" type="java.lang.String" length="50"/>
     
     <field column="Determined Date4" name="determinedDate4" type="calendar_date"/>
     <field column="Determiner4" name="determiner4" type="java.lang.String" length="64"/>
+    <field column="TypeStatusName4" name="typeStatusName4" type="java.lang.String" length="50"/>
     
     <field column="Determined Date5" name="determinedDate5" type="calendar_date"/>
     <field column="Determiner5" name="determiner5" type="java.lang.String" length="64"/>
+    <field column="TypeStatusName5" name="typeStatusName5" type="java.lang.String" length="50"/>
     
     <field column="Determined Date6" name="determinedDate6" type="calendar_date"/>
     <field column="Determiner6" name="determiner6" type="java.lang.String" length="64"/>
+    <field column="TypeStatusName6" name="typeStatusName6" type="java.lang.String" length="50"/>
     
     <field column="Determined Date7" name="determinedDate7" type="calendar_date"/>
     <field column="Determiner7" name="determiner7" type="java.lang.String" length="64"/>
+    <field column="TypeStatusName7" name="typeStatusName7" type="java.lang.String" length="50"/>
     
     <field column="Determined Date8" name="determinedDate8" type="calendar_date"/>
     <field column="Determiner8" name="determiner8" type="java.lang.String" length="64"/>
+    <field column="TypeStatusName8" name="typeStatusName8" type="java.lang.String" length="50"/>
   </table>
   
   <table classname="edu.ku.brc.specify.datamodel.Geography" table="geography" tableid="3" lazy="true">
