@@ -887,7 +887,21 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     public void gridColumnsUpdated()
     {
+        boolean imageColWasVisible = imageColExt.isVisible();
+
         model.fireTableStructureChanged();
+        
+        // the above call results in new TableColumnExt objects for each column, it appears
+        
+        // re-get the column extension object
+        int imageColIndex = model.getColumnCount() - 1;
+        imageColExt = spreadSheet.getColumnExt(imageColIndex);
+        imageColExt.setVisible(false);
+        
+        if (imageColWasVisible)
+        {
+            toggleImageFrameVisible();
+        }
     }
     
     /**
@@ -1001,7 +1015,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             if (model.getRowCount() > 0)
             {
                 spreadSheet.setRowSelectionInterval(currentRow, currentRow);
-                spreadSheet.setColumnSelectionInterval(0, model.getColumnCount()-1);
+                spreadSheet.setColumnSelectionInterval(0, spreadSheet.getColumnCount()-1);
                 spreadSheet.scrollToRow(Math.min(currentRow+4, model.getRowCount()));
                 
                 SwingUtilities.invokeLater(new Runnable()
