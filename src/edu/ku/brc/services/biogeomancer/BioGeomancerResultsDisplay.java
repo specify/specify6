@@ -199,6 +199,20 @@ public class BioGeomancerResultsDisplay extends JPanel implements MapperListener
         
         return summary.results[rowIndex];
     }
+    
+    public void setSelectedResult(int index)
+    {
+        if (index < 0 || index > bgResultsTable.getRowCount()-1)
+        {
+            bgResultsTable.clearSelection();
+        }
+        else
+        {
+            bgResultsTable.setRowSelectionInterval(index, index);
+            int colCount = bgResultsTable.getColumnCount();
+            bgResultsTable.setColumnSelectionInterval(0, colCount-1);
+        }
+    }
 
     public void exceptionOccurred(Exception e)
     {

@@ -6,15 +6,11 @@ import java.awt.Frame;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
 import edu.ku.brc.services.biogeomancer.BioGeomancerResultStruct;
 import edu.ku.brc.services.biogeomancer.BioGeomancerResultsDisplay;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 
@@ -47,37 +43,9 @@ public class BioGeomancerResultsChooser extends CustomDialog
         
         setContentPanel(resultsDisplayPanel);
         
-        this.applyLabel = getResourceString("Skip");
-        
-        resultsDisplayPanel.addListSelectionListener(new ListSelectionListener()
-        {
-            public void valueChanged(ListSelectionEvent e)
-            {
-                // ignore the event that fires during a user change
-                // just catch the one that fires when the user is done changing
-                if (e.getValueIsAdjusting())
-                {
-                    return;
-                }
-                
-                if (onLastRecord())
-                {
-                    // no need to mess with the button now, since it should be disabled
-                    return;
-                }
-                
-                if (resultsDisplayPanel.getSelectedResult() == null)
-                {
-                    // if the user hasn't selected a result record, put "Skip" on the button
-                    setApplyLabel(getResourceString("Skip"));
-                }
-                else
-                {
-                    // if the user selected a result record, put "Next" on the button
-                    setApplyLabel(getResourceString("Next"));
-                }
-            }
-        });
+        this.cancelLabel = getResourceString("Skip");
+        this.applyLabel  = getResourceString("Accept");
+        this.okLabel     = getResourceString("Done");
         
         rowIndex = -1;
     }
@@ -114,8 +82,8 @@ public class BioGeomancerResultsChooser extends CustomDialog
     @Override
     protected void applyButtonPressed()
     {
-        // remember, we're using the 'apply' button for "next" or "skip" to progress
-        // to the next record in the list
+        // remember, we're using the 'Apply' button for "accept" to progress
+        // to the next record in the list and accept the currently selected result
         
         super.applyButtonPressed();
         
@@ -123,12 +91,24 @@ public class BioGeomancerResultsChooser extends CustomDialog
         BioGeomancerResultStruct result = resultsDisplayPanel.getSelectedResult();
         chosenResults.set(rowIndex, result);
         
-        showNextRecord();
+        // if this was the last record, close the window
+        // otherwise, move on to the next record
+        if (onLastRecord())
+        {
+            super.okButtonPressed();
+        }
+        else
+        {
+            showNextRecord();
+        }
     }
 
     @Override
     protected void okButtonPressed()
     {
+        // remember, we're using the 'OK' button for "done" to accept the
+        // currently selected result and hide the dialog
+
         // store the user selection into the chosen results list
         BioGeomancerResultStruct result = resultsDisplayPanel.getSelectedResult();
         chosenResults.set(rowIndex, result);
@@ -136,20 +116,34 @@ public class BioGeomancerResultsChooser extends CustomDialog
         super.okButtonPressed();
     }
     
+    @Override
+    protected void cancelButtonPressed()
+    {
+        // remember, we're using the 'Cancel' button for "skip" to skip the
+        // currently selected result and move onto the next one
+
+        // if this was the last record, close the window
+        // otherwise, move on to the next record
+        if (onLastRecord())
+        {
+            super.okButtonPressed();
+        }
+        else
+        {
+            showNextRecord();
+        }
+    }
+
     protected void showNextRecord()
     {
         rowIndex++;
-
-        if (onLastRecord())
-        {
-            applyBtn.setEnabled(false);
-        }
 
         setTitle(baseTitle + ": " + (rowIndex+1) + " " + getResourceString("of") + " " + rows.size());
         
         try
         {
             resultsDisplayPanel.setBioGeomancerResultsData(rows.get(rowIndex).getBioGeomancerResults());
+            resultsDisplayPanel.setSelectedResult(0);
         }
         catch (Exception e)
         {
