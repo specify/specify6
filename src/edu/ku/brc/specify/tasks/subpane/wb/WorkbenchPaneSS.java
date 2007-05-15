@@ -259,6 +259,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         model.setInImageMode(true);
         int imageColIndex = model.getColumnCount() - 1;
         imageColExt = spreadSheet.getColumnExt(imageColIndex);
+        imageColExt.setVisible(false);
 
         model.addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e)
