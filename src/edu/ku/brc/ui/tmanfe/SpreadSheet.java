@@ -97,7 +97,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
     protected boolean            mouseDown           = false;
     private boolean              rowSelectionStarted = false;
 
-    SearchReplacePanel findPanel = null;//new SearchReplacePanel(this);
+    protected SearchReplacePanel findPanel = null;//new SearchReplacePanel(this);
     
     // XXX Fix for Mac OS X Java 5 Bug
     protected int prevRowSelInx = -1;
