@@ -40,22 +40,33 @@ import edu.ku.brc.util.Pair;
 
 /**
  * This class provides the basic capability to compare an installed piece of software with the
- * latest available version and provide some feedback to the user.
+ * latest available version and provide some feedback to the user.  It also provides the capability
+ * to send usage stats that were collected by the {@link UsageTracker} class.
  * 
  * @author jstewart
- * @code_status Alpha
+ * @code_status Beta
  */
 public class VersionCheckerTask extends BaseTask
 {
+    /** A {@link Logger} for all messages emitted from this class. */
     private static final Logger log = Logger.getLogger(VersionCheckerTask.class);
     
     public static final String VERSION_CHECK = "VersionChecker";
     
+    /**
+     * Constructor.
+     */
     public VersionCheckerTask()
     {
         super(VERSION_CHECK, getResourceString(VERSION_CHECK));
     }
     
+    /**
+     * Cosntructor.
+     * 
+     * @param name the name of the task
+     * @param title the user-viewable name of the task
+     */
     public VersionCheckerTask(String name, String title)
     {
         super(name, title);
@@ -69,8 +80,8 @@ public class VersionCheckerTask extends BaseTask
     {
         super.initialize();
         
+        // setup a background task to check for udpates at startup and/or send usage stats at startup
         Timer timer = new Timer("VersionCheckingThread", true);
-
         TimerTask task = new TimerTask()
         {
             @Override
@@ -80,20 +91,16 @@ public class VersionCheckerTask extends BaseTask
                 //    show popup if updates available
                 //    don't show error popup if we can't contact the server
                 //    send usage stats if allowed
-                checkForUpdatesNow(true);
+                connectToServerNow(false);
             }
         };
         
-        // see if the user is allowing us to check for updates
-        AppPreferences appPrefs        = AppPreferences.getRemote();
-        Boolean        checkForUpdates = appPrefs.getBoolean("version_check.auto", null);
-        if (checkForUpdates == null)
-        {
-            checkForUpdates = true;
-            appPrefs.putBoolean("version_check.auto", checkForUpdates);
-        }
+        // see if either update checking or usage tracking is enabled
+        boolean checkForUpdates = autoUpdateCheckIsEnabled();
+        boolean sendUsageStats  = usageTrackingIsAllowed();
         
-        if (checkForUpdates)
+        // if either feature is enabled, schedule the background task
+        if (checkForUpdates || sendUsageStats)
         {
             timer.schedule(task, 5000);
         }
@@ -106,6 +113,8 @@ public class VersionCheckerTask extends BaseTask
     @Override
     public List<MenuItemDesc> getMenuItems()
     {
+        // create a menu item for "Check for updates now"
+        
         String label    = getResourceString("CheckNow");
         
         JMenuItem checkNow = new JMenuItem(label);
@@ -116,7 +125,7 @@ public class VersionCheckerTask extends BaseTask
                 UsageTracker.incrUsageCount("UpdateNow");
                 
                 // then perform the check
-                checkForUpdatesNow(false);
+                connectToServerNow(true);
             }
         });
         
@@ -137,6 +146,7 @@ public class VersionCheckerTask extends BaseTask
     @Override
     public SubPaneIFace getStarterPane()
     {
+        // this task has no visible panes
         return null;
     }
 
@@ -146,27 +156,74 @@ public class VersionCheckerTask extends BaseTask
     @Override
     public List<ToolBarItemDesc> getToolBarItems()
     {
+        // this task has no toolbar items
         return null;
+    }
+
+    /**
+     * Checks to see if usage tracking is allowed.
+     * 
+     * @return true if usage tracking is allowed.
+     */
+    protected boolean usageTrackingIsAllowed()
+    {
+        // see if the user is allowing us to send back usage data
+        AppPreferences appPrefs  = AppPreferences.getRemote();
+        Boolean        sendStats = appPrefs.getBoolean("usage_tracking.send_stats", null);
+        if (sendStats == null)
+        {
+            sendStats = true;
+            appPrefs.putBoolean("usage_tracking.send_stats", sendStats);
+        }
+        
+        return sendStats;
+    }
+
+    /**
+     * Checks to see if auto update checking is enabled.
+     * 
+     * @return true if auto update checking is turned on
+     */
+    protected boolean autoUpdateCheckIsEnabled()
+    {
+        // see if the user is allowing us to check for updates
+        AppPreferences appPrefs        = AppPreferences.getRemote();
+        Boolean        checkForUpdates = appPrefs.getBoolean("version_check.auto", null);
+        if (checkForUpdates == null)
+        {
+            checkForUpdates = true;
+            appPrefs.putBoolean("version_check.auto", checkForUpdates);
+        }
+        
+        return checkForUpdates;
     }
     
     /**
-     * @param showResultsPopup
-     * @param sendUsageDataIfAllowed
+     * Connect to the update/usage tracking server now.  If this method is called based on the action of a user
+     * on a UI widget (menu item, button, etc) a popup will ALWAYS be displayed as a result, showing updates available
+     * (even if none are) or an error message.  If this method is called as part of an automatic update check or 
+     * automatic usage stats connection, the error message will never be displayed.  Also, in that case, the list
+     * of updates will only be displayed if at least one update is available AND the user has enabled auto update checking.
+     * 
+     * @param isUserInitiatedUpdateCheck if true, the user initiated this process through a UI option
      */
-    protected void checkForUpdatesNow(final boolean silent)
+    protected void connectToServerNow(final boolean isUserInitiatedUpdateCheck)
     {
+        // Create a SwingWorker to connect to the server in the background, then show results on the Swing thread
         SwingWorker workerThread = new SwingWorker()
         {
             @Override
             public Object construct()
             {
+                // connect to the server, sending usage stats if allowed, and gathering the latest modules version info
                 try
                 {
-                    List<String> availUpdates = getUpdatesList();
+                    List<String> availUpdates = sendStatsAndGetUpdates();
                     return availUpdates;
                 }
                 catch (Exception e)
                 {
+                    // if any exceptions occur, return them so the finished() method can have them
                     return e;
                 }
             }
@@ -181,27 +238,39 @@ public class VersionCheckerTask extends BaseTask
                     // if an exception occurred during update check...
                     if (retVal instanceof Exception)
                     {
-                        if (!silent)
+                        // show an error popup if the user requested this update check through the menu item
+                        if (isUserInitiatedUpdateCheck)
                         {
                             showErrorPopup();
                         }
+                        
                         return;
                     }
-                    // else
+                    // else (no errors occurred)
                    
                     // the update check worked, review the results
                     List<String> availUpdates = (List<String>)retVal;
-                    if (availUpdates.size() > 0 || !silent)
+                    boolean autoUpdatesOn     = autoUpdateCheckIsEnabled();
+                    // if there are updates AND auto checking is enabled, OR the user initiated this update check, display a popup message
+                    if ((availUpdates.size() > 0 && autoUpdatesOn) || isUserInitiatedUpdateCheck)
                     {
                         displayUpdatesAvailablePopup(availUpdates);
                     }
                 }
             }
         };
+        
+        // start the background task
         workerThread.start();
     }
     
-    protected List<String> getUpdatesList() throws Exception
+    /**
+     * Connects to the update/usage tracking server to get the latest version info and/or send the usage stats.
+     * 
+     * @return a list of modules that have a different version number than the currently installed software
+     * @throws Exception if an IO error occured or the response couldn't be parsed
+     */
+    protected List<String> sendStatsAndGetUpdates() throws Exception
     {
         // check the website for the info about the latest version
         HttpClient httpClient = new HttpClient();
@@ -212,30 +281,26 @@ public class VersionCheckerTask extends BaseTask
         
         PostMethod postMethod = new PostMethod(versionCheckURL);
         
-        // see if the user is allowing us to send back usage data
-        AppPreferences appPrefs  = AppPreferences.getRemote();
-        Boolean        sendStats = appPrefs.getBoolean("usage_tracking.send_stats", null);
-        if (sendStats == null)
-        {
-            sendStats = true;
-            appPrefs.putBoolean("usage_tracking.send_stats", sendStats);
-        }
+        boolean sendUsageStats = usageTrackingIsAllowed();
         
-        List<String> moduleUpdatesAvailable = null;
-        if (sendStats)
-        {
-            NameValuePair[] postParams = createPostParameters(sendStats);
-            postMethod.setRequestBody(postParams);
-            httpClient.executeMethod(postMethod);
-            String responseString = postMethod.getResponseBodyAsString();
-            moduleUpdatesAvailable = getAvailableUpdates(responseString);
-        }
+        // get the POST parameters (which includes usage stats, if we're allowed to send them)
+        NameValuePair[] postParams = createPostParameters(sendUsageStats);
+        postMethod.setRequestBody(postParams);
+        
+        // connect to the server
+        httpClient.executeMethod(postMethod);
+        
+        // TODO: bypass this code if this connection was ONLY for sending usage stats
+        // get the server response
+        String responseString = postMethod.getResponseBodyAsString();
+        List<String> moduleUpdatesAvailable = getAvailableUpdates(responseString);
         return moduleUpdatesAvailable;
     }
     
     /**
-     * @param sendUsageDataIfAllowed
-     * @return
+     * Gets the URL of the version checking / usage tracking server.
+     * 
+     * @return the URL string
      */
     protected String getVersionCheckURL()
     {
@@ -244,7 +309,7 @@ public class VersionCheckerTask extends BaseTask
     }
     
     /**
-     * Creates an array of POST method parameters to send with the version checking request.
+     * Creates an array of POST method parameters to send with the version checking / usage tracking connection.
      * 
      * @param sendUsageStats if true, the POST parameters include usage stats
      * @return an array of POST parameters
@@ -285,8 +350,7 @@ public class VersionCheckerTask extends BaseTask
     }
     
     /**
-     * @param e
-     * @param showResultsPopup
+     * Shows a {@link JOptionPane} containing an message stating that an error occurred while checking for updates.
      */
     protected void showErrorPopup()
     {
@@ -299,9 +363,12 @@ public class VersionCheckerTask extends BaseTask
     }
     
     /**
-     * @param latestVersionInfo
-     * @return
-     * @throws Exception
+     * Compares the information in the version info grabbed from the server to the module versions of the currently installed software.
+     * A list of installed modules that are not the latest version is returned.
+     * 
+     * @param latestVersionInfo an XML string holding information about the latest available module versions (retrieved from the server)
+     * @return a list of currently installed modules that have a different version than the latest available (according to the server)
+     * @throws Exception an XML parsing error occurred
      */
     protected List<String> getAvailableUpdates(String latestVersionInfo) throws Exception
     {
@@ -349,20 +416,31 @@ public class VersionCheckerTask extends BaseTask
     }
     
     /**
-     * @param availableUpdates
+     * @param availableUpdates a list of currently installed modules that have a different 'latest' version available
      */
     protected void displayUpdatesAvailablePopup(List<String> availableUpdates)
     {
         UpdatesAvailableDialog updatesPopup = new UpdatesAvailableDialog();
         updatesPopup.setAvailableUpdates(availableUpdates);
         updatesPopup.setAlwaysOnTop(true);
+        updatesPopup.setSize(300,100);
         updatesPopup.setVisible(true);
     }
     
+    /**
+     * This class is a UI widget to present the viewer with a list of available updates. 
+     * 
+     * @author jstewart
+     * @code_status Beta
+     */
     static class UpdatesAvailableDialog extends CustomDialog
     {
-        protected JTextPane content      = new JTextPane();
+        /** A JTextPane for displaying the text of the updates list. */
+        protected JTextPane content = new JTextPane();
         
+        /**
+         * Constructor.
+         */
         public UpdatesAvailableDialog()
         {
             super((JFrame)UIRegistry.get(UIRegistry.TOPFRAME), getResourceString("VER_CHK_TITLE"), false, CustomDialog.OK_BTN, null);
@@ -393,8 +471,16 @@ public class VersionCheckerTask extends BaseTask
                     }
                 }
             });
+            
+            // force the creation of the widgets, so I can set the size
+            super.createUI();
         }
         
+        /**
+         * Sets the displayed text (as HTML) based on the provided list of available updates.
+         * 
+         * @param availableUpdates a list of available updates
+         */
         public void setAvailableUpdates(List<String> availableUpdates)
         {
             String popupMessage = new String("<html>");
@@ -402,7 +488,7 @@ public class VersionCheckerTask extends BaseTask
             if (availableUpdates.size() == 0)
             {
                 // no updates available
-                popupMessage += "No updates available";
+                popupMessage += "<center>" + getResourceString("NO_UPDATES_AVAILABLE") + "</center>";
             }
             else
             {
