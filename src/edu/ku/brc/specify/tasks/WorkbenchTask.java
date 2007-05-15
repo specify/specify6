@@ -1099,7 +1099,7 @@ public class WorkbenchTask extends BaseTask
     protected void createWorkbenchFromTemplate(final CommandAction cmdAction)
     {
         
-        Workbench wb = selectWorkbench(cmdAction, "WB_CHOOSE_DATASET_REUSE_TITLE", null, "WorkbenchEditMapping", true); // XXX ADD HELP
+        Workbench wb = selectWorkbench(cmdAction, "WB_CHOOSE_DATASET_REUSE_TITLE", null, "WorkbenchEditMapping", false); // XXX ADD HELP
         if (wb != null)
         {
             WorkbenchTemplate workbenchTemplate = wb.getWorkbenchTemplate();
@@ -1392,7 +1392,7 @@ public class WorkbenchTask extends BaseTask
     {
         if (workbench != null)
         {
-            UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_LOADING_DATASET"), new Object[] {workbench.getName()}), GLASSPANE_FONT_SIZE);
+            UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_IMPORTING_DATASET"), new Object[] {workbench.getName()}), GLASSPANE_FONT_SIZE);
             
             final SwingWorker worker = new SwingWorker()
             {
@@ -1963,7 +1963,7 @@ public class WorkbenchTask extends BaseTask
                     return list.get(0);
                 }
                 
-                if (showAll)
+                if (!showAll)
                 {
                     for (SubPaneIFace sbi : SubPaneMgr.getInstance().getSubPanes())
                     {
@@ -2376,51 +2376,78 @@ public class WorkbenchTask extends BaseTask
         
         if (workbenchTemplate != null)
         {
-            Workbench workbench = createNewWorkbenchDataObj("", selectedTemplate != null ? cloneWorkbenchTemplate(workbenchTemplate) : workbenchTemplate);
+            final Workbench workbench = createNewWorkbenchDataObj("", selectedTemplate != null ? cloneWorkbenchTemplate(workbenchTemplate) : workbenchTemplate);
             if (workbench != null)
             {
-                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                try
+                UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_LOADING_IMGS_DATASET"), new Object[] {workbench.getName()}), GLASSPANE_FONT_SIZE);
+                
+                final File[] files = chooser.getSelectedFiles();
+                final SwingWorker worker = new SwingWorker()
                 {
-                    session.beginTransaction();
+                    protected boolean isOK = false;
                     
-                    File[] files = chooser.getSelectedFiles();
-                    for (int i=0;i<files.length;i++)
+                    @SuppressWarnings("synthetic-access")
+                    @Override
+                    public Object construct()
                     {
-                        WorkbenchRow row = workbench.addRow();
-                        row.setCardImage(files[i]);
-                        if (row.getLoadStatus() != WorkbenchRow.LoadStatus.Successful)
+                        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                        try
                         {
-                            if (!showLoadStatus(row, i < files.length-1))
+                            session.beginTransaction();
+                            
+                            
+                            for (int i=0;i<files.length;i++)
                             {
-                                // Shoud we still save or return?
-                                break; 
+                                WorkbenchRow row = workbench.addRow();
+                                row.setCardImage(files[i]);
+                                if (row.getLoadStatus() != WorkbenchRow.LoadStatus.Successful)
+                                {
+                                    if (!showLoadStatus(row, i < files.length-1))
+                                    {
+                                        // Shoud we still save or return?
+                                        break; 
+                                    }
+                                }
+                            }
+                            session.saveOrUpdate(workbench);
+                            session.commit();
+                            session.flush();
+                            
+                            isOK = true;
+                            
+                        } catch (Exception ex)
+                        {
+                            log.error(ex);
+                            
+                        } finally
+                        {
+                            try
+                            {
+                                session.close();
+                            } catch (Exception ex)
+                            {
+                                log.error(ex);
                             }
                         }
-                    }
-                    session.saveOrUpdate(workbench);
-                    session.commit();
-                    session.flush();
-                    
-                    addWorkbenchToNavBox(workbench);
-                    
-                    createEditorForWorkbench(workbench, session, true);
 
-                    
-                } catch (Exception ex)
-                {
-                    log.error(ex);
-                    
-                } finally
-                {
-                    try
-                    {
-                        session.close();
-                    } catch (Exception ex)
-                    {
-                        log.error(ex);
+                        return null;
                     }
-                }
+
+                    //Runs on the event-dispatching thread.
+                    @Override
+                    public void finished()
+                    {
+                        UIRegistry.clearGlassPaneMsg();
+                        
+                        if (isOK)
+                        {
+                            addWorkbenchToNavBox(workbench);
+                            createEditorForWorkbench(workbench, null, false);
+                        }
+                    }
+                };
+                worker.start();
+                
             } 
         }
     }

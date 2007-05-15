@@ -277,7 +277,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         
         initialSize = new Dimension(maxX, y);
         
-        controlPropsBtn = createIconBtn("ControlEdit", IconManager.IconSize.Std16, "WB_EDIT_CONTROL", true, new ActionListener()
+        controlPropsBtn = createIconBtn("ControlEdit", IconManager.IconSize.NonStd, "WB_EDIT_CONTROL", false, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {

@@ -234,7 +234,7 @@
 		<antcall target="dist-mac-clean"/>
 		
 		
-		<!-- <antcall target="build-empty-derby-db"/> -->
+		<antcall target="build-empty-derby-db"/>
 		
 		
 		<mkdir dir="${dist-mac}" />

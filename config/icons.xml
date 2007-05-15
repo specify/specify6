@@ -15,11 +15,9 @@
     <icon name="Save"           file="filesave.png" sizes="all"/>
     <icon name="Import"         file="ImportData16x16.png" sizes="16"/>
     <icon name="ImportImages"   file="ImportImages16x16.png" sizes="16"/>
-    <icon name="Export"         file="ExportDataSet32x32.png" sizes="all"/>
     <icon name="Export16"       file="ExportDataSet16x16.png" sizes="16"/>
     <icon name="ExportExcel16"  file="ExportExcelTemplate16x16.png" sizes="16"/>
     
-    <icon name="Configure"        file="Configure16x16.png" sizes="16"/>
     <icon name="Workbench16"      file="Workbench16x16.png" sizes="16"/>
     <icon name="Workbench"        file="Workbench32x32.png" sizes="all"/>
     <icon name="Taxon_Tree"       file="taxon.gif" sizes="all"/>
@@ -78,6 +76,19 @@
     <icon name="Labels"        file="Label32x32.png" sizes="all"/>
     <icon name="Form"          file="Form32x32.png" sizes="all"/>
     <icon name="Data_Entry"    file="Form32x32.png" sizes="all"/>
+    <icon name="Configure16"   file="Configure16x16.png" sizes="16"/>
+    <icon name="CarryForward"  file="CarryForward16x16.png" sizes="16"/>
+    
+    <icon name="Configure"     file="Configure20x20.png" sizes="NonStd"/>
+    <icon name="AddRec"        file="AddNewRecord20x20.png" sizes="NonStd"/>
+    <icon name="DelRec"        file="RemoveRecord20x20.png" sizes="NonStd"/>
+    <icon name="EditForm24"    file="Form20x20.png" sizes="NonStd"/>
+    <icon name="Spreadsheet24" file="Grid20x20.png" sizes="NonStd"/>
+    <icon name="Export"        file="ExportDataSet20x20.png" sizes="NonStd"/>
+    <icon name="Eraser"        file="Clear20x20.png"   sizes="NonStd"/>
+    <icon name="CardImage"     file="ImageWindow20x20.png" sizes="NonStd"/>
+    <icon name="LocalityMapper" file="map20x20.png" sizes="NonStd"/>
+    <icon name="ControlEdit"    file="EditProperties20x20.png" sizes="NonStd"/>
     
     <!-- Aliases -->
     <icon name="Accession Agent"        alias="AccessionAgent"/>
@@ -117,7 +128,8 @@
     <icon name="PlusSign"      file="AddNewRecord16x16.png" sizes="16"/>
     <icon name="MinusSign"     file="RemoveRecord16x16.png" sizes="16"/>
     <icon name="GrayDot"       file="graydot.gif"       sizes="16"/>
-    <icon name="Eraser"        file="Clear16x16.png"   sizes="16"/>
+    <icon name="Eraser16"        file="Clear16x16.png"   sizes="16"/>
+    
     <icon name="NewRecord"     alias="PlusSign"/>
     <icon name="DeleteRecord"  alias="MinusSign"/>
     <icon name="Separator"     file="separator16.gif" sizes="16"/>
@@ -170,15 +182,12 @@
     <icon name="Green Arrow Up"   file="green_arrow_up.gif"     sizes="16"/>
     <icon name="Linked"           file="linked.png"          sizes="NonStd"/>
     <icon name="LinkedRight"      file="linked_right.png"     sizes="NonStd"/>
-    <icon name="CardImage"        file="ToggleImageFrame16x16.png" sizes="16"/>
     
     <icon name="Down"             file="down.png" sizes="NonStd"/>
     <icon name="Forward"          file="forward.png" sizes="NonStd"/>
     
     <icon name="Minimize"         file="minimize.gif" sizes="16"/>
     <icon name="Maximize"         file="maximize.gif" sizes="16"/>
-    <icon name="CarryForward"     file="CarryForward16x16.png" sizes="16"/>
-    <icon name="ControlEdit"      file="EditProperties16x16.png" sizes="16"/>
     <icon name="Map"              file="Map16x16.png" sizes="16"/>
     <icon name="Unmap"            file="Unmap16x16.png" sizes="16"/>
     <icon name="ReorderUp"        file="ReorderUp16x16.png" sizes="16"/>
@@ -191,9 +200,10 @@
     
     <!--  Plugins -->
     <icon name="FishBase"         file="fblogootw32.png" sizes="all"/>
-    <icon name="GoogleEarth"      file="GoogleEarth16x16.png" sizes="16"/>
-    <icon name="BioGeoMancer"     file="biogeomancer.png" sizes="all"/>
-    <icon name="ConvertGeoRef"	  file="LatitudeLongitudeConverter16x16.png" sizes="16"/>
+    <!-- <icon name="BioGeoMancer"     file="biogeomancer.png" sizes="all"/> -->
+    <icon name="BioGeoMancer"     file="biogeomancer20x20.png" sizes="NonStd"/>
+    <icon name="ConvertGeoRef"	  file="LatLong20x20.png" sizes="NonStd"/>
+    <icon name="GoogleEarth"      file="GoogleEarth20x20.png" sizes="NonStd"/>
     
     <!-- Preferences -->
     <icon name="Browse" file="browse.gif" sizes="all"/>

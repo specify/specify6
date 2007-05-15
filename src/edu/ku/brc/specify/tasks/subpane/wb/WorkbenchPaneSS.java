@@ -318,7 +318,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 deleteRows();
             }
         });
-        deleteRowsBtn = createIconBtn("MinusSign", "WB_DELETE_ROW", delAction);
+        deleteRowsBtn = createIconBtn("DelRec", "WB_DELETE_ROW", delAction);
         selectionSensativeButtons.add(deleteRowsBtn);
         spreadSheet.setDeleteAction(delAction);
 
@@ -340,12 +340,12 @@ public class WorkbenchPaneSS extends BaseSubPane
                 addRowAfter();
             }
         });
-        addRowsBtn = createIconBtn("PlusSign", "WB_ADD_ROW", addAction);
+        addRowsBtn = createIconBtn("AddRec", "WB_ADD_ROW", addAction);
         addRowsBtn.setEnabled(true);
         addAction.setEnabled(true); 
 
 
-        carryForwardBtn = createIconBtn("Configure", IconManager.IconSize.Std16, "WB_CARRYFORWARD", false, new ActionListener()
+        carryForwardBtn = createIconBtn("Configure", IconManager.IconSize.NonStd, "WB_CARRYFORWARD", false, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -356,7 +356,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         });
         carryForwardBtn.setEnabled(true);
 
-        toggleImageFrameBtn = createIconBtn("CardImage", IconManager.IconSize.Std16, "WB_SHOW_IMG_WIN", false, new ActionListener()
+        toggleImageFrameBtn = createIconBtn("CardImage", IconManager.IconSize.NonStd, "WB_SHOW_IMG_WIN", false, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -365,7 +365,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         });
         toggleImageFrameBtn.setEnabled(true);
         
-        showMapBtn = createIconBtn("ShowMap", IconManager.IconSize.Std16, "WB_SHOW_MAP", false, new ActionListener()
+        showMapBtn = createIconBtn("ShowMap", IconManager.IconSize.NonStd, "WB_SHOW_MAP", false, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -374,7 +374,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         });
         // enable or disable along with Google Earth and Geo Ref Convert buttons
         
-        exportKmlBtn = createIconBtn("GoogleEarth", IconManager.IconSize.Std16, "WB_SHOW_IN_GOOGLE_EARTH", false, new ActionListener()
+        exportKmlBtn = createIconBtn("GoogleEarth", IconManager.IconSize.NonStd, "WB_SHOW_IN_GOOGLE_EARTH", false, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -383,7 +383,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         });
         // enable or disable along with Show Map and Geo Ref Convert buttons
         
-        biogeomancerBtn = createIconBtn("BioGeoMancer", IconManager.IconSize.Std16, "WB_DO_BIOGEOMANCER_LOOKUP", false, new ActionListener()
+        biogeomancerBtn = createIconBtn("BioGeoMancer", IconManager.IconSize.NonStd, "WB_DO_BIOGEOMANCER_LOOKUP", false, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -409,8 +409,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             biogeomancerBtn.setEnabled(true);
         }
         
-        
-        convertGeoRefFormatBtn = createIconBtn("ConvertGeoRef", IconManager.IconSize.Std16, "WB_CONVERT_GEO_FORMAT", false, new ActionListener()
+        convertGeoRefFormatBtn = createIconBtn("ConvertGeoRef", IconManager.IconSize.NonStd, "WB_CONVERT_GEO_FORMAT", false, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -446,7 +445,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             showMapBtn.setEnabled(true);
         }
         
-        exportExcelCsvBtn = createIconBtn("Export", IconManager.IconSize.Std16, "WB_EXPORT_DATA", false, new ActionListener()
+        exportExcelCsvBtn = createIconBtn("Export", IconManager.IconSize.NonStd, "WB_EXPORT_DATA", false, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -751,7 +750,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     /**
      * Adds a row after the selection. 
      */
-    protected void addRowAfter()
+    public void addRowAfter()
     {
         checkCurrentEditState();
         
@@ -928,10 +927,10 @@ public class WorkbenchPaneSS extends BaseSubPane
     {
         Vector<DropDownMenuInfo> menuItems = new Vector<DropDownMenuInfo>();
         menuItems.add(new DropDownMenuInfo(getResourceString("Form"), 
-                                            IconManager.getImage("EditForm", IconManager.IconSize.Std16), 
+                                            IconManager.getImage("EditForm24", IconManager.IconSize.NonStd), 
                                             getResourceString("WB_SHOW_FORM_VIEW")));
         menuItems.add(new DropDownMenuInfo(getResourceString("Grid"), 
-                                            IconManager.getImage("Spreadsheet16", IconManager.IconSize.Std16), 
+                                            IconManager.getImage("Spreadsheet24", IconManager.IconSize.NonStd), 
                                             getResourceString("WB_SHOW_GRID_VIEW")));
         final DropDownButtonStateful switcher = new DropDownButtonStateful(menuItems);
         switcher.setCurrentIndex(1);
