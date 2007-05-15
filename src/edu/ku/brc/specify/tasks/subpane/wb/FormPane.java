@@ -9,12 +9,14 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIHelper.createIconBtn;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.AWTKeyStroke;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.KeyboardFocusManager;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
@@ -23,6 +25,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -30,8 +34,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.InputVerifier;
@@ -43,6 +49,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
@@ -61,8 +68,8 @@ import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
@@ -102,6 +109,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
     protected Vector<InputPanel> uiComps           = new Vector<InputPanel>();
     protected boolean            isInImageMode     = false;
     protected JButton            controlPropsBtn   = null;
+    protected Component          firstComp         = null;
     
     protected boolean            ignoreChanges     = false;
     protected boolean            changesInForm     = false;
@@ -194,13 +202,15 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             }
         });
         
+        Point topLeftPnt = new Point(Integer.MAX_VALUE, Integer.MAX_VALUE);
+
         final int LAYOUT_SPACING = 4;
         short maxY = 0;
         Vector<InputPanel> delayedLayout = new Vector<InputPanel>();
         int maxWidthOffset = 0;
         for (WorkbenchTemplateMappingItem wbtmi : headers)
         {
-            // Create the INputPanel and make it draggable
+            // Create the InputPanel and make it draggable
             InputPanel panel = new InputPanel(wbtmi, wbtmi.getCaption(), createUIComp(wbtmi));
             panel.createMouseInputAdapter(); // this makes it draggable
             panel.getMouseInputAdapter().setDropCanvas(this);
@@ -214,6 +224,14 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             
             // Finds the largest label
             maxWidthOffset = Math.max(panel.getTextFieldOffset(), maxWidthOffset);
+            
+            int x = wbtmi.getXCoord();
+            int y = wbtmi.getYCoord();
+            if (y < topLeftPnt.y || (y == topLeftPnt.y && x < topLeftPnt.x))
+            {
+                firstComp = panel.getComp();
+                topLeftPnt.setLocation(x, y);
+            }
             
             // Add it to the Form (drag canvas)
             uiComps.add(panel);
@@ -235,9 +253,9 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         // NOTE: We set the X,Y into the Mapping so that each item knows where it is, then if the user
         // drags and drop anything or save the template everyone knows where they are suppose to be
         // 
-        int inx  = 0;
-        int maxX = 0;
-        int y    = maxY + LAYOUT_SPACING;
+        int   inx        = 0;
+        int   maxX       = 0;
+        int   y          = maxY + LAYOUT_SPACING;
         for (WorkbenchTemplateMappingItem wbtmi : headers)
         {
             InputPanel panel = uiComps.get(inx);
@@ -267,6 +285,26 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
                 showControlProps();
             }
         });
+        
+        addArrowTraversalKeys();
+    }
+    
+    /**
+     * Adds Up/Down Focus Traversal Keys to the form.
+     */
+    protected void addArrowTraversalKeys()
+    {
+        Set<AWTKeyStroke> set = getFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS);
+        KeyStroke forward = KeyStroke.getKeyStroke("DOWN");
+        set = new HashSet<AWTKeyStroke>(set);
+        set.add(forward);
+        setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, set);
+        
+        set = getFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS);
+        KeyStroke backward = KeyStroke.getKeyStroke("UP");
+        set = new HashSet<AWTKeyStroke>(set);
+        set.add(backward);
+        setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, set);
     }
     
     /**
@@ -532,6 +570,24 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             }
             public void focusLost(FocusEvent e) {}
         });
+        
+        
+        comp.addKeyListener(new KeyAdapter() {
+
+            /* (non-Javadoc)
+             * @see java.awt.event.KeyAdapter#keyTyped(java.awt.event.KeyEvent)
+             */
+            @Override
+            public void keyPressed(KeyEvent e)
+            {
+                if ((e.isControlDown() || e.isMetaDown()) && e.getKeyCode() == KeyEvent.VK_N)
+                {
+                    workbenchPane.addRowAfter();
+                }
+                super.keyTyped(e);
+            }
+            
+        });
         return comp;
     }
     
@@ -647,7 +703,10 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             {
                 public void run()
                 {
-                    uiComps.get(0).getComp().requestFocus();
+                    if (firstComp != null)
+                    {
+                        firstComp.requestFocus();
+                    }
                 }
             });
         }
@@ -846,6 +905,17 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         {
             currentIndex  = newIndex;
             setDataIntoForm(currentIndex);
+            
+            if (firstComp != null)
+            {
+                SwingUtilities.invokeLater(new Runnable()
+                {
+                    public void run()
+                    {
+                        firstComp.requestFocus();
+                    }
+                });
+            }
         }
     }
 
