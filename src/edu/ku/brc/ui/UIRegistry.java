@@ -334,24 +334,24 @@ public class UIRegistry
 	public static String getAppDataDir()
 	{
 		File dir;
-		log.debug("1 AppDataDir["+instance.appDataDir+"]");
+		//log.debug("1 AppDataDir["+instance.appDataDir+"]");
 		if (instance.appDataDir == null)
 		{
 			dir = new File(getUserHomeAppDir());
 		} else
 		{
-			log.debug("2 AppDataDir["+instance.appDataDir+"]");
+			//log.debug("2 AppDataDir["+instance.appDataDir+"]");
 			if (instance.appDataDir.equals("."))
 			{
-				log.debug("************* dot");
+				//log.debug("************* dot");
 				dir = new File(UIHelper.stripSubDirs((new File(".").getAbsolutePath()), 1) + File.separator + instance.appName);
 			} else
 			{
-				log.debug("3 AppDataDir["+instance.appDataDir+"]");
+				//log.debug("3 AppDataDir["+instance.appDataDir+"]");
 				dir = new File(instance.appDataDir + File.separator + instance.appName);
 			}
 		}
-		log.debug("AppDataDir["+dir.getAbsolutePath()+"]");
+		//log.debug("AppDataDir["+dir.getAbsolutePath()+"]");
 		
         if (!dir.exists())
         {
@@ -704,7 +704,7 @@ public class UIRegistry
      */
     public static void displayErrorDlg(final String msg)
     {
-         JOptionPane.showMessageDialog(getMostRecentFrame(), msg, getResourceString("error"), JOptionPane.ERROR_MESSAGE);
+         JOptionPane.showMessageDialog(getMostRecentFrame(), msg, getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
     }
 
     /**
@@ -713,7 +713,7 @@ public class UIRegistry
      */
     public static void displayErrorDlgLocalized(final String key)
     {
-         JOptionPane.showMessageDialog(getMostRecentFrame(), getResourceString(key), getResourceString("error"), JOptionPane.ERROR_MESSAGE);
+         JOptionPane.showMessageDialog(getMostRecentFrame(), getResourceString(key), getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
     }
 
     /**

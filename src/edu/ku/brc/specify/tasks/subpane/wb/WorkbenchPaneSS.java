@@ -1160,8 +1160,9 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected boolean loadNewImage(final WorkbenchRow row)
     {
+        ImageFilter imageFilter = new ImageFilter();
         JFileChooser fileChooser = new JFileChooser(WorkbenchTask.getDefaultDirPath(WorkbenchTask.IMAGES_FILE_PATH));
-        fileChooser.setFileFilter(new ImageFilter());
+        fileChooser.setFileFilter(imageFilter);
         
         int          userAction  = fileChooser.showOpenDialog(this);
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
@@ -1169,16 +1170,24 @@ public class WorkbenchPaneSS extends BaseSubPane
         localPrefs.put(WorkbenchTask.IMAGES_FILE_PATH, fileChooser.getCurrentDirectory().getAbsolutePath());
         if (userAction == JFileChooser.APPROVE_OPTION)
         {
-            String chosenFile = fileChooser.getSelectedFile().getAbsolutePath();
-            row.setCardImage(chosenFile);
-            if (row.getLoadStatus() != WorkbenchRow.LoadStatus.Successful)
+            String fullPath = fileChooser.getSelectedFile().getAbsolutePath();
+            if (imageFilter.isImageFile(fullPath))
             {
-                if (!WorkbenchTask.showLoadStatus(row, false))
+                row.setCardImage(fullPath);
+                if (row.getLoadStatus() != WorkbenchRow.LoadStatus.Successful)
                 {
-                    return false;
+                    if (!WorkbenchTask.showLoadStatus(row, false))
+                    {
+                        return false;
+                    }
                 }
+                return true;
             }
-            return true;
+            JOptionPane.showMessageDialog(UIRegistry.getMostRecentFrame(), 
+                                          String.format(getResourceString("WB_WRONG_IMAGE_TYPE"), 
+                                                  new Object[] {FilenameUtils.getExtension(fullPath)}),
+                                          UIRegistry.getResourceString("Warning"), 
+                                          JOptionPane.ERROR_MESSAGE);
         }
         return false;
     }

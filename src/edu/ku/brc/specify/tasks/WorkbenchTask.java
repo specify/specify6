@@ -32,6 +32,7 @@ import java.sql.Statement;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -1249,10 +1250,9 @@ public class WorkbenchTask extends BaseTask
     protected Workbench createNewWorkbench(final ImportDataFileInfo dataFileInfo, 
                                            final File   inputFile)
     {
-        boolean hasDataFile = inputFile != null;
-        String wbName  = hasDataFile ? FilenameUtils.getBaseName(inputFile.getName()) : null;
-        int btnPressed = selectExistingTemplate(hasDataFile ? dataFileInfo.getColInfo() : null, 
-                                                hasDataFile ? "WorkbenchImportData" : "WorkbenchNewDataSet");
+        String wbName  = inputFile != null ? FilenameUtils.getBaseName(inputFile.getName()) : null;
+        int btnPressed = selectExistingTemplate(inputFile != null ? dataFileInfo.getColInfo() : null, 
+                inputFile != null ? "WorkbenchImportData" : "WorkbenchNewDataSet");
         WorkbenchTemplate workbenchTemplate = selectedTemplate;
         
         if (btnPressed == ChooseFromListDlg.APPLY_BTN)
@@ -1260,7 +1260,7 @@ public class WorkbenchTask extends BaseTask
             TemplateEditor dlg = showColumnMapperDlg(dataFileInfo, null, "WB_MAPPING_EDITOR");
             if (!dlg.isCancelled())
             {   
-                workbenchTemplate = createTemplate(dlg, hasDataFile ? inputFile.getAbsolutePath() : "");
+                workbenchTemplate = createTemplate(dlg, inputFile != null ? inputFile.getAbsolutePath() : "");
              }
             
         } else if (btnPressed == ChooseFromListDlg.OK_BTN && workbenchTemplate != null)
@@ -2276,11 +2276,12 @@ public class WorkbenchTask extends BaseTask
      */
     protected void importCardImages()
     {
+        final ImageFilter imageFilter = new ImageFilter();
         JFileChooser chooser = new JFileChooser(getDefaultDirPath(IMAGES_FILE_PATH));
         chooser.setDialogTitle(getResourceString("WB_CHOOSE_IMAGES"));
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         chooser.setMultiSelectionEnabled(true);
-        chooser.setFileFilter(new ImageFilter());
+        chooser.setFileFilter(imageFilter);
 
         
         if (chooser.showOpenDialog(UIRegistry.get(UIRegistry.FRAME)) != JFileChooser.APPROVE_OPTION)
@@ -2291,6 +2292,64 @@ public class WorkbenchTask extends BaseTask
         
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
         localPrefs.put(IMAGES_FILE_PATH, chooser.getCurrentDirectory().getAbsolutePath());
+        
+        // Start by looping through the files and checking for image file extensions
+        // weed out the bad files.
+        File[]                     files       = chooser.getSelectedFiles();
+        final Vector<File>         fileList    = new Vector<File>();
+        Hashtable<String, Boolean> badFileExts = new Hashtable<String, Boolean>();
+        
+        for (int i=0;i<files.length;i++)
+        {
+            if (files[i].isFile())
+            {
+                String fileName = files[i].getName();
+                if (imageFilter.isImageFile(fileName))
+                {
+                    fileList.add(files[i]);
+                } else
+                {
+                    badFileExts.put(FilenameUtils.getExtension(fileName), true);
+                }
+            }
+        }
+        
+        // No check to see if we had any bad files and warn the user about them
+        if (badFileExts.size() > 0)
+        {
+            StringBuffer badExtStrBuf = new StringBuffer();
+            for (String ext : badFileExts.keySet())
+            {
+                if (badExtStrBuf.length() > 0) badExtStrBuf.append(", ");
+                badExtStrBuf.append(ext);
+            }
+            
+            // Now, if none of the files were good we tell them and then quit the import task
+            if (fileList.size() == 0)
+            {
+                JOptionPane.showMessageDialog(UIRegistry.getMostRecentFrame(), 
+                        String.format(getResourceString("WB_WRONG_IMG_NO_IMAGES"), 
+                                new Object[] {badExtStrBuf.toString()}),
+                        UIRegistry.getResourceString("Warning"), 
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+                        
+            }
+            
+            // So we know we have at least one good image file type
+            // So let them choose if they want to continue.
+            Object[] options = { getResourceString("Continue"), getResourceString("Stop")};
+            
+            if (JOptionPane.showOptionDialog(UIRegistry.getMostRecentFrame(), 
+                        String.format(getResourceString("WB_WRONG_IMG_SOME_IMAGES"), new Object[] {badExtStrBuf.toString()}),
+                        title, JOptionPane.YES_NO_OPTION,
+                        JOptionPane.WARNING_MESSAGE, null, options, options[1]) == JOptionPane.NO_OPTION)
+            {
+                return;
+            }
+        }
+        
+        // Ok, at this point 'fileList' has all the files we want to import
         
         int               btnPressed        = selectExistingTemplate(null, "WorkbenchImportImages");
         WorkbenchTemplate workbenchTemplate = selectedTemplate;
@@ -2316,7 +2375,6 @@ public class WorkbenchTask extends BaseTask
             {
                 UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_LOADING_IMGS_DATASET"), new Object[] {workbench.getName()}), GLASSPANE_FONT_SIZE);
                 
-                final File[] files = chooser.getSelectedFiles();
                 final SwingWorker worker = new SwingWorker()
                 {
                     protected boolean isOK = false;
@@ -2325,31 +2383,36 @@ public class WorkbenchTask extends BaseTask
                     @Override
                     public Object construct()
                     {
+
                         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
                         try
                         {
                             session.beginTransaction();
                             
-                            
-                            for (int i=0;i<files.length;i++)
+                            for (int i=0;i<fileList.size();i++)
                             {
-                                WorkbenchRow row = workbench.addRow();
-                                row.setCardImage(files[i]);
-                                if (row.getLoadStatus() != WorkbenchRow.LoadStatus.Successful)
+                                File file = fileList.get(i);
+                                String fileName = file.getName();
+                                if (imageFilter.isImageFile(fileName))
                                 {
-                                    if (!showLoadStatus(row, i < files.length-1))
+                                    WorkbenchRow row = workbench.addRow();
+                                    row.setCardImage(file);
+                                    if (row.getLoadStatus() != WorkbenchRow.LoadStatus.Successful)
                                     {
-                                        // Shoud we still save or return?
-                                        break; 
+                                        if (!showLoadStatus(row, i < fileList.size()-1))
+                                        {
+                                            // Should we still save or return?
+                                            break; 
+                                        }
                                     }
                                 }
                             }
                             session.saveOrUpdate(workbench);
                             session.commit();
                             session.flush();
-                            
+                        
                             isOK = true;
-                            
+                        
                         } catch (Exception ex)
                         {
                             log.error(ex);
@@ -2366,6 +2429,7 @@ public class WorkbenchTask extends BaseTask
                                 UIRegistry.clearGlassPaneMsg();
                             }
                         }
+                        
 
                         return null;
                     }
