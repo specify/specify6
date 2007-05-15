@@ -119,7 +119,7 @@ public class ArraySearcher
         log.debug("tableContains: + searchString: " + search + " Current row: " + rowPos + " Current col: " + columPos);
         log.debug("tableContains: + initialRow: " + initialRow + " initialCol: " + initialCol);
         //if it's done a full wrap search
-        if ((!isFirstSearch) && (initialRow == rowPos) &&  (initialCol == columPos))
+        if ((!isFirstSearch) && (initialRow >= rowPos) &&  (initialCol >= columPos))
         {
             found = false;
             return new ASearchableCell(-1, -1, found);
@@ -133,44 +133,45 @@ public class ArraySearcher
         if (!forwards)
         {
             return tableContainsBackwards(search, theTable, model,  rowPos,  columPos,matchCase, isWrapOn); 
-        }
-
-        
+        } 
        
 		int colCnt = theTable.getColumnCount();
 		int rowCnt = theTable.getRowCount();
         boolean isStartOfRow = true;
 
-		for (int i = rowPos; i < rowCnt; i++) 
+		for (int i = rowPos; i < rowCnt; i++)
 		{
-          if (!isStartOfRow)columPos = 0;
-		  for(int j = columPos; j < colCnt; j++) 
-		  {
-			  if (theTable.getValueAt(i,j) != null)
-			  {
-                    if ((!isFirstSearch) && (initialRow == i) &&  (initialCol == j))
-                    {
-                        found = false;
-                        return new ASearchableCell(-1, -1, found);
-                    }
-				  	String valueInTable = theTable.getValueAt(i,j).toString();
-                              
-				  	if (!matchCase)
-				  	{
-				  		valueInTable = valueInTable.toLowerCase();
-				  		search = search.toLowerCase();
-				  	}
-                    printMatching( search,  valueInTable,  i,  j,  matchCase);
-                    if (valueInTable.contains(search))
-				  	{
-                        log.debug("Found!");
+			if (!isStartOfRow)
+			{
+				columPos = 0;
+			}
+			for (int j = columPos; j < colCnt; j++)
+			{
+				if (theTable.getValueAt(i, j) != null)
+				{
+					if ((!isFirstSearch) && (initialRow >= i) && (initialCol >= j))
+					{
+						found = false;
+						return new ASearchableCell(-1, -1, found);
+					}
+					String valueInTable = theTable.getValueAt(i, j).toString();
+
+					if (!matchCase)
+					{
+						valueInTable = valueInTable.toLowerCase();
+						search = search.toLowerCase();
+					}
+					printMatching(search, valueInTable, i, j, matchCase);
+					if (valueInTable.contains(search))
+					{
+						log.debug("Found!");
 						found = true;
-                        isFirstSearch = true;
+						isFirstSearch = true;
 						return new ASearchableCell(i, j, found);
-				  	}
-			  }
-              isStartOfRow = false;
-		  }
+					}
+				}
+				isStartOfRow = false;
+			}
 		}  
 		
         if(isWrapOn)
