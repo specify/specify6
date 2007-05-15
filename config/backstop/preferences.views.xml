@@ -216,13 +216,13 @@
 					<cell type="separator" label="Version Checking" colspan="4"/>
 				</row>
 				<row>
-					<cell type="field" id="2" name="version_check.auto" uitype="checkbox" label="Check for Updates"/>
+					<cell type="field" id="2" name="version_check.auto" uitype="checkbox" label="Check for updates at startup"/>
 				</row>
 				<row>
 					<cell type="separator" label="Anonymous Usage Statistics" colspan="4"/>
 				</row>
 				<row>
-					<cell type="field" id="3" name="usage_tracking.send_stats" uitype="checkbox" label="Send Statistics"/>
+					<cell type="field" id="3" name="usage_tracking.send_stats" uitype="checkbox" label="Send usage statistics"/>
 				</row>
 			</rows>
 		</viewdef>
