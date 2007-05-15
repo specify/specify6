@@ -82,6 +82,7 @@ import javax.swing.undo.UndoManager;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.jdesktop.swingx.table.TableColumnExt;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -158,6 +159,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected SpreadSheet           spreadSheet;
     protected Workbench             workbench;
     protected GridTableModel        model;
+    protected TableColumnExt        imageColExt;
     protected String[]              columns;
     protected Vector<WorkbenchTemplateMappingItem> headers = new Vector<WorkbenchTemplateMappingItem>();
     protected boolean               hasChanged             = false;
@@ -251,7 +253,13 @@ public class WorkbenchPaneSS extends BaseSubPane
         initColumnSizes(spreadSheet);
         spreadSheet.setShowGrid(true);
         spreadSheet.getTableHeader().setReorderingAllowed(false); // Turn Off column dragging
-        
+
+        // Put the model in image mode, and never change it.
+        // Now we're showing/hiding the image column using JXTable's column hiding features.
+        model.setInImageMode(true);
+        int imageColIndex = model.getColumnCount() - 1;
+        imageColExt = spreadSheet.getColumnExt(imageColIndex);
+
         model.addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e)
             {
@@ -260,10 +268,12 @@ public class WorkbenchPaneSS extends BaseSubPane
         });
         
         spreadSheet.addFocusListener(new FocusAdapter() {
+            @Override
             public void focusGained(FocusEvent e)
             {
                 UIRegistry.enableCutCopyPaste(true);
             }
+            @Override
             public void focusLost(FocusEvent e)
             {
                 UIRegistry.enableCutCopyPaste(true);
@@ -1043,9 +1053,11 @@ public class WorkbenchPaneSS extends BaseSubPane
     {
         // We simply have to toggle the visibility
         // and add or remove the ListSelectionListener (to avoid loading images when not visible)
-        boolean visible = imageFrame.isVisible();
-        if (visible)
+        boolean isVisible = imageFrame.isVisible();
+        if (isVisible)
         {
+            // hide the image window
+            
             // if the image frame is minimized or iconified, set it to fully visible before doing anything else
             if (imageFrame.getState() == Frame.ICONIFIED)
             {
@@ -1055,87 +1067,25 @@ public class WorkbenchPaneSS extends BaseSubPane
             toggleImageFrameBtn.setToolTipText(getResourceString("WB_SHOW_IMG_WIN"));
 
             spreadSheet.getSelectionModel().removeListSelectionListener(workbenchRowChangeListener);
+            
+            // set the image window and the image column invisible
             imageFrame.setVisible(false);
-            blockChanges = true;
-            // XXX Temporary Fix for Bug 4409
-            try
-            {
-                // get the selection before the changes
-                int[] selRows = spreadSheet.getSelectedRows();
-                for (int i = 0; i < selRows.length; ++i)
-                {
-                    selRows[i] = spreadSheet.convertRowIndexToModel(selRows[i]);
-                }
-                int[] selCols = spreadSheet.getSelectedColumns();
-                for (int i = 0; i < selCols.length; ++i)
-                {
-                    selCols[i] = spreadSheet.convertColumnIndexToModel(selCols[i]);
-                }
-    
-                model.setInImageMode(false);
-                
-                // then restore the selection
-                for (int selRow: selRows)
-                {
-                    spreadSheet.getSelectionModel().addSelectionInterval(selRow, selRow);
-                }
-                for (int selCol: selCols)
-                {
-                    spreadSheet.getColumnModel().getSelectionModel().addSelectionInterval(selCol, selCol);
-                }
-                
-            } catch (Exception ex)
-            {
-                log.error(ex);
-            }
-            blockChanges = false;
-
+            imageColExt.setVisible(false);
         }
         else
         {
+            // show the image window
+            
             // when a user hits the "show image" button, for some reason the selection gets nullified
             // so we'll grab it here, then set it at the end of this method
 
             toggleImageFrameBtn.setToolTipText(getResourceString("WB_HIDE_IMG_WIN"));
             spreadSheet.getSelectionModel().addListSelectionListener(workbenchRowChangeListener);
             imageFrame.setHelpContext("WorkbenchWorkingWithImages");
+            
+            // set the image window and the image column visible
             imageFrame.setVisible(true);
-            
-            // tell the table model to show the image column
-            blockChanges = true;
-            
-            // XXX Temporary Fix for Bug Bug 4409
-            int[] selRows = spreadSheet.getSelectedRows();
-            try
-            {
-                // get the selection before the changes
-                for (int i = 0; i < selRows.length; ++i)
-                {
-                    selRows[i] = spreadSheet.convertRowIndexToModel(selRows[i]);
-                }
-                int[] selCols = spreadSheet.getSelectedColumns();
-                for (int i = 0; i < selCols.length; ++i)
-                {
-                    selCols[i] = spreadSheet.convertColumnIndexToModel(selCols[i]);
-                }
-                
-                model.setInImageMode(true);
-                
-                // then restore the selection
-                for (int selRow: selRows)
-                {
-                    spreadSheet.getSelectionModel().addSelectionInterval(selRow, selRow);
-                }
-                for (int selCol: selCols)
-                {
-                    spreadSheet.getColumnModel().getSelectionModel().addSelectionInterval(selCol, selCol);
-                }
-                
-            } catch (Exception ex)
-            {
-                log.error(ex);
-            }
-            blockChanges = false;
+            imageColExt.setVisible(true);
 
             // if the image frame is minimized or iconified, set it to fully visible before doing anything else
             if (imageFrame.getState() == Frame.ICONIFIED)
@@ -1153,7 +1103,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     
     /**
      * Loads a new Image into a WB Row.
-     * XXX Note this needs to to be refactored so both the WorkbenchTask and this class use the same image olad method.
+     * XXX Note this needs to to be refactored so both the WorkbenchTask and this class use the same image load method.
      * 
      * @param row the row of the new card image
      * @return true if the row was set

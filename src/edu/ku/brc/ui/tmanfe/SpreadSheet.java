@@ -261,6 +261,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         // Experimental from the web, but I think it does the trick.
         addKeyListener(new KeyAdapter()
         {
+            @Override
             public void keyPressed(KeyEvent e)
             {
                 if (!ss.isEditing() && !e.isActionKey() && !e.isControlDown() && !e.isMetaDown() &&
@@ -969,7 +970,8 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
                 // just select the current row
                 // and set it as the new anchor
                 table.setRowSelectionInterval(row, row);
-                table.setColumnSelectionInterval(0, model.getColumnCount()-1);
+
+                table.setColumnSelectionInterval(0, table.getColumnCount()-1);
                 selAnchor = selLead = row;
             }
             
@@ -1038,7 +1040,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
                 {
                     table.setRowSelectionInterval(selAnchor, row);
                 }
-                table.setColumnSelectionInterval(0, model.getColumnCount()-1);
+                table.setColumnSelectionInterval(0, table.getColumnCount()-1);
                 log.debug("anchor: " + selAnchor);
                 log.debug("lead   :" + selLead);
                 log.debug("mouseEntered exited");
@@ -1049,6 +1051,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
     /**
      * @return the model
      */
+    @Override
     public SpreadSheetModel getModel()
     {
         return model;
