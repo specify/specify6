@@ -1720,7 +1720,15 @@ public class WorkbenchPaneSS extends BaseSubPane
         final SwingWorker bgTask = new SwingWorker()
         {
             final JStatusBar statusBar = UIRegistry.getStatusBar();
+            protected boolean cancelled = false;
             
+            @Override
+            public void interrupt()
+            {
+                super.interrupt();
+                cancelled = true;
+            }
+                        
             @SuppressWarnings("synthetic-access")
             @Override
             public Object construct()
@@ -1819,40 +1827,44 @@ public class WorkbenchPaneSS extends BaseSubPane
             @Override
             public void finished()
             {
-                // hide the progress dialog
-                progressDialog.setVisible(false);
-                
-                // find out how many records actually had results
-                List<WorkbenchRow> rowsWithResults = new Vector<WorkbenchRow>();
-                for (WorkbenchRow row: selectedRows)
+                if (!cancelled)
                 {
-                    if (row.getBioGeomancerResults() != null)
-                    {
-                        rowsWithResults.add(row);
-                    }
-                }
-                
-                // if no records had possible results...
-                int numRecordsWithResults = rowsWithResults.size();
-                if (numRecordsWithResults == 0)
-                {
-                    JOptionPane.showMessageDialog(UIRegistry.get(UIRegistry.TOPFRAME),
-                                                  getResourceString("NO_BG_RESULTS"),
-                                                  getResourceString("NO_RESULTS"),
-                                                  JOptionPane.INFORMATION_MESSAGE);
-                    return;
-                }
+                    // hide the progress dialog
+                    progressDialog.setVisible(false);
 
-                // ask the user if they want to review the results
-                String message = "BioGeomancer returned results for " + numRecordsWithResults + " records.  Would you like to view them now?";
-                int userChoice = JOptionPane.showConfirmDialog(WorkbenchPaneSS.this, message, "Continue?", JOptionPane.YES_NO_OPTION);
-                if (userChoice != JOptionPane.OK_OPTION)
-                {
-                    statusBar.setText("BioGeomancer process terminated by user");
-                    return;
+                    // find out how many records actually had results
+                    List<WorkbenchRow> rowsWithResults = new Vector<WorkbenchRow>();
+                    for (WorkbenchRow row : selectedRows)
+                    {
+                        if (row.getBioGeomancerResults() != null)
+                        {
+                            rowsWithResults.add(row);
+                        }
+                    }
+
+                    // if no records had possible results...
+                    int numRecordsWithResults = rowsWithResults.size();
+                    if (numRecordsWithResults == 0)
+                    {
+                        JOptionPane.showMessageDialog(UIRegistry.get(UIRegistry.TOPFRAME),
+                                getResourceString("NO_BG_RESULTS"),
+                                getResourceString("NO_RESULTS"), JOptionPane.INFORMATION_MESSAGE);
+                        return;
+                    }
+
+                    // ask the user if they want to review the results
+                    String message = "BioGeomancer returned results for " + numRecordsWithResults
+                            + " records.  Would you like to view them now?";
+                    int userChoice = JOptionPane.showConfirmDialog(WorkbenchPaneSS.this, message,
+                            "Continue?", JOptionPane.YES_NO_OPTION);
+                    if (userChoice != JOptionPane.OK_OPTION)
+                    {
+                        statusBar.setText("BioGeomancer process terminated by user");
+                        return;
+                    }
+
+                    displayBioGeomancerResults(rowsWithResults);
                 }
-                
-                displayBioGeomancerResults(rowsWithResults);
             }
         };
         
