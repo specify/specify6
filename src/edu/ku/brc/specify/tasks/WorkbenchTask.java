@@ -692,7 +692,7 @@ public class WorkbenchTask extends BaseTask
             Collection<WorkbenchTemplateMappingItem> newItems     = mapper.updateAndGetNewItems();
             for (WorkbenchTemplateMappingItem item : newItems)
             {
-                log.error(item.getFieldName()+" "+item.getViewOrder()+"  "+item.getOrigImportColumnIndex());
+                log.debug(item.getFieldName()+" "+item.getViewOrder()+"  "+item.getOrigImportColumnIndex());
             }
             for (WorkbenchTemplateMappingItem wbtmi : newItems)
             {
