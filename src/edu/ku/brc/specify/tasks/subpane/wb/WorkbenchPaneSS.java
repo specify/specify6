@@ -23,10 +23,10 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Frame;
-import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -1274,10 +1274,21 @@ public class WorkbenchPaneSS extends BaseSubPane
 
         JFrame mainFrame = (JFrame)UIRegistry.get(UIRegistry.TOPFRAME);
         
-        String title = getResourceString("GeoRefConv");
-        String description = getResourceString("GeoRefConvDesc");
+        String title = "GeoRefConv";
+        String description = "GeoRefConvDesc";
         ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>(mainFrame,title,description,outputFormats,null, CustomDialog.OKCANCEL, Type.RadioButton)
         {
+            
+            @Override
+            public void setVisible(boolean visible)
+            {
+                super.setVisible(visible);
+                
+                Dimension prefSize = this.getPreferredSize();
+                prefSize.width += 60;
+                this.setSize(prefSize);
+            }
+
             @Override
             protected void okButtonPressed()
             {
