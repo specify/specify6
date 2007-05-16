@@ -136,11 +136,10 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog implements ActionLis
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
 
-    /**
-     * Create the UI for the dialog.
-     * @param title dialog title
-     * @param desc description label above list (optional)
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CustomDialog#createUI()
      */
+    @Override
     protected void createUI()
     {
         super.createUI();
@@ -389,10 +388,10 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog implements ActionLis
         return list;
     }
 
-    /**
-     * Returns whether it was cancelled.
-     * @return whether it was cancelled
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CustomDialog#isCancelled()
      */
+    @Override
     public boolean isCancelled()
     {
         return isCancelled;
