@@ -869,7 +869,7 @@ public class DataImportDialog extends JDialog implements ActionListener
                 errorPanel.showDataImportStatusPanel(false);
             }
             
-            if(numRows >= WorkbenchTask.MAX_ROWS)
+            if(numRows > WorkbenchTask.MAX_ROWS)
             {
             	showTooManyRowsErrorDialog();
             }
@@ -916,14 +916,14 @@ public class DataImportDialog extends JDialog implements ActionListener
 
         //builder.add(new JLabel(IconManager.getIcon("SpecifyLargeIcon")), cc.xy(1,1));
         // XXX I18N 
+        
+        //The Specify 6 Workbench can only import 2000 rows of data.  The file you tried to import had more than that.  Please reduce the record account and try again.
         builder.add(new JLabel("<html>"
-        		+"<p>The preview release of the Specify 6.0 Workbench"
+        		+"<p>The Specify 6 Workbench can only import 2000 rows of data."
         		//+"<br>"
-        		+"can only import 2000 rows of data.<br>The file you "
+        		+"<br>The file you tried to import had more than that."
         		//+"<br>"
-        		+"are attempting to import contains too many rows."
-        		//+"<br>"
-        		+"<br><br>Please select another file or split the larger file."
+        		+"<br><br>Please reduce the record account and try again.<br>"
         		+"</p></html>"), cc.xy(1,1)); //TODO i8n
         builder.setBorder(BorderFactory.createEmptyBorder(4, 4, 0, 4));
         CustomDialog maxRowExceededDlg = new CustomDialog((Frame)UIRegistry.get(UIRegistry.FRAME), getResourceString("WB_MAXROWS") , true, CustomDialog.OK_BTN, builder.getPanel());
@@ -1015,7 +1015,7 @@ public class DataImportDialog extends JDialog implements ActionListener
                 errorPanel.showDataImportStatusPanel(false);
             }
             
-            if(tableDataVector.size() >= WorkbenchTask.MAX_ROWS)
+            if(tableDataVector.size() > WorkbenchTask.MAX_ROWS)
             {
             	showTooManyRowsErrorDialog();
             }
