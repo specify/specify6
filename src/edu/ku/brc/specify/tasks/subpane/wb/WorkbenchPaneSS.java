@@ -26,6 +26,7 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Frame;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -194,6 +195,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     
     protected ImageFrame            imageFrame                 = null;
     protected boolean               imageFrameWasShowing       = false;
+    protected boolean               imageFramePositioned       = false;
     protected ListSelectionListener workbenchRowChangeListener = null;
     
     protected JFrame                mapFrame                   = null;
@@ -1061,6 +1063,37 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
     }
     
+    protected void positionFrame(final JFrame frame)
+    {
+        // not sure of safest surest way to get main window???
+        JFrame topFrame = (JFrame) UIRegistry.get(UIRegistry.TOPFRAME);
+
+        //for now this just sets the top of frame to the top of topFrame
+        //if there is room on the left side of topFrame, frame is set so it's right edge is next to topFrame's left edge.
+        //otherwise, frame's left edge is aligned with topFrame's right edge.
+        if (topFrame != null)
+        {
+            int x = 0;
+            int y = topFrame.getY();
+            Rectangle screenRect = topFrame.getGraphicsConfiguration().getBounds();
+            Rectangle leftRect = new Rectangle(0, 0, topFrame.getX(), screenRect.height);
+            Rectangle rightRect = new Rectangle(topFrame.getX() + topFrame.getWidth(), 0,
+                    screenRect.width, screenRect.height);
+            if (leftRect.width >= frame.getWidth())
+            {
+                x = leftRect.width - frame.getWidth();
+            }
+            else
+            {
+                x = rightRect.x;
+            }
+            frame.setBounds(x, y, frame.getWidth(), frame.getHeight());
+            
+            //i guess...
+            frame.setAlwaysOnTop(topFrame.getExtendedState() == Frame.MAXIMIZED_BOTH || topFrame.getExtendedState() == Frame.MAXIMIZED_VERT || topFrame.getExtendedState() == Frame.MAXIMIZED_HORIZ);
+        }
+    }
+    
     /**
      * Shows / Hides the Image Window. 
      */
@@ -1090,6 +1123,14 @@ public class WorkbenchPaneSS extends BaseSubPane
         else
         {
             // show the image window
+            
+            //for some reason i thought it would be a good idea only to position the window the first
+            //time it was shown. if statement and imageFramePositioned member should probably be dumped.
+            if (!imageFramePositioned)
+            {
+                positionFrame(imageFrame);
+                //imageFramePositioned = true;
+            }
             
             // when a user hits the "show image" button, for some reason the selection gets nullified
             // so we'll grab it here, then set it at the end of this method
@@ -1393,6 +1434,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 
         if (map != null)
         {
+            positionFrame(mapFrame);
             mapFrame.setVisible(true);
             mapImageLabel.setIcon(map);
             showMapBtn.setEnabled(true);
