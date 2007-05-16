@@ -2019,6 +2019,7 @@ public class WorkbenchTask extends BaseTask
                 CustomDialog.OKCANCELHELP,
                 ToggleButtonChooserDlg.Type.RadioButton);
         
+        dlg.setUseScrollPane(true);
         dlg.setHelpContext("WorkbenchReporting");
         dlg.setModal(true);
         dlg.setVisible(true);  

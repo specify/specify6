@@ -213,21 +213,26 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog implements ActionLis
         listPanel.setSize(size);
         listPanel.setPreferredSize(size);
 
-        if (buttons.size() > 0 && useScrollPane)
-        {
-            JToggleButton togBtn = buttons.get(0);
-            Dimension     dim    = getPreferredSize();
-            dim.height = togBtn.getPreferredSize().height * 10;
-            listPanel.setPreferredSize(dim);
-        }
-
+        // if we are using a JScrollPane, create it and put the listPanel inside it
+        // then add it to the panelBuilder
         if (useScrollPane)
         {
             JScrollPane listScroller = new JScrollPane(listPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-            //Dimension   psize        = listScroller.getViewport().getPreferredSize();
-            //psize.width = size.width + 15; // add 15 for scrollbar
-            //listScroller.getViewport().setSize(psize);
-            //listScroller.getViewport().setPreferredSize(psize);
+            
+            // if there is at least 1 button, size the scrollpane to be the height of 10 buttons
+            if (buttons.size() > 0)
+            {
+                // get the size of a button
+                Dimension btnPrefSize     = buttons.get(0).getPreferredSize();
+                Dimension scollerPrefSize = listScroller.getPreferredSize();
+                
+                // set the scrollpane to have a pref height the same as the height of 11 buttons
+                // this will actually result in the scrollpane being able to show about 10 buttons, due
+                // to spacing between the buttons
+                scollerPrefSize.height = btnPrefSize.height * 11;
+                listScroller.setPreferredSize(scollerPrefSize);
+            }
+            
             panelBlder.add(listScroller, cc.xy(1, y)); y += 2;
             
         } else
