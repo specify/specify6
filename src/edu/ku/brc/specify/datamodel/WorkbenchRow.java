@@ -340,6 +340,15 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     public void setCardImageFullPath(String cardImageFullPath)
     {
         this.cardImageFullPath = cardImageFullPath;
+        
+        // clear out the weak reference to the card image, since it's out of date now
+        synchronized(this)
+        {
+            if (fullSizeImageWR != null)
+            {
+                fullSizeImageWR = null;
+            }
+        }
     }
 
     /**

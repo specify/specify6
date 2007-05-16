@@ -1181,7 +1181,9 @@ public class WorkbenchPaneSS extends BaseSubPane
             String fullPath = fileChooser.getSelectedFile().getAbsolutePath();
             if (imageFilter.isImageFile(fullPath))
             {
-                row.setCardImage(fileChooser.getSelectedFile());
+                File chosenFile = fileChooser.getSelectedFile();
+                row.setCardImage(chosenFile);
+                row.setCardImageFullPath(chosenFile.getAbsolutePath());
                 if (row.getLoadStatus() != WorkbenchRow.LoadStatus.Successful)
                 {
                     if (!WorkbenchTask.showLoadStatus(row, false))
