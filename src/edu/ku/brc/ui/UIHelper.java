@@ -227,10 +227,10 @@ public final class UIHelper
         // not sure of safest surest way to get main window???
         JFrame topFrame = (JFrame) UIRegistry.get(UIRegistry.TOPFRAME);
 
-        //for now this just sets the top of frame to the top of topFrame
-        //if there is room on the left side of topFrame, frame is set so it's right edge is next to topFrame's left edge.
-        //otherwise, if frame will fit, frame's left edge is aligned with topFrame's right edge.
-        //If it won't fit then frame's right edge is aligned with right of edge of screen.
+        // for now this just sets the top of frame to the top of topFrame
+        // if there is room on the left side of topFrame, frame is set so it's right edge is next to topFrame's left edge.
+        // otherwise, if frame will fit, frame's left edge is aligned with topFrame's right edge.
+        // If it won't fit then frame's right edge is aligned with right of edge of screen.
         if (topFrame != null)
         {
             int x = 0;
@@ -249,7 +249,6 @@ public final class UIHelper
             }
             frame.setBounds(x, y, frame.getWidth(), frame.getHeight());
             
-            //i guess...
             frame.setAlwaysOnTop(topFrame.getExtendedState() == Frame.MAXIMIZED_BOTH || topFrame.getExtendedState() == Frame.MAXIMIZED_VERT || topFrame.getExtendedState() == Frame.MAXIMIZED_HORIZ);
         }
     }
