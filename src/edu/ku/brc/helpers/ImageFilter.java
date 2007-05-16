@@ -80,7 +80,7 @@ public class ImageFilter extends FileFilter implements java.io.FilenameFilter
         String extension = FilenameUtils.getExtension(filename);
         if (extension != null)
         {
-            return hash.get(extension) != null;
+            return hash.get(extension.toLowerCase()) != null;
         }
         return false;
     }
