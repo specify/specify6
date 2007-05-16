@@ -888,6 +888,14 @@ public class UIRegistry
             bufImg = glassPaneBufferedImageWR.get();
         }
         
+        if (bufImg != null)
+        {
+            if (bufImg.getWidth() != width && bufImg.getHeight() != height)
+            {
+                bufImg = null;   
+            }
+        }
+        
         if (bufImg == null)
         {
             glassPaneBufferedImageWR = new WeakReference<BufferedImage>(new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB));
