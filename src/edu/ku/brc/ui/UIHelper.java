@@ -236,16 +236,17 @@ public final class UIHelper
             int x = 0;
             int y = topFrame.getY();
             Rectangle screenRect = topFrame.getGraphicsConfiguration().getBounds();
-            Rectangle leftRect = new Rectangle(0, 0, topFrame.getX(), screenRect.height);
-            Rectangle rightRect = new Rectangle(topFrame.getX() + topFrame.getWidth(), 0,
-                    screenRect.width, screenRect.height);
-            if (leftRect.width >= frame.getWidth())
+            if (topFrame.getX() >= frame.getWidth())
             {
-                x = leftRect.width - frame.getWidth();
+                x = topFrame.getX() - frame.getWidth();
+            }
+            else if (screenRect.width - topFrame.getX() - topFrame.getWidth() >= frame.getWidth())
+            {
+                x = topFrame.getWidth();
             }
             else
             {
-                x = rightRect.x;
+                x = screenRect.width - frame.getWidth();
             }
             frame.setBounds(x, y, frame.getWidth(), frame.getHeight());
             
