@@ -25,13 +25,13 @@
     <field column="Method" name="method" type="java.lang.String" length="50"/>
     <field column="Verbatim Date" name="verbatimDate" type="java.lang.String" length="50"/>
     <field column="Start Date" name="startDate" type="calendar_date"/>
-    <field column="Start Date Precision" name="startDatePrecision" type="short"/>
+    <field column="Start Date Precision" name="startDatePrecision" type="java.lang.Short"/>
     <field column="Start Date Verbatim" name="startDateVerbatim" type="java.lang.String" length="50"/>
     <field column="End Date" name="endDate" type="calendar_date"/>
-    <field column="End Date Precision" name="endDatePrecision" type="short"/>
+    <field column="End Date Precision" name="endDatePrecision" type="java.lang.Short"/>
     <field column="End Date Verbatim" name="endDateVerbatim" type="java.lang.String" length="50"/>
-    <field column="Start Time" name="startTime" type="short"/>
-    <field column="End Time" name="endTime" type="short"/>
+    <field column="Start Time" name="startTime" type="java.lang.Short"/>
+    <field column="End Time" name="endTime" type="java.lang.Short"/>
     <field column="Verbatim Locality" name="verbatimLocality" type="text" length="255"/>
     <field column="Remarks (Collecting Event)" name="collectingEventRemarks" type="text" length="255"/>
     <field column="Collector1" name="collector1" type="java.lang.String" length="64"/>
