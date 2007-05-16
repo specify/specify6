@@ -2407,6 +2407,18 @@ public class WorkbenchTask extends BaseTask
                                         }
                                     }
                                 }
+                                
+                                if (i % 5 == 0)
+                                {
+                                    final String msg = workbench.getName() + " (" + i + " / " + fileList.size() + ")";
+                                    SwingUtilities.invokeLater(new Runnable() {
+                                        public void run()
+                                        {
+                                            
+                                            UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_LOADING_IMGS_DATASET"), new Object[] {msg}), GLASSPANE_FONT_SIZE);
+                                        }
+                                    });
+                                }
                             }
                             session.saveOrUpdate(workbench);
                             session.commit();
@@ -2625,6 +2637,14 @@ public class WorkbenchTask extends BaseTask
                     } else if (type.equals("boolean"))
                     {
                         return Boolean.class;
+                        
+                    } else if (type.equals("short"))
+                    {
+                        return Short.class;
+                        
+                    } else if (type.equals("byte"))
+                    {
+                        return Byte.class;
                         
                     } else
                     {

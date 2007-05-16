@@ -144,37 +144,34 @@
   
   <table classname="edu.ku.brc.specify.datamodel.Determination" table="determination" tableid="9" lazy="true" >
 
-    <field column="Determined Date1" name="determinedDate1" type="calendar_date"/>
-    <field column="Determiner1" name="determiner1" type="java.lang.String" length="64"/>
-    <field column="TypeStatusName1" name="typeStatusName1" type="java.lang.String" length="50"/>
+    <field column="Determined Date1"       name="determinedDate1" type="calendar_date"/>
+    <field column="Determiner Last Name1"  name="determinationLastName1" type="java.lang.String" length="64"/>
+    <field column="Determiner First Name1" name="determinationFirstName1" type="java.lang.String" length="64"/>
+    <field column="Genus1"                 name="genus1" type="java.lang.String" length="50"/>
+    <field column="Species1"               name="species1" type="java.lang.String" length="50"/>
+    <field column="Subspecies1"            name="subspecies1" type="java.lang.String" length="50"/>
+    <field column="Variety1"               name="variety1" type="java.lang.String" length="50"/>
+    <field column="Species Qualifier1"     name="speciesQualifier1" type="java.lang.String" length="50"/>
+    <field column="Subspecies Qualifier1"  name="subspeciesQualifier1" type="java.lang.String" length="50"/>
+    <field column="Variety Qualifier1"     name="varietyQualifier1" type="java.lang.String" length="50"/>
+    <field column="Species Author1"        name="speciesAuthor1" type="java.lang.String" length="50"/>
+    <field column="Infra Author1"          name="infraAuthor1" type="java.lang.String" length="50"/>
+    <field column="TypeStatusName1"        name="typeStatusName1" type="java.lang.String" length="50"/>
     
-    <field column="Determined Date2" name="determinedDate2" type="calendar_date"/>
-    <field column="Determiner2" name="determiner2" type="java.lang.String" length="64"/>
-    <field column="TypeStatusName2" name="typeStatusName2" type="java.lang.String" length="50"/>
+    <field column="Determined Date2"       name="determinedDate2" type="calendar_date"/>
+    <field column="Determiner Last Name2"  name="determinationLastName2" type="java.lang.String" length="64"/>
+    <field column="Determiner First Name2" name="determinationFirstName2" type="java.lang.String" length="64"/>
+    <field column="Genus2"                 name="genus2" type="java.lang.String" length="50"/>
+    <field column="Species2"               name="species2" type="java.lang.String" length="50"/>
+    <field column="Subspecies2"            name="subspecies2" type="java.lang.String" length="50"/>
+    <field column="Variety2"               name="variety2" type="java.lang.String" length="50"/>
+    <field column="Species Qualifier2"     name="speciesQualifier2" type="java.lang.String" length="50"/>
+    <field column="Subspecies Qualifier2"  name="subspeciesQualifier2" type="java.lang.String" length="50"/>
+    <field column="Variety Qualifier2"     name="varietyQualifier2" type="java.lang.String" length="50"/>
+    <field column="Species Author2"        name="speciesAuthor2" type="java.lang.String" length="50"/>
+    <field column="Infra Author2"          name="infraAuthor2" type="java.lang.String" length="50"/>
+    <field column="TypeStatusName2"        name="typeStatusName2" type="java.lang.String" length="50"/>
     
-    <field column="Determined Date3" name="determinedDate3" type="calendar_date"/>
-    <field column="Determiner3" name="determiner3" type="java.lang.String" length="64"/>
-    <field column="TypeStatusName3" name="typeStatusName3" type="java.lang.String" length="50"/>
-    
-    <field column="Determined Date4" name="determinedDate4" type="calendar_date"/>
-    <field column="Determiner4" name="determiner4" type="java.lang.String" length="64"/>
-    <field column="TypeStatusName4" name="typeStatusName4" type="java.lang.String" length="50"/>
-    
-    <field column="Determined Date5" name="determinedDate5" type="calendar_date"/>
-    <field column="Determiner5" name="determiner5" type="java.lang.String" length="64"/>
-    <field column="TypeStatusName5" name="typeStatusName5" type="java.lang.String" length="50"/>
-    
-    <field column="Determined Date6" name="determinedDate6" type="calendar_date"/>
-    <field column="Determiner6" name="determiner6" type="java.lang.String" length="64"/>
-    <field column="TypeStatusName6" name="typeStatusName6" type="java.lang.String" length="50"/>
-    
-    <field column="Determined Date7" name="determinedDate7" type="calendar_date"/>
-    <field column="Determiner7" name="determiner7" type="java.lang.String" length="64"/>
-    <field column="TypeStatusName7" name="typeStatusName7" type="java.lang.String" length="50"/>
-    
-    <field column="Determined Date8" name="determinedDate8" type="calendar_date"/>
-    <field column="Determiner8" name="determiner8" type="java.lang.String" length="64"/>
-    <field column="TypeStatusName8" name="typeStatusName8" type="java.lang.String" length="50"/>
   </table>
   
   <table classname="edu.ku.brc.specify.datamodel.Geography" table="geography" tableid="3" lazy="true">
@@ -446,6 +443,7 @@
     <field column="Superfamily1" name="Superfamily" type="java.lang.String" length="64"/>
     <field column="Family1" name="Family" type="java.lang.String" length="64"/>
     <field column="Subfamily1" name="Subfamily" type="java.lang.String" length="64"/>
+    <!--
     <field column="Tribe1" name="Tribe" type="java.lang.String" length="64"/>
     <field column="Subtribe1" name="Subtribe" type="java.lang.String" length="64"/>
     <field column="Genus1" name="Genus" type="java.lang.String" length="64"/>
@@ -458,31 +456,6 @@
     <field column="Subvariety1" name="Subvariety" type="java.lang.String" length="64"/>
     <field column="Forma1" name="Forma" type="java.lang.String" length="64"/>
     <field column="Subforma1" name="Subforma" type="java.lang.String" length="64"/>
-    
-    <!-- Authors -->
-    <field column="Genus Author1" name="Genus" type="java.lang.String" length="64"/>
-    <field column="Subgenus Author1" name="Subgenus" type="java.lang.String" length="64"/>
-    <field column="Section Author1" name="Section" type="java.lang.String" length="64"/>
-    <field column="Subsection Author1" name="Subsection" type="java.lang.String" length="64"/>
-    <field column="Species Author1" name="Species" type="java.lang.String" length="64"/>
-    <field column="Subspecies Author1" name="Subspecies" type="java.lang.String" length="64"/>
-    <field column="Variety Author1" name="Variety" type="java.lang.String" length="64"/>
-    <field column="Subvariety Author1" name="Subvariety" type="java.lang.String" length="64"/>
-    <field column="Forma Author1" name="Forma" type="java.lang.String" length="64"/>
-    <field column="Subforma Author1" name="Subforma" type="java.lang.String" length="64"/>
-
-    <!-- Additional Attributes -->    
-    <field column="Common Name" name="commonName" type="java.lang.String" length="128"/>
-    <field column="Citation (Taxon)" name="taxonCitation" type="java.lang.String" length="128"/>
-    
-    <field column="Qualifier1" name="taxonCitation" type="java.lang.String" length="16"/>
-    <field column="Qualifier2" name="taxonCitation" type="java.lang.String" length="16"/>
-    <field column="Qualifier3" name="taxonCitation" type="java.lang.String" length="16"/>
-    <!--
-    <field column="Species Author" name="speciesAuthor" type="java.lang.String" length="128"/>
-    <field column="Infraspecific Author" name="infraspecificAuthor" type="java.lang.String" length="128"/>
-    <field column="Infraspecific Rank" name="infraspecificRank" type="java.lang.String" length="128"/>
-    <field column="Infraspecific Name" name="infraspecificName" type="java.lang.String" length="128"/>
     -->
   </table>
 </database>
