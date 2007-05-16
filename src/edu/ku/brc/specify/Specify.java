@@ -116,7 +116,9 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
 @SuppressWarnings("serial")
 public class Specify extends JPanel implements DatabaseLoginListener
 {
-    private static final Logger log                = Logger.getLogger(Specify.class);
+    private static final boolean isRelease          = true;
+    private static final Logger  log                = Logger.getLogger(Specify.class);
+    
     public static final boolean IS_DEVELOPMENT     = true;
     
     // The preferred size of the demo
@@ -142,13 +144,12 @@ public class Specify extends JPanel implements DatabaseLoginListener
     protected GhostGlassPane     glassPane;
 
     private boolean              isWorkbenchOnly     = true;
-    private boolean              isRelease           = true;
     
     private String               appName             = "Specify";
     private String               appVersion          = "6.0";
     private String               appBuildVersion     = "200705091402";
     
-    protected static CacheManager       cacheManager        = new CacheManager();
+    protected static CacheManager cacheManager        = new CacheManager();
 
     /**
      * Constructor.
@@ -1192,51 +1193,54 @@ public class Specify extends JPanel implements DatabaseLoginListener
               // Then set this, which        
         	  IconManager.setApplicationClass(Specify.class);
               
-              MemoryWarningSystem.setPercentageUsageThreshold(0.75);
-
-              MemoryWarningSystem mws = new MemoryWarningSystem();
-              mws.addListener(new MemoryWarningSystem.Listener()
+              if (!isRelease)
               {
-                  protected void setMessage(final String msg, final boolean isError)
+                  MemoryWarningSystem.setPercentageUsageThreshold(0.75);
+    
+                  MemoryWarningSystem mws = new MemoryWarningSystem();
+                  mws.addListener(new MemoryWarningSystem.Listener()
                   {
-                      JStatusBar statusBar = UIRegistry.getStatusBar();
-                      if (statusBar != null)
+                      protected void setMessage(final String msg, final boolean isError)
                       {
-                          if (isError)
+                          JStatusBar statusBar = UIRegistry.getStatusBar();
+                          if (statusBar != null)
                           {
-                              statusBar.setErrorMessage(msg);
+                              if (isError)
+                              {
+                                  statusBar.setErrorMessage(msg);
+                              } else
+                              {
+                                  statusBar.setText(msg);
+                              }
                           } else
                           {
-                              statusBar.setText(msg);
+                              System.err.println(msg);
                           }
-                      } else
-                      {
-                          System.err.println(msg);
                       }
-                  }
-                  
-                  public void memoryUsage(long usedMemory, long maxMemory)
-                  {
-                      double percentageUsed = ((double) usedMemory) / maxMemory;
                       
-                      String msg = String.format("Percent Memory Used %6.2f of Max %d", new Object[] {(percentageUsed * 100.0), maxMemory});
-                      setMessage(msg, false);
-
-                  }
-
-                  public void memoryUsageLow(long usedMemory, long maxMemory)
-                  {
-                      double percentageUsed = ((double) usedMemory) / maxMemory;
-                        
-                      String msg = String.format("Memory is Low! Percentage Used = %6.2f of Max %d", new Object[] {(percentageUsed * 100.0), maxMemory});
-                      setMessage(msg, true);
-                        
-                      if (MemoryWarningSystem.getThresholdPercentage() < 0.8)
+                      public void memoryUsage(long usedMemory, long maxMemory)
                       {
-                          MemoryWarningSystem.setPercentageUsageThreshold(0.8);
+                          double percentageUsed = ((double) usedMemory) / maxMemory;
+                          
+                          String msg = String.format("Percent Memory Used %6.2f of Max %d", new Object[] {(percentageUsed * 100.0), maxMemory});
+                          setMessage(msg, false);
+    
                       }
-                    }
-                });
+    
+                      public void memoryUsageLow(long usedMemory, long maxMemory)
+                      {
+                          double percentageUsed = ((double) usedMemory) / maxMemory;
+                            
+                          String msg = String.format("Memory is Low! Percentage Used = %6.2f of Max %d", new Object[] {(percentageUsed * 100.0), maxMemory});
+                          setMessage(msg, true);
+                            
+                          if (MemoryWarningSystem.getThresholdPercentage() < 0.8)
+                          {
+                              MemoryWarningSystem.setPercentageUsageThreshold(0.8);
+                          }
+                        }
+                    });
+              }
               
               try
               {
