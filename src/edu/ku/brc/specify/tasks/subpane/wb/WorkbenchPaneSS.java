@@ -618,7 +618,16 @@ public class WorkbenchPaneSS extends BaseSubPane
                 public void run()
                 {
                     toggleImageFrameVisible();
-                    ((Frame)UIRegistry.get(UIRegistry.FRAME)).toFront();
+
+                    SwingUtilities.invokeLater(new Runnable()
+                    {
+                        public void run()
+                        {
+                            final Frame f = (Frame)UIRegistry.get(UIRegistry.FRAME);
+                            f.toFront();
+                            f.requestFocus();
+                        }
+                    });
                 }
             });
         }
@@ -2390,7 +2399,16 @@ public class WorkbenchPaneSS extends BaseSubPane
             if (imageFrameWasShowing)
             {
                 toggleImageFrameVisible();
-                ((Frame)UIRegistry.get(UIRegistry.FRAME)).toFront();
+                
+                SwingUtilities.invokeLater(new Runnable()
+                {
+                    public void run()
+                    {
+                        final Frame f = (Frame)UIRegistry.get(UIRegistry.FRAME);
+                        f.toFront();
+                        f.requestFocus();
+                    }
+                });
             }
         }
         else
