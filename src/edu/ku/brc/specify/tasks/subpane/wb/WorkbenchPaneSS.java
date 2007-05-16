@@ -488,19 +488,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             public void actionPerformed(ActionEvent ae)
             {
-                UsageTracker.incrUsageCount("WB.EditWBRowImage");
-                
-                // figure out what row is selected
-                int firstRowSelected = spreadSheet.getSelectedRow();
-                firstRowSelected = spreadSheet.convertRowIndexToModel(firstRowSelected);
-                WorkbenchRow row = workbench.getWorkbenchRowsAsList().get(firstRowSelected);
-                // then load a new image for it
-                boolean loaded = loadNewImage(row);
-                if (loaded)
-                {
-                    showCardImageForSelectedRow();
-                    setChanged(true);
-                }
+                editRowImage();
             }
         });
         
@@ -508,14 +496,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             public void actionPerformed(ActionEvent ae)
             {
-                // figure out what row is selected
-                int firstRowSelected = spreadSheet.getSelectedRow();
-                firstRowSelected = spreadSheet.convertRowIndexToModel(firstRowSelected);
-                WorkbenchRow row = workbench.getWorkbenchRowsAsList().get(firstRowSelected);
-                row.setCardImage((File)null);
-                imageFrame.clearImage();
-                //showCardImageForSelectedRow();
-                spreadSheet.repaint();
+                clearRowImage();
             }
         });
         imageFrame.installCloseActionListener(new ActionListener()
@@ -652,12 +633,47 @@ public class WorkbenchPaneSS extends BaseSubPane
                 {
                     imageFrame.setRow(workbench.getRow(newIndex));
                 }
-                
             }
             public void newRecordAdded()
             {
             }
         });
+    }
+    
+    /**
+     * Displays a FIle dialog aso the user can chhose and image.
+     */
+    protected void editRowImage()
+    {
+        UsageTracker.incrUsageCount("WB.EditWBRowImage");
+        
+        // figure out what row is selected
+        int firstRowSelected = spreadSheet.getSelectedRow();
+        firstRowSelected = spreadSheet.convertRowIndexToModel(firstRowSelected);
+        WorkbenchRow row = workbench.getWorkbenchRowsAsList().get(firstRowSelected);
+        
+        // then load a new image for it
+        boolean loaded = loadNewImage(row);
+        if (loaded)
+        {
+            showCardImageForSelectedRow();
+            setChanged(true);
+        }
+    }
+    
+    /**
+     * Clear the image from the row.
+     */
+    protected void clearRowImage()
+    {
+        // figure out what row is selected
+        int firstRowSelected = spreadSheet.getSelectedRow();
+        firstRowSelected = spreadSheet.convertRowIndexToModel(firstRowSelected);
+        WorkbenchRow row = workbench.getWorkbenchRowsAsList().get(firstRowSelected);
+        row.setCardImage((File)null);
+        imageFrame.clearImage();
+        //showCardImageForSelectedRow();
+        spreadSheet.repaint();  
     }
     
     /**
@@ -1189,7 +1205,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             String fullPath = fileChooser.getSelectedFile().getAbsolutePath();
             if (imageFilter.isImageFile(fullPath))
             {
-                row.setCardImage(fullPath);
+                row.setCardImage(fileChooser.getSelectedFile());
                 if (row.getLoadStatus() != WorkbenchRow.LoadStatus.Successful)
                 {
                     if (!WorkbenchTask.showLoadStatus(row, false))
@@ -2215,7 +2231,6 @@ public class WorkbenchPaneSS extends BaseSubPane
             formPane.setWorkbench(workbench);
             
             log.info("Session Saved[ and Flushed "+session.hashCode()+"]");
-            
            
             hasChanged = false;
             
