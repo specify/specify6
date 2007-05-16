@@ -19,6 +19,7 @@ package edu.ku.brc.ui;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Insets;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
@@ -674,6 +675,15 @@ public class SearchReplacePanel extends JPanel
             ListSelectionModel csm = table.getColumnModel().getSelectionModel();
             rsm.setSelectionInterval(curRow, curRow);
             csm.setSelectionInterval(curCol, curCol);
+            
+		    int ar = table.getSelectionModel().getAnchorSelectionIndex();
+		    int ac = table.getColumnModel().getSelectionModel().getAnchorSelectionIndex();
+
+		    Rectangle rect = table.getCellRect(ar, ac, false);
+		    if (rect!=null && table.getAutoscrolls()) 
+		    {
+		    	table.scrollRectToVisible(rect);
+		    }
 
             if (isSearchDown)
             {
