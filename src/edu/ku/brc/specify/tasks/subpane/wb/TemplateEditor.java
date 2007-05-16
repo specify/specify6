@@ -430,6 +430,7 @@ public class TemplateEditor extends CustomDialog
             {
                 cancelBtn.requestFocus();
                 fieldModel.clear();
+                fieldList.clearSelection();
                 updateEnabledState();
                 
                 if (mapModel.size() > 1)
@@ -449,6 +450,7 @@ public class TemplateEditor extends CustomDialog
     {
         DefaultListModel model = (DefaultListModel)fieldList.getModel();
         model.clear();
+        fieldList.clearSelection();
         
         if (tableInfo != null)
         {
