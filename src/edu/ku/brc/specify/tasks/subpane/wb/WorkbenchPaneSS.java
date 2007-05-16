@@ -2410,9 +2410,19 @@ public class WorkbenchPaneSS extends BaseSubPane
                     }
                 });
             }
+            
+            if ( currentPanelType == PanelType.Spreadsheet)
+            {
+                spreadSheet.requestFocus();
+            } else
+            {
+                
+            }
         }
         else
         {
+            checkCurrentEditState();
+            
             if (imageFrame != null && imageFrame.isVisible())
             {
                 imageFrameWasShowing = true;
