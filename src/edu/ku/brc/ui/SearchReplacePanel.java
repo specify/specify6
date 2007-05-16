@@ -579,8 +579,8 @@ public class SearchReplacePanel extends JPanel
 //            	break;
 //            }
             log.debug("replace all");
-            as = new ArraySearcher();
-            cell = as.tableContains(str, table, table.getModel(), curRow, curCol,getMatchCaseFlag(), isSearchDown, getWrapSearchFlag());
+            //as = new ArraySearcher();
+            cell = as.tableContains(str, table, table.getModel(), curRow, curCol,getMatchCaseFlag(), isSearchDown, false);
             found = cell.isFound();
 
         }  
@@ -638,6 +638,10 @@ public class SearchReplacePanel extends JPanel
             {
                 curRow++;
                 curCol = -1;
+            }
+            if(getWrapSearchFlag() && curRow >= table.getRowCount())
+            {
+            	curRow = 0;
             }
             curCol++;
         }

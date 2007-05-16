@@ -77,7 +77,7 @@ public class ArraySearcher
           {
               if (theTable.getValueAt(i,j) != null)
               {
-                  if ((!isFirstSearch) && (initialRow >= i) &&  (initialCol >= j))
+                  if ((!isFirstSearch) && (initialRow == i) &&  (initialCol == j))
                   {
                       found = false;
                       return new ASearchableCell(-1, -1, found);
@@ -115,21 +115,20 @@ public class ArraySearcher
 
 	public ASearchableCell tableContains(String search, JTable theTable, TableModel model, int rowPos, int columPos, boolean matchCase, boolean forwards, boolean isWrapOn)
 	{
-        log.debug("tableContains() - searchString[" + search + "] Current row[" + rowPos + "] Current col[" + columPos+"]");
+        log.debug("tableContains() - searchString[" + search + "] Current row[" + rowPos + "] Current col[" + columPos+"] isFirstPass["+ isFirstSearch +"]");
+        log.debug("tableContains() - initialRow[" + initialRow + "] initialCol[" + initialCol +"]");
         
-        //if it's done a full wrap search
-        if ((!isFirstSearch) && (initialRow >= rowPos) &&  (initialCol >= columPos))
-        {
-            return new ASearchableCell(-1, -1, false);
-        }
+
         if (isFirstSearch)
         {
              initialRow = rowPos;
              initialCol = columPos;     
         }
-        
-        log.debug("tableContains() - initialRow[" + initialRow + "] initialCol[" + initialCol +"]");
-        
+        //if it's done a full wrap search
+        if ((!isFirstSearch) && (initialRow == rowPos) &&  (initialCol == columPos))
+        {
+            return new ASearchableCell(-1, -1, false);
+        }
         if (!forwards)
         {
             return tableContainsBackwards(search, theTable, model,  rowPos,  columPos,matchCase, isWrapOn); 
@@ -149,7 +148,8 @@ public class ArraySearcher
 			{
 				if (theTable.getValueAt(i, j) != null)
 				{
-					if ((!isFirstSearch) && (initialRow >= i) && (initialCol >= j))
+					log.debug("tableContains() - looking at val i["+i+"] j["+j+"]");
+					if ((!isFirstSearch) && (initialRow == i) && (initialCol == j))
 					{
 						return new ASearchableCell(-1, -1, false);
 					}
@@ -174,6 +174,7 @@ public class ArraySearcher
 		
         if(isWrapOn)
         {
+        	log.debug("tableContains() - wrap is on, moving to start of table");
             isFirstSearch = false;
             return tableContains( search,  theTable,  model, 0, 0,  matchCase,  forwards,  isWrapOn);
         }
