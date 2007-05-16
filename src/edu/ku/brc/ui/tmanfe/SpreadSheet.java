@@ -50,6 +50,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.text.JTextComponent;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.UsageTracker;
@@ -635,8 +636,8 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
             int   numrows      = getSelectedRowCount();
             int[] rowsselected = getSelectedRows();
             int[] colsselected = getSelectedColumns();
-            if (!((numrows - 1 == rowsselected[rowsselected.length - 1] - rowsselected[0] && numrows == rowsselected.length) && (numcols - 1 == colsselected[colsselected.length - 1]
-                    - colsselected[0] && numcols == colsselected.length)))
+            if (!((numrows - 1 == rowsselected[rowsselected.length - 1] - rowsselected[0] && numrows == rowsselected.length) && 
+                  (numcols - 1 == colsselected[colsselected.length - 1] - colsselected[0] && numcols == colsselected.length)))
             {
                 //JOptionPane.showMessageDialog(null, "Invalid Copy Selection",
                 //        "Invalid Copy Selection", JOptionPane.ERROR_MESSAGE);
@@ -676,17 +677,15 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
                 StringTokenizer st1 = new StringTokenizer(trstring, "\n");
                 for (int i = 0; st1.hasMoreTokens(); i++)
                 {
-                    String rowstring = st1.nextToken();
-                    StringTokenizer st2 = new StringTokenizer(rowstring, "\t");
-                    for (int j = 0; st2.hasMoreTokens(); j++)
+                    String   rowstring = st1.nextToken();
+                    String[] tokens    = StringUtils.splitPreserveAllTokens(rowstring, '\t');
+                    for (int j = 0; j < tokens.length; j++)
                     {
-                        String value = st2.nextToken();
                         if (startRow + i < getRowCount() && startCol + j < getColumnCount())
                         {
-                            setValueAt(value, startRow + i, startCol + j);
+                            setValueAt(tokens[j], startRow + i, startCol + j);
                         }
-                        //System.out.println("Putting " + value + "at row=" + startRow + i
-                        //        + "column=" + startCol + j);
+                        //System.out.println("Putting " + tokens[j] + "at row=" + startRow + i + "column=" + startCol + j);
                     }
                 }
             } catch (Exception ex)
