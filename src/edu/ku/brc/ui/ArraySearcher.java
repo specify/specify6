@@ -115,7 +115,7 @@ public class ArraySearcher
 
 	public ASearchableCell tableContains(String search, JTable theTable, TableModel model, int rowPos, int columPos, boolean matchCase, boolean forwards, boolean isWrapOn)
 	{
-        log.debug("tableContains - searchString[" + search + "] Current row[" + rowPos + "] Current col[" + columPos+"]");
+        log.debug("tableContains() - searchString[" + search + "] Current row[" + rowPos + "] Current col[" + columPos+"]");
         
         //if it's done a full wrap search
         if ((!isFirstSearch) && (initialRow >= rowPos) &&  (initialCol >= columPos))
@@ -128,7 +128,7 @@ public class ArraySearcher
              initialCol = columPos;     
         }
         
-        log.debug("tableContains - initialRow[" + initialRow + "] initialCol[" + initialCol +"]");
+        log.debug("tableContains() - initialRow[" + initialRow + "] initialCol[" + initialCol +"]");
         
         if (!forwards)
         {
@@ -163,7 +163,7 @@ public class ArraySearcher
 					printMatching(search, valueInTable, i, j, matchCase);
 					if (valueInTable.contains(search))
 					{
-						log.debug("Found! value at Row["+i+"] Col["+j+"]");
+						log.debug("tableContains() - Found! value at Row["+i+"] Col["+j+"]");
 						isFirstSearch = true;
 						return new ASearchableCell(i, j, true);
 					}
