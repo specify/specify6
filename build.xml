@@ -108,15 +108,26 @@
 	<!-- Jar up compiled classes -->
 	<target name="dist-jar" depends="">
 		
-		<jar destfile="${jar.name}.jar" basedir="${class.root}" />
+		<jar destfile="${jar.name}.jar">
+			<fileset dir="${class.root}">
+				<include name="**/*.class" />
+				<include name="**/*.properties" />
+			</fileset>
+	    </jar>
 
 	</target>
 
 	<!-- Jar up compiled classes -->
 	<target name="dist-jar-mac" depends="">
 		
-		<jar destfile="${jar.name}.jar" basedir="${class.root}" />
-
+		<jar destfile="${jar.name}.jar">
+			<fileset dir="${class.root}">
+				<include name="**/*.class" />
+				<include name="**/*.properties" />
+				<include name="**/*.xml" />
+				<include name="**/images/*.*" />
+			</fileset>
+	    </jar>
 	</target>
 
 	<!-- Jar Clean Up -->
