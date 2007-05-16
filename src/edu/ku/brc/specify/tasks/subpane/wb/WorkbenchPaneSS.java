@@ -252,7 +252,6 @@ public class WorkbenchPaneSS extends BaseSubPane
         findPanel = spreadSheet.getFindReplacePanel();
         UIRegistry.getLaunchFindReplaceAction().setSearchReplacePanel(findPanel);
     
-        initColumnSizes(spreadSheet);
         spreadSheet.setShowGrid(true);
         spreadSheet.getTableHeader().setReorderingAllowed(false); // Turn Off column dragging
 
@@ -270,6 +269,8 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         });
         
+        initColumnSizes(spreadSheet);
+
         spreadSheet.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e)
@@ -2076,7 +2077,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         GridCellEditor cellEditor = new GridCellEditor(new JTextField());
         //UIRegistry.getInstance().hookUpUndoableEditListener(cellEditor);
         
-        for (int i = 0; i < tblModel.getColumnCount(); i++) 
+        for (int i = 0; i < tableArg.getColumnCount(); i++) 
         {
             column = tableArg.getColumnModel().getColumn(i);
 
@@ -2094,15 +2095,17 @@ public class WorkbenchPaneSS extends BaseSubPane
             
             int maxWidth = headerWidth + 10;
             TableModel m = tableArg.getModel();
-            FontMetrics fm     = new JLabel().getFontMetrics(getFont());
+            FontMetrics fm     = comp.getFontMetrics(comp.getFont());
             for (int row=0;row<tableArg.getModel().getRowCount();row++)
             {
                 String text = m.getValueAt(row, i).toString();
                 maxWidth = Math.max(maxWidth, fm.stringWidth(text)+10);
-                //System.out.println(i+" "+maxWidth);
+                //log.debug(i+" "+maxWidth);
             }
 
             //XXX: Before Swing 1.1 Beta 2, use setMinWidth instead.
+            //log.debug(Math.max(maxWidth, cellWidth));
+            //log.debug(Math.min(Math.max(maxWidth, cellWidth), 400));
             column.setPreferredWidth(Math.min(Math.max(maxWidth, cellWidth), 400));
             
             column.setCellEditor(cellEditor);
