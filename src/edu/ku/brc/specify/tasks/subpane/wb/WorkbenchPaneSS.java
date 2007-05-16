@@ -1154,7 +1154,26 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
             
             TableColumn column = spreadSheet.getTableHeader().getColumnModel().getColumn(spreadSheet.getTableHeader().getColumnModel().getColumnCount()-1);
-            column.setCellRenderer(new ImageRenderer());
+            column.setCellRenderer(new DefaultTableCellRenderer()
+            {
+                @Override
+                public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int tblRow, int tblColumn)
+                {
+                    JLabel lbl = (JLabel)super.getTableCellRendererComponent(table, value, isSelected, hasFocus, tblRow, tblColumn);
+                    int modelRow = spreadSheet.convertRowIndexToModel(tblRow);
+                    WorkbenchRow wbRow = workbench.getRow(modelRow);
+                    String cardImageFullPath = wbRow.getCardImageFullPath();
+                    if (cardImageFullPath != null)
+                    {
+                        String filename = FilenameUtils.getBaseName(cardImageFullPath);
+                        filename = FilenameUtils.getName(cardImageFullPath);
+                        lbl.setText(filename);
+                        lbl.setHorizontalAlignment(SwingConstants.CENTER);
+                    }
+                    return lbl;
+                }
+
+            });
             spreadSheet.repaint();
         }
     }
