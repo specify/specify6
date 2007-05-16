@@ -115,21 +115,21 @@ public class ArraySearcher
 
 	public ASearchableCell tableContains(String search, JTable theTable, TableModel model, int rowPos, int columPos, boolean matchCase, boolean forwards, boolean isWrapOn)
 	{
-        boolean found = false;
-        log.debug("tableContains: + searchString: " + search + " Current row: " + rowPos + " Current col: " + columPos);
-        log.debug("tableContains: + initialRow: " + initialRow + " initialCol: " + initialCol);
+        log.debug("tableContains - searchString[" + search + "] Current row[" + rowPos + "] Current col[" + columPos+"]");
+        
         //if it's done a full wrap search
         if ((!isFirstSearch) && (initialRow >= rowPos) &&  (initialCol >= columPos))
         {
-            found = false;
-            return new ASearchableCell(-1, -1, found);
+            return new ASearchableCell(-1, -1, false);
         }
         if (isFirstSearch)
         {
-            
              initialRow = rowPos;
              initialCol = columPos;     
         }
+        
+        log.debug("tableContains - initialRow[" + initialRow + "] initialCol[" + initialCol +"]");
+        
         if (!forwards)
         {
             return tableContainsBackwards(search, theTable, model,  rowPos,  columPos,matchCase, isWrapOn); 
@@ -151,8 +151,7 @@ public class ArraySearcher
 				{
 					if ((!isFirstSearch) && (initialRow >= i) && (initialCol >= j))
 					{
-						found = false;
-						return new ASearchableCell(-1, -1, found);
+						return new ASearchableCell(-1, -1, false);
 					}
 					String valueInTable = theTable.getValueAt(i, j).toString();
 
@@ -164,10 +163,9 @@ public class ArraySearcher
 					printMatching(search, valueInTable, i, j, matchCase);
 					if (valueInTable.contains(search))
 					{
-						log.debug("Found!");
-						found = true;
+						log.debug("Found! value at Row["+i+"] Col["+j+"]");
 						isFirstSearch = true;
-						return new ASearchableCell(i, j, found);
+						return new ASearchableCell(i, j, true);
 					}
 				}
 				isStartOfRow = false;
@@ -179,9 +177,8 @@ public class ArraySearcher
             isFirstSearch = false;
             return tableContains( search,  theTable,  model, 0, 0,  matchCase,  forwards,  isWrapOn);
         }
-        found = false;
         isFirstSearch = true;
-		return new ASearchableCell(-1, -1, found);
+		return new ASearchableCell(-1, -1, false);
 	}
     
     private void printMatching(String searchString, String valueInTable, int row, int col, boolean matchCase)
