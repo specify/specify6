@@ -484,7 +484,7 @@ public class SearchReplacePanel extends JPanel
             }
             else
             {
-                log.error("Need to implement case insensitivity");
+                log.debug("Need to implement case insensitivity");
                 myNewStr = Pattern.compile(myFindValue, Pattern.CASE_INSENSITIVE).matcher(myStrToReplaceValueIn).replaceAll(myReplaceValue);
             }  
             
@@ -627,6 +627,7 @@ public class SearchReplacePanel extends JPanel
         
         int curRow = table.getSelectedRow();
         int curCol = table.getSelectedColumn();
+        log.debug("find() - curRow[" + curRow + "] curCol[" + curCol+ "]");
 
         if (isSearchDown){
             if (curRow == -1) 
@@ -640,6 +641,7 @@ public class SearchReplacePanel extends JPanel
             }
             curCol++;
         }
+        
         //is previous clicked, reverse direction
         else
         {
@@ -650,10 +652,12 @@ public class SearchReplacePanel extends JPanel
             if (curCol <= 0 ) 
             {
                 curRow--;
-                curCol = table.getColumnModel().getColumnCount()-1;
+                curCol = table.getColumnModel().getColumnCount();
             }
             curCol--;     
         }
+        
+        
         ArraySearcher as = new ArraySearcher();
         ASearchableCell cell = as.tableContains(str, table, table.getModel(), curRow, curCol, getMatchCaseFlag(),isSearchDown, getWrapSearchFlag() );
         boolean found = cell.isFound();
