@@ -215,6 +215,45 @@ public final class UIHelper
 
     }
 
+    
+    /**
+     * @param frame to be positioned
+     * 
+     * positions frame on screen relative to position of TOPFRAME.
+     * Sets frame.alwaysOnTop to true if TOPFRAME is maximized.
+     */
+    public static void positionFrameRelativeToTopFrame(final JFrame frame)
+    {
+        // not sure of safest surest way to get main window???
+        JFrame topFrame = (JFrame) UIRegistry.get(UIRegistry.TOPFRAME);
+
+        //for now this just sets the top of frame to the top of topFrame
+        //if there is room on the left side of topFrame, frame is set so it's right edge is next to topFrame's left edge.
+        //otherwise, if frame will fit, frame's left edge is aligned with topFrame's right edge.
+        //If it won't fit then frame's right edge is aligned with right of edge of screen.
+        if (topFrame != null)
+        {
+            int x = 0;
+            int y = topFrame.getY();
+            Rectangle screenRect = topFrame.getGraphicsConfiguration().getBounds();
+            Rectangle leftRect = new Rectangle(0, 0, topFrame.getX(), screenRect.height);
+            Rectangle rightRect = new Rectangle(topFrame.getX() + topFrame.getWidth(), 0,
+                    screenRect.width, screenRect.height);
+            if (leftRect.width >= frame.getWidth())
+            {
+                x = leftRect.width - frame.getWidth();
+            }
+            else
+            {
+                x = rightRect.x;
+            }
+            frame.setBounds(x, y, frame.getWidth(), frame.getHeight());
+            
+            //i guess...
+            frame.setAlwaysOnTop(topFrame.getExtendedState() == Frame.MAXIMIZED_BOTH || topFrame.getExtendedState() == Frame.MAXIMIZED_VERT || topFrame.getExtendedState() == Frame.MAXIMIZED_HORIZ);
+        }
+    }
+   
     /**
      * Returns a JGoodies column or row definition string that has 'length' number of duplicated formats
      * @param def the col/row def to be duplicated
