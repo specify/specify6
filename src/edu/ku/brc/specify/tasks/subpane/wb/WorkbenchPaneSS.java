@@ -1070,7 +1070,8 @@ public class WorkbenchPaneSS extends BaseSubPane
 
         //for now this just sets the top of frame to the top of topFrame
         //if there is room on the left side of topFrame, frame is set so it's right edge is next to topFrame's left edge.
-        //otherwise, frame's left edge is aligned with topFrame's right edge.
+        //otherwise, if frame will fit, frame's left edge is aligned with topFrame's right edge.
+        //If it won't fit then frame's right edge is aligned with right of edge of screen.
         if (topFrame != null)
         {
             int x = 0;
