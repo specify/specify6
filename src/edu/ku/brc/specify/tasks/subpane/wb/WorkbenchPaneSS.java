@@ -914,8 +914,6 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     public void gridColumnsUpdated()
     {
-        boolean imageColWasVisible = imageColExt.isVisible();
-
         model.fireTableStructureChanged();
         
         // the above call results in new TableColumnExt objects for each column, it appears
@@ -925,10 +923,14 @@ public class WorkbenchPaneSS extends BaseSubPane
         imageColExt = spreadSheet.getColumnExt(imageColIndex);
         imageColExt.setVisible(false);
         
-        if (imageColWasVisible)
+        // show the column if the image frame is showing
+        if (imageFrame.isVisible())
         {
-            toggleImageFrameVisible();
+            imageColExt.setVisible(true);
         }
+
+        int currentRecord = resultsetController.getCurrentIndex();
+        spreadSheet.setRowSelectionInterval(currentRecord, currentRecord);
     }
     
     /**
