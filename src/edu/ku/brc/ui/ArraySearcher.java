@@ -148,7 +148,7 @@ public class ArraySearcher
 			{
 				if (theTable.getValueAt(i, j) != null)
 				{
-					log.debug("tableContains() - looking at val i["+i+"] j["+j+"]");
+					//log.debug("tableContains() - looking at val i["+i+"] j["+j+"]");
 					if ((!isFirstSearch) && (initialRow == i) && (initialCol == j))
 					{
 						return new ASearchableCell(-1, -1, false);
