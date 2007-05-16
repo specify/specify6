@@ -68,7 +68,7 @@ public class BioGeomancerResultsChooser extends CustomDialog
             hasBeenShown = true;
             createUI();
 
-            HelpMgr.registerComponent(this.helpBtn, "biogeomancer");
+            HelpMgr.registerComponent(this.helpBtn, "WorkbenchSpecialTools");
 
             showNextRecord();
 
