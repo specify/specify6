@@ -36,6 +36,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -144,12 +145,23 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog implements ActionLis
     {
         super.createUI();
         
-        int rows = desc != null ? 3 : 2;
-        rows += addSelectAll ? 2 : 0;
+        StringBuffer rowDef = new StringBuffer();
+        if (desc != null)
+        {
+            rowDef.append("p,2px,");
+        }
+        
+        rowDef.append("f:p:g");
+        
+        if (addSelectAll)
+        {
+            rowDef.append(",2px,p");
+        }
+        rowDef.append(",2px,p");
         
         int y    = 1;
         CellConstraints cc         = new CellConstraints();
-        PanelBuilder    panelBlder = new PanelBuilder(new FormLayout("f:p:g", UIHelper.createDuplicateJGoodiesDef("p", "2px", rows)));
+        PanelBuilder    panelBlder = new PanelBuilder(new FormLayout("f:p:g", rowDef.toString()));
         JPanel          panel      = panelBlder.getPanel();
         panel.setBorder(BorderFactory.createEmptyBorder(4,4,4,2));
         if (desc != null)
@@ -212,11 +224,11 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog implements ActionLis
 
         if (useScrollPane)
         {
-            JScrollPane listScroller = new JScrollPane(listPanel);
-            Dimension   psize        = listScroller.getViewport().getPreferredSize();
-            psize.width = size.width + 15; // add 15 for scrollbar
-            listScroller.getViewport().setSize(psize);
-            listScroller.getViewport().setPreferredSize(psize);
+            JScrollPane listScroller = new JScrollPane(listPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+            //Dimension   psize        = listScroller.getViewport().getPreferredSize();
+            //psize.width = size.width + 15; // add 15 for scrollbar
+            //listScroller.getViewport().setSize(psize);
+            //listScroller.getViewport().setPreferredSize(psize);
             panelBlder.add(listScroller, cc.xy(1, y)); y += 2;
             
         } else
@@ -235,7 +247,6 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog implements ActionLis
             JPanel btnBar = ButtonBarFactory.buildOKCancelBar(selectAll, delSelectAll);
             btnBar.setBorder(BorderFactory.createEmptyBorder(2,0,0,2));
             panelBlder.add(btnBar, cc.xy(1, y)); y += 2;
-            //panelBlder.addSeparator("", cc.xy(1, y)); y += 2;
         }
         
         mainPanel.add(panel, BorderLayout.CENTER);
