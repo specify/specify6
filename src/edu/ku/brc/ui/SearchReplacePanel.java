@@ -645,7 +645,7 @@ public class SearchReplacePanel extends JPanel
         {
             if (curRow == -1)
 			{
-				curRow++;
+				curRow = table.getRowCount()-1;
 			}
             if (curCol <= 0 ) 
             {
