@@ -77,7 +77,7 @@ public class ArraySearcher
           {
               if (theTable.getValueAt(i,j) != null)
               {
-                  if ((!isFirstSearch) && (initialRow == i) &&  (initialCol == j))
+                  if ((!isFirstSearch) && (initialRow >= i) &&  (initialCol >= j))
                   {
                       found = false;
                       return new ASearchableCell(-1, -1, found);
