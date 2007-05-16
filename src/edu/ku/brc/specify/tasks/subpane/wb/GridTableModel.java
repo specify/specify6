@@ -7,6 +7,7 @@
 package edu.ku.brc.specify.tasks.subpane.wb;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
@@ -39,8 +40,8 @@ public class GridTableModel extends SpreadSheetModel
     protected ImageIcon          blankIcon = IconManager.getIcon("Blank", IconManager.IconSize.Std16);
     protected ImageIcon          imageIcon = IconManager.getIcon("CardImage", IconManager.IconSize.Std16);
     
-    protected Vector<WorkbenchTemplateMappingItem> headers = new Vector<WorkbenchTemplateMappingItem>();
-    protected WorkbenchTemplateMappingItem imageMappingItem = null;
+    protected Vector<WorkbenchTemplateMappingItem> headers          = new Vector<WorkbenchTemplateMappingItem>();
+    protected WorkbenchTemplateMappingItem         imageMappingItem = null;
 
     public GridTableModel(final Workbench    workbench, 
                           final Vector<WorkbenchTemplateMappingItem> headers)
@@ -57,6 +58,16 @@ public class GridTableModel extends SpreadSheetModel
     public void setWorkbench(final Workbench workbench)
     {
         this.workbench = workbench;
+        
+        // Make the new Header List
+        headers.clear();
+        headers.addAll(workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems());
+        Collections.sort(headers);
+        
+        if (imageMappingItem != null)
+        {
+            headers.add(imageMappingItem);
+        }
     }
     
     /**
