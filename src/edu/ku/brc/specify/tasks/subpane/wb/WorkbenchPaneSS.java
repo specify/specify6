@@ -1152,6 +1152,15 @@ public class WorkbenchPaneSS extends BaseSubPane
 
             showCardImageForSelectedRow();
             
+            // Without this code below the Image Column doesn't get selected
+            // when toggling 
+            if (currentPanelType == PanelType.Spreadsheet && currentRow != -1)
+            {
+                spreadSheet.setRowSelectionInterval(currentRow, currentRow);
+                spreadSheet.setColumnSelectionInterval(0, spreadSheet.getColumnCount()-1);
+                spreadSheet.scrollToRow(Math.min(currentRow+4, model.getRowCount()));
+            }
+            
             TableColumn column = spreadSheet.getTableHeader().getColumnModel().getColumn(spreadSheet.getTableHeader().getColumnModel().getColumnCount()-1);
             column.setCellRenderer(new ImageRenderer());
             spreadSheet.repaint();
