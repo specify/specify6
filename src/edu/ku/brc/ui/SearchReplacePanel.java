@@ -122,7 +122,7 @@ public class SearchReplacePanel extends JPanel
         {
             public void valueChanged(ListSelectionEvent e)
             {
-                log.debug("table selectoin");
+               // log.debug("table selectoin");
                 nextButton.setEnabled(true);
                 previousButton.setEnabled(true);
                 clearStatusLabel();
@@ -424,7 +424,7 @@ public class SearchReplacePanel extends JPanel
      */
     private void clearStatusLabel()
     {
-        log.debug("clearing status lable");
+        //log.debug("clearing status lable");
         statusInfo.setHorizontalTextPosition(JLabel.RIGHT);
         statusInfo.setIcon(null);
         statusInfo.setText("");
@@ -574,8 +574,15 @@ public class SearchReplacePanel extends JPanel
                 curCol = -1;
             }
             curCol++;
+//            if((curRow==(table.getRowCount()-1))&&(curCol==(table.getColumnCount()-1)))
+//            {
+//            	break;
+//            }
+            log.debug("replace all");
+            as = new ArraySearcher();
             cell = as.tableContains(str, table, table.getModel(), curRow, curCol,getMatchCaseFlag(), isSearchDown, getWrapSearchFlag());
             found = cell.isFound();
+
         }  
         nextButton.setEnabled(false);
 		previousButton.setEnabled(false);
@@ -622,7 +629,10 @@ public class SearchReplacePanel extends JPanel
         int curCol = table.getSelectedColumn();
 
         if (isSearchDown){
-            if (curRow == -1) curRow++;
+            if (curRow == -1) 
+            {
+            	curRow++;
+            }
             if (curCol >= (table.getColumnModel().getColumnCount()-1)) 
             {
                 curRow++;
@@ -633,7 +643,10 @@ public class SearchReplacePanel extends JPanel
         //is previous clicked, reverse direction
         else
         {
-            if (curRow == -1) curRow++;
+            if (curRow == -1)
+			{
+				curRow++;
+			}
             if (curCol <= 0 ) 
             {
                 curRow--;
