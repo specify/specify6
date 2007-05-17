@@ -7,8 +7,8 @@
 <h2>Form Editing</h2>
 <hr>
 <font size="-2"><br></font>
-<p> Form Editing enables the Data Set rows to be  displayed and edited row by row (record by record). Each column heading in the Data Set is displayed as a label with an accompanying UI control (text field, text area, or check box).</p>
-<p>Values within a Data Set are easily manipulated using the icons in the Workspace Item Bar:</p>
+<p> Form Editing enables the Data Set rows to be  displayed and edited row by row (record by record). Each column heading  has an accompanying User Interface (UI) control (text field, text area, or check box) for entering data. </p>
+<p>Values within a Data Set are easily manipulated using the icons in the Workspace Item Bar:</p><br>
 
 <table border="1">
   <tr>
@@ -30,7 +30,7 @@
   </tr>
   <tr>
     <td><img src="../images/AddNewRecord16x16.png" width="16" height="16"></td>
-    <td>Add a record and display it </td>
+    <td>Add a record </td>
   </tr>
   <tr>
     <td><img src="../images/RemoveRecord16x16.png" width="16" height="16"></td>
@@ -39,7 +39,7 @@
   <tr>
     <td>Edit Form Properties </td>
     <td><img src="../images/EditProperties16x16.png" width="16" height="16"></td>
-    <td>Allows the columns to be resized, moved and renamed. See 'Form Control Properties' below. </td>
+    <td>Allows the columns to be resized, moved and renamed. See <a href="#formcontrol">Edit Form Properties</a></td>
   </tr>
   <tr>
     <td>Image Window </td>
@@ -57,11 +57,11 @@
     <td>Displays the Data Set in a  grid view (resembling a spreadsheet). Data Sets always open in this view. </td>
   </tr>
 </table>
-<p>The Label and UI controls can be moved and repositioned on the form with a left mouse button click and drag. </p>
-<p>UI controls can be activated by clicking in them, or using the tab key. The tab order is automatically adjusted depending on the placement of the controls. The tab order is top - down, left to right. </p>
+<p>The column headings and UI controls can be moved and repositioned on the form with a click and drag. </p>
+<p>UI controls can be activated by clicking in them, or using the tab key to navigate between them. The tab order is top left to bottom right by default. </p>
 <p>&nbsp;</p>
-<h3><u>Edit Form  Properties</u></h3>
-<p>In addition to dragging and dropping the controls, several properties that also be manually updated. Activate the Label or UI control,  then click the <img src="../images/EditProperties16x16.png" width="16" height="16"> (edit properties) button. The following dialog will appear: </p>
+<h3><a name="formcontrol"></a><u>Edit Form  Properties</u></h3>
+<p>In addition to dragging and dropping the controls, several properties can also be manually updated. Activate either the column heading or UI control,  then click the <img src="../images/EditProperties16x16.png" width="16" height="16"> (edit properties) button. The following dialog will appear: </p>
 <p align="center"><img src="../images/formproperties.png" alt="form properties"></p>
 <p align="center"><span class="imgcaption">Edit Form Properties</span></p>
 <p>&nbsp;</p>
@@ -69,19 +69,19 @@
 <table width="100%" border="1">
   <tr>
     <td>X</td>
-    <td>Refers to  the X coordinateofr text area. </td>
+    <td>Sets   the X coordinate of UI control. </td>
   </tr>
   <tr>
     <td>Y</td>
-    <td>Refers to the Y coordinate of text area. </td>
+    <td>Sets the Y coordinate of UI control. </td>
   </tr>
   <tr>
     <td>Label</td>
-    <td>Refers to the column heading. This is the only place in the WorkBench that allows a Column heading to be changed. </td>
+    <td>Sets the column heading. This will change the original column heading in the Data Set Mapping. </td>
   </tr>
   <tr>
     <td>Number of Rows </td>
-    <td>Lists the number of rows the text field will display. </td>
+    <td>Lists the number of rows the UI control will display. </td>
   </tr>
   <tr>
     <td>Field Type </td>
