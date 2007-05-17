@@ -911,6 +911,10 @@
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             <desc><![CDATA[The WorkbenchTemplate form]]></desc>
+            <!-- <enableRules>
+                <rule id="AddItem"><![CDATA[name.isNotEmpty() && name.length < 64]]></rule>
+            </enableRules>
+            -->
             <columnDef>p,2px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <rows>

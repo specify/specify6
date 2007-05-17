@@ -443,30 +443,33 @@ public class WorkbenchTask extends BaseTask
         if (roc != null)
         {
             Workbench workbench = loadWorkbench((RecordSet)((CommandAction)roc.getData()).getProperty("workbench"));
-            if (workbench != null && askUserForInfo("Workbench", getResourceString("WB_DATASET_INFO"), workbench))
+            if (workbench != null)
             {
-                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                try
+                if (fillInWorkbenchNameAndAttrs(workbench, workbench.getName(), true))
                 {
+                    DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                    try
+                    {
+        
+                        session.beginTransaction();
+                        Workbench mergedWB = (Workbench)session.merge(workbench);
+                        mergedWB.getWorkbenchTemplate().setName(mergedWB.getName());
+                        session.saveOrUpdate(mergedWB);
+                        session.commit();
+                        session.flush();
+                        
+                        roc.setLabelText(workbench.getName());
     
-                    session.beginTransaction();
-                    Workbench mergedWB = (Workbench)session.merge(workbench);
-                    mergedWB.getWorkbenchTemplate().setName(mergedWB.getName());
-                    session.saveOrUpdate(mergedWB);
-                    session.commit();
-                    session.flush();
-                    
-                    roc.setLabelText(workbench.getName());
-
-                    NavBox.refresh((NavBoxItemIFace)roc);
-                    
-                } catch (Exception ex)
-                {
-                    log.error(ex);
-                    
-                } finally
-                {
-                    session.close();    
+                        NavBox.refresh((NavBoxItemIFace)roc);
+                        
+                    } catch (Exception ex)
+                    {
+                        log.error(ex);
+                        
+                    } finally
+                    {
+                        session.close();    
+                    }
                 }
             }
         }
@@ -1326,7 +1329,7 @@ public class WorkbenchTask extends BaseTask
             workbench.setWorkbenchTemplate(workbenchTemplate);
             workbenchTemplate.getWorkbenches().add(workbench);
             
-            if (fillInWorkbenchNameAndAttrs(workbench, wbName))
+            if (fillInWorkbenchNameAndAttrs(workbench, wbName, false))
             {
                 workbenchTemplate.setName(workbench.getName());
                 return workbench;
@@ -1341,8 +1344,9 @@ public class WorkbenchTask extends BaseTask
      * @param name
      * @return
      */
-    protected boolean fillInWorkbenchNameAndAttrs(final Workbench workbench, final String wbName)
+    protected boolean fillInWorkbenchNameAndAttrs(final Workbench workbench, final String wbName, final boolean skipFirstCheck)
     {
+        boolean skip = skipFirstCheck;
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         
         try
@@ -1360,14 +1364,15 @@ public class WorkbenchTask extends BaseTask
                 } else
                 {
                     foundWB = session.getData(Workbench.class, "name", newWorkbenchName, DataProviderSessionIFace.CompareType.Equals);
-                    if (foundWB != null)
+                    if (foundWB != null && !skip)
                     {
                         UIRegistry.getStatusBar().setErrorMessage(String.format(getResourceString("WB_DATASET_EXISTS"), new Object[] { newWorkbenchName}));
                         workbench.setName("");
                     }
+                    skip = false;
                 }
                 
-                if (foundWB != null || alwaysAsk)
+                if ((foundWB != null || newWorkbenchName.length() > 64) || alwaysAsk)
                 {
                     alwaysAsk = false;
                     
@@ -1375,8 +1380,12 @@ public class WorkbenchTask extends BaseTask
                     if (askUserForInfo("Workbench", getResourceString("WB_DATASET_INFO"), workbench))
                     {
                         newWorkbenchName = workbench.getName();
+                        // This Part here needfs to be moved into an <enablerule/>
+                        if (StringUtils.isNotEmpty(newWorkbenchName) && newWorkbenchName.length() > 64)
+                        {
+                            UIRegistry.getStatusBar().setErrorMessage(getResourceString("WB_NAME_TOO_LONG"));
+                        }
                         foundWB = workbench;
-                        
                     } else
                     {
                         UIRegistry.getStatusBar().setText("");
