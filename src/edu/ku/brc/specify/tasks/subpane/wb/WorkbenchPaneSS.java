@@ -699,7 +699,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             if (spreadSheet.getCellEditor() != null)
             {
-                int index = spreadSheet.getSelectedRow();  // XXX JOSH?
+                int index = spreadSheet.getSelectedRow();
                 spreadSheet.getCellEditor().stopCellEditing();
                 spreadSheet.setRowSelectionInterval(index, index);
             }
