@@ -453,35 +453,35 @@
     <field column="YesNo2 (Stratigraphy)" name="stratigraphyYesNo2" type="boolean"/>
   </table>
   <table classname="edu.ku.brc.specify.datamodel.Taxon" table="taxon" tableid="4">
-    <field column="Kingdom1" name="Kingdom" type="java.lang.String" length="64"/>
-    <field column="Subkingdom1" name="Subkingdom" type="java.lang.String" length="64"/>
-    <field column="Division1" name="Division" type="java.lang.String" length="64"/>
-    <field column="Phylum1" name="Phylum" type="java.lang.String" length="64"/>
-    <field column="Subphylum1" name="Subphylum" type="java.lang.String" length="64"/>
-    <field column="Superclass1" name="Superclass" type="java.lang.String" length="64"/>
-    <field column="Class1" name="Class" type="java.lang.String" length="64"/>
-    <field column="Subclass1" name="Subclass" type="java.lang.String" length="64"/>
-    <field column="Infraclass1" name="Infraclass" type="java.lang.String" length="64"/>
-    <field column="Superorder1" name="Superorder" type="java.lang.String" length="64"/>
-    <field column="Order1" name="Order" type="java.lang.String" length="64"/>
-    <field column="Suborder1" name="Suborder" type="java.lang.String" length="64"/>
-    <field column="Infraorder1" name="Infraorder" type="java.lang.String" length="64"/>
-    <field column="Superfamily1" name="Superfamily" type="java.lang.String" length="64"/>
-    <field column="Family1" name="Family" type="java.lang.String" length="64"/>
-    <field column="Subfamily1" name="Subfamily" type="java.lang.String" length="64"/>
+    <field column="Kingdom" name="Kingdom" type="java.lang.String" length="64"/>
+    <field column="Subkingdom" name="Subkingdom" type="java.lang.String" length="64"/>
+    <field column="Division" name="Division" type="java.lang.String" length="64"/>
+    <field column="Phylum" name="Phylum" type="java.lang.String" length="64"/>
+    <field column="Subphylum" name="Subphylum" type="java.lang.String" length="64"/>
+    <field column="Superclass" name="Superclass" type="java.lang.String" length="64"/>
+    <field column="Class" name="Class" type="java.lang.String" length="64"/>
+    <field column="Subclass" name="Subclass" type="java.lang.String" length="64"/>
+    <field column="Infraclass" name="Infraclass" type="java.lang.String" length="64"/>
+    <field column="Superorder" name="Superorder" type="java.lang.String" length="64"/>
+    <field column="Order" name="Order" type="java.lang.String" length="64"/>
+    <field column="Suborder" name="Suborder" type="java.lang.String" length="64"/>
+    <field column="Infraorder" name="Infraorder" type="java.lang.String" length="64"/>
+    <field column="Superfamily" name="Superfamily" type="java.lang.String" length="64"/>
+    <field column="Family" name="Family" type="java.lang.String" length="64"/>
+    <field column="Subfamily" name="Subfamily" type="java.lang.String" length="64"/>
     <!--
-    <field column="Tribe1" name="Tribe" type="java.lang.String" length="64"/>
-    <field column="Subtribe1" name="Subtribe" type="java.lang.String" length="64"/>
-    <field column="Genus1" name="Genus" type="java.lang.String" length="64"/>
-    <field column="Subgenus1" name="Subgenus" type="java.lang.String" length="64"/>
-    <field column="Section1" name="Section" type="java.lang.String" length="64"/>
-    <field column="Subsection1" name="Subsection" type="java.lang.String" length="64"/>
-    <field column="Species1" name="Species" type="java.lang.String" length="64"/>
-    <field column="Subspecies1" name="Subspecies" type="java.lang.String" length="64"/>
-    <field column="Variety1" name="Variety" type="java.lang.String" length="64"/>
-    <field column="Subvariety1" name="Subvariety" type="java.lang.String" length="64"/>
-    <field column="Forma1" name="Forma" type="java.lang.String" length="64"/>
-    <field column="Subforma1" name="Subforma" type="java.lang.String" length="64"/>
+    <field column="Tribe" name="Tribe" type="java.lang.String" length="64"/>
+    <field column="Subtribe" name="Subtribe" type="java.lang.String" length="64"/>
+    <field column="Genus" name="Genus" type="java.lang.String" length="64"/>
+    <field column="Subgenus" name="Subgenus" type="java.lang.String" length="64"/>
+    <field column="Section" name="Section" type="java.lang.String" length="64"/>
+    <field column="Subsection" name="Subsection" type="java.lang.String" length="64"/>
+    <field column="Species" name="Species" type="java.lang.String" length="64"/>
+    <field column="Subspecies" name="Subspecies" type="java.lang.String" length="64"/>
+    <field column="Variety" name="Variety" type="java.lang.String" length="64"/>
+    <field column="Subvariety" name="Subvariety" type="java.lang.String" length="64"/>
+    <field column="Forma" name="Forma" type="java.lang.String" length="64"/>
+    <field column="Subforma" name="Subforma" type="java.lang.String" length="64"/>
     -->
   </table>
 </database>
