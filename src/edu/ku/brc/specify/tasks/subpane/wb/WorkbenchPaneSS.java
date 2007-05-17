@@ -350,7 +350,10 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             public void actionPerformed(ActionEvent ae)
             {
-                addRowAfter();
+                if (workbench.getWorkbenchRows().size() < WorkbenchTask.MAX_ROWS)
+                {
+                    addRowAfter();
+                }
             }
         });
         addRowsBtn = createIconBtn("AddRec", "WB_ADD_ROW", addAction);
