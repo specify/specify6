@@ -528,6 +528,7 @@ public class SearchReplacePanel extends JPanel
         int curRow = 0;
         int curCol = 0;
 
+        isSearchDown = true;
 
         ArraySearcher as = new ArraySearcher();
         ASearchableCell cell = as.tableContains(str, table, table.getModel(), curRow, curCol,getMatchCaseFlag(), isSearchDown, getWrapSearchFlag());
