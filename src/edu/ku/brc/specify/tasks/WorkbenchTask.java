@@ -811,11 +811,8 @@ public class WorkbenchTask extends BaseTask
         } catch (Exception ex)
         {
             log.error(ex);
-<<<<<<< .mine
             ex.printStackTrace();
-=======
-            //ex.printStackTrace();
->>>>>>> .r2147
+
             
         } finally 
         {
