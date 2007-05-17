@@ -1372,7 +1372,7 @@ public class WorkbenchTask extends BaseTask
                     skip = false;
                 }
                 
-                if ((foundWB != null || newWorkbenchName.length() > 64) || alwaysAsk)
+                if ((foundWB != null || (StringUtils.isNotEmpty(newWorkbenchName) && newWorkbenchName.length() > 64)) || alwaysAsk)
                 {
                     alwaysAsk = false;
                     
