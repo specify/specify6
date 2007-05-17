@@ -772,7 +772,7 @@ public class WorkbenchTask extends BaseTask
                         ImportColumnInfo             fileItem = colInfo.get(i);
                         // Check to see if there is an exact match by name
                         
-                        if (wbItem.getImportedColName()!=null && fileItem.getColName()!=null &&(wbItem.getImportedColName().equalsIgnoreCase(fileItem.getColName())))
+                        if ((wbItem.getImportedColName()!= null) && (fileItem.getColName()!= null) && (wbItem.getImportedColName().equalsIgnoreCase(fileItem.getColName())))
                         {
                             ImportColumnInfo.ColumnType type = ImportColumnInfo.getType(getDataType(wbItem));
                             if (type == ImportColumnInfo.ColumnType.Date)
@@ -809,7 +809,7 @@ public class WorkbenchTask extends BaseTask
         } catch (Exception ex)
         {
             log.error(ex);
-            ex.printStackTrace();
+            //ex.printStackTrace();
             
         } finally 
         {
