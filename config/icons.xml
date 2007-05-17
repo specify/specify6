@@ -70,7 +70,7 @@
     <icon name="Reports16"     file="Reports16x16.png" sizes="16"/>
     <icon name="DataSet"       file="DataSet32x32.png" sizes="all"/>
     <icon name="DataSet16"     file="DataSet16x16.png" sizes="16"/>
-    <icon name="Trash"         file="TrashEmpty32x32.png" sizes="all"/>
+    <icon name="Trash"         file="trash_named.png" sizes="NonStd"/>
     <icon name="TrashFull"     file="TrashFull32x32.png" sizes="all"/>
     <icon name="NewDataSet"    file="NewDataSet16x16.png" sizes="16"/>
     <icon name="Labels"        file="Label32x32.png" sizes="all"/>
