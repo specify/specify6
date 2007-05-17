@@ -374,7 +374,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
             {
                 setRowSelectionInterval(rowInx, rowInx);
             }
-            setColumnSelectionInterval(0, model.getColumnCount()-1);
+            setColumnSelectionInterval(0, getColumnCount()-1);
         }
     }
 
