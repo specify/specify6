@@ -923,7 +923,7 @@ public class DataImportDialog extends JDialog implements ActionListener
         		//+"<br>"
         		+"<br>The file you tried to import had more than that."
         		//+"<br>"
-        		+"<br><br>Please reduce the record account and try again.<br>"
+        		+"<br><br>Please reduce the record account and try again.<br><br>"
         		+"</p></html>"), cc.xy(1,1)); //TODO i8n
         builder.setBorder(BorderFactory.createEmptyBorder(4, 4, 0, 4));
         CustomDialog maxRowExceededDlg = new CustomDialog((Frame)UIRegistry.get(UIRegistry.FRAME), getResourceString("WB_MAXROWS") , true, CustomDialog.OK_BTN, builder.getPanel());
