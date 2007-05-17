@@ -229,6 +229,7 @@ public class WorkbenchTask extends BaseTask
             } catch (Exception ex)
             {
                 log.error(ex);
+                ex.printStackTrace();
                 
             } finally
             {
@@ -771,8 +772,9 @@ public class WorkbenchTask extends BaseTask
                         WorkbenchTemplateMappingItem wbItem   = items.get(i);
                         ImportColumnInfo             fileItem = colInfo.get(i);
                         // Check to see if there is an exact match by name
-                        
-                        if ((wbItem.getImportedColName()!= null) && (fileItem.getColName()!= null) && (wbItem.getImportedColName().equalsIgnoreCase(fileItem.getColName())))
+                        if (wbItem != null && StringUtils.isNotEmpty(wbItem.getImportedColName()) &&
+                            fileItem != null && StringUtils.isNotEmpty(fileItem.getColName()) &&
+                            wbItem.getImportedColName().equalsIgnoreCase(fileItem.getColName()))
                         {
                             ImportColumnInfo.ColumnType type = ImportColumnInfo.getType(getDataType(wbItem));
                             if (type == ImportColumnInfo.ColumnType.Date)
@@ -809,7 +811,11 @@ public class WorkbenchTask extends BaseTask
         } catch (Exception ex)
         {
             log.error(ex);
+<<<<<<< .mine
+            ex.printStackTrace();
+=======
             //ex.printStackTrace();
+>>>>>>> .r2147
             
         } finally 
         {
