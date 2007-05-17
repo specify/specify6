@@ -163,7 +163,10 @@ public class UIRegistry
                     {
                         permanentFocusOwner = focusManager.getFocusOwner();
                     }
-                    //System.out.println(propName+"  "+focusManager.getFocusOwner()+" "+focusManager.getFocusedWindow());
+                    //System.out.println(propName+"  "+
+                    //        ( focusManager.getFocusOwner() != null ? focusManager.getFocusOwner().hashCode():"")+
+                    //        "  FO: "+focusManager.getFocusOwner()+
+                    //        " "+focusManager.getFocusedWindow()+" perm: "+permanentFocusOwner);
                     if (("focusOwner".equals(propName)) && undoAction != null && redoAction != null) 
                     { 
                         if (focusManager.getFocusOwner() instanceof UndoableTextIFace)

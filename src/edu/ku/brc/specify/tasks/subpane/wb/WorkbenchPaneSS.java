@@ -213,18 +213,18 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     public WorkbenchPaneSS(final String    name,
                            final Taskable  task,
-                           final Workbench workbench,
+                           final Workbench workbenchArg,
                            final boolean   showImageView)
     {
         super(name, task);
         
         removeAll();
         
-        if (workbench == null)
+        if (workbenchArg == null)
         {
             return;
         }
-        this.workbench = workbench;
+        this.workbench = workbenchArg;
         
         headers.addAll(workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems());
         Collections.sort(headers);
@@ -250,7 +250,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         findPanel = spreadSheet.getFindReplacePanel();
         UIRegistry.getLaunchFindReplaceAction().setSearchReplacePanel(findPanel);
-    
+        
         spreadSheet.setShowGrid(true);
         spreadSheet.getTableHeader().setReorderingAllowed(false); // Turn Off column dragging
 
@@ -657,16 +657,18 @@ public class WorkbenchPaneSS extends BaseSubPane
         UsageTracker.incrUsageCount("WB.EditWBRowImage");
         
         // figure out what row is selected
-        int firstRowSelected = spreadSheet.getSelectedRow();
-        firstRowSelected = spreadSheet.convertRowIndexToModel(firstRowSelected);
-        WorkbenchRow row = workbench.getWorkbenchRowsAsList().get(firstRowSelected);
-        
-        // then load a new image for it
-        boolean loaded = loadNewImage(row);
-        if (loaded)
+        int selectedIndex = getCurrentIndex();
+        if (selectedIndex > -1)
         {
-            showCardImageForSelectedRow();
-            setChanged(true);
+            WorkbenchRow row = workbench.getWorkbenchRowsAsList().get(selectedIndex);
+            
+            // then load a new image for it
+            boolean loaded = loadNewImage(row);
+            if (loaded)
+            {
+                showCardImageForSelectedRow();
+                setChanged(true);
+            }
         }
     }
     
@@ -676,13 +678,15 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected void clearRowImage()
     {
         // figure out what row is selected
-        int firstRowSelected = spreadSheet.getSelectedRow();
-        firstRowSelected = spreadSheet.convertRowIndexToModel(firstRowSelected);
-        WorkbenchRow row = workbench.getWorkbenchRowsAsList().get(firstRowSelected);
-        row.setCardImage((File)null);
-        imageFrame.clearImage();
-        //showCardImageForSelectedRow();
-        spreadSheet.repaint();  
+        int selectedIndex = getCurrentIndex();
+        if (selectedIndex > -1)
+        {
+            WorkbenchRow row = workbench.getWorkbenchRowsAsList().get(selectedIndex);
+            row.setCardImage((File)null);
+            imageFrame.clearImage();
+            //showCardImageForSelectedRow();
+            spreadSheet.repaint();
+        }
     }
     
     /**
@@ -694,7 +698,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             if (spreadSheet.getCellEditor() != null)
             {
-                int index = spreadSheet.getSelectedRow();
+                int index = spreadSheet.getSelectedRow();  // XXX JOSH?
                 spreadSheet.getCellEditor().stopCellEditing();
                 spreadSheet.setRowSelectionInterval(index, index);
             }
@@ -858,14 +862,14 @@ public class WorkbenchPaneSS extends BaseSubPane
         } else
         {
             rows = new int[1];
-            rows[0] = getCurrentIndexFromFormOrSS();
+            rows[0] = resultsetController.getCurrentIndex();
         }
         
         int firstRow = rows[0];
 
-        model.deleteRows(rows);
+        resultsetController.setLength(model.getRowCount() - rows.length);
 
-        resultsetController.setLength(model.getRowCount());
+        model.deleteRows(rows);
         
         int rowCount = workbench.getWorkbenchRowsAsList().size();
         
@@ -938,8 +942,8 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected void showCardImageForSelectedRow()
     {
-        int firstRowSelected = spreadSheet.getSelectedRow();
-        if (firstRowSelected == -1)
+        int selectedIndex = getCurrentIndex();
+        if (selectedIndex == -1)
         {
             // no selection
             log.debug("No selection, so removing the card image");
@@ -948,11 +952,9 @@ public class WorkbenchPaneSS extends BaseSubPane
             imageFrame.setStatusBarText(null);
             return;
         }
-        // else
-        firstRowSelected = spreadSheet.convertRowIndexToModel(firstRowSelected);
 
-        log.debug("Showing image for row " + firstRowSelected);
-        WorkbenchRow row = workbench.getWorkbenchRowsAsList().get(firstRowSelected);
+        log.debug("Showing image for row " + selectedIndex);
+        WorkbenchRow row = workbench.getWorkbenchRowsAsList().get(selectedIndex);
         imageFrame.setRow(row);
 
         // XXX Change later - Assuming first Row
@@ -960,7 +962,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         //String firstColCellData = (firstColItem != null) ? firstColItem.getCellData() : "";
         String fullFilePath = row.getCardImageFullPath();
         String filename = FilenameUtils.getName(fullFilePath);
-        imageFrame.setTitle("Row " + (spreadSheet.getSelectedRow()+1) + ((filename != null) ? ": " + filename : ""));
+        imageFrame.setTitle("Row " + (selectedIndex+1) + ((filename != null) ? ": " + filename : ""));
         imageFrame.setStatusBarText(fullFilePath);
     }
     
@@ -1005,9 +1007,31 @@ public class WorkbenchPaneSS extends BaseSubPane
      * Returns the current selected index from a spreadsheet or the form.
      * @return the current selected index from a spreadsheet or the form.
      */
+    protected int getCurrentIndex()
+    {
+        int selectedInx;
+        if (currentPanelType == PanelType.Spreadsheet)
+        {
+            selectedInx = spreadSheet.getSelectedRow();
+            if (selectedInx > -1)
+            {
+                selectedInx = spreadSheet.convertRowIndexToModel(selectedInx);
+            }
+        } else
+        {
+            selectedInx = resultsetController.getCurrentIndex();
+        }
+        return selectedInx;
+    }
+    
+    /**
+     * Returns the current selected index from a spreadsheet or the form.
+     * @return the current selected index from a spreadsheet or the form.
+     */
     protected int getCurrentIndexFromFormOrSS()
     {
-        int selectedInx = currentPanelType == PanelType.Spreadsheet ? spreadSheet.getSelectedRow() : resultsetController.getCurrentIndex();
+        int selectedInx = getCurrentIndex();
+        
         if (selectedInx == -1)
         {
             return 0;
@@ -2396,6 +2420,8 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         if (show)
         {
+            UIRegistry.getLaunchFindReplaceAction().setSearchReplacePanel(findPanel);
+            
             if (imageFrameWasShowing)
             {
                 toggleImageFrameVisible();
@@ -2409,14 +2435,6 @@ public class WorkbenchPaneSS extends BaseSubPane
                         f.requestFocus();
                     }
                 });
-            }
-            
-            if ( currentPanelType == PanelType.Spreadsheet)
-            {
-                spreadSheet.requestFocus();
-            } else
-            {
-                
             }
         }
         else
