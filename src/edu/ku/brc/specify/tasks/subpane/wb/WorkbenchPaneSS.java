@@ -1128,6 +1128,11 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     public void toggleImageFrameVisible()
     {
+        if (spreadSheet.getCellEditor() != null)
+        {
+            spreadSheet.getCellEditor().stopCellEditing();
+        }
+
         // We simply have to toggle the visibility
         // and add or remove the ListSelectionListener (to avoid loading images when not visible)
         boolean isVisible = imageFrame.isVisible();
