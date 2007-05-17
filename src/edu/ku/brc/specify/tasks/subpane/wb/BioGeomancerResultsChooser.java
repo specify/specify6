@@ -45,7 +45,7 @@ public class BioGeomancerResultsChooser extends CustomDialog
         
         this.cancelLabel = getResourceString("Skip");
         this.applyLabel  = getResourceString("Accept");
-        this.okLabel     = getResourceString("Dismiss");
+        this.okLabel     = getResourceString("Quit");
         
         rowIndex = -1;
     }
