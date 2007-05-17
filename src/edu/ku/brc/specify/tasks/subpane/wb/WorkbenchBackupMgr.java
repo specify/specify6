@@ -113,8 +113,9 @@ public class WorkbenchBackupMgr
      * loads workbench from the database and backs it up (exports to an xls file) in a subdir in the
      * default working Path, and deletes old backups if necessary.
      */
-    public static void backupWorkbench(final long workbenchId, final WorkbenchTask task)
+    public static String backupWorkbench(final long workbenchId, final WorkbenchTask task)
     {
+        String backupName = null;
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
@@ -126,11 +127,11 @@ public class WorkbenchBackupMgr
 
             String fileName = getFileName(workbench);
 
+            backupName = UIRegistry.getAppDataSubDir(backupSubDir, true) + File.separator + fileName;
+            
             Properties props = new Properties();
             props.setProperty("mimetype", ExportFileConfigurationFactory.XLS_MIME_TYPE);
-            props.setProperty("fileName", UIRegistry.getAppDataSubDir(backupSubDir,
-                    true)
-                    + File.separator + fileName);
+            props.setProperty("fileName", backupName);
 
             CommandAction command = new CommandAction(ExportTask.EXPORT, ExportTask.EXPORT_LIST);
             command.setProperty("exporter", ExportToFile.class);
@@ -160,5 +161,6 @@ public class WorkbenchBackupMgr
                 session.close();
             }
         }
+        return backupName;
     }
 }

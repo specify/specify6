@@ -1176,7 +1176,7 @@ public class TemplateEditor extends CustomDialog
     //------------------------------------------------------------
     class FieldMappingPanel extends JPanel
     {
-        protected String            noMappingStr = getResourceString("WB_NO_MAPPING");
+        protected String            noMappingStr   = getResourceString("WB_NO_MAPPING");
 
         protected boolean           isSelected      = false;
         protected Color             bgColor       = null;
@@ -1321,6 +1321,11 @@ public class TemplateEditor extends CustomDialog
         @Override
         public String getToolTipText()
         {
+            if (isNew)
+            {
+                return getResourceString("WB_NEW_REC_TT");
+            }
+            
             if (fieldInfo != null)
             {
                 String name = UIHelper.makeNamePretty(fieldInfo.getFieldInfo().getTableInfo().getClassObj().getSimpleName());
@@ -1331,8 +1336,8 @@ public class TemplateEditor extends CustomDialog
                 sb.append(fieldInfo.getTitle());
                 return sb.toString();
             }
-            
-            return "";
+            // else
+            return getResourceString("WB_NO_MAPPING_TT");
         }
         
         public void setSchemaLabelVisible(final boolean isVis)
@@ -1427,7 +1432,9 @@ public class TemplateEditor extends CustomDialog
             this.isNew = isNew;
             if (isNew)
             {
-                schemaLabel.setText("<New>"); // XXX I18N
+                schemaLabel.setText(getResourceString("WB_NEW_REC"));
+                schemaLabel.setToolTipText(getResourceString("WB_NEW_REC_TT"));
+
                 schemaLabel.setVisible(true);
                 arrowLabel.setVisible(false);
             }
@@ -1453,7 +1460,7 @@ public class TemplateEditor extends CustomDialog
         {
             FieldMappingPanel panel = (FieldMappingPanel)value;
             panel.setSelected(isSelected);
-            panel.setToolTipText(panel.getFieldInfo() != null ? panel.getToolTipText() : "");
+            panel.setToolTipText(panel.getToolTipText());
             
             Border border = null;
             if (cellHasFocus)

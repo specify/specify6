@@ -100,6 +100,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.ImportColumnInfo;
 import edu.ku.brc.specify.tasks.subpane.wb.ImportDataFileInfo;
 import edu.ku.brc.specify.tasks.subpane.wb.SelectNewOrExistingDlg;
 import edu.ku.brc.specify.tasks.subpane.wb.TemplateEditor;
+import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchBackupMgr;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchJRDataSource;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
 import edu.ku.brc.ui.ChooseFromListDlg;
@@ -370,30 +371,67 @@ public class WorkbenchTask extends BaseTask
             @SuppressWarnings("synthetic-access")
             public void actionPerformed(ActionEvent e)
             {
-                Object cmdData = roc.getData();
-                if (cmdData != null && cmdData instanceof CommandAction)
+                Workbench wb = getWorkbenchFromCmd(roc.getData(), "WorkbenchEditMapping");
+                if (wb != null)
                 {
-                    CommandAction subCmd = (CommandAction)cmdData;
-                    if (subCmd.getTableId() == Workbench.getClassTableId())
-                    {
-                        Workbench wb = selectWorkbench(subCmd, "WorkbenchEditMapping"); // XXX ADD HELP
-                        if (wb != null)
-                        {
-                            UsageTracker.incrUsageCount("WB.EditMappings");
-                            editTemplate(wb.getWorkbenchTemplate());
-                            
-                        } else
-                        {
-                            log.error("No Workbench selected or found.");
-                        }
-                    }
+                    UsageTracker.incrUsageCount("WB.EditMappings");
+                    editTemplate(wb.getWorkbenchTemplate());
                 }
             }
+        });
+
+        popupMenu.addSeparator();
+        
+        UIHelper.createMenuItem(popupMenu, getResourceString("Delete"), getResourceString("DELETE_MNEU"), null, true, new ActionListener() {
+            @SuppressWarnings("synthetic-access")
+            public void actionPerformed(ActionEvent e)
+            {
+                //Workbench wb = getWorkbenchFromCmd(roc.getData(), "Workbench");
+                //if (wb != null)
+                //{
+                    UsageTracker.incrUsageCount("WB.DeletedWorkbench");
+                //}
+                Object cmdActionObj = roc.getData();
+                if (cmdActionObj != null && cmdActionObj instanceof CommandAction)
+                {
+                    CommandAction subCmd    = (CommandAction)cmdActionObj;
+                    RecordSet     recordSet = (RecordSet)subCmd.getProperty("workbench");
+                    if (recordSet != null)
+                    {
+                        deleteWorkbench(recordSet);
+                    }
+                }
+             }
         });
 
         roc.setPopupMenu(popupMenu);
 
         NavBox.refresh(workbenchNavBox);
+    }
+    
+    /**
+     * Get a Workbench object from ActionCommand or asks for it.
+     * @param cmdActionObj the data from the current action command
+     * @param helpContext the help context for the dialog that pops up asking for Workbench
+     * @return the selected or dropped workbench.
+     */
+    protected Workbench getWorkbenchFromCmd(final Object cmdActionObj, final String helpContext)
+    {
+        if (cmdActionObj != null && cmdActionObj instanceof CommandAction)
+        {
+            CommandAction subCmd = (CommandAction)cmdActionObj;
+            if (subCmd.getTableId() == Workbench.getClassTableId())
+            {
+                Workbench wb = selectWorkbench(subCmd, helpContext);
+                if (wb != null)
+                {
+                    return wb;
+                }
+                // else
+                log.error("No Workbench selected or found.");
+            }
+        }
+        return null;
     }
     
     /**
@@ -1610,7 +1648,6 @@ public class WorkbenchTask extends BaseTask
      */
     protected void deleteWorkbench(final RecordSet recordSet)
     {
-        
         final Workbench workbench = loadWorkbench(recordSet);
         if (workbench == null)
         {
@@ -1618,6 +1655,13 @@ public class WorkbenchTask extends BaseTask
         }
         
         UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_DELETING_DATASET"), new Object[] {workbench.getName()}), GLASSPANE_FONT_SIZE);
+        
+        String backupName = WorkbenchBackupMgr.backupWorkbench(workbench.getId(), this);
+        if (StringUtils.isNotEmpty(backupName))
+        {
+            UIRegistry.getStatusBar().setText(String.format(getResourceString("WB_DEL_BACKED_UP"), new Object[] { workbench.getName(), backupName }));
+        }
+
         
         final SwingWorker worker = new SwingWorker()
         {
@@ -1681,7 +1725,7 @@ public class WorkbenchTask extends BaseTask
             public void finished()
             {
                 UIRegistry.clearGlassPaneMsg();
-                UIRegistry.getStatusBar().setText(String.format(getResourceString("WB_DELETED_DATASET"), new Object[] {workbench.getName()}));
+                //UIRegistry.getStatusBar().setText(String.format(getResourceString("WB_DELETED_DATASET"), new Object[] {workbench.getName()}));
 
             }
         };
@@ -2002,6 +2046,7 @@ public class WorkbenchTask extends BaseTask
         dlg.setUseScrollPane(true);
         dlg.setHelpContext("WorkbenchReporting");
         dlg.setModal(true);
+        dlg.setUseScrollPane(true);
         dlg.setVisible(true);  
         return dlg.isCancelled() ? null : dlg.getSelectedObject();
     }
