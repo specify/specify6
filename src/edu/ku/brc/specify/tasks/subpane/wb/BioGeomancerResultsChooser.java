@@ -45,7 +45,7 @@ public class BioGeomancerResultsChooser extends CustomDialog
         
         this.cancelLabel = getResourceString("Skip");
         this.applyLabel  = getResourceString("Accept");
-        this.okLabel     = getResourceString("Done");
+        this.okLabel     = getResourceString("Dismiss");
         
         rowIndex = -1;
     }
@@ -106,12 +106,16 @@ public class BioGeomancerResultsChooser extends CustomDialog
     @Override
     protected void okButtonPressed()
     {
-        // remember, we're using the 'OK' button for "done" to accept the
+        // remember, we're using the 'OK' button for "Dismiss" to accept the
         // currently selected result and hide the dialog
 
+        // right now we're NOT storing the user selection when "Dismiss" is pressed
+        // to enable storing of the user selection, just uncomment the following lines...
+        //----------------------------------
         // store the user selection into the chosen results list
-        BioGeomancerResultStruct result = resultsDisplayPanel.getSelectedResult();
-        chosenResults.set(rowIndex, result);
+        // BioGeomancerResultStruct result = resultsDisplayPanel.getSelectedResult();
+        // chosenResults.set(rowIndex, result);
+        //----------------------------------
         
         super.okButtonPressed();
     }
