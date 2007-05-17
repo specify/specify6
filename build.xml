@@ -112,8 +112,10 @@
 			<fileset dir="${class.root}">
 				<include name="**/*.class" />
 				<include name="**/*.properties" />
+				<include name="**/*.xml" />
+				<include name="**/images/*.*" />
 			</fileset>
-	    </jar>
+		</jar>
 
 	</target>
 
