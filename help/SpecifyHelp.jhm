@@ -23,6 +23,12 @@
 	<mapID target="Workbench"                  url="SpecifyHelp/Workbench/Overview.html"/>
 	<mapID target="WorkbenchOverview"          url="SpecifyHelp/Workbench/Overview.html"/>
 	
+	<mapID target="WorkbenchTechnicalNotes" url="SpecifyHelp/Workbench/TechnicalNotes.html"/>
+	<mapID target="WorkbenchRequirements" url="SpecifyHelp/Workbench/Requirements.html"/>
+	<mapID target="WorkbenchPreferences" url="SpecifyHelp/Workbench/Preferences.html"/>
+	<mapID target="WorkbenchBackup" url="SpecifyHelp/Workbench/Backup.html"/>
+	<mapID target="WorkbenchRecovery" url="SpecifyHelp/Workbench/DataRecovery.html"/>
+	
 	<mapID target="WorkbenchDataSetProperties" url="SpecifyHelp/Workbench/DataSetProperties.html"/>
 	<mapID target="WorkbenchNewDataSet"        url="SpecifyHelp/Workbench/NewDataSet.html"/>
 	<mapID target="WorkbenchNewMapping"        url="SpecifyHelp/Workbench/NewDataSet.html#NewDataSetMapping"/>
@@ -32,6 +38,7 @@
 	<mapID target="WorkbenchGridEditingCF"     url="SpecifyHelp/Workbench/GridEditing.html#Carry_Forward"/>
 	<mapID target="WorkbenchFormEditingCF"     url="SpecifyHelp/Workbench/FormEditing.html#Carry_Forward"/>
 	<mapID target="WorkbenchWorkingWithImages" url="SpecifyHelp/Workbench/WorkingWithImages.html"/>
+	<mapID target="WorkbenchFormats" url="SpecifyHelp/Workbench/Formats.html"/>
 	
 	<mapID target="WorkbenchExportData"        url="SpecifyHelp/Workbench/ExportingData.html"/>
 	<mapID target="WorkbenchEditMapping"       url="SpecifyHelp/Workbench/EditMapping.html"/>                       

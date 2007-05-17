@@ -16,7 +16,15 @@
       <tocitem text="Statistics" target="Statistics"/>
       <tocitem text="Search" target="Search"/>
 -->
-          <tocitem text="WorkBench" target="WorkbenchOverview"> 
+          <tocitem text="WorkBench" target="WorkbenchOverview">
+          		<tocitem text="Technical Notes" target="WorkbenchTechnicalNotes"> 
+					<tocitem text="System Requirements" target="WorkbenchRequirements"/>
+					<tocitem text="Preferences" target="WorkbenchPreferences"/>
+					<tocitem text="Data Set Backup" target="WorkbenchBackup"/>
+					<tocitem text="Data Recovery" target="WorkbenchDataRecovery"/>
+					
+					
+ 				</tocitem>
  				<tocitem text="Data Sets" target="WorkbenchDataSetOverview">
               		<tocitem text="New Data Set" target="WorkbenchNewDataSet"/>
               		<tocitem text="Import Data" target="WorkbenchImportData">
@@ -28,6 +36,7 @@
               		<tocitem text="Edit Properties" target="WorkbenchDataSetProperties"/>    
               		<tocitem text="Grid Editing" target="WorkbenchGridEditing"/>
               		<tocitem text="Form Editing" target="WorkbenchFormEditing"/>
+              		<tocitem text="Data Format Guidelines" target="WorkbenchFormats"/>
               		<tocitem text="Exporting Data" target="WorkbenchExportData">
 						<tocitem text="Export Data Set" target="WorkbenchExportDataSet"/>
               			<tocitem text="Export Excel Template" target="WorkbenchExportExcelTemplate"/>
@@ -41,7 +50,7 @@
           		<tocitem text="Top 10" target="WorkbenchTop10"/>
           </tocitem>		
           <tocitem text="Special Tools" target="WorkbenchSpecialTools">
-          		<tocitem text="BioGiomancer" target="WorkbenchSpecialTools"/>
+          		<tocitem text="BioGeomancer" target="WorkbenchSpecialTools"/>
           		<tocitem text="GeoReference" target="WorkbenchSpecialTools"/>
           		<tocitem text="Google Earth" target="WorkbenchSpecialTools"/>
           		<tocitem text="Lat Long Converter" target="WorkbenchLatLongConverter"/>
