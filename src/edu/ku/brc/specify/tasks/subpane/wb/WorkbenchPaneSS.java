@@ -684,6 +684,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             WorkbenchRow row = workbench.getWorkbenchRowsAsList().get(selectedIndex);
             row.setCardImage((File)null);
             imageFrame.clearImage();
+            setChanged(true);
             //showCardImageForSelectedRow();
             spreadSheet.repaint();
         }
