@@ -19,7 +19,6 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FileDialog;
-import java.awt.Font;
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
@@ -46,7 +45,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.io.FilenameUtils;
@@ -537,30 +535,11 @@ public class WorkbenchTask extends BaseTask
     @Override
     public SubPaneIFace getStarterPane()
     {
-        /*File htmlFile = new File(getResourceString("WB_INITIAL_HTML"));
-        if (htmlFile.exists())
-        {
-            try
-            {
-                String s = XMLHelper.fixUpHTML(htmlFile);
-                if (StringUtils.isNotEmpty(s))
-                {
-                    return new HtmlDescPane(title, this, s);    
-                }
-            } catch (Exception ex)
-            {
-                // no op
-            }
-        }*/
-        //return starterPane = new WorkbenchPaneSS(title, this, null, false);
-        PanelBuilder    display = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "f:p:g,p,5px,p,100px,f:p:g"));
+
+        PanelBuilder    display = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "f:p:g,p,150px,f:p:g"));
         CellConstraints cc      = new CellConstraints();
 
-        JLabel label = new JLabel(getResourceString("WB_WELCOME"), SwingConstants.CENTER);
-        Font font = label.getFont();
-        label.setFont(new Font(font.getName(), Font.PLAIN, font.getSize()+4));
         display.add(new JLabel(IconManager.getIcon("SpecifySplash")), cc.xy(2, 2));
-        display.add(label, cc.xy(2, 4));
         doingStarterPane = true;
         
         if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
@@ -1533,6 +1512,7 @@ public class WorkbenchTask extends BaseTask
                      } catch (Exception ex)
                      {
                          log.error(ex);
+                         ex.printStackTrace();
                      } 
                      finally
                      {
