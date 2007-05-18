@@ -1699,8 +1699,11 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             return;
         }
         
-        String msg = String.format(getResourceString("WB_DELET_DS_MSG"), new Object[] { workbench.getName() } );
-        if (!UIRegistry.displayConfirmLocalized("WB_DELET_DS_TITLE", msg, getResourceString("Delete"), getResourceString("Cancel"), JOptionPane.QUESTION_MESSAGE))
+        if (!UIRegistry.displayConfirm(getResourceString("WB_DELET_DS_TITLE"), 
+                                       String.format(getResourceString("WB_DELET_DS_MSG"), new Object[] { workbench.getName() } ), 
+                                       getResourceString("Delete"),
+                                       getResourceString("Cancel"), 
+                                       JOptionPane.QUESTION_MESSAGE))
         {
             return;
         }
