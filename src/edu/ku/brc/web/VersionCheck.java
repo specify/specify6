@@ -56,14 +56,20 @@ public class VersionCheck extends HttpServlet
         String version = null;
         
         // get the request params (from POST or GET request)
-        Enumeration paramNames = request.getParameterNames();
+        Enumeration<?> paramNames = request.getParameterNames();
         while(paramNames.hasMoreElements())
         {
             String paramName = (String)paramNames.nextElement();
-            // limit the parameter name to 32 characters
-            if (paramName != null && paramName.length() > 32)
+            
+            if (paramName == null)
             {
-                paramName = paramName.substring(0,32);
+                continue;
+            }
+            
+            // limit the parameter name to 32 characters
+            if (paramName.length() > 64)
+            {
+                paramName = paramName.substring(0,64);
             }
             String[] valueArray = request.getParameterValues(paramName);
             String value = null;
