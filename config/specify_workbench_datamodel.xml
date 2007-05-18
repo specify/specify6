@@ -160,6 +160,7 @@
     <field column="Determined Date 1"       	name="determinedDate1" type="calendar_date"/>
     <field column="Determiner Last Name 1"  	name="determinerLastName1" type="java.lang.String" length="64"/>
     <field column="Determiner First Name 1" 	name="determinerFirstName1" type="java.lang.String" length="64"/>
+    <field column="Is Current (Yes/No) 1"       name="isCurrent1" type="boolean"/>
     <field column="Genus 1"                 	name="genus1" type="java.lang.String" length="50"/>
     <field column="Species 1"               	name="species1" type="java.lang.String" length="50"/>
     <field column="Subspecies 1"            	name="subspecies1" type="java.lang.String" length="50"/>
@@ -176,6 +177,7 @@
     <field column="Determined Date 2"       	name="determinedDate2" type="calendar_date"/>
     <field column="Determiner Last Name 2"  	name="determinerLastName2" type="java.lang.String" length="64"/>
     <field column="Determiner First Name 2" 	name="determinerFirstName2" type="java.lang.String" length="64"/>
+    <field column="Is Current (Yes/No) 2"       name="isCurrent2" type="boolean"/>
     <field column="Genus 2"                 	name="genus2" type="java.lang.String" length="50"/>
     <field column="Species 2"               	name="species2" type="java.lang.String" length="50"/>
     <field column="Subspecies 2"            	name="subspecies2" type="java.lang.String" length="50"/>
