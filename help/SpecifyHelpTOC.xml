@@ -18,43 +18,41 @@
 -->
           <tocitem text="WorkBench" target="WorkbenchOverview">
           
-          <tocitem text="Examples" target="WorkbenchExampleFiles/">
+          	<tocitem text="Examples" target="WorkbenchExamples"/>
           
-          		<tocitem text="Technical Notes" target="WorkbenchTechnicalNotes"> 
-					<tocitem text="System Requirements" target="WorkbenchRequirements"/>
-					<tocitem text="Preferences" target="WorkbenchPreferences"/>
-					<tocitem text="Data Set Backup" target="WorkbenchBackup"/>
-					<tocitem text="Data Recovery" target="WorkbenchDataRecovery"/>
-					<tocitem text="Portability" target="WorkbenchPortability"/>
-					
-					
- 				</tocitem>
- 				<tocitem text="Data Sets" target="WorkbenchDataSetOverview">
-              		<tocitem text="New Data Set" target="WorkbenchNewDataSet"/>
-              		<tocitem text="Import Data" target="WorkbenchImportData">
-              			<tocitem text="CSV Import" target="WorkbenchImportCSV"/>
-              			<tocitem text="MS Excel Import" target="WorkbenchImportXLS"/>
-              			<tocitem text="Import Images" target="WorkbenchImportImages"/>  
-          	  		</tocitem>
-          	  		<tocitem text="Edit Data Set Mapping" target="WorkbenchEditMapping"/>
-              		<tocitem text="Edit Properties" target="WorkbenchDataSetProperties"/>    
-              		<tocitem text="Grid Editing" target="WorkbenchGridEditing"/>
-              		<tocitem text="Form Editing" target="WorkbenchFormEditing"/>
-              		<tocitem text="Data Format Guidelines" target="WorkbenchFormats"/>
-              		<tocitem text="Exporting Data" target="WorkbenchExportData">
-						<tocitem text="Export Data Set" target="WorkbenchExportDataSet"/>
-              			<tocitem text="Export Excel Template" target="WorkbenchExportExcelTemplate"/>
-              		</tocitem>	
-              		<tocitem text="Image Window" target="WorkbenchWorkingWithImages"/>
-          		</tocitem>  
+          	<tocitem text="Technical Notes" target="WorkbenchTechnicalNotes"> 
+				<tocitem text="System Requirements" target="WorkbenchRequirements"/>
+				<tocitem text="Preferences" target="WorkbenchPreferences"/>
+				<tocitem text="Data Set Backup" target="WorkbenchBackup"/>
+				<tocitem text="Data Recovery" target="WorkbenchDataRecovery"/>
+				<tocitem text="Portability" target="WorkbenchPortability"/>
+ 			</tocitem>
+ 			<tocitem text="Data Sets" target="WorkbenchDataSetOverview">
+              	<tocitem text="New Data Set" target="WorkbenchNewDataSet"/>
+              	<tocitem text="Import Data" target="WorkbenchImportData">
+              		<tocitem text="CSV Import" target="WorkbenchImportCSV"/>
+              		<tocitem text="MS Excel Import" target="WorkbenchImportXLS"/>
+              		<tocitem text="Import Images" target="WorkbenchImportImages"/>  
+            		</tocitem>
+            		<tocitem text="Edit Data Set Mapping" target="WorkbenchEditMapping"/>
+              	<tocitem text="Edit Properties" target="WorkbenchDataSetProperties"/>    
+              	<tocitem text="Grid Editing" target="WorkbenchGridEditing"/>
+              	<tocitem text="Form Editing" target="WorkbenchFormEditing"/>
+              	<tocitem text="Data Format Guidelines" target="WorkbenchFormats"/>
+              	<tocitem text="Exporting Data" target="WorkbenchExportData">
+					<tocitem text="Export Data Set" target="WorkbenchExportDataSet"/>
+              		<tocitem text="Export Excel Template" target="WorkbenchExportExcelTemplate"/>
+              	</tocitem>	
+              	<tocitem text="Image Window" target="WorkbenchWorkingWithImages"/>
+          	</tocitem>  
           <tocitem text="Reports" target="WorkbenchReporting">
           		<tocitem text="Data Set Summary" target="WorkbenchDataSetSummary"/>
-          		<tocitem text="Basic Label" target="WorkbenchBasicLabel"/>
+          		<!-- <tocitem text="Basic Label" target="WorkbenchBasicLabel"/> -->
           		<tocitem text="Chart" target="WorkbenchChart"/>
           		<tocitem text="Top 10" target="WorkbenchTop10"/>
           </tocitem>		
           <tocitem text="Special Tools" target="WorkbenchSpecialTools">
-          		<tocitem text="BioGeomancer" target="WorkbenchSpecialTools"/>
+          		<tocitem text="BioGeomancer" target="WorkbenchBGM"/>
           		<tocitem text="Record Mapping Tool" target="WorkbenchRecordMappingTool"/>
           		<tocitem text="Google Earth" target="WorkbenchGoogleEarth"/>
           		<tocitem text="Lat Long Converter" target="WorkbenchLatLongConverter"/>

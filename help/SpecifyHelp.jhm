@@ -60,8 +60,9 @@
 	<mapID target="WorkbenchReporting"         url="SpecifyHelp/Workbench/Reports.html"/>
 	<mapID target="WorkbenchSpecialTools"      url="SpecifyHelp/Workbench/SpecialTools.html"/>
 	<mapID target="WorkbenchLatLongConverter"  url="SpecifyHelp/Workbench/LatLongConvert.html"/>
-	<mapID target="WorkbenchRecordMap"         url="SpecifyHelp/Workbench/RecordMappingTool.html"/>
+	<mapID target="WorkbenchRecordMappingTool" url="SpecifyHelp/Workbench/RecordMappingTool.html"/>
 	<mapID target="WorkbenchGoogleEarth"       url="SpecifyHelp/Workbench/GoogleEarth.html"/>
+	<mapID target="WorkbenchBGM"               url="SpecifyHelp/Workbench/BioGiomancer.html"/>
 	
 	<!--
 	<mapID target="GlossMouse"                 url="SpecifyHelp/Glossary/GlossMouse.html" />
