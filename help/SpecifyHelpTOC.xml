@@ -17,11 +17,15 @@
       <tocitem text="Search" target="Search"/>
 -->
           <tocitem text="WorkBench" target="WorkbenchOverview">
+          
+          <tocitem text="Examples" target="WorkbenchExampleFiles/">
+          
           		<tocitem text="Technical Notes" target="WorkbenchTechnicalNotes"> 
 					<tocitem text="System Requirements" target="WorkbenchRequirements"/>
 					<tocitem text="Preferences" target="WorkbenchPreferences"/>
 					<tocitem text="Data Set Backup" target="WorkbenchBackup"/>
 					<tocitem text="Data Recovery" target="WorkbenchDataRecovery"/>
+					<tocitem text="Portability" target="WorkbenchPortability"/>
 					
 					
  				</tocitem>
@@ -51,8 +55,8 @@
           </tocitem>		
           <tocitem text="Special Tools" target="WorkbenchSpecialTools">
           		<tocitem text="BioGeomancer" target="WorkbenchSpecialTools"/>
-          		<tocitem text="GeoReference" target="WorkbenchSpecialTools"/>
-          		<tocitem text="Google Earth" target="WorkbenchSpecialTools"/>
+          		<tocitem text="Record Mapping Tool" target="WorkbenchRecordMappingTool"/>
+          		<tocitem text="Google Earth" target="WorkbenchGoogleEarth"/>
           		<tocitem text="Lat Long Converter" target="WorkbenchLatLongConverter"/>
           </tocitem>
       </tocitem>
