@@ -861,8 +861,8 @@ public class TemplateEditor extends CustomDialog
      */
     protected FieldInfo autoMapFieldName(final String fieldNameArg, List<Pair<String,TableFieldPair>> automappings)
     {
-        String fieldNameLower = fieldNameArg.toLowerCase();
-        String fieldName      = StringUtils.deleteWhitespace(fieldNameLower);
+        String fieldNameLower     = fieldNameArg.toLowerCase();
+        String fieldNameLowerNoWS = StringUtils.deleteWhitespace(fieldNameLower);
         
         FieldInfo fieldInfo  = null;
         
@@ -870,7 +870,7 @@ public class TemplateEditor extends CustomDialog
         for (Pair<String, TableFieldPair> mapping: automappings)
         {
             //System.out.println("["+fieldName+"]["+mapping.first+"]");
-            if (fieldName.matches(mapping.first))
+            if (fieldNameLowerNoWS.matches(mapping.first))
             {
                 TableFieldPair tblFldPair = mapping.second;
                 //fieldInfo = new FieldInfo(tblFldPair.getTableinfo(),tblFldPair.getFieldInfo());
@@ -899,9 +899,18 @@ public class TemplateEditor extends CustomDialog
             TableInfo tblInfo = tableModel.getElementAt(i);
             for (FieldInfo fi : tblInfo.getFieldItems())
             {
-                String    tblFieldName = fi.getFieldInfo().getName().toLowerCase();
+                DBTableIdMgr.FieldInfo dbFieldInfo = fi.getFieldInfo();
+                
+                String    tblFieldName  = dbFieldInfo.getName().toLowerCase();
+                String    tblColumnName = dbFieldInfo.getColumn().toLowerCase();
+                
                 //System.out.println("["+tblFieldName+"]["+fieldNameLower+"]");
-                if (tblFieldName.equals(fieldNameLower) || tblFieldName.startsWith(fieldNameLower))
+                if (tblFieldName.equals(fieldNameLower)      ||
+                    tblColumnName.equals(fieldNameLower)     ||
+                    tblColumnName.equals(fieldNameLowerNoWS) ||
+                    tblFieldName.equals(fieldNameLowerNoWS)  ||
+                    tblFieldName.startsWith(fieldNameLower)  ||
+                    tblColumnName.startsWith(fieldNameLower))
                 {
                     return fi;
                 }
