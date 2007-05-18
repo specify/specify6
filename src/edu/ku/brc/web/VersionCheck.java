@@ -77,9 +77,9 @@ public class VersionCheck extends HttpServlet
             {
                 value = valueArray[0];
                 // limit value to 32 characters
-                if (value != null && value.length() > 32)
+                if (value != null && value.length() > 64)
                 {
-                    value = value.substring(0,32);
+                    value = value.substring(0,64);
                 }
             }
             
