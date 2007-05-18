@@ -13,22 +13,26 @@
   <li>Changes made to the data in the WorkBench will not be reflected in the original MS Excel file.</li>
   <li> The WorkBench has a 2000 row maximum. Import files that include more than 2000 rows will not import. </li>
 </ul>
-<p align="center"><img src="../images/importerror.png" alt="Import Error" width="425" height="171"></p>
+<p align="center"><img src="../images/importerror.png" alt="Import Error"></p>
 <p align="center" class="imgcaption">Import Error </p>
 <p>&nbsp;</p>
 <p>To begin, click on the Import Data action on the Sidebar and choose the import file in the file dialog. </p>
-<p>To properly import the data from an MS Excel file, the WorkBench must first determine if the data includes column headings. The following information dialog appears after the file dialog:</p>
+<p>To properly import the data from an MS Excel file, the WorkBench must first determine if the data includes column headings. The following information dialog appears after the file 
+dialog:</p>
 <p align="center"><img src="../images/importdialog.png" ></p>
 <p align="center" class="imgcaption">Import from MS Excel </p>
 <p align="center" class="imgcaption">&nbsp;</p>
-<p>The Data Preview window reads and displays a sample of the column headings and data from the import file. If the file does not contain column headings the columns will be labelled in  numerical order (Column 1, Column 2, etc.). Check the 'First row contains column headings' box according to how the file displays in the Data Preview window. </p>
+<p>The Data Preview window reads and displays a sample of the column headings and data from the import file. If the file does not contain column headings the columns will be labelled in  
+numerical order (Column 1, Column 2, etc.). Check the 'First row contains column headings' box according to how the file displays in the Data Preview window. </p>
 <p>The next step in the import process is to 'map' the  column headings from the import file to  the  fields in the Specify data model. </p>
 <p>&nbsp;</p>
 <h3><u>File includes  Column Headings </u> </h3>
-<p>The Workbench includes an '<span class="index">auto-mapping</span>' feature which  first identifies  column headings and compares them to existing Data Sets. If the column headings in the import file match those in an existing Data Set the following dialog will open:</p>
+<p>The Workbench includes an '<span class="index">auto-mapping</span>' feature which  first identifies  column headings and compares them to existing Data Sets. If the column headings 
+in the import file match those in an existing Data Set the following dialog will open:</p>
 <p align="center"><img src="../images/newdataset.png" alt="New Data Set" ></p>
 <p align="center" class="imgcaption">New Data Set Column Headings </p>
-<p>To reuse the 'map' from an existing Data Set select the 'Use an existing Data Set mapping' button and choose the Data Set from the list provided. The Data Set Properties dialog will then open, to name and describe the new Data Set. </p>
+<p>To reuse the 'map' from an existing Data Set select the 'Use an existing Data Set mapping' button and choose the Data Set from the list provided. The Data Set 
+Properties dialog will then open, to name and describe the new Data Set. </p>
 <p>To create a new map for the  Data Set select the 'Create new Data Set mapping' button and click 'OK'.</p>
 <p>The 'auto-mapper' then compare the import column headings to the Specify fields and 'maps' the columns to matching fields. </p>
 <p align="center"><img src="../images/automappededitor.png"></p>
@@ -36,7 +40,8 @@
 <p>&nbsp;</p>
 <p>The column headings from the import file appear under 'Data Set Columns' on the right side of the dialog and are mapped to  'Specify Fields'  on the left. </p>
 <p><span class="index">Column headings</span> that map to Specify fields display a <img src="../images/linked.png" alt="Linked" > (linked) icon. </p>
-<p>Column headings that have not been automapped will have  'To Be Discarded' displayed under 'Specify Fields'. Unmapped column headings will be deleted if they are not mapped to a Specify field before clicking 'OK'.</p>
+<p>Column headings that have not been automapped will have  'To Be Discarded' displayed under 'Specify Fields'. Unmapped column headings will be deleted if they are not 
+mapped to a Specify field before clicking 'OK'.</p>
 <p>The buttons in the dialog enable columns to be mapped, unmapped, added, deleted and reordered.</p><br>
 <table width="75%" border="1" cellspacing="1" cellpadding="6">
   <tr>

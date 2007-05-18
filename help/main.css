@@ -1,7 +1,7 @@
 /* CSS Document */
 
 span.code { font:"Courier New", Courier, monospace 11pt; }
-span.index {color: red; font-style:italic; }
+/* span.index {color: red; font-style:italic; } */
 
 span.title { font: sans-serif 18pt bold; }
 span.imgcaption { font: sans-serif; font-size:10pt; font-style:italic; }
