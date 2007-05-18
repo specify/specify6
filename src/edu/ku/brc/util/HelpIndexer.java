@@ -82,7 +82,9 @@ public class HelpIndexer
         Iterator<File> helpFiles = FileUtils.iterateFiles(topDir, ext, true);
         while (helpFiles.hasNext())
         {
-            processFile(helpFiles.next(), lines);
+            File file = helpFiles.next();
+            System.out.println("Processing "+file.getName());
+            processFile(file, lines);
         }
         
         System.out.println();
@@ -127,9 +129,10 @@ public class HelpIndexer
     protected String processIndexLine(final String line, final String target)
     {
         String workLine = line.trim();
-        
-        int startIdxTitle = workLine.indexOf(">") + 1; 
-        String idxTitle = workLine.substring(startIdxTitle,workLine.length()-7);
+        int sinx          = workLine.indexOf("<span");
+        int startIdxTitle = workLine.indexOf(">", sinx)+1;
+        int endIdxTitle = workLine.indexOf("</span>", sinx);
+        String idxTitle = workLine.substring(startIdxTitle, endIdxTitle);
         return "<indexitem text=\"" + idxTitle + "\"   target=\"" + target + "\"/>";
     }
     
@@ -196,7 +199,7 @@ public class HelpIndexer
                 while (it.hasNext())
                 {
                     String line = it.nextLine();
-                    // System.out.println(line);
+                    //System.out.println(line);
                     if (isIndexLine(line))
                     {
                         // System.out.println("hey an index line!");
@@ -226,27 +229,15 @@ public class HelpIndexer
     
     protected boolean isIndexLine(final String line)
     {
+        final String token = "<span class=\"index\">";
         String stripped = line.trim();
-        if (!(stripped.length() > 5))
+        if (stripped.length() < token.length())
         {
             return false;
         }
-        if (!stripped.substring(0, 5).equalsIgnoreCase("<span"))
-        {
-            return false;
-        }
-        int classPos = stripped.indexOf("class=\"");
-        if (classPos < 0)
-        {
-            return false;
-        }
-        int endClassPos = stripped.indexOf("\">");
-        if (endClassPos < 0)
-        {
-            return false;
-        }
-        return stripped.substring(classPos + 7, endClassPos).equalsIgnoreCase("index");
+        return stripped.indexOf(token) > -1;
     }
+    
     /**
      * @param args
      * args[0] - map file. eg. "/home/timbo/workspace/Specify 6/help/...
@@ -255,7 +246,12 @@ public class HelpIndexer
      */
     public static void main(String[] args)
     {
-        HelpIndexer hi = new HelpIndexer(args[0], args[1], args[2]);
+        //System.out.println(new File(".").getAbsolutePath());
+        String mapFile  = "help/SpecifyHelp.jhm";
+        String helpFile = "help/SpecifyHelp/Workbench";
+        String output   = "SpecifyHelpIndex.xml";
+        HelpIndexer hi = new HelpIndexer(mapFile, helpFile, output);
+        //HelpIndexer hi = new HelpIndexer(args[0], args[1], args[2]);
         hi.indexIt();
     }
 
