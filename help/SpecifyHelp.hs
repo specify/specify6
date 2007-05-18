@@ -24,6 +24,7 @@
     <data>SpecifyHelpTOC.xml</data>
   </view>
 
+  <!--
   <view>
     <name>Index</name>
     <label>Index</label>
@@ -46,7 +47,7 @@
     <type>javax.help.GlossaryView</type>
     <data>SpecifyHelpGlossary.xml</data>
   </view>
-
+-->
   <view>
     <name>Favorites</name>
     <label>Favorites</label>
