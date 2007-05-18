@@ -33,12 +33,12 @@
 		</view>
 		
 		<view
-			name="Cache"
+			name="System"
 			class="java.util.prefs.Preferences"
 			useresourcelabels="false">
 			<desc><![CDATA[Formatting Preference Form.]]></desc>
 			<altviews>
-				<altview name="Cache" viewdef="Cache" label="Cache" mode="edit" validated="true"/>
+				<altview name="System" viewdef="System" label="System" mode="edit" validated="true"/>
 			</altviews>
 		</view>
 		
@@ -184,7 +184,7 @@
 		
 		<viewdef
 			type="form"
-			name="Cache"
+			name="System"
 			class="java.util.prefs.Preferences"
 			gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
 			settable="edu.ku.brc.af.prefs.PrefsSettableImpl">
@@ -196,7 +196,7 @@
 			
 			<rows>
 				<row>
-					<cell type="separator" label="Misc" colspan="5"/>
+					<cell type="separator" label="Cache" colspan="5"/>
 				</row>
 				<row>
 					<cell type="command" id="clearcache" name="clearcache" label="Clear Cache" commandtype="ClearCache" action="ClearCache"/>

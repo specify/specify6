@@ -44,13 +44,13 @@ public class CachePrefs extends JPanel implements PrefsSavable, PrefsPanelIFace
     protected Viewable     form      = null;
     
     /**
-     * Constrcutor.
+     * Constructor.
      */
     public CachePrefs()
     {
         super(new BorderLayout());
         
-        String viewName = "Cache";
+        String viewName = "System";
         String name     = "Preferences";
 
         formView = AppContextMgr.getInstance().getView(name, viewName);

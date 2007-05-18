@@ -4,8 +4,8 @@
         <!--
             <pref title="ui" icon="Data_Entry" panelClass="edu.ku.brc.af.prefs.UIPrefsPanel"/>
         -->
-        <pref title="formatting" icon="Data_Entry" panelClass="edu.ku.brc.specify.prefs.FormattingPrefsPanel"/>
-        <pref title="Cache"      icon="SystemSetup"     panelClass="edu.ku.brc.specify.prefs.CachePrefs"/>
+        <pref title="Formatting" icon="Data_Entry" panelClass="edu.ku.brc.specify.prefs.FormattingPrefsPanel"/>
+        <pref title="System"      icon="SystemSetup"     panelClass="edu.ku.brc.specify.prefs.CachePrefs"/>
     </section>
     
     <!--
