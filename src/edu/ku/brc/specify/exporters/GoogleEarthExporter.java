@@ -47,6 +47,8 @@ public class GoogleEarthExporter implements RecordSetExporter
 {
     /** Logger for all log messages emitted from this class. */
     private static final Logger log = Logger.getLogger(GoogleEarthExporter.class);
+    
+    private static final String DEFAULT_ICON_FILE = "specify32.png";
             
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.RecordSetExporter#exportRecordSet(edu.ku.brc.specify.datamodel.RecordSet)
@@ -210,7 +212,7 @@ public class GoogleEarthExporter implements RecordSetExporter
         // we need to create a KMZ (zip file containing doc.kml and other files)
         
         // get a copy of the icon file
-        URL icon = IconManager.getImagePath("specify32.png");
+        URL icon = IconManager.getImagePath(DEFAULT_ICON_FILE);
         File iconFile = File.createTempFile("sp6-export-icon-", ".png");
         FileUtils.copyURLToFile(icon, iconFile);
         
