@@ -50,7 +50,6 @@ import javax.swing.SwingUtilities;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.hibernate.Session;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -1696,6 +1695,12 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     {
         final Workbench workbench = loadWorkbench(recordSet);
         if (workbench == null)
+        {
+            return;
+        }
+        
+        String msg = String.format(getResourceString("WB_DELET_DS_MSG"), new Object[] { workbench.getName() } );
+        if (!UIRegistry.displayConfirmLocalized("WB_DELET_DS_TITLE", msg, getResourceString("Delete"), getResourceString("Cancel"), JOptionPane.QUESTION_MESSAGE))
         {
             return;
         }
