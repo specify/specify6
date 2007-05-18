@@ -9,6 +9,8 @@ package edu.ku.brc.specify.ui;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Component;
+import java.awt.Image;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
@@ -16,10 +18,13 @@ import java.net.URL;
 import javax.help.BadIDException;
 import javax.help.CSH;
 import javax.help.HelpBroker;
+import javax.help.DefaultHelpBroker;
 import javax.help.HelpSet;
 import javax.help.InvalidHelpSetContextException;
 import javax.help.Map;
+import javax.help.WindowPresentation;
 import javax.swing.AbstractButton;
+import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -53,7 +58,7 @@ public class HelpMgr
      * Creates a Helpset and HelpBroker.
      * @param helpName the name of the help
      */
-    public static void initializeHelp(final String helpName)
+    public static void initializeHelp(final String helpName, final Image frameIcon)
     {
         helpSystemName = helpName;
         
@@ -73,6 +78,22 @@ public class HelpMgr
         }
         // Create a HelpBroker object:
         hb = hs.createHelpBroker();
+
+        if (frameIcon != null)
+        {
+            // try to change the icon of the help window
+            if (hb instanceof DefaultHelpBroker)
+            {
+                DefaultHelpBroker dhb = (DefaultHelpBroker)hb;
+                WindowPresentation pres = dhb.getWindowPresentation();
+                pres.createHelpWindow();
+                Window window = pres.getHelpWindow();
+                if (window instanceof JFrame)
+                {
+                    ((JFrame)window).setIconImage(frameIcon);
+                }
+            }
+        }
     }
 
     /**

@@ -39,6 +39,7 @@ import java.util.prefs.BackingStoreException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -96,6 +97,7 @@ import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.ToolbarLayoutManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.db.DatabaseLoginListener;
 import edu.ku.brc.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
@@ -1268,7 +1270,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
               }
               
               
-              HelpMgr.initializeHelp("SpecifyHelp");
+              ImageIcon helpIcon = IconManager.getIcon("AppIcon",IconSize.Std16);
+              HelpMgr.initializeHelp("SpecifyHelp", helpIcon.getImage());
               
               // Startup Specify
               Specify specify = new Specify();
