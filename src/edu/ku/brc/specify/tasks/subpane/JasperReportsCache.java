@@ -21,6 +21,7 @@ import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.DataCacheIFace;
 
@@ -40,16 +41,16 @@ public class JasperReportsCache implements DataCacheIFace
     // Static Data Members
     private static final Logger log = Logger.getLogger(LabelsPane.class);
     
-    private static boolean reportsCacheWasCleared = false;
-    
-    private static JasperReportsCache instance = new JasperReportsCache();
-    
+    private static boolean            reportsCacheWasCleared = false;
+    private static JasperReportsCache instance         = new JasperReportsCache();
+    private static String             reportsCacheName;
     /**
      * Constructor.
      */
     protected JasperReportsCache()
     {
-        // no-op
+        // XXX FOR WORKBENCH RELEASE ONLY
+        reportsCacheName = "reportsCache_" + UIHelper.getOSType().toString();
     }
 
     /**
@@ -93,7 +94,7 @@ public class JasperReportsCache implements DataCacheIFace
      */
     public static File getCachePath()
     {
-        File path = UIRegistry.getAppDataSubDir("reportsCache", true); 
+        File path = UIRegistry.getAppDataSubDir(reportsCacheName, true); 
         if (path == null)
         {
             String msg = "The reportsCache directory path is empty.";
