@@ -248,12 +248,12 @@ public class Specify extends JPanel implements DatabaseLoginListener
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
         localPrefs.setDirPath(UIRegistry.getAppDataDir());
         //localPrefs.load(); moved to end for not-null constraint
-        String         derbyPath  = localPrefs.get("javadb.location", null);
+        /*String         derbyPath  = localPrefs.get("javadb.location", null);
         if (StringUtils.isNotEmpty(derbyPath))
         {
             UIRegistry.setJavaDBDir(derbyPath);
             log.debug("JavaDB Path: "+UIRegistry.getJavaDBPath());
-        }
+        }*/
         
         UsageTracker.incrUsageCount("RunCount");
         
