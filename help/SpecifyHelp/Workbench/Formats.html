@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<head>
+<link href="../../main.css" rel="stylesheet" type="text/css" media="screen"></link>
+<title>Data Format Guidelines</title>
+</head>
+
+<body>
+<h2>Data Format Guidelines</h2>
+<hr>
+<p>Consistency in formatting data is crutial to any data management system. Using the same format for data within the columns of all Data Sets  will ensure that the data will import more consistently into Specify , making it more searchable and usable.</p>
+<p>&nbsp;</p>
+<h3><u>Column Headings</u></h3>
+<p> Use the title of the field as an indication of what sort of data that field will accept e.g. all count and number fields should contain only numeric data, Yes/No fields should contain only a Yes or Y, No or N.</p>
+<p>Use consistent  formats and data standards for one-to-may relationships that are represented by a cumulative number of the same headings, e.g. Collector1, Collector 2 and PrepType1, PrepType2 etc.&nbsp;</p>
+<p>First Name and Last Name fields for agents should ideally contain only this information.&nbsp; If other information is desired (such as title or middle initials) it can be added but should be positively identifiable and separated to ensure easy parsing.</p>
+<p>Use specialized data entry standards in the required fields below. </p>
+<p>&nbsp;</p>
+<h3><strong><u>Catalog numbers</u></strong></h3>
+<p>The catalog number field will accept&nbsp;numbers and decimal numbers as well as a number together with your institution or catalog series (if you use this function in Specify 5) acronym e.g 1234, 1234.5, KU 1234 or KU1234.&nbsp; This information will be parsed when imported into Specify 6.</p>
+<p>&nbsp;</p>
+<h3><strong><u>Dates</u></strong></h3>
+<p>Dates are accepted as day month year, month day year or partial varieties of these. For partial dates zero&rsquo;s should be used in the format selected.</p>
+<table border="0" cellpadding="0">
+  <tr>
+    <td><p>Months as   1&ndash;12</p></td>
+    <td><p>&nbsp; </p></td>
+  </tr>
+  <tr>
+    <td><p>Months as   01&ndash;12</p></td>
+    <td><p>&nbsp; </p></td>
+  </tr>
+  <tr>
+    <td><p>Months as   Jan&ndash;Dec</p></td>
+    <td><p>&nbsp; </p></td>
+  </tr>
+  <tr>
+    <td><p>Months as   January&ndash;December</p></td>
+    <td><p>&nbsp; </p></td>
+  </tr>
+  <tr>
+    <td><p>Days as   1&ndash;31</p></td>
+    <td><p>&nbsp; </p></td>
+  </tr>
+  <tr>
+    <td><p>Days as   01&ndash;31</p></td>
+    <td><p>&nbsp; </p></td>
+  </tr>
+  <tr>
+    <td><p>Years as   00&ndash;99</p></td>
+    <td><p>&nbsp; </p></td>
+  </tr>
+  <tr>
+    <td><p>Years as   1900&ndash;9999</p></td>
+    <td><p>&nbsp; </p></td>
+  </tr>
+</table>
+<p>Allowable separators include a space, / (slash), .(period), or &ndash; (dash).</p>
+<p>&nbsp;</p>
+<h3><strong><u>Latitude and Longitude</u></strong></h3>
+<p>+/- and N, S, E, W formats are both accepted as hemisphere information.</p>
+<p>Both d and &deg; are accepted for degrees, while ' and &quot; are accepted for minutes and seconds.&nbsp; A space is also accepted in place of or together with all of these.</p>
+<p>Decimal places for decimal degrees, minutes and seconds are unlimited.&nbsp; However, when using the Lat Long Converter {make this a link}, these will be truncated to 4 decimals for decimal degrees and two decimals for minutes and seconds.&nbsp; Therefore make sure that you have included the LatText1 and LongText1 fields to preserve your original input values.</p>
+<p>Some examples of accepted formats follow</p>
+<p><u>Degrees Minutes Seconds</u></p>
+<p>32 45 16.8232<br />
+  32d 45' 16.8232&quot;<br />
+  32d45'16.8232&quot;<br />
+  32&deg;45'16.8232&quot;<br />
+  32&deg; 45' 16.82&quot;<br />
+  32 45 16.8232 N<br />
+  32d 45' 16.8232&quot; N<br />
+  32d45'16.8232&quot; N<br />
+  32&deg;45'16.8232&quot; N<br />
+  32&deg; 45' 16.82&quot; N</p>
+<p><u>Degrees decimal minutes</u></p>
+<p>32 16.8232<br />
+  32&deg; 16.82'<br />
+  32&deg;16.82<br />
+  32d 16.82<br />
+  32 16.8232 N<br />
+  32&deg; 16.82' N<br />
+  32&deg;16.82 N<br />
+  32d 16.82 N</p>
+<p><u>Decimal Degrees</u></p>
+<p>16.8232<br />
+  16.8232&deg;<br />
+  16.8232 N<br />
+  16.8232&deg; N</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</body>
+</html>
