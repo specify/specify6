@@ -48,7 +48,7 @@ public class GoogleEarthExporter implements RecordSetExporter
     /** Logger for all log messages emitted from this class. */
     private static final Logger log = Logger.getLogger(GoogleEarthExporter.class);
     
-    private static final String DEFAULT_ICON_FILE = "specify32.png";
+    private static final String DEFAULT_ICON_FILE = "specify32white.png";
             
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.RecordSetExporter#exportRecordSet(edu.ku.brc.specify.datamodel.RecordSet)
