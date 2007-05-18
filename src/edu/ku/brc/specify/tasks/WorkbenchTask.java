@@ -50,6 +50,7 @@ import javax.swing.SwingUtilities;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.hibernate.Session;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -730,6 +731,30 @@ public class WorkbenchTask extends BaseTask
         return workbenchTemplate;
     }
     
+   /**
+ * @param wbItem column from existing template
+ * @param fileItem column form import file
+ * @return true if ImportedColumName of Field name of wbItem equal ColumnName of fileItem
+ */
+protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
+                                final ImportColumnInfo fileItem)
+    {
+        boolean result = false;
+        if (wbItem != null && fileItem != null)
+        {
+            if (StringUtils.isNotEmpty(wbItem.getImportedColName())
+                    && StringUtils.isNotEmpty(fileItem.getColName()))
+            {
+                result = wbItem.getImportedColName().equalsIgnoreCase(fileItem.getColName());
+            }
+            if (!result && StringUtils.isNotEmpty(wbItem.getFieldName()))
+            {
+                result = wbItem.getFieldName().equalsIgnoreCase(fileItem.getColName());
+            }
+        }
+        return result;
+    }
+   
     /**
      * If the colInfo Vector is null then all the templates are added to the list to be displayed.<br>
      * If not, then it checks all the column in the file against the columns in each Template to see if there is a match
@@ -769,31 +794,38 @@ public class WorkbenchTask extends BaseTask
                     Collections.sort(items);
                     for (int i=0;i<items.size();i++)
                     {
-                        WorkbenchTemplateMappingItem wbItem   = items.get(i);
-                        ImportColumnInfo             fileItem = colInfo.get(i);
+                        WorkbenchTemplateMappingItem wbItem = items.get(i);
+                        ImportColumnInfo fileItem = colInfo.get(i);
                         // Check to see if there is an exact match by name
-                        if (wbItem != null && StringUtils.isNotEmpty(wbItem.getImportedColName()) &&
-                            fileItem != null && StringUtils.isNotEmpty(fileItem.getColName()) &&
-                            wbItem.getImportedColName().equalsIgnoreCase(fileItem.getColName()))
+                        if (colsMatchByName(wbItem, fileItem))
                         {
-                            ImportColumnInfo.ColumnType type = ImportColumnInfo.getType(getDataType(wbItem));
-                            if (type == ImportColumnInfo.ColumnType.Date)
-                            {
-                                ImportColumnInfo.ColumnType colType = fileItem.getColType();
-                                if (colType != ImportColumnInfo.ColumnType.String && colType != ImportColumnInfo.ColumnType.Double)
-                                {
-                                    //log.error("["+wbItem.getImportedColName()+"]["+fileItem.getColName()+"]["+colType+"]");
-                                    match = false;
-                                    break;
-                                }
-                            } else if (type != fileItem.getColType())
-                            {
-                                //log.error("["+wbItem.getImportedColName()+"]["+fileItem.getColName()+"]["+type+"]["+fileItem.getColType()+"]");
-                                match = false;
-                                break;
-                            }
-    
-                        } else
+                            // commenting out type-checking code
+                            // type checking doesn't really work right now.
+                            // for csv imports getColType() is always "String". for xls, all numeric
+                            // types are represented by HSSFCell.CELL_TYPE_NUMERIC,
+                            // for which "Double" is arbitrarily assigned by ImportColumnInfo.
+
+                            // ImportColumnInfo.ColumnType type =
+                            // ImportColumnInfo.getType(getDataType(wbItem));
+                            // if (type == ImportColumnInfo.ColumnType.Date)
+                            // {
+                            // ImportColumnInfo.ColumnType colType = fileItem.getColType();
+                            // if (colType != ImportColumnInfo.ColumnType.String && colType !=
+                            // ImportColumnInfo.ColumnType.Double)
+                            // {
+                            // //log.error("["+wbItem.getImportedColName()+"]["+fileItem.getColName()+"]["+colType+"]");
+                            // match = false;
+                            // break;
+                            // }
+                            // } else if (type != fileItem.getColType())
+                            // {
+                            //                                //log.error("["+wbItem.getImportedColName()+"]["+fileItem.getColName()+"]["+type+"]["+fileItem.getColType()+"]");
+                            //                                match = false;
+                            //                                break;
+                            //                            }
+                            //    
+                        }
+                        else
                         {
                             //log.error("["+wbItem.getImportedColName()+"]["+fileItem.getColName()+"]");
                             match = false;

@@ -123,6 +123,10 @@ public class ImportColumnInfo  implements Comparable<ImportColumnInfo>
             } else if (type.equals(Calendar.class) || type.equals(Date.class))
             {
                 return ImportColumnInfo.ColumnType.Date;
+                
+            } else if (type.equals(java.math.BigDecimal.class))
+            {
+                return ImportColumnInfo.ColumnType.Double;
             }
         }
         return ImportColumnInfo.ColumnType.String;
