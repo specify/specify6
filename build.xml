@@ -293,6 +293,7 @@
 			</fileset>
 			<fileset dir="${macnative.dir}">
 				<include name="*.jar" />
+				<include name="**/*.jnilib" />
 			</fileset>
 		</copy>
 
@@ -328,8 +329,9 @@
 		<antcall target="dist-jar-mac"/>
 		<antcall target="dist-mac-clean"/>
 		
+		<!--
 		<antcall target="build-empty-derby-db"/>
-		
+		-->
 		<mkdir dir="${dist-mac}" />
 		<mkdir dir="${appdir}" />
 		<mkdir dir="${appdir}/Contents" />
