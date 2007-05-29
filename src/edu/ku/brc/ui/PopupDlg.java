@@ -83,12 +83,12 @@ public class PopupDlg
 			boolean disableMe = components.isCheckboxSelected();
 			if(disableMe)
 			{
-				log.info("User has selected to disable the popup");
+				log.debug("User has selected to disable the popup");
 				popupMgr.disableDialog(dialogId, response);
 			}
 			else
 			{
-				log.info("User has selected not to disable the popup");
+				log.debug("User has selected not to disable the popup");
 			}
 			return response;
 		}	
@@ -129,12 +129,12 @@ public class PopupDlg
 			boolean disableMe = components.isCheckboxSelected();
 			if(disableMe)
 			{
-				log.info("User has selected to disable the popup");
+				log.debug("User has selected to disable the popup");
 				popupMgr.disableDialog(dialogId, response);
 			}
 			else
 			{
-				log.info("User has selected not to disable the popup");
+				log.debug("User has selected not to disable the popup");
 			}
 			return response;
 		}	
@@ -177,12 +177,12 @@ public class PopupDlg
 			boolean disableMe = components.isCheckboxSelected();
 			if(disableMe)
 			{
-				log.info("User has selected to disable the popup");
+				log.debug("User has selected to disable the popup");
 				popupMgr.disableDialog(dialogId, response);
 			}
 			else
 			{
-				log.info("User has selected not to disable the popup");
+				log.debug("User has selected not to disable the popup");
 			}
 			return response;
 		}	

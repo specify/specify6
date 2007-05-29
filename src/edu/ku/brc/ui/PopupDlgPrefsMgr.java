@@ -53,7 +53,7 @@ public class PopupDlgPrefsMgr
 	 */
 	public int generatePopupDialogId(String title, String message, String identifierStr )
 	{
-		log.info("Generating DialogId");
+		log.debug("Generating DialogId");
 		 PopupDlgId popupId = new PopupDlgId(title, message, identifierStr);	
 		 return popupId.getId();
 	}
@@ -69,7 +69,7 @@ public class PopupDlgPrefsMgr
 	public void disableDialog(int dialogId, int actionChoice)
 	{
 		String dialogPrefName = dialogNamePrefix + dialogId;
-		log.info("Adding disabling dialog to preferences: [" + dialogId + "] with selected value of: "+actionChoice);
+		log.debug("Adding disabling dialog to preferences: [" + dialogId + "] with selected value of: "+actionChoice);
 		appPrefs.putInt(dialogPrefName, Integer.valueOf(actionChoice));
 	}	
 	
@@ -83,7 +83,7 @@ public class PopupDlgPrefsMgr
 	public void removeDialogFromPrefs(int dialogId)
 	{
 		String dialogPrefName = dialogNamePrefix + dialogId;
-		log.info("Removing dialog from preferences: [" + dialogId + "]");	
+		log.debug("Removing dialog from preferences: [" + dialogId + "]");	
 		appPrefs.remove(dialogPrefName);
 	}
 
@@ -98,9 +98,9 @@ public class PopupDlgPrefsMgr
 	public int getDisabledDialogOptionSelection(int dialogId)
 	{
 		String dialogPrefName = dialogNamePrefix + dialogId;
-		log.info("Reading preference to get previous selection choice for dialog: [" + dialogId + "]");
+		log.debug("Reading preference to get previous selection choice for dialog: [" + dialogId + "]");
 		int actionChoice = appPrefs.getInt(dialogPrefName, -1).intValue();
-		log.info(" Selection was: "+actionChoice);
+		log.debug(" Selection was: "+actionChoice);
 		return actionChoice;
 	}
 
@@ -114,14 +114,14 @@ public class PopupDlgPrefsMgr
 	public boolean isDialogDisabled(int dialogId)
 	{
 		String dialogPrefName = dialogNamePrefix + dialogId;
-		log.info("Reading preferences to check whether dialog has been disabled: [" +dialogId+"]" );
+		log.debug("Reading preferences to check whether dialog has been disabled: [" +dialogId+"]" );
 		int actionChoice = appPrefs.getInt(dialogPrefName, -1).intValue();		
 		if (actionChoice == -1)
 		{
-			log.info("Dialog has not been disabled");
+			log.debug("Dialog has not been disabled");
 			return false;
 		}
-		log.info("Dialog previously has been disabled");
+		log.debug("Dialog previously has been disabled");
 		return true;
 	}
 
