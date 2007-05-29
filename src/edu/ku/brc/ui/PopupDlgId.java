@@ -56,7 +56,7 @@ public class PopupDlgId
         idString = "title:" + title + ";" + "message:" + message + ";"
                         + "uniqueIdentifier:" + uniqueIdentifier;
         id = idString.hashCode();
-        log.info("id [" + id + "] created for dialog [" + idString + "]");
+        log.debug("id [" + id + "] created for dialog [" + idString + "]");
     }
 
     /*
