@@ -18,56 +18,62 @@
 package edu.ku.brc.ui;
 
 /**
+ * Object allows us to incapsulate the row, col and boolean of whether a search value was found in a table cell.
+ * 
  * @author megkumin
  *
- * @code_status Alpha
+ * @code_status Complete
  *
  * Created Date: Apr 26, 2007
  *
  */
 public class TableSearcherCell
 {
-    int row = -1;
-    int col = -1;
-    boolean found = false;
+    private int row = -1;
+    private int col = -1;
+    private boolean found = false;
+    
     /**
-     * 
+     * Returns the information associated with a found value in the TableSearcher class.
+     * allows user to acces the row, col and whether teh value was found
      */
     public TableSearcherCell(int row, int col, boolean found)
-        {
-        this.row =row;
+    {
+        this.row = row;
         this.col = col;
         this.found = found;
 
     }
+    
     /**
-     * @return the col
+     * @return the col in which the value was found
      */
     public int getCol()
     {
         return this.col;
     }
+    
     /**
-     * @return the found
+     * @return true if a value is found
      */
     public boolean isFound()
     {
         return this.found;
     }
+    
     /**
-     * @return the row
+     * @return the row in which the value was found
      */
     public int getRow()
     {
         return this.row;
     }
+    
     /**
      * @param args
      */
     public static void main(String[] args)
     {
         // TODO Auto-generated method stub
-
     }
-
 }
