@@ -29,13 +29,9 @@ import org.apache.log4j.Logger;
 public class PopupDlgId
 {
     private static final Logger log = Logger.getLogger(PopupDlgId.class);
-
     private String idString = "";
-
     private String title, message, uniqueIdentifier = "";
-
     int callingLinenumber;
-
     int id = -1;
 
     /**
