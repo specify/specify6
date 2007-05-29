@@ -25,7 +25,7 @@ package edu.ku.brc.ui;
  * Created Date: Apr 26, 2007
  *
  */
-public class ASearchableCell
+public class TableSearcherCell
 {
     int row = -1;
     int col = -1;
@@ -33,7 +33,7 @@ public class ASearchableCell
     /**
      * 
      */
-    public ASearchableCell(int row, int col, boolean found)
+    public TableSearcherCell(int row, int col, boolean found)
         {
         this.row =row;
         this.col = col;
