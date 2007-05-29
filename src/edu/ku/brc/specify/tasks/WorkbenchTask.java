@@ -121,9 +121,9 @@ import edu.ku.brc.ui.forms.MultiView;
 /**
  * Placeholder for additional work.
  *
- * @code_status Alpha
+ * @code_status Beta
  *
- * @author meg
+ * @author meg, rods, jstewart
  *
  */
 public class WorkbenchTask extends BaseTask
