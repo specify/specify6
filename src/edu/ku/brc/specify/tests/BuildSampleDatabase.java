@@ -1670,8 +1670,7 @@ public class BuildSampleDatabase
         {
             if (hideFrame) System.out.println("Creating schema");
             
-            SpecifySchemaGenerator schemaGen = new SpecifySchemaGenerator();
-            schemaGen.generateSchema(driverInfo, hostName, dbName, username, password);
+            SpecifySchemaGenerator.generateSchema(driverInfo, hostName, dbName, username, password);
             
             SwingUtilities.invokeLater(new Runnable()
             {
@@ -1802,15 +1801,12 @@ public class BuildSampleDatabase
             }
         });
         
-        SpecifySchemaGenerator schemaGen = new SpecifySchemaGenerator();
-        //schemaGen.generateSchema(databaseHost, databaseName);
-        
         DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver(driverName);
         if (driverInfo == null)
         {
             throw new RuntimeException("Couldn't find driver by name ["+driverInfo+"] in driver list.");
         }
-        schemaGen.generateSchema(driverInfo, databaseHost, dbName, userName, password);
+        SpecifySchemaGenerator.generateSchema(driverInfo, databaseHost, dbName, userName, password);
 
         //HibernateUtil.setListener("post-commit-update", new edu.ku.brc.specify.dbsupport.PostUpdateEventListener());
         HibernateUtil.setListener("post-commit-insert", new edu.ku.brc.specify.dbsupport.PostInsertEventListener());

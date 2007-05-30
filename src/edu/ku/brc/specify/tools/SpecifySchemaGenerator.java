@@ -27,38 +27,17 @@ import edu.ku.brc.ui.UIRegistry;
 
 
 /**
+ * This class provides the ability to create a DB schema from a Hibernate OR mapping.
  *
- * @code_status Alpha
+ * @code_status Beta
  * @author jstewart
  */
 public class SpecifySchemaGenerator
 {
     protected static final Logger log = Logger.getLogger(SpecifySchemaGenerator.class);
             
-    protected DBConnection dbConn;
-    
-    public SpecifySchemaGenerator()
-    {
-        // do nothing
-    }
-    
-    /*
-    public synchronized void generateSchema(String hostname, String databaseName) throws SQLException
-    {
-        String dbDriver  = "com.mysql.jdbc.Driver";
-        String dbDialect = "org.hibernate.dialect.MySQLDialect";
-        String connStr   = "jdbc:mysql://" + hostname + "/";
-        String user      = "rods";
-        String passwd    = "rods";
-
-        dbConn = DBConnection.createInstance(dbDriver, dbDialect, databaseName, connStr, user, passwd);
-
-        dropAndCreateDB(databaseName);
-        doGenSchema(dbDriver,dbDialect,hostname,databaseName,user,passwd);
-    }*/
-    
     /**
-     * This Drops (or deletes) the database and creates a new one by generating the schema.
+     * Drops (or deletes) the database and creates a new one by generating the schema.
      * @param dbdriverInfo the driver info
      * @param hostname the host name ('localhost')
      * @param databaseName the database name
@@ -66,7 +45,7 @@ public class SpecifySchemaGenerator
      * @param password the password
      * @throws SQLException
      */
-    public synchronized void generateSchema(final DatabaseDriverInfo dbdriverInfo, 
+    public static void generateSchema(final DatabaseDriverInfo dbdriverInfo, 
                                             final String hostname,
                                             final String databaseName,
                                             final String userName,
@@ -88,7 +67,7 @@ public class SpecifySchemaGenerator
         }
 
         // Now connect to other databases and "create" the Derby database
-        dbConn = DBConnection.createInstance(dbdriverInfo.getDriverClassName(), dbdriverInfo.getDialectClassName(), databaseName, connectionStr, userName, password);
+        DBConnection dbConn = DBConnection.createInstance(dbdriverInfo.getDriverClassName(), dbdriverInfo.getDialectClassName(), databaseName, connectionStr, userName, password);
 
         // Once connected drop the non-Derby databases
         if (!isDerby)
@@ -101,8 +80,6 @@ public class SpecifySchemaGenerator
         // Generate the schema
         doGenSchema(dbdriverInfo,
                     connectionStr,
-                    hostname,
-                    databaseName,
                     userName,
                     password);
         
@@ -122,7 +99,7 @@ public class SpecifySchemaGenerator
      * Drops (deletes the directory) for a local Derby Database.
      * @param databaseName the database name (which is really the directory name).
      */
-    protected void dropDerbyDatabase(final String databaseName)
+    protected static void dropDerbyDatabase(final String databaseName)
     {
         String derbyDatabasePath = UIRegistry.getJavaDBPath();
         if (StringUtils.isNotEmpty(derbyDatabasePath))
@@ -154,9 +131,9 @@ public class SpecifySchemaGenerator
      * Drop the database via it's connection.
      * @param dbConnection the connection 
      * @param dbName the database name
-     * @throws SQLException
+     * @throws SQLException if any DB errors occur
      */
-    protected void dropAndCreateDB(final DBConnection dbConnection, final String dbName) throws SQLException
+    protected static void dropAndCreateDB(final DBConnection dbConnection, final String dbName) throws SQLException
     {
         Connection connection = dbConnection.createConnection();
         Statement  stmt       = connection.createStatement();
@@ -187,40 +164,16 @@ public class SpecifySchemaGenerator
         connection.close();
     }
     
-//    protected void writeHibPropFile(final String dbDriver,
-//    								final String dbDialect,
-//    								final String hostname,
-//    								final String databaseName,
-//    								final String user,
-//    								final String passwd) throws IOException
-//    {
-//        StringBuilder sb = new StringBuilder();
-//        sb.append("hibernate.connection.driver_class="+dbDriver+"\n");
-//        sb.append("hibernate.dialect="+dbDialect+"\n");
-//        sb.append("hibernate.connection.url=jdbc:mysql://"+hostname+"/"+databaseName+"\n");
-//        sb.append("hibernate.connection.username="+user+"\n");
-//        sb.append("hibernate.connection.password="+passwd+"\n");
-//        sb.append("hibernate.max_fetch_depth=3\n");
-//        sb.append("hibernate.connection.pool_size=5\n");
-//        sb.append("hibernate.bytecode.use_reflection_optimizer=true\n");
-//
-//        XMLHelper.setContents(new File("src" + File.separator + "hibernate.properties"), sb.toString());
-//    }
-    
     /**
      * Creates a properties object with the necessary args for generating the schema.
-     * @param driverInfo the driver info to use
+     * @param driverInfo basic info about the DB driver to use
      * @param connectionStr the connection string for creating or opening a database
-     * @param hostname the hostname (localhost)
-     * @param databaseName the database name
      * @param user the username
-     * @param passwd the password (clear text)
-     * @return properties
+     * @param passwd the password (plaintext)
+     * @return the generated Hibernate properties
      */
-    protected Properties getHibernateProperties(final DatabaseDriverInfo driverInfo,
+    protected static Properties getHibernateProperties(final DatabaseDriverInfo driverInfo,
                                                 final String connectionStr, // might be a create or an open connection string
-                                                final String hostname,
-                                                final String databaseName,
                                                 final String user,
                                                 final String passwd)
     {
@@ -234,13 +187,6 @@ public class SpecifySchemaGenerator
         props.setProperty("hibernate.connection.pool_size",    "5");
         props.setProperty("hibernate.format_sql",              "true");
         
-        /*
-        for (Object key : props.keySet())
-        {
-            //log.info(key+"="+props.getProperty((String)key));
-            log.error(key+"="+props.getProperty((String)key));
-        }
-        */
         return props;
     }
 
@@ -253,23 +199,14 @@ public class SpecifySchemaGenerator
      * @param user the username
      * @param passwd the password (clear text)
      */
-    protected void doGenSchema(final DatabaseDriverInfo driverInfo,
+    protected static void doGenSchema(final DatabaseDriverInfo driverInfo,
                                final String connectionStr, // might be a create or an open connection string
-                               final String hostname,
-                               final String databaseName,
                                final String user,
                                final String passwd)
     {
-//        // Let Apache Ant do all of the real work
-//        Project project = new Project();
-//        project.init();
-//        project.setBasedir(".");
-//        ProjectHelper.getProjectHelper().parse(project, new File("build.xml"));
-//        project.executeTarget("genschema");
-//
-        // if we can get this stuff working, we can get rid of using Ant for this purpose
+        // setup the Hibernate configuartion
         Configuration hibCfg = new AnnotationConfiguration();
-        hibCfg.setProperties(getHibernateProperties(driverInfo, connectionStr, hostname, databaseName, user, passwd));
+        hibCfg.setProperties(getHibernateProperties(driverInfo, connectionStr, user, passwd));
         hibCfg.configure();
         
         SchemaExport schemaExporter = new SchemaExport(hibCfg);
@@ -295,12 +232,16 @@ public class SpecifySchemaGenerator
         }
     }
     
+    /**
+     * Creates a {@link SpecifySchemaGenerator} and generates a test DB in a localhost MySQL server.
+     * 
+     * @param args ignored
+     * @throws SQLException if any DB error occurs
+     */
     public static void main(String[] args) throws SQLException
     {
-        SpecifySchemaGenerator schemaGen = new SpecifySchemaGenerator();
-        
         DatabaseDriverInfo dbdriverInfo = DatabaseDriverInfo.getDriver("MySQL");
 
-        schemaGen.generateSchema(dbdriverInfo, "localhost", "testdb", "rods", "rods");
+        SpecifySchemaGenerator.generateSchema(dbdriverInfo, "localhost", "testdb", "rods", "rods");
     }
 }
