@@ -18,21 +18,37 @@ import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
  * using the data in a {@link WorkbenchRow} object.
  * 
  * @author jstewart
- * @code_status Alpha
+ * @code_status Beta
  */
 public class WorkbenchRowPlacemarkWrapper implements GoogleEarthPlacemarkIFace
 {
+    /** The {@link WorkbenchRow} containing the actual data. */
     protected WorkbenchRow wbRow;
+    
+    /** A text label used to identify this placemark. */
     protected String label;
+    
+    /** The {@link WorkbenchTemplateMappingItem}s describing the row. */
     protected Hashtable<Short, WorkbenchTemplateMappingItem> mappings = null;
-    protected Vector<WorkbenchDataItem>                      dataList = null;
+    
+    /** The data items contained in the row. */
+    protected Vector<WorkbenchDataItem> dataList = null;
 
+    /**
+     * Constructor.
+     * 
+     * @param row the {@link WorkbenchRow} to represent as a {@link GoogleEarthPlacemarkIFace} object
+     * @param label the text label of the resulting placemark
+     */
     public WorkbenchRowPlacemarkWrapper( WorkbenchRow row, String label )
     {
         this.wbRow = row;
         this.label = label;
     }
     
+    /**
+     * Initializes all data needed by the {@link GoogleEarthPlacemarkIFace} methods.
+     */
     protected void initExportData()
     {
         if (mappings == null)
@@ -51,12 +67,18 @@ public class WorkbenchRowPlacemarkWrapper implements GoogleEarthPlacemarkIFace
         }
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.exporters.GoogleEarthPlacemarkIFace#cleanup()
+     */
     public void cleanup()
     {
         mappings.clear();
         mappings = null;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.exporters.GoogleEarthPlacemarkIFace#getHtmlContent()
+     */
     public String getHtmlContent()
     {
         // XXX In the Future this should call a delegate
@@ -82,6 +104,9 @@ public class WorkbenchRowPlacemarkWrapper implements GoogleEarthPlacemarkIFace
         return sb.toString();
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.exporters.GoogleEarthPlacemarkIFace#getLatLon()
+     */
     public Pair<Double, Double> getLatLon()
     {
         GeoRefConverter converter = new GeoRefConverter();
@@ -137,6 +162,9 @@ public class WorkbenchRowPlacemarkWrapper implements GoogleEarthPlacemarkIFace
         return null;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.exporters.GoogleEarthPlacemarkIFace#getTitle()
+     */
     public String getTitle()
     {
         initExportData();

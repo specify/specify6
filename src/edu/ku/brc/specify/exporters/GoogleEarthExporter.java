@@ -20,8 +20,6 @@ import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import javax.swing.Icon;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import org.apache.commons.io.FileUtils;
@@ -29,7 +27,6 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
-import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.dbsupport.RecordSetLoader;
 import edu.ku.brc.specify.tasks.services.KeyholeMarkupGenerator;
@@ -40,14 +37,19 @@ import edu.ku.brc.util.Pair;
 import edu.ku.brc.util.services.GenericKmlGenerator;
 
 /**
+ * An implementation of {@link RecordSetExporter} that produces KML files
+ * and opens Google Earth as an external viewer.
+ * 
  * @author jstewart
- * @code_status Alpha
+ * @code_status Complete
  */
 public class GoogleEarthExporter implements RecordSetExporter
 {
     /** Logger for all log messages emitted from this class. */
     private static final Logger log = Logger.getLogger(GoogleEarthExporter.class);
     
+    /** The filename of the placemark icon file used if the caller doesn't specify one.  This file must be
+     * successfully located using {@link IconManager#getImagePath(String). */
     private static final String DEFAULT_ICON_FILE = "specify32White.png";
             
 	/* (non-Javadoc)
@@ -56,15 +58,10 @@ public class GoogleEarthExporter implements RecordSetExporter
 	public void exportRecordSet(RecordSet data, Properties reqParams)
     {
         log.info("Exporting RecordSet");
-        int collObjTableId = DBTableIdMgr.getInstance().getIdByClassName(CollectionObject.class.getName());
         int collEvtTableId = DBTableIdMgr.getInstance().getIdByClassName(CollectingEvent.class.getName());
         int dataTableId = data.getDbTableId();
 
-        if (dataTableId == collObjTableId)
-        {
-            exportCollectionObjectRecordSet(data);
-        }
-        else if (dataTableId == collEvtTableId)
+        if (dataTableId == collEvtTableId)
         {
             exportCollectingEventRecordSet(data);
         }
@@ -74,6 +71,9 @@ public class GoogleEarthExporter implements RecordSetExporter
         }
 	}
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.exporters.RecordSetExporter#exportList(java.util.List, java.util.Properties)
+     */
     @SuppressWarnings("unchecked")
     public void exportList(List<?> data, Properties reqParams) throws Exception
     {
@@ -121,14 +121,12 @@ public class GoogleEarthExporter implements RecordSetExporter
         }
     }
     
-    protected void exportCollectionObjectRecordSet(@SuppressWarnings("unused") RecordSet data)
-    {
-        log.info("Exporting a RecordSet of CollectionObjects");
-        JFrame topFrame = (JFrame)UIRegistry.get(UIRegistry.TOPFRAME);
-        Icon icon = IconManager.getIcon(getIconName());
-        JOptionPane.showMessageDialog(topFrame, "Not yet implemented", getName() + " data export", JOptionPane.ERROR_MESSAGE, icon);
-    }
-    
+    /**
+     * Creates a KML file containing the data found in a {@link RecordSet} of {@link CollectingEvent}s and
+     * opens the KML file using the default system viewer (most likely Google Earth).
+     * 
+     * @param data a {@link RecordSet} of {@link CollectingEvent}s
+     */
     protected void exportCollectingEventRecordSet(RecordSet data)
     {
         KeyholeMarkupGenerator kmlGen = new KeyholeMarkupGenerator();
@@ -143,7 +141,7 @@ public class GoogleEarthExporter implements RecordSetExporter
         {
             tmpFile = File.createTempFile("sp6export", ".kml");
             kmlGen.outputToFile(tmpFile.getAbsolutePath());
-            AttachmentUtils.openFile(tmpFile);
+            openExternalViewer(tmpFile);
         }
         catch (Exception e)
         {
@@ -213,8 +211,6 @@ public class GoogleEarthExporter implements RecordSetExporter
         
         // get a copy of the icon file
         URL icon = IconManager.getImagePath(DEFAULT_ICON_FILE);
-        System.out.println("Default File:"+ icon);
-        System.out.println(icon.toString());
         File iconFile = File.createTempFile("sp6-export-icon-", ".png");
         FileUtils.copyURLToFile(icon, iconFile);
         
@@ -269,6 +265,12 @@ public class GoogleEarthExporter implements RecordSetExporter
         return mappedPlacemarks;
     }
     
+    /**
+     * Opens the system default viewer for the given file.
+     * 
+     * @param f
+     * @throws Exception
+     */
     protected void openExternalViewer(File f) throws Exception
     {
         AttachmentUtils.openFile(f);
@@ -279,7 +281,7 @@ public class GoogleEarthExporter implements RecordSetExporter
      */
     public Class<?>[] getHandledClasses()
     {
-        return new Class<?>[] {CollectionObject.class, CollectingEvent.class, GoogleEarthPlacemarkIFace.class};
+        return new Class<?>[] {CollectingEvent.class, GoogleEarthPlacemarkIFace.class};
     }
 
     /* (non-Javadoc)
@@ -290,11 +292,17 @@ public class GoogleEarthExporter implements RecordSetExporter
         return getResourceString("GoogleEarth");
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.exporters.RecordSetExporter#getIconName()
+     */
     public String getIconName()
     {
         return "GoogleEarth";
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.exporters.RecordSetExporter#getDescription()
+     */
     public String getDescription()
     {
         return getResourceString("GoogleEarth_Description");

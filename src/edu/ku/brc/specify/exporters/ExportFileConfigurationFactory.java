@@ -1,11 +1,8 @@
 /*
-     * Copyright (C) 2007  The University of Kansas
-     *
-     * [INSERT KU-APPROVED LICENSE TEXT HERE]
-     *
-     */
-/**
- * 
+ * Copyright (C) 2007  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ *
  */
 package edu.ku.brc.specify.exporters;
 
@@ -18,14 +15,13 @@ import edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalDataIFace;
 import edu.ku.brc.specify.tasks.subpane.wb.ConfigureXLS;
 
 /**
+ * 
  * @author timbo
- *
  * @code_status Alpha
- *
  */
 public class ExportFileConfigurationFactory
 {
-    public static String XLS_MIME_TYPE = "bindary/xls";
+    public static String XLS_MIME_TYPE = "binary/xls";
     public static String CSV_MIME_TYPE = "text/csv";
     
     // This should be a WeakReference somday

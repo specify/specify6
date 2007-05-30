@@ -14,7 +14,7 @@ import edu.ku.brc.util.Pair;
  * be displayed in Google Earth as a placemark.
  * 
  * @author jstewart
- * @code_status Alpha
+ * @code_status Complete
  */
 public interface GoogleEarthPlacemarkIFace
 {

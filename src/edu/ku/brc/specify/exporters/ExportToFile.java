@@ -1,11 +1,8 @@
 /*
-     * Copyright (C) 2007  The University of Kansas
-     *
-     * [INSERT KU-APPROVED LICENSE TEXT HERE]
-     *
-     */
-/**
- * 
+ * Copyright (C) 2007  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ *
  */
 package edu.ku.brc.specify.exporters;
 
@@ -25,10 +22,9 @@ import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
+ * 
  * @author timbo
- *
  * @code_status Alpha
- *
  */
 public class ExportToFile implements RecordSetExporter
 {    
