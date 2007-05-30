@@ -12,8 +12,10 @@ import java.security.PrivilegedAction;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 
 /**
+ * This class is a factory that produces objects capable of finding
+ * {@link TreeDefIface}s.
  *
- * @code_status Alpha
+ * @code_status Beta
  * @author jstewart
  */
 public abstract class TreeFinderFactory
@@ -22,13 +24,19 @@ public abstract class TreeFinderFactory
     
     private static TreeFinderFactory instance;
     
+    /**
+     * Finds the {@link TreeDefIface} object of the given type.
+     * 
+     * @param type the type of the {@link TreeDefIface} instance to find
+     * @return a {@link TreeDefIface} instance
+     */
     public abstract TreeDefIface<?,?,?> findTreeDefinition(String type);
     
     /**
      * Returns the instance of the TreeFinderFactory.
      * @return the instance of the TreeFinderFactory.
      */
-    public static TreeFinderFactory getInstance()
+    public synchronized static TreeFinderFactory getInstance()
     {
         if (instance != null)
         {
@@ -36,10 +44,13 @@ public abstract class TreeFinderFactory
             
         }
         // else
-        String factoryName = AccessController.doPrivileged(new PrivilegedAction<String>() {
-                public String run() {
-                    return System.getProperty(
-                    propName);}});
+        String factoryName = AccessController.doPrivileged(new PrivilegedAction<String>()
+                {
+                    public String run()
+                    {
+                        return System.getProperty(propName);
+                    }
+                });
             
         if (factoryName != null) 
         {
