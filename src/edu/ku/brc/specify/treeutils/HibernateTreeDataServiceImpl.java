@@ -15,6 +15,7 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.Hibernate;
+import org.hibernate.Interceptor;
 import org.hibernate.LockMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -47,14 +48,21 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
      */
     protected static final Logger log = Logger.getLogger(HibernateTreeDataServiceImpl.class);
 
+    /** An {@link Interceptor} that logs all objects loaded by Hibernate. */
     static HibernateLoadLogger loadLogger = new HibernateLoadLogger();
     
+	/**
+	 * Constructor.
+	 */
 	public HibernateTreeDataServiceImpl()
 	{
         log.trace("enter");
         log.trace("exit");
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.treeutils.TreeDataService#findByName(edu.ku.brc.specify.datamodel.TreeDefIface, java.lang.String)
+	 */
 	@SuppressWarnings("unchecked")
     public synchronized List<T> findByName(D treeDef, String name)
     {
@@ -85,6 +93,9 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         return results;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.treeutils.TreeDataService#getChildNodes(edu.ku.brc.specify.datamodel.Treeable)
+     */
     public synchronized Set<T> getChildNodes(T parent)
     {
         log.trace("enter");
@@ -108,12 +119,8 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         return children;
     }
     
-	/**
-	 *
-	 *
+	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.treeutils.TreeDataService#getRootNode(edu.ku.brc.specify.datamodel.TreeDefIface)
-	 * @param treeDef
-	 * @return
 	 */
 	@SuppressWarnings("unchecked")
 	public synchronized T getRootNode(D treeDef)
@@ -144,6 +151,9 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 		return root;
 	}
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.treeutils.TreeDataService#addNewTreeDefItem(edu.ku.brc.specify.datamodel.TreeDefItemIface, edu.ku.brc.specify.datamodel.TreeDefItemIface)
+     */
     public synchronized boolean addNewTreeDefItem(I newDefItem, I parent)
     {
         log.trace("enter");
@@ -174,13 +184,8 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         return success;
     }
     
-    /**
-     * Determines, based on the registered business rules, if the given object
-     * can be deleted safely.
-     * 
-     * @param o the object the check
-     * @param s the Hibernate Session managing that Object
-     * @return true if the Object is deletable
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.treeutils.TreeDataService#canDelete(java.lang.Object)
      */
     public synchronized boolean canDelete(Object o)
     {
@@ -200,6 +205,9 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         return busRule.okToDelete(o);
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.treeutils.TreeDataService#deleteTreeDefItem(edu.ku.brc.specify.datamodel.TreeDefItemIface)
+     */
     public synchronized boolean deleteTreeDefItem(I defItem)
     {
         log.trace("enter");
@@ -284,6 +292,9 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 		return def;
 	}
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.treeutils.TreeDataService#canAddChildToNode(edu.ku.brc.specify.datamodel.Treeable)
+     */
     public synchronized boolean canAddChildToNode(T node)
     {
         log.trace("enter");
@@ -296,6 +307,9 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         return false;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.treeutils.TreeDataService#getDescendantCount(edu.ku.brc.specify.datamodel.Treeable)
+     */
     public synchronized int getDescendantCount(T node)
     { 
         log.trace("enter");
@@ -384,6 +398,9 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         log.trace("exit");
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.treeutils.TreeDataService#addNewChild(edu.ku.brc.specify.datamodel.Treeable, edu.ku.brc.specify.datamodel.Treeable)
+     */
     @SuppressWarnings("null")
     public synchronized void addNewChild(T parent, T child)
     {
@@ -446,7 +463,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.treeutils.TreeDataService#moveTreeNode(edu.ku.brc.specify.datamodel.Treeable, edu.ku.brc.specify.datamodel.Treeable)
+     * @see edu.ku.brc.specify.treeutils.TreeDataService#moveTreeNode(edu.ku.brc.specify.datamodel.Treeable, edu.ku.brc.specify.datamodel.Treeable, edu.ku.brc.specify.datamodel.Treeable)
      */
     public synchronized void moveTreeNode(T node, T newParent, T rootNode)
     {
@@ -657,6 +674,15 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         return result;
     }
     
+    /**
+     * Returns a string representation of the given Object.  If the object does not
+     * implement {@link Treeable}, then {@link Object#toString()} is called.  If the object
+     * does implement {@link Treeable}, the node ID, name, and hashcode are used to create
+     * a string representation.  This method is for debugging purposes only.
+     * 
+     * @param o any object
+     * @return a string representation of the node
+     */
     private String nodeDebugInfo(Object o)
     {
         if (o instanceof Treeable)
@@ -667,6 +693,14 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         return o.toString();
     }
 
+    /**
+     * This class is an extension of {@link EmptyInterceptor} that logs all
+     * objects loaded by Hibernate.  This class is only intended for use in
+     * debugging.
+     * 
+     * @author jstewart
+     * @code_status Complete.
+     */
     public static class HibernateLoadLogger extends EmptyInterceptor
     {
         @Override

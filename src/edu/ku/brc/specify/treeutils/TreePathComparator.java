@@ -1,4 +1,7 @@
 /**
+ * Copyright (C) 2006  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
  * 
  */
 package edu.ku.brc.specify.treeutils;
@@ -11,32 +14,38 @@ import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 
 /**
- *
- *
+ * An implementation of {@link Comparator} that sorts tree nodes according to their
+ * visual order in a tree UI widget.
+ * 
  * @author jstewart
- * @version %I% %G%
+ * @code_status Beta
+ * @param <T> a subclass of {@link Treeable}
+ * @param <D> a subclass of {@link TreeDefIface}
+ * @param <I> a subclass of {@link TreeDefItemIface}
  */
 public class TreePathComparator<T extends Treeable<T,D,I>,
                                 D extends TreeDefIface<T,D,I>,
                                 I extends TreeDefItemIface<T,D,I>>
                                 implements Comparator<T>
 {
+	/** A {@link Comparator} for sorting sibling nodes. */
 	protected TreeOrderSiblingComparator siblingComp;
+	/** A toggle for setting the case-sensativity of the name-based sorting. */
 	protected boolean ignoreCase;
 	
+	/**
+     * Constructor.  
+     * 
+	 * @param ignoreCase indicator of whether to perform case-sensative sorting or not.
+	 */
 	public TreePathComparator(boolean ignoreCase)
 	{
 		siblingComp = new TreeOrderSiblingComparator(ignoreCase);
 		this.ignoreCase = ignoreCase;
 	}
 	
-	/**
-	 *
-	 *
+	/* (non-Javadoc)
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-	 * @param o1
-	 * @param o2
-	 * @return
 	 */
 	public int compare(T o1, T o2)
 	{

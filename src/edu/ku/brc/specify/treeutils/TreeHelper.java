@@ -1,3 +1,9 @@
+/**
+ * Copyright (C) 2006  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ * 
+ */
 package edu.ku.brc.specify.treeutils;
 
 import java.util.Vector;
@@ -12,16 +18,25 @@ import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 
+/**
+ * This is simply a collection of helper methods for manipulating trees and tree nodes.
+ * 
+ * @author jstewart
+ * @code_status Beta
+ */
 public class TreeHelper
 {
     protected static final Logger log = Logger.getLogger(TreeHelper.class);
     
     /**
+     * Generates the 'full' name of the given tree node.
+     * 
      * THIS METHOD ASSUMES ALL DATA IS AVAILABLE.  IF USED WITH A JPA
      * PROVIDER THAT DOES LAZY LOADING, IT IS THE CALLER'S RESPONSIBILITY
      * TO LOAD ALL DATA BEFORE CALLING THIS METHOD.
      * 
-     * @param node
+     * @param node a tree node
+     * @return the full name
      */
     public static <T extends Treeable<T,D,I>,
                    D extends TreeDefIface<T,D,I>,
@@ -116,12 +131,15 @@ public class TreeHelper
     }
     
     /**
+     * Generates and sets the full name of the given node and all of its
+     * descendants.
+     * 
      * THIS METHOD ASSUMES ALL DATA IS AVAILABLE.  IF USED WITH A JPA
      * PROVIDER THAT DOES LAZY LOADING, IT IS THE CALLER'S RESPONSIBILITY
      * TO LOAD ALL DATA BEFORE CALLING THIS METHOD OR CALLING THIS METHOD
      * FROM WITHIN AN ENTITYMANAGER CONTEXT.
      * 
-     * @param node
+     * @param node a tree node
      */
     public static <T extends Treeable<T,D,I>,
                    D extends TreeDefIface<T,D,I>,
@@ -157,6 +175,10 @@ public class TreeHelper
         }
     }
     
+    /**
+     * @see #fixFullnameForNodeAndDescendants(Treeable)
+     * @param a {@link Geography} node
+     */
     public static void fixFullnameForNodeAndDescendants(Geography geo)
     {
         String generated = generateFullname(geo);
@@ -168,6 +190,10 @@ public class TreeHelper
         }
     }
 
+    /**
+     * @see #fixFullnameForNodeAndDescendants(Treeable)
+     * @param a {@link GeologicTimePeriod} node
+     */
     public static void fixFullnameForNodeAndDescendants(GeologicTimePeriod gtp)
     {
         String generated = generateFullname(gtp);
@@ -179,6 +205,10 @@ public class TreeHelper
         }
     }
 
+    /**
+     * @see #fixFullnameForNodeAndDescendants(Treeable)
+     * @param a {@link Location} node
+     */
     public static void fixFullnameForNodeAndDescendants(Location loc)
     {
         String generated = generateFullname(loc);
@@ -190,6 +220,10 @@ public class TreeHelper
         }
     }
 
+    /**
+     * @see #fixFullnameForNodeAndDescendants(Treeable)
+     * @param a {@link Taxon} node
+     */
     public static void fixFullnameForNodeAndDescendants(Taxon taxon)
     {
         String generated = generateFullname(taxon);

@@ -11,12 +11,22 @@ import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 
 /**
- *
- * @code_status Alpha
+ * A factory for producing {@link TreeDataService} instances.
+ * 
  * @author jstewart
+ * @code_status Complete
  */
 public class TreeDataServiceFactory
 {
+	/**
+     * Returns a {@link TreeDataService} instance capable of finding and manipulating
+     * a tree of the given type.
+     * 
+	 * @param <T> an implementation class of {@link Treeable}
+	 * @param <D> an implementation class of {@link TreeDefIface}
+	 * @param <I> an implementation class of {@link TreeDefItemIface}
+	 * @return a {@link TreeDataService} instance capable of handling the given type of tree
+	 */
 	public static
 	<T extends Treeable<T,D,I>,
 	D extends TreeDefIface<T,D,I>,

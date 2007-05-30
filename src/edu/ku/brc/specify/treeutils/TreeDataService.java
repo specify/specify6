@@ -1,4 +1,7 @@
 /**
+ * Copyright (C) 2006  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
  * 
  */
 package edu.ku.brc.specify.treeutils;
@@ -12,23 +15,67 @@ import edu.ku.brc.specify.datamodel.Treeable;
 
 /**
  * This interface defines a session facade for all clients needing access to tree-structured data.
- *
- * @code_status Beta
+ * 
  * @author jstewart
+ * @code_status Complete
+ * @param <T> an implementation class of {@link Treeable}
+ * @param <D> an implementation class of {@link TreeDefIface}
+ * @param <I> an implementation class of {@link TreeDefItemIface}
  */
 public interface TreeDataService <T extends Treeable<T,D,I>,
 									D extends TreeDefIface<T,D,I>,
 									I extends TreeDefItemIface<T,D,I>>
 {
-    // various finding methods
+	/**
+     * Finds a tree node in the given tree with the given name.
+     * 
+	 * @param treeDef the tree to search
+	 * @param name the node name to search for
+	 * @return a {@link List} of matching nodes
+	 */
 	public List<T> findByName(D treeDef, String name);
+	
+    /**
+     * Returns the root node of the given tree.
+     * 
+	 * @param treeDef the tree to inspect
+	 * @return the root node
+	 */
 	public T getRootNode(D treeDef);
+	
+    /**
+     * Returns all of the trees of the given class.
+     * 
+	 * @param treeDefClass a class implementing {@link TreeDefIface}
+	 * @return a {@link List} of trees of the given class
+	 */
 	public List<D> getAllTreeDefs(Class<D> treeDefClass);
+	
+    /**
+     * Returns the tree having the given class and ID.
+     * 
+	 * @param defClass the tree class
+	 * @param defId the tree ID
+	 * @return the tree definition
+	 */
 	public D getTreeDef(Class<D> defClass, long defId);
+    
+    /**
+     * Returns the {@link Set} of the children of the given node.
+     * 
+     * @param parent the node for which to gather the children
+     * @return the {@link Set} of child nodes
+     */
     public Set<T> getChildNodes(T parent);
+    
+    /**
+     * Returns the number of descendants of the given node.
+     * 
+     * @param node the node to inspect
+     * @return the number of descendants
+     */
     public int getDescendantCount(T node);
     
-    // manipulation and inspection of tree nodes
     /**
      * Checks the business rules for the given object to see if it can be deleted.
      * 
@@ -71,6 +118,21 @@ public interface TreeDataService <T extends Treeable<T,D,I>,
      */
     public void moveTreeNode(T node, T newParent, T rootNode);
     
+    /**
+     * Adds a new {@link TreeDefItemIface} as a child of the given
+     * {@link TreeDefItemIface}.
+     * 
+     * @param newDefItem the new child item
+     * @param parentDefItem the parent item
+     * @return true on success, false on failure
+     */
     public boolean addNewTreeDefItem(I newDefItem, I parentDefItem);
+    
+    /**
+     * Deletes the given {@link TreeDefItemIface}.
+     * 
+     * @param defItem the {@link TreeDefItemIface} to delete
+     * @return true on success, false on failure
+     */
     public boolean deleteTreeDefItem(I defItem);
 }

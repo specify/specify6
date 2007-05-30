@@ -21,13 +21,13 @@ import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.util.Pair;
 
 /**
- * A factory class for creating instances of the Treeable, TreeDefIface, and TreeDefinitionItemIface interfaces.
- * The class also contains factory methods for creating appropriate comparators for comparing Treeables.  Also
- * included are some methods for determining if a given Treeable instance is deletable based on type-specific
- * business rules.
+ * A factory class for creating instances of the {@link Treeable}, {@link TreeDefIface}, and
+ * {@link TreeDefItemIface} interfaces.  The class also contains factory methods for creating
+ * appropriate comparators for comparing Treeables.  Also included are some methods for
+ * determining if a given Treeable instance is deletable based on type-specific business rules.
  * 
  * @author jstewart
- *
+ * @code_status Alpha
  */
 public class TreeFactory
 {
@@ -76,6 +76,14 @@ public class TreeFactory
 		return t;
 	}
     
+    /**
+     * Creates a new {@link Treeable} object having the given name and the same class as the given node.
+     * 
+     * @param <T> the class of the new node
+     * @param nodeOfSameClass a node having the same class as the node to be created
+     * @param name the name of the new node
+     * @return the new node
+     */
     @SuppressWarnings("unchecked")
     public static <T extends Treeable<T,?,?>> T createNewTreeable( T nodeOfSameClass, String name )
     {
@@ -145,27 +153,6 @@ public class TreeFactory
 		}
 		return t;
 	}
-
-//	/**
-//	 * Find and return a <code>java.util.Comparator</code> appropriate for comparing <code>Treeable</code> objects
-//	 * having the same implementation class as the given node.
-//	 * 
-//	 * @param node a node of the class tobe compared
-//	 * @return a <code>Comparator</code> capable of properly comparing nodes of the same class as <code>node</code>
-//	 */
-//	public static <T extends Treeable<T,?,?>> Comparator<? super T> getAppropriateComparator( T node )
-//	{
-//		if( (new Class<T>()).equals(GeologicTimePeriod.class) )
-//		{
-//			return new GeologicTimePeriodComparator();
-//		}
-//		else if( nodeClass.equals(Taxon.class) )
-//		{
-//			return new TreeOrderSiblingComparator();
-//		}
-//		
-//		return new NameBasedComparator();
-//	}
 
 	/**
 	 * Find and return the names of the formset and view for editing tree nodes of the same class
@@ -244,6 +231,13 @@ public class TreeFactory
 		return null;
 	}
 	
+	/**
+     * Creates a standard {@link Location} tree.
+     * 
+	 * @param defName the name of the new tree
+	 * @param remarks the remarks about the new tree
+	 * @return the new tree
+	 */
 	public static LocationTreeDef createStdLocationTreeDef(String defName,String remarks)
 	{
 		LocationTreeDef def = new LocationTreeDef();
@@ -277,6 +271,7 @@ public class TreeFactory
 		return def;
 	}
     
+	/** An array describing the standard levels of a {@link Location} tree. */
 	@SuppressWarnings("unused")
 	private Object[][] stdLocItems = {
 			{   0,"Location Root",true},
@@ -285,6 +280,7 @@ public class TreeFactory
          	{ 600,"Room",true},
          	{ 800,"Shelf/Freezer",true}, };
 	
+    /** An array describing the standard levels of a {@link Geography} tree. */
     @SuppressWarnings("unused")
 	private Object[][] stdGeoItems = {
     		{ 0, "Geography Root", true },
@@ -293,6 +289,7 @@ public class TreeFactory
 			{ 600, "State", true },
 			{ 800, "County", false }, };
 
+    /** An array describing the standard levels of a {@link GeologicTimePeriod} tree. */
 	@SuppressWarnings("unused")
 	private Object[][] stdGtpItems = {
 			{ 0, "Time Root", true },
@@ -301,6 +298,7 @@ public class TreeFactory
 			{ 600, "Epoch", false },
 			{ 800, "Age", false }, };
 
+    /** An array describing the standard levels of a {@link Taxon} tree. */
 	@SuppressWarnings("unused")
 	private Object[][] stdTaxonItems = {
 			{ 0, "Taxonomy Root", true },

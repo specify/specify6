@@ -19,14 +19,20 @@ import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.ui.db.TreeFinderFactory;
 
 /**
+ * A {@link TreeFinderFactoryImpl} is a Specify-centric implementation
+ * of {@link TreeFinderFactory}.
  *
- * @code_status Alpha
+ * @code_status Beta
  * @author jstewart
  */
 public class TreeFinderFactoryImpl extends TreeFinderFactory
 {
+    /** The data service that handles all data access. */
     protected TreeDataService<?,?,?> dataServ;
     
+    /**
+     * Constructor.
+     */
     @SuppressWarnings("unchecked")
     public TreeFinderFactoryImpl()
     {
@@ -39,6 +45,7 @@ public class TreeFinderFactoryImpl extends TreeFinderFactory
     @Override
     public TreeDefIface<?, ?, ?> findTreeDefinition(String type)
     {
+        // ask the type-specific method to do all of the work
         if (type.equalsIgnoreCase("taxon"))
         {
             return findTaxonTreeDef();
@@ -58,6 +65,11 @@ public class TreeFinderFactoryImpl extends TreeFinderFactory
         return null;
     }
     
+    /**
+     * Finds the 'first' taxonomy tree associated with the current {@link CatalogSeries}.
+     * 
+     * @return a {@link TaxonTreeDef}
+     */
     protected TaxonTreeDef findTaxonTreeDef()
     {
         List<TaxonTreeDef> defs = new Vector<TaxonTreeDef>();
@@ -78,6 +90,11 @@ public class TreeFinderFactoryImpl extends TreeFinderFactory
         return defs.get(0);
     }
     
+    /**
+     * Finds the 'first' geography tree associated with the current {@link CatalogSeries}.
+     * 
+     * @return a {@link GeographyTreeDef}
+     */
     protected GeographyTreeDef findGeographyTreeDef()
     {
         List<GeographyTreeDef> defs = new Vector<GeographyTreeDef>();
@@ -98,6 +115,11 @@ public class TreeFinderFactoryImpl extends TreeFinderFactory
         return defs.get(0);
     }
     
+    /**
+     * Finds the 'first' geologic time period tree associated with the current {@link CatalogSeries}.
+     * 
+     * @return a {@link GeologicTimePeriodTreeDef}
+     */
     protected GeologicTimePeriodTreeDef findGeologicTimePeriodTreeDef()
     {
         List<GeologicTimePeriodTreeDef> defs = new Vector<GeologicTimePeriodTreeDef>();
@@ -118,6 +140,11 @@ public class TreeFinderFactoryImpl extends TreeFinderFactory
         return defs.get(0);
     }
     
+    /**
+     * Finds the 'first' location tree associated with the current {@link CatalogSeries}.
+     * 
+     * @return a {@link LocationTreeDef}
+     */
     protected LocationTreeDef findLocationTreeDef()
     {
         List<LocationTreeDef> defs = new Vector<LocationTreeDef>();
