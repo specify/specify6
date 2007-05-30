@@ -13,10 +13,10 @@ import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.tasks.services.LocalityMapper.MapperListener;
 
 /**
- * The class is a client-side interface to the BioGeomancer georeferencing web service.
+ * The class is a client-side interface to the BioGeomancer Classic georeferencing service.
  * 
- * @code_status Beta
  * @author jstewart
+ * @code_status Beta
  */
 public class BioGeomancer
 {
@@ -72,9 +72,9 @@ public class BioGeomancer
                 new NameValuePair("batchtext", strBuf.toString()),
                 new NameValuePair("format", "xml") };
 
-        //the 2.0 beta1 version has a
+        // the 2.0 beta1 version has a
         // PostMethod.setRequestBody(NameValuePair[])
-        //method, as addParameters is deprecated
+        // method, as addParameters is deprecated
         postMethod.addParameters(postData);
 
         String responseBody = "";

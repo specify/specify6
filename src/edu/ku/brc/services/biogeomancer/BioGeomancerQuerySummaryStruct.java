@@ -6,7 +6,7 @@ package edu.ku.brc.services.biogeomancer;
  * values and an array of {@link BioGeomancerResultStruct}s.
  * 
  * @author jstewart
- * @code_status Alpha
+ * @code_status Beta
  *
  */
 public class BioGeomancerQuerySummaryStruct

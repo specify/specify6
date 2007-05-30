@@ -23,6 +23,12 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.specify.tasks.services.LocalityMapper.MapperListener;
 import edu.ku.brc.ui.UIHelper;
 
+/**
+ * A UI panel for use in displaying the results of a BioGeomancer Classic query.
+ * 
+ * @author jstewart
+ * @code_status Beta
+ */
 public class BioGeomancerResultsDisplay extends JPanel implements MapperListener
 {
     protected static final int MAP_WIDTH  = 400;
@@ -49,6 +55,9 @@ public class BioGeomancerResultsDisplay extends JPanel implements MapperListener
     
     protected BioGeomancerQuerySummaryStruct summary;
     
+    /**
+     * Constructor.  Creates all of the internal UI contents.
+     */
     public BioGeomancerResultsDisplay()
     {
         String rowDef = UIHelper.createDuplicateJGoodiesDef("p", "2px", 13) + ",20px,p:g";
@@ -103,6 +112,15 @@ public class BioGeomancerResultsDisplay extends JPanel implements MapperListener
         rowIndex+=2;
     }
     
+    /**
+     * Adds a new row to this object's content area.
+     * 
+     * @param cc the cell constraints of the new row
+     * @param labelStr the text label for the new row
+     * @param column the starting column number for the new row's UI
+     * @param row the row number of the new row
+     * @return the {@link JTextField} added to the new row
+     */
     protected JTextField addRow(final CellConstraints cc,
                                 final String labelStr,
                                 final int column,
@@ -115,18 +133,11 @@ public class BioGeomancerResultsDisplay extends JPanel implements MapperListener
         return tf;
     }
 
-    protected JTextField addRow(final CellConstraints cc,
-                                final String labelStr,
-                                final int column,
-                                final int row,
-                                int colSpan)
-    {
-        add(new JLabel(labelStr+":", SwingConstants.RIGHT), cc.xy(column,row));
-        JTextField tf = createTextField();
-        add(tf, cc.xywh(column+2,row, colSpan,1));
-        return tf;
-    }
-
+    /**
+     * Creates a {@link JTextField} customized for use in this UI widget.
+     * 
+     * @return a {@link JTextField}
+     */
     protected JTextField createTextField()
     {
         JTextField tf     = new JTextField();
@@ -138,6 +149,13 @@ public class BioGeomancerResultsDisplay extends JPanel implements MapperListener
         return tf;
     }
     
+    /**
+     * Parses the XML reply from BioGeomancer Classic, creating a {@link BioGeomancerQuerySummaryStruct}
+     * holding the corresponding data.  The data is then displayed in the appropriate UI widgets.
+     * 
+     * @param bgXmlResponse
+     * @throws Exception
+     */
     public void setBioGeomancerResultsData(String bgXmlResponse) throws Exception
     {
         mapLabel.setIcon(null);
@@ -179,16 +197,31 @@ public class BioGeomancerResultsDisplay extends JPanel implements MapperListener
         repaint();
     }
     
+    /**
+     * Adds a list selection listener to the results listing.
+     * 
+     * @param listener the listener to add
+     */
     public void addListSelectionListener( ListSelectionListener listener )
     {
         bgResultsTable.getSelectionModel().addListSelectionListener(listener);
     }
     
+    /**
+     * Removes the given {@link ListSelectionListener} (if it was previously added).
+     * 
+     * @param listener the listener to remove
+     */
     public void removeListSelectionListener( ListSelectionListener listener )
     {
         bgResultsTable.getSelectionModel().removeListSelectionListener(listener);
     }
     
+    /**
+     * Returns the selected result.
+     * 
+     * @return the selected result
+     */
     public BioGeomancerResultStruct getSelectedResult()
     {
         int rowIndex = bgResultsTable.getSelectedRow();
@@ -200,6 +233,11 @@ public class BioGeomancerResultsDisplay extends JPanel implements MapperListener
         return summary.results[rowIndex];
     }
     
+    /**
+     * Selects the result with the given index in the results list.
+     * 
+     * @param index the index of the result to select
+     */
     public void setSelectedResult(int index)
     {
         if (index < 0 || index > bgResultsTable.getRowCount()-1)
@@ -214,11 +252,17 @@ public class BioGeomancerResultsDisplay extends JPanel implements MapperListener
         }
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.services.LocalityMapper.MapperListener#exceptionOccurred(java.lang.Exception)
+     */
     public void exceptionOccurred(Exception e)
     {
         mapLabel.setText("Error while grabbing map");
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.services.LocalityMapper.MapperListener#mapReceived(javax.swing.Icon)
+     */
     public void mapReceived(Icon map)
     {
         mapLabel.setIcon(map);

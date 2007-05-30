@@ -2,11 +2,11 @@ package edu.ku.brc.services.biogeomancer;
 
 /**
  * This class is nothing more than a C-style struct holding a bunch of string
- * values.
+ * values.  The information encapsulated in this struct is a representation of
+ * the a BioGeomancer Classic query result.
  * 
  * @author jstewart
- * @code_status Alpha
- *
+ * @code_status Beta
  */
 public class BioGeomancerResultStruct
 {

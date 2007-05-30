@@ -2,27 +2,51 @@ package edu.ku.brc.services.biogeomancer;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
 
+/**
+ * An implementation of {@link TableModel} for use in presenting an array of {@link BioGeomancerResultStruct}s
+ * for display in a {@link JTable}.
+ * 
+ * @author jstewart
+ * @code_status Beta
+ */
 public class BioGeomancerResultsTableModel extends AbstractTableModel
 {
+    /** The actual data to be displayed. */
     protected BioGeomancerResultStruct[] results;
     
+    /**
+     * Constructor.
+     * 
+     * @param results the row data to be displayed
+     */
     public BioGeomancerResultsTableModel(BioGeomancerResultStruct[] results)
     {
         this.results = results;
     }
     
+    /* (non-Javadoc)
+     * @see javax.swing.table.TableModel#getColumnCount()
+     */
     public int getColumnCount()
     {
         return 11;
     }
 
+    /* (non-Javadoc)
+     * @see javax.swing.table.TableModel#getRowCount()
+     */
     public int getRowCount()
     {
         return results.length;
     }
 
+    /* (non-Javadoc)
+     * @see javax.swing.table.AbstractTableModel#getColumnName(int)
+     */
     @Override
     public String getColumnName(int column)
     {
@@ -77,6 +101,9 @@ public class BioGeomancerResultsTableModel extends AbstractTableModel
         return null;
     }
 
+    /* (non-Javadoc)
+     * @see javax.swing.table.TableModel#getValueAt(int, int)
+     */
     public Object getValueAt(int rowIndex, int columnIndex)
     {
         BioGeomancerResultStruct result = results[rowIndex];
