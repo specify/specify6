@@ -1,9 +1,9 @@
-/*
- * VersionCheck.java
+/**
+ * Copyright (C) 2007  The University of Kansas
  *
- * Created on April 30, 2007, 1:47 PM
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ * 
  */
-
 package edu.ku.brc.web;
 
 import java.io.BufferedInputStream;
@@ -22,9 +22,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
+ * This class is a HTTP servlet that handles version checking / usage tracking connections.
  *
  * @author jstewart
- * @code_status Alpha
+ * @code_status Beta
  */
 public class VersionCheck extends HttpServlet
 {    
@@ -32,6 +33,7 @@ public class VersionCheck extends HttpServlet
      * @param request servlet request
      * @param response servlet response
      */
+    @SuppressWarnings("unused")
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException
     {
@@ -54,6 +56,10 @@ public class VersionCheck extends HttpServlet
         String id      = null;
         String os      = null;
         String version = null;
+        
+        // TODO: work this info into the output out the servlet
+        //       this will help us filter out the dev and testing boxes' requests
+        boolean isKU   = request.getRemoteAddr().startsWith("129.237.");
         
         // get the request params (from POST or GET request)
         Enumeration<?> paramNames = request.getParameterNames();
@@ -132,6 +138,13 @@ public class VersionCheck extends HttpServlet
         // add the installation ID string
         String idString = "ID = " + id + ", " + "OS = " + os + ", " + version;
         logEntry.append(idString);
+        
+        // add the client IP address (and a 'KU' if they are coming from the ku.edu domain)
+        logEntry.append("\t" + request.getRemoteAddr());
+        if (isKU)
+        {
+            logEntry.append(" (KU)");
+        }
         logEntry.append("\n");
         
         // add the usage data
@@ -163,7 +176,9 @@ public class VersionCheck extends HttpServlet
     }
     
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /** Handles the HTTP <code>GET</code> method.
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     * 
      * @param request servlet request
      * @param response servlet response
      */
@@ -174,7 +189,9 @@ public class VersionCheck extends HttpServlet
         processRequest(request, response);
     }
     
-    /** Handles the HTTP <code>POST</code> method.
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     * 
      * @param request servlet request
      * @param response servlet response
      */
@@ -185,12 +202,13 @@ public class VersionCheck extends HttpServlet
         processRequest(request, response);
     }
     
-    /** Returns a short description of the servlet.
+    /**
+     * Returns a short description of the servlet.
      */
     @Override
     public String getServletInfo()
     {
-        return "A simple application version checker";
+        return "A simple application version checker / usage tracker";
     }
     // </editor-fold>
 }
