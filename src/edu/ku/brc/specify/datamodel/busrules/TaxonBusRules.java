@@ -19,14 +19,20 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.treeutils.TreeHelper;
 
 /**
+ * A business rules class that handles various safety checking and housekeeping tasks
+ * that must be performed when editing {@link Taxon} or
+ * {@link TaxonTreeDefItem} objects.
  *
- * @code_status Alpha
  * @author jstewart
+ * @code_status Beta
  */
 public class TaxonBusRules extends BaseBusRules
 {
     private static final Logger log = Logger.getLogger("edu.ku.brc.specify.datamodel.busrules");
     
+    /**
+     * Constructor.
+     */
     public TaxonBusRules()
     {
         super(Taxon.class,TaxonTreeDefItem.class);
@@ -299,11 +305,24 @@ public class TaxonBusRules extends BaseBusRules
         session.close();
     }
     
+    /**
+     * Converts a null string into an empty string.  If the provided String is not
+     * null, it is returned unchanged.
+     * 
+     * @param s a string
+     * @return the string or " ", if null
+     */
     private String makeNotNull(String s)
     {
         return (s == null) ? "" : s;
     }
     
+    /**
+     * Returns the provided {@link Boolean}, or <code>false</code> if null
+     * 
+     * @param b the {@link Boolean} to convert to non-null
+     * @returnthe provided {@link Boolean}, or <code>false</code> if null
+     */
     private boolean makeNotNull(Boolean b)
     {
         return (b == null) ? false : b.booleanValue();

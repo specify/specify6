@@ -17,14 +17,14 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Location;
 import edu.ku.brc.specify.datamodel.LocationTreeDefItem;
 import edu.ku.brc.specify.treeutils.TreeHelper;
-import edu.ku.brc.ui.forms.BusinessRulesIFace;
 
 /**
- * A class implementing the {@link BusinessRulesIFace} interface for both the
- * {@link Location} and {@link LocationTreeDefItem} classes.
+ * A business rules class that handles various safety checking and housekeeping tasks
+ * that must be performed when editing {@link Location} or
+ * {@link LocationTreeDefItem} objects.
  *
- * @code_status Beta
  * @author jstewart
+ * @code_status Beta
  */
 public class LocationBusRules extends BaseBusRules
 {
@@ -34,9 +34,7 @@ public class LocationBusRules extends BaseBusRules
     private static final Logger log = Logger.getLogger("edu.ku.brc.specify.datamodel.busrules");
     
     /**
-     * Creates a new {@link BusinessRulesIFace} instance capable of handling
-     * {@link Location} and {@link LocationTreeDefItem} objects.
-     * 
+     * Constructor.
      */
     public LocationBusRules()
     {
@@ -305,16 +303,6 @@ public class LocationBusRules extends BaseBusRules
         session.close();
     }
     
-    private String makeNotNull(String s)
-    {
-        return (s == null) ? "" : s;
-    }
-    
-    private boolean makeNotNull(Boolean b)
-    {
-        return (b == null) ? false : b.booleanValue();
-    }
-
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object)
      */
@@ -383,5 +371,28 @@ public class LocationBusRules extends BaseBusRules
         }
         
         return true;
+    }
+    
+    /**
+     * Converts a null string into an empty string.  If the provided String is not
+     * null, it is returned unchanged.
+     * 
+     * @param s a string
+     * @return the string or " ", if null
+     */
+    private String makeNotNull(String s)
+    {
+        return (s == null) ? "" : s;
+    }
+    
+    /**
+     * Returns the provided {@link Boolean}, or <code>false</code> if null
+     * 
+     * @param b the {@link Boolean} to convert to non-null
+     * @returnthe provided {@link Boolean}, or <code>false</code> if null
+     */
+    private boolean makeNotNull(Boolean b)
+    {
+        return (b == null) ? false : b.booleanValue();
     }
 }
