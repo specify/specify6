@@ -32,6 +32,9 @@ public class LocationTreeTask extends BaseTreeTask<Location,LocationTreeDef,Loca
 {
 	public static final String LOCATION = "LocationTree";
 	
+	/**
+	 * Constructor.
+	 */
 	public LocationTreeTask()
 	{
         super(LOCATION, getResourceString(LOCATION));
@@ -41,6 +44,9 @@ public class LocationTreeTask extends BaseTreeTask<Location,LocationTreeDef,Loca
         initialize();
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.BaseTreeTask#createMenus(java.util.List)
+	 */
 	@Override
 	protected void createMenus(List<LocationTreeDef> defs)
 	{

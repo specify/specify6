@@ -32,6 +32,9 @@ public class GeographyTreeTask extends BaseTreeTask<Geography,GeographyTreeDef,G
 {
 	public static final String GEOGRAPHY = "GeographyTree";
 	
+	/**
+	 * Constructor.
+	 */
 	public GeographyTreeTask()
 	{
         super(GEOGRAPHY, getResourceString(GEOGRAPHY));
@@ -41,6 +44,9 @@ public class GeographyTreeTask extends BaseTreeTask<Geography,GeographyTreeDef,G
         initialize();
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.BaseTreeTask#createMenus(java.util.List)
+	 */
 	@Override
 	protected void createMenus(List<GeographyTreeDef> defs)
 	{

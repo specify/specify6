@@ -36,7 +36,7 @@ import edu.ku.brc.ui.UIRegistry;
 
 /**
  * A base task that provides functionality in common to all tasks
- * the handle UI for tree-structured data.
+ * that provide UI for tree-structured data.
  *
  * @code_status Beta
  * @author jstewart
@@ -47,18 +47,36 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
 							extends BaseTask
 							implements DualViewSearchable
 {
+    /** The toolbar items provided by this task. */
     protected List<ToolBarItemDesc> toolBarItems;
+    
+    /** The menu items provided by this task. */
     protected List<MenuItemDesc> menuItems;
+    
+    /** The tree node searching widget provided by this task. */
     protected TreeNodeFindWidget finderWidget;
     
+    /** A list of {@link TreeTableViewer}s already visible that are handled by this task. */
     protected Vector<TreeTableViewer<T,D,I>> visibleTTVs;
+    
+    /** A list of {@link TreeDefinitionEditor}s already visible that are handled by this task. */
     protected Vector<TreeDefinitionEditor<T,D,I>> visibleTreeDefEditors;
     
+    /** The class of {@link TreeDefIface} handled by this task. */
     protected Class<D> treeDefClass;
     
+    /** A button that switches the view from tree view to tree definition view. */
     protected NavBoxItemIFace defEditorNavBox;
+
+    /** A button that switches the view from tree definition view to tree view. */
     protected NavBoxItemIFace treeViewerNavBox;
     	
+	/**
+     * Constructor.
+     * 
+	 * @param name the name of the task
+	 * @param title the visible name of the task
+	 */
 	protected BaseTreeTask(final String name, final String title)
 	{
 		super(name,title);
@@ -68,6 +86,9 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
         menuItems = new Vector<MenuItemDesc>();
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.af.tasks.BaseTask#initialize()
+	 */
 	@Override
 	public void initialize()
 	{
@@ -81,6 +102,11 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
 		}
 	}
 	
+	/**
+     * Creates the {@link NavBox}s returned by a call to 
+     * 
+	 * @param defs
+	 */
 	protected void createNavBoxes(@SuppressWarnings("unused") List<D> defs)
 	{
 		NavBox actions = new NavBox(getResourceString("Actions"));
@@ -120,11 +146,22 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
         navBoxes.addElement(admin);
 	}
 	
+	/**
+     * Does nothing.  Subclasses can override this method to put menus into the application's menubar.
+     * 
+	 * @param defs a list of tree definitions handled by this task
+	 */
 	protected void createMenus(@SuppressWarnings("unused") List<D> defs)
 	{
 		// do nothing
 	}
 	
+	/**
+     * Displays the tree associated with the given {@link TreeDefIface}.
+     * 
+	 * @param treeDef the {@link TreeDefIface} corresponding to the tree to be displayed
+	 * @return a {@link SubPaneIFace} for displaying the tree
+	 */
 	protected TreeTableViewer<T,D,I> showTree(D treeDef)
 	{
 		for(TreeTableViewer<T,D,I> ttv: visibleTTVs)
@@ -153,6 +190,11 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
     	return ttv;
 	}
 	
+	/**
+     * Returns a handle to the UI widget for performing a search on the tree nodes.
+     * 
+	 * @return the tree node searching UI widget.
+	 */
 	public TreeNodeFindWidget getFinderWidget()
 	{
 		return finderWidget;
@@ -195,11 +237,12 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
         return this.getClass();
     }
     
-	/**
-     *
-     *
-     * @param name
-     * @param where in TOPVIEW, BOTTOMVIEW, or BOTHVIEWS views
+    /**
+     * Finds the node with the given name in the current {@link TreeTableViewer}.
+     * 
+     * @param key the node name
+     * @param where an indicator of which view (top or bottom) to show the result in (if any)
+     * @param wrap whether or not to perform a wrap when doing the search
      */
     public void find(String key,int where,boolean wrap)
     {
@@ -207,12 +250,22 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
     	ttv.find(key,where,wrap);
     }
     
+    /**
+     * Finds the next node with the given name in the current {@link TreeTableViewer}.
+     * 
+     * @param key the node name
+     * @param where an indicator of which view (top or bottom) to show the result in (if any)
+     * @param wrap whether or not to perform a wrap when doing the search
+     */
     public void findNext(String key,int where,boolean wrap)
     {
     	TreeTableViewer<T,D,I> ttv = (TreeTableViewer<T,D,I>)SubPaneMgr.getInstance().getCurrentSubPane();
     	ttv.findNext(key,where,wrap);
     }
     
+    /**
+     * Switches the view from a {@link TreeTableViewer} to the associated {@link TreeDefinitionEditor} and vice versa.
+     */
     public void switchView()
     {
         SubPaneMgr paneMgr = SubPaneMgr.getInstance();
@@ -242,6 +295,9 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
         }
     }
     
+    /**
+     * Opens a {@link SubPaneIFace} for viewing/editing a {@link TreeDefIface} object.
+     */
     public void openTreeDefEditor()
     {
     	SubPaneMgr paneMgr = SubPaneMgr.getInstance();

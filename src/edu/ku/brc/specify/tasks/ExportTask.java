@@ -30,7 +30,6 @@ import edu.ku.brc.specify.exporters.DiGIRExporter;
 import edu.ku.brc.specify.exporters.ExportToFile;
 import edu.ku.brc.specify.exporters.GoogleEarthExporter;
 import edu.ku.brc.specify.exporters.RecordSetExporter;
-import edu.ku.brc.specify.exporters.RecordSetExporterAdapter;
 import edu.ku.brc.specify.exporters.WebPageExporter;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -138,7 +137,6 @@ public class ExportTask extends BaseTask
     protected void readExporterRegistry()
     {
         exportersRegistry.clear();
-        exportersRegistry.add(RecordSetExporterAdapter.class);
         exportersRegistry.add(GoogleEarthExporter.class);
         exportersRegistry.add(DiGIRExporter.class);
         exportersRegistry.add(WebPageExporter.class);

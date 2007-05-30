@@ -32,6 +32,9 @@ public class GtpTreeTask extends BaseTreeTask<GeologicTimePeriod,GeologicTimePer
 {
 	public static final String GTP = "GeoTimePeriodTree";
 	
+	/**
+	 * Constructor.
+	 */
 	public GtpTreeTask()
 	{
         super(GTP, getResourceString(GTP));
@@ -41,6 +44,9 @@ public class GtpTreeTask extends BaseTreeTask<GeologicTimePeriod,GeologicTimePer
         initialize();
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.BaseTreeTask#createMenus(java.util.List)
+	 */
 	@Override
 	protected void createMenus(List<GeologicTimePeriodTreeDef> defs)
 	{

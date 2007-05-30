@@ -38,6 +38,9 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
     //private static final Logger log = Logger.getLogger(TaxonTreeTask.class);
 	public static final String TAXON = "TaxonTree";
 	
+	/**
+	 * Constructor.
+	 */
 	public TaxonTreeTask()
 	{
         super(TAXON, getResourceString(TAXON));
@@ -49,6 +52,9 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
         //log.info("\"Taxonomy (the science of classification) is often undervalued as a glorified form of filing - with each species in its prescribed place in an album; but taxonomy is a fundamental and dynamic science, dedicated to exploring the causes of relationships and similarities among organisms. Classifications are theories about the basis of natural order, not dull catalogues compiled only to avoid chaos.\" Stephen Jay Gould (1990, p.98)");
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.BaseTreeTask#createMenus(java.util.List)
+	 */
 	@Override
 	protected void createMenus(List<TaxonTreeDef> defs)
 	{
@@ -77,6 +83,9 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.tasks.BaseTreeTask#showTree(edu.ku.brc.specify.datamodel.TreeDefIface)
+	 */
 	@Override
 	protected TreeTableViewer<Taxon, TaxonTreeDef, TaxonTreeDefItem> showTree(TaxonTreeDef treeDef)
 	{
