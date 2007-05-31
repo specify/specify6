@@ -389,15 +389,9 @@ public class SearchReplacePanel extends JPanel
         log.debug("replace called");
         if (!isTableValid())
         {
-            setStatusLabelWithFailedFind(); 
             return;
         }
-        
-        if (table.getCellEditor() != null)
-        {
-            table.getCellEditor().stopCellEditing();
-        }
-        
+        stopTableEditing();        
         int selectedCol = table.getSelectedColumn();
         int selectedRow = table.getSelectedRow();
 
@@ -457,19 +451,14 @@ public class SearchReplacePanel extends JPanel
      * replaces all of the values where a cell contains the string
      * @return
      */
-    private boolean replaceAll()
+    private void replaceAll()
     {
         log.debug("replaceAll() called");
         if (!isTableValid()) 
         { 
-            setStatusLabelWithFailedFind();
-            return false; 
-        }
-        
-        if (table.getCellEditor() != null)
-        {
-            table.getCellEditor().stopCellEditing();
-        }
+            return ; 
+        }        
+        stopTableEditing();
         
         String str = findField.getText();
         log.debug("replaceAll() - FindValue[" + str + "] SearchingDown[" + isSearchDown + "]");
@@ -506,8 +495,7 @@ public class SearchReplacePanel extends JPanel
                   nextButton.setEnabled(true);                
               }
               setStatusLabelWithFailedFind();
-          }
-          return false;         
+          }      
         }
         while (found)
         {
@@ -541,7 +529,6 @@ public class SearchReplacePanel extends JPanel
         replaceButton.setEnabled(false);
         replaceAllButton.setEnabled(false);
         setStatusLabelEndReached();
-        return true;
     }  
         
     
@@ -574,18 +561,13 @@ public class SearchReplacePanel extends JPanel
      * performs a search/find on a particular string.
      * @return
      */
-    private boolean find()
+    private void find()
     {   
         if (!isTableValid())
         {
-            setStatusLabelWithFailedFind();
-            return false;
-        }
-        
-        if (table.getCellEditor() != null)
-        {
-            table.getCellEditor().stopCellEditing();
-        }
+            return ;
+        }        
+        stopTableEditing();
         
         String str = findField.getText();
         log.debug("find() - FindValue[" + str + "] SearchingDown[" + isSearchDown+ "]");
@@ -687,9 +669,7 @@ public class SearchReplacePanel extends JPanel
                 }
                 setStatusLabelWithFailedFind();
             }
-            return false;
         }
-        return true;
     }
     
     /**
