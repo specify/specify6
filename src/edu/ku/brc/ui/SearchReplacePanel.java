@@ -27,6 +27,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.regex.Pattern;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -37,6 +38,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
@@ -55,7 +57,7 @@ import edu.ku.brc.ui.tmanfe.SpreadSheet;
 /**
  * @author megkumin
  * 
- * @code_status Beta
+ * @code_status Alpha
  * 
  * Created Date: Mar 1, 2007
  * 
@@ -64,6 +66,8 @@ import edu.ku.brc.ui.tmanfe.SpreadSheet;
 public class SearchReplacePanel extends JPanel
 {
     private SpreadSheet              table;
+    private Pattern                  pattern;
+    //private Searchable               searchable;
     @SuppressWarnings("unused")
     private boolean                  isStartOfSearch         = true;
     private boolean                  isSearchDown            = true;
@@ -80,11 +84,9 @@ public class SearchReplacePanel extends JPanel
     private JButton                  previousButton;
     private JButton                  replaceButton;
     private JButton                  replaceAllButton;   
-    
     private int                      textFieldLength         = 10;
     private JTextField               findField               = new JTextField();
     private JTextField               replaceField            = new JTextField();
-   
     private JCheckBox                matchCaseButton;
     private JCheckBox                wrapSearchButton;
     private JLabel                   statusInfo;
@@ -108,151 +110,20 @@ public class SearchReplacePanel extends JPanel
      */
     public SearchReplacePanel(SpreadSheet mytable)
     {
-    	this.table = mytable;
+        this.table = mytable;
         this.setVisible(false);
-        createFindAndReplacePanel();        
-    }
-        
-    /**
-     * creates the find/replace JPanel and associates keyboard shortcuts for launching,
-     * displaying and navigating the search panel
-     */
-    private void createFindAndReplacePanel()
-    {
-        setupKeyStrokeMappings();
-        createFindPanel();
-        createReplacePanel();  
+        //this.searchable = mytable.getSearchable();
+        createFindAndReplacePanel();
         handleTableSelections();
-        
-        /*
-        Font font = wrapSearchButton.getFont();
-        font = new Font(font.getFontName(), font.getStyle(), font.getSize()-2);
-        nextButton.setFont(font);
-        previousButton.setFont(font);
-        matchCaseButton.setFont(font);
-        wrapSearchButton.setFont(font);
-        replaceButton.setFont(font);
-        replaceAllButton.setFont(font);
-        
-        font = findLabel.getFont();
-        font = new Font(font.getFontName(), font.getStyle(), font.getSize()-2);
-        findLabel.setFont(font);
-        statusInfo.setFont(font);*/
     }
     
-    /**
-     *  Creates the panel that displays the replace buttons and status bar
-     */
-    private void createReplacePanel()
-    {
-        replaceField.setColumns(textFieldLength);
-        replaceField.addKeyListener(new FindReplaceTextFieldKeyAdapter());
-        
-        replaceButton = new JButton(getResourceString("REPLACE"));
-        //replaceButton.setEnabled(false);
-        //replaceButton.setMargin(new Insets(0, 0, 0, 0));
-        replaceButton.addActionListener(replaceAction);
-        
-  
-        replaceAllButton = new JButton(getResourceString("REPLACEALL"));
-        //replaceAllButton.setEnabled(false);
-        //replaceAllButton.setMargin(new Insets(0, 0, 0, 0));
-        replaceAllButton.addActionListener(replaceAction);
-        
-        //replaceButton.setMnemonic(KeyEvent.VK_N);
-        //replaceButton.addActionListener(searchAction);
-		//JComponent[] itemSample = { new JMenuItem("Replace"), new JMenuItem("Replace All") };
-		//memoryReplaceButton = new MemoryDropDownButton("Replace", IconManager.getIcon("DropDownArrow"),
-		//                1, java.util.Arrays.asList(itemSample));
-		//memoryReplaceButton.setOverrideBorder(true, memoryReplaceButton.raisedBorder);
-		//memoryReplaceButton.setEnabled(false);
-        
-        builder.add(replaceField,          cc.xy(5,3));
-        builder.add(replaceButton,         cc.xy(7,3));
-        builder.add(replaceAllButton,      cc.xy(9,3));
-        
-        statusInfo = new JLabel("");
-        builder.add(statusInfo,          cc.xywh(11,3, 4,1));
-    }
-
-    
-    /**
-     * Creates the panel that displays the close button, the search field, the next button,
-     * the previous button, the match case checkbox and the wrap search checkbox
-     */
-    private void createFindPanel()
-    {
-        cancelButton = new JButton(hideFindPanelAction);
-        cancelButton.setIcon(IconManager.getIcon("Close"));
-        cancelButton.setMargin(new Insets(0, 0, 0, 0));
-
-        findLabel = new JLabel(getResourceString("FIND") + ": ", SwingConstants.RIGHT);
-
-        nextButton = new JButton(getResourceString("NEXT"));//, new ImageIcon(Specify.class.getResource("images/down.png")));
-        nextButton.setEnabled(false);
-        //nextButton.setMargin(new Insets(0, 0, 0, 0));
-        nextButton.setMnemonic(KeyEvent.VK_N);
-        nextButton.addActionListener(searchAction);
-
-        previousButton = new JButton(getResourceString("PREVIOUS"));//, new ImageIcon(Specify.class.getResource("images/up.png")));
-        previousButton.setEnabled(false);
-        //previousButton.setMargin(new Insets(0, 0, 0, 0));
-        previousButton.setMnemonic(KeyEvent.VK_P);
-        previousButton.addActionListener(searchAction);
-
-		//JComponent[] itemSample = { new JMenuItem("Replace"), new JMenuItem("Replace All") };
-		//replaceButton = new MemoryDropDownButton("Replace", IconManager.getIcon("DropDownArrow"),
-		//                1, java.util.Arrays.asList(itemSample));
-		//replaceButton.setOverrideBorder(true, replaceButton.raisedBorder);
-		//replaceButton.setEnabled(false);
-
-        findField.setColumns(textFieldLength);
-        findField.setText("");
-        findField.addKeyListener(new FindReplaceTextFieldKeyAdapter());
-
-        //replaceField.setColumns(textFieldLength);
-        //replaceField.addKeyListener(new InputFieldKeyAdapter());
-
-        matchCaseButton = new JCheckBox(getResourceString("MATCHCASE"));
-        matchCaseButton.addItemListener(new ItemListener()
-        {
-            public void itemStateChanged(ItemEvent e)
-            {
-                
-            }
-        });
-
-        wrapSearchButton = new JCheckBox(getResourceString("WRAP"));
-        wrapSearchButton.addItemListener(new ItemListener()
-        {
-            public void itemStateChanged(ItemEvent e)
-            {
-                setCheckAndSetWrapOption();
-            }
-        });
-               
-        builder.add(cancelButton,        cc.xy(1,1));
-        builder.add(findLabel,           cc.xy(3,1));
-        builder.add(findField,           cc.xy(5,1));
-        builder.add(nextButton,          cc.xy(7,1));
-        builder.add(previousButton,      cc.xy(9,1));
-        builder.add(matchCaseButton,     cc.xy(11,1));
-        builder.add(wrapSearchButton,    cc.xy(13,1));
-        
-       // statusInfo = new JLabel("");
-       // builder.add(statusInfo,          cc.xy(15,1));
-    }
-    
-    /**
-     * detects when a table changes has been made and changes the next, previous buttons, as well as
-     * clears teh status label. 
-     */
     public void handleTableSelections()
     {
         ListSelectionListener lsl = new ListSelectionListener()
         {
             public void valueChanged(ListSelectionEvent e)
             {
+               // log.debug("table selectoin");
                 nextButton.setEnabled(true);
                 previousButton.setEnabled(true);
                 clearStatusLabel();
@@ -271,11 +142,14 @@ public class SearchReplacePanel extends JPanel
         {
             log.debug("hiding Find/Replace panel");
             this.setVisible(false);
-        } 
-        else
+        } else
         {
+            if (table.getCellEditor() != null)
+            {
+                table.getCellEditor().stopCellEditing();
+            }
+            
             log.debug("showing Find/replace panel");
-            stopTableEditing();                        
             this.setVisible(true);
             findField.requestFocusInWindow();
             UsageTracker.incrUsageCount("WB.ShowFindReplace");
@@ -284,8 +158,7 @@ public class SearchReplacePanel extends JPanel
     }
 
     /**
-     * sets up the keystroke mappings for "Ctrl-F" firing the find/replace panel
-     * Escape making it disappear, and enter key firing a search
+     * 
      */
     private void setupKeyStrokeMappings()
     {
@@ -312,50 +185,234 @@ public class SearchReplacePanel extends JPanel
         ActionMap actionMap = getActionMap();
         actionMap.put(ENTER_KEY, searchAction);
         actionMap.put(CANCEL_KEY, hideFindPanelAction);
-        
-        //TODO: need to change mapping for search action on "Enter", this fires a search if
-        //enter is hit in iether the find box, or the replace box
     }
     
+    /**
+     * 
+     */
+    private void createReplacePanel()
+    {
+        replaceField.setColumns(textFieldLength);
+        replaceField.addKeyListener(new FindReplaceTextFieldKeyAdapter());
+        
+        replaceButton = new JButton(getResourceString("REPLACE"));
+        //replaceButton.setEnabled(false);
+        //replaceButton.setMargin(new Insets(0, 0, 0, 0));
+        replaceButton.addActionListener(replaceAction);
+        
+  
+        replaceAllButton = new JButton(getResourceString("REPLACEALL"));
+        //replaceAllButton.setEnabled(false);
+        //replaceAllButton.setMargin(new Insets(0, 0, 0, 0));
+        replaceAllButton.addActionListener(replaceAction);
+        
+        //replaceButton.setMnemonic(KeyEvent.VK_N);
+        //replaceButton.addActionListener(searchAction);
+        //JComponent[] itemSample = { new JMenuItem("Replace"), new JMenuItem("Replace All") };
+        //memoryReplaceButton = new MemoryDropDownButton("Replace", IconManager.getIcon("DropDownArrow"),
+        //                1, java.util.Arrays.asList(itemSample));
+        //memoryReplaceButton.setOverrideBorder(true, memoryReplaceButton.raisedBorder);
+        //memoryReplaceButton.setEnabled(false);
+        
+        builder.add(replaceField,          cc.xy(5,3));
+        builder.add(replaceButton,         cc.xy(7,3));
+        builder.add(replaceAllButton,      cc.xy(9,3));
+        
+        statusInfo = new JLabel("");
+        builder.add(statusInfo,          cc.xywh(11,3, 4,1));
+    }
+    
+    /**
+     * creates the find/replace JPanel and associates keyboard shortcuts for launching,
+     * displaying and navigating the search panel
+     */
+    private void createFindAndReplacePanel()
+    {
+        setupKeyStrokeMappings();
+        createFindPanel();
+        createReplacePanel();  
+        
+        /*
+        Font font = wrapSearchButton.getFont();
+        font = new Font(font.getFontName(), font.getStyle(), font.getSize()-2);
+        nextButton.setFont(font);
+        previousButton.setFont(font);
+        matchCaseButton.setFont(font);
+        wrapSearchButton.setFont(font);
+        replaceButton.setFont(font);
+        replaceAllButton.setFont(font);
+        
+        font = findLabel.getFont();
+        font = new Font(font.getFontName(), font.getStyle(), font.getSize()-2);
+        findLabel.setFont(font);
+        statusInfo.setFont(font);*/
+    }
+    
+    /**
+     * Creates the panel that displays the close button, the search field, the next button,
+     * the previous button, the match case checkbox and the wrap search checkbox
+     */
+    private void createFindPanel()
+    {
+        cancelButton = new JButton(hideFindPanelAction);
+        cancelButton.setIcon(IconManager.getIcon("Close"));
+        cancelButton.setMargin(new Insets(0, 0, 0, 0));
+
+        findLabel = new JLabel(getResourceString("FIND") + ": ", SwingConstants.RIGHT);
+
+        nextButton = new JButton(getResourceString("NEXT"));//, new ImageIcon(Specify.class.getResource("images/down.png")));
+        nextButton.setEnabled(false);
+        //nextButton.setMargin(new Insets(0, 0, 0, 0));
+        nextButton.setMnemonic(KeyEvent.VK_N);
+        nextButton.addActionListener(searchAction);
+
+        previousButton = new JButton(getResourceString("PREVIOUS"));//, new ImageIcon(Specify.class.getResource("images/up.png")));
+        previousButton.setEnabled(false);
+        //previousButton.setMargin(new Insets(0, 0, 0, 0));
+        previousButton.setMnemonic(KeyEvent.VK_P);
+        previousButton.addActionListener(searchAction);
+
+        //JComponent[] itemSample = { new JMenuItem("Replace"), new JMenuItem("Replace All") };
+        //replaceButton = new MemoryDropDownButton("Replace", IconManager.getIcon("DropDownArrow"),
+        //                1, java.util.Arrays.asList(itemSample));
+        //replaceButton.setOverrideBorder(true, replaceButton.raisedBorder);
+        //replaceButton.setEnabled(false);
+
+        findField.setColumns(textFieldLength);
+        findField.setText("");
+        findField.addKeyListener(new FindReplaceTextFieldKeyAdapter());
+
+        //replaceField.setColumns(textFieldLength);
+        //replaceField.addKeyListener(new InputFieldKeyAdapter());
+
+        matchCaseButton = new JCheckBox(getResourceString("MATCHCASE"));
+        matchCaseButton.addItemListener(new ItemListener()
+        {
+            public void itemStateChanged(ItemEvent e)
+            {
+                pattern = null;
+            }
+        });
+
+        wrapSearchButton = new JCheckBox(getResourceString("WRAP"));
+        wrapSearchButton.addItemListener(new ItemListener()
+        {
+            public void itemStateChanged(ItemEvent e)
+            {
+                setCheckAndSetWrapOption();
+            }
+        });
+               
+        builder.add(cancelButton,        cc.xy(1,1));
+        builder.add(findLabel,           cc.xy(3,1));
+        builder.add(findField,           cc.xy(5,1));
+        builder.add(nextButton,          cc.xy(7,1));
+        builder.add(previousButton,      cc.xy(9,1));
+        builder.add(matchCaseButton,     cc.xy(11,1));
+        builder.add(wrapSearchButton,    cc.xy(13,1));
+        
+       // statusInfo = new JLabel("");
+       // builder.add(statusInfo,          cc.xy(15,1));
+    }
+
+    /**
+     * Creates a table for testing. 
+     */
+    @SuppressWarnings("unused")
+    private static SearchableJXTable createTestTableFromJTable()
+    {
+        Object[] columnNames = { "First Name", "Last Name", "Sport", "# of Years", "Vegetarian" };
+
+        Object[][] data = {
+                { "Mary bary", "Campione", "Snowboarding", new Integer(5), new Boolean(false) },
+                { "Alison", "Huml", "Rowing", new Integer(3), new Boolean(true) },
+                { "Kathy", "Walrath", "Knitting", new Integer(2), new Boolean(false) },
+                { "Sharon", "Zakhour", "Speed reading", new Integer(20), new Boolean(true) },
+                { "Philip", "Milne", "Pool",  new Integer(10), new Boolean(false) } };
+
+        JTable myJTable = new JTable(data, columnNames);
+        log.debug("creating searchablejxtable");
+        final SearchableJXTable mytable = new SearchableJXTable(myJTable.getModel());
+        return mytable;
+    }
+    
+
     /**
      * @param args
      */
     public static void main(String[] args)
     {
+//      log.debug("main");
+//        final JDialog dialog = new JDialog();
+//        dialog.setLayout(new FlowLayout());
+//        dialog.addWindowListener(new WindowAdapter()
+//        {
+//            public void windowClosing(WindowEvent we)
+//            {
+//                dialog.dispose();
+//            }
+//        });
+//        log.debug("Creating testtable");
+//        SearchableJXTable t = createTestTableFromJTable();
+//        
+//        t.setColumnSelectionAllowed(true);
+//        t.setRowSelectionAllowed(true);
+//        t.setCellSelectionEnabled(true);
+//        dialog.getContentPane().add( new JScrollPane(t));
+//        dialog.getContentPane().add(t.getFindReplacePanel());//getMyPanel());
+//        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+//        dialog.setVisible(true);
+//        dialog.setSize(900, 900);
+//        UIHelper.centerAndShow(dialog);
     }
 
     /**
-     * @return the state fo the "match case" option
+     * @return
      */
     private boolean getMatchCaseFlag()
     {
-        return matchCaseButton.isSelected();
+        boolean isMatchCase = matchCaseButton.isSelected();
+        return isMatchCase;
     }
 
     /**
-     * @return the state of the "wrap search" option
+     * @return
      */
     private boolean getWrapSearchFlag()
     {
-        return wrapSearchButton.isSelected();
+        boolean isWrapSearch = wrapSearchButton.isSelected();
+        return isWrapSearch;
+    }
+    /**
+     * @return
+     */
+    @SuppressWarnings("unused")
+    private Pattern getSearchablePattern(String str)
+    {
+        if (str.length() == 0) { return null; }
+        
+        if (pattern == null || !pattern.pattern().equals(str))
+        {
+            log.debug("getSearchablePattern - compiling a Pattern for string:" + str);
+            //force case insensitivity is match case flag is not set
+            pattern = Pattern.compile(str, getMatchCaseFlag() ? 0: Pattern.CASE_INSENSITIVE);
+            // Start from the beginning.
+            lastIndex = -1;
+        }
+        return pattern;
     }
 
     /**
-     * Setst the status label to alert the user that a word has not been found.
+     * 
      */
     private void setStatusLabelWithFailedFind()
     {
         log.info("NOT FOUND - Findvalue[" + findField.getText() + "] displaying statusInfo to the user");
-    	statusInfo.setHorizontalTextPosition(JLabel.RIGHT);
+        statusInfo.setHorizontalTextPosition(JLabel.RIGHT);
         statusInfo.setIcon(IconManager.getIcon("Error", IconManager.IconSize.Std16));
         statusInfo.setText(getResourceString("PHRASENOTFOUND"));
     }
 
-    /**
-     *  Setst the status label to alert the user that the end of the table is 
-     *  has been reached during the search.
-     *      
-     */
     private void setStatusLabelEndReached()
     {
         log.info("NOT FOUND - Findvalue[" + findField.getText() + "] displaying statusInfo to the user");
@@ -363,30 +420,34 @@ public class SearchReplacePanel extends JPanel
         statusInfo.setIcon(IconManager.getIcon("ValidationValid", IconManager.IconSize.Std16));
         statusInfo.setText(getResourceString("ENDOFTABLE"));
     }
-    
     /**
-     * Clears the label that tells the user the status of the search/replace
+     * 
      */
     private void clearStatusLabel()
     {
+        //log.debug("clearing status lable");
         statusInfo.setHorizontalTextPosition(JLabel.RIGHT);
         statusInfo.setIcon(null);
         statusInfo.setText("");
-    }   
+    }
+    
     
     /**
-     * replaces the contents of cell where part of the cell contains the string found with the string
-     * that is provided for replacement.
+     * 
      */
     private void replace()
     {
         log.debug("replace called");
         if (!isTableValid())
         {
+            setStatusLabelWithFailedFind(); 
             return;
         }
         
-        stopTableEditing();
+        if (table.getCellEditor() != null)
+        {
+            table.getCellEditor().stopCellEditing();
+        }
         
         int selectedCol = table.getSelectedColumn();
         int selectedRow = table.getSelectedRow();
@@ -408,33 +469,32 @@ public class SearchReplacePanel extends JPanel
 
         }
      
-        String cellValue = o.toString();
-        String replaceValue = replaceField.getText();	     
-        //String newValue = "";
-        String searchValue = findField.getText();
+        String myStrToReplaceValueIn = o.toString();
+        String myReplaceValue = replaceField.getText();      
+        String myNewStr = "";
+        String myFindValue = findField.getText();
 
         TableSearcher as = new TableSearcher();
-        TableSearcherCell cell = as.cellContains(searchValue, table, selectedRow, selectedCol, getMatchCaseFlag());
+        TableSearcherCell cell = as.cellContains(myFindValue, table, table.getModel(), selectedRow, selectedCol,getMatchCaseFlag());
         boolean found = cell.isFound();
         if (found)
         {
-            as.replaceCellValue(searchValue, replaceValue, cellValue, table, selectedRow, selectedCol, getMatchCaseFlag());
-            //            if (getMatchCaseFlag())
-            //            {
-            //                 newValue = Pattern.compile(searchValue).matcher(cellValue).replaceAll(replaceValue);
-            //            }
-            //            else
-            //            {
-            //                log.debug("Need to implement case insensitivity");
-            //                newValue = Pattern.compile(searchValue, Pattern.CASE_INSENSITIVE).matcher(cellValue).replaceAll(replaceValue);
-            //            }  
-            //            
-            //            table.setValueAt(newValue, selectedRow, selectedCol);   
-            //            
-            //            ListSelectionModel rsm = table.getSelectionModel();
-            //            ListSelectionModel csm = table.getColumnModel().getSelectionModel();
-            //            rsm.setSelectionInterval(selectedRow, selectedRow);
-            //            csm.setSelectionInterval(selectedCol, selectedCol);
+            if (getMatchCaseFlag())
+            {
+                 myNewStr = Pattern.compile(myFindValue).matcher(myStrToReplaceValueIn).replaceAll(myReplaceValue);
+            }
+            else
+            {
+                log.debug("Need to implement case insensitivity");
+                myNewStr = Pattern.compile(myFindValue, Pattern.CASE_INSENSITIVE).matcher(myStrToReplaceValueIn).replaceAll(myReplaceValue);
+            }  
+            
+            table.setValueAt(myNewStr, selectedRow, selectedCol);   
+            
+            ListSelectionModel rsm = table.getSelectionModel();
+            ListSelectionModel csm = table.getColumnModel().getSelectionModel();
+            rsm.setSelectionInterval(selectedRow, selectedRow);
+            csm.setSelectionInterval(selectedCol, selectedCol);
         }    
         else
         {
@@ -445,18 +505,21 @@ public class SearchReplacePanel extends JPanel
     }
     
     /**
-     * replaces all of the values where a cell contains the string
      * @return
      */
-    private void replaceAll()
+    private boolean replaceAll()
     {
         log.debug("replaceAll() called");
         if (!isTableValid()) 
         { 
-            return; 
+            setStatusLabelWithFailedFind();
+            return false; 
         }
         
-        stopTableEditing();
+        if (table.getCellEditor() != null)
+        {
+            table.getCellEditor().stopCellEditing();
+        }
         
         String str = findField.getText();
         log.debug("replaceAll() - FindValue[" + str + "] SearchingDown[" + isSearchDown + "]");
@@ -468,7 +531,7 @@ public class SearchReplacePanel extends JPanel
         isSearchDown = true;
 
         TableSearcher as = new TableSearcher();
-        TableSearcherCell cell = as.findCellInTable(str, table,  curRow, curCol,getMatchCaseFlag(), isSearchDown, getWrapSearchFlag());
+        TableSearcherCell cell = as.tableContains(str, table, table.getModel(), curRow, curCol,getMatchCaseFlag(), isSearchDown, getWrapSearchFlag());
         boolean found = cell.isFound();  
         if (!found)
         {
@@ -493,11 +556,12 @@ public class SearchReplacePanel extends JPanel
                   nextButton.setEnabled(true);                
               }
               setStatusLabelWithFailedFind();
-          }      
+          }
+          return false;         
         }
         while (found)
         {
-        	log.debug("repalceall() found value");
+            log.debug("repalceall() found value");
             curRow = cell.getRow();
             curCol = cell.getCol();
             ListSelectionModel rsm = table.getSelectionModel();
@@ -512,122 +576,115 @@ public class SearchReplacePanel extends JPanel
                 curCol = -1;
             }
             curCol++;
-            cell = as.findCellInTable(str, table,  curRow, curCol,getMatchCaseFlag(), isSearchDown, false);
+//            if((curRow==(table.getRowCount()-1))&&(curCol==(table.getColumnCount()-1)))
+//            {
+//              break;
+//            }
+            log.debug("replace all");
+            //as = new TableSearcher();
+            cell = as.tableContains(str, table, table.getModel(), curRow, curCol,getMatchCaseFlag(), isSearchDown, false);
             found = cell.isFound();
+
         }  
         nextButton.setEnabled(false);
-		previousButton.setEnabled(false);
-		replaceButton.setEnabled(false);
-		replaceAllButton.setEnabled(false);
-		setStatusLabelEndReached();
-	}  
+        previousButton.setEnabled(false);
+        replaceButton.setEnabled(false);
+        replaceAllButton.setEnabled(false);
+        setStatusLabelEndReached();
+        return true;
+    }  
         
     
     /**
-     * @return boolean false if the table is null
+     * @return
      */
     private boolean isTableValid()
     {
-		if (table == null)
-		{
-			log.error("The search table is null!");
-            setStatusLabelWithFailedFind();
-			return false;
-		}
-		return true;
+        if (table == null)
+        {
+            log.error("The search table is null!");
+            return false;
+        }
+        return true;
     }
-    
-    
+
     /**
-     * stops editing of the table.  
+     * 
      */
-    private void stopTableEditing()
-    {
+    private boolean find()
+    {   
+        if (!isTableValid())
+        {
+            setStatusLabelWithFailedFind();
+            return false;
+        }
+        
         if (table.getCellEditor() != null)
         {
             table.getCellEditor().stopCellEditing();
-        }   
-    }
-
-    
-    /**
-     * performs a search/find on a particular string.
-     * @return
-     */
-    private void find()
-    { 	
-        if (!isTableValid())
-        {            
-            return;
-        }        
-        stopTableEditing();
+        }
         
-        String searchValue = findField.getText();        
-        int currentRow = table.getSelectedRow();
-        int currentColumn = table.getSelectedColumn();
-        log.debug("find() - FindValue[" + searchValue + "] SearchingDown[" + isSearchDown
-                + "] curRow[" + currentRow + "] curCol[" + currentColumn+ "]");
+        String str = findField.getText();
+        log.debug("find() - FindValue[" + str + "] SearchingDown[" + isSearchDown+ "]");
+        
+        int curRow = table.getSelectedRow();
+        int curCol = table.getSelectedColumn();
+        log.debug("find() - curRow[" + curRow + "] curCol[" + curCol+ "]");
 
-        //if "next" is clicked, the search is forwards
         if (isSearchDown){
-            //if table has no selection, start at row 0
-            if (currentRow == -1) 
+            if (curRow == -1) 
             {
-            	currentRow++;
+                curRow++;
             }
-            //if at end of row, wrap search to next row 
-            if (currentColumn >= (table.getColumnModel().getColumnCount()-1)) 
+            if (curCol >= (table.getColumnModel().getColumnCount()-1)) 
             {
-                currentRow++;
-                currentColumn = -1;
+                curRow++;
+                curCol = -1;
             }
-            //if end of table is reached and wrap search is on, start at beginning of table.
-            if(getWrapSearchFlag() && currentRow >= table.getRowCount())
+            if(getWrapSearchFlag() && curRow >= table.getRowCount())
             {
-            	currentRow = 0;
+                curRow = 0;
             }
-            currentColumn++;
+            curCol++;
         }
         
         //is previous clicked, reverse direction
         else
         {
-            //if table has no selection, start at the last row
-            if (currentRow == -1)
-			{
-				currentRow = table.getRowCount()-1;
-			}
-            //if the column is not selected, go to the previous row and it's last column
-            if (currentColumn <= 0 ) 
+            if (curRow == -1)
             {
-                currentRow--;
-                currentColumn = table.getColumnModel().getColumnCount();
+                curRow = table.getRowCount()-1;
             }
-            currentColumn--;     
+            if (curCol <= 0 ) 
+            {
+                curRow--;
+                curCol = table.getColumnModel().getColumnCount();
+            }
+            curCol--;     
         }
         
         
         TableSearcher as = new TableSearcher();
-        TableSearcherCell cell = as.findCellInTable(searchValue, table, currentRow, currentColumn, getMatchCaseFlag(),isSearchDown, getWrapSearchFlag() );
+        TableSearcherCell cell = as.tableContains(str, table, table.getModel(), curRow, curCol, getMatchCaseFlag(),isSearchDown, getWrapSearchFlag() );
         boolean found = cell.isFound();
         
         if (found)
         {
-            currentRow = cell.getRow();
-            currentColumn = cell.getCol();
+            curRow = cell.getRow();
+            curCol = cell.getCol();
             ListSelectionModel rsm = table.getSelectionModel();
             ListSelectionModel csm = table.getColumnModel().getSelectionModel();
-            rsm.setSelectionInterval(currentRow, currentRow);
-            csm.setSelectionInterval(currentColumn, currentColumn);
+            rsm.setSelectionInterval(curRow, curRow);
+            csm.setSelectionInterval(curCol, curCol);
             
-            //scroll table to the next found value
-		    int ar = table.getSelectionModel().getAnchorSelectionIndex();
-		    int ac = table.getColumnModel().getSelectionModel().getAnchorSelectionIndex();
-		    Rectangle rect = table.getCellRect(ar, ac, false);
-		    if (rect!=null && table.getAutoscrolls()) 
-		    {
-		    	table.scrollRectToVisible(rect);
-		    }
+            int ar = table.getSelectionModel().getAnchorSelectionIndex();
+            int ac = table.getColumnModel().getSelectionModel().getAnchorSelectionIndex();
+
+            Rectangle rect = table.getCellRect(ar, ac, false);
+            if (rect!=null && table.getAutoscrolls()) 
+            {
+                table.scrollRectToVisible(rect);
+            }
 
             if (isSearchDown)
             {
@@ -635,6 +692,7 @@ public class SearchReplacePanel extends JPanel
             }            
             else
             {
+                log.debug("setting next button true");
                 nextButton.setEnabled(true);
             }
             clearStatusLabel();
@@ -647,8 +705,10 @@ public class SearchReplacePanel extends JPanel
                 isFinishedSearchingDown = true;
                 if (!wrapSearchButton.isSelected())
                 {
+                    log.debug("=======" + isSearchDown);
                     nextButton.setEnabled(false);
-                    previousButton.setEnabled(true);                    
+                    previousButton.setEnabled(true);
+                    
                 }
                 setStatusLabelWithFailedFind();
             }
@@ -658,15 +718,19 @@ public class SearchReplacePanel extends JPanel
                 if (!wrapSearchButton.isSelected())
                 {
                     previousButton.setEnabled(false);
-                    nextButton.setEnabled(true);                    
+                    log.debug("seeting next button to true");
+                    nextButton.setEnabled(true);
+                    
                 }
                 setStatusLabelWithFailedFind();
             }
+            return false;
         }
+        return true;
     }
     
     /**
-     * checks to see if the "wrap search" option is enabled, sets teh button state and clears the label.
+     * 
      */
     private void setCheckAndSetWrapOption()
     {
@@ -674,6 +738,7 @@ public class SearchReplacePanel extends JPanel
         {
             isFinishedSearchingDown = false;
             isFinishedSearchingUp = false;
+            log.debug("seeting next button to true");
             nextButton.setEnabled(true);     
             previousButton.setEnabled(true);
             clearStatusLabel();
@@ -687,13 +752,10 @@ public class SearchReplacePanel extends JPanel
     {
         return launchFindAction;
     }
-    
     /**
-     * Action that hides the search/repalce panel
-     * 
      * @author megkumin
      *
-     * @code_status Complete
+     * @code_status Alpha
      *
      * Created Date: Mar 15, 2007
      *
@@ -701,7 +763,7 @@ public class SearchReplacePanel extends JPanel
     public class HideFindPanelAction extends AbstractAction
     {
         /**
-         * Constructor
+         * 
          */
         public HideFindPanelAction()
         {
@@ -713,7 +775,8 @@ public class SearchReplacePanel extends JPanel
          */
         public void actionPerformed(ActionEvent evt)
         {
-        	log.debug("ReplaceAction.actionPerformed closing the FindReplace Dialog - either the close \"X\" button was pressed or the esc button was pressed");
+            log.debug("ReplaceAction.actionPerformed");
+            log.debug("closing the FindReplace Dialog - either the close \"X\" button was pressed or the esc button was pressed");
             showFindAndReplacePanel(false);
         }
         
@@ -727,63 +790,59 @@ public class SearchReplacePanel extends JPanel
     }
 
     /**
-     * Action that fires off a replace event
-     * 
      * @author megkumin
      *
-     * @code_status Complete
+     * @code_status Alpha
      *
      * Created Date: Mar 15, 2007
      *
      */
     private class ReplaceAction extends AbstractAction
-	{
-		/**
-		 * Constructor
-		 */
-		public ReplaceAction()
-		{
-			super();
-		}
+    {
+        /**
+         * 
+         */
+        public ReplaceAction()
+        {
+            super();
+        }
 
-		/* (non-Javadoc)
-		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-		 */
-		public void actionPerformed(ActionEvent evt)
-		{
-			log.debug("ReplaceAction.actionPerformed");
-			Object source = evt.getSource();
-			if (source == replaceButton)
-			{
-				isSearchDown = true;
+        /* (non-Javadoc)
+         * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+         */
+        public void actionPerformed(ActionEvent evt)
+        {
+            log.debug("ReplaceAction.actionPerformed");
+            Object source = evt.getSource();
+            if (source == replaceButton)
+            {
+                isSearchDown = true;
                 //moved these two from after the if/else statement
                 setCheckAndSetWrapOption();
                 replace();
                 UsageTracker.incrUsageCount("WB.ReplaceButton");
-			}
-			else if (source == replaceAllButton)
-			{
-				replaceAll();
-				UsageTracker.incrUsageCount("WB.ReplaceAllButton");
-			}
-		}
-	}
-        
+            }
+            else if (source == replaceAllButton)
+            {
+                replaceAll();
+                UsageTracker.incrUsageCount("WB.ReplaceAllButton");
+            }
+        }
+    }
+    
+    
     /**
-	 * Action that fires off a search event and determins if the search is
-     * forwards or backwards.
-     * 
      * @author megkumin
-	 * 
-	 * @code_status Complete
-	 * 
-	 * Created Date: Mar 15, 2007
-	 * 
-	 */
+     * 
+     * @code_status Alpha
+     * 
+     * Created Date: Mar 15, 2007
+     * 
+     */
     private class SearchAction extends AbstractAction
     {
         /**
-         * Constructor
+         * 
          */
         public SearchAction()
         {
@@ -797,12 +856,14 @@ public class SearchReplacePanel extends JPanel
         {
             log.debug("SearchAction.actionPerformed" + evt.getActionCommand().toString());
             isSearchDown = true;
-        	Object source = evt.getSource();
+            Object source = evt.getSource();
             if (source == nextButton)
             {
+                log.debug("Find Next button selected - searching downwards");
                 isSearchDown = true;
             } else if (source == previousButton)
             {
+                log.debug("Find Previous button selected - searching upwards");
                 isSearchDown = false;
             } 
 
@@ -814,11 +875,9 @@ public class SearchReplacePanel extends JPanel
     }
 
     /**
-     * 
-     * Action that displays the Find/Replace panel
      * @author megkumin
      *
-     * @code_status Complete
+     * @code_status Alpha
      *
      * Created Date: Mar 22, 2007
      *
@@ -842,10 +901,9 @@ public class SearchReplacePanel extends JPanel
         }
     }
     /**
-     * Handles the key events in the the search and replace textfields
      * @author megkumin
      *
-     * @code_status Complete
+     * @code_status Alpha
      *
      * Created Date: Mar 15, 2007
      *
@@ -853,7 +911,7 @@ public class SearchReplacePanel extends JPanel
     private class FindReplaceTextFieldKeyAdapter extends KeyAdapter
     {
         /**
-         * Constructor
+         * 
          */
         public FindReplaceTextFieldKeyAdapter()
         {
@@ -866,24 +924,31 @@ public class SearchReplacePanel extends JPanel
          */
         public void keyReleased(KeyEvent ke)
         {
-            // make sure the user has entered a text string in teh find box before enabling find buttons
+            
+            //boolean replaceTextState = false;
+            // make sure the user has entered a text string in teh find box before enabling find
+            // buttons
             boolean findTextState = (findField.getText().length() > 0);
+            //if (replaceField != null)
+            //{
+            //    replaceTextState = (replaceField.getText().length() > 0);
+            //}
             nextButton.setEnabled(findTextState);
 
             if (table.getSelectedRow() > 0 || table.getSelectedColumn() > 0)
             {
                 previousButton.setEnabled(findTextState);
             }
-            // make sure the user has entered a text string in teh searck textfield before enabling replace buttons
-            // must make sure replace buttons aren't null because 
-            // depending on context replace panel might not exsist
+            // memoryReplaceButton.setEnabled(findTextState && replaceTextState);
+            // make sure the user has entered a text string in teh replace textfield before enabling
+            // replace buttons
             if (replaceButton != null)
             {
-                replaceButton.setEnabled(findTextState);
+                replaceButton.setEnabled(findTextState);// && replaceTextState);
             }
             if (replaceAllButton != null)
             {
-                replaceAllButton.setEnabled(findTextState);
+                replaceAllButton.setEnabled(findTextState);// && replaceTextState);
             }
             int key = ke.getKeyCode();
             if (key != KeyEvent.VK_ENTER)
@@ -893,7 +958,6 @@ public class SearchReplacePanel extends JPanel
             
         }
     }
-    
     /**
      * @return the hideFindPanelAction
      */

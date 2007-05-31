@@ -16,202 +16,191 @@ import org.apache.log4j.Logger;
  */
 public class TableSearcher
 {
-	private int ROWDIM = 50;
-    private int initialRow = -1;
-    private int initialCol = -1;
-    private boolean isFirstPassOfSearch = true;
-    private static final Logger    log                     = Logger.getLogger(SearchReplacePanel.class);
-	
+
+    int ROWDIM = 50;
+    int initialRow = -1;
+    int initialCol = -1;
+    boolean isFirstSearch = true;
+    protected static final Logger    log                     = Logger.getLogger(SearchReplacePanel.class);
     /**
-     * Constructor. 
+     * 
      */
-	public TableSearcher()
-	{
-	}
+    public TableSearcher()
+    {
+        // TODO Auto-generated constructor stub
+    }
     
-    /**
-     * @param search
-     * @param table
-     * @param row
-     * @param col
-     * @param matchCase
-     * @return
-     */
-    public TableSearcherCell cellContains(final String search, final JTable table,  
-                                          final int row, final int col, final boolean matchCase)
-    {        
-        log.debug("cellContains - searchString: " + search + " Current row: " + row+ " Current col: " + col);        
-        if (table.getValueAt(row, col) != null)
-        {
-            String searchString = search;
-            String valueInTable = table.getValueAt(row, col).toString();
+    public TableSearcherCell cellContains(String searchString, JTable theTable, TableModel model, int curRowPos, int curColPos, boolean matchCase)
+    {
+        log.debug("cellContains - searchString: " + searchString + " Current row: " + curRowPos + " Current col: " + curColPos);
+        boolean found = false;
+        if (theTable.getValueAt(curRowPos,curColPos) != null)
+          {
+            String valueInTable = theTable.getValueAt(curRowPos,curColPos).toString();
+            log.debug("checking to replace valueInTable: " + valueInTable.getClass());
+            //printMatching( searchString,  valueInTable,  curRowPos,  curColPos,  matchCase);
             if (!matchCase)
             {
                 valueInTable = valueInTable.toLowerCase();
                 searchString = searchString.toLowerCase();
             }
-            if (valueInTable.contains(searchString))
-            {
-                log.debug("cellContains - Found value: at Row["+row+"] Col["+col+"]");
-                return new TableSearcherCell(row, col, true);
-            }
-        }
-        return new TableSearcherCell(-1, -1, false);
+                if (valueInTable.contains(searchString))
+                {
+                    log.debug("This cell constains the search value!");
+                    found = true;
+                    isFirstSearch = true;
+                    return new TableSearcherCell(curRowPos, curColPos, found);
+                }
+            
+          }
+        log.debug("cellContains: ran into a null value");
+        isFirstSearch = true;
+        return new TableSearcherCell(-1, -1, found);
     }
     
-    /**
-     * @param search the string to be searched for
-     * @param table the table in which to perform the search
-     * @param row the current row selected in the table
-     * @param column the current column selected in teh table
-     * @param matchCase whether or not the user's selected match case on the search
-     * @param isWrapOn whether or not the user's selected wrap search for the search
-     * @return TableSearcherCell contains information as whether a match was found and at what row and column
-     */
-    private TableSearcherCell findCellInTableBackwards(final String search, final JTable table, 
-                                                       final int row, final int column, 
-                                                       final boolean matchCase, final boolean isWrapOn)
+    private TableSearcherCell tableContainsBackwards(String searchString, JTable theTable, TableModel model, int rowPos, int columPos, boolean matchCase, boolean isWrapOn)
     {
-        log.debug("tableContainsBackwards - searchString: " + search + " Current row: " + row + " Current col: " + column);
-        String searchString = search;
-        int currentRow = row;
-        int currentColumn = column;
-        
-        int colCnt = table.getColumnCount();
-        int rowCnt = table.getRowCount();
+        log.debug("tableContainsBackwards: + searchString: " + searchString + " Current row: " + rowPos + " Current col: " + columPos);
+        boolean found = false;
+        int colCnt = theTable.getColumnCount();
+        int rowCnt = theTable.getRowCount();
 
         boolean isStartOfRow = true;
 
-        for (int i = currentRow; i > -1; i--)
+        for (int i = rowPos; i > -1; i--) 
         {
             if (!isStartOfRow)
             {
-                currentColumn = colCnt - 1;
+                columPos = colCnt -1 ;
             }
-            for (int j = currentColumn; j > -1; j--)
-            {
-                if (table.getValueAt(i, j) != null)
-                {
-                    if ((!isFirstPassOfSearch) && (initialRow == i) && (initialCol == j)) 
-                    { 
-                        return new TableSearcherCell(-1, -1, false); 
-                    }
-                    String valueInTable = table.getValueAt(i, j).toString();
-
+          for(int j = columPos; j > -1; j--) 
+          {
+              if (theTable.getValueAt(i,j) != null)
+              {
+                  if ((!isFirstSearch) && (initialRow == i) &&  (initialCol == j))
+                  {
+                      found = false;
+                      return new TableSearcherCell(-1, -1, found);
+                  }
+                    String valueInTable = theTable.getValueAt(i,j).toString();
+                              
                     if (!matchCase)
                     {
                         valueInTable = valueInTable.toLowerCase();
                         searchString = searchString.toLowerCase();
                     }
+                    printMatching( searchString,  valueInTable,  i,  j,  matchCase);
                     if (valueInTable.contains(searchString))
                     {
-                        log.debug("tableContainsBackwards - Found value: at Row[" + i + "] Col["+ j + "]");
-                        isFirstPassOfSearch = true;
+                        log.debug("Found!");
+                        found = true;
+                        isFirstSearch = true;
+                        return new TableSearcherCell(i, j, found);
+                    }
+              }
+              isStartOfRow = false;
+          }
+        }  
+       
+        if(isWrapOn)
+        {
+            isFirstSearch = false;
+            return tableContainsBackwards( searchString,  theTable,  model, (rowCnt-1), (colCnt-1),  matchCase,  isWrapOn);
+        }
+        found = false;
+        isFirstSearch = true;
+        return new TableSearcherCell(-1, -1, found);
+    }
+
+
+    public TableSearcherCell tableContains(String search, JTable theTable, TableModel model, int rowPos, int columPos, boolean matchCase, boolean forwards, boolean isWrapOn)
+    {
+        log.debug("tableContains() - searchString[" + search + "] Current row[" + rowPos + "] Current col[" + columPos+"] isFirstPass["+ isFirstSearch +"]");
+        log.debug("tableContains() - initialRow[" + initialRow + "] initialCol[" + initialCol +"]");
+        
+
+        if (isFirstSearch)
+        {
+             initialRow = rowPos;
+             initialCol = columPos;     
+        }
+        //if it's done a full wrap search
+        if ((!isFirstSearch) && (initialRow == rowPos) &&  (initialCol == columPos))
+        {
+            return new TableSearcherCell(-1, -1, false);
+        }
+        if (!forwards)
+        {
+            return tableContainsBackwards(search, theTable, model,  rowPos,  columPos,matchCase, isWrapOn); 
+        } 
+       
+        int colCnt = theTable.getColumnCount();
+        int rowCnt = theTable.getRowCount();
+        boolean isStartOfRow = true;
+
+        for (int i = rowPos; i < rowCnt; i++)
+        {
+            if (!isStartOfRow)
+            {
+                columPos = 0;
+            }
+            for (int j = columPos; j < colCnt; j++)
+            {
+                if (theTable.getValueAt(i, j) != null)
+                {
+                    //log.debug("tableContains() - looking at val i["+i+"] j["+j+"]");
+                    if ((!isFirstSearch) && (initialRow == i) && (initialCol == j))
+                    {
+                        return new TableSearcherCell(-1, -1, false);
+                    }
+                    String valueInTable = theTable.getValueAt(i, j).toString();
+
+                    if (!matchCase)
+                    {
+                        valueInTable = valueInTable.toLowerCase();
+                        search = search.toLowerCase();
+                    }
+                    printMatching(search, valueInTable, i, j, matchCase);
+                    if (valueInTable.contains(search))
+                    {
+                        log.debug("tableContains() - Found! value at Row["+i+"] Col["+j+"]");
+                        isFirstSearch = true;
                         return new TableSearcherCell(i, j, true);
                     }
                 }
                 isStartOfRow = false;
             }
         }  
-       
-        if (isWrapOn)
+        
+        if(isWrapOn)
         {
-            isFirstPassOfSearch = false;
-            return findCellInTableBackwards( searchString,  table, (rowCnt-1), (colCnt-1),  matchCase,  isWrapOn);
+            log.debug("tableContains() - wrap is on, moving to start of table");
+            isFirstSearch = false;
+            return tableContains( search,  theTable,  model, 0, 0,  matchCase,  forwards,  isWrapOn);
         }
-        isFirstPassOfSearch = true;
+        isFirstSearch = true;
         return new TableSearcherCell(-1, -1, false);
     }
-
+    
+    private void printMatching(String searchString, String valueInTable, int row, int col, boolean matchCase)
+    {
+//        log.debug("---------------------");
+//        log.debug("Matchcase: "+matchCase);
+//        log.debug("rowPos: "+row );
+//        log.debug("columPos: "+col);
+//        log.debug("Search :"+searchString);
+//        log.debug("String :"+valueInTable);
+//        log.debug("---------------------");
+           
+    }
     /**
-     * @param search the string to be searched for
-     * @param table the table in which to perform the search
-     * @param row the current row selected in the table
-     * @param column the current column selected in teh table
-     * @param matchCase whether or not the user's selected match case on the search
-     * @param forwards true if the search is a fowards search, false if backwards
-     * @param isWrapOn whether or not the user's selected wrap search for the search
-     * @return TableSearcherCell contains information as whether a match was found and at what row and column
+     * @param args
+     * void
      */
-	public TableSearcherCell findCellInTable(final String search, final JTable table, final int row, final int column, 
-                                             final boolean matchCase, final boolean forwards, final boolean isWrapOn)
-	{
-        log.debug("tableContains - searchString[" + search + "] Current row[" + row + "] Current col[" + column+"] isFirstPass["+ isFirstPassOfSearch +"]");
-        log.debug("tableContains - initialRow[" + initialRow + "] initialCol[" + initialCol +"]");
-        String searchString = search;
-        int curSearchRow = row;
-        int curSearchCol = column;
-        
-        if (isFirstPassOfSearch)
-        {
-             initialRow = row;
-             initialCol = column;     
-        }
-        
-        //if it's done a full wrap search
-        if ((!isFirstPassOfSearch) && (initialRow == curSearchRow) &&  (initialCol == curSearchCol))
-        {
-            return new TableSearcherCell(-1, -1, false);
-        }
-        
-        if (!forwards)
-        {
-            return findCellInTableBackwards(search, table,curSearchRow,  curSearchCol,matchCase, isWrapOn); 
-        } 
-        
-        boolean isStartOfRow = true;
+    public static void main(String[] args)
+    {
+        // TODO Auto-generated method stub
 
-		for (int i = curSearchRow; i < table.getRowCount(); i++)
-		{
-			if (!isStartOfRow)
-			{
-                curSearchCol = 0;
-			}
-            
-			for (int j = curSearchCol; j < table.getColumnCount(); j++)
-			{
-				if (table.getValueAt(i, j) != null)
-				{
-					if ((!isFirstPassOfSearch) && (initialRow == i) && (initialCol == j))
-					{
-						return new TableSearcherCell(-1, -1, false);
-					}
-					
-                    String valueInTable = table.getValueAt(i, j).toString();
-					if (!matchCase)
-					{
-						valueInTable = valueInTable.toLowerCase();
-                        searchString = search.toLowerCase();
-					}					
-                    if (valueInTable.contains(search))
-					{
-						log.debug("tableContains - Found value: at Row["+i+"] Col["+j+"]");
-						isFirstPassOfSearch = true;
-						return new TableSearcherCell(i, j, true);
-					}
-				}
-				isStartOfRow = false;
-			}
-		}  
-		
-        if (isWrapOn)
-        {
-        	log.debug("tableContains - wrap is on, moving to start of table");
-            isFirstPassOfSearch = false;
-            return findCellInTable( search,  table, 0, 0,  matchCase,  forwards,  isWrapOn);
-        }
-        isFirstPassOfSearch = true;
-		return new TableSearcherCell(-1, -1, false);
-	}
-   
-	/**
-	 * @param args
-	 * void
-	 */
-	public static void main(String[] args)
-	{
-		// TODO Auto-generated method stub
-
-	}
+    }
 
 }
