@@ -104,6 +104,12 @@ public class TreeDataListModel<T extends Treeable<T,D,I>,
 		return true;
 	}
     
+    /**
+     * Returns true if the node has any children (descendants)
+     * 
+     * @param t any tree node
+     * @return true if the node has any descendants
+     */
     public boolean hasChildren(T t)
     {
         if (t == null)
@@ -111,10 +117,7 @@ public class TreeDataListModel<T extends Treeable<T,D,I>,
             return false;
         }
         
-        // TODO: convert this to use the node numbers and highest child node numbers instead of actually loading the children
-        return (t.getNodeNumber() < t.getHighestChildNodeNumber()) ? true : false;
-        
-        //return !dataService.getChildNodes(t).isEmpty();
+        return (getDescendantCount(t) > 0);
     }
 	
 	protected boolean childrenWereShowing(T t)
