@@ -167,23 +167,29 @@ public class SearchReplacePanel extends JPanel
         table.getActionMap().put("Find", launchFindAction);
         
         //Allow ESC buttun to call DisablePanelAction   
-        String CANCEL_KEY = "CANCEL_KEY";
+        String CANCEL_KEY = "CANCELKEY";
         //Allow ENTER button to SearchAction
-        String ENTER_KEY = "ENTER_KEY";
+        String ENTER_KEY = "ENTERKEY";
+        String REPLACE_KEY = "REPLACEKEY";
 
         KeyStroke enterKey = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false);
         KeyStroke escapeKey = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false);
 
-        InputMap inputMap = getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-        inputMap.put(enterKey, ENTER_KEY);
-        inputMap.put(escapeKey, CANCEL_KEY);
-
-        ActionMap actionMap = getActionMap();
-        actionMap.put(ENTER_KEY, searchAction);
-        actionMap.put(CANCEL_KEY, hideFindPanelAction);
+        InputMap textFieldInputMap = findField.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        textFieldInputMap.put(enterKey, ENTER_KEY);
+        textFieldInputMap.put(escapeKey, CANCEL_KEY);
         
-        //TODO: need to change mapping for search action on "Enter", this fires a search if
-        //enter is hit in iether the find box, or the replace box
+        ActionMap textFieldActionMap = findField.getActionMap();
+        textFieldActionMap.put(ENTER_KEY, searchAction);
+        textFieldActionMap.put(CANCEL_KEY, hideFindPanelAction);
+        
+        InputMap replaceFieldInputMap = replaceField.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        replaceFieldInputMap.put(enterKey, REPLACE_KEY);
+        replaceFieldInputMap.put(escapeKey, CANCEL_KEY);
+        
+        ActionMap replaceFieldActionMap = replaceField.getActionMap();
+        replaceFieldActionMap.put(REPLACE_KEY, replaceAction);
+        replaceFieldActionMap.put(CANCEL_KEY, hideFindPanelAction);
 
     }
     
@@ -739,19 +745,23 @@ public class SearchReplacePanel extends JPanel
         {
             log.debug("ReplaceAction.actionPerformed");
             Object source = evt.getSource();
-            if (source == replaceButton)
-            {
-                isSearchDown = true;
-                //moved these two from after the if/else statement
-                setCheckAndSetWrapOption();
-                replace();
-                UsageTracker.incrUsageCount("WB.ReplaceButton");
-            }
-            else if (source == replaceAllButton)
+            //isSearchDown = true;
+            //moved these two from after the if/else statement
+            setCheckAndSetWrapOption();
+//            if (source == replaceButton)
+//            {
+//
+//                replace();
+//                UsageTracker.incrUsageCount("WB.ReplaceButton");
+//            }
+            //else 
+            if (source == replaceAllButton)
             {
                 replaceAll();
                 UsageTracker.incrUsageCount("WB.ReplaceAllButton");
             }
+            replace();
+            UsageTracker.incrUsageCount("WB.ReplaceButton");
         }
     }
     
