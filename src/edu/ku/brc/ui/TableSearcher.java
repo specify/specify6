@@ -114,8 +114,8 @@ public class TableSearcher
 
     public TableSearcherCell findCellInTable(String search, JTable theTable, TableModel model, int rowPos, int columPos, boolean matchCase, boolean forwards, boolean isWrapOn)
     {
-        log.debug("tableContains() - searchString[" + search + "] Current row[" + rowPos + "] Current col[" + columPos+"] isFirstPass["+ isFirstSearch +"]");
-        log.debug("tableContains() - initialRow[" + initialRow + "] initialCol[" + initialCol +"]");
+        log.debug("findCellInTable() - searchString[" + search + "] Current row[" + rowPos + "] Current col[" + columPos+"] isFirstPass["+ isFirstSearch +"]");
+        log.debug("findCellInTable() - initialRow[" + initialRow + "] initialCol[" + initialCol +"]");
         
 
         if (isFirstSearch)
