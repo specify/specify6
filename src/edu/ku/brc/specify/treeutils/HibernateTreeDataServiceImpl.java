@@ -29,7 +29,6 @@ import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
-import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 /**
  * An implementation of @see {@link TreeDataService} that uses Hibernate
