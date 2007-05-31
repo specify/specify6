@@ -11,13 +11,11 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
-import java.util.Vector;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 import edu.ku.brc.af.core.MenuItemDesc;
-import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
@@ -95,37 +93,36 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
 		{
 			final TreeNodePopupMenu popup = ttv.getPopupMenu();
 			// install custom popup menu items
-			JMenuItem getITIS = new JMenuItem("Get ITIS Info");
-			getITIS.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(ActionEvent e)
-				{
-					Taxon taxon = ttv.getSelectedNode(popup.getList());
-					System.out.println("Get ITIS info for " + taxon.getFullName());
-				}
-			});
-			popup.add(getITIS);
+//			JMenuItem getITIS = new JMenuItem("Get ITIS Info");
+//			getITIS.addActionListener(new ActionListener()
+//			{
+//				public void actionPerformed(ActionEvent e)
+//				{
+//					Taxon taxon = ttv.getSelectedNode(popup.getList());
+//					System.out.println("Get ITIS info for " + taxon.getFullName());
+//				}
+//			});
+//			popup.add(getITIS);
 			
-			JMenuItem getCollObjs = new JMenuItem("Associated Collection Objects");
-			getCollObjs.addActionListener(new ActionListener()
+			JMenuItem getDeters = new JMenuItem("Associated Determinations");
+            getDeters.addActionListener(new ActionListener()
 			{
 				public void actionPerformed(ActionEvent e)
 				{
-                    // TODO this won't work now that we are session-less
-                    // reimplement this to work in a session-less environment
 					Taxon taxon = ttv.getSelectedNode(popup.getList());
-					System.out.println("Get associated collection objects for " + taxon.getFullName());
+					System.out.println("Get associated determination objects for " + taxon.getFullName());
 					
-					Vector<CollectionObject> collObjs = new Vector<CollectionObject>();
+                    // this call initializes all of the linked objects
+                    // it only initializes the immediate links, not objects that are multiple hops away
+                    ttv.initializeNodeAssociations(taxon);
+                    
 					for(Determination deter : taxon.getDeterminations())
 					{
-						CollectionObject collObj = deter.getCollectionObject();
-						collObjs.add(collObj);
-						System.out.println("Collection object " + collObj.getName() + " " + collObj.getCatalogNumber() );
+						System.out.println(deter.getIdentityTitle());
 					}
 				}
 			});
-			popup.add(getCollObjs);
+			popup.add(getDeters);
 		}
 
 		return ttv;

@@ -6,6 +6,8 @@
  */
 package edu.ku.brc.specify.treeutils;
 
+import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -35,7 +37,10 @@ public class TreeHelper
      * PROVIDER THAT DOES LAZY LOADING, IT IS THE CALLER'S RESPONSIBILITY
      * TO LOAD ALL DATA BEFORE CALLING THIS METHOD.
      * 
-     * @param node a tree node
+     * @param <T> an implementation class of {@link Treeable}
+     * @param <D> an implementation class of {@link TreeDefIface}
+     * @param <I> an implementation class of {@link TreeDefItemIface}
+     * @param treeNode a tree node
      * @return the full name
      */
     public static <T extends Treeable<T,D,I>,
@@ -127,7 +132,7 @@ public class TreeHelper
             }
         }
         
-        return fullNameBuilder.toString();
+        return fullNameBuilder.toString().trim();
     }
     
     /**
@@ -139,7 +144,10 @@ public class TreeHelper
      * TO LOAD ALL DATA BEFORE CALLING THIS METHOD OR CALLING THIS METHOD
      * FROM WITHIN AN ENTITYMANAGER CONTEXT.
      * 
-     * @param node a tree node
+     * @param <T> an implementation class of {@link Treeable}
+     * @param <D> an implementation class of {@link TreeDefIface}
+     * @param <I> an implementation class of {@link TreeDefItemIface}
+     * @param treeNode a tree node
      */
     public static <T extends Treeable<T,D,I>,
                    D extends TreeDefIface<T,D,I>,
@@ -233,5 +241,71 @@ public class TreeHelper
         {
             fixFullnameForNodeAndDescendants(child);
         }
+    }
+    
+    /**
+     * Initializes the {@link Set}s or {@link List}s of related objects.
+     * 
+     * THIS METHOD ASSUMES ALL DATA IS AVAILABLE.  IF USED WITH A JPA
+     * PROVIDER THAT DOES LAZY LOADING, IT IS THE CALLER'S RESPONSIBILITY
+     * TO LOAD ALL DATA BEFORE CALLING THIS METHOD OR CALLING THIS METHOD
+     * FROM WITHIN AN ENTITYMANAGER CONTEXT.
+     * 
+     * @param <T> an implementation class of {@link Treeable}
+     * @param <D> an implementation class of {@link TreeDefIface}
+     * @param <I> an implementation class of {@link TreeDefItemIface}
+     * @param treeNode any tree node
+     */
+    public static <T extends Treeable<T,D,I>,
+                   D extends TreeDefIface<T,D,I>,
+                   I extends TreeDefItemIface<T,D,I>>
+                        void initializeRelatedObjects(T treeNode)
+    {
+        if (treeNode instanceof Geography)
+        {
+            initializeRelatedObjects((Geography)treeNode);
+            return;
+        }
+        
+        if (treeNode instanceof GeologicTimePeriod)
+        {
+            initializeRelatedObjects((GeologicTimePeriod)treeNode);
+            return;
+        }
+        
+        if (treeNode instanceof Location)
+        {
+            initializeRelatedObjects((Location)treeNode);
+            return;
+        }
+        
+        if (treeNode instanceof Taxon)
+        {
+            initializeRelatedObjects((Taxon)treeNode);
+            return;
+        }
+    }
+    
+    public static void initializeRelatedObjects(Location loc)
+    {
+        loc.getContainers().size();
+        loc.getPreparations().size();
+    }
+    
+    public static void initializeRelatedObjects(GeologicTimePeriod gtp)
+    {
+        gtp.getStratigraphies().size();
+    }
+    
+    public static void initializeRelatedObjects(Geography geo)
+    {
+        geo.getLocalities().size();
+    }
+    
+    public static void initializeRelatedObjects(Taxon taxon)
+    {
+        taxon.getAttachments().size();
+        taxon.getDeterminations().size();
+        taxon.getTaxonCitations().size();
     }
 }

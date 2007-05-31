@@ -77,6 +77,16 @@ public class TreeDataListModel<T extends Treeable<T,D,I>,
 	{
 		return this.treeDef;
 	}
+    
+    public void initializeNodeAssociations(T t)
+    {
+        if (t == null)
+        {
+            return;
+        }
+        
+        dataService.initializeRelatedObjects(t);
+    }
 	
 	public boolean allChildrenAreVisible(T t)
 	{
@@ -101,7 +111,10 @@ public class TreeDataListModel<T extends Treeable<T,D,I>,
             return false;
         }
         
-        return !dataService.getChildNodes(t).isEmpty();
+        // TODO: convert this to use the node numbers and highest child node numbers instead of actually loading the children
+        return (t.getNodeNumber() < t.getHighestChildNodeNumber()) ? true : false;
+        
+        //return !dataService.getChildNodes(t).isEmpty();
     }
 	
 	protected boolean childrenWereShowing(T t)
@@ -202,7 +215,7 @@ public class TreeDataListModel<T extends Treeable<T,D,I>,
 	{
         // TODO: is this the right place for this?
         // make sure the children of all visible nodes are loaded, allowing for retrieving their counts
-        dataService.getChildNodes(t);
+        //dataService.getChildNodes(t);
 
         // if this is the first node to ever be made visible...
 		if(visibleNodes.isEmpty())

@@ -29,6 +29,7 @@ import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
+import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 /**
  * An implementation of @see {@link TreeDataService} that uses Hibernate
@@ -612,6 +613,14 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         log.debug("committing JDBC transaction to update node numbers");
         commitTransaction(session, tx);
         log.trace("exit");
+    }
+    
+    public synchronized void initializeRelatedObjects(T node)
+    {
+        log.trace("enter");
+        Session session = getNewSession(node);
+        TreeHelper.initializeRelatedObjects(node);
+        session.close();
     }
     
     /**

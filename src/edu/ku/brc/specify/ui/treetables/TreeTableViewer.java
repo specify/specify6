@@ -784,6 +784,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             setStatusBarText(numNodesToDelete + " node(s) deleted");
         }
 	}
+    
+    public void initializeNodeAssociations(T node)
+    {
+        listModel.initializeNodeAssociations(node);
+    }
 	
 	/**
 	 * Display a form for editing the data in the currently selected node.

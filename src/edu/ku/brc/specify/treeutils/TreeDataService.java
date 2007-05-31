@@ -135,4 +135,11 @@ public interface TreeDataService <T extends Treeable<T,D,I>,
      * @return true on success, false on failure
      */
     public boolean deleteTreeDefItem(I defItem);
+    
+    /**
+     * Initializes any data associated with the given node.
+     * 
+     * @param node any tree node
+     */
+    public void initializeRelatedObjects(T node);
 }
