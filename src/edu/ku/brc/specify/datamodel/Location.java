@@ -506,7 +506,7 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
             }
         }
         
-        return fullNameBuilder.toString();
+        return fullNameBuilder.toString().trim();
     }
 
 	/**

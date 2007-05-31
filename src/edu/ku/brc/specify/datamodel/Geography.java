@@ -623,7 +623,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 			}
 		}
 		
-		return fullNameBuilder.toString();
+		return fullNameBuilder.toString().trim();
 	}
 	
 	/**

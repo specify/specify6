@@ -538,7 +538,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
             }
         }
         
-        return fullNameBuilder.toString();
+        return fullNameBuilder.toString().trim();
     }
 	
 	/**

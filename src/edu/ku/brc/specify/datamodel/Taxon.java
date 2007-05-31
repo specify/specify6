@@ -182,8 +182,8 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
     @Transient
     public String getIdentityTitle()
     {
-        String title = fullName != null && fullName.length() > 0 ? fullName : name;
-        return title != null && title.length() > 0 ? title : super.getIdentityTitle();
+        String title = ((fullName != null) && (fullName.length() > 0)) ? fullName : name;
+        return ((title != null) && (title.length() > 0)) ? title : super.getIdentityTitle();
     }
 
     /* (non-Javadoc)
@@ -832,7 +832,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
             }
         }
         
-        return fullNameBuilder.toString();
+        return fullNameBuilder.toString().trim();
     }
 	
 	/**
