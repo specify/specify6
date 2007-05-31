@@ -25,7 +25,7 @@ import edu.ku.brc.util.Pair;
  * and HTML descriptions.
  * 
  * @author jstewart
- * @code_status Alpha
+ * @code_status Complete
  */
 public class GenericKmlGenerator
 {
@@ -103,31 +103,61 @@ public class GenericKmlGenerator
         this.placemarkIconURL = placemarkIconURL;
     }
 
+    /**
+     * Gets the the balloon background color.
+     * 
+     * @return the balloon background color
+     */
     public String getBalloonStyleBgColor()
     {
         return balloonStyleBgColor;
     }
 
+    /**
+     * Sets the balloon background color.
+     * 
+     * @param the balloon background color
+     */
     public void setBalloonStyleBgColor(String balloonStyleBgColor)
     {
         this.balloonStyleBgColor = balloonStyleBgColor;
     }
 
+    /**
+     * Gets the balloon text format description.
+     * 
+     * @return the balloon text format description
+     */
     public String getBalloonStyleText()
     {
         return balloonStyleText;
     }
 
+    /**
+     * Sets the balloon text format description.
+     * 
+     * @param the balloon text format description
+     */
     public void setBalloonStyleText(String balloonStyleText)
     {
         this.balloonStyleText = balloonStyleText;
     }
 
+    /**
+     * Gets the balloon text color.
+     * 
+     * @return the balloon text color
+     */
     public String getBalloonStyleTextColor()
     {
         return balloonStyleTextColor;
     }
 
+    /**
+     * Sets the balloon text color.
+     * 
+     * @param the balloon text color
+     */
     public void setBalloonStyleTextColor(String balloonStyleTextColor)
     {
         this.balloonStyleTextColor = balloonStyleTextColor;
@@ -145,7 +175,7 @@ public class GenericKmlGenerator
         kmlBuilder.append(KML_NAMESPACE_DECL);
         kmlBuilder.append("<Document>\n");
 
-        // setup the custom icon, if any
+        // setup the custom style, if any of these are non-null
         if (placemarkIconURL != null || balloonStyleBgColor != null || balloonStyleTextColor != null || balloonStyleText != null)
         {
             kmlBuilder.append("<Style id=\"custom\">\n");
@@ -192,6 +222,14 @@ public class GenericKmlGenerator
         return kmlBuilder.toString();
     }
     
+    /**
+     * Builds the XML for a KML 'Placemark' element using the given data.
+     * 
+     * @param point the geolocation of the placemark
+     * @param name the string label of the placemark
+     * @param htmlDesc the HTML content of the placemark popup balloon
+     * @return the XML string
+     */
     protected String buildPlacemark(Pair<Double,Double> point, String name, String htmlDesc)
     {
         StringBuilder sb = new StringBuilder();
@@ -211,6 +249,12 @@ public class GenericKmlGenerator
         return sb.toString();
     }
     
+    /**
+     * Builds the XML for KML 'LookAt' and 'Point' elements.
+     * 
+     * @param point the geolocation of the point
+     * @return the XML string
+     */
     protected String buildPointAndLookAt(Pair<Double,Double> point)
     {
         StringBuilder sb = new StringBuilder();
@@ -257,16 +301,35 @@ public class GenericKmlGenerator
         generateKML(fos);
     }
     
+    /**
+     * Builds an XML start tag of the given name.
+     * 
+     * @param name the name of the start tag
+     * @return the XML snippet
+     */
     protected String generateXmlStartTag(String name)
     {
         return "<" + name + ">";
     }
 
+    /**
+     * Builds an XML end tag of the given name.
+     * 
+     * @param name the name of the end tag
+     * @return the XML snippet
+     */
     protected String generateXmlEndTag(String name)
     {
         return "</" + name + ">";
     }
     
+    /**
+     * Builds an XML element with the given name and content.
+     * 
+     * @param name the name of the element
+     * @param content the content of the element
+     * @return the XML snippet
+     */
     protected String generateXmlElement(String name, String content)
     {
         if (content == null || content.equals("") )
@@ -278,7 +341,9 @@ public class GenericKmlGenerator
     }
     
     /**
-     * @param args
+     * A test main.
+     * 
+     * @param args ignored
      */
     public static void main(String[] args)
     {
