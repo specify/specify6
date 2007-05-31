@@ -411,7 +411,7 @@ public class SearchReplacePanel extends JPanel
         String myFindValue = findField.getText();
 
         TableSearcher as = new TableSearcher();
-        TableSearcherCell cell = as.cellContains(myFindValue, table, table.getModel(), selectedRow, selectedCol,getMatchCaseFlag());
+        TableSearcherCell cell = as.cellContains(myFindValue, table,  selectedRow, selectedCol,getMatchCaseFlag());
         boolean found = cell.isFound();
         if (found)
         {
