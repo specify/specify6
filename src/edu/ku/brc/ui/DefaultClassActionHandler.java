@@ -14,7 +14,7 @@ import java.util.Hashtable;
  * that should fire when objects of those classes are 'activated'
  * in some manner, most likely by a double-click action from a user.
  *
- * @code_status Beta
+ * @code_status Complete
  * @author jstewart
  */
 public class DefaultClassActionHandler

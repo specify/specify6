@@ -21,8 +21,9 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.util.Pair;
 
 /**
- * This class generates KML output representing the provided geo reference data
- * and HTML descriptions.
+ * This class generates KML output representing the provided geolocations
+ * and HTML descriptions.  For a more detailed description of KML, see
+ * <a href="http://code.google.com/apis/kml/documentation/index.html">the Google KML reference</a>.
  * 
  * @author jstewart
  * @code_status Complete
@@ -50,8 +51,13 @@ public class GenericKmlGenerator
     /** A URL to an image file to be used as the placemark icon. */
     protected String placemarkIconURL;
     
+    /** The background color of the placemark balloons. */
     protected String balloonStyleBgColor;
+    
+    /** The text color for the placemark balloons. */
     protected String balloonStyleTextColor;
+    
+    /** The format description for the placemark balloons. */
     protected String balloonStyleText;
     
     /**
