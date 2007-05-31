@@ -1,6 +1,5 @@
 package edu.ku.brc.ui;
 
-import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -18,9 +17,6 @@ import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.JList;
 import javax.swing.ListModel;
@@ -50,28 +46,21 @@ public class DragDropJList extends JList implements DragSourceListener,
 		}
 	}
 	/** A static array holding only {@link #localObjectFlavor}. */
-	protected static DataFlavor[]	supportedFlavors = {localObjectFlavor};
+	protected static DataFlavor[] supportedFlavors = {localObjectFlavor};
 	/** */
-	protected DragSource			dragSource;
+	protected DragSource          dragSource;
 	/** */
-	protected DropTarget			dropTarget;
+	protected DropTarget          dropTarget;
 	/** */
-	protected Object				dropTargetCell;
+	protected int                 draggedIndex     = -1;
 	/** */
-	protected int					draggedIndex		= -1;
-	/** */
-	protected DragDropCallback	dragDropCallback;
-    /** */
-    //protected GhostMouseInputAdapter  mouseDropAdapter = null;
-    /** */
-    protected List<DataFlavor>       dropFlavors  = new ArrayList<DataFlavor>();
-    /** */
-    protected List<DataFlavor>       dragFlavors  = new ArrayList<DataFlavor>();
+	protected DragDropCallback    dragDropCallback;
 
 	/**
-	 * 
-	 *
-	 * @param model
+     * Constructor.
+     * 
+	 * @param model a list model managing the data to be displayed by this JList
+	 * @param dragDropCallback the object to notify during drag and drop events
 	 */
 	public DragDropJList( ListModel model, DragDropCallback dragDropCallback )
 	{
@@ -83,14 +72,10 @@ public class DragDropJList extends JList implements DragSourceListener,
 		int actions = DnDConstants.ACTION_MOVE | DnDConstants.ACTION_COPY | DnDConstants.ACTION_NONE;
 		dragSource.createDefaultDragGestureRecognizer(this,actions,this);
 		dropTarget = new DropTarget(this, this);
-		//createMouseInputAdapter();
 	}
 
-	/**
-	 *
-	 *
+	/* (non-Javadoc)
 	 * @see java.awt.dnd.DragGestureListener#dragGestureRecognized(java.awt.dnd.DragGestureEvent)
-	 * @param dge
 	 */
 	public void dragGestureRecognized(DragGestureEvent dge)
 	{
@@ -102,69 +87,51 @@ public class DragDropJList extends JList implements DragSourceListener,
 		Object target = getModel().getElementAt(index);
 		Transferable trans = new RJLTransferable(target);
 		draggedIndex = index;
-		dragSource.startDrag(dge, Cursor.getDefaultCursor(), trans, this);
+		dragSource.startDrag(dge, null, trans, this);
 	}
 
-	/**
-	 *
-	 *
+	/* (non-Javadoc)
 	 * @see java.awt.dnd.DragSourceListener#dragDropEnd(java.awt.dnd.DragSourceDropEvent)
-	 * @param dsde
 	 */
 	public void dragDropEnd(DragSourceDropEvent dsde)
 	{
 		// do nothing
 	}
 
-	/**
-	 *
-	 *
+	/* (non-Javadoc)
 	 * @see java.awt.dnd.DragSourceListener#dragEnter(java.awt.dnd.DragSourceDragEvent)
-	 * @param dsde
 	 */
 	public void dragEnter(DragSourceDragEvent dsde)
 	{
 		// do nothing
 	}
 
-	/**
-	 *
-	 *
+	/* (non-Javadoc)
 	 * @see java.awt.dnd.DragSourceListener#dragExit(java.awt.dnd.DragSourceEvent)
-	 * @param dse
 	 */
 	public void dragExit(DragSourceEvent dse)
 	{
 		// do nothing
 	}
 
-	/**
-	 *
-	 *
+	/* (non-Javadoc)
 	 * @see java.awt.dnd.DragSourceListener#dragOver(java.awt.dnd.DragSourceDragEvent)
-	 * @param dsde
 	 */
 	public void dragOver(DragSourceDragEvent dsde)
 	{
 		// do nothing
 	}
 
-	/**
-	 *
-	 *
+	/* (non-Javadoc)
 	 * @see java.awt.dnd.DragSourceListener#dropActionChanged(java.awt.dnd.DragSourceDragEvent)
-	 * @param dsde
 	 */
 	public void dropActionChanged(DragSourceDragEvent dsde)
 	{
 		// do nothing
 	}
 
-	/**
-	 *
-	 *
+	/* (non-Javadoc)
 	 * @see java.awt.dnd.DropTargetListener#dragEnter(java.awt.dnd.DropTargetDragEvent)
-	 * @param dtde
 	 */
 	public void dragEnter(DropTargetDragEvent dtde)
 	{
@@ -178,22 +145,16 @@ public class DragDropJList extends JList implements DragSourceListener,
 		}
 	}
 
-	/**
-	 *
-	 *
+	/* (non-Javadoc)
 	 * @see java.awt.dnd.DropTargetListener#dragExit(java.awt.dnd.DropTargetEvent)
-	 * @param dte
 	 */
 	public void dragExit(DropTargetEvent dte)
 	{
 		// do nothing
 	}
 
-	/**
-	 *
-	 *
+	/* (non-Javadoc)
 	 * @see java.awt.dnd.DropTargetListener#dragOver(java.awt.dnd.DropTargetDragEvent)
-	 * @param dtde
 	 */
 	public void dragOver(DropTargetDragEvent dtde)
 	{
@@ -207,6 +168,12 @@ public class DragDropJList extends JList implements DragSourceListener,
 		}
 	}
 	
+	/**
+     * Determines if a drop should be accepted.
+     * 
+	 * @param dtde the {@link DropTargetDragEvent} in question
+	 * @return true if a drop is acceptable, false otherwise
+	 */
 	protected boolean shouldAccept(DropTargetDragEvent dtde)
 	{
 		Point loc = dtde.getLocation();
@@ -229,11 +196,8 @@ public class DragDropJList extends JList implements DragSourceListener,
 		return false;
 	}
 
-	/**
-	 *
-	 *
+	/* (non-Javadoc)
 	 * @see java.awt.dnd.DropTargetListener#drop(java.awt.dnd.DropTargetDropEvent)
-	 * @param dtde
 	 */
 	public void drop(DropTargetDropEvent dtde)
 	{
@@ -262,48 +226,38 @@ public class DragDropJList extends JList implements DragSourceListener,
 		dtde.dropComplete(dropped);
 	}
 	
-
-	/**
-	 *
-	 *
+	/* (non-Javadoc)
 	 * @see java.awt.dnd.DropTargetListener#dropActionChanged(java.awt.dnd.DropTargetDragEvent)
-	 * @param dtde
 	 */
 	public void dropActionChanged(DropTargetDragEvent dtde)
 	{
 		// do nothing
 	}
-
 	
 	/**
-	 *
-	 *
+     * This class serves as a wrapper to allow any object to be transfered in a
+     * drag and drop operation.
+     * 
 	 * @author jstewart
-	 * @version %I% %G%
+	 * @code_status Complete
 	 */
 	class RJLTransferable implements Transferable
 	{
-		/** */
+		/** The actual object being transfered. */
 		Object	object;
 
 		/**
-		 *
-		 *
-		 * @param o
+         * Constructor.
+         * 
+		 * @param o the object being transfered.
 		 */
 		public RJLTransferable(Object o)
 		{
 			object = o;
 		}
 
-		/**
-		 *
-		 *
+		/* (non-Javadoc)
 		 * @see java.awt.datatransfer.Transferable#getTransferData(java.awt.datatransfer.DataFlavor)
-		 * @param df
-		 * @return
-		 * @throws UnsupportedFlavorException
-		 * @throws IOException
 		 */
 		public Object getTransferData(DataFlavor df)
 				throws UnsupportedFlavorException
@@ -313,23 +267,16 @@ public class DragDropJList extends JList implements DragSourceListener,
 			throw new UnsupportedFlavorException(df);
 		}
 
-		/**
-		 *
-		 *
+		/* (non-Javadoc)
 		 * @see java.awt.datatransfer.Transferable#isDataFlavorSupported(java.awt.datatransfer.DataFlavor)
-		 * @param df
-		 * @return
 		 */
 		public boolean isDataFlavorSupported(DataFlavor df)
 		{
 			return (df.equals(localObjectFlavor));
 		}
 
-		/**
-		 *
-		 *
+		/* (non-Javadoc)
 		 * @see java.awt.datatransfer.Transferable#getTransferDataFlavors()
-		 * @return
 		 */
 		public DataFlavor[] getTransferDataFlavors()
 		{
