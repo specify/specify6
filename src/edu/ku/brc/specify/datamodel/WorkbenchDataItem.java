@@ -37,7 +37,7 @@ import org.hibernate.annotations.Index;
 @Table(name = "workbenchdataitem")
 @org.hibernate.annotations.Table(appliesTo="workbenchdataitem", indexes =
     {   
-        @Index (name="DataItemRowNumberIDX", columnNames={"rowNumber"}),
+        @Index (name="DataItemRowNumberIDX", columnNames={"rowNumber"})
     })
 @org.hibernate.annotations.Proxy(lazy = false)
 public class WorkbenchDataItem implements java.io.Serializable, Comparable<WorkbenchDataItem>
@@ -111,7 +111,7 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
     /**
      * Generic Getter for the ID Property.
      * 
-     * @returns ID Property.
+     * @return ID Property
      */
     @Transient
     public Long getId()
