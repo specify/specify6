@@ -461,7 +461,7 @@ public class SearchReplacePanel extends JPanel
         isSearchDown = true;
 
         TableSearcher as = new TableSearcher();
-        TableSearcherCell cell = as.findCellInTable(str, table, table.getModel(), curRow, curCol,getMatchCaseFlag(), isSearchDown, getWrapSearchFlag());
+        TableSearcherCell cell = as.findCellInTable(str, table,  curRow, curCol,getMatchCaseFlag(), isSearchDown, getWrapSearchFlag());
         boolean found = cell.isFound();  
         if (!found)
         {
@@ -504,7 +504,7 @@ public class SearchReplacePanel extends JPanel
                 curCol = -1;
             }
             curCol++;
-            cell = as.findCellInTable(str, table, table.getModel(), curRow, curCol,getMatchCaseFlag(), isSearchDown, false);
+            cell = as.findCellInTable(str, table, curRow, curCol,getMatchCaseFlag(), isSearchDown, false);
             found = cell.isFound();
 
         }  
@@ -591,7 +591,7 @@ public class SearchReplacePanel extends JPanel
         
         
         TableSearcher as = new TableSearcher();
-        TableSearcherCell cell = as.findCellInTable(str, table, table.getModel(), curRow, curCol, getMatchCaseFlag(),isSearchDown, getWrapSearchFlag() );
+        TableSearcherCell cell = as.findCellInTable(str, table, curRow, curCol, getMatchCaseFlag(),isSearchDown, getWrapSearchFlag() );
         boolean found = cell.isFound();
         
         if (found)

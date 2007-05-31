@@ -58,7 +58,7 @@ public class TableSearcher
         return new TableSearcherCell(-1, -1, found);
     }
     
-    private TableSearcherCell findCellInTableBackwards(String searchString, JTable theTable, TableModel model, int rowPos, int columPos, boolean matchCase, boolean isWrapOn)
+    private TableSearcherCell findCellInTableBackwards(String searchString, JTable theTable,  int rowPos, int columPos, boolean matchCase, boolean isWrapOn)
     {
         log.debug("tableContainsBackwards: + searchString: " + searchString + " Current row: " + rowPos + " Current col: " + columPos);
         boolean found = false;
@@ -104,7 +104,7 @@ public class TableSearcher
         if(isWrapOn)
         {
             isFirstSearch = false;
-            return findCellInTableBackwards( searchString,  theTable,  model, (rowCnt-1), (colCnt-1),  matchCase,  isWrapOn);
+            return findCellInTableBackwards( searchString,  theTable,  (rowCnt-1), (colCnt-1),  matchCase,  isWrapOn);
         }
         found = false;
         isFirstSearch = true;
@@ -112,7 +112,7 @@ public class TableSearcher
     }
 
 
-    public TableSearcherCell findCellInTable(String search, JTable theTable, TableModel model, int rowPos, int columPos, boolean matchCase, boolean forwards, boolean isWrapOn)
+    public TableSearcherCell findCellInTable(String search, JTable theTable, int rowPos, int columPos, boolean matchCase, boolean forwards, boolean isWrapOn)
     {
         log.debug("findCellInTable() - searchString[" + search + "] Current row[" + rowPos + "] Current col[" + columPos+"] isFirstPass["+ isFirstSearch +"]");
         log.debug("findCellInTable() - initialRow[" + initialRow + "] initialCol[" + initialCol +"]");
@@ -130,7 +130,7 @@ public class TableSearcher
         }
         if (!forwards)
         {
-            return findCellInTableBackwards(search, theTable, model,  rowPos,  columPos,matchCase, isWrapOn); 
+            return findCellInTableBackwards(search, theTable, rowPos,  columPos,matchCase, isWrapOn); 
         } 
        
         int colCnt = theTable.getColumnCount();
@@ -174,7 +174,7 @@ public class TableSearcher
         {
             log.debug("tableContains() - wrap is on, moving to start of table");
             isFirstSearch = false;
-            return findCellInTable( search,  theTable,  model, 0, 0,  matchCase,  forwards,  isWrapOn);
+            return findCellInTable( search,  theTable,  0, 0,  matchCase,  forwards,  isWrapOn);
         }
         isFirstSearch = true;
         return new TableSearcherCell(-1, -1, false);
