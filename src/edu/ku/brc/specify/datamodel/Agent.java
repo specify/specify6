@@ -58,6 +58,7 @@ import edu.ku.brc.util.AttachmentUtils;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "agent")
+@org.hibernate.annotations.Proxy(lazy = false)
 @org.hibernate.annotations.Table(appliesTo="agent", indexes =
     {   @Index (name="AgentLastNameIDX", columnNames={"LastName"}),
         @Index (name="AgentFirstNameIDX", columnNames={"FirstName"})  })

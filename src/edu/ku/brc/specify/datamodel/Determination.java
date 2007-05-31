@@ -55,6 +55,7 @@ import org.hibernate.annotations.CascadeType;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "determination")
+@org.hibernate.annotations.Proxy(lazy = false)
 public class Determination extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
@@ -462,8 +463,9 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
     @Transient
     public String getIdentityTitle()
     {
-        Taxon tax = getTaxon();
-        return "Determination " + (tax != null ? ": "+ tax.getName() : "");
+        String taxonName = (taxon != null) ? taxon.getIdentityTitle() : "";
+        String determinerName = (determiner != null) ? determiner.getIdentityTitle() : "";
+        return "Determination: " + determinerName + " (" + taxonName + ")";
     }
 
 }
