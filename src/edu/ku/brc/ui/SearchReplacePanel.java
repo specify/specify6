@@ -38,7 +38,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
@@ -110,7 +109,6 @@ public class SearchReplacePanel extends JPanel
     {
         this.table = mytable;
         this.setVisible(false);
-        //this.searchable = mytable.getSearchable();
         createFindAndReplacePanel();
         handleTableSelections();
     }
@@ -125,7 +123,6 @@ public class SearchReplacePanel extends JPanel
         {
             public void valueChanged(ListSelectionEvent e)
             {
-               // log.debug("table selectoin");
                 nextButton.setEnabled(true);
                 previousButton.setEnabled(true);
                 clearStatusLabel();
@@ -146,11 +143,7 @@ public class SearchReplacePanel extends JPanel
             this.setVisible(false);
         } else
         {
-            if (table.getCellEditor() != null)
-            {
-                table.getCellEditor().stopCellEditing();
-            }
-            
+            stopTableEditing();            
             log.debug("showing Find/replace panel");
             this.setVisible(true);
             findField.requestFocusInWindow();
@@ -453,7 +446,6 @@ public class SearchReplacePanel extends JPanel
      */
     private void replaceAll()
     {
-        log.debug("replaceAll() called");
         if (!isTableValid()) 
         { 
             return ; 
@@ -462,7 +454,6 @@ public class SearchReplacePanel extends JPanel
         
         String str = findField.getText();
         log.debug("replaceAll() - FindValue[" + str + "] SearchingDown[" + isSearchDown + "]");
-        log.debug("tableSize - rowCount: " + table.getRowCount() + " columnCount: " + table.getColumnCount());
 
         int curRow = 0;
         int curCol = 0;
@@ -491,7 +482,6 @@ public class SearchReplacePanel extends JPanel
               if (!wrapSearchButton.isSelected())
               {
                   previousButton.setEnabled(false);
-                  log.debug("seeting next button to true");
                   nextButton.setEnabled(true);                
               }
               setStatusLabelWithFailedFind();
@@ -514,12 +504,6 @@ public class SearchReplacePanel extends JPanel
                 curCol = -1;
             }
             curCol++;
-//            if((curRow==(table.getRowCount()-1))&&(curCol==(table.getColumnCount()-1)))
-//            {
-//              break;
-//            }
-            log.debug("replace all");
-            //as = new TableSearcher();
             cell = as.tableContains(str, table, table.getModel(), curRow, curCol,getMatchCaseFlag(), isSearchDown, false);
             found = cell.isFound();
 
@@ -539,7 +523,6 @@ public class SearchReplacePanel extends JPanel
     {
         if (table == null)
         {
-            log.error("The search table is null!");
             setStatusLabelWithFailedFind();
             return false;
         }
@@ -567,14 +550,12 @@ public class SearchReplacePanel extends JPanel
         {
             return ;
         }        
-        stopTableEditing();
-        
-        String str = findField.getText();
-        log.debug("find() - FindValue[" + str + "] SearchingDown[" + isSearchDown+ "]");
-        
+        stopTableEditing();        
+        String str = findField.getText();        
         int curRow = table.getSelectedRow();
         int curCol = table.getSelectedColumn();
-        log.debug("find() - curRow[" + curRow + "] curCol[" + curCol+ "]");
+        log.debug("find() - FindValue[" + str + "] SearchingDown[" + isSearchDown+ "]"
+                +"curRow[" + curRow + "] curCol[" + curCol+ "]");
 
         if (isSearchDown){
             if (curRow == -1) 
@@ -637,7 +618,6 @@ public class SearchReplacePanel extends JPanel
             }            
             else
             {
-                log.debug("setting next button true");
                 nextButton.setEnabled(true);
             }
             clearStatusLabel();
@@ -650,7 +630,6 @@ public class SearchReplacePanel extends JPanel
                 isFinishedSearchingDown = true;
                 if (!wrapSearchButton.isSelected())
                 {
-                    log.debug("=======" + isSearchDown);
                     nextButton.setEnabled(false);
                     previousButton.setEnabled(true);
                     
@@ -663,7 +642,6 @@ public class SearchReplacePanel extends JPanel
                 if (!wrapSearchButton.isSelected())
                 {
                     previousButton.setEnabled(false);
-                    log.debug("seeting next button to true");
                     nextButton.setEnabled(true);
                     
                 }
@@ -681,7 +659,6 @@ public class SearchReplacePanel extends JPanel
         {
             isFinishedSearchingDown = false;
             isFinishedSearchingUp = false;
-            log.debug("seeting next button to true");
             nextButton.setEnabled(true);     
             previousButton.setEnabled(true);
             clearStatusLabel();
@@ -721,8 +698,7 @@ public class SearchReplacePanel extends JPanel
          */
         public void actionPerformed(ActionEvent evt)
         {
-            log.debug("ReplaceAction.actionPerformed");
-            log.debug("closing the FindReplace Dialog - either the close \"X\" button was pressed or the esc button was pressed");
+            log.debug("ReplaceAction.actionPerformed closing the FindReplace Dialog - either the close \"X\" button was pressed or the esc button was pressed");
             showFindAndReplacePanel(false);
         }
         
