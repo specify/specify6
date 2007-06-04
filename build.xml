@@ -376,6 +376,7 @@
 			</fileset>
 			<fileset dir="${macnative.dir}">
 				<include name="*.jar" />
+				<include name="**/*.jnilib" />
 			</fileset>
 		</copy>
 

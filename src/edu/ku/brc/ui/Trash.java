@@ -24,6 +24,7 @@ import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -33,6 +34,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -46,6 +48,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 import edu.ku.brc.ui.dnd.DndDeletable;
+import edu.ku.brc.ui.dnd.DragAndDropLock;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
@@ -73,6 +76,7 @@ public class Trash extends JComponent implements GhostActionable
     protected ImageIcon              trashIcon;
     protected ImageIcon              trashFullIcon;
     protected ImageIcon              paperIcon;
+    protected Insets                 insets = new Insets(4,4,4,4);
     
     protected GhostMouseInputAdapter  mouseInputAdapter    = null;
     protected RenderingHints         hints               = null;
@@ -81,6 +85,8 @@ public class Trash extends JComponent implements GhostActionable
     protected Dimension              prefferedRenderSize = new Dimension(0,0);
     protected boolean                verticalLayout      = false;
     protected Vector<DndDeletable>   items               = new Vector<DndDeletable>();
+    protected boolean                isActive            = false;
+    protected boolean                isOver              = false;
     
     protected Color                  textColor           = new Color(0,0,0, 90);
     protected Font                   textFont            = null;
@@ -105,6 +111,8 @@ public class Trash extends JComponent implements GhostActionable
         paperIcon     = trashFullIcon;//new ImageIcon(IconManager.getImagePath("trash_paper.gif"));
         imgIcon       = trashIcon;
         
+        createMouseInputAdapter();
+        
         // XXX RELEASE - Disabled for stand-alone Workbench
         if (false)
         {
@@ -125,7 +133,8 @@ public class Trash extends JComponent implements GhostActionable
                 }
               });
             popupMenu.add(emptyMenuItem);
-            
+        }
+        
             MouseListener mouseListener = new MouseAdapter() {
                   private void showIfPopupTrigger(MouseEvent mouseEvent) 
                   {
@@ -138,17 +147,34 @@ public class Trash extends JComponent implements GhostActionable
                       }
                   }
                   @Override
-                public void mousePressed(MouseEvent mouseEvent) {
+                  public void mousePressed(MouseEvent mouseEvent) {
                     showIfPopupTrigger(mouseEvent);
                   }
                   @Override
-                public void mouseReleased(MouseEvent mouseEvent) {
+                  public void mouseReleased(MouseEvent mouseEvent) {
                     showIfPopupTrigger(mouseEvent);
+                  }
+                  @Override
+                  public void mouseEntered(MouseEvent e)
+                  {
+                      if (isEnabled())
+                      {
+                          isOver = true;
+                          repaint();
+                          //UIRegistry.displayStatusBarText(itself.getToolTipText());
+                      }
+                  }
+                  @Override
+                  public void mouseExited(MouseEvent e)
+                  {
+                      isOver = false;
+                      repaint();
+                      //UIRegistry.displayStatusBarText("");
                   }
                 };
                 //iconLabel.addMouseListener (mouseListener);            
             addMouseListener (mouseListener);       
-        }
+        
 
     }
     
@@ -187,7 +213,7 @@ public class Trash extends JComponent implements GhostActionable
     {
         super.paintComponent(g);
         
-        g.drawImage(imgIcon.getImage(), 0, 0, imgIcon.getIconWidth(), imgIcon.getIconHeight(), null);
+        g.drawImage(imgIcon.getImage(), insets.top, insets.left, imgIcon.getIconWidth(), imgIcon.getIconHeight(), null);
         /*
         if (items.size() > 0)
         {
@@ -202,6 +228,30 @@ public class Trash extends JComponent implements GhostActionable
             String text = Integer.toString(items.size());
             g.drawString(text, (size.width-fm.stringWidth(text))/2, size.height-(size.height - fm.getAscent())/2);
         }*/
+        
+        if (isActive && !this.hasFocus())
+        {
+            Color color;
+            if (isActive)
+            {
+                color = DragAndDropLock.isDragAndDropStarted() && isOver ? RolloverCommand.getDropColor() : RolloverCommand.getActiveColor();
+            } else
+            {
+                color = RolloverCommand.getHoverColor();
+            }
+            g.setColor(color);
+            
+            Dimension size   = getSize();
+            
+            //g.drawRect(insets.left, insets.top, size.width-insets.right-insets.left, size.height-insets.bottom-insets.top);
+            Graphics2D g2d = (Graphics2D)g;
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            //g2d.setRenderingHints(hints);
+            RoundRectangle2D.Double rr = new RoundRectangle2D.Double(0, 0, size.width-1, size.height-1, 10, 10);
+            g2d.draw(rr);
+            rr = new RoundRectangle2D.Double(1, 1, size.width-3, size.height-3, 10, 10);
+            g2d.draw(rr);
+        }
     }
     
     /* (non-Javadoc)
@@ -210,7 +260,7 @@ public class Trash extends JComponent implements GhostActionable
     @Override
     public Dimension getPreferredSize()
     {
-        return new Dimension(imgIcon.getIconWidth(), imgIcon.getIconHeight());
+        return new Dimension(imgIcon.getIconWidth()+insets.left+insets.right, imgIcon.getIconHeight()+insets.top+insets.bottom);
     }
     
     /**
@@ -317,6 +367,7 @@ public class Trash extends JComponent implements GhostActionable
         mouseInputAdapter = new GhostMouseInputAdapter(UIRegistry.getGlassPane(), "action", this);
         addMouseListener(mouseInputAdapter);
         addMouseMotionListener(mouseInputAdapter);
+        mouseInputAdapter.registerWithGlassPane();
     }
     
     /* (non-Javadoc)
@@ -324,7 +375,7 @@ public class Trash extends JComponent implements GhostActionable
      */
     public void setActive(boolean isActive)
     {
-        // Auto-generated method stub
+        this.isActive = isActive;
     }
     
     /**

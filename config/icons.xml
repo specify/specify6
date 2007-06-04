@@ -89,7 +89,8 @@
     <icon name="CardImage"     file="ImageWindow20x20.png" sizes="NonStd"/>
     <icon name="LocalityMapper" file="map20x20.png" sizes="NonStd"/>
     <icon name="ControlEdit"    file="EditProperties20x20.png" sizes="NonStd"/>
-    
+    <icon name="DropIndicator"  file="dropindicator.png" sizes="NonStd"/>
+
     <!-- Aliases -->
     <icon name="Accession Agent"        alias="AccessionAgent"/>
     <icon name="Attachment"             alias="unknown"/>

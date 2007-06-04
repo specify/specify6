@@ -71,18 +71,20 @@ import edu.ku.brc.ui.dnd.ShadowFactory;
 @SuppressWarnings("serial")
 public class RolloverCommand extends JPanel implements GhostActionable, DndDeletable
 {
-    static protected Color           transparentWhite = new Color(255, 255, 255, 180);
+    protected static Color           transparentWhite = new Color(255, 255, 255, 180);
+    protected static Color           focusColor  = Color.BLUE;
+    protected static Color           activeColor = new Color(0, 150, 0, 100); 
+    protected static Color           hoverColor  = new Color(0, 0, 150, 100);
+    protected static Color           dropColor   = new Color(255, 140, 0, 100);
     
     protected static final int       ICON_TEXT_GAP = 4;
+    protected static ImageIcon       hoverImg      = null;
     
     protected JTextField             txtFld     = null;
     protected JLabel                 iconLabel;
     protected boolean                isEditing   = false;
 
     protected boolean                isOver      = false;
-    protected static Color           focusColor  = Color.BLUE;
-    protected static Color           activeColor = new Color(0, 150, 0, 100); 
-    protected static Color           hoverColor  = new Color(0, 0, 150, 100);
     protected Vector<ActionListener> actions     = new Vector<ActionListener>();
 
     protected ImageIcon              imgIcon     = null;
@@ -495,7 +497,7 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
                 Color color;
                 if (isActive)
                 {
-                    color = activeColor;
+                    color = DragAndDropLock.isDragAndDropStarted() && isOver ? dropColor : activeColor;
                 } else
                 {
                     Color mouseOverColor = dragFlavors.size() > 0 ? activeColor : hoverColor;
@@ -511,6 +513,13 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
                 g2d.draw(rr);
                 rr = new RoundRectangle2D.Double(insets.left+1, insets.top+1, size.width-insets.right-insets.left-2, size.height-insets.bottom-insets.top-2, 10, 10);
                 g2d.draw(rr);
+            }
+            
+            if (isOver && hoverImg != null && isActive && DragAndDropLock.isDragAndDropStarted())
+            {
+                int x = size.width  - hoverImg.getIconWidth() -1;
+                int y = (size.height - hoverImg.getIconHeight()) / 2;
+                g.drawImage(hoverImg.getImage(), x, y, null);
             }
         }
     }
@@ -568,6 +577,86 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
         dropFlavors.add(dataFlavor);
     }
 
+    
+    /**
+     * @return the hoverImg
+     */
+    public static ImageIcon getHoverImg()
+    {
+        return hoverImg;
+    }
+
+    /**
+     * @param hoverImg the hoverImg to set
+     */
+    public static void setHoverImg(ImageIcon hoverImg)
+    {
+        RolloverCommand.hoverImg = hoverImg;
+    }
+
+    /**
+     * @return the activeColor
+     */
+    public static Color getActiveColor()
+    {
+        return activeColor;
+    }
+
+    /**
+     * @param activeColor the activeColor to set
+     */
+    public static void setActiveColor(Color activeColor)
+    {
+        RolloverCommand.activeColor = activeColor;
+    }
+
+    /**
+     * @return the dropColor
+     */
+    public static Color getDropColor()
+    {
+        return dropColor;
+    }
+
+    /**
+     * @param dropColor the dropColor to set
+     */
+    public static void setDropColor(Color dropColor)
+    {
+        RolloverCommand.dropColor = dropColor;
+    }
+
+    /**
+     * @return the focusColor
+     */
+    public static Color getFocusColor()
+    {
+        return focusColor;
+    }
+
+    /**
+     * @param focusColor the focusColor to set
+     */
+    public static void setFocusColor(Color focusColor)
+    {
+        RolloverCommand.focusColor = focusColor;
+    }
+
+    /**
+     * @return the hoverColor
+     */
+    public static Color getHoverColor()
+    {
+        return hoverColor;
+    }
+
+    /**
+     * @param hoverColor the hoverColor to set
+     */
+    public static void setHoverColor(Color hoverColor)
+    {
+        RolloverCommand.hoverColor = hoverColor;
+    }
 
     //-----------------------------------------------
     // NavBoxItemIFace Interface

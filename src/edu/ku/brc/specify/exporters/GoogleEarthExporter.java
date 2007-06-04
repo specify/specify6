@@ -95,10 +95,11 @@ public class GoogleEarthExporter implements RecordSetExporter
                 List<GoogleEarthPlacemarkIFace> mappedPlacemarks = exportPlacemarkList((List<GoogleEarthPlacemarkIFace>)data, reqParams, tmpFile);
                 if (mappedPlacemarks.size() != data.size())
                 {
-                    Component parentFrame = UIRegistry.get(UIRegistry.TOPFRAME);
-                    String notAllMappedMsg = getResourceString("NOT_ALL_MAPPED");
-                    String title = getResourceString("Warning");
-                    JOptionPane.showMessageDialog(parentFrame, notAllMappedMsg, title, JOptionPane.WARNING_MESSAGE);
+                    //Component parentFrame = UIRegistry.get(UIRegistry.TOPFRAME);
+                    //String notAllMappedMsg = getResourceString("NOT_ALL_MAPPED");
+                    //String title = getResourceString("Warning");
+                    //JOptionPane.showMessageDialog(parentFrame, notAllMappedMsg, title, JOptionPane.WARNING_MESSAGE);
+                    UIRegistry.getStatusBar().setErrorMessage(String.format(getResourceString("NOT_ALL_MAPPED"), new Object[] {(data.size() - mappedPlacemarks.size()), data.size()}));
                 }
                 
                 try

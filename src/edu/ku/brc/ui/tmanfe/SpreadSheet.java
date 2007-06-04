@@ -660,7 +660,10 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
                         setValueAt("", rowsselected[i], colsselected[j]);
                     }
                 }
-                sbf.append("\n");
+                if (numrows > 1)
+                {
+                    sbf.append("\n");
+                }
             }
             StringSelection stsel  = new StringSelection(sbf.toString());
             Clipboard       sysClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();

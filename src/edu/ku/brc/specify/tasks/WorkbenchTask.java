@@ -2846,6 +2846,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     @Override
     public void doCommand(final CommandAction cmdAction)
     {
+        UIRegistry.getStatusBar().setText("");
+        
         if (cmdAction.isType(WORKBENCH))
         {
             //SwingUtilities.invokeLater(new Runnable() {

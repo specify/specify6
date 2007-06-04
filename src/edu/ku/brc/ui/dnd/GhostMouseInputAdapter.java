@@ -396,7 +396,7 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
         {
             if (currCursor != HAND_CURSOR) // a little optimiztion
             {
-                glassPane.setAlpha(1.0f);
+                //glassPane.setAlpha(1.0f);
                 glassPane.setCursor(HAND_CURSOR);
                 currCursor = HAND_CURSOR;
             }
@@ -404,7 +404,7 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
         {
             if (currCursor != DEF_CURSOR) // a little optimiztion
             {
-                glassPane.resetAlpha();
+                //glassPane.resetAlpha();
                 glassPane.setCursor(DEF_CURSOR);
                 currCursor = DEF_CURSOR;
             }

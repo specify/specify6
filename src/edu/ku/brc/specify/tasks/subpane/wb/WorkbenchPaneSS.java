@@ -1702,10 +1702,10 @@ public class WorkbenchPaneSS extends BaseSubPane
 //        {
 //            command.setProperty("iconURL", iconUrl);
 //        }
-        CommandDispatcher.dispatch(command);
         JStatusBar statusBar = UIRegistry.getStatusBar();
-        statusBar.setText("Opening Google Earth");
-    }
+        statusBar.setText("Opening Google Earth");  // XXX I18N
+        CommandDispatcher.dispatch(command);
+     }
     
     /**
      * Checks to see if the template can support BG.
