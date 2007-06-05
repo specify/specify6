@@ -2352,33 +2352,116 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     }
     
     /**
-     * Imports a list if images.
+     * Imports a list if images and creates the rows.
+     * @param workbench the current workbench
+     * @param imageFilter the filter for deciding what images
+     * @param fileList the list of files with 
+     * @param pane
+     * @param isNew
+     * @return
      */
-    protected void importCardImages()
+    protected boolean importCardImages(final Workbench       workbench, 
+                                       final Vector<File>    fileList,
+                                       final WorkbenchPaneSS pane,
+                                       final boolean         isNew)
     {
-        final ImageFilter imageFilter = new ImageFilter();
-        JFileChooser chooser = new JFileChooser(getDefaultDirPath(IMAGES_FILE_PATH));
-        chooser.setDialogTitle(getResourceString("WB_CHOOSE_IMAGES"));
-        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        chooser.setMultiSelectionEnabled(true);
-        chooser.setFileFilter(imageFilter);
-
-        
-        if (chooser.showOpenDialog(UIRegistry.get(UIRegistry.FRAME)) != JFileChooser.APPROVE_OPTION)
+        boolean                  isOK    = false;
+        DataProviderSessionIFace session = null;
+        try
         {
-            UIRegistry.getStatusBar().setText("");
-            return;
+            if (pane != null)
+            {
+                pane.checkCurrentEditState();
+            }
+            
+            if (isNew)
+            {
+                session = DataProviderFactory.getInstance().createSession();
+                session.beginTransaction();
+            }
+            
+            for (int i=0;i<fileList.size();i++)
+            {
+                File         file = fileList.get(i);
+                WorkbenchRow row  = workbench.addRow();
+                if (pane != null)
+                {
+                    //pane.addRowAfter();
+                    pane.addRowToSpreadSheet();
+                }
+                row.setCardImage(file);
+                if (row.getLoadStatus() != WorkbenchRow.LoadStatus.Successful)
+                {
+                    if (!showLoadStatus(row, i < fileList.size()-1))
+                    {
+                        // Should we still save or return?
+                        break; 
+                    }
+                }
+                                
+                if (i % 5 == 0)
+                {
+                    final String msg = workbench.getName() + " (" + i + " / " + fileList.size() + ")";
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run()
+                        {
+                            
+                            UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_LOADING_IMGS_DATASET"), new Object[] {msg}), GLASSPANE_FONT_SIZE);
+                        }
+                    });
+                }
+            }
+            
+            if (session != null)
+            {
+                session.saveOrUpdate(workbench);
+                session.commit();
+                session.flush();
+            }
+        
+            isOK = true;
+        
+        } catch (Exception ex)
+        {
+            log.error(ex);
+            UIRegistry.clearGlassPaneMsg();
+            
+        } finally
+        {
+            if (session != null)
+            {
+                try
+                {
+                    session.close();
+                } catch (Exception ex)
+                {
+                    log.error(ex);
+                    UIRegistry.clearGlassPaneMsg();
+                }
+            }
         }
         
-        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-        localPrefs.put(IMAGES_FILE_PATH, chooser.getCurrentDirectory().getAbsolutePath());
-        
-        // Start by looping through the files and checking for image file extensions
-        // weed out the bad files.
-        File[]                     files       = chooser.getSelectedFiles();
-        final Vector<File>         fileList    = new Vector<File>();
+        return isOK;
+    }
+    
+    /**
+     * This filters out all non-image files per the image filter and adds them to the Vector.
+     * @param files the list of files
+     * @param fileList the returned Vector of image files
+     * @param imageFilter the filter to use to weed out non-image files
+     * @return true if it should continue, false to stop
+     */
+    protected boolean filterSelectedFileNames(final File[]       files, 
+                                              final Vector<File> fileList,
+                                              final ImageFilter  imageFilter)
+    {
+        if (files == null || files.length == 0)
+        {
+            return false;
+        }
+
         Hashtable<String, Boolean> badFileExts = new Hashtable<String, Boolean>();
-        
+
         for (int i=0;i<files.length;i++)
         {
             if (files[i].isFile())
@@ -2412,7 +2495,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                                 new Object[] {badExtStrBuf.toString()}),
                         UIRegistry.getResourceString("Warning"), 
                         JOptionPane.ERROR_MESSAGE);
-                return;
+                return false;
                         
             }
             
@@ -2425,123 +2508,116 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                         title, JOptionPane.YES_NO_OPTION,
                         JOptionPane.WARNING_MESSAGE, null, options, options[1]) == JOptionPane.NO_OPTION)
             {
-                return;
+                return false;
             }
         }
+        return true;
+    }
+    
+    /**
+     * Imports a list if images.
+     */
+    public void importCardImages(final Workbench workbenchArg)
+    {
+        final ImageFilter imageFilter = new ImageFilter();
+        JFileChooser chooser = new JFileChooser(getDefaultDirPath(IMAGES_FILE_PATH));
+        chooser.setDialogTitle(getResourceString("WB_CHOOSE_IMAGES"));
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.setMultiSelectionEnabled(true);
+        chooser.setFileFilter(imageFilter);
         
-        // Ok, at this point 'fileList' has all the files we want to import
-        
-        int               btnPressed        = selectExistingTemplate(null, "WorkbenchImportImages");
-        WorkbenchTemplate workbenchTemplate = selectedTemplate;
-        
-        if (btnPressed == ChooseFromListDlg.APPLY_BTN)
+        if (chooser.showOpenDialog(UIRegistry.get(UIRegistry.FRAME)) != JFileChooser.APPROVE_OPTION)
         {
-            // Create a new Template 
-            TemplateEditor dlg = showColumnMapperDlg(null, null, "WB_MAPPING_EDITOR");
-            if (!dlg.isCancelled())
-            {   
-                workbenchTemplate = createTemplate(dlg, null);
-            }
-            
-        } else if (btnPressed == ChooseFromListDlg.CANCEL_BTN)
+            UIRegistry.getStatusBar().setText("");
+            return;
+        }
+        
+        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        localPrefs.put(IMAGES_FILE_PATH, chooser.getCurrentDirectory().getAbsolutePath());
+        
+        // Start by looping through the files and checking for image file extensions
+        // weed out the bad files.
+        final Vector<File> fileList = new Vector<File>();
+        if (!filterSelectedFileNames(chooser.getSelectedFiles(), fileList, imageFilter))
         {
             return;
         }
         
-        if (workbenchTemplate != null)
+        Workbench workbench = null;
+        if (workbenchArg == null)
         {
-            final Workbench workbench = createNewWorkbenchDataObj("", selectedTemplate != null ? cloneWorkbenchTemplate(workbenchTemplate) : workbenchTemplate);
-            if (workbench != null)
+            // Ok, at this point 'fileList' has all the files we want to import
+            
+            int               btnPressed        = selectExistingTemplate(null, "WorkbenchImportImages");
+            WorkbenchTemplate workbenchTemplate = selectedTemplate;
+            
+            if (btnPressed == ChooseFromListDlg.APPLY_BTN)
             {
-                UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_LOADING_IMGS_DATASET"), new Object[] {workbench.getName()}), GLASSPANE_FONT_SIZE);
+                // Create a new Template 
+                TemplateEditor dlg = showColumnMapperDlg(null, null, "WB_MAPPING_EDITOR");
+                if (!dlg.isCancelled())
+                {   
+                    workbenchTemplate = createTemplate(dlg, null);
+                }
                 
-                final SwingWorker worker = new SwingWorker()
+            } else if (btnPressed == ChooseFromListDlg.CANCEL_BTN)
+            {
+                return;
+            }
+            
+            if (workbenchTemplate != null)
+            {
+                workbench = createNewWorkbenchDataObj("", selectedTemplate != null ? cloneWorkbenchTemplate(workbenchTemplate) : workbenchTemplate);
+            }
+
+        } else
+        {
+            workbench = workbenchArg;
+        }
+        
+        if (workbench != null)
+        {
+            final Workbench importWB = workbench;
+            
+            UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_LOADING_IMGS_DATASET"), new Object[] {workbench.getName()}), GLASSPANE_FONT_SIZE);
+            
+            final SwingWorker worker = new SwingWorker()
+            {
+                protected boolean isOK = false;
+                protected WorkbenchPaneSS pane = null;
+                
+                @SuppressWarnings("synthetic-access")
+                @Override
+                public Object construct()
                 {
-                    protected boolean isOK = false;
+
+                    pane = (WorkbenchPaneSS)SubPaneMgr.getInstance().getCurrentSubPane();
+                    isOK = importCardImages(importWB, fileList, pane, workbenchArg == null);
+
+                    return null;
+                }
+
+                //Runs on the event-dispatching thread.
+                @Override
+                public void finished()
+                {
+                    UIRegistry.clearGlassPaneMsg();
                     
-                    @SuppressWarnings("synthetic-access")
-                    @Override
-                    public Object construct()
+                    if (isOK)
                     {
-
-                        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                        try
+                        if (workbenchArg == null)
                         {
-                            session.beginTransaction();
+                            addWorkbenchToNavBox(importWB);
+                            createEditorForWorkbench(importWB, null, false);
                             
-                            for (int i=0;i<fileList.size();i++)
-                            {
-                                File file = fileList.get(i);
-                                String fileName = file.getName();
-                                if (imageFilter.isImageFile(fileName))
-                                {
-                                    WorkbenchRow row = workbench.addRow();
-                                    row.setCardImage(file);
-                                    if (row.getLoadStatus() != WorkbenchRow.LoadStatus.Successful)
-                                    {
-                                        if (!showLoadStatus(row, i < fileList.size()-1))
-                                        {
-                                            // Should we still save or return?
-                                            break; 
-                                        }
-                                    }
-                                }
-                                
-                                if (i % 5 == 0)
-                                {
-                                    final String msg = workbench.getName() + " (" + i + " / " + fileList.size() + ")";
-                                    SwingUtilities.invokeLater(new Runnable() {
-                                        public void run()
-                                        {
-                                            
-                                            UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_LOADING_IMGS_DATASET"), new Object[] {msg}), GLASSPANE_FONT_SIZE);
-                                        }
-                                    });
-                                }
-                            }
-                            session.saveOrUpdate(workbench);
-                            session.commit();
-                            session.flush();
-                        
-                            isOK = true;
-                        
-                        } catch (Exception ex)
+                        } else
                         {
-                            log.error(ex);
-                            UIRegistry.clearGlassPaneMsg();
-                            
-                        } finally
-                        {
-                            try
-                            {
-                                session.close();
-                            } catch (Exception ex)
-                            {
-                                log.error(ex);
-                                UIRegistry.clearGlassPaneMsg();
-                            }
-                        }
-                        
-
-                        return null;
-                    }
-
-                    //Runs on the event-dispatching thread.
-                    @Override
-                    public void finished()
-                    {
-                        UIRegistry.clearGlassPaneMsg();
-                        
-                        if (isOK)
-                        {
-                            addWorkbenchToNavBox(workbench);
-                            createEditorForWorkbench(workbench, null, false);
+                            pane.newImagesAdded();
                         }
                     }
-                };
-                worker.start();
-                
-            } 
+                }
+            };
+            worker.start();
         }
     }
     
@@ -2796,7 +2872,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         {
             if (isClickedOn)
             {
-                importCardImages();
+                importCardImages(null);
             }
             
         } else if (cmdAction.isAction(NEW_WORKBENCH_FROM_TEMPLATE)) // XXX This can be removed

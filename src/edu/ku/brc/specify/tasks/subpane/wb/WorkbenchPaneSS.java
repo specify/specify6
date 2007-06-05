@@ -490,7 +490,8 @@ public class WorkbenchPaneSS extends BaseSubPane
         });
         
         // setup the JFrame to show images attached to WorkbenchRows
-        imageFrame = new ImageFrame(mapSize);
+        imageFrame = new ImageFrame(mapSize, this.workbench);
+        
         imageFrame.installLoadActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
@@ -645,9 +646,9 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
             public void indexChanged(int newIndex)
             {
-                if (imageFrame != null && newIndex > -1)
+                if (imageFrame != null)
                 {
-                    imageFrame.setRow(workbench.getRow(newIndex));
+                    imageFrame.setRow(newIndex > -1 ? workbench.getRow(newIndex) : null);
                 }
             }
             public void newRecordAdded()
@@ -700,7 +701,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     /**
      * Checks the cell for cell editing and stops it.
      */
-    protected void checkCurrentEditState()
+    public void checkCurrentEditState()
     {
         if (currentPanelType == PanelType.Spreadsheet)
         {
@@ -919,6 +920,44 @@ public class WorkbenchPaneSS extends BaseSubPane
     public ResultSetController getResultSetController()
     {
         return resultsetController;
+    }
+    
+
+    /**
+     * Tells the model there is new data.
+     */
+    public void addRowToSpreadSheet()
+    {
+        if (spreadSheet != null)
+        {
+            spreadSheet.addRow();
+            
+            resultsetController.setLength(model.getRowCount());
+            
+            setChanged(true);
+            
+            updateBtnUI();
+        }
+    }
+    
+    /**
+     * Tells the model there is new data.
+     */
+    public void newImagesAdded()
+    {
+       /* if (currentPanelType == PanelType.Form)
+        {
+            resultsetController.setIndex(model.getRowCount());
+        } else
+        {
+            spreadSheet.setRowSelectionInterval(currentRow, currentRow);
+            spreadSheet.setColumnSelectionInterval(0, spreadSheet.getColumnCount()-1);
+            spreadSheet.scrollToRow(Math.min(currentRow+4, model.getRowCount()));
+
+        }
+        */
+        
+        adjustSelectionAfterAdd(model.getRowCount()-1);
     }
     
     /**

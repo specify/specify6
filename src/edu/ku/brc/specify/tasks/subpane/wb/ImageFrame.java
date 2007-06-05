@@ -43,6 +43,8 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.TaskMgr;
+import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.ui.HelpMgr;
@@ -66,6 +68,7 @@ public class ImageFrame extends JFrame
     protected JLabel       cardImageLabel             = new JLabel("", SwingConstants.CENTER);
     protected JProgressBar progress                   = new JProgressBar();
     protected WorkbenchRow row                        = null;
+    protected  Workbench   workbench;
     
     protected JPanel       noCardImageMessagePanel    = null;
     protected boolean      showingCardImageLabel      = true;
@@ -93,8 +96,10 @@ public class ImageFrame extends JFrame
     /**
      * Constructor. 
      */
-    public ImageFrame(final int mapSize)
+    public ImageFrame(final int mapSize, final Workbench workbench)
     {
+        this.workbench = workbench;
+        
         setIconImage(IconManager.getImage("AppIcon").getImage());
         
         Dimension minSize = new Dimension(mapSize, mapSize);
@@ -129,7 +134,8 @@ public class ImageFrame extends JFrame
         
         JMenuBar  menuBar   = new JMenuBar();
         JMenu     fileMenu  = UIHelper.createMenu(menuBar, "File", "FileMneu");
-        closeMI = UIHelper.createMenuItem(fileMenu, "Close", "CloseMneu", "", true, null);
+        JMenuItem importImagesMI  = UIHelper.createMenuItem(fileMenu, getResourceString("WB_IMPORT_CARDS"), getResourceString("WB_IMPORT_CARDS_MNEU"), "", true, null);
+        closeMI = UIHelper.createMenuItem(fileMenu, getResourceString("Close"), getResourceString("CloseMneu"), "", true, null);
         
         viewMenu  = UIHelper.createMenu(menuBar, "View", "ViewMneu");
         
@@ -160,6 +166,15 @@ public class ImageFrame extends JFrame
             }
         });
         
+        importImagesMI.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                WorkbenchTask workbenchTask = (WorkbenchTask)TaskMgr.getDefaultTaskable();
+                workbenchTask.importCardImages(workbench);
+            }
+        });
+        
         imageMenu = UIHelper.createMenu(menuBar, "Image", "ImageMneu");
         clearMI   = UIHelper.createMenuItem(imageMenu, getResourceString("WB_DEL_IMG_LINK"), getResourceString("WB_DEL_IMG_LINK_MNEU"), "", true, null);
         replaceMI = UIHelper.createMenuItem(imageMenu, getResourceString("WB_REPLACE_IMG"), getResourceString("WB_REPLACE_IMG_MNEU"), "", true, null);
@@ -176,11 +191,19 @@ public class ImageFrame extends JFrame
         //HelpMgr.setHelpID(this, "OnRampImageWindow");
     }
     
+    /**
+     * Sets text into the statubar of thew image frame.
+     * @param text the message
+     */
     public void setStatusBarText(final String text)
     {
         statusBar.setText(text);
     }
     
+    /**
+     * Sets the help context.
+     * @param helpContext the context
+     */
     public void setHelpContext(final String helpContext)
     {
         HelpMgr.setHelpID(this, helpContext);
