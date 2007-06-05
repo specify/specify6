@@ -8,7 +8,6 @@ package edu.ku.brc.specify.exporters;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
-import java.awt.Component;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -19,8 +18,6 @@ import java.util.Properties;
 import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
-import javax.swing.JOptionPane;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -95,10 +92,6 @@ public class GoogleEarthExporter implements RecordSetExporter
                 List<GoogleEarthPlacemarkIFace> mappedPlacemarks = exportPlacemarkList((List<GoogleEarthPlacemarkIFace>)data, reqParams, tmpFile);
                 if (mappedPlacemarks.size() != data.size())
                 {
-                    //Component parentFrame = UIRegistry.get(UIRegistry.TOPFRAME);
-                    //String notAllMappedMsg = getResourceString("NOT_ALL_MAPPED");
-                    //String title = getResourceString("Warning");
-                    //JOptionPane.showMessageDialog(parentFrame, notAllMappedMsg, title, JOptionPane.WARNING_MESSAGE);
                     UIRegistry.getStatusBar().setErrorMessage(String.format(getResourceString("NOT_ALL_MAPPED"), new Object[] {(data.size() - mappedPlacemarks.size()), data.size()}));
                 }
                 
@@ -108,16 +101,16 @@ public class GoogleEarthExporter implements RecordSetExporter
                 }
                 catch (Exception e)
                 {
-                	log.warn("Failed to start external viewer (e.g. Google Earth) for KML file", e);
-                    Component parentFrame = UIRegistry.get(UIRegistry.TOPFRAME);
+                	log.warn("Failed to open external viewer (e.g. Google Earth) for KML file", e);
                     String errorMessage = getResourceString("GOOGLE_EARTH_ERROR");
-                    String title = getResourceString("Error");
-                    JOptionPane.showMessageDialog(parentFrame, errorMessage, title, JOptionPane.ERROR_MESSAGE);
+                    UIRegistry.getStatusBar().setErrorMessage(errorMessage,e);
                 }
             }
             catch (Exception e)
             {
                 log.error("Exception caught while creating KML output or opening Google Earth", e);
+                String errorMessage = getResourceString("KML_EXPORT_ERROR");
+                UIRegistry.getStatusBar().setErrorMessage(errorMessage,e);
             }
         }
     }
