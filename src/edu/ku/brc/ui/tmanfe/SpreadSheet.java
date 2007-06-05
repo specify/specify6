@@ -672,31 +672,36 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         } else if (e.getActionCommand().compareTo("Paste") == 0)
         {
             //System.out.println("Trying to Paste");
-            int startRow = (getSelectedRows())[0];
-            int startCol = (getSelectedColumns())[0];
-            try
+            int[] rows = getSelectedRows();
+            int[] cols = getSelectedColumns();
+            if (rows != null && cols != null && rows.length > 0 && cols.length > 0)
             {
-                Clipboard sysClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                String trstring = (String) (sysClipboard.getContents(this).getTransferData(DataFlavor.stringFlavor));
-                //System.out.println("String is: [" + trstring+"]");
-                StringTokenizer st1 = new StringTokenizer(trstring, "\n\r");
-                for (int i = 0; st1.hasMoreTokens(); i++)
+                int startRow = rows[0];
+                int startCol = cols[0];
+                try
                 {
-                    String   rowstring = st1.nextToken();
-                    //System.out.println("Row [" + rowstring+"]");
-                    String[] tokens    = StringUtils.splitPreserveAllTokens(rowstring, '\t');
-                    for (int j = 0; j < tokens.length; j++)
+                    Clipboard sysClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                    String trstring = (String) (sysClipboard.getContents(this).getTransferData(DataFlavor.stringFlavor));
+                    //System.out.println("String is: [" + trstring+"]");
+                    StringTokenizer st1 = new StringTokenizer(trstring, "\n\r");
+                    for (int i = 0; st1.hasMoreTokens(); i++)
                     {
-                        if (startRow + i < getRowCount() && startCol + j < getColumnCount())
+                        String   rowstring = st1.nextToken();
+                        //System.out.println("Row [" + rowstring+"]");
+                        String[] tokens    = StringUtils.splitPreserveAllTokens(rowstring, '\t');
+                        for (int j = 0; j < tokens.length; j++)
                         {
-                            setValueAt(tokens[j], startRow + i, startCol + j);
+                            if (startRow + i < getRowCount() && startCol + j < getColumnCount())
+                            {
+                                setValueAt(tokens[j], startRow + i, startCol + j);
+                            }
+                            //System.out.println("Putting [" + tokens[j] + "] at row=" + startRow + i + "column=" + startCol + j);
                         }
-                        //System.out.println("Putting [" + tokens[j] + "] at row=" + startRow + i + "column=" + startCol + j);
                     }
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
                 }
-            } catch (Exception ex)
-            {
-                ex.printStackTrace();
             }
         }
     }
