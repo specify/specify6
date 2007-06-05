@@ -678,11 +678,12 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
             {
                 Clipboard sysClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
                 String trstring = (String) (sysClipboard.getContents(this).getTransferData(DataFlavor.stringFlavor));
-                //System.out.println("String is:" + trstring);
-                StringTokenizer st1 = new StringTokenizer(trstring, "\n");
+                //System.out.println("String is: [" + trstring+"]");
+                StringTokenizer st1 = new StringTokenizer(trstring, "\n\r");
                 for (int i = 0; st1.hasMoreTokens(); i++)
                 {
                     String   rowstring = st1.nextToken();
+                    //System.out.println("Row [" + rowstring+"]");
                     String[] tokens    = StringUtils.splitPreserveAllTokens(rowstring, '\t');
                     for (int j = 0; j < tokens.length; j++)
                     {
@@ -690,7 +691,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
                         {
                             setValueAt(tokens[j], startRow + i, startCol + j);
                         }
-                        //System.out.println("Putting " + tokens[j] + "at row=" + startRow + i + "column=" + startCol + j);
+                        //System.out.println("Putting [" + tokens[j] + "] at row=" + startRow + i + "column=" + startCol + j);
                     }
                 }
             } catch (Exception ex)
