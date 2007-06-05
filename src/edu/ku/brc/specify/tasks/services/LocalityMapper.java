@@ -1206,7 +1206,6 @@ public class LocalityMapper implements TimingTarget
 						log.error("A marker location is off the map");
 						continue;
 					}
-					// TODO: draw an arrow from lastLoc to iconLoc
 					if( showArrows && lastLoc != null )
 					{
 						int x1 = x+lastLoc.x;
