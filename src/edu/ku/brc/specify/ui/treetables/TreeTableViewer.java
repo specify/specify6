@@ -1232,7 +1232,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		}
 		else if(dropAction == DnDConstants.ACTION_MOVE)
 		{
-			//TODO: check if reparenting is allowed
 			if( !(dragged instanceof Treeable && droppedOn instanceof Treeable) )
 			{
 				return false;
