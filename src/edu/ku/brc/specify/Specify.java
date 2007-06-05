@@ -273,6 +273,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
  
         specifyApp = this;
         
+        // this code simply demonstrates the creation of a system tray icon for Sp6
+        // perhaps someday we may want to use this capability
 //        SystemTray sysTray = SystemTray.getSystemTray();
 //        PopupMenu popup = new PopupMenu("Sp6");
 //        MenuItem exitItem = new MenuItem("Exit");
