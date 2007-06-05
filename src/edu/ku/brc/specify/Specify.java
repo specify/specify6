@@ -94,6 +94,7 @@ import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.DefaultClassActionHandler;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
+import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolbarLayoutManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -1276,6 +1277,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
               // Startup Specify
               Specify specify = new Specify();
               
+              RolloverCommand.setHoverImg(IconManager.getIcon("DropIndicator"));
               
               boolean startAsWorkBench = false; // XXX Workbench Testing (start up testing)
               if (startAsWorkBench)
