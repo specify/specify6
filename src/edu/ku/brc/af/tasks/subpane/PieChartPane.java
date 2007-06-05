@@ -15,22 +15,20 @@
 
 package edu.ku.brc.af.tasks.subpane;
 
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIHelper.getInt;
 import static edu.ku.brc.ui.UIHelper.getString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
+import java.awt.Font;
 
 import javax.swing.Icon;
 
 import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PiePlot;
 import org.jfree.data.general.DefaultPieDataset;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.dbsupport.QueryResultsContainer;
@@ -140,57 +138,27 @@ public class PieChartPane extends ChartPane
                 true, // tooltips?
                 false // URLs?
             );
-
-        /*JPanel outerPanel = new JPanel()
-        {
-            Dimension dim = new Dimension(400,400);
-            public Rectangle getBounds()
-            {
-              return new Rectangle(getLocation().x, getLocation().y, dim.width, dim.height);
-            }
-            public void setBounds(Rectangle r)
-            {
-                setBounds(r.x, r.y, r.width, r.height);
-            }
-            public void setBounds(int x, int y, int width, int height)
-            {
-                if (width <= 400)
-                    dim.width = width;
-                else
-                    dim.width = 400;
-                if (height <= 400)
-                    dim.height = height;
-                else
-                    dim.height = 400;
-                super.setBounds(x, y, width, height);
-            }
-            public Rectangle getBounds(Rectangle rv)
-            {
-                rv.setBounds(getLocation().x, getLocation().y, dim.width, dim.height);
-                return rv;
-            }
-            public Dimension getSize()
-            {
-                return new Dimension(dim);
-            }
-            public Dimension getSize(Dimension rv)
-            {
-                rv.setSize(dim);
-                return rv;
-            }
-        };*/
-        // create and display a frame...
-        SquareChartPanel panel = new SquareChartPanel(chart, true, true, true, true, true);
-        setBackground(Color.BLUE);
-        //outerPanel.setLayout(new BorderLayout());
-        //outerPanel.add(panel);
-
+        
+        PiePlot plot = (PiePlot) chart.getPlot();
+        plot.setLabelFont(new Font("SansSerif", Font.PLAIN, 11));
+        
+        /*
+        PiePlot3D plot = (PiePlot3D) chart.getPlot();
+        //plot.setSectionOutlinesVisible(false);
+        plot.setLabelFont(new Font("SansSerif", Font.PLAIN, 11));
+        plot.setNoDataMessage("No data available");
+        plot.setCircular(true);
+        plot.setLabelGap(0.02);
+        //plot.setBackgroundAlpha(0.5f);
+        plot.setForegroundAlpha(0.5f);
+        plot.setDepthFactor(0.05);
+        */
+        
         removeAll(); // remove progress bar
-
-        PanelBuilder    builder    = new PanelBuilder(new FormLayout("p:g,p,p:g", "f:p:g"));
-        CellConstraints cc         = new CellConstraints();
-        builder.add(panel, cc.xy(2,1));
-        add(builder.getPanel(), BorderLayout.CENTER);
+        
+        ChartPanel panel = new ChartPanel(chart, true, true, true, true, true);
+        
+        add(panel, BorderLayout.CENTER);
 
         doLayout();
         repaint();
