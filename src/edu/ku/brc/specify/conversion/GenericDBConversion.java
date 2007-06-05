@@ -4301,7 +4301,6 @@ public class GenericDBConversion
     		}
     	}
     	
-    	// TODO: fix parent pointers
     	// now we need to fix the parent/pointers
     	for( int i = 0; i < newItems.size(); ++i )
     	{
@@ -4316,7 +4315,7 @@ public class GenericDBConversion
     		}
     	}
     	
-    	// TODO: fix node number, child node number stuff
+    	// fix node number, child node number stuff
     	allTime.setNodeNumber(1);
     	fixNodeNumbersFromRoot(allTime);
     	allTime.fixFullNameForAllDescendants();
