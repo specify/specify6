@@ -144,20 +144,21 @@ public class GoogleEarthExporter implements RecordSetExporter
     }
     
     /**
-     * Generates a KML file representing the given list of placemarks.
+     * Generates a KMZ file representing the given list of placemarks.
      * 
      * @param placemarks a List of placemarks to be mapped
-     * @param reqParams request parameters
+     * @param requestParams request parameters
      * @param outputFile the file to put the KML into
      * @return a List of placemarks that were mapped (does not include any passed in placemarks that couldn't be mapped for some reason)
      * @throws IOException an error occurred while writing the KML to the file
      */
-    protected List<GoogleEarthPlacemarkIFace> exportPlacemarkList(List<GoogleEarthPlacemarkIFace> placemarks, Properties reqParams, File outputFile) throws IOException
+    protected List<GoogleEarthPlacemarkIFace> exportPlacemarkList(List<GoogleEarthPlacemarkIFace> placemarks, Properties requestParams, File outputFile) throws IOException
     {
         List<GoogleEarthPlacemarkIFace> mappedPlacemarks = new Vector<GoogleEarthPlacemarkIFace>();
         
         GenericKmlGenerator kmlGenerator = new GenericKmlGenerator();
         
+        // setup all of the general style stuff
         kmlGenerator.setBalloonStyleBgColor("AAB36600");
         String red   = "FF";
         String green = "FF";
@@ -171,17 +172,36 @@ public class GoogleEarthExporter implements RecordSetExporter
                 + "<center><b><a style=\"color: #" + textColor + "\" href=\"http://www.specifysoftware.org/\">http://www.specifysoftware.org</a></b></center>"
                 );
 
-        // see if an icon URL was specified
-        Object iconURL = reqParams.getProperty("iconURL");
-        if (iconURL!=null && iconURL instanceof String)
+        // get a copy of the default icon file (we (attempt to) package this with all KMZ files)
+        URL defaultIconURL = IconManager.getImagePath(DEFAULT_ICON_FILE);
+        File defaultIconFile = null;
+        if (defaultIconURL != null)
         {
-            kmlGenerator.setPlacemarkIconURL((String)iconURL);
+            defaultIconFile = File.createTempFile("sp6-export-icon-", ".png");
+            FileUtils.copyURLToFile(defaultIconURL, defaultIconFile);
+        }
+        // else...
+        // the default icon file was not found, we simply have to leave it out of the KMZ file
+
+        // see if an icon URL was specified as a parameter
+        Object iconURLparam = requestParams.getProperty("iconURL");
+        if (iconURLparam != null && iconURLparam instanceof String)
+        {
+            kmlGenerator.setPlacemarkIconURL((String)iconURLparam);
+        }
+        else if (defaultIconFile != null)
+        {
+            // the caller didn't specify an icon URL on the web, so try to use the default placemark icon
+            kmlGenerator.setPlacemarkIconURL("files/specify32.png");
         }
         else
         {
-            kmlGenerator.setPlacemarkIconURL("files/specify32.png");
+            // the default icon file was not found, so...
+            // this will force Google Earth to use the default placemark icon that it provides
+            kmlGenerator.setPlacemarkIconURL(null);
         }
         
+        // add all of the placemarks to the KML generator
         for (GoogleEarthPlacemarkIFace pm: placemarks)
         {
             String name = pm.getTitle();
@@ -198,15 +218,11 @@ public class GoogleEarthExporter implements RecordSetExporter
             }
         }
 
+        // generate the KML
         kmlGenerator.generateKML(outputFile);
         
         // now we have the KML in outputFile
         // we need to create a KMZ (zip file containing doc.kml and other files)
-        
-        // get a copy of the icon file
-        URL icon = IconManager.getImagePath(DEFAULT_ICON_FILE);
-        File iconFile = File.createTempFile("sp6-export-icon-", ".png");
-        FileUtils.copyURLToFile(icon, iconFile);
         
         // create a buffer for reading the files
         byte[] buf = new byte[1024];
@@ -234,18 +250,21 @@ public class GoogleEarthExporter implements RecordSetExporter
         out.putNextEntry(filesDir);
         out.closeEntry();
         
-        // add the specify32.png file to the ZIP (in the "files" directory)
-        in = new FileInputStream(iconFile);
-        // add ZIP entry to output stream
-        out.putNextEntry(new ZipEntry("files/specify32.png"));
-        // copy the bytes
-        while ((len = in.read(buf)) > 0)
+        if (defaultIconFile != null)
         {
-            out.write(buf, 0, len);
+            // add the specify32.png file (default icon file) to the ZIP (in the "files" directory)
+            in = new FileInputStream(defaultIconFile);
+            // add ZIP entry to output stream
+            out.putNextEntry(new ZipEntry("files/specify32.png"));
+            // copy the bytes
+            while ((len = in.read(buf)) > 0)
+            {
+                out.write(buf, 0, len);
+            }
+            // complete the entry
+            out.closeEntry();
+            in.close();
         }
-        // complete the entry
-        out.closeEntry();
-        in.close();
 
         // complete the ZIP file
         out.close();
@@ -253,7 +272,10 @@ public class GoogleEarthExporter implements RecordSetExporter
         // now put the KMZ file where the KML output was
         FileUtils.copyFile(outputKMZ, outputFile);
         
-        iconFile.delete();
+        if (defaultIconFile != null)
+        {
+            defaultIconFile.delete();
+        }
         outputKMZ.delete();
         
         return mappedPlacemarks;
