@@ -93,6 +93,19 @@ public class HelpIndexer
         File outFile = new File(outFileName); 
         try
         {
+
+            //add lines to top of file
+            lines.insertElementAt("<?xml version='1.0' encoding='ISO-8859-1'  ?>", 0);
+            lines.insertElementAt("<!DOCTYPE index", 1);
+            lines.insertElementAt("  PUBLIC \"-//Sun Microsystems Inc.//DTD JavaHelp Index Version 1.0//EN\"", 2);
+            lines.insertElementAt("         \"http://java.sun.com/products/javahelp/index_1_0.dtd\">", 3);
+            lines.insertElementAt("<index version=\"1.0\">", 4);
+            lines.insertElementAt(" ", 5);
+            
+            //and bottom...
+            lines.add(" ");
+            lines.add("</index>");
+            
             FileUtils.writeLines(outFile, lines);
         }
         catch (IOException ex)
@@ -246,12 +259,23 @@ public class HelpIndexer
      */
     public static void main(String[] args)
     {
-        //System.out.println(new File(".").getAbsolutePath());
-        String mapFile  = "help/SpecifyHelp.jhm";
-        String helpFile = "help/SpecifyHelp/Workbench";
-        String output   = "SpecifyHelpIndex.xml";
+        String mapFile;
+        String helpFile;
+        String output;
+        if (args.length == 0)
+        {
+            mapFile = "help/SpecifyHelp.jhm";
+            helpFile = "help/SpecifyHelp/Workbench";
+            output = "SpecifyHelpIndex.xml";
+        }
+        else
+        {
+            mapFile = args[0];
+            helpFile = args[1];
+            output = args[2];
+        }
+        
         HelpIndexer hi = new HelpIndexer(mapFile, helpFile, output);
-        //HelpIndexer hi = new HelpIndexer(args[0], args[1], args[2]);
         hi.indexIt();
     }
 
