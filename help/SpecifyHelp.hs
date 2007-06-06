@@ -24,7 +24,7 @@
     <data>SpecifyHelpTOC.xml</data>
   </view>
 
-  <!--
+
   <view>
     <name>Index</name>
     <label>Index</label>
@@ -32,7 +32,7 @@
     <data>SpecifyHelpIndex.xml</data>
   </view>
 
-  <view>
+  <!--  <view>
     <name>Search</name>
     <label>Search</label>
     <type>javax.help.SearchView</type>

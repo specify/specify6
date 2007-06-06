@@ -3,58 +3,66 @@
   PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp Index Version 1.0//EN"
          "http://java.sun.com/products/javahelp/index_1_0.dtd">
 <index version="1.0">
-    <indexitem text="Edit Data Set Mapping">
-        <indexitem text="Edit Data Set Mapping"   target="WorkbenchEditMapping"/>
-        <indexitem text="Map"   target="WorkbenchEditMapping"/>
-        <indexitem text="Unmap"   target="WorkbenchEditMapping"/>
-        <indexitem text="Reorder up"   target="WorkbenchEditMapping"/>
-        <indexitem text="Reorder down"   target="WorkbenchEditMapping"/>
-    </indexitem>
-    <indexitem text="Form Editing">
-        <indexitem text="Form Editing"   target="WorkbenchFormEditing"/>
-        <indexitem text="Edit Form Properties"   target="WorkbenchFormEditing"/>
-        <indexitem text="Image Window"   target="WorkbenchFormEditing"/>
-        <indexitem text="Configure Carry Forward"   target="WorkbenchFormEditing"/>
-        <indexitem text="Carry Forward"   target="WorkbenchFormEditing"/>
-    </indexitem>
-    <indexitem text="Grid Editing">
-        <indexitem text="Grid Editing"   target="WorkbenchGridEditing"/>
-        <indexitem text="Google Earth"   target="WorkbenchGridEditing"/>
-        <indexitem text="BioGeomancer"   target="WorkbenchGridEditing"/>
-        <indexitem text="GeoCoordinate Formats"   target="WorkbenchGridEditing"/>
-        <indexitem text="Carry Forward"   target="WorkbenchGridEditing"/>
-        <indexitem text="Clear Cell(s)"   target="WorkbenchGridEditing"/>
-        <indexitem text="Delete Row(s)"   target="WorkbenchGridEditing"/>
-        <indexitem text="Fill Up"   target="WorkbenchGridEditing"/>
-        <indexitem text="Fill Down"   target="WorkbenchGridEditing"/>
-        <indexitem text="Find/Replace"   target="WorkbenchGridEditing"/>
-    </indexitem>
-    <indexitem text="Import from CSV">
-        <indexitem text="Map"   target="WorkbenchImportCSV"/>
-        <indexitem text="Unmap"   target="WorkbenchImportCSV"/>
-        <indexitem text="Reorder up"   target="WorkbenchImportCSV"/>
-        <indexitem text="Reorder down"   target="WorkbenchImportCSV"/>
-    </indexitem>
-    <indexitem text="Import from XLS">
-        <indexitem text="auto-mapping"   target="WorkbenchImportXLS"/>
-        <indexitem text="Column headings"   target="WorkbenchImportXLS"/>
-        <indexitem text="Map"   target="WorkbenchImportXLS"/>
-        <indexitem text="Unmap"   target="WorkbenchImportXLS"/>
-        <indexitem text="Reorder up"   target="WorkbenchImportXLS"/>
-        <indexitem text="Reorder down"   target="WorkbenchImportXLS"/>
-        <indexitem text="Map"   target="WorkbenchImportXLS"/>
-        <indexitem text="Unmap"   target="WorkbenchImportXLS"/>
-        <indexitem text="Reorder up"   target="WorkbenchImportXLS"/>
-        <indexitem text="Reorder down"   target="WorkbenchImportXLS"/>
-    </indexitem>
-    <indexitem text="New Data Set">
-        <indexitem text="New Data Set"   target="WorkbenchNewDataSet"/>
-        <indexitem text="limit of 2000 records"   target="WorkbenchNewDataSet"/>
-        <indexitem text="copy the column headings"   target="WorkbenchNewDataSet"/>
-        <indexitem text="Map"   target="WorkbenchNewDataSet"/>
-        <indexitem text="Unmap"   target="WorkbenchNewDataSet"/>
-        <indexitem text="Reorder up"   target="WorkbenchNewDataSet"/>
-        <indexitem text="Reorder down"   target="WorkbenchNewDataSet"/>
-    </indexitem>
-    
+ 
+<indexitem text="New Data Set">
+     <indexitem text="New Data Set"   target="WorkbenchNewDataSet"/>
+     <indexitem text="limit of 2000 records"   target="WorkbenchNewDataSet"/>
+     <indexitem text="copy the column headings"   target="WorkbenchNewDataSet"/>
+     <indexitem text="Map"   target="WorkbenchNewDataSet"/>
+     <indexitem text="Unmap"   target="WorkbenchNewDataSet"/>
+     <indexitem text="Reorder up"   target="WorkbenchNewDataSet"/>
+     <indexitem text="Reorder down"   target="WorkbenchNewDataSet"/>
+</indexitem>
+<indexitem text="Import from CSV">
+     <indexitem text="Map"   target="WorkbenchImportCSV"/>
+     <indexitem text="Unmap"   target="WorkbenchImportCSV"/>
+     <indexitem text="Reorder up"   target="WorkbenchImportCSV"/>
+     <indexitem text="Reorder down"   target="WorkbenchImportCSV"/>
+</indexitem>
+<indexitem text="Edit Data Set Mapping">
+     <indexitem text="Edit Data Set Mapping"   target="WorkbenchEditMapping"/>
+     <indexitem text="Map"   target="WorkbenchEditMapping"/>
+     <indexitem text="Unmap"   target="WorkbenchEditMapping"/>
+     <indexitem text="Reorder up"   target="WorkbenchEditMapping"/>
+     <indexitem text="Reorder down"   target="WorkbenchEditMapping"/>
+</indexitem>
+<indexitem text="Basic Label">
+     <indexitem text="an index in the basic label file"   target="WorkbenchBasicLabel"/>
+     <indexitem text="another index in the basic label file"   target="WorkbenchBasicLabel"/>
+</indexitem>
+<indexitem text="Grid Editing">
+     <indexitem text="Grid Editing"   target="WorkbenchGridEditing"/>
+     <indexitem text="Google Earth"   target="WorkbenchGridEditing"/>
+     <indexitem text="BioGeomancer"   target="WorkbenchGridEditing"/>
+     <indexitem text="GeoCoordinate Formats"   target="WorkbenchGridEditing"/>
+     <indexitem text="Carry Forward"   target="WorkbenchGridEditing"/>
+     <indexitem text="Clear Cell(s)"   target="WorkbenchGridEditing"/>
+     <indexitem text="Delete Row(s)"   target="WorkbenchGridEditing"/>
+     <indexitem text="Fill Up"   target="WorkbenchGridEditing"/>
+     <indexitem text="Fill Down"   target="WorkbenchGridEditing"/>
+     <indexitem text="Find/Replace"   target="WorkbenchGridEditing"/>
+</indexitem>
+<indexitem text="Import from XLS">
+     <indexitem text="auto-mapping"   target="WorkbenchImportXLS"/>
+     <indexitem text="Column headings"   target="WorkbenchImportXLS"/>
+     <indexitem text="Map"   target="WorkbenchImportXLS"/>
+     <indexitem text="Unmap"   target="WorkbenchImportXLS"/>
+     <indexitem text="Reorder up"   target="WorkbenchImportXLS"/>
+     <indexitem text="Reorder down"   target="WorkbenchImportXLS"/>
+     <indexitem text="Map"   target="WorkbenchImportXLS"/>
+     <indexitem text="Unmap"   target="WorkbenchImportXLS"/>
+     <indexitem text="Reorder up"   target="WorkbenchImportXLS"/>
+     <indexitem text="Reorder down"   target="WorkbenchImportXLS"/>
+</indexitem>
+<indexitem text="Form Editing">
+     <indexitem text="Form Editing"   target="WorkbenchFormEditing"/>
+     <indexitem text="Edit Form Properties"   target="WorkbenchFormEditing"/>
+     <indexitem text="Image Window"   target="WorkbenchFormEditing"/>
+     <indexitem text="Configure Carry Forward"   target="WorkbenchFormEditing"/>
+     <indexitem text="Carry Forward"   target="WorkbenchFormEditing"/>
+</indexitem>
+<indexitem text="LOGIN OR DIE!">
+     <indexitem text="woo hoo"   target="login"/>
+</indexitem>
+ 
 </index>
