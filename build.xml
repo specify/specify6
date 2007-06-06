@@ -248,8 +248,7 @@
 		
 		
 		<antcall target="build-empty-derby-db"/>
-		
-		
+				
 		<mkdir dir="${dist-mac}" />
 		<mkdir dir="${appdir}" />
 		<mkdir dir="${appdir}/Contents" />
@@ -308,6 +307,7 @@
 			</fileset>
 		</copy>
 		
+		<antcall target="build-help-index"/>
 		
 		<!-- Testing Alt Help 
 		<property name="alt.help.img.dir" value="AltHelpImages/Windows"/>
@@ -419,6 +419,19 @@
 	</target>
 		
 	<!-- *************************************************************
+	     Build Help Index
+	     ************************************************************* -->
+	<target name="build-help-index">		
+		<java classname="edu.ku.brc.util.HelpIndexer" fork="true">
+		    <classpath refid="project.class.path" />
+			<arg value="${appdir}/help/SpecifyHelp.jhm"/>
+			<arg value="${appdir}/help/SpecifyHelp"/>
+			<arg value="${appdir}/help/SpecifyHelpIndex.xml"/>
+		</java>
+	</target>
+	
+	
+	<!-- *************************************************************
 	     Common files between Windows and Linux
 	     ************************************************************* -->
 	<target name="basic-non-mac-dist">
@@ -476,7 +489,9 @@
 		
 		<antcall target="build-empty-derby-db"/>
 		<antcall target="basic-non-mac-dist"/>
-		
+
+		<antcall target="build-help-index"/>
+
 		<!-- Copy Alt Help Image Files -->
 		<property name="alt.help.img.dir" value="AltHelpImages/Windows"/>
 	    <antcall target="copy-alt-help-images"/>
@@ -523,6 +538,8 @@
 		
 		<antcall target="basic-non-mac-dist"/>
 		
+		<antcall target="build-help-index"/>
+
 		<!-- Copy Alt Help Image Files -->
 		<property name="alt.help.img.dir" value="AltHelpImages/Windows"/>
 	    <antcall target="copy-alt-help-images"/>
