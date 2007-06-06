@@ -1,3 +1,9 @@
+/**
+ * Copyright (C) 2007  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ * 
+ */
 package edu.ku.brc.services.biogeomancer;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
@@ -257,7 +263,7 @@ public class BioGeomancerResultsDisplay extends JPanel implements MapperListener
      */
     public void exceptionOccurred(Exception e)
     {
-        mapLabel.setText("Error while grabbing map");
+        mapLabel.setText("Error while grabbing map"); // XXX i18n
     }
 
     /* (non-Javadoc)

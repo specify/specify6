@@ -1,6 +1,5 @@
 package edu.ku.brc.services.biogeomancer;
 
-
 /**
  * This class is nothing more than a C-style struct holding a bunch of string
  * values and an array of {@link BioGeomancerResultStruct}s.
