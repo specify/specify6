@@ -23,6 +23,9 @@
 
 	<property name="data.dir" value="data" />
 
+	<!-- Needed for building help search index -->
+	<property name ="javahelp-home" value="/home/timbo/installs/javahelp/jh2.0" /> 
+	
 	<!-- Needed for Packing on the Mac -->
 	<property name="packaging" value="packaging" />
 	<property name="app.name" value="Specify" />
@@ -308,6 +311,7 @@
 		</copy>
 		
 		<antcall target="build-help-index"/>
+		<antcall target="build-help-fulltext"/>
 		
 		<!-- Testing Alt Help 
 		<property name="alt.help.img.dir" value="AltHelpImages/Windows"/>
@@ -430,6 +434,16 @@
 		</java>
 	</target>
 	
+
+	<!-- *************************************************************
+	     Build Help FullText Index
+	     ************************************************************* -->
+	<target name="build-help-fulltext">
+	  <java jar="${javahelp-home}/javahelp/bin/jhindexer.jar" fork="true">
+	    <arg value="${appdir}/help/SpecifyHelp"/>
+	  </java>
+	</target>
+	
 	
 	<!-- *************************************************************
 	     Common files between Windows and Linux
@@ -491,6 +505,7 @@
 		<antcall target="basic-non-mac-dist"/>
 
 		<antcall target="build-help-index"/>
+		<antcall target="build-help-fulltext"/>
 
 		<!-- Copy Alt Help Image Files -->
 		<property name="alt.help.img.dir" value="AltHelpImages/Windows"/>
@@ -539,6 +554,7 @@
 		<antcall target="basic-non-mac-dist"/>
 		
 		<antcall target="build-help-index"/>
+		<antcall target="build-help-fulltext"/>
 
 		<!-- Copy Alt Help Image Files -->
 		<property name="alt.help.img.dir" value="AltHelpImages/Windows"/>
