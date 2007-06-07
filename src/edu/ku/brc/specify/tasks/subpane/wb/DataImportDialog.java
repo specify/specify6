@@ -96,7 +96,7 @@ import edu.ku.brc.ui.UIRegistry;
  * 
  * @author megkumin
  *
- * @code_status Alpha
+ * @code_status Complete
  *
  * Created Date: Mar 26, 2007
  *
