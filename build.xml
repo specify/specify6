@@ -440,6 +440,8 @@
 	     ************************************************************* -->
 	<target name="build-help-fulltext">
 	  <java jar="${javahelp-home}/javahelp/bin/jhindexer.jar" fork="true">
+	  	<arg value="-db"/>
+	  	<arg value="${appdir}/help"/>
 	    <arg value="${appdir}/help/SpecifyHelp"/>
 	  </java>
 	</target>

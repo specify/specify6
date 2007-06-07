@@ -32,15 +32,16 @@
     <data>SpecifyHelpIndex.xml</data>
   </view>
 
-  <!--  <view>
+  <view>
     <name>Search</name>
     <label>Search</label>
     <type>javax.help.SearchView</type>
     <data engine="com.sun.java.help.search.DefaultSearchEngine">
-      SpecifyHelpSearchIndex
+      JavaHelpSearch
     </data>
   </view>
   
+  <!--  <view>
   <view>
     <name>Glossary</name>
     <label>Glossary</label>
