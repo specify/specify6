@@ -193,7 +193,6 @@ public class BioGeomancerMapper
             }
         }
         createBoundingBoxBufferRegion();
-        expandMapRegionToFillUsableSpace();
         
         // XXX
         // TODO: ensure the resulting bounding box is valid by panning left/right/up/down and shrinking
@@ -292,8 +291,8 @@ public class BioGeomancerMapper
         mapGrabber.setMinLong(minLongArg);
         mapGrabber.setMaxLong(maxLongArg);
 
-        mapGrabber.setMaxHeight(maxMapHeight);
-        mapGrabber.setMaxWidth(maxMapWidth);
+        mapGrabber.setHeight(maxMapHeight);
+        mapGrabber.setWidth(maxMapWidth);
         return mapGrabber.getMap();
     }
 
