@@ -424,8 +424,8 @@ public class WorkbenchPaneSS extends BaseSubPane
             public void actionPerformed(ActionEvent ae)
             {
                 AppPreferences remotePrefs = AppPreferences.getRemote();
-                String tool = remotePrefs.get("georef_tool", null);
-                if (StringUtils.isNotEmpty(tool) && tool.equalsIgnoreCase("geolocate"))
+                String tool = remotePrefs.get("georef_tool", "");
+                if (tool.equalsIgnoreCase("geolocate"))
                 {
                     doGeoLocateLookup();    
                 } else
