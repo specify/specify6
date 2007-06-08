@@ -1,3 +1,9 @@
+/**
+ * Copyright (C) 2006  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ * 
+ */
 package edu.ku.brc.specify.tasks.services;
 
 import java.awt.Color;
@@ -27,15 +33,16 @@ import edu.ku.brc.util.Pair;
 import edu.ku.brc.util.services.MapGrabber;
 
 /**
- * Maps a grouping of <code>Locality</code> objects.
+ * Maps a collection of <code>Locality</code> objects.
  *
  * @author jstewart
- * @code_status Complete
+ * @code_status Beta
  */
 public class LocalityMapper implements TimingTarget
 {
 	/** Logger for all messages emitted from this class. */
 	protected static final Logger       log					= Logger.getLogger(LocalityMapper.class);
+    
 	/** List of <code>Locality</code> objects to be mapped. */
 	protected List<Locality>	localities;
 	/** A member of <code>localities</code> to be considered the 'current' item. */
@@ -44,8 +51,6 @@ public class LocalityMapper implements TimingTarget
 	protected List<String>		labels;
 	/** Pixel locations of markers to apply to members of <code>localities</code>. */
 	protected List<Point>		markerLocations;
-	/** <code>MapGrabber</code> that provides the basic map images. */
-	protected MapGrabber		mapGrabber;
 	/** Smallest latitude in the set of localities. */
 	protected double			minLat;
 	/** Largest latitude in the set of localities. */
@@ -79,11 +84,11 @@ public class LocalityMapper implements TimingTarget
 	/** Actual height of a retrieved map. */
 	protected int				mapHeight;
     /** The minimum aspect ratio of the returned map (as a float length/width) */
-    protected double             minAspectRatio;
+    protected double            minAspectRatio;
     /** The maximum aspect ratio of the returned map (as a float length/width) */
-    protected double             maxAspectRatio;
+    protected double            maxAspectRatio;
     /** Indicator as to whether the minimum and maximum aspect ratios are enforced. */
-    protected boolean enforceAspectRatios;
+    protected boolean           enforceAspectRatios;
 	/** The most recent screen coordinate used for painting the map. */
 	protected int				mostRecentPaintedX;
 	/** The most recent screen coordinate used for painting the map. */
@@ -116,7 +121,7 @@ public class LocalityMapper implements TimingTarget
 	/** An <code>Icon</code> of the map. */
 	protected Icon				mapIcon;
     /** ??? Rod? ???*/
-    protected Icon             overlayIcon = null;
+    protected Icon              overlayIcon = null;
 	/** Indicator as to whether the currently cached map image is still valid. */
 	protected boolean			cacheValid;
 
@@ -137,7 +142,6 @@ public class LocalityMapper implements TimingTarget
         this.localities = new Vector<Locality>();
         this.labels = new Vector<String>();
         this.markerLocations = new Vector<Point>();
-        this.mapGrabber = new MapGrabber();
         
         showArrows = true;
         showLabels = true;
@@ -185,7 +189,7 @@ public class LocalityMapper implements TimingTarget
 		{
 			markerLocations.add(null);
 		}
-		recalculateBoundingBox();
+        cacheValid = false;
 	}
 
 	
@@ -199,13 +203,20 @@ public class LocalityMapper implements TimingTarget
 	public LocalityMapper(List<Locality> localities, List<String> labels)
 	{
 		this();
+
+        // check the sizes
+        if (localities.size() != labels.size())
+        {
+            throw new IllegalArgumentException("Localities and labels list must be the same size");
+        }
+
 		this.localities.addAll(localities);
 		this.labels.addAll(labels);
 		for( int i = 0; i<localities.size(); ++i )
 		{
 			markerLocations.add(null);
 		}
-		recalculateBoundingBox();
+        cacheValid = false;
 	}
 
 	/**
@@ -292,41 +303,9 @@ public class LocalityMapper implements TimingTarget
 	{
 		localities.add(loc);
 		labels.add(label);
-		System.out.println("["+loc.getLatitude1()+"]["+label+"]");
-		Point iconLoc = determinePixelCoordsOfLocality(loc);
-		markerLocations.add(iconLoc);
-		if( localities.size()==1 )
-		{
-			recalculateBoundingBox();
-		}
-		// instead of recalculating the bounding box from scratch
-		// just factor in how this new data point might change it
-		Pair<Double, Double> latLong = getLatLong(loc);
-		double lat = latLong.first;
-		double lon = latLong.second;
-		if( lat<minLat )
-		{
-			minLat = lat;
-			cacheValid = false;
-		}
-		if( lat>maxLat )
-		{
-			maxLat = lat;
-			cacheValid = false;
-		}
-		if( lon<minLong )
-		{
-			minLong = lon;
-			cacheValid = false;
-		}
-		if( lon>maxLong )
-		{
-			maxLong = lon;
-			cacheValid = false;
-		}
-		createBoundingBoxBufferRegion();
+        markerLocations.add(null);
+        cacheValid = false;
 	}
-
 	
 	/**
 	 * Removes a locality (and associated label) from the set to be mapped/displayed. 
@@ -339,14 +318,7 @@ public class LocalityMapper implements TimingTarget
 		localities.remove(index);
 		labels.remove(index);
 		markerLocations.remove(index);
-
-		Pair<Double, Double> latLong = getLatLong(loc);
-		double lat = latLong.first;
-		double lon = latLong.second;
-		if( minLat==lat||maxLat==lat||minLong==lon||maxLong==lon )
-		{
-			recalculateBoundingBox();
-		}
+        cacheValid = false;
 	}
 
 	/**
@@ -435,6 +407,7 @@ public class LocalityMapper implements TimingTarget
 	public void setMaxMapHeight(Integer maxMapHeight)
 	{
 		this.maxMapHeight = maxMapHeight;
+        cacheValid = false;
 	}
 
 	/**
@@ -457,6 +430,7 @@ public class LocalityMapper implements TimingTarget
 	public void setMaxMapWidth(Integer maxMapWidth)
 	{
 		this.maxMapWidth = maxMapWidth;
+        cacheValid = false;
 	}
 
 	/**
@@ -482,6 +456,10 @@ public class LocalityMapper implements TimingTarget
     public void setMaxAspectRatio(double maxAspectRatio)
     {
         this.maxAspectRatio = maxAspectRatio;
+        if (this.enforceAspectRatios)
+        {
+            cacheValid = false;
+        }
     }
 
     /**
@@ -507,6 +485,10 @@ public class LocalityMapper implements TimingTarget
     public void setMinAspectRatio(double minAspectRatio)
     {
         this.minAspectRatio = minAspectRatio;
+        if (this.enforceAspectRatios)
+        {
+            cacheValid = false;
+        }
     }
 
     /**
@@ -526,19 +508,11 @@ public class LocalityMapper implements TimingTarget
      */
     public void setEnforceAspectRatios(boolean enforceAspectRatios)
     {
-        // if the user is turning on or off the aspect ratio enforcement, we need to recalculate
-        // the bounding box of the map
-        boolean recalc = false;
-        if (enforceAspectRatios != this.enforceAspectRatios)
-        {
-            recalc = true;
-        }
-        
         this.enforceAspectRatios = enforceAspectRatios;
         
-        if (recalc)
+        if (this.enforceAspectRatios)
         {
-            recalculateBoundingBox();
+            cacheValid = false;
         }
     }
 
@@ -699,7 +673,6 @@ public class LocalityMapper implements TimingTarget
 			// don't waste any time
 			return;
 		}
-		cacheValid = false;
 		double longRangeChange = mapLongRange*1/percentZoom;
 		double longChange = .5*(mapLongRange-longRangeChange);
 		mapMinLong += longChange;
@@ -708,6 +681,7 @@ public class LocalityMapper implements TimingTarget
 		double latChange = .5*(mapLatRange-latRangeChange);
 		mapMinLat += latChange;
 		mapMaxLat -= latChange;
+        cacheValid = false;
 	}
 
 	/**
@@ -720,7 +694,6 @@ public class LocalityMapper implements TimingTarget
 	{
         double latChg = latChange;
         double longChg = longChange;
-		cacheValid = false;
 		if( mapMinLat+latChange<-90 )
 		{
             latChg = -90-mapMinLat;
@@ -742,6 +715,7 @@ public class LocalityMapper implements TimingTarget
 		mapMaxLat += latChg;
 		mapMinLong += longChg;
 		mapMaxLong += longChg;
+        cacheValid = false;
 	}
 
 	/**
@@ -755,36 +729,14 @@ public class LocalityMapper implements TimingTarget
 	 */
 	protected boolean boxIsValid(double minimumLat, double minimumLong, double maximumLat, double maximumLong)
 	{
-		if( -90<=minimumLat&&minimumLat<maximumLat&&maximumLat<=90 )
+		if( -90 <= minimumLat && minimumLat < maximumLat && maximumLat <= 90 )
 		{
-			if( -180<=minimumLong&&minimumLong<maximumLong&&maximumLong<=180 )
+			if( -180 <= minimumLong && minimumLong < maximumLong && maximumLong <= 180 )
 			{
 				return true;
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * Sets the map bounding box.
-	 *
-	 * @param minLat min lat
-	 * @param minLong min long
-	 * @param maxLat max lat
-	 * @param maxLong max long
-	 */
-	public void setBoundingBox(double minLat, double minLong, double maxLat, double maxLong)
-	{
-		if( !boxIsValid(minLat,minLong,maxLat,maxLong) )
-		{
-			throw new IllegalArgumentException("Arguments define invalid bounding box");
-		}
-
-		cacheValid = false;
-		mapMinLat = minLat;
-		mapMinLong = minLong;
-		mapMaxLat = maxLat;
-		mapMaxLong = maxLong;
 	}
 
 	/**
@@ -844,7 +796,6 @@ public class LocalityMapper implements TimingTarget
 	 */
 	protected void recalculateBoundingBox()
 	{
-		cacheValid = false;
 		if( localities.isEmpty() )
 		{
 			minLat = -90;
@@ -866,24 +817,28 @@ public class LocalityMapper implements TimingTarget
 		for( Locality loc : localities )
 		{
 			Pair<Double, Double> latLong = getLatLong(loc);
-			if( latLong.first<minLat )
+			if( latLong.first < minLat )
 			{
 				minLat = latLong.first;
 			}
-			if( latLong.second<minLong )
+			if( latLong.second < minLong )
 			{
 				minLong = latLong.second;
 			}
-			if( latLong.first>maxLat )
+			if( latLong.first > maxLat )
 			{
 				maxLat = latLong.first;
 			}
-			if( latLong.second>maxLong )
+			if( latLong.second > maxLong )
 			{
 				maxLong = latLong.second;
 			}
 		}
+        
 		createBoundingBoxBufferRegion();
+        
+        expandMapRegionToFillUsableSpace();
+        
         if (enforceAspectRatios)
         {
             ensureMinMaxAspectRatio();
@@ -896,12 +851,13 @@ public class LocalityMapper implements TimingTarget
 	 */
     protected void createBoundingBoxBufferRegion()
     {
+        double minSpread = .025;
         double latSpread = maxLat-minLat;
-        if( latSpread < .25 )
+        if( latSpread < minSpread )
         {
             // expand the range to at least be .5 degrees
-            double diff = .25 - latSpread;
-            latSpread = .25;
+            double diff = minSpread - latSpread;
+            latSpread = minSpread;
             mapMinLat = minLat - diff/2;
             mapMaxLat = maxLat + diff/2;
         }
@@ -913,11 +869,11 @@ public class LocalityMapper implements TimingTarget
         }
         
         double longSpread = maxLong-minLong;
-        if( longSpread < .25 )
+        if( longSpread < minSpread )
         {
             // expand the range to at least be .5 degrees
-            double diff = .25 - longSpread;
-            longSpread = .25;
+            double diff = minSpread - longSpread;
+            longSpread = minSpread;
             mapMinLong = minLong - diff/2;
             mapMaxLong = maxLong + diff/2;
         }
@@ -1001,6 +957,32 @@ public class LocalityMapper implements TimingTarget
         // Now we have a bounding box that fits within the maximum bounding box, contains
         // all the provided georeferences, and is as close to the ratio limits as possible
     }
+    
+    /**
+     * In order to ensure that we grab the largest map allowed, we need to expand either
+     * then width or height to fill in the extra space.  So, we figure out which way the
+     * map needs to be expanded, then adjust the bounding box to accomplish that.
+     */
+    protected void expandMapRegionToFillUsableSpace()
+    {
+        double degToPixelLat = (mapMaxLat - mapMinLat) / maxMapHeight;
+        double degToPixelLon = (mapMaxLong - mapMinLong) / maxMapWidth;
+        
+        // we need a uniform deg/pixel ratio for both lat and long, so find the largest one and use it
+        double uniformDegToPixel = Math.max(degToPixelLat, degToPixelLon);
+        
+        double correctedLatRange = uniformDegToPixel * maxMapHeight;
+        double correctedLonRange = uniformDegToPixel * maxMapWidth;
+        
+        double latRangeDiff = correctedLatRange - (mapMaxLat - mapMinLat);
+        double lonRangeDiff = correctedLonRange - (mapMaxLong - mapMinLong);
+        
+        // apply the corrections evenly
+        mapMaxLat  += latRangeDiff / 2;
+        mapMinLat  -= latRangeDiff / 2;
+        mapMaxLong += lonRangeDiff / 2;
+        mapMinLong -= lonRangeDiff / 2;
+    }
 
 	/**
 	 * Configures the {@link MapGrabber} with the given parameters and requests
@@ -1023,9 +1005,11 @@ public class LocalityMapper implements TimingTarget
                                       double miniLat,
                                       double miniLong,
                                       double maxiLat,
-                                      double maxiLong)	throws HttpException, IOException
+                                      double maxiLong,
+                                      int height,
+                                      int width)	throws HttpException, IOException
 	{
-
+	    MapGrabber mapGrabber = new MapGrabber();
         mapGrabber.setHost(host);
         mapGrabber.setDefaultPathAndParams(defaultPathAndParams);
         mapGrabber.setLayers(layers);
@@ -1035,8 +1019,8 @@ public class LocalityMapper implements TimingTarget
 		mapGrabber.setMinLong(miniLong);
 		mapGrabber.setMaxLong(maxiLong);
 
-		mapGrabber.setMaxHeight(maxMapHeight);
-		mapGrabber.setMaxWidth(maxMapWidth);
+		mapGrabber.setHeight(height);
+		mapGrabber.setWidth(width);
 		return mapGrabber.getMap();
 	}
 
@@ -1116,11 +1100,17 @@ public class LocalityMapper implements TimingTarget
 				try
 				{
 					Icon map = grabNewMap();
-					callback.mapReceived(map);
+                    if (callback != null)
+                    {
+                        callback.mapReceived(map);
+                    }
 				}
 				catch( Exception e )
 				{
-					callback.exceptionOccurred(e);
+                    if (callback != null)
+                    {
+                        callback.exceptionOccurred(e);
+                    }
 				}
 			}
 		};
@@ -1138,18 +1128,20 @@ public class LocalityMapper implements TimingTarget
 	 */
 	protected Icon grabNewMap() throws HttpException, IOException
 	{
+        recalculateBoundingBox();
+        
 		if( !cacheValid )
 		{
             Image mapImage = getMapFromService("mapus.jpl.nasa.gov",
                     "/wms.cgi?request=GetMap&srs=EPSG:4326&format=image/png&styles=visual",
                     "global_mosaic",
-                    mapMinLat, mapMinLong, mapMaxLat, mapMaxLong);
+                    mapMinLat, mapMinLong, mapMaxLat, mapMaxLong, maxMapHeight, maxMapWidth);
 
             Image overlayImage = getMapFromService("129.237.201.132",
                     //"/cgi-bin/ogc.cgi/specify?service=WMS&request=GetMap&srs=EPSG:4326&version=1.3.1&format=image/png&transparent=true",
                     "/cgi-bin/mapserv?map=/var/www/maps/specify.map&service=WMS&request=GetMap&srs=EPSG:4326&version=1.3.1&format=image/png&transparent=true",
                     "states,rivers",
-                    mapMinLat, mapMinLong, mapMaxLat, mapMaxLong);
+                    mapMinLat, mapMinLong, mapMaxLat, mapMaxLong, maxMapHeight, maxMapWidth);
 
 			mapIcon     = new ImageIcon(mapImage);
             overlayIcon = new ImageIcon(overlayImage);
@@ -1170,7 +1162,10 @@ public class LocalityMapper implements TimingTarget
 				Point iconLoc = determinePixelCoordsOfLocality(loc);
 				markerLocations.set(i,iconLoc);
 			}
+            
+            cacheValid = true;
 		}
+        
 		Icon icon = new Icon()
 		{
 			public void paintIcon(Component c, Graphics g, int x, int y)
@@ -1196,12 +1191,12 @@ public class LocalityMapper implements TimingTarget
 					String label = labels.get(i);
 					boolean current = (currentLoc!=null)&&markerLoc.equals(currentLocPoint);
 
-					if( markerLoc==null )
+					if( markerLoc == null )
 					{
 						log.error("A marker location is null");
 						continue;
 					}
-					if( !pointIsOnMapIcon(x+markerLoc.x,y+markerLoc.y) )
+					if( !pointIsOnMapIcon(x+markerLoc.x, y+markerLoc.y) )
 					{
 						log.error("A marker location is off the map");
 						continue;
@@ -1247,7 +1242,7 @@ public class LocalityMapper implements TimingTarget
 
 					lastLoc = markerLoc;
 				}
-				if( showArrowAnimations&&animationInProgress )
+				if( showArrowAnimations && animationInProgress )
 				{
 					int startIndex = localities.indexOf(animStartLoc);
 					int endIndex = localities.indexOf(animEndLoc);
@@ -1322,6 +1317,7 @@ public class LocalityMapper implements TimingTarget
 	 * generation process.
 	 * 
 	 * @author jstewart
+     * @code_status Complete
 	 */
 	public interface MapperListener
 	{
@@ -1339,4 +1335,68 @@ public class LocalityMapper implements TimingTarget
 		 */
 		public void exceptionOccurred(Exception e);
 	}
+    
+    // I commented out this code so it doesn't get compiled in.  However, if I ever need to come back and retest this class, I'll need this again.
+//    public static void main(String[] args)
+//    {
+//        // some test points
+//        Locality l1 = new Locality();
+//        l1.setLatitude1(new BigDecimal(38.877));
+//        l1.setLongitude1(new BigDecimal(-94.871));
+//        
+//        Locality l2 = new Locality();
+//        l2.setLatitude1(new BigDecimal(38.875));
+//        l2.setLongitude1(new BigDecimal(-94.875));
+//        
+//        Locality l3 = new Locality();
+//        l3.setLatitude1(new BigDecimal(38.879));
+//        l3.setLongitude1(new BigDecimal(-94.877));
+//        
+//        Locality l4 = new Locality();
+//        l4.setLatitude1(new BigDecimal(38.871));
+//        l4.setLongitude1(new BigDecimal(-94.879));
+//        
+//        LocalityMapper lm = new LocalityMapper();
+//        lm.addLocalityAndLabel(l1,null);
+//        lm.addLocalityAndLabel(l2,null);
+//        lm.addLocalityAndLabel(l3,null);
+//        lm.addLocalityAndLabel(l4,null);
+//        lm.setShowArrows(false);
+//        lm.setDotColor(Color.YELLOW);
+//     
+//        JFrame f = new JFrame();
+//        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        final JLabel mapLabel = new JLabel();
+//        int w = 700;
+//        int h = 250;
+//        Dimension dimension = new Dimension(w,h);
+//        mapLabel.setSize(dimension);
+//        mapLabel.setPreferredSize(dimension);
+//        f.add(mapLabel);
+//        
+//        lm.setMaxMapWidth(w);
+//        lm.setMaxMapHeight(h);
+//
+//        MapperListener l = new MapperListener()
+//        {
+//            public void exceptionOccurred(Exception e)
+//            {
+//                final Writer result = new StringWriter();
+//                final PrintWriter printWriter = new PrintWriter(result);
+//                e.printStackTrace(printWriter);
+//
+//                mapLabel.setText("<html><pre> " + result.toString() + "</pre></html>");
+//            }
+//            public void mapReceived(Icon map)
+//            {
+//                mapLabel.setIcon(map);
+//            }
+//        };
+//        
+//        f.pack();
+//
+//        lm.getMap(l);
+//        
+//        f.setVisible(true);
+//    }
 }
