@@ -12,7 +12,7 @@
 	<string>6.0</string>
 	
     <key>CFBundleGetInfoString</key>
-	<string>Specify 6.0, © 1998-2007 Contributors</string>
+	<string>Specify 6.0, ï¿½ 1998-2007 Contributors</string>
 
 	<key>CFBundleAllowMixedLocalizations</key>
 	<string>true</string>
@@ -102,6 +102,21 @@
 			<string>$JAVAROOT/iReport.jar</string>
 			<string>$JAVAROOT/javacsv.jar</string>
 			<string>$JAVAROOT/swingx.jar</string>
+			<string>$JAVAROOT/FastInfoset.jar</string>
+    		<string>$JAVAROOT/http.jar</string>
+    		<string>$JAVAROOT/jaxb-api.jar</string>
+    		<string>$JAVAROOT/jaxb-impl.jar</string>
+    		<string>$JAVAROOT/jaxb-xjc.jar</string>
+    		<string>$JAVAROOT/jaxws-api.jar</string>
+    		<string>$JAVAROOT/jaxws-rt.jar</string>
+    		<string>$JAVAROOT/jaxws-tools.jar</string>
+    		<string>$JAVAROOT/jsr173_api.jar</string>
+    		<string>$JAVAROOT/jsr181-api.jar</string>
+    		<string>$JAVAROOT/jsr250-api.jar</string>
+    		<string>$JAVAROOT/resolver.jar</string>
+   			<string>$JAVAROOT/saaj-api.jar</string>
+    		<string>$JAVAROOT/saaj-impl.jar</string>
+    		<string>$JAVAROOT/sjsxp.jar</string>
 			<string>$JAVAROOT/help</string>
 			</array>
 		<key>Properties</key>
