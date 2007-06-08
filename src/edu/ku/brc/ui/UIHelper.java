@@ -1588,7 +1588,9 @@ public final class UIHelper
     }
     
     /**
-     * Calculates and sets the each column to it preferred size.
+     * Calculates and sets the each column to it preferred size.  NOTE: This
+     * method also sets the table height to 10 rows.
+     * 
      * @param table the table to fix up
      */
     public static void calcColumnWidths(JTable table)
