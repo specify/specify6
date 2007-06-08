@@ -571,4 +571,32 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         }
         return null;
     }
+
+    ////////////////////////////////////////////////////
+    // Helper methods
+    ////////////////////////////////////////////////////
+
+    @Transient
+    public int getLocalityStringIndex()
+    {
+        return workbench.getColumnIndex(Locality.class, "localityName");
+    }
+
+    @Transient
+    public int getCountryIndex()
+    {
+        return workbench.getColumnIndex(Geography.class, "Country");
+    }
+
+    @Transient
+    public int getStateIndex()
+    {
+        return workbench.getColumnIndex(Geography.class, "State");
+    }
+
+    @Transient
+    public int getCountyIndex()
+    {
+        return workbench.getColumnIndex(Geography.class, "County");
+    }
 }

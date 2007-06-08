@@ -655,5 +655,11 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
         
         return -1;
     }
+    
+    public int getColumnIndex(Class dataClass, String fieldNameOrCaption)
+    {
+        int tableId = DBTableIdMgr.getInstance().getIdByClassName(dataClass.getName());
+        return getColumnIndex(tableId,fieldNameOrCaption);
+    }
 
 }
