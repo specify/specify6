@@ -1,18 +1,9 @@
-/* This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+/**
+ * Copyright (C) 2007  The University of Kansas
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ * 
  */
-
 package edu.ku.brc.util.services;
 
 import java.awt.Image;
@@ -67,13 +58,13 @@ public class MapGrabber
 	/** Easternmost longitude of interest. */
 	protected double maxLong = 180;
 	/** Maximum height of returned map (in pixels). */
-	protected Integer maxHeight = null;
+	protected Integer height = null;
 	/** Maximum width of returned map (in pixels). */
-	protected Integer maxWidth = null;
+	protected Integer width = null;
 	/** Maximum height of returned map if caller doesn't specify one. */
-	protected int defaultMaxHeight = 2048;
+	protected int defaultHeight = 2048;
 	/** Maximum width of returned map if caller doesn't specify one. */
-	protected int defaultMaxWidth = 2048;
+	protected int defaultWidth = 2048;
 
 	/** FileCache for caching retrieved maps. */
 	protected static FileCache imageCache = UIRegistry.getLongTermFileCache();
@@ -133,55 +124,55 @@ public class MapGrabber
 	/**
 	 * Returns the max map height.
 	 * 
-	 * @see #setMaxHeight(Integer)
+	 * @see #setHeight(Integer)
 	 * @return the max map height
 	 */
-	public Integer getMaxHeight()
+	public Integer getHeight()
 	{
-		return maxHeight;
+		return height;
 	}
 
 	/**
 	 * Sets the max map height the grabber should return.
 	 * 
-	 * @see #getMaxHeight()
+	 * @see #getHeight()
 	 * @param height the max height
 	 */
-	public void setMaxHeight(Integer height)
+	public void setHeight(Integer height)
 	{
         Integer ht = height;
 		if( ht != null && ht > 2048 )
 		{
             ht = 2048;
 		}
-		this.maxHeight = ht;
+		this.height = ht;
 	}
 
 	/**
 	 * Returns the max map width.
 	 * 
-	 * @see #setMaxWidth(Integer)
+	 * @see #setWidth(Integer)
 	 * @return the max map width
 	 */
-	public Integer getMaxWidth()
+	public Integer getWidth()
 	{
-		return maxWidth;
+		return width;
 	}
 
 	/**
 	 * Sets the max map width the grabber should return.
 	 * 
-	 * @see #getMaxWidth()
+	 * @see #getWidth()
 	 * @param width the max map width
 	 */
-	public void setMaxWidth(Integer width)
+	public void setWidth(Integer width)
 	{
         Integer wt = width;
 		if( wt != null && wt.intValue() > 2048 )
 		{
             wt = 2048;
 		}
-		this.maxWidth = wt;
+		this.width = wt;
 	}
 
 	/**
@@ -284,37 +275,13 @@ public class MapGrabber
 
     /**
      * Provides a convenience method.  Calling this method results in calls to
-     * {@link #setMaxWidth(Integer)} and {@link #setMaxHeight(Integer)} followed
-     * by a call to {@link #getMap()}.
-     * 
-     * @see #getMap()
-     * @see #setMaxWidth(Integer)
-     * @see #setMaxHeight(Integer)
-     * 
-     * @param width the max map width
-     * @param height the max map height
-     * @return a map image
-     * @throws HttpException if network errors occur while grabbing map from service
-     * @throws IOException if network errors occur while grabbing map from service
-     */
-    public Image getMap(Integer width,
-						Integer height)
-		throws HttpException, IOException
-	{
-		setMaxWidth(width);
-		setMaxHeight(height);
-		return getMap();
-	}
-
-    /**
-     * Provides a convenience method.  Calling this method results in calls to
      * setters for the various fields associated with the parameters followed
      * by a call to {@link #getMap()}.
      * 
      * @see #getMap()
      * 
-     * @param width the max map width
-     * @param height the max map height
+     * @param w the max map width
+     * @param h the max map height
      * @param minLat the min map latitude
      * @param minLong the min map longitude
      * @param maxLat the max map latitude
@@ -323,8 +290,8 @@ public class MapGrabber
      * @throws HttpException if network errors occur while grabbing map from service
      * @throws IOException if network errors occur while grabbing map from service
      */
-	public Image getMap(Integer width,
-						Integer height,
+	public Image getMap(Integer w,
+						Integer h,
 						int minLatitude,
 						int minLongitude,
 						int maxLatitude,
@@ -335,8 +302,8 @@ public class MapGrabber
 		setMinLong(minLongitude);
 		setMaxLat(maxLatitude);
 		setMaxLong(maxLongitude);
-		setMaxWidth(width);
-		setMaxHeight(height);
+		setWidth(w);
+		setHeight(h);
 		return getMap();
 	}
 
@@ -353,35 +320,6 @@ public class MapGrabber
 	}
 
 	/**
-	 * Calculates the appropriate width and height of a map (before grabbing it)
-	 * based on the values of maxWidth, maxHeight, minLat, minLong, maxLat, and
-	 * maxLong.  The values of maxHeight and maxWidth are modified appropriately.
-	 */
-	protected void calcWidthAndHeight()
-	{
-        log.debug("Entering calcWidthAndHeight():  maxWidth = " + maxWidth + "  maxHeight = " + maxHeight);
-        
-		double longSpread = maxLong - minLong;
-		double latSpread = maxLat - minLat;
-
-		boolean fatMap = longSpread > latSpread ? true : false;
-
-		if( fatMap )
-		{
-			// calculate the height from max width
-			maxHeight = (int)(latSpread/longSpread*maxWidth);
-			return;
-		}
-		// else (tall map)
-        
-		// calculate the width from the max height
-		maxWidth = (int)(maxHeight*longSpread/latSpread);
-        
-        log.debug("Leaving calcWidthAndHeight():  maxWidth = " + maxWidth + "  maxHeight = " + maxHeight);
-		return;
-	}
-
-	/**
 	 * Retrieves a map from the web service.
 	 * 
 	 * @return a map image
@@ -391,17 +329,16 @@ public class MapGrabber
 	public Image getMap() throws HttpException, IOException
 	{
 		log.debug("Entering MapGrabber.getMap()");
-		log.debug("maxWidth="+maxWidth+"\tmaxHeight="+maxHeight);
+		log.debug("width="+width+"\theight="+height);
 		double longSpread = maxLong - minLong;
 		double latSpread = maxLat - minLat;
 		log.debug("lat spread:  min="+minLat+"\tmax="+maxLat+"\trange="+latSpread);
 		log.debug("long spread: min="+minLong+"\tmax="+maxLong+"\trange="+longSpread);
-		if( maxWidth == null && maxHeight == null )
+		if( width == null && height == null )
 		{
-			maxWidth = defaultMaxWidth;
-			maxHeight = defaultMaxHeight;
+			width = defaultWidth;
+			height = defaultHeight;
 		}
-		calcWidthAndHeight();
 
 		StringBuilder url = new StringBuilder("http://");
 		url.append(host);
@@ -423,9 +360,9 @@ public class MapGrabber
 
 		// set size
 		url.append("&height=");
-		url.append(maxHeight);
+		url.append(height);
 		url.append("&width=");
-		url.append(maxWidth);
+		url.append(width);
 
 		Image image;
 		String urlStr = url.toString();
