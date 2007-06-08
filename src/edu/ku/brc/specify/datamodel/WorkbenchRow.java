@@ -274,7 +274,8 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
                     Graphics2D    graphics2D = thumbImage.createGraphics();
                     graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION,RenderingHints.VALUE_INTERPOLATION_BILINEAR);
                     graphics2D.drawImage(img, 0, 0, thumbWidth, thumbHeight, null);
-        
+                    graphics2D.dispose();
+                    
                     // save thumbnail image to the byte[] as a JPEG
                     ByteArrayOutputStream outputByteStream = new ByteArrayOutputStream(8192);
                     JPEGImageEncoder      encoder          = JPEGCodec.createJPEGEncoder(outputByteStream);

@@ -18,14 +18,15 @@ import java.util.List;
 
 import javax.swing.ImageIcon;
 
-
-
 /**
  * Interface for any task in the system, most of the methods are "getters" that
  * enable the Task to play nice within the system.
- 
+ * 
+ * The initialize and pre-initialize do not assume any order this this is
+ * why we do it in two steps.
+ * 
  * @code_status Complete
- **
+ *
  * @author rods
  *
  */
@@ -80,6 +81,12 @@ public interface Taskable
      */
     public List<MenuItemDesc> getMenuItems();
     
+    /**
+     * Pre-Initializes the task. This is called after all the tasks are created and registered, 
+     * but before Initialize is called.
+     */
+    public void preInitialize();
+
     /**
      * Initializes the task. The Taskable is responsible for making sure this method
      * can be called mulitple times with no ill effects.

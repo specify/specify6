@@ -24,6 +24,7 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Insets;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -35,6 +36,7 @@ import java.awt.event.MouseEvent;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -130,6 +132,7 @@ public final class UIHelper
     
     protected static Border          emptyBorder     = BorderFactory.createEmptyBorder(1, 1, 1, 1);
     protected static Border          focusBorder     = new LineBorder(Color.GRAY, 1, true);
+    protected static RenderingHints  txtRenderingHints;
     
     static {
 
@@ -150,7 +153,7 @@ public final class UIHelper
         {
             oSType   = OSTYPE.Unknown;
         }
-
+        txtRenderingHints = createTextRenderingHints();
     }
     
     /**
@@ -1819,6 +1822,27 @@ public final class UIHelper
             }
         }
         return databasePath;
+    }
+    
+    
+    /**
+     * Creates rendering hints for Text.
+     */
+    public static RenderingHints createTextRenderingHints() 
+    {
+        RenderingHints renderingHints = new RenderingHints(RenderingHints.KEY_INTERPOLATION,
+                                                           RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        Object value = RenderingHints.VALUE_TEXT_ANTIALIAS_ON;
+        try {
+            Field declaredField = RenderingHints.class.getDeclaredField("VALUE_TEXT_ANTIALIAS_LCD_HRGB");
+            value = declaredField.get(null);
+            
+        } catch (Exception e)
+        {
+            // do nothing
+        }
+        renderingHints.put(RenderingHints.KEY_TEXT_ANTIALIASING, value);
+        return renderingHints;
     }
 
 }

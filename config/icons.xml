@@ -27,6 +27,7 @@
     <icon name="Pie_Chart"        file="PieChart32x32.png" sizes="all"/>
     <icon name="Bar_Chart"        file="BarGraph32x32.png" sizes="all"/>
     <icon name="Record_Set"       file="bundle.png" sizes="all"/>
+    <icon name="Record_Set16"     file="bundle.png" sizes="16"/>
     <icon name="Agent"            file="agent.gif" sizes="all"/>
     <icon name="Person"           file="emblem-personal.png" sizes="all"/>
     <icon name="People"           file="emblem-people.png" sizes="all"/>
@@ -70,8 +71,8 @@
     <icon name="Reports16"     file="Reports16x16.png" sizes="16"/>
     <icon name="DataSet"       file="DataSet32x32.png" sizes="all"/>
     <icon name="DataSet16"     file="DataSet16x16.png" sizes="16"/>
-    <icon name="Trash"         file="trash_named.png" sizes="NonStd"/>
-    <icon name="TrashFull"     file="TrashFull32x32.png" sizes="all"/>
+    <icon name="Trash"         file="trash.png"  sizes="NonStd"/>
+    <icon name="TrashFull"     file="trash_full.png"   sizes="NonStd"/>
     <icon name="NewDataSet"    file="NewDataSet16x16.png" sizes="16"/>
     <icon name="Labels"        file="Label32x32.png" sizes="all"/>
     <icon name="Form"          file="Form32x32.png" sizes="all"/>

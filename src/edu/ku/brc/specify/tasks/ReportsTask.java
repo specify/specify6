@@ -16,11 +16,13 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.datatransfer.DataFlavor;
 import java.util.List;
 import java.util.Vector;
 
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
+import edu.ku.brc.af.core.NavBoxAction;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
@@ -36,35 +38,32 @@ import edu.ku.brc.ui.ToolBarDropDownBtn;
  * @author rods
  *
  */
-public class ReportsTask extends BaseTask
+public class ReportsTask extends ReportsBaseTask
 {
-    public static final String REPORTS = "Reports";
 
     public ReportsTask()
     {
-        super(REPORTS, getResourceString(REPORTS));
-    }    
+        super();
+        
+        name          = "Reports";
+        title         = getResourceString(name);
+        defaultFlavor = new DataFlavor(ReportsBaseTask.class, name);
+        mimeType      = REPORTS_MIME;
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.core.Taskable#initialize()
-     */
-    public void initialize()
-    {
-        if (!isInitialized)
-        {
-            super.initialize(); // sets isInitialized to false
-            
-            // Temporary
-             NavBox navBox = new NavBox(getResourceString("Actions"));
-             navBox.add(NavBox.createBtn(getResourceString("Create_New_Report"), name, IconManager.IconSize.Std16));
-             navBoxes.addElement(navBox);
-     
-             navBox = new NavBox(name);
-             navBox.add(NavBox.createBtn("Year End Report", name, IconManager.IconSize.Std16));
-             navBox.add(NavBox.createBtn("Grant Statistics Report", name, IconManager.IconSize.Std16));
-             navBoxes.addElement(navBox);
-        }
+        setIcon(this.name);
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.ReportsBaseTask#preInitialize()
+     */
+    @Override
+    public void preInitialize()
+    {
+        super.preInitialize();
+        
+        actionNavBox.add(NavBox.createBtn(getResourceString("Create_New_Report"), name, IconManager.IconSize.Std16));
+        actionNavBox.add(NavBox.createBtn(getResourceString("ReportEditor"),  "EditIcon", IconManager.IconSize.Std16, new NavBoxAction(name, OPEN_EDITOR))); // I18N
+   }
 
     /**
      * @return the initial pane

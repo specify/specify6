@@ -460,7 +460,7 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
                 {
                     FontMetrics fm = g.getFontMetrics();
                     g.setColor(getForeground());
-
+                    ((Graphics2D)g).setRenderingHints(UIHelper.createTextRenderingHints());
                     g.drawString(label, (size.width - fm.stringWidth(label))/2, y+fm.getHeight());
                 }
 
@@ -485,7 +485,7 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
                 {
                     FontMetrics fm = g.getFontMetrics();
                     g.setColor(getForeground());
-
+                    ((Graphics2D)g).setRenderingHints(UIHelper.createTextRenderingHints());
                     g.drawString(label, x+xOffset+1, y+((size.height-fm.getHeight())/2)+fm.getAscent());
                 }
 

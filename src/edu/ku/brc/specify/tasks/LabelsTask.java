@@ -33,8 +33,6 @@ import net.sf.jasperreports.engine.JRDataSource;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
@@ -49,12 +47,14 @@ import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.tasks.subpane.LabelsPane;
 import edu.ku.brc.specify.tools.IReportSpecify.MainFrameSpecify;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -76,14 +76,17 @@ public class LabelsTask extends BaseTask
     private static final Logger log = Logger.getLogger(LabelsTask.class);
             
     // Static Data Members
-    public static final DataFlavor LABEL_FLAVOR = new DataFlavor(LabelsTask.class, "Label");
-
-    public static final String     LABELS = "Labels";
+    public static final DataFlavor LABEL_FLAVOR  = new DataFlavor(LabelsTask.class, "Label");
+    public static final DataFlavor REPORT_FLAVOR = new DataFlavor(LabelsTask.class, "Report");
+    
+    public static final String     LABELS       = "Labels";
+    public static final String     REPORTS_MIME = "jrxml/report";
+    public static final String     LABELS_MIME  = "jrxml/label";
 
     //public static final String DOLABELS_ACTION     = "DoLabels";
-    public static final String NEWRECORDSET_ACTION = "NewRecordSet";
-    public static final String PRINT_LABEL         = "PrintLabel";
-    public static final String OPEN_EDITOR         = "OpenEditor";
+    public static final String NEWRECORDSET_ACTION = "LBL.NewRecordSet";
+    public static final String PRINT_LABEL         = "LBL.PrintLabel";
+    public static final String OPEN_EDITOR         = "LBL.OpenEditor";
 
     // Data Members
     protected Vector<NavBoxIFace>     extendedNavBoxes = new Vector<NavBoxIFace>();
@@ -107,6 +110,18 @@ public class LabelsTask extends BaseTask
         CommandDispatcher.register(LABELS, this);
         CommandDispatcher.register(RecordSetTask.RECORD_SET, this);
         CommandDispatcher.register(APP_CMD_TYPE, this);
+        
+    }
+
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#preInitialize()
+     */
+    @Override
+    public void preInitialize()
+    {
+        RecordSetTask.addDroppableDataFlavor(LABEL_FLAVOR);
+        RecordSetTask.addDroppableDataFlavor(REPORT_FLAVOR);
     }
 
 
@@ -126,15 +141,9 @@ public class LabelsTask extends BaseTask
             {
                 NavBox navBox = new NavBox(name);
                 
-                for (AppResourceIFace ap : AppContextMgr.getInstance().getResourceByMimeType("jrxml/label"))
-                {
-                    Map<String, String> params = ap.getMetaDataMap();
-                    params.put("title", ap.getDescription());
-                    params.put("file", ap.getName());
-                    //log.info("["+ap.getDescription()+"]["+ap.getName()+"]");
-                    
-                    commands.add(new TaskCommandDef(ap.getDescription(), name, params));
-                }
+                addAppResourcesToCommandsByMimeType(LABELS_MIME, 
+                                                    null,  // reporttype is unimportant for labels
+                                                    null); // no particular table at the moment
                 
                 // Then add
                 if (commands != null)
@@ -145,23 +154,37 @@ public class LabelsTask extends BaseTask
                         String tableIdStr = tcd.getParams().get("tableid");
                         if (tableIdStr != null)
                         {
-                            CommandAction cmdAction = new CommandAction(LABELS, PRINT_LABEL, null);
+                            CommandAction cmdAction = new CommandAction(LABELS, PRINT_LABEL, Workbench.getClassTableId());
                             cmdAction.addStringProperties(tcd.getParams());
-                            labelsList.add(makeDnDNavBtn(navBox, tcd.getName(), name, cmdAction, null, true, false));// true means make it draggable
+                            cmdAction.getProperties().put("icon", IconManager.getIcon(tcd.getIconName()));
                             
+                            NavBoxItemIFace nbi = makeDnDNavBtn(navBox, 
+                                                                tcd.getName(), 
+                                                                tcd.getIconName(), 
+                                                                cmdAction, 
+                                                                null, 
+                                                                true,  // true means make it draggable
+                                                                true); // true means add sorted
+                            labelsList.add(nbi);
+                            
+                            RolloverCommand roc = (RolloverCommand)nbi;
+                            roc.addDropDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
+                            roc.addDragDataFlavor(LABEL_FLAVOR);
+                            roc.setToolTip(getResourceString("WB_PRINTREPORT_TT"));
+
                         } else
                         {
-                            log.error("Label Command is missing the table id");
+                            log.error("Interaction Command is missing the table id");
                         }
                     }
+
                 }
                 
-                navBox.add(NavBox.createBtn(getResourceString("LabelEditor"),  "Loan", IconManager.IconSize.Std16, new NavBoxAction(LABELS, OPEN_EDITOR))); // I18N
+                navBox.add(NavBox.createBtn(getResourceString("LabelEditor"),  "EditIcon", IconManager.IconSize.Std16, new NavBoxAction(LABELS, OPEN_EDITOR))); // I18N
                 
                 navBoxes.addElement(navBox);
             }
         }
-
     }
 
     /**
@@ -206,7 +229,7 @@ public class LabelsTask extends BaseTask
         //
         if (recordSet.getItems().size() > 200) // XXX Pref
         {
-            Object[] options = {getResourceString("CreateLabels"), getResourceString("Cancel")};
+            Object[] options = {getResourceString("Create_New_Label"), getResourceString("Cancel")};
             int n = JOptionPane.showOptionDialog(UIRegistry.get(UIRegistry.FRAME),
                                                 String.format(getResourceString("LotsOfLabels"), new Object[] {(recordSet.getItems().size())}),
                                                 getResourceString("LotsOfLabelsTitle"),
@@ -276,7 +299,6 @@ public class LabelsTask extends BaseTask
         }
         return null;
     }
-
 
     /**
      * Single place to convert the data to a Map.
@@ -448,8 +470,15 @@ public class LabelsTask extends BaseTask
      */
     protected void printLabel(final CommandAction cmdAction)
     {
-        String     paramList = cmdAction.getPropertyAsString("params");
-        Properties params    = null;
+        // Get the original set of params
+        Properties params = cmdAction.getProperties();
+        if (params == null)
+        {
+            params = new Properties();
+        }
+        
+        // No add the additional params
+        String paramList = cmdAction.getPropertyAsString("params");
         if (StringUtils.isNotEmpty(paramList))
         {
             params = UIHelper.parseProperties(paramList);
@@ -518,9 +547,29 @@ public class LabelsTask extends BaseTask
                     doLabels(cmdAction.getPropertyAsString("file"), cmdAction.getPropertyAsString("title"), recordSet, params, this, (ImageIcon)cmdAction.getProperty("icon"));
                 }
             }
-            
         }
-
+    }
+    
+    /**
+     * Open the IReport editor.
+     * @param cmdAction the command to be processed
+     */
+    private void openIReportEditor() 
+    {
+        if (iReportMainFrame == null)
+        {
+            MainFrame.reportClassLoader.rescanLibDirectory();
+            Thread.currentThread().setContextClassLoader( MainFrame.reportClassLoader );
+            Map args = MainFrameSpecify.getArgs();
+            iReportMainFrame = new MainFrameSpecify(args);
+        }
+        SwingUtilities.invokeLater( new Runnable()
+        {
+             public void run()
+             {
+                 iReportMainFrame.setVisible(true);
+             }
+        });
     }
     
     /**
@@ -569,28 +618,6 @@ public class LabelsTask extends BaseTask
                 openIReportEditor();
             }
         }
-    }
-    
-    /**
-     * Open the IReport editor.
-     * @param cmdAction the command to be processed
-     */
-    private void openIReportEditor() 
-    {
-        if (iReportMainFrame == null)
-        {
-            MainFrame.reportClassLoader.rescanLibDirectory();
-            Thread.currentThread().setContextClassLoader( MainFrame.reportClassLoader );
-            Map args = MainFrameSpecify.getArgs();
-            iReportMainFrame = new MainFrameSpecify(args);
-        }
-        SwingUtilities.invokeLater( new Runnable()
-        {
-             public void run()
-             {
-                 iReportMainFrame.setVisible(true);
-             }
-        });
     }
         
 

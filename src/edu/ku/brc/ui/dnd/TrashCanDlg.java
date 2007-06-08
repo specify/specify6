@@ -13,7 +13,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.ku.brc.ui;
+package edu.ku.brc.ui.dnd;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
@@ -43,7 +43,8 @@ import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 
-import edu.ku.brc.ui.dnd.DndDeletable;
+import edu.ku.brc.ui.DndDeletableListCellRenderer;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * This dialoig enables the user to view the contents of the trash can. It can be used to send commands to have the items recovered.
@@ -73,7 +74,8 @@ public class TrashCanDlg extends JDialog implements ActionListener, ListSelectio
      */
     public TrashCanDlg(final Frame frame) throws HeadlessException
     {
-        super((Frame)UIRegistry.get(UIRegistry.FRAME), true);
+        super(frame, true);
+        
         createUI();
         setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);

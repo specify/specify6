@@ -41,7 +41,7 @@ Inner Join locality ON collectingevent.LocalityID = locality.LocalityID
 Inner Join agent ON collectionobject.CatalogerID = agent.AgentID 
 Inner Join preparation ON collectionobject.CollectionObjectID = preparation.CollectionObjectID 
 Inner Join preptype ON preparation.PrepTypeID = preptype.PrepTypeID 
-where preptype.Name = 'EtOH' and DT.DeterminationStatusID = 983040 and collectionobject.CollectionObjectID $P!{itemnum}]]></queryString>
+where preptype.Name = 'EtOH' and DT.DeterminationStatusID = 1 and collectionobject.CollectionObjectID $P!{itemnum}]]></queryString>
 
 	<field name="cat_no" class="java.lang.String"/>
 	<field name="catalogedBy" class="java.lang.String"/>

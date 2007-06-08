@@ -88,17 +88,6 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
         this.ghostActionable = ghostActionable;
         this.listeners       = new ArrayList<GhostDropListener>();
     }
-    
-    public void registerWithGlassPane()
-    {
-        glassPane.add(ghostActionable);
-    }
-    
-    public void unregisterWithGlassPane()
-    {
-        glassPane.remove(ghostActionable);
-    }
-    
 
     public ImagePaintMode getPaintPositionMode()
     {

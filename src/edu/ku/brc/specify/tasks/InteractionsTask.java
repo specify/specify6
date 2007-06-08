@@ -60,6 +60,7 @@ import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.dbsupport.TableModel2Excel;
 import edu.ku.brc.helpers.EMailHelper;
 import edu.ku.brc.helpers.Encryption;
@@ -81,14 +82,15 @@ import edu.ku.brc.specify.ui.LoanReturnDlg.LoanReturnInfo;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.DataFlavorTableExt;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
-import edu.ku.brc.ui.Trash;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
+import edu.ku.brc.ui.dnd.Trash;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.FormViewObj;
@@ -112,9 +114,9 @@ public class InteractionsTask extends BaseTask
 {
     private static final Logger log = Logger.getLogger(InteractionsTask.class);
 
-    public static final String     INTERACTIONS        = "Interactions";
-    public static final DataFlavor INTERACTIONS_FLAVOR = new DataFlavor(DataEntryTask.class, INTERACTIONS);
-    public static final DataFlavor INFOREQUEST_FLAVOR  = new DataFlavor(InfoRequest.class, INTERACTIONS);
+    public static final String             INTERACTIONS        = "Interactions";
+    public static final DataFlavorTableExt INTERACTIONS_FLAVOR = new DataFlavorTableExt(DataEntryTask.class, INTERACTIONS);
+    public static final DataFlavorTableExt INFOREQUEST_FLAVOR  = new DataFlavorTableExt(InfoRequest.class, "InfoRequest");
 
     protected static final String InfoRequestName      = "InfoRequest";
     protected static final String NEW_LOAN             = "New_Loan";
@@ -122,14 +124,24 @@ public class InteractionsTask extends BaseTask
     protected static final String INFO_REQ_MESSAGE     = "Specify Info Request";
     protected static final String CREATE_MAILMSG       = "CreateMailMsg";
     
-    protected final int           loanTableId;
-    protected final int           infoRequestTableId;
-    protected final int           colObjTableId;
+    protected static final int    loanTableId;
+    protected static final int    infoRequestTableId;
+    protected static final int    colObjTableId;
 
     // Data Members
     protected NavBox                  infoRequestNavBox;
     protected Vector<NavBoxIFace>     extendedNavBoxes = new Vector<NavBoxIFace>();
     protected Vector<NavBoxItemIFace> invoiceList      = new Vector<NavBoxItemIFace>();
+    
+    static 
+    {
+        loanTableId        = DBTableIdMgr.getInstance().getIdByClassName(Loan.class.getName());
+        infoRequestTableId = DBTableIdMgr.getInstance().getIdByClassName(InfoRequest.class.getName());
+        colObjTableId      = DBTableIdMgr.getInstance().getIdByClassName(CollectionObject.class.getName());
+        
+        INFOREQUEST_FLAVOR.addTableId(50);
+        
+    }
 
    /**
      * Default Constructor
@@ -145,9 +157,6 @@ public class InteractionsTask extends BaseTask
         CommandDispatcher.register(DB_CMD_TYPE, this);
         CommandDispatcher.register(DataEntryTask.DATA_ENTRY, this);
         
-        loanTableId        = DBTableIdMgr.getInstance().getIdByClassName(Loan.class.getName());
-        infoRequestTableId = DBTableIdMgr.getInstance().getIdByClassName(InfoRequest.class.getName());
-        colObjTableId      = DBTableIdMgr.getInstance().getIdByClassName(CollectionObject.class.getName());
 
     }
     
@@ -166,27 +175,33 @@ public class InteractionsTask extends BaseTask
             // Temporary
             NavBox navBox = new NavBox(getResourceString("Actions"));
             
+            // New Loan Action
+            // A New loan can accept RecordSets that contain CollectionObjects or InfoRequests
+            // or InfoRequests
             CommandAction cmdAction = new CommandAction(INTERACTIONS, NEW_LOAN);
             NavBoxButton roc = (NavBoxButton)makeDnDNavBtn(navBox, getResourceString(NEW_LOAN), name, cmdAction, null, true, false);// true means make it draggable
             roc.addDropDataFlavor(InfoRequestTask.INFOREQUEST_FLAVOR);
             
+            DataFlavorTableExt dfx = new DataFlavorTableExt(RecordSetTask.RECORDSET_FLAVOR.getDefaultRepresentationClass(), RecordSetTask.RECORDSET_FLAVOR.getHumanPresentableName(), new int[] {1, 50});
+            roc.addDropDataFlavor(dfx);
+            
+            // Misc Action (does nothing at the moment XXX IMPLEMENT ME!)
             navBox.add(NavBox.createBtn(getResourceString("New_Gifts"), "Loan", IconManager.IconSize.Std16));
             navBox.add(NavBox.createBtn(getResourceString("New_Exchange"), "Loan", IconManager.IconSize.Std16));
             
+            // InfoRequest Action
             cmdAction = new CommandAction(INTERACTIONS, InfoRequestName);
             roc = (NavBoxButton)makeDnDNavBtn(navBox, getResourceString(InfoRequestName), InfoRequestName, cmdAction, null, true, false);// true means make it draggable
-            roc.addDropDataFlavor(InfoRequestTask.INFOREQUEST_FLAVOR);
+            dfx = new DataFlavorTableExt(RecordSetTask.RECORDSET_FLAVOR.getDefaultRepresentationClass(), RecordSetTask.RECORDSET_FLAVOR.getHumanPresentableName(), 1);
+            roc.addDropDataFlavor(dfx);
             
-            
-            navBoxes.addElement(navBox);
-    
             // These need to be loaded as Resources
-            navBox = new NavBox(getResourceString(ReportsTask.REPORTS));
-            navBox.add(NavBox.createBtn(getResourceString("All_Overdue_Loans_Report"), ReportsTask.REPORTS, IconManager.IconSize.Std16));
+            //navBox = new NavBox(getResourceString(ReportsTask.REPORTS));
+            //navBox.add(NavBox.createBtn(getResourceString("All_Overdue_Loans_Report"), ReportsTask.REPORTS, IconManager.IconSize.Std16));
             //navBox.add(NavBox.createBtn(getResourceString("All_Open_Loans_Report"), ReportsTask.REPORTS, IconManager.IconSize.Std16));
             //navBox.add(NavBox.createBtn(getResourceString("All_Loans_Report"), ReportsTask.REPORTS, IconManager.IconSize.Std16));
             //addToNavBoxAndRegisterAsDroppable(navBox, NavBox.createBtn(getResourceString(PRINT_LOAN),  ReportsTask.REPORTS, IconManager.IconSize.Std16, new NavBoxAction(INTERACTIONS, PRINT_LOAN, this)), null);
-            navBoxes.addElement(navBox);
+            //navBoxes.addElement(navBox);
             
             // Then add
             if (commands != null)
@@ -211,8 +226,13 @@ public class InteractionsTask extends BaseTask
                         
                         cmdAction = new CommandAction(INTERACTIONS, PRINT_LOAN, Loan.getClassTableId());
                         cmdAction.addStringProperties(tcd.getParams());
-                        invoiceList.add(makeDnDNavBtn(navBox, tcd.getName(), "Loan", cmdAction, null, true, false));// true means make it draggable
-
+                        NavBoxItemIFace nbi = makeDnDNavBtn(navBox, tcd.getName(), "Loan", cmdAction, null, true, false);
+                        roc = (NavBoxButton)nbi;
+                        invoiceList.add(nbi);// true means make it draggable
+                        //setUpDraggable(nbi, new DataFlavor[]{Trash.TRASH_FLAVOR, INFOREQUEST_FLAVOR}, new NavBoxAction("", ""));
+                        roc.addDragDataFlavor(INFOREQUEST_FLAVOR);
+                        roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
+                        
                     } else
                     {
                         log.error("Interaction Command is missing the table id");
@@ -230,8 +250,15 @@ public class InteractionsTask extends BaseTask
             {
                 InfoRequest infoRequest = (InfoRequest)iter.next();
                 
-                NavBoxItemIFace nbi = addNavBoxItem(infoRequestNavBox, infoRequest.getIdentityTitle(), INTERACTIONS, new CommandAction(INTERACTIONS, DELETE_CMD_ACT, infoRequest), infoRequest);
-                setUpDraggable(nbi, new DataFlavor[]{Trash.TRASH_FLAVOR, INFOREQUEST_FLAVOR}, new NavBoxAction("", ""));
+                //roc = (NavBoxButton) addNavBoxItem(infoRequestNavBox, infoRequest.getIdentityTitle(), "InfoRequest", new CommandAction(INTERACTIONS, DELETE_CMD_ACT, infoRequest), infoRequest);
+                NavBoxItemIFace nbi = makeDnDNavBtn(infoRequestNavBox, infoRequest.getIdentityTitle(), "InfoRequest", new CommandAction(INTERACTIONS, DELETE_CMD_ACT, infoRequest), null, true, true);
+                roc = (NavBoxButton)nbi;
+                nbi.setData(infoRequest);
+                roc.addDragDataFlavor(INFOREQUEST_FLAVOR);
+                roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
+                
+                //setUpDraggable(nbi, new DataFlavor[]{Trash.TRASH_FLAVOR, INFOREQUEST_FLAVOR}, new NavBoxAction("", ""));
+                
             }      
             navBoxes.addElement(infoRequestNavBox);
             session.close();
@@ -404,6 +431,51 @@ public class InteractionsTask extends BaseTask
         
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         
+        // OK, it COULD be a RecordSet contain one or more InfoRequest, 
+        // we will only accept an RS with one InfoRequest
+        if (infoRequest == null && recordSet.getDbTableId() == infoRequestTableId)
+        {
+            try
+            {
+                if (recordSet.getItems().size() == 1)
+                {
+                    RecordSetItemIFace item = recordSet.getOnlyItem();
+                    if (item != null)
+                    {
+                        InfoRequest infoReq = session.get(InfoRequest.class, item.getRecordId().longValue());
+                        if (infoReq != null)
+                        {
+                            createNewLoan(infoReq, infoReq.getRecordSet());
+                            
+                        } else
+                        {
+                            // error about missing info request
+                        }
+                    } else
+                    {
+                        // error about item being null for some unbelievable reason 
+                    }
+                } else 
+                {
+                    // error about item having more than one or none
+                }
+                
+            } catch (Exception ex)
+            {
+                log.error(ex);
+                ex.printStackTrace();
+                
+            } finally
+            {
+                if (session != null)
+                {
+                    session.close();
+                }
+            }
+            return;
+        }
+        
+        // OK, here we have a recordset of CollectionObjects
         // First we process all the CollectionObjects in the RecordSet
         // and create a list of Preparations that can be loaned
         String sqlStr = DBTableIdMgr.getInstance().getQueryForTable(recordSet);
@@ -1081,7 +1153,7 @@ public class InteractionsTask extends BaseTask
                 {
                     RecordSetIFace rs = (RecordSetIFace)cmdData;
                     
-                    if (rs.getDbTableId() == colObjTableId)
+                    if (rs.getDbTableId() == colObjTableId || rs.getDbTableId() == infoRequestTableId)
                     {
                         if (cmdAction.isAction(NEW_LOAN))
                         {    
@@ -1118,7 +1190,7 @@ public class InteractionsTask extends BaseTask
     @SuppressWarnings("unchecked")
     public void doCommand(final CommandAction cmdAction)
     {
-        log.debug("Processing Command ["+cmdAction.getType()+"][ "+cmdAction.getAction()+"]");
+        log.debug("Processing Command ["+cmdAction.getType()+"]["+cmdAction.getAction()+"]");
         
         if (cmdAction.isType(DB_CMD_TYPE))
         {

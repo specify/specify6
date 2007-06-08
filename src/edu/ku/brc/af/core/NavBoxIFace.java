@@ -20,7 +20,8 @@ import javax.swing.JComponent;
 
 /**
  * Describes a Navigation Box (container) of objects. The objects can be commands, queries, 
- * recordsets, anything that can be shown and acts or acts upon.
+ * recordsets, anything that can be shown and acts or acts upon.<br>
+ * NOTE: When a NavBox is managed it should add and remove GhostActionables from the GhostGlassPane pane, otherwise it shouldn't.
  *
  * @code_status Complete
  * 
@@ -83,5 +84,11 @@ public interface NavBoxIFace
      * @param nbi the item to be removed
      */
     public void remove(NavBoxItemIFace nbi);
+    
+    /**
+     * The box is being managed by the NavBoxManager.
+     * @param isManaged true/false
+     */
+    public void setIsManaged(boolean isManaged);
     
 }

@@ -20,6 +20,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.event.ActionListener;
@@ -38,7 +39,10 @@ import javax.swing.ScrollPaneConstants;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.dnd.GhostActionable;
+import edu.ku.brc.ui.dnd.GhostGlassPane;
 
 /**
  * This organized NavBoxItemIFace object in a vertical layout (via a layout manager)<br>
@@ -70,8 +74,8 @@ public class NavBox extends JPanel implements NavBoxIFace
     protected ImageIcon          collapsableIconClosed = null;
     protected Rectangle          iconRect              = null;
     protected int                minHeight             = -1;
+    protected boolean            isManaged             = false;
      
-    
     /**
      * Constructor (with name).
      * @param name the name of the NavBox.
@@ -253,12 +257,15 @@ public class NavBox extends JPanel implements NavBoxIFace
                 }
             }
         }
+        
+        if (isManaged && item instanceof GhostActionable)
+        {
+            ((GhostGlassPane)UIRegistry.get(UIRegistry.GLASSPANE)).add((GhostActionable)item);
+        }
        
         if (notify && mgr != null)
         {
             refresh(this);
-            //mgr.invalidate();
-            //mgr.doLayout();
         }
         item.getUIComponent().setBackground(getBackground());
         item.getUIComponent().setOpaque(true);
@@ -286,9 +293,8 @@ public class NavBox extends JPanel implements NavBoxIFace
         return add(item, false);
     }
     
-    /**
-     * Removes an item from the navbox.
-     * @param item the item to be removed
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.NavBoxIFace#remove(edu.ku.brc.af.core.NavBoxItemIFace)
      */
     public void remove(final NavBoxItemIFace item)
     {
@@ -302,7 +308,20 @@ public class NavBox extends JPanel implements NavBoxIFace
         }
         items.remove(item);
         
+        if (isManaged && item instanceof GhostActionable)
+        {
+            ((GhostGlassPane)UIRegistry.get(UIRegistry.GLASSPANE)).remove((GhostActionable)item);
+        }
+        
         refresh(this);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.NavBoxIFace#setIsManaged(boolean)
+     */
+    public void setIsManaged(final boolean isManaged)
+    {
+        this.isManaged = isManaged;
     }
 
     /**
@@ -317,6 +336,17 @@ public class NavBox extends JPanel implements NavBoxIFace
         else
         {
             removeAll();
+        }
+        
+        if (isManaged)
+        {
+            for (NavBoxItemIFace item : items)
+            {
+                if (item instanceof GhostActionable)
+                {
+                    ((GhostGlassPane)UIRegistry.get(UIRegistry.GLASSPANE)).add((GhostActionable)item);
+                }
+            }
         }
         items.clear();
         refresh(this);
@@ -396,6 +426,7 @@ public class NavBox extends JPanel implements NavBoxIFace
         g.setColor(Color.LIGHT_GRAY.darker());
         g.drawLine(x, y,   x+lineW, y);
         
+        ((Graphics2D)g).setRenderingHints(UIHelper.createTextRenderingHints());
         g.setColor(Color.BLUE.darker());
         g.drawString(name, x, txtY);
         
@@ -485,6 +516,10 @@ public class NavBox extends JPanel implements NavBoxIFace
         return  nbi;
     }
     
+    /**
+     * Refreshes - meaning it makes sure it is resized (layed out) and drawn.
+     * @param nbi the box to refresh
+     */
     public static void refresh(final NavBoxIFace nb)
     {
         NavBox box = (NavBox)nb;
@@ -515,6 +550,10 @@ public class NavBox extends JPanel implements NavBoxIFace
         UIRegistry.forceTopFrameRepaint();
     }
     
+    /**
+     * Refreshes - meaning it makes sure it is resized (layed out) and drawn.
+     * @param nbi the box to refresh
+     */
     public static void refresh(final NavBoxItemIFace nbi)
     {
         if (nbi != null)

@@ -22,7 +22,10 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
 import edu.ku.brc.exceptions.ConfigurationException;
-import edu.ku.brc.ui.Trash;
+import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.dnd.GhostActionable;
+import edu.ku.brc.ui.dnd.GhostGlassPane;
+import edu.ku.brc.ui.dnd.Trash;
 
 /**
  * A singleton that manages a list of NavBoxIFace items. The NavBoxIFace are layed out using a manager 
@@ -56,17 +59,6 @@ public class NavBoxMgr extends JPanel
        setBackground(Color.WHITE); // XXX PREF ??
        
        trash = Trash.getInstance();
-       
-       //add(trash);
-    }
-    
-    /**
-     * Returns the TrashCan Object.
-     * @return the trash can object
-     */
-    public static Trash getTrash()
-    {
-        return trash;
     }
     
     /**
@@ -98,12 +90,14 @@ public class NavBoxMgr extends JPanel
         {
             if (instance.getComponentCount() == 0 && list.size() > 0)
             {
-                instance.add(trash);    
+                instance.add(trash);
+                ((GhostGlassPane)UIRegistry.get(UIRegistry.GLASSPANE)).add((GhostActionable)trash); // assumes trash implements GhostActionable (and why not?)
             }
             
             for (NavBoxIFace box : list)
             {
-                instance.addBox(box);
+                instance.addBox(box); // Adds them to ther GhostGlassPane
+                
                 box.getUIComponent().invalidate();
                 box.getUIComponent().doLayout();
             }
@@ -136,6 +130,13 @@ public class NavBoxMgr extends JPanel
      */
     public static void unregister()
     {
+        ((GhostGlassPane)UIRegistry.get(UIRegistry.GLASSPANE)).clearActionableList();
+        
+        for (NavBoxIFace box : instance.list)
+        {
+            box.setIsManaged(false);
+        }
+        
         // for now just clear everything
         instance.layout.removeAll();
         instance.removeAll();
@@ -168,7 +169,7 @@ public class NavBoxMgr extends JPanel
      * @param box the box to be added
      * @param ignoreAlreadyThere ignore the fact if it is already there
      */
-    public void addBoxInternal(final NavBoxIFace box, final boolean ignoreAlreadyThere)
+    protected void addBoxInternal(final NavBoxIFace box, final boolean ignoreAlreadyThere)
     {
         if (box == null)
         {
@@ -182,6 +183,16 @@ public class NavBoxMgr extends JPanel
             invalidate();
             doLayout();
             adjustSplitter();
+            
+            box.setIsManaged(true);
+            GhostGlassPane glassPane = (GhostGlassPane)UIRegistry.get(UIRegistry.GLASSPANE);
+            for (NavBoxItemIFace item : box.getItems())
+            {
+                if (item instanceof GhostActionable)
+                {
+                    glassPane.add((GhostActionable)item);
+                }
+            }
             
         } else if (ignoreAlreadyThere)
         {
@@ -219,6 +230,8 @@ public class NavBoxMgr extends JPanel
         if (list.contains(box))
         {
             list.remove(box);
+            box.setIsManaged(false);
+            
             remove(box.getUIComponent());
             invalidate();
             doLayout();

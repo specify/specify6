@@ -401,7 +401,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         topFrame.setIconImage(IconManager.getImage("AppIcon").getImage());
         //topFrame.setAlwaysOnTop(true);
         
-        topFrame.setGlassPane(glassPane = new GhostGlassPane());
+        topFrame.setGlassPane(glassPane = GhostGlassPane.getInstance());
         topFrame.setLocationRelativeTo(null);
         Toolkit.getDefaultToolkit().setDynamicLayout(true);
         UIRegistry.register(UIRegistry.GLASSPANE, glassPane);

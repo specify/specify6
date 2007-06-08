@@ -40,6 +40,7 @@ import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
+import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
@@ -53,10 +54,12 @@ import edu.ku.brc.specify.datamodel.RecordSetItem;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.DataFlavorTableExt;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.Trash;
+import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.DataActionEvent;
+import edu.ku.brc.ui.dnd.Trash;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.FormHelper;
 /**
@@ -76,6 +79,9 @@ public class RecordSetTask extends BaseTask
     public static final String SAVE_RECORDSET = "Save";
     
     public static final DataFlavor RECORDSET_FLAVOR = new DataFlavor(RecordSetTask.class, "RECORD_SET");
+    
+    protected Vector<DataFlavor> draggableFlavors = new Vector<DataFlavor>();
+    protected Vector<DataFlavor> droppableFlavors = new Vector<DataFlavor>();
 
     // Data Members
     protected DroppableNavBox navBox = null;
@@ -87,6 +93,9 @@ public class RecordSetTask extends BaseTask
     public RecordSetTask()
     {
         super(RECORD_SET, getResourceString(RECORD_SET));
+        
+        draggableFlavors.add(Trash.TRASH_FLAVOR);
+        //draggableFlavors.add(RecordSetTask.RECORDSET_FLAVOR);
         
         CommandDispatcher.register(RECORD_SET, this);
         CommandDispatcher.register(APP_CMD_TYPE, this);
@@ -122,44 +131,28 @@ public class RecordSetTask extends BaseTask
                                       // TODO Probably don't want to do this defer it to later when they are used.
                 session.evict(recordSet);
                 
-                NavBoxItemIFace nbi = addNavBoxItem(navBox, recordSet.getName(), name, new CommandAction(RECORD_SET, DELETE_CMD_ACT, recordSet), recordSet);
-                DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
-                if (tblInfo != null)
-                {
-                    ImageIcon rsIcon = tblInfo.getIcon(IconManager.IconSize.Std16);
-                    if (rsIcon != null)
-                    {
-                        nbi.setIcon(rsIcon);
-                    }
-                }
-                addDraggableDataFlavors(nbi);
+                addToNavBox(recordSet);
             }
             navBoxes.addElement(navBox);
             session.close();
 
         }
     }
-
+    
     /**
-     * Adds the appropriate flavors to make it draggable
-     * @param nbi the item to be made draggable
+     * Adds a WorkbenchTemplate to the Left Pane NavBox
+     * @param workbench the workbench to be added
      */
-    protected void addDraggableDataFlavors(final NavBoxItemIFace nbi)
+    protected NavBoxItemIFace addToNavBox(final RecordSetIFace recordSet)
     {
-        NavBoxButton roc = (NavBoxButton)nbi;
-        roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
-        roc.addDragDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
+        //NavBoxItemIFace nbi = addNavBoxItem(navBox, recordSet.getName(), name, new CommandAction(RECORD_SET, DELETE_CMD_ACT, recordSet), recordSet);
         
-        roc.addActionListener(new RecordSetSelectedAction((NavBoxButton)nbi, (RecordSetIFace)roc.getData()));
-    }
-
-    /**
-     * Save a record set
-     * @param recordSet the rs to be saved
-     */
-    public void saveRecordSet(final RecordSet recordSet)
-    {
-        NavBoxItemIFace nbi = addNavBoxItem(navBox, recordSet.getName(), name, new CommandAction(RECORD_SET, DELETE_CMD_ACT, recordSet), recordSet);
+        final RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(navBox, recordSet.getName(), "Record_Set16", null, 
+                                                                   new CommandAction(RECORD_SET, DELETE_CMD_ACT, recordSet), 
+                                                                   true, true);// true means make it draggable
+        roc.setData(recordSet);
+        
+        NavBoxItemIFace nbi = (NavBoxItemIFace)roc;
         
         DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
         if (tblInfo != null)
@@ -171,7 +164,52 @@ public class RecordSetTask extends BaseTask
             }
         }
         
+        roc.addDragDataFlavor(new DataFlavorTableExt(RecordSetTask.class, "RECORD_SET", recordSet.getDbTableId()));
+        
         addDraggableDataFlavors(nbi);
+        addDroppableDataFlavors(nbi);
+        
+
+        
+        return nbi;
+    }
+
+    /**
+     * Adds the appropriate flavors to make it draggable
+     * @param nbi the item to be made draggable
+     */
+    protected void addDraggableDataFlavors(final NavBoxItemIFace nbi)
+    {
+        NavBoxButton roc = (NavBoxButton)nbi;
+        for (DataFlavor df : draggableFlavors)
+        {
+            roc.addDragDataFlavor(df);
+        }
+        
+        roc.addActionListener(new RecordSetSelectedAction((NavBoxButton)nbi, (RecordSetIFace)roc.getData()));
+    }
+
+    /**
+     * Adds the appropriate flavors to make it draggable
+     * @param nbi the item to be made draggable
+     */
+    protected void addDroppableDataFlavors(final NavBoxItemIFace nbi)
+    {
+        NavBoxButton roc = (NavBoxButton)nbi;
+        
+        for (DataFlavor df : droppableFlavors)
+        {
+            roc.addDropDataFlavor(df);
+        }
+    }
+
+    /**
+     * Save a record set.
+     * @param recordSet the rs to be saved
+     */
+    public void saveNewRecordSet(final RecordSet recordSet)
+    {
+        NavBoxItemIFace nbi = addToNavBox(recordSet);
         
         recordSet.setTimestampCreated(Calendar.getInstance().getTime());
         recordSet.setOwner(SpecifyUser.getCurrentUser());
@@ -367,7 +405,7 @@ public class RecordSetTask extends BaseTask
                     RecordSet rs = (RecordSet)data;
                     rs.setName(rsName);
                     rs.setLastEditedBy(FormHelper.getCurrentUserEditStr());
-                    saveRecordSet(rs);
+                    saveNewRecordSet(rs);
                 }
             }
         } else if (cmdAction.isAction(DELETE_CMD_ACT) && cmdAction.getData() instanceof RecordSet)
@@ -502,6 +540,31 @@ public class RecordSetTask extends BaseTask
                 //CommandDispatcher.dispatch(new CommandAction(RECORD_SET, "Clicked", null, rs, null));
             }
         }
-
+    }
+    
+    /**
+     * Adds a DataFlavor to the list of Draggable DataFlavors that each RecordSet supports.
+     * @param df the new DataFlavor
+     */
+    public static void addDraggableDataFlavor(final DataFlavor df)
+    {
+        RecordSetTask rst = (RecordSetTask)TaskMgr.getTask(RecordSetTask.RECORD_SET);
+        if (df != null && rst != null)
+        {
+            rst.draggableFlavors.add(df);
+        }
+    }
+    
+    /**
+     * Adds a DataFlavor to the list of Droppable DataFlavors that each RecordSet supports.
+     * @param df the new DataFlavor
+     */
+    public static void addDroppableDataFlavor(final DataFlavor df)
+    {
+        RecordSetTask rst = (RecordSetTask)TaskMgr.getTask(RecordSetTask.RECORD_SET);
+        if (df != null && rst != null)
+        {
+            rst.droppableFlavors.add(df);
+        }
     }
 }

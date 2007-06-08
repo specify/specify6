@@ -7,16 +7,17 @@
     
     <!-- Labels -->  
     <file level="3" mimetype="jrxml/label" name="fish_label.jrxml" description="Fish Labels" file="fish_label.jrxml" 
-        metadata="tableid=1;reqrs=true;type=Labels;action=PrintLabel;reporttype=Label;reportsubtype=CollectionObject"/>
+        metadata="tableid=1;reqrs=true;type=Labels;action=PrintLabel;reporttype=CollectionObject"/>
         
     <file level="3" mimetype="jrxml/report" name="LoanInvoice.jrxml" description="Loan Invoice" file="LoanInvoice.jrxml" 
-        metadata="tableid=52;reqrs=true;type=Labels;action=PrintLabel;reporttype=Report;reportsubtype=Invoice;subreports=LoanInvoice_subreport1.jrxml"/>
+        metadata="tableid=52;reqrs=true;type=Labels;action=PrintLabel;reporttype=Invoice;subreports=LoanInvoice_subreport1.jrxml"/>
         
-    <file level="3" mimetype="jrxml/subreport" name="LoanInvoice_subreport1.jrxml" description="LoanInvoice SubReport" file="LoanInvoice_subreport1.jrxml" 
-        metadata=""/>
+    <file level="3" mimetype="jrxml/subreport" name="LoanInvoice_subreport1.jrxml" description="LoanInvoice SubReport" 
+        file="LoanInvoice_subreport1.jrxml" metadata=""/>
     
+    <!-- Although DataSet Summary is a Report the Workbench groups the labels and reports together -->
     <file level="3" mimetype="jrxml/report" name="wb_items.jrxml" description="Data Set Summary" file="wb_items.jrxml" 
-        metadata="tableid=79;reqrs=true;type=Report;action=PrintWBItems;reporttype=Report;icon=Reports16"/>
+        metadata="tableid=79;reqrs=true;type=Report;action=PrintWBItems;reporttype=Workbench;icon=Reports16"/>
     <!--
     <file level="3" mimetype="jrxml/report" name="basic_label.jrxml" description="Basic Label" file="basic_label.jrxml" 
         metadata="tableid=79;reqrs=true;type=Report;action=PrintBasicLabel;reporttype=Report;icon=Labels16"/>

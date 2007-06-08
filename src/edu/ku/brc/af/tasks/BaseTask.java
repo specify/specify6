@@ -31,6 +31,8 @@ import javax.swing.SwingConstants;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
@@ -60,9 +62,9 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.MemoryDropDownButton;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
-import edu.ku.brc.ui.Trash;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.GhostActionable;
+import edu.ku.brc.ui.dnd.Trash;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.Viewable;
@@ -92,8 +94,8 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     protected static final String UPDATE_CMD_ACT = "Update";
 
     // Data Members
-    protected final String        name;
-    protected final String        title;
+    protected String              name;
+    protected String              title;
 
     protected Vector<NavBoxIFace> navBoxes      = new Vector<NavBoxIFace>();
     protected ImageIcon           icon          = null;
@@ -110,9 +112,18 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     protected boolean             isVisible            = true;
 
     // Data Members needed for support "recent form pane" management
-    protected FormPane  recentFormPane = null;
+    protected FormPane            recentFormPane       = null;
 
 
+    /**
+     * Default Constructor 
+     * (when this is used the extending class MUST manually set the Name, Title and Icon).
+     */
+    public BaseTask()
+    {
+        ContextMgr.register(this);
+        SubPaneMgr.getInstance().addListener(this);
+    }
 
     /**
      * Constructor.
@@ -121,14 +132,12 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      */
     public BaseTask(final String name, final String title)
     {
+        this();
+        
         this.name  = name;
         this.title = title;
-
-        ContextMgr.register(this);
-
-        SubPaneMgr.getInstance().addListener(this);
         
-        this.icon = IconManager.getIcon(name, IconManager.IconSize.Std16);
+        setIcon(name);
     }
 
     /**
@@ -139,6 +148,15 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     {
         ContextMgr.unregister(this);
         SubPaneMgr.getInstance().removeListener(this);
+    }
+    
+    /**
+     * Sets the icon from the IconCacheManager with the appropritae size.
+     * @param iconName the name of the icon to use
+     */
+    protected void setIcon(final String iconName)
+    {
+        this.icon = IconManager.getIcon(iconName, IconManager.IconSize.Std16);
     }
 
     /**
@@ -325,11 +343,10 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
             if (makeDraggable)
             {
                 ga.createMouseInputAdapter(); // this makes it draggable
-                ga.getMouseInputAdapter().registerWithGlassPane();
                 ((RolloverCommand)nb).setCursor(new Cursor(Cursor.HAND_CURSOR));
             } else
             {
-                UIRegistry.getGlassPane().add(ga);
+                //UIRegistry.getGlassPane().add(ga);
             }
         }
         return nb;
@@ -380,6 +397,16 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      * Sets up NavBoxItemIFace item as a draggable and adds the action
      * @param nbi the item
      * @param flavors the draggable flavors
+     */
+    protected void setUpDraggable(final NavBoxItemIFace nbi, final DataFlavor[] flavors)
+    {
+        setUpDraggable(nbi, flavors, null);
+    }
+    
+    /**
+     * Sets up NavBoxItemIFace item as a draggable and adds the action
+     * @param nbi the item
+     * @param flavors the draggable flavors
      * @param navBoxAction the action to be performed
      */
     protected void setUpDraggable(final NavBoxItemIFace nbi, final DataFlavor[] flavors, final NavBoxAction navBoxAction)
@@ -389,7 +416,11 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
         {
             roc.addDragDataFlavor(df);
         }
-        roc.addActionListener(navBoxAction);
+        
+        if (navBoxAction != null)
+        {
+            roc.addActionListener(navBoxAction);
+        }
     }
 
     /**
@@ -632,6 +663,15 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     //-------------------------------------------------------
     // Taskable
     //-------------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.Taskable#preInitialize()
+     */
+    public void preInitialize()
+    {
+        // this is a the stub so all tasks do not have to implement it
+        // or call it.
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#initialize()
@@ -802,6 +842,41 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     //--------------------------------------------------------------
     // NavBoxButton Helpers
     //--------------------------------------------------------------
+    
+    /**
+     * Creates Command Items for a mime type in the AppResources XML.
+     * @param mimeType the MimeType to use
+     * @param classTableId the Table Id
+     */
+    protected void addAppResourcesToCommandsByMimeType(final String mimeType, 
+                                                       final String reportType,
+                                                       final Integer classTableId)
+    {
+        for (AppResourceIFace ap : AppContextMgr.getInstance().getResourceByMimeType(mimeType))
+        {
+            Map<String, String> params = ap.getMetaDataMap();
+            
+            String tableid = params.get("tableid");
+            String rptType = params.get("reporttype");
+            
+            if (StringUtils.isNotEmpty(tableid) && 
+               (classTableId == null || (Integer.parseInt(tableid) == classTableId.intValue())) &&
+               StringUtils.isEmpty(reportType) || (StringUtils.isNotEmpty(rptType) && reportType.equals(rptType)))
+            {
+                params.put("title", ap.getDescription());
+                params.put("file", ap.getName());
+                
+                //log.debug("["+ap.getDescription()+"]["+ap.getName()+"]");
+                
+                String iconName = params.get("icon");
+                if (StringUtils.isEmpty(iconName))
+                {
+                    iconName = name;
+                }                        
+                commands.add(new TaskCommandDef(ap.getDescription(), iconName, params));
+            }
+        }
+    }
 
     /**
       * Helper method for registering a NavBoxItem as a GhostMouseDropAdapter

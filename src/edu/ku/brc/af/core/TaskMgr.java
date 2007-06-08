@@ -403,6 +403,16 @@ public class TaskMgr
      */
     public static void initializePlugins()
     {
+        // The initialize and pre-initialize do not assume any order this this is
+        // why we do it in two steps.
+        
+        // Pre Initialze Step
+        for (Enumeration<Taskable> e=instance.tasks.elements();e.hasMoreElements();)
+        {
+            e.nextElement().preInitialize();
+        }
+        
+        // Now call initialize.
         for (Enumeration<Taskable> e=instance.tasks.elements();e.hasMoreElements();)
         {
             Taskable taskablePlugin = e.nextElement();

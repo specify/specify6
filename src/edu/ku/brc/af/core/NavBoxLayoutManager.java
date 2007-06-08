@@ -21,7 +21,7 @@ import java.awt.LayoutManager2;
 import java.util.List;
 import java.util.Vector;
 
-import edu.ku.brc.ui.Trash;
+import edu.ku.brc.ui.dnd.Trash;
 
 /**
  * The layout manager for laying out NavBoxes in a vertical fashion (only). 

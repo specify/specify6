@@ -112,10 +112,10 @@ import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
-import edu.ku.brc.ui.Trash;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
+import edu.ku.brc.ui.dnd.Trash;
 import edu.ku.brc.ui.forms.MultiView;
 
 /**
@@ -133,7 +133,7 @@ public class WorkbenchTask extends BaseTask
     public static final int        MAX_ROWS              = 2000;
     public static final int        GLASSPANE_FONT_SIZE   = 20;
 
-	public static final DataFlavor WORKBENCH_FLAVOR      = new DataFlavor(WorkbenchTask.class, "Workbench");
+	public static final DataFlavor DATASET_FLAVOR        = new DataFlavor(WorkbenchTask.class, "DataSet");
     public static final String     WORKBENCH             = "Workbench";
     public static final String     WORKBENCHTEMPLATE     = "WorkbenchTemplate";
     
@@ -197,18 +197,18 @@ public class WorkbenchTask extends BaseTask
             makeDnDNavBtn(navBox, getResourceString("WB_IMPORT_CARDS"),  "ImportImages", getResourceString("WB_IMPORTCARDS_TT"), new CommandAction(WORKBENCH, WB_IMPORTCARDS, wbTblId),   null, false, false);// true means make it draggable
             
             roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_NEW_DATASET"),   "NewDataSet", getResourceString("WB_NEW_DATASET_TT"), new CommandAction(WORKBENCH, NEW_WORKBENCH, wbTblId),     null, false, false);// true means make it draggable
-            roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
+            roc.addDropDataFlavor(DATASET_FLAVOR);
 
             //roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_NEW_DS_FROM_TMPL"), "NewDataSet", getResourceString("WB_NEW_DS_FROM_TMPL"), new CommandAction(WORKBENCH, NEW_WORKBENCH_FROM_TEMPLATE, wbTblId), null, false, false);// true means make it draggable
 
             
             roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_EXPORT_DATA"), "Export16", getResourceString("WB_EXPORT_DATA_TT"), new CommandAction(WORKBENCH, EXPORT_DATA_FILE, wbTblId), null, true, false);// true means make it draggable
-            roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
+            roc.addDropDataFlavor(DATASET_FLAVOR);
             roc.addDragDataFlavor(new DataFlavor(Workbench.class, EXPORT_DATA_FILE));
             enableNavBoxList.add((NavBoxItemIFace)roc);
             
             roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_EXPORT_TEMPLATE"), "ExportExcel16", getResourceString("WB_EXPORT_TEMPLATE_TT"),new CommandAction(WORKBENCH, EXPORT_TEMPLATE, wbTblId), null, true, false);// true means make it draggable
-            roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
+            roc.addDropDataFlavor(DATASET_FLAVOR);
             roc.addDragDataFlavor(new DataFlavor(Workbench.class, EXPORT_TEMPLATE));
             enableNavBoxList.add((NavBoxItemIFace)roc);
             
@@ -278,7 +278,7 @@ public class WorkbenchTask extends BaseTask
                         enableNavBoxList.add(nbi);
                         
                         roc = (RolloverCommand)nbi;
-                        roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
+                        roc.addDropDataFlavor(DATASET_FLAVOR);
                         roc.addDragDataFlavor(new DataFlavor(Workbench.class, "Report"));
                         roc.setToolTip(getResourceString("WB_PRINTREPORT_TT"));
 
@@ -293,7 +293,7 @@ public class WorkbenchTask extends BaseTask
                 
                 roc = (RolloverCommand)makeDnDNavBtn(reportsNavBox, getResourceString("CHART"), "Bar_Chart", cmdAction, null, true, false);
                 enableNavBoxList.add((NavBoxItemIFace)roc);
-                roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
+                roc.addDropDataFlavor(DATASET_FLAVOR);
                 roc.addDragDataFlavor(new DataFlavor(Workbench.class, "Report"));
                 roc.setToolTip(getResourceString("WB_BARCHART_TT"));
 
@@ -302,7 +302,7 @@ public class WorkbenchTask extends BaseTask
 
                 roc = (RolloverCommand)makeDnDNavBtn(reportsNavBox, getResourceString("WB_TOP10"), "Pie_Chart", cmdAction, null, true, false);
                 enableNavBoxList.add((NavBoxItemIFace)roc);// true means make it draggable
-                roc.addDropDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
+                roc.addDropDataFlavor(DATASET_FLAVOR);
                 roc.addDragDataFlavor(new DataFlavor(Workbench.class, "Report"));
                 roc.setToolTip(getResourceString("WB_TOP10_TT"));
             }
@@ -353,12 +353,14 @@ public class WorkbenchTask extends BaseTask
                                                                    new CommandAction(WORKBENCH, DELETE_CMD_ACT, rs), 
                                                                    true, true);// true means make it draggable
         roc.setToolTip(getResourceString("WB_CLICK_EDIT_DATA_TT"));
-        roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
         
+        // Drag Flavors
+        roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
+        roc.addDragDataFlavor(DATASET_FLAVOR);
+        
+        // Drop Flavors
         roc.addDropDataFlavor(new DataFlavor(Workbench.class, EXPORT_DATA_FILE));
         roc.addDropDataFlavor(new DataFlavor(Workbench.class, "Report"));
-        
-        roc.addDragDataFlavor(new DataFlavor(Workbench.class, WORKBENCH));
        
         JPopupMenu popupMenu = new JPopupMenu();
         UIHelper.createMenuItem(popupMenu, getResourceString("WB_EDIT_PROPS"), getResourceString("WB_EDIT_PROPS_MNEU"), null, true, new ActionListener() {
