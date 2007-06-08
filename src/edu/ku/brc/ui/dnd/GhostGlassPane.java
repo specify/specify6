@@ -308,7 +308,7 @@ public class GhostGlassPane extends JPanel
      */
     protected boolean isDropOK(final GhostActionable dragActionable, final GhostActionable dropActionable)
     {
-        System.out.println("\n\n*********** ["+((RolloverCommand)dragActionable).getTitle()+"] ["+(dropActionable instanceof RolloverCommand ? (((RolloverCommand)dropActionable).getTitle()) : dropActionable.getClass().getSimpleName())+"] ********");
+        //System.out.println("\n\n*********** ["+((RolloverCommand)dragActionable).getTitle()+"] ["+(dropActionable instanceof RolloverCommand ? (((RolloverCommand)dropActionable).getTitle()) : dropActionable.getClass().getSimpleName())+"] ********");
         List<DataFlavor> dragList = dragActionable.getDragDataFlavors();
         //for (DataFlavor dragFlavor : dragList)
         //{
@@ -323,8 +323,8 @@ public class GhostGlassPane extends JPanel
                 //System.out.println("------ dragFlavor "+dragFlavor.getHumanPresentableName()+" ----------");
                 for (DataFlavor dropFlavor : dropActionable.getDropDataFlavors())
                 {
-                    System.out.print("Drag["+dragFlavor.getHumanPresentableName()+"] drop["+dropFlavor.getHumanPresentableName()+"] ");
-                    System.out.println("Drag["+(dragFlavor instanceof DataFlavorTableExt)+"] drop["+(dropFlavor instanceof DataFlavorTableExt)+"]");
+                    //System.out.print("Drag["+dragFlavor.getHumanPresentableName()+"] drop["+dropFlavor.getHumanPresentableName()+"] ");
+                    //System.out.println("Drag["+(dragFlavor instanceof DataFlavorTableExt)+"] drop["+(dropFlavor instanceof DataFlavorTableExt)+"]");
                     if (!(dragFlavor instanceof DataFlavorTableExt) && !(dropFlavor instanceof DataFlavorTableExt))
                     {
                         //System.out.println(dragFlavor.equals(dropFlavor));
