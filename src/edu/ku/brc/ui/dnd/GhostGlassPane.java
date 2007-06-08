@@ -325,7 +325,7 @@ public class GhostGlassPane extends JPanel
                 {
                     //System.out.print("Drag["+dragFlavor.getHumanPresentableName()+"] drop["+dropFlavor.getHumanPresentableName()+"] ");
                     //System.out.println("Drag["+(dragFlavor instanceof DataFlavorTableExt)+"] drop["+(dropFlavor instanceof DataFlavorTableExt)+"]");
-                    if (!(dragFlavor instanceof DataFlavorTableExt) && !(dropFlavor instanceof DataFlavorTableExt))
+                    /*if (!(dragFlavor instanceof DataFlavorTableExt) && !(dropFlavor instanceof DataFlavorTableExt))
                     {
                         //System.out.println(dragFlavor.equals(dropFlavor));
                         if (dragFlavor.getHumanPresentableName().equals("InfoRequest") || dropFlavor.getHumanPresentableName().equals("InfoRequest"))
@@ -333,7 +333,7 @@ public class GhostGlassPane extends JPanel
                             int x = 0;
                             x++;
                         }
-                    }
+                    }*/
                     if (dragFlavor.equals(dropFlavor))
                     {
                         //System.out.print("Drag["+(dragFlavor instanceof DataFlavorTableExt)+"] drop["+(dropFlavor instanceof DataFlavorTableExt)+"] ");
