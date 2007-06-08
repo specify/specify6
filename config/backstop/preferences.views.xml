@@ -196,16 +196,22 @@
 			
 			<rows>
 				<row>
+					<cell type="separator" label="Geo-Referencing" colspan="5"/>
+				</row>
+				<row>
+					<cell type="field" id="4" name="georef_tool" uitype="combobox" initialize="data=BioGeomancer,GEOLocate" default="BioGeomancer"/>
+				</row>
+				<row>
 					<cell type="separator" label="Cache" colspan="5"/>
 				</row>
 				<row>
 					<cell type="command" id="clearcache" name="clearcache" label="Clear Cache" commandtype="ClearCache" action="ClearCache"/>
 					<!-- <cell type="label" labelfor="clearcache" label="Clears Long Term, Short Term and Reports Cache" /> -->
 				</row>
-				<row>
+				<!--<row>
 					<cell type="label" labelfor="" label="" />
 				</row>
-				<!--
+				
 				<row>
 					<cell type="separator" label="Reports and Labels" colspan="4"/>
 				</row>

@@ -488,7 +488,8 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
                     Object item = model.getElementAt(i);
                     if (item instanceof String)
                     {
-                        if (((String)item).equals(value))
+                        String val = value != null && StringUtils.isEmpty(value.toString()) && StringUtils.isNotEmpty(defaultValue) ? defaultValue : (value != null ? value.toString() : "");
+                        if (((String)item).equals(val))
                         {
                             comboBox.setSelectedIndex(i);
                             fnd = true;
