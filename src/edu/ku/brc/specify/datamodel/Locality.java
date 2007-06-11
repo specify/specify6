@@ -49,13 +49,15 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
+import edu.ku.brc.services.mapping.LocalityMapper.MapLocationIFace;
+
 /**
 
  */
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "locality")
-public class Locality extends DataModelObjBase implements java.io.Serializable {
+public class Locality extends DataModelObjBase implements java.io.Serializable, MapLocationIFace {
 
     // Fields    
 
@@ -880,6 +882,47 @@ public class Locality extends DataModelObjBase implements java.io.Serializable {
     public static int getClassTableId()
     {
         return 2;
+    }
+
+    ////////////////////////////////
+    // MapLocationIFace methods
+    ////////////////////////////////
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.services.mapping.LocalityMapper.MapLocationIFace#getLat1()
+     */
+    @Transient
+    public Double getLat1()
+    {
+        return (latitude1 != null) ? latitude1.doubleValue() : null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.services.mapping.LocalityMapper.MapLocationIFace#getLat2()
+     */
+    @Transient
+    public Double getLat2()
+    {
+        return (latitude2 != null) ? latitude2.doubleValue() : null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.services.mapping.LocalityMapper.MapLocationIFace#getLong1()
+     */
+    @Transient
+    public Double getLong1()
+    {
+        return (longitude1 != null) ? longitude1.doubleValue() : null;
+        
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.services.mapping.LocalityMapper.MapLocationIFace#getLong2()
+     */
+    @Transient
+    public Double getLong2()
+    {
+        return (longitude2 != null) ? longitude2.doubleValue() : null;
     }
 
 }

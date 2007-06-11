@@ -137,6 +137,12 @@ public class FileCache implements DataCacheIFace
         }
     }
     
+    public synchronized void clearItem(String key)
+    {
+        String filename = (String)handleToFilenameHash.get(key);
+        removeCacheItem(filename);
+    }
+    
 	/**
 	 * Returns the prefix prepended to all cache files.
 	 * 
@@ -400,7 +406,7 @@ public class FileCache implements DataCacheIFace
 	 * @return a newly created cache file
 	 * @throws IOException an I/O error occurred while creating a new cache file object
 	 */
-	synchronized protected File createCacheFile() throws IOException
+	protected synchronized File createCacheFile() throws IOException
 	{
 		return File.createTempFile(prefix, suffix, cacheDir);
 	}
@@ -473,7 +479,7 @@ public class FileCache implements DataCacheIFace
 	 * @param key the "handle" used to retrieve this cached data item in the future
 	 * @param item the File to be cached
 	 */
-	protected void cacheNewItem( String key, File item )
+	protected synchronized void cacheNewItem( String key, File item )
 	{
 		handleToAccessTimeHash.setProperty(key, Long.toString(System.currentTimeMillis()));
 		Object oldValue = handleToFilenameHash.setProperty(key, item.getAbsolutePath());
@@ -495,7 +501,7 @@ public class FileCache implements DataCacheIFace
 	 * 
 	 * @param filename the name of the cache file to be deleted
 	 */
-	protected void removeCacheItem( String filename )
+	protected synchronized void removeCacheItem( String filename )
 	{
 		File f = new File(filename);
 		long size = f.length();

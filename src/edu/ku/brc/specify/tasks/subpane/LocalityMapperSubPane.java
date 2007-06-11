@@ -62,6 +62,7 @@ import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.services.mapping.LocalityMapper;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
@@ -70,7 +71,6 @@ import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.extras.FishBaseInfoGetter;
 import edu.ku.brc.specify.extras.FishBaseInfoGetterListener;
 import edu.ku.brc.specify.tasks.services.KeyholeMarkupGenerator;
-import edu.ku.brc.specify.tasks.services.LocalityMapper;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ImageDisplay;
@@ -292,7 +292,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
         int inx = 0;
         for (Locality locality : localities)
         {
-            localityMapper.addLocalityAndLabel(locality, labels != null ? labels.get(inx) : null);
+            localityMapper.addLocationAndLabel(locality, labels != null ? labels.get(inx) : null);
             inx++;
         }
         localityMapper.setCurrentLoc(localities.get(0));

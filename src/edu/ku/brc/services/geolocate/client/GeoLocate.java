@@ -6,12 +6,11 @@
  */
 package edu.ku.brc.services.geolocate.client;
 
-import java.math.BigDecimal;
 import java.util.List;
 
-import edu.ku.brc.specify.datamodel.Locality;
-import edu.ku.brc.specify.tasks.services.LocalityMapper;
-import edu.ku.brc.specify.tasks.services.LocalityMapper.MapperListener;
+import edu.ku.brc.services.mapping.LocalityMapper;
+import edu.ku.brc.services.mapping.SimpleMapLocation;
+import edu.ku.brc.services.mapping.LocalityMapper.MapperListener;
 
 public class GeoLocate
 {
@@ -55,12 +54,9 @@ public class GeoLocate
             double lat = point.getLatitude();
             
             // create a Locality record to pass to the mapper
-            Locality tmpLocRecord = new Locality();
-            tmpLocRecord.initialize();
-            tmpLocRecord.setLatitude1(new BigDecimal(lat));
-            tmpLocRecord.setLongitude1(new BigDecimal(lon));
+            SimpleMapLocation tmpLoc = new SimpleMapLocation(lat,lon,null,null);
             
-            mapper.addLocalityAndLabel(tmpLocRecord, Integer.toString(index+1));
+            mapper.addLocationAndLabel(tmpLoc, Integer.toString(index+1));
         }
         
         // get the map, notifying the callback when done

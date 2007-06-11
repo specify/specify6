@@ -37,7 +37,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.net.ConnectException;
 import java.util.Collections;
 import java.util.EventObject;
@@ -111,6 +110,10 @@ import edu.ku.brc.services.biogeomancer.BioGeomancerResultStruct;
 import edu.ku.brc.services.geolocate.client.GeoLocate;
 import edu.ku.brc.services.geolocate.client.GeorefResult;
 import edu.ku.brc.services.geolocate.client.GeorefResultSet;
+import edu.ku.brc.services.mapping.LocalityMapper;
+import edu.ku.brc.services.mapping.SimpleMapLocation;
+import edu.ku.brc.services.mapping.LocalityMapper.MapLocationIFace;
+import edu.ku.brc.services.mapping.LocalityMapper.MapperListener;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.RecordSet;
@@ -125,8 +128,6 @@ import edu.ku.brc.specify.exporters.GoogleEarthPlacemarkIFace;
 import edu.ku.brc.specify.exporters.WorkbenchRowPlacemarkWrapper;
 import edu.ku.brc.specify.tasks.ExportTask;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
-import edu.ku.brc.specify.tasks.services.LocalityMapper;
-import edu.ku.brc.specify.tasks.services.LocalityMapper.MapperListener;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
@@ -1452,8 +1453,8 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
         
         DBTableIdMgr databaseSchema = WorkbenchTask.getDatabaseSchema();
-        // build up a list of temporary Locality records to feed to the LocalityMapper
-        List<Locality> fakeLocalityRecords = new Vector<Locality>(selection.length);
+        // build up a list of temporary MapLocationIFace records to feed to the LocalityMapper
+        List<MapLocationIFace> mapLocations = new Vector<MapLocationIFace>(selection.length);
         List<WorkbenchRow> rows = workbench.getWorkbenchRowsAsList();
         int localityTableId = databaseSchema.getIdByClassName(Locality.class.getName());
         int lat1Index = workbench.getColumnIndex(localityTableId, "latitude1");
@@ -1464,22 +1465,19 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             int index = selection[i];
             
-            Locality newLoc = new Locality();
-            newLoc.initialize();
-
             WorkbenchRow row = rows.get(index);
 
             String lat1 = row.getData(lat1Index);
             String lon1 = row.getData(lon1Index);
-            BigDecimal latitude = null;
-            BigDecimal longitude = null;
+            Double latitude = null;
+            Double longitude = null;
             try
             {
                 GeoRefConverter converter = new GeoRefConverter();
                 lat1 = converter.convert(lat1, GeoRefFormat.D_PLUS_MINUS.name());
-                latitude = new BigDecimal(lat1);
+                latitude = new Double(lat1);
                 lon1 = converter.convert(lon1, GeoRefFormat.D_PLUS_MINUS.name());
-                longitude = new BigDecimal(lon1);
+                longitude = new Double(lon1);
             }
             catch (Exception e)
             {
@@ -1489,21 +1487,20 @@ public class WorkbenchPaneSS extends BaseSubPane
                 continue;
             }
             
-            newLoc.setLatitude1(latitude);
-            newLoc.setLongitude1(longitude);
+            SimpleMapLocation newLoc = null;
             
+            // try to use a bounding box
             if (lat2Index != -1 && lon2Index != -1)
             {
                 String lat2 = row.getData((short)lat2Index);
                 String lon2 = row.getData((short)lon2Index);
-                BigDecimal latitude2 = null;
-                BigDecimal longitude2 = null;
+                Double latitude2 = null;
+                Double longitude2 = null;
                 try
                 {
-                    latitude2 = new BigDecimal(lat2);
-                    longitude2 = new BigDecimal(lon2);
-                    newLoc.setLatitude2(latitude2);
-                    newLoc.setLongitude2(longitude2);
+                    latitude2 = new Double(lat2);
+                    longitude2 = new Double(lon2);
+                    newLoc = new SimpleMapLocation(latitude,longitude,latitude2,longitude2);
                 }
                 catch (Exception e)
                 {
@@ -1512,10 +1509,17 @@ public class WorkbenchPaneSS extends BaseSubPane
                     // either way, we'll just treat this record as though it only has lat1 and lon1
                 }
             }
-            fakeLocalityRecords.add(newLoc);
+            else // use just the point
+            {
+                // we only have lat1 and long2
+                newLoc = new SimpleMapLocation(latitude,longitude,null,null);
+            }
+            
+            // add the location to the list
+            mapLocations.add(newLoc);
         }
         
-        LocalityMapper mapper = new LocalityMapper(fakeLocalityRecords);
+        LocalityMapper mapper = new LocalityMapper(mapLocations);
         mapper.setMaxMapHeight(500);
         mapper.setMaxMapWidth(500);
         mapper.setShowArrows(false);

@@ -26,7 +26,7 @@ import javax.swing.event.ListSelectionListener;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.specify.tasks.services.LocalityMapper.MapperListener;
+import edu.ku.brc.services.mapping.LocalityMapper.MapperListener;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -263,7 +263,7 @@ public class BioGeomancerResultsDisplay extends JPanel implements MapperListener
      */
     public void exceptionOccurred(Exception e)
     {
-        mapLabel.setText("Error while grabbing map"); // XXX i18n
+        mapLabel.setText("Error while grabbing map."); // XXX i18n
     }
 
     /* (non-Javadoc)

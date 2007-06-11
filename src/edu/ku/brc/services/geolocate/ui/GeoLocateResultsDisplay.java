@@ -33,7 +33,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.services.geolocate.client.GeoLocate;
 import edu.ku.brc.services.geolocate.client.GeorefResult;
 import edu.ku.brc.services.geolocate.client.GeorefResultSet;
-import edu.ku.brc.specify.tasks.services.LocalityMapper.MapperListener;
+import edu.ku.brc.services.mapping.LocalityMapper.MapperListener;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -175,7 +175,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener
      */
     public void exceptionOccurred(Exception e)
     {
-        mapLabel.setText("Error while grabbing map"); // XXX i18n
+        mapLabel.setText("<html><h3>Error while grabbing map</h3><br>" + e.getMessage() + "</html>"); // XXX i18n
     }
 
     /* (non-Javadoc)

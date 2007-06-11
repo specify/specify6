@@ -11,6 +11,8 @@ import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
 
+import javax.swing.ImageIcon;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -375,10 +377,17 @@ public class MapGrabber
 			{
 				// the image wasn't in the cache
 				// grab it again
-				imageCache.cacheWebResource(urlStr);
+				urlStr = imageCache.cacheWebResource(urlStr);
 				imageFile = imageCache.getCacheFile(urlStr);
 			}
 			image = Toolkit.getDefaultToolkit().getImage(imageFile.getAbsolutePath());
+            ImageIcon mapIcon = new ImageIcon(image);
+            if (mapIcon.getIconHeight() < 0 || mapIcon.getIconWidth() < 0)
+            {
+                // since it was invalid, throw it out of the cache
+                imageCache.clearItem(urlStr);
+                throw new IOException("Mapping service failed to return a valid image.  Map request URL: " + urlStr);
+            }
 		}
 		else
 		{
@@ -390,6 +399,11 @@ public class MapGrabber
 			log.info("Exiting MapGrabber.getMap()");
 			byte[] data = get.getResponseBody();
 			image = Toolkit.getDefaultToolkit().createImage(data);
+            ImageIcon mapIcon = new ImageIcon(image);
+            if (mapIcon.getIconHeight() < 0 || mapIcon.getIconWidth() < 0)
+            {
+                throw new IOException("Mapping service failed to return a valid image.  Map request URL: " + urlStr);
+            }
 		}
 
 		return image;

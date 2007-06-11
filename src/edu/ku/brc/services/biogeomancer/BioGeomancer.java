@@ -16,7 +16,9 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.tasks.services.LocalityMapper.MapperListener;
+import edu.ku.brc.services.mapping.LocalityMapper;
+import edu.ku.brc.services.mapping.SimpleMapLocation;
+import edu.ku.brc.services.mapping.LocalityMapper.MapperListener;
 
 /**
  * The class is a client-side interface to the BioGeomancer Classic georeferencing service.
@@ -202,9 +204,37 @@ public class BioGeomancer
      */
     public static void getMapOfQuerySummary(BioGeomancerQuerySummaryStruct querySummary, MapperListener callback)
     {
-        BioGeomancerMapper bioGeoMancerMapper = new BioGeomancerMapper();
-        bioGeoMancerMapper.setMaxMapWidth(MAP_MAX_WIDTH);
-        bioGeoMancerMapper.setMaxMapHeight(MAP_MAX_HEIGHT);
+        // This is the 'old' version of the code.
+        // It used BioGeomancerMapper.  The new version works with LocalityMapper.
+//        BioGeomancerMapper bioGeoMancerMapper = new BioGeomancerMapper();
+//        bioGeoMancerMapper.setMaxMapWidth(MAP_MAX_WIDTH);
+//        bioGeoMancerMapper.setMaxMapHeight(MAP_MAX_HEIGHT);
+//
+//        for (int i = 0; i < querySummary.results.length; ++i)
+//        {
+//            BioGeomancerResultStruct result = querySummary.results[i];
+//            String[] coords = StringUtils.split(result.coordinates);
+//            double lon = Double.parseDouble(coords[0]);
+//            double lat = Double.parseDouble(coords[1]);
+//            
+//            String bbox = result.boundingBox;
+//            if (StringUtils.isNotEmpty(bbox))
+//            {
+//                String[] boxList = StringUtils.split(bbox.replace(',', ' '));
+//                double[] box = new double[4];
+//                for (int j = 0; j < boxList.length; ++j)
+//                {
+//                    box[j] = Double.parseDouble(boxList[j]);
+//                }
+//                bioGeoMancerMapper.addBGMDataAndLabel(lat, lon, box[1], box[0], box[3], box[2], Integer.toString(i+1));
+//            }
+//        }
+//        bioGeoMancerMapper.getMap(callback);
+        
+        LocalityMapper mapper = new LocalityMapper();
+        mapper.setShowArrows(false);
+        mapper.setMaxMapWidth(MAP_MAX_WIDTH);
+        mapper.setMaxMapHeight(MAP_MAX_HEIGHT);
 
         for (int i = 0; i < querySummary.results.length; ++i)
         {
@@ -212,7 +242,7 @@ public class BioGeomancer
             String[] coords = StringUtils.split(result.coordinates);
             double lon = Double.parseDouble(coords[0]);
             double lat = Double.parseDouble(coords[1]);
-            
+
             String bbox = result.boundingBox;
             if (StringUtils.isNotEmpty(bbox))
             {
@@ -222,9 +252,16 @@ public class BioGeomancer
                 {
                     box[j] = Double.parseDouble(boxList[j]);
                 }
-                bioGeoMancerMapper.addBGMDataAndLabel(lat, lon, box[1], box[0], box[3], box[2], Integer.toString(i+1));
+                SimpleMapLocation loc = new SimpleMapLocation(box[1],box[0],box[3],box[2]);
+        
+                mapper.addLocationAndLabel(loc, Integer.toString(i+1));
+            }
+            else
+            {
+                SimpleMapLocation loc = new SimpleMapLocation(lat,lon,null,null);
+                mapper.addLocationAndLabel(loc, Integer.toString(i+1));
             }
         }
-        bioGeoMancerMapper.getMap(callback);
+        mapper.getMap(callback);
     }
 }
