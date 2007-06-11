@@ -34,7 +34,9 @@ import edu.ku.brc.services.geolocate.client.GeoLocate;
 import edu.ku.brc.services.geolocate.client.GeorefResult;
 import edu.ku.brc.services.geolocate.client.GeorefResultSet;
 import edu.ku.brc.services.mapping.LocalityMapper.MapperListener;
+import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * A UI panel for use in displaying the results of a GEOLocate web service query.
@@ -175,7 +177,9 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener
      */
     public void exceptionOccurred(Exception e)
     {
-        mapLabel.setText("<html><h3>Error while grabbing map</h3><br>" + e.getMessage() + "</html>"); // XXX i18n
+        mapLabel.setText("Error while grabbing map"); // XXX i18n
+        JStatusBar statusBar = UIRegistry.getStatusBar();
+        statusBar.setErrorMessage("Error while grabbing map", e);
     }
 
     /* (non-Javadoc)
@@ -183,6 +187,8 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener
      */
     public void mapReceived(Icon map)
     {
+        JStatusBar statusBar = UIRegistry.getStatusBar();
+        statusBar.setText("");
         mapLabel.setText(null);
         mapLabel.setIcon(map);
         repaint();
