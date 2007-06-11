@@ -82,7 +82,7 @@ public class SelectNewOrExistingDlg<T> extends CustomDialog
      * @see edu.ku.brc.ui.CustomDialog#createUI()
      */
     @Override
-    protected void createUI()
+    public void createUI()
     {
         ButtonGroup group = new ButtonGroup();
         group.add(createNewRB);

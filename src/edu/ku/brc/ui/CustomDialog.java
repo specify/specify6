@@ -187,7 +187,7 @@ public class CustomDialog extends JDialog
     /**
      * Create the UI for the dialog.
      */
-    protected void createUI()
+    public void createUI()
     {
         mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBorder(BorderFactory.createEmptyBorder(0, 2, 5, 2));

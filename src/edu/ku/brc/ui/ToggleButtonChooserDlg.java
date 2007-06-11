@@ -140,7 +140,7 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog implements ActionLis
      * @see edu.ku.brc.ui.CustomDialog#createUI()
      */
     @Override
-    protected void createUI()
+    public void createUI()
     {
         super.createUI();
         

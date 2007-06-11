@@ -19,9 +19,6 @@ import java.util.Vector;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-import edu.ku.brc.ui.DataFlavorTableExt;
-import edu.ku.brc.ui.RolloverCommand;
-
 /**
  * Implements a transparent glass pane for the app so images can be dragged across
  *

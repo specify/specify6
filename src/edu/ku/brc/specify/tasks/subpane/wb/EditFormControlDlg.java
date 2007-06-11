@@ -119,7 +119,7 @@ public class EditFormControlDlg extends CustomDialog implements ChangeListener, 
      * @see edu.ku.brc.ui.CustomDialog#createUI()
      */
     @Override
-    protected void createUI()
+    public void createUI()
     {
         if (xCoord == null)
         {

@@ -50,11 +50,16 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
 import javax.swing.JToolBar;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -150,7 +155,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     
     private String               appName             = "Specify";
     private String               appVersion          = "6.0";
-    private String               appBuildVersion     = "200705201114 (SVN: 2203)";
+    private String               appBuildVersion     = "200706111309 (SVN: 2291)";
     
     protected static CacheManager cacheManager        = new CacheManager();
 
@@ -719,9 +724,20 @@ public class Specify extends JPanel implements DatabaseLoginListener
         HelpMgr.createHelpMenuItem(helpMenu, "Specify");
         helpMenu.addSeparator();
                 
+        mi = UIHelper.createMenuItem(helpMenu, getResourceString("LOG_SHOW_FILES"), getResourceString("LOG_SHOW_FILES_MNEU"), getResourceString("LOG_SHOW_FILES"), true, null);
+        helpMenu.addSeparator();
+        mi.addActionListener(new ActionListener()
+        {
+            @SuppressWarnings("synthetic-access")
+            public void actionPerformed(ActionEvent ae)
+            {
+                dumpSpecifyLogFile();
+            }
+        });
+                
         if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
         {
-           mi = UIHelper.createMenuItem(helpMenu, getResourceString("About"), getResourceString("AboutMneu"), getResourceString("About"), true, null);
+            mi = UIHelper.createMenuItem(helpMenu, getResourceString("About"), getResourceString("AboutMneu"), getResourceString("About"), true, null);
             mi.addActionListener(new ActionListener()
                     {
                         public void actionPerformed(ActionEvent ae)
@@ -731,6 +747,60 @@ public class Specify extends JPanel implements DatabaseLoginListener
                     });
         }
         return mb;
+    }
+    
+    /**
+     * CReates a scrollpane with the text fro the log file.
+     * @param doError indicates it should display the erro log
+     * @return the scrollpane.
+     */
+    protected JScrollPane getLogFilePanel(final boolean doError)
+    {
+        JTextArea textArea = new JTextArea();
+        
+        File logFile = new File(UIRegistry.getDefaultWorkingPath() + File.separator + (doError ? "error.log" : "specify.log"));
+        if (logFile.exists())
+        {
+            try
+            {
+                textArea.setText(FileUtils.readFileToString(logFile));
+                textArea.setEditable(false);
+            } catch (Exception ex) {}
+        } else
+        {
+            textArea.setText(doError ? getResourceString("LOG_NO_ERRORS") : getResourceString("LOG_EMPTY"));
+        }
+            
+        return new JScrollPane(textArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    }
+    
+    /**
+     * Creates a modal dialog displaying the the error and specify log files. 
+     */
+    protected void dumpSpecifyLogFile()
+    {
+        
+        File logFile = new File(UIRegistry.getDefaultWorkingPath() + File.separator + "specify.log");
+        if (logFile.exists())
+        {
+            JTextArea textArea = new JTextArea();
+            try
+            {
+                textArea.setText(FileUtils.readFileToString(logFile));
+                textArea.setEditable(false);
+            } catch (Exception ex) {}
+            
+            JTabbedPane tabPane = new JTabbedPane();
+            tabPane.add(getResourceString("Error"), getLogFilePanel(true));
+            tabPane.add("Specify", getLogFilePanel(false));
+            
+            CustomDialog dialog = new CustomDialog((JFrame)UIRegistry.get(UIRegistry.TOPFRAME), getResourceString("LOG_FILES_TITLE"), true, CustomDialog.OK_BTN, tabPane);
+            dialog.setOkLabel(getResourceString("Close"));
+            dialog.createUI();
+            dialog.setSize(800, 600);
+            UIHelper.centerWindow(dialog);
+            dialog.setVisible(true);
+        }
     }
 
     /**
@@ -969,13 +1039,13 @@ public class Specify extends JPanel implements DatabaseLoginListener
         {
             JFileChooser chooser = new JFileChooser();
             chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-            if (chooser.showDialog(null, "Select File or Directory") != JFileChooser.CANCEL_OPTION) // XXX LOCALIZE
+            if (chooser.showDialog(null, "Select File or Directory") != JFileChooser.CANCEL_OPTION) // XXX I18N
             {
                 File destFile = chooser.getSelectedFile();
                 props.store(new FileOutputStream(destFile), "User Prefs");
             } else 
             {
-                throw new NoSuchElementException("The External File Repository needs a valid directory.");// XXX LOCALIZE
+                throw new NoSuchElementException("The External File Repository needs a valid directory.");// XXX I18N
             } 
             
         } catch (Exception ex)

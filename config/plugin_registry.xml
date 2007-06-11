@@ -3,14 +3,14 @@
      that ID -->
 <plugins>
 	<core>
-		
+		<!-- 
 		<plugin class="edu.ku.brc.specify.tasks.LabelsTask" addui="false"/>
 		<plugin class="edu.ku.brc.specify.tasks.RecordSetTask" addui="false"/>
 		<plugin class="edu.ku.brc.specify.tasks.WorkbenchTask" addui="true" default="true"/>
 		<plugin class="edu.ku.brc.specify.tasks.ExportTask" addui="false"/>
 		<plugin class="edu.ku.brc.af.tasks.VersionCheckerTask" addui="true"/>
 		
-		<!-- 
+		-->
 		<plugin class="edu.ku.brc.af.tasks.StartUpTask" addui="true" default="true"/>
 		
 		<plugin class="edu.ku.brc.specify.tasks.DataEntryTask" addui="true"/>
@@ -37,7 +37,7 @@
 		<plugin class="edu.ku.brc.specify.tasks.ExpressSearchTask" addui="true"/>
 		
 		<plugin class="edu.ku.brc.af.tasks.VersionCheckerTask" addui="true"/>
-		-->
+		
 	</core>
 	
 	<external>

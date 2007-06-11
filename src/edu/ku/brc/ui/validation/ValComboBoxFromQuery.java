@@ -280,7 +280,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         builder.add(comboBox, cc.xy(1,1));
 
         int x = 3;
-        editBtn = createBtn("EditForm", "EditRecordTT", objTitle);
+        editBtn = createBtn("EditIcon", "EditRecordTT", objTitle);
         builder.add(editBtn, cc.xy(x,1));
         x += 2;
 
@@ -631,10 +631,13 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                 comboBox.setSelectedIndex(-1);
                 valState = UIValidatable.ErrorType.Incomplete;
             }
+            editBtn.setEnabled(false);
+
         } else
         {
             comboBox.setSelectedIndex(-1);
             valState = UIValidatable.ErrorType.Incomplete;
+            editBtn.setEnabled(false);
         }
         repaint();
     }

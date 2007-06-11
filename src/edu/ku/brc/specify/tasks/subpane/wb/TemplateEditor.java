@@ -21,8 +21,13 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Frame;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Hashtable;
@@ -33,6 +38,7 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -68,6 +74,7 @@ import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.DefaultModifiableListModel;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -162,9 +169,6 @@ public class TemplateEditor extends CustomDialog
     public void createUI()
     {
         super.createUI();
-        
-        boolean isFromScratch = !isMappedToAFile && workbenchTemplate == null;
-        boolean isNewTemplate = workbenchTemplate == null;
         
         databaseSchema = WorkbenchTask.getDatabaseSchema();
         
@@ -302,6 +306,33 @@ public class TemplateEditor extends CustomDialog
                 setChanged(true);
             }
         });
+        
+        JButton dumpMappingBtn = createIconBtn("BlankIcon", IconManager.IconSize.Std16, "WB_MAPPING_DUMP", new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                dumpMapping();
+            }
+        });
+        dumpMappingBtn.setEnabled(true);
+        dumpMappingBtn.setFocusable(false);
+        dumpMappingBtn.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseEntered(MouseEvent e)
+            {
+                ((JButton)e.getSource()).setIcon(IconManager.getIcon("Save", IconManager.IconSize.Std16));
+                super.mouseEntered(e);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e)
+            {
+                ((JButton)e.getSource()).setIcon(IconManager.getIcon("BlankIcon", IconManager.IconSize.Std16));
+                super.mouseExited(e);
+            }
+            
+        });
 
         mapToBtn = createIconBtn("Map", "WB_ADD_MAPPING_ITEM", new ActionListener()
         {
@@ -327,32 +358,8 @@ public class TemplateEditor extends CustomDialog
         String dataTypeLabel   = getResourceString("WB_DATA_TYPE");
         String fieldsLabel     = getResourceString("WB_FIELDS");
         
-        if (isMappedToAFile)
-        {
-            if (isNewTemplate) // New Template being mapped from a file
-            {
-                mapListLeftLabel  = fieldsLabel;
-                mapListRightLabel = getResourceString("WB_COLUMNS");
-
-            } else // Editing a template mapped from a file
-            {
-                mapListLeftLabel  = fieldsLabel;
-                mapListRightLabel = getResourceString("WB_COLUMNS");
-            }
-            
-        } else 
-        {
-            if (isFromScratch) // Creatingd a brand new template from Scratch
-            {
-                mapListLeftLabel  = fieldsLabel;
-                mapListRightLabel = getResourceString("WB_COLUMNS");
-                
-            } else // Editing Template that wasn't mapped
-            {
-                mapListLeftLabel  = fieldsLabel;
-                mapListRightLabel = getResourceString("WB_COLUMNS");                
-            }
-        }
+        mapListLeftLabel  = fieldsLabel;
+        mapListRightLabel = getResourceString("WB_COLUMNS");
         
         CellConstraints cc = new CellConstraints();
         
@@ -362,9 +369,10 @@ public class TemplateEditor extends CustomDialog
         labelsBldr.add(new JLabel(mapListLeftLabel, SwingConstants.LEFT), cc.xy(1, 1));
         labelsBldr.add(new JLabel(mapListRightLabel, SwingConstants.RIGHT), cc.xy(3, 1));
 
-        PanelBuilder upDownPanel = new PanelBuilder(new FormLayout("p", "f:p:g, p, 2px, p, f:p:g"));        
-        upDownPanel.add(upBtn,    cc.xy(1, 2));
-        upDownPanel.add(downBtn,  cc.xy(1, 4));
+        PanelBuilder upDownPanel = new PanelBuilder(new FormLayout("p", "p,f:p:g, p, 2px, p, f:p:g"));        
+        upDownPanel.add(dumpMappingBtn, cc.xy(1, 1));
+        upDownPanel.add(upBtn,          cc.xy(1, 3));
+        upDownPanel.add(downBtn,        cc.xy(1, 5));
 
         PanelBuilder middlePanel = new PanelBuilder(new FormLayout("c:p:g", "p, 2px, p"));
         middlePanel.add(mapToBtn, cc.xy(1, 1));
@@ -439,6 +447,39 @@ public class TemplateEditor extends CustomDialog
                 }
             }
         });
+    }
+    
+    /**
+     * Dumps the mapping to the screen and clipboard.
+     */
+    protected void dumpMapping()
+    {
+        StringBuilder clipBrdTxt = new StringBuilder();
+
+        StringBuilder sb = new StringBuilder("<html><br><table border=\"1\">");
+        sb.append("<tr><td><b>"+getResourceString("WB_FIELDS")+"</b></td><td><b>"+getResourceString("WB_COLUMNS")+"</b></td></tr>");
+        for (int i=0;i<mapModel.size();i++)
+        {
+            FieldMappingPanel fmp = (FieldMappingPanel)mapModel.get(i);
+            FieldInfo       fieldInfo = fmp.getFieldInfo();
+            ImportColumnInfo colInfo  = fmp.getColInfo();
+            if (!fmp.isNew)
+            {
+                sb.append("<tr><td>"+fieldInfo.getTableinfo().getObjTitle()+" - "+fieldInfo.getFieldInfo().getName()+"</td><td>"+colInfo.getColTitle()+"</td></tr>");
+                clipBrdTxt.append(fieldInfo.getTableinfo().getObjTitle()+" - "+fieldInfo.getFieldInfo().getName()+" -> "+colInfo.getColTitle()+"\n");
+            }
+        }
+        sb.append("</table><br>The Mappings have been copied to the clipboard for pasting into an email.<br><br></htm>");
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(new JLabel(sb.toString()), BorderLayout.CENTER);
+        
+        // Set into Clipboard
+        StringSelection stsel  = new StringSelection(clipBrdTxt.toString());
+        Clipboard       sysClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        sysClipboard.setContents(stsel, stsel);
+        
+        CustomDialog dialog = new CustomDialog((JFrame)UIRegistry.get(UIRegistry.TOPFRAME), "Mappings", true, CustomDialog.OK_BTN, panel);
+        dialog.setVisible(true);
     }
     
     

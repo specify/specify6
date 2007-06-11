@@ -1385,7 +1385,7 @@ public class TableViewObj implements Viewable,
 
             if (state == UIValidatable.ErrorType.Incomplete)
             {
-                icon = IconManager.getIcon("ValidationWarning");
+                icon = IconManager.getIcon("ValidationWarning", IconManager.IconSize.Std16);
 
             } else if (state == UIValidatable.ErrorType.Error)
             {

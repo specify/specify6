@@ -130,7 +130,7 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
      * @see edu.ku.brc.ui.CustomDialog#createUI()
      */
     @Override
-    protected void createUI()
+    public void createUI()
     {
         super.createUI();
 
