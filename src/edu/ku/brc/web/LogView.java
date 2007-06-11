@@ -6,14 +6,26 @@
 
 package edu.ku.brc.web;
 
-import java.io.*;
-import java.net.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  *
@@ -42,6 +54,9 @@ public class LogView extends HttpServlet
         File usageLog = new File(webInfPath + "usage_log.txt");
         
         Hashtable<String, List<String>> usageData = summarizeUsageData(usageLog);
+        
+        // augment the records by adding the hostname to the end of the IP address
+        performReverseDNS(usageData);
         
         out.println("<h3>Records found: " + usageData.keySet().size() + "</h3><br/>");
         
@@ -91,6 +106,60 @@ public class LogView extends HttpServlet
         }
         
         return compiledData;
+    }
+    
+    protected String doSingleReverseDNS( String ipAddr )
+    {
+        InetAddress addr;
+        try
+        {
+            addr = InetAddress.getByName(ipAddr);
+        }
+        catch (UnknownHostException ex)
+        {
+            return "";
+        }
+        return addr.getHostName();
+    }
+    
+    protected void performReverseDNS( Hashtable<String, List<String>> usageData )
+    {
+        ExecutorService glExecServ = Executors.newFixedThreadPool(25);
+        
+        for (String id: usageData.keySet())
+        {
+            final List<String> record = usageData.get(id);
+            final String idLine = record.get(0);
+            StringTokenizer st = new StringTokenizer(idLine,"\t");
+            // ignore the first token
+            st.nextToken();
+            final String ipAddr = st.nextToken().trim();
+            
+            Runnable hostnameLookup = new Runnable()
+            {
+                public void run()
+                {
+                    String hostname = doSingleReverseDNS(ipAddr);
+                    record.set(0,idLine + "\t(" + hostname + ")");
+                }
+            };
+            
+            glExecServ.submit(hostnameLookup);
+            
+            String hostname = doSingleReverseDNS(ipAddr);
+        }
+        
+        glExecServ.shutdown();
+        try
+        {
+            // wait at most 10 seconds for all of the reverse DNS results
+            glExecServ.awaitTermination(10,TimeUnit.SECONDS);
+        }
+        catch (InterruptedException ex)
+        {
+            // if we didn't get all of the results in the allotted time, oh well
+            // do nothing
+        }
     }
     
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
