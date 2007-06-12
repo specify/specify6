@@ -2073,17 +2073,18 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected void displayGeoLocateResults(List<Pair<WorkbenchRow,GeorefResultSet>> glResults)
     {
         final JStatusBar statusBar = UIRegistry.getStatusBar();
+        
+        List<Pair<WorkbenchRow,GeorefResultSet>> withResults = new Vector<Pair<WorkbenchRow,GeorefResultSet>>();
 
-        int rowsWithResults = 0;
         for (Pair<WorkbenchRow,GeorefResultSet> result: glResults)
         {
             if (result.second.getNumResults() > 0)
             {
-                rowsWithResults++;
+                withResults.add(result);
             }
         }
         
-        if (rowsWithResults == 0)
+        if (withResults.size() == 0)
         {
             statusBar.setText(getResourceString("NO_GL_RESULTS"));
             return;
@@ -2092,7 +2093,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         // ask the user if they want to review the results
         // TODO: i18n
         // XXX: i18n
-        String message = "GEOLocate returned results for " + rowsWithResults
+        String message = "GEOLocate returned results for " + withResults.size()
                 + " records.  Would you like to view them now?";
         int userChoice = JOptionPane.showConfirmDialog(WorkbenchPaneSS.this, message,
                 "Continue?", JOptionPane.YES_NO_OPTION);
@@ -2104,7 +2105,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 
         // create the UI for displaying the BG results
         JFrame topFrame = (JFrame)UIRegistry.get(UIRegistry.TOPFRAME);
-        GeoLocateResultsChooser bgResChooser = new GeoLocateResultsChooser(topFrame,"GEOLocate Results Chooser",glResults);
+        GeoLocateResultsChooser bgResChooser = new GeoLocateResultsChooser(topFrame,"GEOLocate Results Chooser",withResults);
         
         List<GeorefResult> results = bgResChooser.getResultsChosen();
         
@@ -2115,7 +2116,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 
         for (int i = 0; i < results.size(); ++i)
         {
-            WorkbenchRow row = glResults.get(i).first;
+            WorkbenchRow row = withResults.get(i).first;
             GeorefResult chosenResult = results.get(i);
             
             if (chosenResult != null)
