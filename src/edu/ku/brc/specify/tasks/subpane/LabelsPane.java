@@ -295,6 +295,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                         }
                     }
                     
+                    // XXX What about losing a connection here?
                     if (requiresHibernate)
                     {
                         session = HibernateUtil.getNewSession();

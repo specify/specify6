@@ -1,5 +1,7 @@
 package edu.ku.brc.ui.tmanfe;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -693,7 +695,16 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
                         {
                             if (startRow + i < getRowCount() && startCol + j < getColumnCount())
                             {
-                                setValueAt(tokens[j], startRow + i, startCol + j);
+                                int colInx = startCol + j;
+                                if (tokens[j].length() <= model.getColDataLen(colInx))
+                                {
+                                    setValueAt(tokens[j], startRow + i, colInx);
+                                } else
+                                {
+                                    String msg = String.format(getResourceString("UI_NEWDATA_TOO_LONG"), new Object[] { model.getColumnName(startCol + j), model.getColDataLen(colInx) } );
+                                    UIRegistry.getStatusBar().setErrorMessage(msg);
+                                    Toolkit.getDefaultToolkit().beep();
+                                }
                             }
                             //System.out.println("Putting [" + tokens[j] + "] at row=" + startRow + i + "column=" + startCol + j);
                         }

@@ -22,6 +22,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.exception.JDBCConnectionException;
 
 import edu.ku.brc.helpers.SwingWorker;
 
@@ -63,12 +64,17 @@ public class JPAQuery implements CustomQuery
         
         try
         {
-            session = HibernateUtil.getNewSession();
-            
-            log.debug(sqlStr);
-            Query query = session.createQuery(sqlStr);
-            
-            resultsList = query.list();
+            try
+            {
+                Query query = session.createQuery(sqlStr);
+                resultsList = query.list();
+                
+            } catch (JDBCConnectionException ex)
+            {
+                HibernateUtil.rebuildSessionFactory();
+                Query query = session.createQuery(sqlStr);
+                resultsList = query.list();
+            }
             
             inError = resultsList == null;
             

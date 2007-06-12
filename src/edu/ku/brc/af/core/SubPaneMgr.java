@@ -356,7 +356,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      * @param pane the SubPane to be shown
      * @return the SubPane that was passed in
      */
-    public SubPaneIFace showPane(SubPaneIFace pane)
+    public SubPaneIFace showPane(final SubPaneIFace pane)
     {
         if (pane != null)
         {

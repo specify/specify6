@@ -380,4 +380,15 @@ public class GridTableModel extends SpreadSheetModel
         
         fireDataChanged();
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.tmanfe.SpreadSheetModel#getColDataLen(int)
+     */
+    @Override
+    public int getColDataLen(final int column)
+    {
+        return headers.get(column).getDataFieldLength();
+    }
+    
+    
 }

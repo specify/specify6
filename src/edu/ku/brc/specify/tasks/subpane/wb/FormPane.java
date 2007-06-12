@@ -19,7 +19,6 @@ import java.awt.Frame;
 import java.awt.KeyboardFocusManager;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -40,7 +39,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.swing.InputVerifier;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -66,6 +64,7 @@ import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
+import edu.ku.brc.specify.ui.LengthInputVerifier;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
@@ -585,14 +584,14 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         {
             ValTextField txt = new ValTextField(columns);
             txt.getDocument().addDocumentListener(this);
-            txt.setInputVerifier(new LengthVerifier(caption, fieldLength));
+            txt.setInputVerifier(new LengthInputVerifier(caption, fieldLength));
             comp      = txt;
             focusComp = comp;
         }
         else
         {
             JScrollPane taScrollPane = createTextArea(columns, rows);
-            ((JTextArea)taScrollPane.getViewport().getView()).setInputVerifier(new LengthVerifier(caption, fieldLength));
+            ((JTextArea)taScrollPane.getViewport().getView()).setInputVerifier(new LengthInputVerifier(caption, fieldLength));
             comp = taScrollPane;
             focusComp = taScrollPane.getViewport().getView();
         }
@@ -1118,36 +1117,4 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         }
     }
     
-    //-----------------------------------------------
-    // Inner Class
-    //-----------------------------------------------
-    class LengthVerifier extends InputVerifier
-    {
-        protected String caption;
-        protected int    maxLength;
-        
-        public LengthVerifier(final String caption, final int maxLength)
-        {
-            this.caption   = caption;
-            this.maxLength = maxLength;
-        }
-        
-        @Override
-        public boolean verify(JComponent comp)
-        {
-            boolean isOK = ((JTextComponent)comp).getText().length() <= maxLength;
-            if (!isOK)
-            {
-                String msg = String.format(getResourceString("WB_NEWDATA_TOO_LONG"), new Object[] { caption, maxLength } );
-                UIRegistry.getStatusBar().setErrorMessage(msg);
-                Toolkit.getDefaultToolkit().beep();
-                
-            } else
-            {
-                UIRegistry.getStatusBar().setText("");
-            }
-            return isOK;
-        }
-    }
-    
-}
+ }

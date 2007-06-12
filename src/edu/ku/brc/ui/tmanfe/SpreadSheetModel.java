@@ -39,6 +39,8 @@ public abstract class SpreadSheetModel extends AbstractTableModel
     public abstract void insertRow(int rowInx);
     
     public abstract void appendRow();
+    
+    public abstract int getColDataLen(final int column);
 
 }
 

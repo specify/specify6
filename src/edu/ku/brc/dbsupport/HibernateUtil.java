@@ -159,6 +159,14 @@ public class HibernateUtil {
         config.setProperty("hibernate.connection.username", userName);
         config.setProperty("hibernate.connection.password", password);
         
+        config.setProperty("hibernate.connection.autoReconnect", "true");
+        config.setProperty("hibernate.connection.autoReconnectForPools", "true");
+        config.setProperty("hibernate.connection.is-connection-validation-required", "true");
+        
+        config.setProperty("connection.autoReconnect", "true");
+        config.setProperty("connection.autoReconnectForPools", "true");
+        config.setProperty("connection.is-connection-validation-required", "true");
+        
         log.info("Using database ["+connection+"]");
         
         // if not MS SQLServer
@@ -217,7 +225,8 @@ public class HibernateUtil {
         try 
         {
             //configuration = new Configuration();
-            configuration = new AnnotationConfiguration();
+            configuration = new AnnotationConfiguration().configure();
+            
             AuditInterceptor auditInter = AuditInterceptor.getInstance();
             if (auditInter != null)
             {
@@ -231,7 +240,8 @@ public class HibernateUtil {
             }
             setHibernateLogonConfig(configuration);
             
-            sessionFactory = configuration.configure().buildSessionFactory();
+            
+            sessionFactory = configuration.buildSessionFactory();
             
         } catch (Throwable ex) {
             // We have to catch Throwable, otherwise we will miss
@@ -351,7 +361,7 @@ public class HibernateUtil {
      *
      * @param cfg
      */
-     public static void rebuildSessionFactory(Configuration cfg)
+    public static void rebuildSessionFactory(final Configuration cfg)
     {
         //log.debug("Rebuilding the SessionFactory from given Configuration.");
         synchronized (sessionFactory)

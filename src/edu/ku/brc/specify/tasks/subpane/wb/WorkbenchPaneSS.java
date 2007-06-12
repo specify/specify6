@@ -59,7 +59,6 @@ import javax.swing.ImageIcon;
 import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -71,6 +70,8 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
@@ -93,6 +94,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.prefs.AppPreferences;
@@ -128,6 +130,7 @@ import edu.ku.brc.specify.exporters.GoogleEarthPlacemarkIFace;
 import edu.ku.brc.specify.exporters.WorkbenchRowPlacemarkWrapper;
 import edu.ku.brc.specify.tasks.ExportTask;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
+import edu.ku.brc.specify.ui.LengthInputVerifier;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
@@ -278,8 +281,6 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         });
         
-        initColumnSizes(spreadSheet);
-
         spreadSheet.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e)
@@ -340,7 +341,10 @@ public class WorkbenchPaneSS extends BaseSubPane
 
             }
         });
-       
+
+        // NOTE: This needs to be done after the creation of the saveBtn
+        initColumnSizes(spreadSheet, saveBtn);
+
         Action delAction = addRecordKeyMappings(spreadSheet, KeyEvent.VK_F3, "DelRow", new AbstractAction()
         {
             public void actionPerformed(ActionEvent ae)
@@ -727,20 +731,22 @@ public class WorkbenchPaneSS extends BaseSubPane
     /**
      * Checks the cell for cell editing and stops it.
      */
-    public void checkCurrentEditState()
+    public boolean checkCurrentEditState()
     {
+        boolean isOK = true;
         if (currentPanelType == PanelType.Spreadsheet)
         {
             if (spreadSheet.getCellEditor() != null)
             {
                 int index = spreadSheet.getSelectedRow();
-                spreadSheet.getCellEditor().stopCellEditing();
+                isOK = spreadSheet.getCellEditor().stopCellEditing();
                 spreadSheet.setRowSelectionInterval(index, index);
             }
         } else
         {
             formPane.copyDataFromForm();
         }
+        return isOK;
     }
     
     /**
@@ -1908,7 +1914,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         final int    stateColIndex        = workbench.getColumnIndex(Geography.class, "State");
         final int    countyColIndex       = workbench.getColumnIndex(Geography.class, "County");
 
-        final JStatusBar statusBar = UIRegistry.getStatusBar();
+        //final JStatusBar statusBar = UIRegistry.getStatusBar();
         
         final List<WorkbenchRow> selectedRows = getSelectedRowsFromView();
 
@@ -2418,7 +2424,7 @@ public class WorkbenchPaneSS extends BaseSubPane
      * Adjust all the column width for the data in the column, this may be handles with JDK 1.6 (6.)
      * @param tableArg the table that should have it's columns adjusted
      */
-    private void initColumnSizes(final JTable tableArg) 
+    private void initColumnSizes(final JTable tableArg, final JButton theSaveBtn) 
     {
         TableModel  tblModel    = tableArg.getModel();
         TableColumn column      = null;
@@ -2428,11 +2434,18 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         TableCellRenderer headerRenderer = tableArg.getTableHeader().getDefaultRenderer();
 
-        GridCellEditor cellEditor = new GridCellEditor(new JTextField());
+        
         //UIRegistry.getInstance().hookUpUndoableEditListener(cellEditor);
+        
+        Vector<WorkbenchTemplateMappingItem> wbtmis = new Vector<WorkbenchTemplateMappingItem>();
+        wbtmis.addAll(workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems());
+        Collections.sort(wbtmis);
         
         for (int i = 0; i < tableArg.getColumnCount(); i++) 
         {
+            WorkbenchTemplateMappingItem wbtmi = wbtmis.elementAt(i);
+            GridCellEditor cellEditor = new GridCellEditor(new JTextField(), wbtmi.getCaption(), wbtmi.getDataFieldLength(), theSaveBtn);
+            
             column = tableArg.getColumnModel().getColumn(i);
 
             comp = headerRenderer.getTableCellRendererComponent(
@@ -2465,7 +2478,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             column.setCellEditor(cellEditor);
         }
         
-        tableArg.setCellEditor(cellEditor);
+        //tableArg.setCellEditor(cellEditor);
 
     }
     
@@ -2688,7 +2701,16 @@ public class WorkbenchPaneSS extends BaseSubPane
         // this way it can end any editing
         if (formPane != null)
         {
-            checkCurrentEditState();
+            if (!checkCurrentEditState())
+            {
+                SubPaneMgr.getInstance().showPane(this);
+                // Need to reverify to get the error to display again.
+                if (spreadSheet.getCellEditor() != null)
+                {
+                    spreadSheet.getCellEditor().stopCellEditing();
+                }
+                return false;
+            }
         }
         
         boolean retStatus = true;
@@ -2811,21 +2833,63 @@ public class WorkbenchPaneSS extends BaseSubPane
 
     class GridCellEditor extends DefaultCellEditor implements TableCellEditor//, UndoableTextIFace
     {
-        protected JTextField  textField;
+        protected JTextField          textField;
+        protected int                 length;
+        protected LengthInputVerifier verifier;
+        protected JButton             saveBtn;
+        
         //protected UndoManager undoManager = new UndoManager();
 
-        public GridCellEditor(final JTextField textField)
+        public GridCellEditor(final JTextField textField, final String caption, final int length, final JButton saveBtn)
         {
             super(textField);
             this.textField = textField;
+            this.length    = length;
+            this.saveBtn   = saveBtn;
+            
+            verifier = new LengthInputVerifier(caption, length);
+            textField.setInputVerifier(verifier);
+
             textField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            
+            textField.getDocument().addDocumentListener(new DocumentListener() {
+                public void changedUpdate(DocumentEvent e)
+                {
+                    validateDoc();
+                }
+                
+                public void insertUpdate(DocumentEvent e)
+                {
+                    validateDoc();
+                }
+                
+                public void removeUpdate(DocumentEvent e) 
+                {
+                    validateDoc();
+                }
+            });
+        }
+        
+        /**
+         * Makes sure the document is the correct length.
+         */
+        protected void validateDoc()
+        {
+            if (!verifier.verify(textField))
+            {
+                saveBtn.setEnabled(false);
+            }
         }
 
+        /* (non-Javadoc)
+         * @see javax.swing.DefaultCellEditor#stopCellEditing()
+         */
         @Override
         public boolean stopCellEditing()
         {
-            if (textField.getText().length() > WorkbenchDataItem.cellDataLength)
+            if (!verifier.verify(textField))
             {
+                saveBtn.setEnabled(false);
                 return false;
             }
             return super.stopCellEditing();
@@ -2975,47 +3039,6 @@ public class WorkbenchPaneSS extends BaseSubPane
                 setBorder(null);
             }
             return this;
-        }
-    }
-    
-    class SaveProgressDialog extends ProgressDialog
-    {
-        public SaveProgressDialog(final String  title, 
-                              final boolean includeBothBars,
-                              final boolean includeClose)
-        {
-            super(title, includeBothBars, includeClose);
-            
-            setModal(true);
-            
-            final JDialog dlg = this;
-            final SwingWorker worker = new SwingWorker()
-            {
-                @SuppressWarnings("synthetic-access")
-                @Override
-                public Object construct()
-                {
-                    try
-                    {
-                        saveObject();
-                        
-                    } catch (Exception ex)
-                    {
-                        log.error(ex);
-                        UIRegistry.getStatusBar().setErrorMessage(getResourceString("WB_ERROR_SAVING"), ex);
-                    }
-                    return null;
-                }
-
-                //Runs on the event-dispatching thread.
-                @Override
-                public void finished()
-                {
-                    dlg.setVisible(false);
-                    dlg.dispose();
-                }
-            };
-            worker.start();
         }
     }
 }
