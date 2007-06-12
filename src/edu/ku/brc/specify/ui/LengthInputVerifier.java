@@ -41,7 +41,6 @@ public class LengthInputVerifier extends InputVerifier
     public boolean verify(JComponent comp)
     {
         boolean isOK = ((JTextComponent)comp).getText().length() <= maxLength;
-        System.out.println(isOK);
         if (!isOK)
         {
             String msg = String.format(getResourceString("UI_NEWDATA_TOO_LONG"), new Object[] { caption, maxLength } );
