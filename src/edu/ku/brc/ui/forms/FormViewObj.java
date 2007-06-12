@@ -2207,18 +2207,21 @@ public class FormViewObj implements Viewable,
                 {
                     return ColorWrapper.toString(((ColorChooser)comp).getBackground());
 
-                } else if(comp instanceof JList)
+                } else if (comp instanceof JList)
                 {
                     return ((JList)comp).getSelectedValue().toString();
 
-                } else if(comp instanceof JCheckBox)
+                } else if (comp instanceof JCheckBox)
                 {
                     return new Boolean(((JCheckBox)comp).isSelected());
 
-               } else
-               {
+                } else if (fieldInfo.getFormCell().getType() == FormCell.CellType.command)
+                {
+                   // no op
+                } else
+                {
                     log.error("Not sure how to get data from object "+comp);
-               }
+                }
             } else
             {
                 log.error("Component is null in FieldInfo "+id);
