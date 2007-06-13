@@ -127,6 +127,8 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         {
             item.getCellData();
         }
+
+        getWorkbenchRowImages().size();
     }
     
     @Id
