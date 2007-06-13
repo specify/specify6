@@ -12,9 +12,6 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-/**
- * 
- */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
@@ -23,11 +20,16 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 import java.util.Hashtable;
+import java.util.Set;
 
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -35,17 +37,28 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
+import javax.swing.JSlider;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import org.apache.commons.io.FilenameUtils;
+import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.TaskMgr;
+import edu.ku.brc.af.core.UsageTracker;
+import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.helpers.ImageFilter;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
+import edu.ku.brc.specify.datamodel.WorkbenchRowImage;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.IconManager;
@@ -53,22 +66,22 @@ import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 
 /**
- * THis class is used to show Card Images that are "linked" to a row of data.
+ * This frame is used to display a set of images linked to a record in a workbench data set.
  * 
- * @author rods
+ * @author jstewart
  *
- * @code_status Complete
- *
- * Created Date: Mar 16, 2007
- *
+ * @code_status Beta
  */
 public class ImageFrame extends JFrame
 {
-    //protected JPanel       panel                      = new JPanel(new BorderLayout());
-    protected JLabel       cardImageLabel             = new JLabel("", SwingConstants.CENTER);
-    protected JProgressBar progress                   = new JProgressBar();
-    protected WorkbenchRow row                        = null;
-    protected  Workbench   workbench;
+    private static final Logger log                      = Logger.getLogger(ImageFrame.class);
+            
+    protected JLabel          cardImageLabel             = new JLabel("", SwingConstants.CENTER);
+    protected JProgressBar    progress                   = new JProgressBar();
+    protected WorkbenchRow    row                        = null;
+    protected WorkbenchPaneSS wbPane                     = null;
+    protected int             imageIndex                 = -1;
+    protected Workbench       workbench;
     
     protected JPanel       noCardImageMessagePanel    = null;
     protected boolean      showingCardImageLabel      = true;
@@ -77,15 +90,20 @@ public class ImageFrame extends JFrame
     protected JPanel       mainPane;
     protected JScrollPane  scrollPane;
     protected JStatusBar   statusBar;
+    protected JSlider      indexSlider;
 
     protected JMenu             viewMenu;
     protected JMenu             imageMenu;
     protected JMenuItem         closeMI;
     protected JMenuItem         replaceMI;
-    protected JMenuItem         clearMI;
-    protected JCheckBoxMenuItem origMI;
-    protected JCheckBoxMenuItem reduceMI;
+    protected JMenuItem         deleteMI;
+    protected JMenuItem         addMI;
+    protected JRadioButtonMenuItem origMI;
+    protected JRadioButtonMenuItem reduceMI;
     protected JCheckBoxMenuItem alwaysOnTopMI;
+    
+    protected static int REDUCED_SIZE = -1;
+    protected static int FULL_SIZE    =  1;
     
     /** This hash keeps track of the size that a given image was last displayed as.  If an image is displayed as full size, we add an entry
      * to this hash where the key is row.hashCode() and the value is 1.  If the image is displayed as reduced size, the value is -1.  (We
@@ -96,9 +114,10 @@ public class ImageFrame extends JFrame
     /**
      * Constructor. 
      */
-    public ImageFrame(final int mapSize, final Workbench workbench)
+    public ImageFrame(final int mapSize, final WorkbenchPaneSS wbPane, final Workbench workbench)
     {
         this.workbench = workbench;
+        this.wbPane = wbPane;
         
         setIconImage(IconManager.getImage("AppIcon").getImage());
         
@@ -123,37 +142,89 @@ public class ImageFrame extends JFrame
         scrollPane = new JScrollPane(mainPane, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         
         statusBar = new JStatusBar();
-        statusBar.setText("hello");
+        
+        indexSlider = new JSlider(SwingConstants.HORIZONTAL);
+        indexSlider.setMajorTickSpacing(1);
+        indexSlider.setPaintTicks(true);
+        indexSlider.setPaintLabels(true);
+        indexSlider.setSnapToTicks(true);
+        indexSlider.setMinimum(1);
+        indexSlider.setMaximum(1);
+        indexSlider.getModel().addChangeListener(new ChangeListener()
+        {
+            public void stateChanged(ChangeEvent ce)
+            {
+                int value = indexSlider.getValue();
+                setImageIndex(value-1);
+            }
+        });
+        indexSlider.setEnabled(false);
+        
+        JPanel southPanel = new JPanel();
+        southPanel.setLayout(new BorderLayout());
+        
+        southPanel.add(indexSlider,BorderLayout.NORTH);
+        southPanel.add(statusBar, BorderLayout.SOUTH);
 
         JPanel basePanel = new JPanel();
         basePanel.setLayout(new BorderLayout());
         basePanel.add(scrollPane,BorderLayout.CENTER);
-        basePanel.add(statusBar,BorderLayout.SOUTH);
+        basePanel.add(southPanel,BorderLayout.SOUTH);
         
         setContentPane(basePanel);
         
         JMenuBar  menuBar   = new JMenuBar();
         JMenu     fileMenu  = UIHelper.createMenu(menuBar, "File", "FileMneu");
         JMenuItem importImagesMI  = UIHelper.createMenuItem(fileMenu, getResourceString("WB_IMPORT_CARDS"), getResourceString("WB_IMPORT_CARDS_MNEU"), "", true, null);
+        
         closeMI = UIHelper.createMenuItem(fileMenu, getResourceString("Close"), getResourceString("CloseMneu"), "", true, null);
+        closeMI.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                indexSlider.setEnabled(false);
+                ImageFrame.this.setVisible(false);
+            }
+        });
         
         viewMenu  = UIHelper.createMenu(menuBar, "View", "ViewMneu");
         
-        reduceMI = UIHelper.createCheckBoxMenuItem(viewMenu, "WB_REDUCED_SIZE", "ReducedSizeMneu", "", true, null);
+        reduceMI = UIHelper.createRadioButtonMenuItem(viewMenu, "WB_REDUCED_SIZE", "ReducedSizeMneu", "", true, null);
+        reduceMI.setSelected(true);
         reduceMI.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
-                showReducedImage();
+                if (row == null)
+                {
+                    return;
+                }
+                
+                // simply 'remember' that we want to show reduced images for this row
+                rowToImageSizeHash.put(row.hashCode(), REDUCED_SIZE);
+                // then 'reshow' the current image
+                showImage();
             }
         });
         
-        origMI = UIHelper.createCheckBoxMenuItem(viewMenu, "WB_ORIG_SIZE", "OrigMneu", "", true, null);
+        origMI = UIHelper.createRadioButtonMenuItem(viewMenu, "WB_ORIG_SIZE", "OrigMneu", "", true, null);
         origMI.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
-                showOriginalSizeImage();
+                if (row == null)
+                {
+                    return;
+                }
+                
+                // simply 'remember' that we want to show fill size images for this row
+                rowToImageSizeHash.put(row.hashCode(), FULL_SIZE);
+                // then 'reshow' the current image
+                showImage();
             }
         });
+        
+        ButtonGroup btnGrp = new ButtonGroup();
+        btnGrp.add(reduceMI);
+        btnGrp.add(origMI);        
         
         viewMenu.addSeparator();
         
@@ -175,9 +246,36 @@ public class ImageFrame extends JFrame
             }
         });
         
+        ActionListener deleteImg = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                deleteImage();
+            }
+        };
+        
+        ActionListener replaceImg = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                replaceImage();
+            }
+        };
+        
+        ActionListener addImg = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                addImages();
+            }
+        };
+        
         imageMenu = UIHelper.createMenu(menuBar, "Image", "ImageMneu");
-        clearMI   = UIHelper.createMenuItem(imageMenu, getResourceString("WB_DEL_IMG_LINK"), getResourceString("WB_DEL_IMG_LINK_MNEU"), "", true, null);
-        replaceMI = UIHelper.createMenuItem(imageMenu, getResourceString("WB_REPLACE_IMG"), getResourceString("WB_REPLACE_IMG_MNEU"), "", true, null);
+        deleteMI   = UIHelper.createMenuItem(imageMenu, getResourceString("WB_DEL_IMG_LINK"), getResourceString("WB_DEL_IMG_LINK_MNEU"), "", true, deleteImg);
+        replaceMI = UIHelper.createMenuItem(imageMenu, getResourceString("WB_REPLACE_IMG"), getResourceString("WB_REPLACE_IMG_MNEU"), "", true, replaceImg);
+        addMI     = UIHelper.createMenuItem(imageMenu, getResourceString("WB_ADD_IMG"), getResourceString("WB_ADD_IMG_MNEM"), "", true, addImg);
+        
+        loadImgBtn.addActionListener(addImg);
         
         JMenu helpMenu = new JMenu(getResourceString("Help"));
         menuBar.add(HelpMgr.createHelpMenuItem(helpMenu, getResourceString("WB_IMAGE_WINDOW")));
@@ -192,7 +290,7 @@ public class ImageFrame extends JFrame
     }
     
     /**
-     * Sets text into the statubar of thew image frame.
+     * Sets text into the statubar of the image frame.
      * @param text the message
      */
     public void setStatusBarText(final String text)
@@ -201,107 +299,213 @@ public class ImageFrame extends JFrame
     }
     
     /**
-     * Sets the help context.
-     * @param helpContext the context
+     * Returns the index of the selected image
+     * 
+     * @return
      */
-    public void setHelpContext(final String helpContext)
+    public int getImageIndex()
     {
-        HelpMgr.setHelpID(this, helpContext);
+        return imageIndex;
     }
-    
+
     /**
-     * Clear the has so when when it is displayed later without an image it calls the reduced one. 
+     * @param imageIndex
      */
-    public void clearImage()
+    public void setImageIndex(int imageIndex)
     {
-        if (row != null)
-        {
-            rowToImageSizeHash.remove(row.hashCode());
-        }
-        showNoCardImages();
+        this.imageIndex = imageIndex;
+        showImage();
     }
+
+//    /**
+//     * Clear the hash so when when it is displayed later without an image it calls the reduced one. 
+//     */
+//    public void clearImage()
+//    {
+//        if (row != null)
+//        {
+//            rowToImageSizeHash.remove(row.hashCode());
+//        }
+//        // swap out the cardImageLabel for the noCardImageMessagePanel
+//        mainPane.remove(cardImageLabel);
+//        mainPane.add(noCardImageMessagePanel, BorderLayout.CENTER);
+//        showingCardImageLabel = false;
+//        
+//        enableMenus(false);
+//        validate();
+//        repaint();
+//    }
+//    
+//    /**
+//     * Displays the card image in a reduced size.
+//     */
+//    public void showReducedImage()
+//    {
+//        if (row == null)
+//        {
+//            return;
+//        }
+//        
+//        rowToImageSizeHash.put(row.hashCode(), -1);
+//        
+//        cardImage = row.getCardImage();
+//        cardImageLabel.setIcon(cardImage);
+//        if (cardImage != null)
+//        {
+//            cardImageLabel.setSize(cardImage.getIconWidth(), cardImage.getIconHeight());
+//            mainPane.setSize(cardImage.getIconWidth(), cardImage.getIconHeight());
+//            mainPane.setPreferredSize(new Dimension(cardImage.getIconWidth(), cardImage.getIconHeight()));
+//        }
+//        mainPane.repaint();
+//    }
+//    
+//    /**
+//     * Displays the full size card image.
+//     */
+//    public void showOriginalSizeImage()
+//    {
+//        if (row == null)
+//        {
+//            return;
+//        }
+//        
+//        rowToImageSizeHash.put(row.hashCode(), 1);
+//        
+//        cardImage = row.getFullSizeImage();
+//        if (cardImage != null)
+//        {
+//            cardImageLabel.setIcon(cardImage);
+//            if (cardImage != null)
+//            {
+//                mainPane.setSize(cardImage.getIconWidth(), cardImage.getIconHeight());
+//                mainPane.setPreferredSize(new Dimension(cardImage.getIconWidth(), cardImage.getIconHeight()));
+//            }
+//        } else
+//        {
+//            WorkbenchTask.showLoadStatus(row, false);
+//        }
+//        mainPane.repaint();
+//    }
     
-    /**
-     * Displays the card image in a reduced size.
-     */
-    public void showReducedImage()
+    protected void showImage()
     {
         if (row == null)
         {
             return;
         }
         
-        rowToImageSizeHash.put(row.hashCode(), -1);
-        
-        cardImage = row.getCardImage();
-        cardImageLabel.setIcon(cardImage);
-        reduceMI.setSelected(true);
-        origMI.setSelected(false);
-        if (cardImage != null)
+        Set<WorkbenchRowImage> rowImages = row.getWorkbenchRowImages();
+        if (rowImages == null || rowImages.size() == 0)
         {
-            cardImageLabel.setSize(cardImage.getIconWidth(), cardImage.getIconHeight());
-            mainPane.setSize(cardImage.getIconWidth(), cardImage.getIconHeight());
-            mainPane.setPreferredSize(new Dimension(cardImage.getIconWidth(), cardImage.getIconHeight()));
-        }
-        mainPane.repaint();
-    }
-    
-    /**
-     * Displays the full size card image.
-     */
-    public void showOriginalSizeImage()
-    {
-        if (row == null)
-        {
+            noImagesLinked();
             return;
         }
         
-        rowToImageSizeHash.put(row.hashCode(), 1);
-        
-        cardImage = row.getFullSizeImage();
-        if (cardImage != null)
+        // adjust the imageIndex to be within the proper bounds (in order to avoid a few error possibilities)
+        if (imageIndex < 0)
         {
-            cardImageLabel.setIcon(cardImage);
-            reduceMI.setSelected(false);
-            origMI.setSelected(true);
-            if (cardImage != null)
+            imageIndex = 0;
+        }
+        else if (imageIndex > rowImages.size()-1)
+        {
+            imageIndex = rowImages.size()-1;
+        }
+        
+        indexSlider.setMinimum(1);
+        indexSlider.setMaximum(rowImages.size());
+        indexSlider.setValue(imageIndex+1);
+        if (rowImages.size() > 1)
+        {
+            indexSlider.setEnabled(true);
+        }
+        else
+        {
+            indexSlider.setEnabled(false);
+        }
+
+        // try to get the appropriate WorkbenchRowImage
+        WorkbenchRowImage rowImage = row.getRowImage(imageIndex);
+        if (rowImage == null)
+        {
+            // What do we do here?
+            // This should never happen.
+            // There were images available, but none of them had the right index.
+            // Just give the first one, I guess.
+            rowImage = rowImages.iterator().next();
+            imageIndex = 0;
+            statusBar.setWarningMessage("Unable to locate an image with the proper index.  Showing first image."); // XXX i18n
+        }
+
+        // at this point, we know at least one image is available
+        
+        // update the title and status bar
+        String fullFilePath = rowImage.getCardImageFullPath();
+        String filename = FilenameUtils.getName(fullFilePath);
+        setTitle( String.format(getResourceString("WB_IMAGE_X_OF_Y"), imageIndex+1, rowImages.size()) + ((filename != null) ? ": " + filename : "") );
+        setStatusBarText(fullFilePath);
+        
+        ImageIcon image = null;
+        
+        Integer lastDisplayedSize = rowToImageSizeHash.get(row.hashCode());
+        if (lastDisplayedSize == null || lastDisplayedSize == REDUCED_SIZE)
+        {
+            image = rowImage.getImage();
+        }
+        else
+        {
+            image = rowImage.getFullSizeImage();
+        }
+        
+        cardImageLabel.setIcon(image);
+        
+        if (image == null) // no image available
+        {
+            statusBar.setErrorMessage("Unable to load image"); // XXX i18n
+        }
+        else // we've got an image
+        {
+            // if we're NOT currently showing the image label
+            if (!showingCardImageLabel)
             {
-                mainPane.setSize(cardImage.getIconWidth(), cardImage.getIconHeight());
-                mainPane.setPreferredSize(new Dimension(cardImage.getIconWidth(), cardImage.getIconHeight()));
+                // swap out the "no image" text for the image label
+                mainPane.remove(noCardImageMessagePanel);
+                mainPane.add(cardImageLabel, BorderLayout.CENTER);
+                showingCardImageLabel = true;
             }
-        } else
-        {
-            WorkbenchTask.showLoadStatus(row, false);
+            
+            int w = image.getIconWidth();
+            int h = image.getIconHeight();
+            cardImageLabel.setText(null);
+            cardImageLabel.setSize(w, h);
+            mainPane.setSize(w, h);
+            mainPane.setPreferredSize(new Dimension(w, h));
+            enableMenus(true);
+            
+            mainPane.validate();
+            mainPane.repaint();
         }
-        mainPane.repaint();
     }
     
     /**
-     * When there is no image the user can press "load" and load a new image.
-     * @param al the action listener for the load button
+     * Handles UI tasks related to showing the user that no images are available for display.
      */
-    public void installLoadActionListener(final ActionListener al)
+    protected void noImagesLinked()
     {
-        loadImgBtn.addActionListener(al);
-        replaceMI.addActionListener(al);
-    }
-    
-    /**
-     * When there is no image the user can press "load" and load a new image.
-     * @param al the action listener for the load button
-     */
-    public void installClearActionListener(final ActionListener al)
-    {
-        clearMI.addActionListener(al);
-    }
-    
-    /**
-     * Registers the given ActionListener as action to perform when the window is closed.
-     * @param al the action listener for the close button
-     */
-    public void installCloseActionListener(final ActionListener al)
-    {
-        closeMI.addActionListener(al);
+        // are we currently showing the image label
+        if (showingCardImageLabel)
+        {
+            // remove the image label and show the "no images" text
+            // swap out the cardImageLabel for the noCardImageMessagePanel
+            mainPane.remove(cardImageLabel);
+            mainPane.add(noCardImageMessagePanel, BorderLayout.CENTER);
+            showingCardImageLabel = false;
+        }
+        indexSlider.setEnabled(false);
+        setTitle(getResourceString("WB_NO_IMAGES_LINKED"));
+        setStatusBarText(null);
+        enableMenus(false);
+        validate();
+        repaint();
     }
     
     /**
@@ -310,26 +514,123 @@ public class ImageFrame extends JFrame
      */
     protected void enableMenus(final boolean enable)
     {
-        imageMenu.setEnabled(enable);
-        clearMI.setEnabled(enable);
+        deleteMI.setEnabled(enable);
         replaceMI.setEnabled(enable);
         origMI.setEnabled(enable);
         reduceMI.setEnabled(enable);
     }
     
     /**
-     *  Displays the UI for no images.
+     * Adds a new image to the current {@link WorkbenchRow}.
      */
-    protected void showNoCardImages()
+    public void addImages()
     {
-        // swap out the cardImageLabel for the noCardImageMessagePanel
-        mainPane.remove(cardImageLabel);
-        mainPane.add(noCardImageMessagePanel, BorderLayout.CENTER);
-        showingCardImageLabel = false;
+        UsageTracker.incrUsageCount("WB.AddWBRowImage");
+        File[] imageFiles = askUserForImageFiles();
+        if (imageFiles == null || imageFiles.length == 0)
+        {
+            return;
+        }
         
-        enableMenus(false);
-        validate();
-        repaint();
+        log.debug("addImages: " + imageFiles.length + " files selected");
+        for (File f: imageFiles)
+        {
+            try
+            {
+                int newIndex = row.addImage(f);
+                wbPane.setChanged(true);
+                this.imageIndex = newIndex;
+                showImage();
+            }
+            catch (IOException e)
+            {
+                statusBar.setErrorMessage("Exception while adding a new image", e);
+            }
+        }
+        wbPane.repaint();
+    }
+    
+    public void replaceImage()
+    {
+        UsageTracker.incrUsageCount("WB.EditWBRowImage");
+        File imageFile = askUserForImageFile();
+        log.debug("replaceImage: " + ((imageFile!=null) ? imageFile.getAbsolutePath() : "NULL"));
+        try
+        {
+            row.setImage(imageIndex, imageFile);
+            wbPane.setChanged(true);
+            
+            // call showImage() to update the visible image
+            showImage();
+        }
+        catch (IOException e)
+        {
+            statusBar.setErrorMessage("Exception while replacing image", e);
+        }
+    }
+    
+    public void deleteImage()
+    {
+        UsageTracker.incrUsageCount("WB.DeleteWBRowImage");
+        row.deleteImage(imageIndex);
+        imageIndex--;
+
+        // call showImage() to update the visible image
+        showImage();
+        
+        wbPane.setChanged(true);
+        wbPane.repaint();
+    }
+    
+    protected File askUserForImageFile()
+    {
+        ImageFilter imageFilter = new ImageFilter();
+        JFileChooser fileChooser = new JFileChooser(WorkbenchTask.getDefaultDirPath(WorkbenchTask.IMAGES_FILE_PATH));
+        fileChooser.setFileFilter(imageFilter);
+        fileChooser.setDialogTitle(getResourceString("WB_CHOOSE_IMAGE"));
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        
+        int          userAction  = fileChooser.showOpenDialog(this);
+        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        
+        // remember the directory the user was last in
+        localPrefs.put(WorkbenchTask.IMAGES_FILE_PATH, fileChooser.getCurrentDirectory().getAbsolutePath());
+        
+        if (userAction == JFileChooser.APPROVE_OPTION)
+        {
+            String fullPath = fileChooser.getSelectedFile().getAbsolutePath();
+            if (imageFilter.isImageFile(fullPath))
+            {
+                return fileChooser.getSelectedFile();
+            }
+        }
+        
+        // if for any reason we got to this point...
+        return null;
+    }
+    
+    protected File[] askUserForImageFiles()
+    {
+        ImageFilter imageFilter = new ImageFilter();
+        JFileChooser fileChooser = new JFileChooser(WorkbenchTask.getDefaultDirPath(WorkbenchTask.IMAGES_FILE_PATH));
+        fileChooser.setFileFilter(imageFilter);
+        fileChooser.setDialogTitle(getResourceString("WB_CHOOSE_IMAGES"));
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setMultiSelectionEnabled(true);
+
+        int          userAction  = fileChooser.showOpenDialog(this);
+        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        
+        // remember the directory the user was last in
+        localPrefs.put(WorkbenchTask.IMAGES_FILE_PATH, fileChooser.getCurrentDirectory().getAbsolutePath());
+
+        if (userAction == JFileChooser.APPROVE_OPTION)
+        {
+            return fileChooser.getSelectedFiles();
+        }
+        
+        // if for any reason we got to this point...
+        return null;
     }
     
     /**
@@ -338,59 +639,25 @@ public class ImageFrame extends JFrame
      */
     public void setRow(final WorkbenchRow row)
     {
+        // if nothing changed, ignore this call
+        if (this.row == row)
+        {
+            return;
+        }
+        
         this.row = row;
+        
+        // set the index so the first image is displayed
+        imageIndex = 0;
         if (row != null)
         {
-            Integer lastDisplayedSize = rowToImageSizeHash.get(row.hashCode());
-            if (lastDisplayedSize == null || lastDisplayedSize == -1)
-            {
-                showReducedImage();
-            }
-            else
-            {
-                showOriginalSizeImage();
-            }
-            
-            // card image should have been set by now by either showReducedImage() or showOriginalSizeImage()
-            if (cardImage == null)
-            {
-                if (showingCardImageLabel)
-                {
-                    showNoCardImages();
-                } else
-                {
-                    enableMenus(false);
-                }
-            }
-            else
-            {
-                if (!showingCardImageLabel)
-                {
-                    // swap out the noCardImageMessagePanel for the cardImageLabel
-                    mainPane.remove(noCardImageMessagePanel);
-                    mainPane.add(cardImageLabel, BorderLayout.CENTER);
-                    showingCardImageLabel = true;
-                }
-                cardImageLabel.setText(null);
-                enableMenus(true);
-            }
-            
-        } else
-        {
-            if (!showingCardImageLabel)
-            {
-                // swap out the noCardImageMessagePanel for the cardImageLabel
-                mainPane.remove(noCardImageMessagePanel);
-                mainPane.add(cardImageLabel, BorderLayout.CENTER);
-                showingCardImageLabel = true;
-            }
-            
-            cardImage = null;
-            cardImageLabel.setIcon(null);
-            cardImageLabel.setText(getResourceString("WB_NO_ROW_SELECTED"));
+            showImage();
         }
-        validate();
-        repaint();
+        else
+        {
+            setTitle(getResourceString("WB_NO_ROW_SELECTED"));
+            setStatusBarText(null);
+        }
     }
 
     /* (non-Javadoc)

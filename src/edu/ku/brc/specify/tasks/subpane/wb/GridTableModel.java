@@ -8,14 +8,17 @@ package edu.ku.brc.specify.tasks.subpane.wb;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
+import edu.ku.brc.specify.datamodel.WorkbenchRowImage;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
@@ -160,13 +163,30 @@ public class GridTableModel extends SpreadSheetModel
             int x = 0;
             x++;
         }
+        
+        // if this is the image column...
         if (isInImageMode && column == headers.size() - 1)
         {
             WorkbenchRow rowObj = workbench.getRow(row);
-            return rowObj.getCardImage() != null ? imageIcon : blankIcon;
+            Set<WorkbenchRowImage> images = rowObj.getWorkbenchRowImages();
+            if (images != null && images.size() > 0)
+            {
+                StringBuilder sb = new StringBuilder();
+                for (WorkbenchRowImage rowImg: images)
+                {
+                    String fullPath = rowImg.getCardImageFullPath();
+                    String filename = FilenameUtils.getName(fullPath);
+                    sb.append(filename + "; ");
+                }
+                sb.delete(sb.length()-2,sb.length());
+                return sb.toString();
+            }
+            // else
+            return "";
         }
         
-        if (getRowCount() > 0)
+        // otherwise...
+        if (getRowCount() > row)
         {
             return workbench.getWorkbenchRowsAsList().get(row).getData(column);
         }
@@ -192,10 +212,10 @@ public class GridTableModel extends SpreadSheetModel
     @Override
     public Class<?> getColumnClass(int columnIndex)
     {
-        if (isInImageMode && columnIndex == headers.size() - 1)
-        {
-            return ImageIcon.class;
-        }
+//        if (isInImageMode && columnIndex == headers.size() - 1)
+//        {
+//            return ImageIcon.class;
+//        }
 
         Object obj = getValueAt(0, columnIndex);
         if (obj != null)

@@ -6,6 +6,8 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.lang.ref.WeakReference;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -16,6 +18,7 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.swing.ImageIcon;
 
 /**
  * A data class to hold images corresponding to WorkbenchRows.
@@ -34,6 +37,7 @@ public class WorkbenchRowImage implements java.io.Serializable
     protected byte[]       cardImageData;
     protected String       cardImageFullPath;
     protected WorkbenchRow workbenchRow;
+    protected WeakReference<ImageIcon> fullSizeImageWR = null;
     
     /**
      * Constructor (for JPA compliance).
@@ -119,5 +123,45 @@ public class WorkbenchRowImage implements java.io.Serializable
     public void setWorkbenchRow(WorkbenchRow workbenchRow)
     {
         this.workbenchRow = workbenchRow;
+    }
+    
+    ////////////////////////////////////
+    // Helper methods
+    ////////////////////////////////////
+    
+    @Transient
+    public ImageIcon getImage()
+    {
+        if (cardImageData != null)
+        {
+            return new ImageIcon(cardImageData);
+        }
+        
+        return null;
+    }
+    
+    @Transient
+    public ImageIcon getFullSizeImage()
+    {
+        if (cardImageData != null && cardImageFullPath != null && cardImageFullPath.length()>0)
+        {
+            ImageIcon fullSizeImage = null;
+            
+            // try to get the image from the WeakReference
+            if (fullSizeImageWR != null)
+            {
+                fullSizeImage = fullSizeImageWR.get();
+            }
+            
+            // if the image is still null, reload the WeakReference
+            if (fullSizeImage == null)
+            {
+                ImageIcon iconImage = new ImageIcon(cardImageFullPath);
+                fullSizeImageWR = new WeakReference<ImageIcon>(iconImage);
+            }
+            
+            return fullSizeImageWR.get();
+        }
+        return null;
     }
 }

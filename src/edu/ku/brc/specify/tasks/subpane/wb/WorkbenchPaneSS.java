@@ -130,6 +130,7 @@ import edu.ku.brc.specify.exporters.GoogleEarthPlacemarkIFace;
 import edu.ku.brc.specify.exporters.WorkbenchRowPlacemarkWrapper;
 import edu.ku.brc.specify.tasks.ExportTask;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
+import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.specify.ui.LengthInputVerifier;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -255,6 +256,9 @@ public class WorkbenchPaneSS extends BaseSubPane
             {
                 hasOneOrMoreImages = true;
             }
+            
+            // force the loading of the WB row images
+            wbRow.getWorkbenchRowImages().size();
         } 
         
         model       = new GridTableModel(workbench, headers);
@@ -519,30 +523,8 @@ public class WorkbenchPaneSS extends BaseSubPane
         });
         
         // setup the JFrame to show images attached to WorkbenchRows
-        imageFrame = new ImageFrame(mapSize, this.workbench);
+        imageFrame = new ImageFrame(mapSize, this, this.workbench);
         
-        imageFrame.installLoadActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent ae)
-            {
-                editRowImage();
-            }
-        });
-        
-        imageFrame.installClearActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent ae)
-            {
-                clearRowImage();
-            }
-        });
-        imageFrame.installCloseActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent ae)
-            {
-                toggleImageFrameVisible();
-            }
-        });
         imageFrame.addWindowListener(new WindowAdapter()
         {
             @Override
@@ -688,7 +670,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     }
     
     /**
-     * Displays a FIle dialog aso the user can chhose and image.
+     * Displays a file dialog so the user can choose an image.
      */
     protected void editRowImage()
     {
@@ -711,22 +693,45 @@ public class WorkbenchPaneSS extends BaseSubPane
     }
     
     /**
-     * Clear the image from the row.
+     * Displays a file dialog so the user can choose an image.
      */
-    protected void clearRowImage()
+    protected void addImage()
     {
+        UsageTracker.incrUsageCount("WB.EditWBRowImage");
+        
         // figure out what row is selected
         int selectedIndex = getCurrentIndex();
         if (selectedIndex > -1)
         {
             WorkbenchRow row = workbench.getWorkbenchRowsAsList().get(selectedIndex);
-            row.setCardImage((File)null);
-            imageFrame.clearImage();
-            setChanged(true);
-            //showCardImageForSelectedRow();
-            spreadSheet.repaint();
+            
+            // then load a new image for it
+            boolean loaded = loadNewImage(row);
+            if (loaded)
+            {
+                showCardImageForSelectedRow();
+                setChanged(true);
+            }
         }
     }
+    
+//    /**
+//     * Clear the image from the row.
+//     */
+//    protected void clearRowImage()
+//    {
+//        // figure out what row is selected
+//        int selectedIndex = getCurrentIndex();
+//        if (selectedIndex > -1)
+//        {
+//            WorkbenchRow row = workbench.getWorkbenchRowsAsList().get(selectedIndex);
+//            row.setCardImage((File)null);
+//            imageFrame.clearImage();
+//            setChanged(true);
+//            //showCardImageForSelectedRow();
+//            spreadSheet.repaint();
+//        }
+//    }
     
     /**
      * Checks the cell for cell editing and stops it.
@@ -1027,22 +1032,12 @@ public class WorkbenchPaneSS extends BaseSubPane
             // no selection
             log.debug("No selection, so removing the card image");
             imageFrame.setRow(null);
-            imageFrame.setTitle(getResourceString("WB_NO_ROW_SELECTED"));
-            imageFrame.setStatusBarText(null);
             return;
         }
 
         log.debug("Showing image for row " + selectedIndex);
         WorkbenchRow row = workbench.getWorkbenchRowsAsList().get(selectedIndex);
         imageFrame.setRow(row);
-
-        // XXX Change later - Assuming first Row
-        //WorkbenchDataItem firstColItem = row.getItems().get((short)0);
-        //String firstColCellData = (firstColItem != null) ? firstColItem.getCellData() : "";
-        String fullFilePath = row.getCardImageFullPath();
-        String filename = FilenameUtils.getName(fullFilePath);
-        imageFrame.setTitle("Row " + (selectedIndex+1) + ((filename != null) ? ": " + filename : ""));
-        imageFrame.setStatusBarText(fullFilePath);
     }
     
     /**
@@ -1121,6 +1116,11 @@ public class WorkbenchPaneSS extends BaseSubPane
             return 0;
         }
         return selectedInx == -1 ? spreadSheet.getRowCount() : selectedInx;
+    }
+    
+    public int getSelectedIndexFromView()
+    {
+        return spreadSheet.getSelectedRow();
     }
     
     /**
@@ -1240,7 +1240,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 
             toggleImageFrameBtn.setToolTipText(getResourceString("WB_HIDE_IMG_WIN"));
             spreadSheet.getSelectionModel().addListSelectionListener(workbenchRowChangeListener);
-            imageFrame.setHelpContext("WorkbenchWorkingWithImages");
+            HelpMgr.setHelpID(this, "WorkbenchWorkingWithImages");
             
             // set the image window and the image column visible
             imageFrame.setVisible(true);

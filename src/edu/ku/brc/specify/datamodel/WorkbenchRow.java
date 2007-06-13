@@ -43,6 +43,7 @@ import javax.swing.ImageIcon;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Index;
 
 import com.sun.image.codec.jpeg.JPEGCodec;
@@ -78,6 +79,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     // XXX PREF
     protected int                      maxWidth  = 500;
     protected int                      maxHeight = 500;
+    protected int                      maxImageSize = 16000000; // ~ 16 MB
     protected WeakReference<ImageIcon> fullSizeImageWR = null;
     
     // Transient Data Members
@@ -177,9 +179,112 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         imgIcon = null;
         this.cardImageData = cardImageData;
     }
+        
+    public synchronized void setImage(int index, File imgOrig) throws IOException
+    {
+        if (workbenchRowImages == null)
+        {
+            workbenchRowImages = new HashSet<WorkbenchRowImage>();
+        }
+        
+        if (index > workbenchRowImages.size()-1)
+        {
+            addImage(imgOrig);
+            return;
+        }
+        
+        for (WorkbenchRowImage img: workbenchRowImages)
+        {
+            if (img.getImageOrder().intValue() == index)
+            {
+                byte[] newImageData = readCardImage(imgOrig);
+                img.setCardImageData(newImageData);
+                img.setCardImageFullPath(imgOrig.getAbsolutePath());
+                return;
+            }
+        }
+    }
+    
+    /**
+     * Adds a new image to the row.
+     * 
+     * @param orig the image file
+     * @return the index of the new image
+     * @throws IOException if an error occurs while loading or scaling the image file
+     */
+    public synchronized int addImage(File orig) throws IOException
+    {
+        if (workbenchRowImages == null)
+        {
+            workbenchRowImages = new HashSet<WorkbenchRowImage>();
+        }
+        
+        byte[] imgData = readCardImage(orig);
+        
+        int order = workbenchRowImages.size();
+        WorkbenchRowImage newRowImage = new WorkbenchRowImage();
+        newRowImage.initialize();
+        newRowImage.setImageOrder(order);
+        newRowImage.setCardImageFullPath(orig.getAbsolutePath());
+        newRowImage.setCardImageData(imgData);
+        newRowImage.setWorkbenchRow(this);
+        workbenchRowImages.add(newRowImage);
+        return order;
+    }
+    
+    public synchronized void deleteImage(int index)
+    {
+        if (workbenchRowImages == null)
+        {
+            workbenchRowImages = new HashSet<WorkbenchRowImage>();
+            return;
+        }
+        
+        WorkbenchRowImage toDelete = null;
+        
+        for (WorkbenchRowImage rowImg: workbenchRowImages)
+        {
+            if (rowImg.getImageOrder().intValue() == index)
+            {
+                toDelete = rowImg;
+                continue;
+            }
+            
+            if (rowImg.getImageOrder() > index)
+            {
+                int newOrder = rowImg.getImageOrder().intValue() - 1;
+                rowImg.setImageOrder(newOrder);
+            }
+        }
+        
+        if (toDelete != null)
+        {
+            toDelete.setWorkbenchRow(null);
+            workbenchRowImages.remove(toDelete);
+        }
+    }
     
     @Transient
-    public ImageIcon getCardImage()
+    public synchronized WorkbenchRowImage getRowImage(int index)
+    {
+        if (workbenchRowImages == null)
+        {
+            workbenchRowImages = new HashSet<WorkbenchRowImage>();
+            return null;
+        }
+        
+        for (WorkbenchRowImage img: workbenchRowImages)
+        {
+            if (img.getImageOrder() != null && img.getImageOrder().intValue() == index)
+            {
+                return img;
+            }
+        }
+        return null;
+    }
+    
+    @Transient
+    public synchronized ImageIcon getCardImage()
     {
         if (cardImageData == null || cardImageData.length == 0)
         {
@@ -203,21 +308,90 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
      * @param imgFilePath the full path to the image file
      * @throws IOException 
      */
-    public void setCardImage(final String imgFilePath)
+    public synchronized void setCardImage(final String imgFilePath)
     {
         setCardImage(new File(imgFilePath));
     }
     
+    public synchronized byte[] readCardImage(final File imageFile) throws IOException
+    {
+        if (imageFile == null)
+        {
+            throw new NullPointerException("Provided File must be non-null");
+        }
+
+        if (imageFile.length() < this.maxImageSize)
+        {
+            // read the original
+            BufferedImage img = ImageIO.read(imageFile);
+
+            // determine if we need to scale
+            int origWidth = img.getWidth();
+            int origHeight = img.getHeight();
+            boolean scale = false;
+
+            if (origWidth > this.maxWidth || origHeight > maxHeight)
+            {
+                scale = true;
+            }
+
+            byte[] imgBytes = null;
+
+            if (scale)
+            {
+                // calculate the new height and width while maintaining the aspect ratio
+                int thumbWidth;
+                int thumbHeight;
+                if (origWidth >= origHeight)
+                {
+                    thumbWidth = maxWidth;
+                    thumbHeight = (int)(origHeight * ((float)thumbWidth / (float)origWidth));
+                }
+                else
+                {
+                    thumbHeight = maxHeight;
+                    thumbWidth = (int)(origWidth * ((float)thumbHeight / (float)origHeight));
+                }
+
+                // scale the image
+                BufferedImage thumbImage = new BufferedImage(thumbWidth, thumbHeight, BufferedImage.TYPE_INT_RGB);
+                Graphics2D graphics2D = thumbImage.createGraphics();
+                graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                        RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                graphics2D.drawImage(img, 0, 0, thumbWidth, thumbHeight, null);
+                graphics2D.dispose();
+
+                // save thumbnail image to the byte[] as a JPEG
+                ByteArrayOutputStream outputByteStream = new ByteArrayOutputStream(8192);
+                JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(outputByteStream);
+                JPEGEncodeParam param = encoder.getDefaultJPEGEncodeParam(thumbImage);
+                param.setQuality(1, false);
+                encoder.setJPEGEncodeParam(param);
+                encoder.encode(thumbImage);
+                imgBytes = outputByteStream.toByteArray();
+            }
+            else
+            {
+                // since we don't need to scale the image, just grab its bytes
+                imgBytes = FileUtils.readFileToByteArray(imageFile);
+            }
+            return imgBytes;
+        }
+        // else, image is too large
+        throw new IOException("Provided image is too large.  Maximum image size is " + this.maxImageSize + " bytes.");
+    }
+    
     /**
-     * Stores the image found at imgFilePath into the row as the card image data, scaling
-     * the image if necessary.  The path to the original image is also set via {@link #setCardImageFullPath(String)}.
+     * Stores the image found at imgFilePath into the row as the card image data, scaling the image
+     * if necessary. The path to the original image is also set via
+     * {@link #setCardImageFullPath(String)}.
      * 
      * This code is taken almost completely from ImageThumbnailGenerator.
      * 
      * @param imageFile the full path to the image file
-     * @throws IOException 
+     * @throws IOException
      */
-    public void setCardImage(final File imageFile)
+    public synchronized void setCardImage(final File imageFile)
     {
         imgIcon       = null;
         
@@ -232,85 +406,22 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
             return;
         }
         
+        byte[] imgData;
         try
         {
-            //log.error(imageFile.length());
-            if (imageFile.length() < 16000000)
-            {
-                // read the original
-                BufferedImage img = ImageIO.read(imageFile);
-                //log.error(img.());
-                
-                // determine if we need to scale
-                int     origWidth  = img.getWidth();
-                int     origHeight = img.getHeight();
-                boolean scale      = false;
-                
-                if (origWidth > this.maxWidth || origHeight > maxHeight)
-                {
-                    scale = true;
-                }
-        
-                byte[] imgBytes = null;
-                
-                if (scale)
-                {
-                    // calculate the new height and width while maintaining the aspect ratio
-                    int thumbWidth;
-                    int thumbHeight;
-                    if( origWidth >= origHeight )
-                    {
-                        thumbWidth = maxWidth;
-                        thumbHeight = (int)(origHeight * ((float)thumbWidth/(float)origWidth));
-                    }
-                    else
-                    {
-                        thumbHeight = maxHeight;
-                        thumbWidth = (int)(origWidth * ((float)thumbHeight/(float)origHeight));
-                    }
-                    
-                    // scale the image
-                    BufferedImage thumbImage = new BufferedImage(thumbWidth, thumbHeight, BufferedImage.TYPE_INT_RGB);
-                    Graphics2D    graphics2D = thumbImage.createGraphics();
-                    graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION,RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-                    graphics2D.drawImage(img, 0, 0, thumbWidth, thumbHeight, null);
-                    graphics2D.dispose();
-                    
-                    // save thumbnail image to the byte[] as a JPEG
-                    ByteArrayOutputStream outputByteStream = new ByteArrayOutputStream(8192);
-                    JPEGImageEncoder      encoder          = JPEGCodec.createJPEGEncoder(outputByteStream);
-                    JPEGEncodeParam       param            = encoder.getDefaultJPEGEncodeParam(thumbImage);
-                    param.setQuality(1, false);
-                    encoder.setJPEGEncodeParam(param);
-                    encoder.encode(thumbImage);
-                    imgBytes = outputByteStream.toByteArray();
-                }
-                else
-                {
-                    // since we don't need to scale the image, just grab its bytes
-                    imgBytes = FileUtils.readFileToByteArray(imageFile);
-                }
-                
-                this.setCardImageData(imgBytes);
-                this.setCardImageFullPath(imageFile.getAbsolutePath());
-                loadStatus = LoadStatus.Successful;
-                
-            } else
-            {
-                loadStatus = LoadStatus.TooLarge;
-
-            }
-        } catch (java.lang.OutOfMemoryError memEx)
-        {
-            loadStatus = LoadStatus.OutOfMemory;
-            loadException = new Exception("Out of Memory");
-            log.error(memEx);
+            imgData = readCardImage(imageFile);
         }
-        catch (Exception ex)
+        catch (IOException e)
         {
-            log.error(ex);
-            loadStatus    = LoadStatus.Error;
-            loadException = ex;
+            loadStatus = LoadStatus.Error;
+            loadException = e;
+            return;
+        }
+        
+        if (imgData != null)
+        {
+            setCardImageData(imgData);
+            setCardImageFullPath(imageFile.getAbsolutePath());
         }
     }
     
@@ -403,8 +514,8 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         this.workbenchDataItems = workbenchDataItems;
     }
 
-    @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "workbenchRow")
-    // @Cascade( { org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.LOCK })
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "workbenchRow")
+    @Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<WorkbenchRowImage> getWorkbenchRowImages()
     {
         return workbenchRowImages;

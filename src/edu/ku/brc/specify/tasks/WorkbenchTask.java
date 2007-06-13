@@ -1456,7 +1456,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     {
         if (workbench != null)
         {
-            UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_IMPORTING_DATASET"), new Object[] {workbench.getName()}), GLASSPANE_FONT_SIZE);
+            UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_IMPORTING_DATASET"), workbench.getName()), GLASSPANE_FONT_SIZE);
             
             final SwingWorker worker = new SwingWorker()
             {
@@ -2362,7 +2362,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
      * @param isNew
      * @return
      */
-    protected boolean importCardImages(final Workbench       workbench, 
+    protected boolean importImages(final Workbench       workbench, 
                                        final Vector<File>    fileList,
                                        final WorkbenchPaneSS pane,
                                        final boolean         isNew)
@@ -2391,15 +2391,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                     //pane.addRowAfter();
                     pane.addRowToSpreadSheet();
                 }
-                row.setCardImage(file);
-                if (row.getLoadStatus() != WorkbenchRow.LoadStatus.Successful)
-                {
-                    if (!showLoadStatus(row, i < fileList.size()-1))
-                    {
-                        // Should we still save or return?
-                        break; 
-                    }
-                }
+                row.addImage(file);
                                 
                 if (i % 5 == 0)
                 {
@@ -2594,7 +2586,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 {
 
                     pane = (WorkbenchPaneSS)SubPaneMgr.getInstance().getCurrentSubPane();
-                    isOK = importCardImages(importWB, fileList, pane, workbenchArg == null);
+                    isOK = importImages(importWB, fileList, pane, workbenchArg == null);
 
                     return null;
                 }

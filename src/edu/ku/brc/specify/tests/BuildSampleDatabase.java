@@ -154,6 +154,7 @@ import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
+import edu.ku.brc.specify.datamodel.WorkbenchRowImage;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
@@ -945,16 +946,30 @@ public class BuildSampleDatabase
             boolValAsStr = "";
             WorkbenchDataItem wbdi3 = createWorkbenchDataItem(wbRow, boolValAsStr, 3);
             
+            WorkbenchRowImage wbRowImage = null;
+            
             File f = new File("demo_files" + File.separator + "card" + i + (i == 2 ? ".png" : ".jpg"));
             if (f.exists())
             {
-                wbRow.setCardImage(f.getAbsolutePath());
+                try
+                {
+                    int imageIndex = wbRow.addImage(f);
+                    wbRowImage= wbRow.getRowImage(imageIndex);
+                }
+                catch (IOException e)
+                {
+                    log.error("Unable to add card image to workbench row", e);
+                }
             }
 
             dataObjects.add(wbRow);
             dataObjects.add(wbdi0);
             dataObjects.add(wbdi1);
             dataObjects.add(wbdi2);
+            if (wbRowImage != null)
+            {
+                dataObjects.add(wbRowImage);
+            }
             
             // since some of these values will be "", the data item might be null
             if (wbdi3 != null)
