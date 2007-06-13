@@ -65,6 +65,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
@@ -751,6 +752,46 @@ public final class UIHelper
                                                            final AbstractAction action)
     {
         JCheckBoxMenuItem mi = new JCheckBoxMenuItem(getResourceString(label));
+        if (menu != null)
+        {
+            menu.add(mi);
+        }
+        if (isNotEmpty(mnemonic))
+        {
+            mi.setMnemonic(getResourceString(mnemonic).charAt(0));
+        }
+        if (isNotEmpty(accessibleDescription))
+        {
+            mi.getAccessibleContext().setAccessibleDescription(accessibleDescription);
+        }
+        if (action != null)
+        {
+            mi.addActionListener(action);
+            action.addPropertyChangeListener(new MenuItemPropertyChangeListener(mi));
+            action.setEnabled(enabled);
+        }
+
+        return mi;
+    }
+
+    /**
+     * Creates a JRadioButtonMenuItem.
+     * @param menu parent menu
+     * @param label the label of the menu item
+     * @param mnemonic the mnemonic
+     * @param accessibleDescription the accessible Description
+     * @param enabled enabled
+     * @param action the aciton
+     * @return menu item
+     */
+    public static JRadioButtonMenuItem createRadioButtonMenuItem(final JMenu          menu,
+                                                              final String         label,
+                                                              final String         mnemonic,
+                                                              final String         accessibleDescription,
+                                                              final boolean        enabled,
+                                                              final AbstractAction action)
+    {
+        JRadioButtonMenuItem mi = new JRadioButtonMenuItem(getResourceString(label));
         if (menu != null)
         {
             menu.add(mi);
