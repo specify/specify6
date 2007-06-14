@@ -17,21 +17,31 @@ package edu.ku.brc.specify.tasks.subpane.wb;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -39,12 +49,15 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
-import javax.swing.JSlider;
+import javax.swing.ListCellRenderer;
+import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
@@ -61,9 +74,12 @@ import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchRowImage;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.ui.HelpMgr;
+import edu.ku.brc.ui.DefaultModifiableListModel;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.IconManager.IconSize;
+import edu.ku.brc.util.thumbnails.ImageThumbnailGenerator;
 
 /**
  * This frame is used to display a set of images linked to a record in a workbench data set.
@@ -74,23 +90,25 @@ import edu.ku.brc.ui.UIHelper;
  */
 public class ImageFrame extends JFrame
 {
-    private static final Logger log                      = Logger.getLogger(ImageFrame.class);
+    private static final Logger log                        = Logger.getLogger(ImageFrame.class);
             
-    protected JLabel          cardImageLabel             = new JLabel("", SwingConstants.CENTER);
-    protected JProgressBar    progress                   = new JProgressBar();
-    protected WorkbenchRow    row                        = null;
-    protected WorkbenchPaneSS wbPane                     = null;
-    protected int             imageIndex                 = -1;
-    protected Workbench       workbench;
+    protected JProgressBar      progress                   = new JProgressBar();
+    protected WorkbenchRow      row;
+    protected WorkbenchPaneSS   wbPane;
+    protected int               imageIndex                 = -1;
+    protected Workbench         workbench;
+
+    // the three things that are viewed in the main display area of the frame
+    protected JLabel            cardImageLabel             = new JLabel("", SwingConstants.CENTER);
+    protected JPanel            noCardImageMessagePanel;
+    protected JPanel            noRowSelectedMessagePanel;
     
-    protected JPanel       noCardImageMessagePanel    = null;
-    protected boolean      showingCardImageLabel      = true;
-    protected ImageIcon    cardImage                  = null;
-    protected JButton      loadImgBtn                 = null;
-    protected JPanel       mainPane;
-    protected JScrollPane  scrollPane;
-    protected JStatusBar   statusBar;
-    protected JSlider      indexSlider;
+    protected ImageIcon         cardImage;
+    protected JButton           loadImgBtn;
+    protected JPanel            mainPane;
+    protected JScrollPane       scrollPane;
+    protected JStatusBar        statusBar;
+    protected ThumbnailTray     tray;
 
     protected JMenu             viewMenu;
     protected JMenu             imageMenu;
@@ -98,9 +116,13 @@ public class ImageFrame extends JFrame
     protected JMenuItem         replaceMI;
     protected JMenuItem         deleteMI;
     protected JMenuItem         addMI;
+    protected JCheckBoxMenuItem alwaysOnTopMI;
     protected JRadioButtonMenuItem origMI;
     protected JRadioButtonMenuItem reduceMI;
-    protected JCheckBoxMenuItem alwaysOnTopMI;
+    
+    protected ImageIcon         defaultThumbIcon;
+    
+    protected ImageThumbnailGenerator thumbnailer;
     
     protected static int REDUCED_SIZE = -1;
     protected static int FULL_SIZE    =  1;
@@ -119,6 +141,8 @@ public class ImageFrame extends JFrame
         this.workbench = workbench;
         this.wbPane = wbPane;
         
+        this.defaultThumbIcon = IconManager.getIcon("image", IconSize.Std32);
+        
         setIconImage(IconManager.getImage("AppIcon").getImage());
         
         Dimension minSize = new Dimension(mapSize, mapSize);
@@ -134,36 +158,46 @@ public class ImageFrame extends JFrame
         
         noCardImageMessagePanel = builder.getPanel();
         
+        builder = new PanelBuilder(new FormLayout("f:p:g,c:p,f:p:g", "f:p:g,c:p,f:p:g"));
+        builder.add(new JLabel(getResourceString("WB_NO_ROW_SELECTED"), SwingConstants.CENTER), cc.xy(2,2));
+        
+        noRowSelectedMessagePanel = builder.getPanel();
+        
         mainPane = new JPanel(new BorderLayout());
         mainPane.setSize(minSize);
         mainPane.setPreferredSize(minSize);
         mainPane.setMinimumSize(minSize);
+        
         mainPane.add(cardImageLabel, BorderLayout.CENTER);
         scrollPane = new JScrollPane(mainPane, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         
         statusBar = new JStatusBar();
         
-        indexSlider = new JSlider(SwingConstants.HORIZONTAL);
-        indexSlider.setMajorTickSpacing(1);
-        indexSlider.setPaintTicks(true);
-        indexSlider.setPaintLabels(true);
-        indexSlider.setSnapToTicks(true);
-        indexSlider.setMinimum(1);
-        indexSlider.setMaximum(1);
-        indexSlider.getModel().addChangeListener(new ChangeListener()
+        thumbnailer = new ImageThumbnailGenerator();
+        thumbnailer.setMaxHeight(32);
+        thumbnailer.setMaxWidth(32);
+        thumbnailer.setQuality(1);
+        
+        tray = new ThumbnailTray();
+        tray.getModel().removeAllElements();
+        tray.addListSelectionListener(new ListSelectionListener()
         {
-            public void stateChanged(ChangeEvent ce)
+            public void valueChanged(ListSelectionEvent e)
             {
-                int value = indexSlider.getValue();
-                setImageIndex(value-1);
+                if (e.getValueIsAdjusting())
+                {
+                    return;
+                }
+                
+                setImageIndex(tray.getSelectedIndex());
             }
         });
-        indexSlider.setEnabled(false);
         
         JPanel southPanel = new JPanel();
         southPanel.setLayout(new BorderLayout());
         
-        southPanel.add(indexSlider,BorderLayout.NORTH);
+        //southPanel.add(indexSlider,BorderLayout.NORTH);
+        southPanel.add(tray, BorderLayout.CENTER);
         southPanel.add(statusBar, BorderLayout.SOUTH);
 
         JPanel basePanel = new JPanel();
@@ -182,7 +216,6 @@ public class ImageFrame extends JFrame
         {
             public void actionPerformed(ActionEvent ae)
             {
-                indexSlider.setEnabled(false);
                 ImageFrame.this.setVisible(false);
             }
         });
@@ -314,79 +347,10 @@ public class ImageFrame extends JFrame
     public void setImageIndex(int imageIndex)
     {
         this.imageIndex = imageIndex;
+        tray.setSelectedIndex(imageIndex);
         showImage();
     }
 
-//    /**
-//     * Clear the hash so when when it is displayed later without an image it calls the reduced one. 
-//     */
-//    public void clearImage()
-//    {
-//        if (row != null)
-//        {
-//            rowToImageSizeHash.remove(row.hashCode());
-//        }
-//        // swap out the cardImageLabel for the noCardImageMessagePanel
-//        mainPane.remove(cardImageLabel);
-//        mainPane.add(noCardImageMessagePanel, BorderLayout.CENTER);
-//        showingCardImageLabel = false;
-//        
-//        enableMenus(false);
-//        validate();
-//        repaint();
-//    }
-//    
-//    /**
-//     * Displays the card image in a reduced size.
-//     */
-//    public void showReducedImage()
-//    {
-//        if (row == null)
-//        {
-//            return;
-//        }
-//        
-//        rowToImageSizeHash.put(row.hashCode(), -1);
-//        
-//        cardImage = row.getCardImage();
-//        cardImageLabel.setIcon(cardImage);
-//        if (cardImage != null)
-//        {
-//            cardImageLabel.setSize(cardImage.getIconWidth(), cardImage.getIconHeight());
-//            mainPane.setSize(cardImage.getIconWidth(), cardImage.getIconHeight());
-//            mainPane.setPreferredSize(new Dimension(cardImage.getIconWidth(), cardImage.getIconHeight()));
-//        }
-//        mainPane.repaint();
-//    }
-//    
-//    /**
-//     * Displays the full size card image.
-//     */
-//    public void showOriginalSizeImage()
-//    {
-//        if (row == null)
-//        {
-//            return;
-//        }
-//        
-//        rowToImageSizeHash.put(row.hashCode(), 1);
-//        
-//        cardImage = row.getFullSizeImage();
-//        if (cardImage != null)
-//        {
-//            cardImageLabel.setIcon(cardImage);
-//            if (cardImage != null)
-//            {
-//                mainPane.setSize(cardImage.getIconWidth(), cardImage.getIconHeight());
-//                mainPane.setPreferredSize(new Dimension(cardImage.getIconWidth(), cardImage.getIconHeight()));
-//            }
-//        } else
-//        {
-//            WorkbenchTask.showLoadStatus(row, false);
-//        }
-//        mainPane.repaint();
-//    }
-    
     protected void showImage()
     {
         if (row == null)
@@ -405,24 +369,14 @@ public class ImageFrame extends JFrame
         if (imageIndex < 0)
         {
             imageIndex = 0;
+            tray.setSelectedIndex(imageIndex);
         }
         else if (imageIndex > rowImages.size()-1)
         {
             imageIndex = rowImages.size()-1;
+            tray.setSelectedIndex(imageIndex);
         }
         
-        indexSlider.setMinimum(1);
-        indexSlider.setMaximum(rowImages.size());
-        indexSlider.setValue(imageIndex+1);
-        if (rowImages.size() > 1)
-        {
-            indexSlider.setEnabled(true);
-        }
-        else
-        {
-            indexSlider.setEnabled(false);
-        }
-
         // try to get the appropriate WorkbenchRowImage
         WorkbenchRowImage rowImage = row.getRowImage(imageIndex);
         if (rowImage == null)
@@ -433,6 +387,7 @@ public class ImageFrame extends JFrame
             // Just give the first one, I guess.
             rowImage = rowImages.iterator().next();
             imageIndex = 0;
+            tray.setSelectedIndex(imageIndex);
             statusBar.setWarningMessage("Unable to locate an image with the proper index.  Showing first image."); // XXX i18n
         }
 
@@ -464,14 +419,11 @@ public class ImageFrame extends JFrame
         }
         else // we've got an image
         {
-            // if we're NOT currently showing the image label
-            if (!showingCardImageLabel)
-            {
-                // swap out the "no image" text for the image label
-                mainPane.remove(noCardImageMessagePanel);
-                mainPane.add(cardImageLabel, BorderLayout.CENTER);
-                showingCardImageLabel = true;
-            }
+            // this method is simpler than tracking what we're showing and changing to the correct view
+            mainPane.remove(noRowSelectedMessagePanel);
+            mainPane.remove(noCardImageMessagePanel);
+            mainPane.remove(cardImageLabel);
+            mainPane.add(cardImageLabel);
             
             int w = image.getIconWidth();
             int h = image.getIconHeight();
@@ -491,17 +443,30 @@ public class ImageFrame extends JFrame
      */
     protected void noImagesLinked()
     {
-        // are we currently showing the image label
-        if (showingCardImageLabel)
-        {
-            // remove the image label and show the "no images" text
-            // swap out the cardImageLabel for the noCardImageMessagePanel
-            mainPane.remove(cardImageLabel);
-            mainPane.add(noCardImageMessagePanel, BorderLayout.CENTER);
-            showingCardImageLabel = false;
-        }
-        indexSlider.setEnabled(false);
+        // this method is simpler than tracking what we're showing and changing to the correct view
+        mainPane.remove(noRowSelectedMessagePanel);
+        mainPane.remove(noCardImageMessagePanel);
+        mainPane.remove(cardImageLabel);
+        mainPane.add(noCardImageMessagePanel);
+
+        tray.getModel().removeAllElements();
         setTitle(getResourceString("WB_NO_IMAGES_LINKED"));
+        setStatusBarText(null);
+        enableMenus(false);
+        validate();
+        repaint();
+    }
+    
+    protected void noRowSelected()
+    {
+        // this method is simpler than tracking what we're showing and changing to the correct view
+        mainPane.remove(noRowSelectedMessagePanel);
+        mainPane.remove(noCardImageMessagePanel);
+        mainPane.remove(cardImageLabel);
+        mainPane.add(noRowSelectedMessagePanel);
+
+        tray.getModel().removeAllElements();
+        setTitle(getResourceString("WB_NO_ROW_SELECTED"));
         setStatusBarText(null);
         enableMenus(false);
         validate();
@@ -533,19 +498,25 @@ public class ImageFrame extends JFrame
         }
         
         log.debug("addImages: " + imageFiles.length + " files selected");
+        List<WorkbenchRowImage> rowImagesNeedingThumbnails = new Vector<WorkbenchRowImage>();
         for (File f: imageFiles)
         {
             try
             {
                 int newIndex = row.addImage(f);
+                tray.getModel().add(defaultThumbIcon);
+                rowImagesNeedingThumbnails.add(row.getRowImage(newIndex));
                 wbPane.setChanged(true);
                 this.imageIndex = newIndex;
+                tray.setSelectedIndex(imageIndex);
                 showImage();
             }
             catch (IOException e)
             {
                 statusBar.setErrorMessage("Exception while adding a new image", e);
             }
+            
+            generateThumbnailsInBackground(rowImagesNeedingThumbnails);
         }
         wbPane.repaint();
     }
@@ -573,7 +544,9 @@ public class ImageFrame extends JFrame
     {
         UsageTracker.incrUsageCount("WB.DeleteWBRowImage");
         row.deleteImage(imageIndex);
+        tray.getModel().remove(imageIndex);
         imageIndex--;
+        tray.setSelectedIndex(imageIndex);
 
         // call showImage() to update the visible image
         showImage();
@@ -647,20 +620,107 @@ public class ImageFrame extends JFrame
         
         this.row = row;
         
+        if (row == null)
+        {
+            noRowSelected();
+            return;
+        }
+
+        // put the correct thumbs in the tray UI
+        tray.getModel().removeAllElements();
+        
+        // add the default, pre-thumbnail-generation icons to the tray for each image
+        Set<WorkbenchRowImage> rowImages = row.getWorkbenchRowImages();
+        for (int i = 0; i < rowImages.size(); ++i)
+        {
+            tray.getModel().add(defaultThumbIcon);
+        }
+        
+        // start the background thumbnail generation process
+        // replacing the default icons as thumbnails become available
+        List<WorkbenchRowImage> rowImagesNeedingThumbnails = new Vector<WorkbenchRowImage>();
+        
+        for (WorkbenchRowImage img: rowImages)
+        {
+            // load any cached thumbnails
+            ImageIcon thumb = img.getThumbnail();
+            if (thumb != null)
+            {
+                tray.getModel().set(img.getImageOrder(), thumb);
+            }
+            else // generate any missing thumbnails
+            {
+                log.debug("Workbench row image is missing its thumbnail.  Adding it to the list of row images for thumbnail generation work.  " + img);
+                rowImagesNeedingThumbnails.add(img);
+            }
+        }
+        
+        generateThumbnailsInBackground(rowImagesNeedingThumbnails);
+        
         // set the index so the first image is displayed
         imageIndex = 0;
-        if (row != null)
+        tray.setSelectedIndex(imageIndex);
+        showImage();
+    }
+    
+    protected ImageIcon generateThumbnail(WorkbenchRowImage rowImage) throws IOException
+    {
+        File orig = new File(rowImage.getCardImageFullPath());
+        byte[] origData = FileUtils.readFileToByteArray(orig);
+        byte[] thumbData = thumbnailer.generateThumbnail(origData);
+        return new ImageIcon(thumbData);
+    }
+    
+    protected void generateThumbnailsInBackground(final List<WorkbenchRowImage> rowImages)
+    {
+        Collections.sort(rowImages);
+        
+        Thread thumbGenTask = new Thread()
         {
-            showImage();
-        }
-        else
-        {
-            setTitle(getResourceString("WB_NO_ROW_SELECTED"));
-            setStatusBarText(null);
-        }
+            @Override
+            @SuppressWarnings("synthetic-access")
+            public void run()
+            {
+                for (final WorkbenchRowImage rowImage: rowImages)
+                {
+                    try
+                    {
+                        final ImageIcon thumb = generateThumbnail(rowImage);
+                        
+                        // cache it so we don't have to do this again and again
+                        rowImage.setThumbnail(thumb);
+                        
+                        // update the UI
+                        Runnable updateTrayUI = new Runnable()
+                        {
+                            public void run()
+                            {
+                                log.info("Thumbnail generation complete.  Updating the UI.  " + rowImage);
+                                if (row == rowImage.getWorkbenchRow())
+                                {
+                                    tray.getModel().set(rowImage.getImageOrder(), thumb);
+                                    tray.repaint();
+                                }
+                            }
+                        };
+                        SwingUtilities.invokeLater(updateTrayUI);
+                    }
+                    catch (IOException e)
+                    {
+                        log.warn("Failed to generate a thumbnail for " + rowImage.getCardImageFullPath(), e);
+                    }
+                }
+            }
+        };
+        
+        thumbGenTask.setName("GenThumbs");
+        thumbGenTask.setDaemon(true);
+        thumbGenTask.start();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.awt.Window#setVisible(boolean)
      */
     @Override
@@ -671,5 +731,137 @@ public class ImageFrame extends JFrame
         cardImageLabel.setText(null);
         cardImage = null;
         super.setVisible(b);
+    }
+    
+    class ThumbnailTray extends JPanel
+    {
+        /** A JList used to display the thumbnails representing the items. */
+        protected JList listWidget;
+        /** The model holding the included items. */
+        protected DefaultModifiableListModel<Icon> listModel;
+        /** A JScrollPane containing the iconListWidget. */
+        protected JScrollPane listScrollPane;
+     
+        protected int minHeight = 64;
+
+        /**
+         * Creates a new IconTray containing zero items.
+         */
+        public ThumbnailTray()
+        {
+            listModel = new DefaultModifiableListModel<Icon>();
+            ListCellRenderer renderer = new DefaultListCellRenderer()
+            {
+                @Override
+                public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
+                {
+                    JLabel l = (JLabel)super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                    if (value instanceof Icon)
+                    {
+                        l.setText(null);
+                        l.setIcon((Icon)value);
+                    }
+                    return l;
+                }
+            };
+            listWidget = new JList(listModel);
+            listWidget.setCellRenderer(renderer);
+            listWidget.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+            listWidget.setVisibleRowCount(1);
+            listWidget.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            
+            JPanel listPanel = new JPanel();
+            listPanel.setBackground(listWidget.getBackground());
+            listPanel.setLayout(new BoxLayout(listPanel,BoxLayout.LINE_AXIS));
+            listPanel.add(Box.createHorizontalGlue());
+            listPanel.add(listWidget);
+            listPanel.add(Box.createHorizontalGlue());
+            
+            listScrollPane = new JScrollPane(listPanel,ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+            
+            this.setLayout(new BorderLayout());
+            this.add(listScrollPane,BorderLayout.CENTER);
+        }
+        
+        public DefaultModifiableListModel<Icon> getModel()
+        {
+            return listModel;
+        }
+
+        /**
+         * Sets the height of every cell in the list.
+         *
+         * @param height an integer giving the height, in pixels, for all cells in this list
+         * @see JList#setFixedCellHeight(int)
+         */
+        public synchronized void setFixedCellHeight(int height)
+        {
+            listWidget.setFixedCellHeight(height);
+        }
+        
+        /* (non-Javadoc)
+         * @see javax.swing.JComponent#getPreferredSize()
+         */
+        @Override
+        public Dimension getPreferredSize()
+        {
+            // need to set the min height to something other than 0 so
+            // that empty trays don't get flattened by containers that
+            // use preferred size
+            int height = minHeight;
+            Dimension d = super.getPreferredSize();        
+            if ((int)d.getHeight() > height)
+            {
+                height = (int)d.getHeight();
+            }
+            return new Dimension(this.getWidth(),height);
+        }
+
+        /**
+         * @see JList#getSelectedIndex()
+         * @return the index of the selection
+         */
+        public int getSelectedIndex()
+        {
+            return listWidget.getSelectedIndex();
+        }
+        
+        /**
+         * @see JList#setSelectedIndex(int)
+         * @param index the index of the selection
+         */
+        public void setSelectedIndex(int index)
+        {
+            if (row == null || index < 0 || index > row.getWorkbenchRowImages().size()-1)
+            {
+                return;
+            }
+
+            listWidget.setSelectedIndex(index);
+
+            Rectangle cellBounds = listWidget.getUI().getCellBounds(listWidget, index, index);
+            if (cellBounds != null)
+            {
+                listWidget.scrollRectToVisible(cellBounds);
+            }
+        }
+
+        /**
+         * @see JList#addListSelectionListener(ListSelectionListener)
+         * @param listener a {@link ListSelectionListener}
+         */
+        public void addListSelectionListener(ListSelectionListener listener)
+        {
+            listWidget.addListSelectionListener(listener);
+        }
+
+        /**
+         * @see JList#removeListSelectionListener(ListSelectionListener)
+         * @param listener a {@link ListSelectionListener}
+         */
+        public void removeListSelectionListener(ListSelectionListener listener)
+        {
+            listWidget.removeListSelectionListener(listener);
+        }
     }
 }
