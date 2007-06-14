@@ -498,26 +498,39 @@ public class ImageFrame extends JFrame
         }
         
         log.debug("addImages: " + imageFiles.length + " files selected");
+        
+        int lowestNewIndex = Integer.MAX_VALUE;
+        
         List<WorkbenchRowImage> rowImagesNeedingThumbnails = new Vector<WorkbenchRowImage>();
         for (File f: imageFiles)
         {
             try
             {
+                // TODO: we need to get this off of the Swing thread, but block the GUI so the user can't do anything until it's done
                 int newIndex = row.addImage(f);
+                if (newIndex < lowestNewIndex)
+                {
+                    lowestNewIndex = newIndex;
+                }
                 tray.getModel().add(defaultThumbIcon);
                 rowImagesNeedingThumbnails.add(row.getRowImage(newIndex));
                 wbPane.setChanged(true);
-                this.imageIndex = newIndex;
-                tray.setSelectedIndex(imageIndex);
-                showImage();
             }
             catch (IOException e)
             {
                 statusBar.setErrorMessage("Exception while adding a new image", e);
             }
-            
-            generateThumbnailsInBackground(rowImagesNeedingThumbnails);
         }
+        
+        if (lowestNewIndex < row.getWorkbenchRowImages().size())
+        {
+            this.imageIndex = lowestNewIndex;
+            tray.setSelectedIndex(imageIndex);
+            showImage();
+        }
+        
+        generateThumbnailsInBackground(rowImagesNeedingThumbnails);
+
         wbPane.repaint();
     }
     
@@ -681,8 +694,15 @@ public class ImageFrame extends JFrame
             @SuppressWarnings("synthetic-access")
             public void run()
             {
-                for (final WorkbenchRowImage rowImage: rowImages)
+                // This is just a weird workaround.
+                // For some reason, using the List directly resulted in a ConcurrentModificationException everytime
+                // this method was called from addImages().
+                // It doesn't look like it should throw an exception at all.
+                WorkbenchRowImage[] imgs = new WorkbenchRowImage[rowImages.size()];
+                rowImages.toArray(imgs);
+                for (WorkbenchRowImage rowImage: imgs)
                 {
+                    final WorkbenchRowImage ri = rowImage;
                     try
                     {
                         final ImageIcon thumb = generateThumbnail(rowImage);
@@ -695,10 +715,10 @@ public class ImageFrame extends JFrame
                         {
                             public void run()
                             {
-                                log.info("Thumbnail generation complete.  Updating the UI.  " + rowImage);
-                                if (row == rowImage.getWorkbenchRow())
+                                log.info("Thumbnail generation complete.  Updating the UI.  " + ri);
+                                if (row == ri.getWorkbenchRow())
                                 {
-                                    tray.getModel().set(rowImage.getImageOrder(), thumb);
+                                    tray.getModel().set(ri.getImageOrder(), thumb);
                                     tray.repaint();
                                 }
                             }

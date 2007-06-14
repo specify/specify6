@@ -239,9 +239,14 @@ public class GraphicsUtils
         }
 
         BufferedImage scaled = getScaledInstance(orig, targetW, targetH, RenderingHints.VALUE_INTERPOLATION_BILINEAR, true);
+
         ByteArrayOutputStream output = new ByteArrayOutputStream(8192);
+        
         ImageIO.write(scaled, "jpeg", output);
-        return output.toByteArray();
+
+        byte[] outputBytes = output.toByteArray();
+
+        return outputBytes;
     }
     
     /**
@@ -266,7 +271,7 @@ public class GraphicsUtils
      *    {@code targetWidth} or {@code targetHeight} is
      *    smaller than the original dimensions, and generally only when
      *    the {@code BILINEAR} hint is specified)
-     * @return a scaled version of the original {@codey BufferedImage}
+     * @return a scaled version of the original {@code BufferedImage}
      */
     public static BufferedImage getScaledInstance(BufferedImage img, int targetWidth, int targetHeight, Object hint,
             boolean higherQuality)
