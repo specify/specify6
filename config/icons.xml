@@ -140,6 +140,8 @@
     
     <icon name="WebPage"       file="html.png"          sizes="all"/>
     
+    <icon name="BrokenImage"   file="gtk-brokenimage.png" sizes="all"/>
+    
     <icon name="FirstRec" file="first.gif" sizes="NonStd"/>
     <icon name="PrevRec"  file="prev.gif"  sizes="NonStd"/>
     <icon name="NextRec"  file="next.gif"  sizes="NonStd"/>
