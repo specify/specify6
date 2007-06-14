@@ -8,6 +8,13 @@ import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
+import java.awt.Transparency;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 /**
  * Provides simple utility functions for drawing circles, arrows, etc.  Some
@@ -181,4 +188,138 @@ public class GraphicsUtils
 			((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		}
 	}
+    
+    /**
+     * Scales an image using a relatively fast algorithm.
+     * 
+     * @param imgData the byte array of the original image data (must be readable by {@link ImageIO#read(java.io.InputStream)})
+     * @param maxHeight the max height of the scaled image
+     * @param maxWidth the max width of the scaled image
+     * @param preserveAspectRatio if true, the scaling preserves the aspect ratio of the original image
+     * @return the byte array of the scaled image
+     * @throws IOException an error occurred while loading the input bytes as a BufferedImage or while encoding the output as a JPEG
+     */
+    public static byte[] scaleImage(byte[] imgData, int maxHeight, int maxWidth, boolean preserveAspectRatio) throws IOException
+    {
+        ByteArrayInputStream inputStr = new ByteArrayInputStream(imgData);
+        BufferedImage orig = ImageIO.read(inputStr);
+        
+        return scaleImage(orig, maxHeight, maxWidth, preserveAspectRatio);
+    }
+    
+    /**
+     * @param orig the original image
+     * @param maxHeight the max height of the scaled image
+     * @param maxWidth the max width of the scaled image
+     * @param preserveAspectRatio if true, the scaling preserves the aspect ratio of the original image
+     * @return the byte array of the scaled image
+     * @throws IOException an error occurred while encoding the result as a JPEG image
+     */
+    public static byte[] scaleImage(BufferedImage orig, int maxHeight, int maxWidth, boolean preserveAspectRatio) throws IOException
+    {
+        int targetW = maxWidth;
+        int targetH = maxHeight;
+
+        if (preserveAspectRatio)
+        {
+            int origWidth = orig.getWidth();
+            int origHeight = orig.getHeight();
+            
+            double origRatio   = (double)origWidth/(double)origHeight;
+            double scaledRatio = (double)maxWidth/(double)maxHeight;
+            
+            if ( origRatio > scaledRatio )
+            {
+                targetH = (int)(targetW / origRatio);
+            }
+            else
+            {
+                targetW = (int)(targetH * origRatio);
+            }
+        }
+
+        BufferedImage scaled = getScaledInstance(orig, targetW, targetH, RenderingHints.VALUE_INTERPOLATION_BILINEAR, true);
+        ByteArrayOutputStream output = new ByteArrayOutputStream(8192);
+        ImageIO.write(scaled, "jpeg", output);
+        return output.toByteArray();
+    }
+    
+    /**
+     * Convenience method that returns a scaled instance of the
+     * provided {@code BufferedImage}.
+     * 
+     * Code stolen from http://today.java.net/pub/a/today/2007/04/03/perils-of-image-getscaledinstance.html
+     *
+     * @param img the original image to be scaled
+     * @param targetWidth the desired width of the scaled instance,
+     *    in pixels
+     * @param targetHeight the desired height of the scaled instance,
+     *    in pixels
+     * @param hint one of the rendering hints that corresponds to
+     *    {@code RenderingHints.KEY_INTERPOLATION} (e.g.
+     *    {@code RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR},
+     *    {@code RenderingHints.VALUE_INTERPOLATION_BILINEAR},
+     *    {@code RenderingHints.VALUE_INTERPOLATION_BICUBIC})
+     * @param higherQuality if true, this method will use a multi-step
+     *    scaling technique that provides higher quality than the usual
+     *    one-step technique (only useful in down-scaling cases, where
+     *    {@code targetWidth} or {@code targetHeight} is
+     *    smaller than the original dimensions, and generally only when
+     *    the {@code BILINEAR} hint is specified)
+     * @return a scaled version of the original {@codey BufferedImage}
+     */
+    public static BufferedImage getScaledInstance(BufferedImage img, int targetWidth, int targetHeight, Object hint,
+            boolean higherQuality)
+    {
+        int type = (img.getTransparency() == Transparency.OPAQUE) ? BufferedImage.TYPE_INT_RGB
+                : BufferedImage.TYPE_INT_ARGB;
+        BufferedImage ret = img;
+        int w, h;
+        if (higherQuality)
+        {
+            // Use multi-step technique: start with original size, then
+            // scale down in multiple passes with drawImage()
+            // until the target size is reached
+            w = img.getWidth();
+            h = img.getHeight();
+        }
+        else
+        {
+            // Use one-step technique: scale directly from original
+            // size to target size with a single drawImage() call
+            w = targetWidth;
+            h = targetHeight;
+        }
+
+        do
+        {
+            if (higherQuality && w > targetWidth)
+            {
+                w /= 2;
+                if (w < targetWidth)
+                {
+                    w = targetWidth;
+                }
+            }
+
+            if (higherQuality && h > targetHeight)
+            {
+                h /= 2;
+                if (h < targetHeight)
+                {
+                    h = targetHeight;
+                }
+            }
+
+            BufferedImage tmp = new BufferedImage(w, h, type);
+            Graphics2D g2 = tmp.createGraphics();
+            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, hint);
+            g2.drawImage(ret, 0, 0, w, h, null);
+            g2.dispose();
+
+            ret = tmp;
+        } while (w != targetWidth || h != targetHeight);
+
+        return ret;
+    }
 }
