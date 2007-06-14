@@ -8,9 +8,11 @@ package edu.ku.brc.util.services;
 
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 import org.apache.commons.httpclient.HttpClient;
@@ -380,7 +382,8 @@ public class MapGrabber
 				urlStr = imageCache.cacheWebResource(urlStr);
 				imageFile = imageCache.getCacheFile(urlStr);
 			}
-			image = Toolkit.getDefaultToolkit().getImage(imageFile.getAbsolutePath());
+			//image = Toolkit.getDefaultToolkit().getImage(imageFile.getAbsolutePath());
+            image = ImageIO.read(imageFile);
             ImageIcon mapIcon = new ImageIcon(image);
             if (mapIcon.getIconHeight() < 0 || mapIcon.getIconWidth() < 0)
             {
