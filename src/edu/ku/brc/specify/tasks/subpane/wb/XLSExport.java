@@ -79,8 +79,8 @@ public class XLSExport implements DataExport
     {
         HSSFRow hssfRow = workSheet.getRow(0);
         short cellNum = hssfRow.getLastCellNum();
-        hssfRow.createCell(++cellNum).setCellValue("bioGeomancerResults");
-        hssfRow.createCell(++cellNum).setCellValue("cardImagePath");
+        hssfRow.createCell(++cellNum).setCellValue(DataImport.GEO_DATA_HEADING);
+        hssfRow.createCell(++cellNum).setCellValue(DataImport.IMAGE_PATH_HEADING);
     }
 
     /**
