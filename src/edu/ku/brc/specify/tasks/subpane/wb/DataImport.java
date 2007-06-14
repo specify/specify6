@@ -26,6 +26,14 @@ public class DataImport
     protected Status                     status = DataImportIFace.Status.None;
     // maximum length of text to be assigned to a workbench cell
 
+    public static String IMAGE_PATH_HEADING = "cardImagePath";
+    public static String GEO_DATA_HEADING = "bioGeomancerResults";
+    
+    public static boolean isSystemColumn(final String columnName)
+    {
+        return columnName.equals(IMAGE_PATH_HEADING) || columnName.equals(GEO_DATA_HEADING);
+    }
+
     protected String truncateIfNecessary(final String value,
                                          final int row,
                                          final short col,

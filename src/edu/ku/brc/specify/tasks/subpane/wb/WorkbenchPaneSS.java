@@ -256,9 +256,6 @@ public class WorkbenchPaneSS extends BaseSubPane
             {
                 hasOneOrMoreImages = true;
             }
-            
-            // force the loading of the WB row images
-            wbRow.getWorkbenchRowImages().size();
         } 
         
         model       = new GridTableModel(workbench, headers);

@@ -29,6 +29,7 @@ public class ImportColumnInfo  implements Comparable<ImportColumnInfo>
     protected String     colName; // the name of the column (this may include the table name in parens)
     protected String     colTitle; // name without parens
     protected String     data;
+    protected boolean    isSystemCol = false;
     
     public ImportColumnInfo(final short      colInx, 
                             final ColumnType colType, 
@@ -41,10 +42,16 @@ public class ImportColumnInfo  implements Comparable<ImportColumnInfo>
         this.colInx  = colInx;
         this.colType = colType;
         this.colName = colName;
+        this.isSystemCol = this.colName.equals(DataImport.GEO_DATA_HEADING) || this.colName.equals(DataImport.IMAGE_PATH_HEADING);
         this.colTitle = colTitle;
         this.data    = data;
     }
 
+    public boolean getIsSystemCol()
+    {
+        return isSystemCol;
+    }
+    
     public String getColName()
     {
         return colName;

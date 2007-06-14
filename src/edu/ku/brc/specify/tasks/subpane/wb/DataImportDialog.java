@@ -151,6 +151,10 @@ public class DataImportDialog extends JDialog implements ActionListener
 	private DataErrorPanel errorPanel = new DataErrorPanel();
    
     private int highestColumnCount;
+    
+    private short geoDataCol = -1;
+    private short imageDataCol = -1;
+
     /**
      * Constructor for Import Dialog for a csv
      * 
@@ -727,6 +731,23 @@ public class DataImportDialog extends JDialog implements ActionListener
         }
         return false;
     }
+    
+    private void checkUserColInfo(final String value, short colNum)
+    {
+        if (value.equals(DataImport.GEO_DATA_HEADING))
+        {
+            geoDataCol = colNum;
+        }
+        if (value.equals(DataImport.IMAGE_PATH_HEADING))
+        {
+            imageDataCol = colNum;
+        }
+    }
+    
+    private boolean isUserCol(short colNum)
+    {
+        return geoDataCol != colNum && imageDataCol != colNum;
+    }
   
     /**
      * Parses the given import xls file according to the users selection and creates/updates the Preview table,
@@ -821,8 +842,14 @@ public class DataImportDialog extends JDialog implements ActionListener
                                 break;
                         }
                     }
-
-                    rowData.add(value.toString());
+                    if (firstRow && doesFirstRowHaveHeaders)
+                    {
+                        checkUserColInfo(value, numCols);
+                    }
+                    if (isUserCol(numCols))
+                    {
+                        rowData.add(value.toString());
+                    }
                     numCols++;
                 }
                 if (doesFirstRowHaveHeaders && firstRow)

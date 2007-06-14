@@ -6,6 +6,7 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,10 +43,35 @@ import edu.ku.brc.ui.DateWrapper;
 public class XLSImport extends DataImport implements DataImportIFace
 {
     private static final Logger log = Logger.getLogger(XLSImport.class);
-    
+    private short cardImageCol = -1;
+    private short geoCol = -1;
     protected ConfigureExternalDataIFace config;
     
-    /**
+    private void getSystemCols(final HSSFRow headerRow)
+    {
+        for (short c = headerRow.getFirstCellNum(); c <= headerRow.getLastCellNum(); c++)
+        {
+            HSSFCell cell = headerRow.getCell(c);
+            if (cell != null)
+            {
+                String header = cell.getStringCellValue();
+                if (header != null)
+                {
+                    if (header.equals(IMAGE_PATH_HEADING))
+                    {
+                        cardImageCol = c;
+                    }
+                    if (header.equals(GEO_DATA_HEADING))
+                    {
+                        geoCol = c;
+                    }
+                }
+                
+            }
+        }
+    }
+     
+     /**
      * Constrcutor.
      * @param config the configuration
      */
@@ -71,7 +97,7 @@ public class XLSImport extends DataImport implements DataImportIFace
                 HSSFWorkbook    workBook = new HSSFWorkbook(fs);
                 HSSFSheet       sheet    = workBook.getSheetAt(0);
                 int             numRows  = 0;
-    
+                
                 // Calculate the number of rows and columns
     
                 Set<WorkbenchTemplateMappingItem>    wbtmiSet  = workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems();
@@ -95,6 +121,7 @@ public class XLSImport extends DataImport implements DataImportIFace
                     if (numRows == 0 && config.getFirstRowHasHeaders())
                     {
                         numRows++;
+                        getSystemCols(row);
                         continue;
                     }
     
@@ -169,6 +196,8 @@ public class XLSImport extends DataImport implements DataImportIFace
                             wbRow.setData(truncateIfNecessary(value, numRows, wbtmi.getViewOrder(), wbtmi.getCaption()), wbtmi.getViewOrder());
                         }
                     }
+                    addImageInfo(row, wbRow);
+                    addGeoInfo(row, wbRow);
                     numRows++;
                 }
                 return status = this.truncations.size() == 0 ? DataImportIFace.Status.Valid : DataImportIFace.Status.Modified;
@@ -180,6 +209,49 @@ public class XLSImport extends DataImport implements DataImportIFace
         return status = DataImportIFace.Status.Error;
     }
 
+    private void addImageInfo(final HSSFRow row, final WorkbenchRow wbRow)
+    {
+        if (cardImageCol != -1)
+        {
+           HSSFCell c = row.getCell(cardImageCol);
+           if (c != null)
+           {
+               String imagePath = c.getStringCellValue();
+               if (imagePath != null)
+               {
+                    String[] paths = imagePath.split("; ");
+                    for (String path : paths)
+                    {
+                        try
+                        {
+                            wbRow.addImage(new File(path));
+                        }
+                        catch (IOException e)
+                        {
+                            System.out.println("OH NO!!!!!");
+                        }
+                    }
+                }
+           }
+        }
+    }
+    
+    public void addGeoInfo(final HSSFRow row, final WorkbenchRow wbRow)
+    {
+        if (geoCol != -1)
+        {
+            HSSFCell c = row.getCell(geoCol);
+            if (c != null)
+            {
+                String geoData = c.getStringCellValue();
+                if (geoData != null)
+                {
+                    wbRow.setBioGeomancerResults(geoData);
+                }
+            }
+        }
+    }
+    
     public void setConfig(final ConfigureExternalDataIFace config)
     {
         this.config = config;

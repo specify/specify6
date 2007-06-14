@@ -1020,36 +1020,39 @@ public class TemplateEditor extends CustomDialog
         boolean notAllMapped = false;  // assume we can auto map everything
         for (ImportColumnInfo colInfo: colInfos)
         {
-            FieldInfo fieldInfo = autoMapFieldName(colInfo.getColTitle(), automappings);
-            if (fieldInfo != null)
+            if (!colInfo.getIsSystemCol())
             {
-                TableInfo tblInfo = null;
-                // Find the right TableInfo
-                for (int i=0;i<tableModel.size();i++)
+                FieldInfo fieldInfo = autoMapFieldName(colInfo.getColTitle(), automappings);
+                if (fieldInfo != null)
                 {
-                    TableListItemIFace item = tableModel.getElementAt(i);
-                    if (item.isExpandable() && ((TableInfo)item).getTableInfo() == fieldInfo.getTableinfo())
+                    TableInfo tblInfo = null;
+                    // Find the right TableInfo
+                    for (int i=0;i<tableModel.size();i++)
                     {
-                        tblInfo = (TableInfo)item;
-                        tablesInUse.put(tblInfo, true);
-                        break;
+                        TableListItemIFace item = tableModel.getElementAt(i);
+                        if (item.isExpandable() && ((TableInfo)item).getTableInfo() == fieldInfo.getTableinfo())
+                        {
+                            tblInfo = (TableInfo)item;
+                            tablesInUse.put(tblInfo, true);
+                            break;
+                        }
                     }
-                }
-                
-                if (tblInfo == null)
+
+                    if (tblInfo == null)
+                    {
+                        throw new RuntimeException("Couldn't find table info for fieldinfo.");
+                    }
+
+                    FieldMappingPanel fmp = map(null, colInfo, tblInfo, fieldInfo, null);
+                    fmp.setIcon(IconManager.getIcon(fieldInfo.getTableinfo().getObjTitle(), IconManager.IconSize.Std24));
+
+                } else
                 {
-                    throw new RuntimeException("Couldn't find table info for fieldinfo.");
+                    notAllMapped = true; // oops, couldn't find a mapping for something
+                    FieldMappingPanel fmp = new FieldMappingPanel(colInfo, blankIcon);
+                    fmp.getArrowLabel().setVisible(false);
+                    mapModel.add(fmp);
                 }
-                
-                FieldMappingPanel fmp = map(null, colInfo, tblInfo, fieldInfo, null);
-                fmp.setIcon(IconManager.getIcon(fieldInfo.getTableinfo().getObjTitle(), IconManager.IconSize.Std24));
-                
-            } else
-            {
-                notAllMapped = true; // oops, couldn't find a mapping for something
-                FieldMappingPanel fmp = new FieldMappingPanel(colInfo, blankIcon);
-                fmp.getArrowLabel().setVisible(false);
-                mapModel.add(fmp);
             }
         }
         
