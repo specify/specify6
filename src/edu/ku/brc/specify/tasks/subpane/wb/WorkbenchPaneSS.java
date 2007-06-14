@@ -252,7 +252,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 wbdi.getCellData();
             }
             
-            if (!hasOneOrMoreImages && !showImageView && wbRow.getCardImage() != null)
+            if (wbRow.getWorkbenchRowImages() != null && wbRow.getWorkbenchRowImages().size() > 0)
             {
                 hasOneOrMoreImages = true;
             }
@@ -667,70 +667,6 @@ public class WorkbenchPaneSS extends BaseSubPane
     }
     
     /**
-     * Displays a file dialog so the user can choose an image.
-     */
-    protected void editRowImage()
-    {
-        UsageTracker.incrUsageCount("WB.EditWBRowImage");
-        
-        // figure out what row is selected
-        int selectedIndex = getCurrentIndex();
-        if (selectedIndex > -1)
-        {
-            WorkbenchRow row = workbench.getWorkbenchRowsAsList().get(selectedIndex);
-            
-            // then load a new image for it
-            boolean loaded = loadNewImage(row);
-            if (loaded)
-            {
-                showCardImageForSelectedRow();
-                setChanged(true);
-            }
-        }
-    }
-    
-    /**
-     * Displays a file dialog so the user can choose an image.
-     */
-    protected void addImage()
-    {
-        UsageTracker.incrUsageCount("WB.EditWBRowImage");
-        
-        // figure out what row is selected
-        int selectedIndex = getCurrentIndex();
-        if (selectedIndex > -1)
-        {
-            WorkbenchRow row = workbench.getWorkbenchRowsAsList().get(selectedIndex);
-            
-            // then load a new image for it
-            boolean loaded = loadNewImage(row);
-            if (loaded)
-            {
-                showCardImageForSelectedRow();
-                setChanged(true);
-            }
-        }
-    }
-    
-//    /**
-//     * Clear the image from the row.
-//     */
-//    protected void clearRowImage()
-//    {
-//        // figure out what row is selected
-//        int selectedIndex = getCurrentIndex();
-//        if (selectedIndex > -1)
-//        {
-//            WorkbenchRow row = workbench.getWorkbenchRowsAsList().get(selectedIndex);
-//            row.setCardImage((File)null);
-//            imageFrame.clearImage();
-//            setChanged(true);
-//            //showCardImageForSelectedRow();
-//            spreadSheet.repaint();
-//        }
-//    }
-    
-    /**
      * Checks the cell for cell editing and stops it.
      */
     public boolean checkCurrentEditState()
@@ -765,7 +701,6 @@ public class WorkbenchPaneSS extends BaseSubPane
         addRowsBtn.setEnabled(enable);
         resultsetController.getNewRecBtn().setEnabled(enable);
     }
-    
     
     /**
      * Adds a Key mappings.
@@ -955,7 +890,6 @@ public class WorkbenchPaneSS extends BaseSubPane
     {
         return resultsetController;
     }
-    
 
     /**
      * Tells the model there is new data.
@@ -1189,7 +1123,6 @@ public class WorkbenchPaneSS extends BaseSubPane
             c.setVisible(isSpreadsheet);
         }
     }
-    
     
     /**
      * Shows / Hides the Image Window. 
@@ -2408,7 +2341,6 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
     }
     
-    
     /**
      * @return whether there has been a change.
      */
@@ -2684,7 +2616,6 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
         return true;
     }
-    
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.subpane.BaseSubPane#aboutToShutdown()
@@ -2826,7 +2757,6 @@ public class WorkbenchPaneSS extends BaseSubPane
     //------------------------------------------------------------
     // Inner Classes
     //------------------------------------------------------------
-
 
     class GridCellEditor extends DefaultCellEditor implements TableCellEditor//, UndoableTextIFace
     {
@@ -2979,7 +2909,6 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
      }
 
-    
     //------------------------------------------------------------
     // Switches between the Grid View and the Form View
     //------------------------------------------------------------
