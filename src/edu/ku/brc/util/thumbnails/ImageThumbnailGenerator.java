@@ -6,19 +6,16 @@
  */
 package edu.ku.brc.util.thumbnails;
 
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import com.sun.image.codec.jpeg.JPEGCodec;
-import com.sun.image.codec.jpeg.JPEGEncodeParam;
-import com.sun.image.codec.jpeg.JPEGImageEncoder;
+import org.apache.commons.io.FileUtils;
+
+import edu.ku.brc.ui.GraphicsUtils;
 
 /**
  * This class generates thumbnails for any image readable by {@link ImageIO#read(File)}.
@@ -79,53 +76,37 @@ public class ImageThumbnailGenerator implements ThumbnailGenerator
 	{
 		return ImageIO.getReaderMIMETypes();
 	}
+    
+    /**
+     * Creates a thumbnail of the given image bytes.
+     * 
+     * @param originalImageData the bytes of the input file
+     * @return the bytes of the output file
+     * @throws IOException if any IO errors occur during generation or storing the output
+     */
+    public byte[] generateThumbnail(byte[] originalImageData) throws IOException
+    {
+        ByteArrayInputStream inputStr = new ByteArrayInputStream(originalImageData);
+        BufferedImage orig = ImageIO.read(inputStr);
+        
+        if (orig.getHeight() < maxHeight && orig.getWidth() < maxWidth)
+        {
+            // there's no need to do anything since the original is already under the max size
+            return originalImageData;
+        }
+        
+        byte[] scaledImgData = GraphicsUtils.scaleImage(orig, maxHeight, maxWidth, true);
+        return scaledImgData;
+    }
 	
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.util.thumbnails.ThumbnailGenerator#generateThumbnail(java.lang.String, java.lang.String)
 	 */
 	public void generateThumbnail(String originalFile, String thumbnailFile) throws IOException
 	{
-        // read the original
-		BufferedImage img = ImageIO.read(new File(originalFile));
-		
-        // calculate the new height and width while maintaining the aspect ratio
-		int origWidth = img.getWidth();
-		int origHeight = img.getHeight();
-		int thumbWidth;
-		int thumbHeight;
-		if( origWidth >= origHeight )
-		{
-			thumbWidth = maxWidth;
-			thumbHeight = (int)(origHeight * ((float)thumbWidth/(float)origWidth));
-		}
-		else
-		{
-			thumbHeight = maxHeight;
-			thumbWidth = (int)(origWidth * ((float)thumbHeight/(float)origHeight));
-		}
-		
-        // scale the image
-	    BufferedImage thumbImage = new BufferedImage(thumbWidth,thumbHeight,BufferedImage.TYPE_INT_RGB);
-	    Graphics2D graphics2D = thumbImage.createGraphics();
-	    graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION,RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-	    graphics2D.drawImage(img, 0, 0, thumbWidth, thumbHeight, null);
-
-	    // save thumbnail image to thumbnailFile as a JPEG
-	    BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(thumbnailFile));
-	    JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
-	    JPEGEncodeParam param = encoder.getDefaultJPEGEncodeParam(thumbImage);
-	    if(quality < 0)
-	    {
-	    	quality = 0;
-	    }
-	    if(quality > 1)
-	    {
-	    	quality = 1;
-	    }
-	    param.setQuality(quality, false);
-	    encoder.setJPEGEncodeParam(param);
-	    encoder.encode(thumbImage);
-	    out.close(); 
+        byte[] origData = FileUtils.readFileToByteArray(new File(originalFile));
+        byte[] thumb = generateThumbnail(origData);
+        FileUtils.writeByteArrayToFile(new File(thumbnailFile), thumb);
 	}
 
 	/* (non-Javadoc)
