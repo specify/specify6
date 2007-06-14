@@ -22,6 +22,8 @@ import javax.swing.ImageIcon;
 
 /**
  * A data class to hold images corresponding to WorkbenchRows.
+ * 
+ * Note: this class has a natural ordering that is inconsistent with equals (as described be {@link Comparable#compareTo(Object)}.
  *
  * @author jstewart
  * @code_status Alpha
@@ -30,7 +32,7 @@ import javax.swing.ImageIcon;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "workbenchrowimage")
 @org.hibernate.annotations.Proxy(lazy = false)
-public class WorkbenchRowImage implements java.io.Serializable
+public class WorkbenchRowImage implements java.io.Serializable, Comparable<WorkbenchRowImage>
 {
     protected Long         workbenchRowImageId;
     protected Integer      imageOrder;
@@ -38,6 +40,7 @@ public class WorkbenchRowImage implements java.io.Serializable
     protected String       cardImageFullPath;
     protected WorkbenchRow workbenchRow;
     protected WeakReference<ImageIcon> fullSizeImageWR = null;
+    protected ImageIcon thumbnail = null;
     
     /**
      * Constructor (for JPA compliance).
@@ -125,6 +128,12 @@ public class WorkbenchRowImage implements java.io.Serializable
         this.workbenchRow = workbenchRow;
     }
     
+    @Override
+    public String toString()
+    {
+        return imageOrder + ": " + cardImageFullPath;
+    }
+    
     ////////////////////////////////////
     // Helper methods
     ////////////////////////////////////
@@ -163,5 +172,29 @@ public class WorkbenchRowImage implements java.io.Serializable
             return fullSizeImageWR.get();
         }
         return null;
+    }
+    
+    @Transient
+    public ImageIcon getThumbnail()
+    {
+        return thumbnail;
+    }
+    
+    public void setThumbnail(ImageIcon thumbnail)
+    {
+        this.thumbnail = thumbnail;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(WorkbenchRowImage o)
+    {
+        if (o == null)
+        {
+            return 1;
+        }
+        
+        return this.getImageOrder().compareTo(o.getImageOrder());
     }
 }
