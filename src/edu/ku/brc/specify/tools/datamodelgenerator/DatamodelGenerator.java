@@ -19,21 +19,23 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.betwixt.XMLIntrospector;
 import org.apache.commons.betwixt.io.BeanWriter;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
 
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.util.DatamodelHelper;
@@ -48,39 +50,10 @@ import edu.ku.brc.util.DatamodelHelper;
  */
 public class DatamodelGenerator
 {
-	private static final Logger log = Logger.getLogger(DatamodelGenerator.class);
+    private static final Logger log = Logger.getLogger(DatamodelGenerator.class);
 
-	Hashtable<String, TableMetaData> tblMetaDataHash = new Hashtable<String, TableMetaData>();
+    Hashtable<String, TableMetaData> tblMetaDataHash = new Hashtable<String, TableMetaData>();
 
-	/**
-	 * Given and XML node, returns a Field object by grabbing the appropriate
-	 * attribute values.
-	 * 
-	 * @param element the XML node
-	 * @return Field object
-	 */
-	private Field createField(final String tableName, final Element element)
-	{
-        String type = element.attributeValue("type");
-        if (StringUtils.isEmpty(type))
-        {
-            String precision = element.attributeValue("precision");
-            String scale     = element.attributeValue("scale");
-            if (StringUtils.isNotEmpty(precision) && StringUtils.isNotEmpty(scale))
-            {
-                type = "java.math.BigDecimal";
-
-            } else
-            {
-                throw new RuntimeException("No type defined for field ["+element.attributeValue("name")+"] Table["+tableName+"]");
-            }
-        }
-		return new Field(element.attributeValue("name"), 
-                type, 
-                element.attributeValue("column"), 
-                element.attributeValue("length"));
-	}
-    
     /**
      * Looks for a child node "display" and creates the appropriate object or returns null.
      * @param element the "table".
@@ -104,315 +77,288 @@ public class DatamodelGenerator
         return null;
     }
 
-	/**
-	 * Given and XML node, returns a Id object by grabbing the appropriate
-	 * attribute values.
-	 * 
-	 * @param element the XML node
-	 * @return Field object
-	 */
-	private Id createId(final Element element)
-	{
-		return new Id(element.attributeValue("name"), 
-                        element.attributeValue("type"), 
-                        element.attributeValue("column"), 
-                        element.attributeValue("length"));
-	}
-
-	/**
-	 * Given and XML node, returns a Table object by grabbing the appropriate
-	 * attribute values.
-	 * 
-	 * @param element the XML node
-	 * @return Table object
-	 */
-	private Table createTable(final Element element)
-	{
+    /**
+     * Given and XML node, returns a Table object by grabbing the appropriate
+     * attribute values.
+     * 
+     * @param element the XML node
+     * @return Table object
+     */
+    private Table createTable(final String className, final String tableName)
+    {
         // get Class Name (or name) from HBM file
-		String className = element.attributeValue("name");
-		log.info("Processing: " + className);
+        log.info("Processing: " + className);
         
         // Get Meta Data for HBM
-		TableMetaData tableMetaData = tblMetaDataHash.get(className);
-		if (tableMetaData == null)
+        TableMetaData tableMetaData = tblMetaDataHash.get(className);
+        if (tableMetaData == null)
         {
             // Throw exception if there is an HBM we don't have meta data for
-			log.error("Could not retrieve TableMetaData from tblMetaDataHashtable for table: " + className);
+            log.error("Could not retrieve TableMetaData from tblMetaDataHashtable for table: " + className);
             throw new RuntimeException("Could not retrieve TableMetaData from tblMetaDataHashtable for table: " + className 
                     + " check to see if table is listed in the file: " + DatamodelHelper.getTableIdFilePath());
         }
         
-		return new Table(className, 
-                         element.attributeValue("table"), 
-                         element.attributeValue("lazy"), 
-                         tableMetaData.getId(), 
-                         tableMetaData.getDisplay(),
-                         tableMetaData.isForQuery(),
-                         tableMetaData.getBusinessRule());
+        return new Table(className, tableName, null, tableMetaData.getId(), tableMetaData.getDisplay(), tableMetaData.isForQuery(), tableMetaData.getBusinessRule());
 
-	}
+    }
 
-	/**
-	 * Given and XML node, returns the value associated with the "class"
-	 * attribute.
-	 * 
-	 * @param element  The XML node
-	 * @return the class name
-	 */
-	private String getRelatedClassName(final Element element)
-	{
-		if (element != null)
-		{
-			return element.attributeValue("class");
-		}
-		return null;
-	}
+    /**
+     * @param method
+     * @return
+     */
+    protected String getReturnType(final Method method)
+    {
+        Class classObj = method.getReturnType();
+        // If there is a better way, PLEASE help me!
+        if (classObj == Set.class)
+        {
+            ParameterizedType type = (ParameterizedType)method.getGenericReturnType();
+            for (Type t : type.getActualTypeArguments())
+            {
+                String cls = t.toString();
+                return cls.substring(6, cls.length());
+            }
+        }
+        return classObj.getName();
+    }
+    
+    /**
+     * @param method
+     * @return
+     */
+    protected String getNameFromMethod(final Method method)
+    {
+        String name = method.getName();
+        name = name.substring(3, 4).toLowerCase() + name.substring(4, name.length());
 
-	/**
-	 * Given and XML node, returns the value associated with the "name"
-	 * attribute.
-	 * 
-	 * @param element The XML node
-	 * @return the name
-	 */
-	private String getName(final Element element)
-	{
-		if (element != null)
-		{
-			return element.attributeValue("name");
-		}
-		return null;
-	}
+        return name;
+    }
+    
+    /**
+     * @param method
+     * @param type
+     * @param joinCol
+     * @return
+     */
+    public Relationship createRelationsip(final Method method, 
+                                          final String type,
+                                          final javax.persistence.JoinColumn joinCol)
+    {
+        return new Relationship(type, getReturnType(method), joinCol != null ? joinCol.name() : "", getNameFromMethod(method));
+    }
 
-	/**
-	 * Returns the last String token from a string that has the package name
-	 * pre-appended to the class name i.e. edu.ku.brc.specify.datamodel.Locality -> Locality.
-	 * 
-	 * @param element The node from the XML document that containst the fully qualified name
-	 * @return returns the simple class name
-	 */
-	private String getRelatedClassShortName(final Element element)
-	{
-		if (element != null)
-		{
-			String name = element.attribute("class").getValue();
-			int inx = name.lastIndexOf('.');
-			if (inx > 0)
-			{
-				return name.substring(inx + 1);
-			}
-		}
-		return null;
-	}
 
-	/**
-	 * Reads in hbm files and generates datamodel tree.
-	 * @return List datamodel tree
-	 */
-	public List<Table> generateDatamodelTree(final List<Table> tableList, final String hbmPath)
-	{
-		try
-		{
-			log.debug("Preparing to read in hbm files from  path: " + hbmPath);
-			File dir = new File(hbmPath);
+    /**
+     * @param method
+     * @param col
+     * @return
+     */
+    public Id createId(final Method method, 
+                       final javax.persistence.Column col)
+    {
+        return new Id(getNameFromMethod(method), getReturnType(method), col.name(), "");
+    }
 
-			String path = dir.getAbsolutePath();
+    /**
+     * @param method
+     * @param col
+     * @return
+     */
+    public Field createField(final Method method, 
+                             final javax.persistence.Column col,
+                             final boolean isLob)
+    {
+        String retType;
+        String len;
+        
+        if (isLob)
+        {
+            retType = "text";
+            len     = "";
+        } else
+        {
+            retType = isLob ? "text" : getReturnType(method);
+            len = retType.equals("java.lang.String") ? Integer.toString(col.length()) : (col.length() != 255 ? Integer.toString(col.length()) : "");
+        }
+        return new Field(getNameFromMethod(method), retType, col.name(), len);
+    }
+
+    /**
+     * Reads in hbm files and generates datamodel tree.
+     * @return List datamodel tree
+     */
+    @SuppressWarnings("unchecked")
+    public List<Table> generateDatamodelTree(final List<Table> tableList, final String dataModelPath)
+    {
+        try
+        {
+            log.debug("Preparing to read in DataModel Classes files from  path: " + dataModelPath);
+            File dir = new File(dataModelPath);
+
+            String path = dir.getAbsolutePath();
             log.info(path);
-			//dir = new File(path.substring(0, path.lastIndexOf(File.separator)));
+            //dir = new File(path.substring(0, path.lastIndexOf(File.separator)));
 
-			// This filter only returns directories
-			FileFilter fileFilter = new FileFilter()
-			{
-				public boolean accept(File file)
-				{
-					return file.toString().indexOf(".hbm.xml") != -1;
-				}
-			};
-			File[] files = dir.listFiles(fileFilter);
-			int count = 0;
-			for (File file : files)
-			{
-				log.debug("Reading    " + file.getAbsolutePath());
-				FileInputStream fileInputStream = new FileInputStream(file);
-				SAXReader reader = new SAXReader();
-				reader.setValidation(false);
-				EntityResolver resolver = new EntityResolver()
-				{
-					public InputSource resolveEntity(String publicId, String systemId)
-					{
-						if (publicId.equals("-//Hibernate/Hibernate Mapping DTD 3.0//EN"))
-						{
-							File filer = new File("hibernate-mapping-3.0.dtd");
-							try
-							{
-								FileInputStream ino = new FileInputStream(filer);// getClass().getResourceAsStream();
-								return new InputSource(ino);
-                                
-							} catch (Exception eer)
-							{
-								log.error("Trying to load Hibernate DTD from local file system, File not found");
-							}
-
-						}
-						return null;
-					}
-				};
-				reader.setEntityResolver(resolver);
-				org.dom4j.Document doc = reader.read(fileInputStream);
-				if (doc != null)
-				{
-					count++;
-					log.debug("Processing " + count + " of " + files.length + "  " + file.getAbsolutePath());
-
-					Element root = doc.getRootElement();
-					if (root == null)
-                    {
-						log.error("Could not get root of document");
-                        return null;
-                    }
-
-					Element classNode = (Element) root.selectSingleNode("class");
-					if (classNode == null)
-                    {
-						log.error("Could not get class node of document");
-                        return null;
-                        
-                    } else
-					{
-						Table table = createTable(classNode);
-						tableList.add(table);
-
-						// iterate through child elements of propery ndoe
-						for (Iterator i = classNode.elementIterator("property"); i.hasNext();)
-						{
-							Element element = (Element) i.next();
-							table.addField(createField(table.getName(), element));
-						}
-
-						// iterate through child elements of id node
-						for (Iterator i = classNode.elementIterator("id"); i.hasNext();)
-						{
-							Element element = (Element) i.next();
-							table.addId(createId(element));
-						}
-						// iterate through child elements of set node
-						for (Iterator i = classNode.elementIterator("set"); i.hasNext();)
-						{
-							Relationship rel = null;
-							Element setSubNode = (Element) i.next();
-
-							rel = processSetRelationship("one-to-many", setSubNode);
-							if (rel != null)
-								table.addRelationship(rel);
-
-							rel = processSetRelationship("many-to-many", setSubNode);
-							if (rel != null)
-								table.addRelationship(rel);
-						}
-
-						// iterate through child elements of root
-						for (Iterator i = classNode.elementIterator("many-to-one"); i.hasNext();)
-						{
-							Element element = (Element) i.next();
-							String relClassName = getRelatedClassName(element);
-							String relationshipName = getName(element);
-							String columnName = getColumnName(element);
-							table.addRelationship(new Relationship("many-to-one", relClassName, columnName,
-									relationshipName));
-						}
-
-						// iterate through child elements of root
-						for (Iterator i = classNode.elementIterator("one-to-one"); i.hasNext();)
-						{
-							Element element = (Element) i.next();
-							String relClassName = getRelatedClassName(element);
-							String relationshipName = getName(element);
-							table.addRelationship(new Relationship("one-to-one", relClassName, "", relationshipName));
-						}
-					}
-				}
-				fileInputStream.close();
-			}
-			return tableList;
-
-		} catch (Exception ex)
-		{
-			ex.printStackTrace();
-			log.fatal(ex);
-		}
-		return null;
-	}
-
-	/**
-	 * Creates a Relationship Object.
-	 * 
-	 * @param type The relationship type i.e. one-to-many.
-	 * @param subNode Node from XML document (hbm file) that contains the relationship information
-	 * @return relationship object
-	 */
-	public Relationship processSetRelationship(String type, Element subNode)
-	{
-		String relationshipType = "";
-		String relShortName     = "";
-		String relClassName     = "";
-		String columnName       = "";
-		String relationshipName = subNode.attributeValue("name");
-
-		for (Iterator i2 = subNode.elementIterator("key"); i2.hasNext();)
-		{
-			Element element = (Element) i2.next();
-			columnName = getColumnName(element);
-		}
-
-		for (Iterator i2 = subNode.elementIterator(type); i2.hasNext();)
-		{
-			Element element = (Element) i2.next();
-			relClassName = getRelatedClassName(element);
-			relShortName = getRelatedClassShortName(element);
-			if (relShortName != null)
-			{
-				relationshipType = type;
-			}
-			return new Relationship(relationshipType, relClassName, columnName, relationshipName);
-		}
-		return null;
-	}
-
-	/**
-     * Gets column name.
-	 * @param element the element
-	 * @return the name of the column
-	 */
-	public String getColumnName(final Element element)
-	{
-		String columnName = null;
-		for (Iterator i2 = element.elementIterator("column"); i2.hasNext();)
-		{
-			Element element1 = (Element) i2.next();
-			columnName = element1.attributeValue("name");
-		}
-		return columnName;
-	}
-
-	/**
-	 * Takes a list and prints out datamodel file using betwixt.
-	 * @param classesList the class list
-	 */
-	public boolean writeTree(final List classesList)
-	{
-
-		try
-		{
-			if (classesList == null)
-			{
-				log.error("Datamodel information is null - datamodel file will not be written!!");
-				return false;
-			}
-			log.info("writing data model tree to file: " + DatamodelHelper.getDatamodelFilePath());
+            // This filter only returns directories
+            FileFilter fileFilter = new FileFilter()
+            {
+                public boolean accept(File file)
+                {
+                    return file.toString().indexOf(".java") != -1;
+                }
+            };
             
-			//Element root = XMLHelper.readFileToDOM4J(new FileInputStream(XMLHelper.getConfigDirPath(datamodelOutputFileName)));
-			File file = new File(DatamodelHelper.getDatamodelFilePath());
-			FileWriter fw = new FileWriter(file);
+            String PACKAGE = "package ";
+            String CLASS   = "public class ";
+            
+            File[] files = dir.listFiles(fileFilter);
+            int count = 0;
+            for (File file : files)
+            {
+                log.debug("Reading    " + file.getAbsolutePath());
+                List<?> lines = FileUtils.readLines(file);
+                count++;
+                log.debug("Processing " + count + " of " + lines.size() + "  " + file.getAbsolutePath());
+
+                String  packageName = null;
+                String  tableName   = null;
+                Table   table       = null; 
+                String  className   = null;
+                
+                for (Object lineObj : lines)
+                {
+                    String line = ((String)lineObj).trim();
+                    //System.out.println(line);
+                    if (line.startsWith(PACKAGE))
+                    {
+                        packageName = line.substring(PACKAGE.length(), line.length()-1);
+                    }
+                    
+                    if (line.startsWith(CLASS))
+                    {
+                        int eInx = line.substring(CLASS.length()).indexOf(' ') + CLASS.length();
+                        if (eInx > -1)
+                        {
+                            className = line.substring(CLASS.length(), eInx);
+                        }
+                        break;
+                    }
+                }
+                
+                if (className != null)
+                {
+                    try
+                    {
+                        
+                        Class classObj = Class.forName(packageName + "." + className);
+                        
+                        if (classObj.isAnnotationPresent(javax.persistence.Table.class))
+                        {
+                            javax.persistence.Table tableAnno = (javax.persistence.Table)classObj.getAnnotation(javax.persistence.Table.class);
+                            tableName = tableAnno.name();
+                            
+                            table = createTable(packageName + "." + className, tableName);
+                            tableList.add(table);
+                        }
+                        
+                        if (table != null)
+                        {
+                            boolean isLob = false;
+                            for (Method method : classObj.getMethods())
+                            {
+                                if (method.isAnnotationPresent(javax.persistence.Lob.class))
+                                {
+                                    isLob = true;
+                                }
+
+                                if (method.isAnnotationPresent(javax.persistence.Column.class))
+                                {
+                                    if (method.isAnnotationPresent(javax.persistence.Id.class))
+                                    {
+                                        table.addId(createId(method, (javax.persistence.Column)method.getAnnotation(javax.persistence.Column.class)));
+                                    } else
+                                    {
+                                        table.addField(createField(method, (javax.persistence.Column)method.getAnnotation(javax.persistence.Column.class), isLob));
+                                    }
+                                    
+                                } else if (method.isAnnotationPresent(javax.persistence.ManyToOne.class))
+                                {
+                                    javax.persistence.JoinColumn join = method.isAnnotationPresent(javax.persistence.JoinColumn.class) ? (javax.persistence.JoinColumn)method.getAnnotation(javax.persistence.JoinColumn.class) : null;
+                                    table.addRelationship(createRelationsip(method, "many-to-one", join));
+                                    
+                                } else if (method.isAnnotationPresent(javax.persistence.ManyToMany.class))
+                                {
+                                    javax.persistence.JoinColumn join = method.isAnnotationPresent(javax.persistence.JoinColumn.class) ? (javax.persistence.JoinColumn)method.getAnnotation(javax.persistence.JoinColumn.class) : null;
+                                    table.addRelationship(createRelationsip(method, "many-to-many", join));
+                                    
+                                } else if (method.isAnnotationPresent(javax.persistence.OneToMany.class))
+                                {
+                                    javax.persistence.JoinColumn join = method.isAnnotationPresent(javax.persistence.JoinColumn.class) ? (javax.persistence.JoinColumn)method.getAnnotation(javax.persistence.JoinColumn.class) : null;
+                                    table.addRelationship(createRelationsip(method, "one-to-many", join));
+                                    
+                                } else if (method.isAnnotationPresent(javax.persistence.OneToOne.class))
+                                {
+                                    javax.persistence.JoinColumn join = method.isAnnotationPresent(javax.persistence.JoinColumn.class) ? (javax.persistence.JoinColumn)method.getAnnotation(javax.persistence.JoinColumn.class) : null;
+                                    table.addRelationship(createRelationsip(method, "one-to-one", join));
+                                    
+                                }
+                                isLob = false;
+                            }
+                        }
+                                    
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+            return tableList;
+
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            log.fatal(ex);
+        }
+        return null;
+    }
+
+
+    /**
+     * Gets column name.
+     * @param element the element
+     * @return the name of the column
+     */
+    public String getColumnName(final Element element)
+    {
+        String columnName = null;
+        for (Iterator i2 = element.elementIterator("column"); i2.hasNext();)
+        {
+            Element element1 = (Element) i2.next();
+            columnName = element1.attributeValue("name");
+        }
+        return columnName;
+    }
+
+    /**
+     * Takes a list and prints out datamodel file using betwixt.
+     * @param classesList the class list
+     */
+    public boolean writeTree(final List classesList)
+    {
+
+        try
+        {
+            if (classesList == null)
+            {
+                log.error("Datamodel information is null - datamodel file will not be written!!");
+                return false;
+            }
+            log.info("writing data model tree to file: " + DatamodelHelper.getDatamodelFilePath());
+            
+            //Element root = XMLHelper.readFileToDOM4J(new FileInputStream(XMLHelper.getConfigDirPath(datamodelOutputFileName)));
+            File file = new File(DatamodelHelper.getDatamodelFilePath());
+            FileWriter fw = new FileWriter(file);
             fw.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
             fw.write("<!-- \n");
             fw.write("    Do Not Edit this file!\n");
@@ -421,52 +367,52 @@ public class DatamodelGenerator
             fw.write("    Generated: "+date.toString()+"\n");
             fw.write("-->\n");
             
-			//using betwixt for writing out datamodel file.  associated .betwixt files allow you to map and define 
-			//output format of attributes in xml file.
-			BeanWriter      beanWriter    = new BeanWriter(fw);
-			XMLIntrospector introspector = beanWriter.getXMLIntrospector();
+            //using betwixt for writing out datamodel file.  associated .betwixt files allow you to map and define 
+            //output format of attributes in xml file.
+            BeanWriter      beanWriter    = new BeanWriter(fw);
+            XMLIntrospector introspector = beanWriter.getXMLIntrospector();
             
-			introspector.getConfiguration().setWrapCollectionsInElement(false);
+            introspector.getConfiguration().setWrapCollectionsInElement(false);
             
-			beanWriter.getBindingConfiguration().setMapIDs(false);
-			beanWriter.setWriteEmptyElements(false);
-			beanWriter.enablePrettyPrint();
-			beanWriter.write("database", classesList);
+            beanWriter.getBindingConfiguration().setMapIDs(false);
+            beanWriter.setWriteEmptyElements(false);
+            beanWriter.enablePrettyPrint();
+            beanWriter.write("database", classesList);
             
-			fw.close();
+            fw.close();
             
-			return true;
+            return true;
             
-		} catch (Exception ex)
-		{
-			log.error("error writing writeTree", ex);
-			return false;
-		}
-	}
+        } catch (Exception ex)
+        {
+            log.error("error writing writeTree", ex);
+            return false;
+        }
+    }
 
-	/**
-	 * Reads in file that provides listing of tables with their respective Id's and default views.
-	 * @return boolean true if reading of tableId file was successful.
-	 */
-	private boolean readTableMetadataFromFile(final String tableIdListingFilePath)
-	{
-		log.info("Preparing to read in Table and TableID listing from file: " + tableIdListingFilePath);
-		try
-		{
-			File tableIdFile = new File(tableIdListingFilePath);
-			FileInputStream fileInputStream = new FileInputStream(tableIdFile);
-			SAXReader reader = new SAXReader();
-			reader.setValidation(false);
-			org.dom4j.Document doc = reader.read(fileInputStream);
-			Element root = doc.getRootElement();
-			Element dbNode = (Element) root.selectSingleNode("database");
-			if (dbNode != null)
-			{
-				for (Iterator i = dbNode.elementIterator("table"); i.hasNext();)
-				{
-					Element element     = (Element)i.next();
-					String tablename    = element.attributeValue("name");
-					String defaultView  = element.attributeValue("view");
+    /**
+     * Reads in file that provides listing of tables with their respective Id's and default views.
+     * @return boolean true if reading of tableId file was successful.
+     */
+    private boolean readTableMetadataFromFile(final String tableIdListingFilePath)
+    {
+        log.info("Preparing to read in Table and TableID listing from file: " + tableIdListingFilePath);
+        try
+        {
+            File tableIdFile = new File(tableIdListingFilePath);
+            FileInputStream fileInputStream = new FileInputStream(tableIdFile);
+            SAXReader reader = new SAXReader();
+            reader.setValidation(false);
+            org.dom4j.Document doc = reader.read(fileInputStream);
+            Element root = doc.getRootElement();
+            Element dbNode = (Element) root.selectSingleNode("database");
+            if (dbNode != null)
+            {
+                for (Iterator i = dbNode.elementIterator("table"); i.hasNext();)
+                {
+                    Element element     = (Element)i.next();
+                    String tablename    = element.attributeValue("name");
+                    String defaultView  = element.attributeValue("view");
                     String id           = element.attributeValue("id");
                     boolean isQuery     = XMLHelper.getAttr(element, "query", false);
                     
@@ -476,57 +422,57 @@ public class DatamodelGenerator
                     {
                         busRule = brElement.getTextTrim();
                     }
-					log.debug("Creating TableMetaData and putting in tblMetaDataHashtable for name: " + tablename + " id: " + id + " defaultview: " + defaultView);
+                    log.debug("Creating TableMetaData and putting in tblMetaDataHashtable for name: " + tablename + " id: " + id + " defaultview: " + defaultView);
                     
- 					tblMetaDataHash.put(tablename, new TableMetaData(id, defaultView, createDisplay(element), isQuery, busRule));
+                     tblMetaDataHash.put(tablename, new TableMetaData(id, defaultView, createDisplay(element), isQuery, busRule));
                     
-				}
+                }
                 
-			} else
-			{
-				log.debug("Ill-formatted file for reading in Table and TableID listing.  Filename:"
-						+ tableIdFile.getAbsolutePath());
-			}
-			fileInputStream.close();
-			return true;
-		} catch (Exception ex)
-		{
-			ex.printStackTrace();
-			log.fatal(ex);
-		}
-		return false;
+            } else
+            {
+                log.debug("Ill-formatted file for reading in Table and TableID listing.  Filename:"
+                        + tableIdFile.getAbsolutePath());
+            }
+            fileInputStream.close();
+            return true;
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            log.fatal(ex);
+        }
+        return false;
 
-	}
+    }
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args)
-	{
+    /**
+     * @param args
+     */
+    public static void main(String[] args)
+    {
         System.out.println("Starting...");
-		List<Table>        tableList              = new ArrayList<Table>(100);
-		DatamodelGenerator datamodelWriter        = new DatamodelGenerator();
-		String             tableIdListingFilePath = DatamodelHelper.getTableIdFilePath();
+        List<Table>        tableList              = new ArrayList<Table>(100);
+        DatamodelGenerator datamodelWriter        = new DatamodelGenerator();
+        String             tableIdListingFilePath = DatamodelHelper.getTableIdFilePath();
         
-		if (datamodelWriter.readTableMetadataFromFile(tableIdListingFilePath))
-		{
-			String hbmPath = DatamodelHelper.getHbmDirPath();
-			tableList      = datamodelWriter.generateDatamodelTree(tableList, hbmPath);
+        if (datamodelWriter.readTableMetadataFromFile(tableIdListingFilePath))
+        {
+            String dmSrc = DatamodelHelper.getDataModelSrcDirPath();
+            tableList    = datamodelWriter.generateDatamodelTree(tableList, dmSrc);
             
             // Sort all the elements by class name
             Collections.sort(tableList);
 
-			boolean didWrite = datamodelWriter.writeTree(tableList);
-			if (!didWrite)
-			{
-				log.error("Failed to write out datamodel document");
-			}
-		} else
-		{
-			log.error("Could not find table/ID listing file for input ");
-		}
+            boolean didWrite = datamodelWriter.writeTree(tableList);
+            if (!didWrite)
+            {
+                log.error("Failed to write out datamodel document");
+            }
+        } else
+        {
+            log.error("Could not find table/ID listing file for input ");
+        }
         log.info("Done.");
         System.out.println("Done.");
-	}
+    }
 
 }

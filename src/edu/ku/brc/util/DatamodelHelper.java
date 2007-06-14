@@ -44,21 +44,19 @@ public class DatamodelHelper
 	 *            the name of the file to be read
 	 * @return the path to the file
 	 */
-	public static String getHbmDirPath() 
+	public static String getDataModelSrcDirPath() 
 	{
         //return ClassLoader.getSystemResource("Accession.hbm.xml").getFile();
         /*String fileName = "Accession.hbm.xml";
 		String path = new File(".").getAbsolutePath();
 		if (path.endsWith(".")) {
 			path = path.substring(0, path.length() - 2);
-		}
-		return path + File.separator + File.separator + "src" + File.separator
+		}*/
+		return"src" + File.separator
 				+ "edu" + File.separator + "ku" + File.separator + "brc"
-				+ File.separator + "specify" + File.separator + "datamodel"
-				+ File.separator + "hbm"
-				+ File.separator + fileName;
-                */
-        return "OldHBMs";
+				+ File.separator + "specify" + File.separator + "datamodel";
+                
+        //return "OldHBMs";
 	}
 
 	/**
