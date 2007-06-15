@@ -663,7 +663,7 @@ public class GenericDBConversion
                                     //"Agent",
                                     //"AgentAddress",
                                     "Author",
-                                    "BiologicalObjectAttributes",
+                                    //"BiologicalObjectAttributes", // Turn back on when datamodel checked in
                                     "Borrow",
                                     "BorrowAgent",
                                     "BorrowMaterial",
@@ -681,7 +681,7 @@ public class GenericDBConversion
                                     "ExchangeIn",
                                     "ExchangeOut",
                                     "GroupPerson",
-                                    "Habitat",
+                                    //"Habitat", // Turn back on when datamodel checked in
                                     "Journal",
                                     "Loan",
                                     "LoanAgent",
@@ -691,7 +691,7 @@ public class GenericDBConversion
                                     "LocalityCitation",
                                     "OtherIdentifier",
                                     "Permit",
-                                    "Preparation",
+                                    //"Preparation", // Turn back on when datamodel checked in
                                     "Project",
                                     "ProjectCollectionObjects",
                                     "ReferenceWork",
@@ -728,9 +728,10 @@ public class GenericDBConversion
        tableMaps.put("stratigraphy",             createFieldNameMap(new String[] {"LithoGroup", "Group1"}));
        tableMaps.put("taxoncitation",            createFieldNameMap(new String[] {"TaxonID", "TaxonNameID"}));
 
-       tableMaps.put("colobjattributes",         createFieldNameMap(getColObjAttributeMappings()));
-       tableMaps.put("preparationattributes",    createFieldNameMap(getPrepAttributeMappings()));
-       tableMaps.put("habitatattributes",        createFieldNameMap(getHabitatAttributeMappings()));
+       // Turn back on when datamodel checked in
+       //tableMaps.put("colobjattributes",         createFieldNameMap(getColObjAttributeMappings()));
+       //tableMaps.put("preparationattributes",    createFieldNameMap(getPrepAttributeMappings()));
+       //tableMaps.put("habitatattributes",        createFieldNameMap(getHabitatAttributeMappings()));
        
        //Map<String, Map<String, String>> tableDateMaps = new Hashtable<String, Map<String, String>>();
        //tableDateMaps.put("collectingevent", createFieldNameMap(new String[] {"TaxonID", "TaxonNameID"}));
