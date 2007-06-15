@@ -200,7 +200,8 @@ public class SpecifyDBConverter
      */
     protected static void convertDB(final String oldDatabaseName, final String databaseName) throws Exception
     {
-        boolean doAll = true; // when converting
+        boolean doAll            = true; // when converting
+        boolean startfromScratch = true; // when converting
 
         System.out.println("************************************************************");
         System.out.println("From "+oldDatabaseName+" to "+databaseName);
@@ -218,7 +219,7 @@ public class SpecifyDBConverter
         DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver(driverName);
         if (driverInfo == null)
         {
-            throw new RuntimeException("COuldn't find driver by name ["+driverInfo+"] in driver list.");
+            throw new RuntimeException("Couldn't find driver by name ["+driverInfo+"] in driver list.");
         }
         
         // This will log us in and return true/false
@@ -237,8 +238,10 @@ public class SpecifyDBConverter
         
         System.out.println("Preparing new database");
         
-        SpecifySchemaGenerator schemaGen = new SpecifySchemaGenerator();
-        schemaGen.generateSchema(driverInfo, databaseHost, databaseName, userName, password);
+        if (startfromScratch)
+        {
+            SpecifySchemaGenerator.generateSchema(driverInfo, databaseHost, databaseName, userName, password);
+        }
         
         System.out.println("Preparing new database: completed");
         
@@ -259,9 +262,9 @@ public class SpecifyDBConverter
         IdMapperMgr idMapperMgr = null;
         try
         {
-        	GenericDBConversion.setShouldCreateMapTables(true);
+        	GenericDBConversion.setShouldCreateMapTables(startfromScratch);
 
-            GenericDBConversion.setShouldDeleteMapTables(true);
+            GenericDBConversion.setShouldDeleteMapTables(startfromScratch);
             
             frame.setOverall(0, 15);
             SwingUtilities.invokeLater(new Runnable() {
@@ -320,7 +323,7 @@ public class SpecifyDBConverter
                 log.info("Converting Geologic Time Period.");
                 // GTP needs to be converted here so the stratigraphy conversion can use
                 // the IDs
-                boolean doGTP = false;
+                boolean doGTP = true;
                 if( doGTP || doAll )
                 {
                 	GeologicTimePeriodTreeDef treeDef = conversion.convertGTPDefAndItems();
@@ -339,7 +342,7 @@ public class SpecifyDBConverter
                     BasicSQLUtils.setFieldsToIgnoreWhenMappingIDs(new String[] {"MethodID",  "RoleID",  "CollectionID",  "ConfidenceID",
                                                                                 "TypeStatusNameID",  "ObservationMethodID",  "StatusID",
                                                                                 "TypeID",  "ShipmentMethodID", "RankID", "DirectParentRankID",
-                                                                                "RequiredParentRankID"});
+                                                                                "RequiredParentRankID", "MediumID"});
                     conversion.mapIds();
                     BasicSQLUtils.setFieldsToIgnoreWhenMappingIDs(null);
                 }
@@ -405,7 +408,7 @@ public class SpecifyDBConverter
 
                 frame.setDesc("Converting Determinations Records");
                 log.info("Converting Determinations Records");
-                boolean doDeterminations = true;
+                boolean doDeterminations = false;
                 if (doDeterminations || doAll)
                 {
                     conversion.createDefaultDeterminationStatusRecords();
@@ -420,7 +423,7 @@ public class SpecifyDBConverter
                 
                 frame.setDesc("Converting doLoanPhysicalObjects Records");
                 log.info("Converting doLoanPhysicalObjects Records");
-                boolean doLoanPhysicalObjects = true;
+                boolean doLoanPhysicalObjects = false;
                 if (doLoanPhysicalObjects || doAll)
                 {
                     conversion.convertLoanPhysicalObjects();
@@ -433,7 +436,7 @@ public class SpecifyDBConverter
 
                 frame.setDesc("Copying Tables");
                 log.info("Copying Tables");
-                boolean copyTables = false;
+                boolean copyTables = true;
                 if (copyTables || doAll)
                 {
                     conversion.copyTables();

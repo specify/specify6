@@ -266,7 +266,7 @@ public class BuildSampleDatabase
      */
     public List<Object> createSingleDiscipline(final String colObjDefName, final String disciplineName)
     {
-        System.err.println("Creating single discipline database: " + disciplineName);
+        System.out.println("Creating single discipline database: " + disciplineName);
         
         int createStep = 0;
         

@@ -119,11 +119,11 @@ public class GenericDBConversion
     
     protected static final Logger log = Logger.getLogger(GenericDBConversion.class);
 
-    protected static StringBuilder strBuf   = new StringBuilder("");
+    protected static StringBuilder    strBuf         = new StringBuilder("");
 
     protected static SimpleDateFormat dateFormatter  = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-    protected static Timestamp now = new Timestamp(System.currentTimeMillis());
-    protected static String nowStr = dateFormatter.format(now);
+    protected static Timestamp        now            = new Timestamp(System.currentTimeMillis());
+    protected static String           nowStr         = dateFormatter.format(now);
     
     protected String oldDriver   = "";
     protected String oldDBName   = "";
@@ -135,9 +135,9 @@ public class GenericDBConversion
     protected Connection oldDBConn;
     protected Connection newDBConn;
 
-    protected String[]                  standardDataTypes    = {"Plant", "Animal", "Mineral", "Fungi", "Anthropology"};
+    protected String[]                   standardDataTypes   = {"Plant", "Animal", "Mineral", "Fungi", "Anthropology"};
     protected Hashtable<String, Integer> dataTypeNameIndexes = new Hashtable<String, Integer>(); // Name to Index in Array
-    protected Hashtable<String, Long> dataTypeNameToIds = new Hashtable<String, Long>(); // name to Record ID
+    protected Hashtable<String, Long>    dataTypeNameToIds   = new Hashtable<String, Long>(); // name to Record ID
 
     protected Hashtable<String, TableStats> tableStatHash = new Hashtable<String, TableStats>();
     
@@ -294,7 +294,7 @@ public class GenericDBConversion
         //"Agent",
         //"AgentAddress",
         "Authors",
-        "BiologicalObjectAttributes",
+        //"BiologicalObjectAttributes", // Turn back on when datamodel checked in
         "BiologicalObjectRelation",
         "BiologicalObjectRelationType",
         "Borrow",
@@ -323,7 +323,7 @@ public class GenericDBConversion
         "GeologicTimeBoundary",
         //"GeologicTimePeriod",
         "GroupPersons",
-        "Habitat",
+        //"Habitat",   // Turn back on when datamodel checked in
         "ImageAgents",
         "ImageCollectionObjects",
         "ImageLocalities",
@@ -337,7 +337,7 @@ public class GenericDBConversion
         "Observation",
         "OtherIdentifier",
         "Permit",
-        //"Preparation",
+        //"Preparation", // Turn back on when datamodel checked in
         "Project",
         "ProjectCollectionObjects",
         "ReferenceWork",
@@ -358,7 +358,9 @@ public class GenericDBConversion
         {
             idMapper = idMapperMgr.addTableMapper(tableName, tableName+"ID");
             if (shouldCreateMapTables)
+            {
                 idMapper.mapAllIds();
+            }
         }
 
         idMapper = idMapperMgr.addTableMapper("TaxonomyType", "TaxonomyTypeID", "select TaxonomyTypeID, TaxonomyTypeName from taxonomytype where TaxonomyTypeID in (SELECT distinct TaxonomyTypeID from taxonname where RankId <> 0)");
@@ -492,6 +494,7 @@ public class GenericDBConversion
             //"Deaccession", "TypeID", "Type", "TypeID",
 
             //"CollectingEvent", "BiologicalObjectTypeCollectedID", "BiologicalObjectTypeCollected", "BiologicalObjectTypeCollectedID",
+            "CollectingEvent", "HabitatAttributesID", "Habitat", "HabitatID",
             "CollectingEvent", "LocalityID", "Locality", "LocalityID",
             "CollectingEvent", "StratigraphyID", "Stratigraphy", "StratigraphyID",
             //"CollectingEvent", "MethodID", "Method", "MethodID",
@@ -583,6 +586,10 @@ public class GenericDBConversion
             "LocalityCitation", "ReferenceWorkID", "ReferenceWork", "ReferenceWorkID",
             "LocalityCitation", "LocalityID", "Locality", "LocalityID",
 
+            // Attribute Tables One-to-Ones
+            //"CollectingEvent",  "HabitatAttributesID",     "Habitat",                    "HabitatID",
+            //"CollectionObject", "ColObjAttributesID",      "BiologicalObjectAttributes", "BiologicalObjectAttributesID", 
+            //"CollectionObject", "PreparationAttributesID", "Preparation",                "PreparationID",                
             //"BiologicalObjectAttributes", "BiologicalObjectTypeID", "BiologicalObjectType", "BiologicalObjectTypeID",
             //"BiologicalObjectAttributes", "SexID", "Sex", "SexID",
             //"BiologicalObjectAttributes", "StageID", "Stage", "StageID",
@@ -656,6 +663,7 @@ public class GenericDBConversion
                                     //"Agent",
                                     //"AgentAddress",
                                     "Author",
+                                    "BiologicalObjectAttributes",
                                     "Borrow",
                                     "BorrowAgent",
                                     "BorrowMaterial",
@@ -673,6 +681,7 @@ public class GenericDBConversion
                                     "ExchangeIn",
                                     "ExchangeOut",
                                     "GroupPerson",
+                                    "Habitat",
                                     "Journal",
                                     "Loan",
                                     "LoanAgent",
@@ -682,6 +691,7 @@ public class GenericDBConversion
                                     "LocalityCitation",
                                     "OtherIdentifier",
                                     "Permit",
+                                    "Preparation",
                                     "Project",
                                     "ProjectCollectionObjects",
                                     "ReferenceWork",
@@ -690,91 +700,124 @@ public class GenericDBConversion
                                     "TaxonCitation",
        };
 
+       // This maps old column names to new column names, they must be in pairs
+       // Ths Table Name is the "TO Table" name
        Map<String, Map<String, String>> tableMaps = new Hashtable<String, Map<String, String>>();
-       tableMaps.put("accessionagent", createFieldNameMap(new String[] {"AgentID", "AgentAddressID", "AccessionAgentID", "AccessionAgentsID"}));
-       tableMaps.put("accessionauthorization", createFieldNameMap(new String[] {"AccessionAuthorizationID", "AccessionAuthorizationsID"}));
-       tableMaps.put("author", createFieldNameMap(new String[] {"OrderNumber", "Order1", "AuthorID", "AuthorsID"}));
-       tableMaps.put("borrow", createFieldNameMap(new String[] {"IsClosed", "Closed"}));
-       tableMaps.put("borrowagent", createFieldNameMap(new String[] {"AgentID", "AgentAddressID", "BorrowAgentID", "BorrowAgentsID"}));
-       tableMaps.put("borrowreturnmaterial", createFieldNameMap(new String[] {"ReturnedDate", "Date1"}));
-       tableMaps.put("borrowshipment", createFieldNameMap(new String[] {"BorrowShipmentID", "BorrowShipmentsID"}));
-       tableMaps.put("collectingevent", createFieldNameMap(new String[] {"StratigraphyID", "CollectingEventID", "TaxonID", "TaxonNameID"}));
+       tableMaps.put("accessionagent",           createFieldNameMap(new String[] {"AgentID", "AgentAddressID", "AccessionAgentID", "AccessionAgentsID"}));
+       tableMaps.put("accessionauthorization",   createFieldNameMap(new String[] {"AccessionAuthorizationID", "AccessionAuthorizationsID"}));
+       tableMaps.put("author",                   createFieldNameMap(new String[] {"OrderNumber", "Order1", "AuthorID", "AuthorsID"}));
+       tableMaps.put("borrow",                   createFieldNameMap(new String[] {"IsClosed", "Closed"}));
+       tableMaps.put("borrowagent",              createFieldNameMap(new String[] {"AgentID", "AgentAddressID", "BorrowAgentID", "BorrowAgentsID"}));
+       tableMaps.put("borrowreturnmaterial",     createFieldNameMap(new String[] {"ReturnedDate", "Date1"}));
+       tableMaps.put("borrowshipment",           createFieldNameMap(new String[] {"BorrowShipmentID", "BorrowShipmentsID"}));
+       tableMaps.put("collectingevent",          createFieldNameMap(new String[] {"StratigraphyID", "CollectingEventID", "TaxonID", "TaxonNameID"}));
        tableMaps.put("collectionobjectcitation", createFieldNameMap(new String[] {"CollectionObjectID", "BiologicalObjectID"}));
-       tableMaps.put("collector", createFieldNameMap(new String[] {"OrderNumber", "Order1", "CollectorID", "CollectorsID"}));
-       tableMaps.put("deaccession", createFieldNameMap(new String[] {"DeaccessionDate", "Date1"}));
-       tableMaps.put("deaccessionagent", createFieldNameMap(new String[] {"AgentID", "AgentAddressID","DeaccessionAgentID","DeaccessionAgentsID"}));
+       tableMaps.put("collector",                createFieldNameMap(new String[] {"OrderNumber", "Order1", "CollectorID", "CollectorsID"}));
+       tableMaps.put("deaccession",              createFieldNameMap(new String[] {"DeaccessionDate", "Date1"}));
+       tableMaps.put("deaccessionagent",         createFieldNameMap(new String[] {"AgentID", "AgentAddressID","DeaccessionAgentID","DeaccessionAgentsID"}));
        //tableMaps.put("determination", createFieldNameMap(new String[] {"CollectionObjectID", "BiologicalObjectID", "IsCurrent", "Current1", "DeterminationDate", "Date1", "TaxonID", "TaxonNameID"}));
        //tableMaps.put("loanreturnphysicalobject", createFieldNameMap(new String[] {"DateField", "Date1"}));
-       tableMaps.put("groupperson", createFieldNameMap(new String[] {"GroupPersonID", "GroupPersonsID"}));
-       tableMaps.put("loan", createFieldNameMap(new String[] {"IsGift", "Category", "IsClosed", "Closed"}));
-       tableMaps.put("loanagent", createFieldNameMap(new String[] {"AgentID", "AgentAddressID","LoanAgentID","LoanAgentsID"}));
-       tableMaps.put("loanphysicalobject", createFieldNameMap(new String[] {"PreparationID", "PhysicalObjectID"}));
+       tableMaps.put("groupperson",              createFieldNameMap(new String[] {"GroupPersonID", "GroupPersonsID"}));
+       tableMaps.put("loan",                     createFieldNameMap(new String[] {"IsGift", "Category", "IsClosed", "Closed"}));
+       tableMaps.put("loanagent",                createFieldNameMap(new String[] {"AgentID", "AgentAddressID","LoanAgentID","LoanAgentsID"}));
+       tableMaps.put("loanphysicalobject",       createFieldNameMap(new String[] {"PreparationID", "PhysicalObjectID"}));
        tableMaps.put("loanreturnphysicalobject", createFieldNameMap(new String[] {"ReturnedDate", "Date1"}));
-       tableMaps.put("permit", createFieldNameMap(new String[] {"IssuedByID", "IssuerID", "IssuedToID", "IssueeID"}));
+       tableMaps.put("permit",                   createFieldNameMap(new String[] {"IssuedByID", "IssuerID", "IssuedToID", "IssueeID"}));
        tableMaps.put("projectcollectionobjects", createFieldNameMap(new String[] {"ProjectCollectionObjectID", "ProjectCollectionObjectsID"}));
-       tableMaps.put("referencework", createFieldNameMap(new String[] {"WorkDate", "Date1", "IsPublished", "Published"}));
-       tableMaps.put("stratigraphy", createFieldNameMap(new String[] {"LithoGroup", "Group1"}));
-       tableMaps.put("taxoncitation", createFieldNameMap(new String[] {"TaxonID", "TaxonNameID"}));
+       tableMaps.put("referencework",            createFieldNameMap(new String[] {"WorkDate", "Date1", "IsPublished", "Published"}));
+       tableMaps.put("stratigraphy",             createFieldNameMap(new String[] {"LithoGroup", "Group1"}));
+       tableMaps.put("taxoncitation",            createFieldNameMap(new String[] {"TaxonID", "TaxonNameID"}));
 
+       tableMaps.put("colobjattributes",         createFieldNameMap(getColObjAttributeMappings()));
+       tableMaps.put("preparationattributes",    createFieldNameMap(getPrepAttributeMappings()));
+       tableMaps.put("habitatattributes",        createFieldNameMap(getHabitatAttributeMappings()));
+       
        //Map<String, Map<String, String>> tableDateMaps = new Hashtable<String, Map<String, String>>();
        //tableDateMaps.put("collectingevent", createFieldNameMap(new String[] {"TaxonID", "TaxonNameID"}));
-       
        //tableMaps.put("locality", createFieldNameMap(new String[] {"NationalParkName", "", "ParentID", "TaxonParentID"}));
        
 
        BasicSQLUtils.setShowMappingError(true);//TODO meg change back to false
        for (String tableName : tablesToMoveOver)
        {
-           String lowerCaseName = tableName.toLowerCase();
-           deleteAllRecordsFromTable(lowerCaseName);
+           String fromTableName = tableName.toLowerCase();
+           String toTableName   = fromTableName;
+           
+           BasicSQLUtils.setOneToOneIDHash(null);
            BasicSQLUtils.setShowMappingError(true);
 
-           TableStats tblStats = new TableStats(oldDBConn, lowerCaseName, newDBConn, lowerCaseName);
-           tableStatHash.put(lowerCaseName, tblStats);
-           log.info("Getting ready to copy table: " + lowerCaseName);
+           TableStats tblStats = new TableStats(oldDBConn, fromTableName, newDBConn, toTableName);
+           tableStatHash.put(fromTableName, tblStats);
+           log.info("Getting ready to copy table: " + fromTableName);
            if (tableName.equals("LoanPhysicalObject"))
            {
                String[] ignoredFields = {"IsResolved"};
                BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
                
            } else if (tableName.equals("Accession") || 
-                       tableName.equals("AccessionAuthorization"))
+                      tableName.equals("AccessionAuthorization"))
            {
                String[] ignoredFields = {"RepositoryAgreementID"};
                BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
                
            } 
-           else if(tableName.toLowerCase().equals("accessionagent")) 
+           else if (fromTableName.equals("accessionagent")) 
            {
                String[] ignoredFields = {"RepositoryAgreementID"};
                BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);  
            }
-           else if(tableName.toLowerCase().equals("accession")) 
+           else if (fromTableName.equals("accession")) 
            {
                String[] ignoredFields = {"RepositoryAgreementID"};
                BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);  
            }
-           else if(tableName.toLowerCase().equals("attachment")) 
+           else if (fromTableName.equals("attachment")) 
            {
                String[] ignoredFields = {"Visibility", "VisibilitySetBy"};
                BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);  
            }
-           else if(tableName.toLowerCase().equals("collectingevent")) 
+           else if (fromTableName.equals("collectionobject")) 
            {
-               String[] ignoredFields = {"Visibility", "VisibilitySetBy", "CollectingTripID", "EndDateVerbatim", "EndDatePrecision", "StartDateVerbatim", "StartDatePrecision"};
-               BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);  
+               // The First name is the name of the new column that is an ID of a One-to-One releationship
+               // NOTE: We have mapped as a Many-to-One for Hibernate, because we really want it to be
+               // a Zero-or-One
+               BasicSQLUtils.setOneToOneIDHash(createFieldNameMap(new String[] {"PreparationAttributesID", "PreparationAttributesID", 
+                                                                                "ColObjAttributesID", "ColObjAttributesID"}));
            }
-           else if(tableName.toLowerCase().equals("determination"))
+           else if (fromTableName.equals("collectingevent")) 
+           {
+               String[] ignoredFields = {"Visibility", "VisibilitySetBy", "CollectingTripID", "EndDateVerbatim", "EndDatePrecision", "StartDateVerbatim", "StartDatePrecision", "HabitatAttributesID"};
+               BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields); 
+               BasicSQLUtils.setOneToOneIDHash(createFieldNameMap(new String[] {"HabitatAttributesID", "HabitatAttributesID"}));
+
+           }
+           else if (fromTableName.equals("determination"))
            {
                String[] ignoredFields = {"DeterminationStatusID"};
                BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);  
            }
-           else if(tableName.toLowerCase().equals("otheridentifier"))
+           else if (fromTableName.equals("otheridentifier"))
            {
                String[] ignoredFields = {"Institution"};
                BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);  
            }      
-            else
+           else if (fromTableName.equals("biologicalobjectattributes"))
+           {
+               toTableName = "colobjattributes";
+               BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(getColObjAttributeToIgnore());  
+           }      
+           else if (fromTableName.equals("preparation"))
+           {
+               toTableName = "preparationattributes";
+               BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(getPrepAttributeAttributeToIgnore());  
+               BasicSQLUtils.setFieldsToIgnoreWhenMappingIDs(new String[] {"MediumID"});
+           }      
+           else if (fromTableName.equals("habitat"))
+           {
+               toTableName = "habitatattributes";
+               BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(getHabitatAttributeToIgnore());  
+           }      
+           else
            {
                BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(null);
            }
@@ -788,36 +831,230 @@ public class GenericDBConversion
                BasicSQLUtils.setShowMappingError(false);
            }
            
-           if(tableName.toLowerCase().equals("accessionagent")
-                   || tableName.toLowerCase().equals("accessionauthorization")
-                   || tableName.toLowerCase().equals("author")
-                   || tableName.toLowerCase().equals("borrowshipment")
-                   || tableName.toLowerCase().equals("borrowagent")
-                   || tableName.toLowerCase().equals("collector")
-                   || tableName.toLowerCase().equals("deaccessionagent")
-                   || tableName.toLowerCase().equals("groupperson")
-                   || tableName.toLowerCase().equals("loanagent"))
+           if (fromTableName.equals("accessionagent") ||
+               fromTableName.equals("accessionauthorization") ||
+               fromTableName.equals("author") ||
+               fromTableName.equals("borrowshipment") ||
+               fromTableName.equals("borrowagent") ||
+               fromTableName.equals("collector") ||
+               fromTableName.equals("deaccessionagent") ||
+               fromTableName.equals("groupperson") ||
+               fromTableName.equals("loanagent"))
            {
-        	   tableName = tableName.toLowerCase();
-               if (!copyTable(oldDBConn, newDBConn, "select * from " + tableName + "s", tableName + "s", tableName, tableMaps.get(lowerCaseName), null))
+               fromTableName = fromTableName + "s";
+               /*if (!copyTable(oldDBConn, newDBConn, "select * from " + fromTableName + "s", tableName + "s", tableName, tableMaps.get(fromTableName), null))
                {
                    log.error("Table ["+tableName+"] didn't copy correctly.");
                    break;
-               }
-               
-           }            
-           else if (!copyTable(oldDBConn, newDBConn, lowerCaseName, tableMaps.get(lowerCaseName), null))
+               }*/
+           }
+           
+           deleteAllRecordsFromTable(toTableName);
+           
+           if (!copyTable(oldDBConn, newDBConn, fromTableName, toTableName, tableMaps.get(toTableName), null))
            {
                log.error("Table ["+tableName+"] didn't copy correctly.");
                break;
                
            }
-
-           // else
            
+           BasicSQLUtils.setFieldsToIgnoreWhenMappingIDs(null);
+
            tblStats.collectStats();
        }
        BasicSQLUtils.setShowMappingError(true);
+    }
+    
+    
+    protected String[] getColObjAttributeToIgnore()
+    {
+        return new String[] {
+                "BiologicalObjectTypeId",
+                "SexId",
+                "StageId",
+                "Number34",
+                "Number35",
+                "Number36",
+        };
+    }
+    
+    protected String[] getColObjAttributeMappings()
+    {
+        return new String[] {
+                "ColObjAttributesID", "BiologicalObjectAttributesID", 
+                // "biologicalObjectTypeId", ??? "Number36"
+                //"sex", 
+                //"age", 
+                //"stage", 
+                //"weight", 
+                //"length", 
+                "Number8",  "GosnerStage", 
+                "Number9",  "SnoutVentLength", 
+                "Text8",    "Sctivity", 
+                "Number10", "LengthTail", 
+                //"reproductiveCondition", 
+                "ObjCondition", "Condition", 
+                "Number11", "LengthTarsus", 
+                "Number12", "LengthWing", 
+                "Number13", "LengthHead", 
+                "Number14", "LengthBody", 
+                "Number15", "LengthMiddleToe", 
+                "Number16", "LengthBill", 
+                "Number17", "TotalExposedCulmen", 
+                //"maxLength", 
+                //"minLength", 
+                "Number18", "LengthHindFoot", 
+                "Number19", "LengthForeArm", 
+                "Number20", "LengthTragus", 
+                "Number21", "LengthEar", 
+                "Number22", "EarFromNotch", 
+                "Number23", "Wingspan", 
+                "Number24", "LengthGonad", 
+                "Number25", "WidthGonad", 
+                "Number26", "LengthHeadBody", 
+                //"width", 
+                "Number27", "HeightFinalWhorl", 
+                "Number28", "InsideHeightAperture", 
+                "Number29", "InsideWidthAperture", 
+                "Number30", "NumberWhorls", 
+                "Number31", "OuterLipThickness",
+                "Number32", "Mantle", 
+                //"height", 
+                "Number33", "Diameter", 
+                "Text9",    "BranchingAt", 
+                //"Text1", 
+                //"Text2", 
+                //"Text3", 
+                //"Text4", 
+                //"Text5", 
+                //"remarks", 
+                //"sexId", "Number34", ?????
+                //"stageId", "Number35", ????
+                //"yesNo1", 
+                //"yesNo2", 
+                //"yesNo3", 
+                //"Number1", 
+                //"Number2", 
+                //"Number3", 
+                //"Number4", 
+                //"Number5", 
+                //"Number6", 
+                //"Number7", 
+                //"Text6", 
+                //"Text7", 
+                //"yesNo4", 
+                //"yesNo5", 
+                //"yesNo6", 
+                //"yesNo7", 
+        };
+    }
+    
+    protected String[] getPrepAttributeAttributeToIgnore()
+    {
+        return new String[] {
+                "MediumId",
+                "PreparationTypeId",
+                "ContainerTypeId",
+                "Number3",
+                "Number8",
+                "Text16",   // ??? JUST FOR NOW!
+        };
+    }
+    
+    protected String[] getPrepAttributeMappings()
+    {
+        return new String[] {
+                "PreparationAttributesID", "PreparationID", 
+                "AttrDate", "PreparedDate", 
+                "Number3", "MediumID", 
+                "Text3", "PartInformation", 
+                "Text4", "StartBoxNumber", 
+                "Text5", "EndBoxNumber", 
+                "Text6", "StartSlideNumber", 
+                "Text7", "EndSlideNumber", 
+                "Text8", "SectionOrientation", 
+                "Text9", "SectionWidth", 
+                //"size",
+                "Text10", "URL", 
+                "Text11", "Identifier", 
+                "Text12", "NestLining", 
+                "Text13", "NestMaterial", 
+                "Text14", "NestLocation", 
+                "Text15", "SetMark", 
+                "Number4", "CollectedEggCount", 
+                "Number5", "CollectedParasiteEggCount",
+                "Number6", "FieldEggCount", 
+                "Number7", "FieldParasiteEggCount",
+                "Text17", "EggIncubationStage", 
+                "Text18", "EggDescription", 
+                "Text19", "Format", 
+                //"storageInfo",
+                //"preparationType",
+                //"preparationTypeId", "Number8", ?????
+                //"containerType",
+                //"containerTypeId",????????
+                "Text20", "DNAConcentration",
+                "Text21", "Volume",
+                //"Text1",
+                //"Text2",
+                //"Number1",
+                //"Number2",
+                //"remarks",
+                "Number9", "NestCollected",
+                //"yesNo1",
+                //"yesNo2",
+        };
+    }
+        
+    protected String[] getHabitatAttributeToIgnore()
+    {
+        return new String[] {
+                "HabitatTypeId",
+        };
+    }
+    
+    protected String[] getHabitatAttributeMappings()
+    {
+        return new String[] {
+                        "HabitatAttributesID", "HabitatID", 
+                        //"airTempC",
+                        //"waterTempC",
+                        "WaterPH", "WaterpH",
+                        //"turbidity",
+                        //"clarity",
+                        //"salinity",
+                        "Text6", "SoilType", 
+                        "Number6", "SoilPh", 
+                        "Number7", "SoilTempC", 
+                        "Text7", "SoilMoisture", 
+                        //"slope",
+                        //"vegetation",
+                        //"habitatType",
+                        "Text8", "IsCurrent", 
+                        "Text9", "Substrate", 
+                        "Text10", "SubstrateMoisture", 
+                        "Number8", "HeightAboveGround", 
+                        "Text11", "NearestNeighbor", 
+                        //"remarks",
+                        //"minDepth",
+                        //"maxDepth",
+                        //"text1",
+                        //"text2",
+                        //"number1",
+                        //"number2",
+                        //"habitatTypeId", ???????
+                        //"yesNo1",
+                        //"yesNo2",
+                        //"number3",
+                        //"number4",
+                        //"number5",
+                        //"text3",
+                        //"text4",
+                        //"text5",
+                        //"yesNo3",
+                        //"yesNo4",
+                        //"yesNo5",
+                         };
     }
 
     /**
@@ -2882,7 +3119,7 @@ public class GenericDBConversion
                         str.append("NULL");
 
                     } 
-                    else if(newFieldName.equals("Visibility")) //User/Security changes
+                    else if (newFieldName.equals("Visibility")) //User/Security changes
                     {
                         str.append(defaultVisibilityLevel);
                     }
@@ -3420,7 +3657,7 @@ public class GenericDBConversion
     		ttd.getTreeDefItems().add(i);
 
     		// setup the parent/child relationship
-    		if( items.isEmpty() )
+    		if ( items.isEmpty() )
     		{
     			i.setParent(null);
     		}
@@ -3435,7 +3672,7 @@ public class GenericDBConversion
 
     	for( TaxonTreeDefItem i: items )
     	{
-    		if( enforcedRanks.contains(i.getRankId()) )
+    		if ( enforcedRanks.contains(i.getRankId()) )
     		{
     			i.setIsEnforced(true);
     		}
@@ -3467,7 +3704,7 @@ public class GenericDBConversion
     	BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
 
     	log.info("Copying taxonomy tree definitions from 'taxonomytype' table");
-    	if( !copyTable(oldDBConn,
+    	if ( !copyTable(oldDBConn,
     			newDBConn,
     			sql,
     			"taxonomytype",
@@ -3512,7 +3749,7 @@ public class GenericDBConversion
 
     	// Copy over most of the columns in the old table to the new one
     	log.info("Copying taxonomy tree definition items from 'taxonomicunittype' table");
-    	if( !copyTable(oldDBConn,
+    	if ( !copyTable(oldDBConn,
     			newDBConn,
     			sqlStr,
     			"taxonomicunittype",
@@ -3539,7 +3776,7 @@ public class GenericDBConversion
     	while(rs.next())
     	{
     		Long typeId = rs.getLong(1);
-    		if( !rs.wasNull() )
+    		if ( !rs.wasNull() )
     		{
         		typeIds.add(typeId);
     		}
@@ -3559,7 +3796,7 @@ public class GenericDBConversion
     		while( rs.next() )
     		{
     			Long reqId = rs.getLong(1);
-    			if( !rs.wasNull() )
+    			if ( !rs.wasNull() )
     			{
     				enforcedIds.add(reqId);
     			}
@@ -3580,7 +3817,7 @@ public class GenericDBConversion
     		for( int i = 0; i < enforcedIds.size(); ++i )
     		{
     			sqlUpdate.append(enforcedIds.get(i));
-    			if( i < enforcedIds.size()-1 )
+    			if ( i < enforcedIds.size()-1 )
     			{
     				sqlUpdate.append(",");
     			}
@@ -3615,7 +3852,7 @@ public class GenericDBConversion
         	rs = newDbStmt.executeQuery(sqlStr);
 
         	boolean atLeastOneRecord = rs.next();
-        	if( !atLeastOneRecord )
+        	if ( !atLeastOneRecord )
         	{
         		continue;
         	}
@@ -3683,7 +3920,7 @@ public class GenericDBConversion
         BasicSQLUtils.setShowMappingError(showMappingErrors);
 
     	log.info("Copying taxon records from 'taxonname' table");
-    	if( !copyTable(oldDBConn,
+    	if ( !copyTable(oldDBConn,
     			newDBConn,
     			sql,
     			"taxonname",
@@ -3877,7 +4114,7 @@ public class GenericDBConversion
     	for( Object o: treeDef.getTreeDefItems() )
     	{
     		GeographyTreeDefItem defItem = (GeographyTreeDefItem)o;
-    		if( defItem.getRankId() == 0 )
+    		if ( defItem.getRankId() == 0 )
     		{
     			planetEarth.setDefinitionItem(defItem);
     			break;
@@ -3965,7 +4202,7 @@ public class GenericDBConversion
     	int levelsToBuild = 0;
     	for( int i = 4; i > 0; --i )
     	{
-    		if( levelNames[i-1] != null )
+    		if ( levelNames[i-1] != null )
     		{
     			levelsToBuild = i;
     			break;
@@ -3991,7 +4228,7 @@ public class GenericDBConversion
     protected Geography buildGeoLevel( String nameArg, Geography parentArg, Session sessionArg )
     {
         String name = nameArg;
-    	if( name == null )
+    	if ( name == null )
     	{
     		name = "N/A";
     	}
@@ -4000,7 +4237,7 @@ public class GenericDBConversion
     	Set<Geography> children = parentArg.getChildren();
     	for( Geography child: children )
     	{
-    		if( name.equalsIgnoreCase(child.getName()) )
+    		if ( name.equalsIgnoreCase(child.getName()) )
     		{
     			// this parent already has a child by the given name
     			// don't create a new one, just return this one
@@ -4143,13 +4380,13 @@ public class GenericDBConversion
     		Integer rankCode = oldGtpRecords.getInt(1) * 100;
     		String rankName  = oldGtpRecords.getString(2);
     		GeologicTimePeriodTreeDefItem newItem = addGtpDefItem(rankCode, rankName, def);
-    		if( newItem != null )
+    		if ( newItem != null )
     		{
                 newItem.setFullNameSeparator(", ");
     			session.save(newItem);
     			newItems.add(newItem);
     		}
-    		if( ++count % 1000 == 0 )
+    		if ( ++count % 1000 == 0 )
     		{
     	    	log.info(count + " geologic time period records processed");
     		}
@@ -4192,7 +4429,7 @@ public class GenericDBConversion
     	for( Object o: def.getTreeDefItems() )
     	{
     		GeologicTimePeriodTreeDefItem item = (GeologicTimePeriodTreeDefItem)o;
-    		if( item.getRankId().equals(rankCode) )
+    		if ( item.getRankId().equals(rankCode) )
     		{
     			return null;
     		}
@@ -4295,7 +4532,7 @@ public class GenericDBConversion
     		
     		gtpIdMapper.put(id, gtp.getGeologicTimePeriodId());
     		
-    		if( ++count % 1000 == 0 )
+    		if ( ++count % 1000 == 0 )
     		{
     	    	log.info(count + " geologic time period records converted");
     		}
@@ -4308,7 +4545,7 @@ public class GenericDBConversion
     		for( int j = 0; j < newItems.size(); ++j )
     		{
     			GeologicTimePeriod child = newItems.get(j);
-    			if( isParentChildPair(gtp, child) )
+    			if ( isParentChildPair(gtp, child) )
     			{
     				gtp.addChild(child);
     			}
@@ -4348,7 +4585,7 @@ public class GenericDBConversion
     
     protected boolean isParentChildPair( GeologicTimePeriod parent, GeologicTimePeriod child )
     {
-    	if( parent == child )
+    	if ( parent == child )
     	{
     		return false;
     	}
@@ -4361,7 +4598,7 @@ public class GenericDBConversion
     	
     	// remember, the numbers represent MYA (millions of yrs AGO)
     	// so the logic seems a little backwards
-    	if( startParent >= startChild && endParent <= endChild && parent.getRankId() < child.getRankId() )
+    	if ( startParent >= startChild && endParent <= endChild && parent.getRankId() < child.getRankId() )
     	{
     		return true;
     	}
@@ -5331,10 +5568,10 @@ public class GenericDBConversion
                             sqlStr.append(agentInfo.getNewAgentId());
 
 
-                        }else if(agentColumns[i].equals("agent.Visibility"))//User/Security changes
+                        }else if (agentColumns[i].equals("agent.Visibility"))//User/Security changes
                         {
                             sqlStr.append(defaultVisibilityLevel);
-                        }else if(agentColumns[i].equals("agent.VisibilitySetBy"))//User/Security changes
+                        }else if (agentColumns[i].equals("agent.VisibilitySetBy"))//User/Security changes
                         {
                             sqlStr.append("null");
                         }else

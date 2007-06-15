@@ -72,5 +72,9 @@ public interface IdMapperIFace
      */
     public void setFrame(ProgressFrame frame);
 
-
+    /**
+     * Tells it to show log errors.
+     * @param showLogErrors true/false
+     */
+    public void setShowLogErrors(boolean showLogErrors);
 }

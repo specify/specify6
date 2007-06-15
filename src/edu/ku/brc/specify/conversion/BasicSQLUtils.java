@@ -59,6 +59,7 @@ public class BasicSQLUtils
 
     protected static Map<String, String> ignoreMappingFieldNames = null;
     protected static Map<String, String> ignoreMappingFieldIDs   = null;
+    protected static Map<String, String> oneToOneIDHash          = null;
 
     protected static Connection dbConn = null;  // (it may be shared so don't close)
     
@@ -133,6 +134,15 @@ public class BasicSQLUtils
         }
     }
     
+    
+    /**
+     * @param oneToOneIDHash the oneToOneIDHash to set
+     */
+    public static void setOneToOneIDHash(Map<String, String> oneToOneIDHash)
+    {
+        BasicSQLUtils.oneToOneIDHash = oneToOneIDHash;
+    }
+
     /**
      * Creates or clears and fills a list
      * @param fieldNames the list of names, can be null then the list is cleared and nulled out
@@ -788,6 +798,11 @@ public class BasicSQLUtils
 
                     // Get the Old Column Index from the New Name
                     Integer columnIndex = fromHash.get(colName);
+                    if (colName.startsWith("Habitat"))
+                    {
+                        int x = 0;
+                        x++;
+                    }
                     
                     if (columnIndex == null && colNewToOldMap != null)
                     {
@@ -810,7 +825,7 @@ public class BasicSQLUtils
                     {
                         if (i > 0) str.append(", ");
                         Object dataObj = rs.getObject(columnIndex);
-
+                        
                         if (idMapperMgr != null && oldMappedColName != null && oldMappedColName.endsWith("ID"))
                         {
                             IdMapperIFace idMapper = idMapperMgr.get(fromTableName, oldMappedColName);
@@ -827,7 +842,7 @@ public class BasicSQLUtils
                                     
                                     if (showMappingError)
                                     {
-                                        log.info("Unable to Map Primary Id[NULL] old Name["+oldMappedColName+"]");
+                                        log.info("Unable to Map Primary Id[NULL] old Name["+oldMappedColName+"] ["+columnIndex+"]");
                                     }
                                 }
                                 else
@@ -919,6 +934,25 @@ public class BasicSQLUtils
                             str.append(getStrValue(dataObj, fieldMetaData.getType()));
                         }
 
+                    } else if (idMapperMgr != null && colName != null && colName.endsWith("ID") && oneToOneIDHash != null && oneToOneIDHash.get(colName) != null)
+                    {
+                        
+                        IdMapperIFace idMapper = idMapperMgr.get(toTableName, colName);
+                        if (idMapper != null)
+                        {
+                            idMapper.setShowLogErrors(false);
+                            Long newPrimaryId = idMapper.get(Long.parseLong(id));
+                            if (newPrimaryId != null)
+                            {
+                                if (i > 0) str.append(", ");
+                                str.append(newPrimaryId);
+                            } else
+                            {
+                                if (i > 0) str.append(", ");
+                                str.append("NULL");
+                                //log.error("For Table[" + fromTableName + "] mapping new Column Name[" + colName + "] ID["+id+"] was not mapped");
+                            }
+                        }
                     }
                     else // there was no old column that maps to this new column
                     {
@@ -997,6 +1031,56 @@ public class BasicSQLUtils
         }
         BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(null);//meg added
         return true;
+    }
+    
+    protected static Object fixID(final IdMapperMgr idMapperMgr,
+                                  final String      fromTableName,
+                                  final String      oldMappedColName,
+                                  final ResultSet   rs,
+                                  final Integer     columnIndex) throws SQLException
+    {
+        Object        dataObj  = null;
+        IdMapperIFace idMapper = idMapperMgr.get(fromTableName, oldMappedColName);
+        if (idMapper != null)
+        {
+            long oldPrimaryKeyId = rs.getLong(columnIndex);
+
+            // if the value was null, getInt() returns 0
+            // use wasNull() to distinguish real 0 from a null return
+            if( rs.wasNull())
+            {
+                dataObj = null;
+                
+                if (showMappingError)
+                {
+                    log.info("Unable to Map Primary Id[NULL] old Name["+oldMappedColName+"]");
+                }
+            }
+            else
+            {
+                dataObj = idMapper.get(oldPrimaryKeyId);
+                
+                if (dataObj == null)
+                {
+                    log.info("Unable to Map Primary Id["+oldPrimaryKeyId+"] old Name["+oldMappedColName+"]");
+                }
+            }
+
+        } else
+        {
+            if (ignoreMappingFieldIDs == null || ignoreMappingFieldIDs.get(oldMappedColName) == null)
+            {
+                // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                // XXX Temporary fix so it doesn't hide other errors
+                // Josh has promised his first born if he doesn't fix this!
+                // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                if (!oldMappedColName.equals("RankID"))
+                {
+                    log.error("No ID Map for ["+fromTableName+"] Old Column Name["+oldMappedColName+"]");
+                }
+            }
+        }
+        return dataObj;
     }
 
     /**
