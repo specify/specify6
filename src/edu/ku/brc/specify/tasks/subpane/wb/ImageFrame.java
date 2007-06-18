@@ -22,6 +22,8 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
@@ -54,6 +56,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -69,6 +72,7 @@ import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.helpers.ImageFilter;
+import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchRowImage;
@@ -78,6 +82,7 @@ import edu.ku.brc.ui.DefaultModifiableListModel;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.util.thumbnails.ImageThumbnailGenerator;
 
@@ -124,6 +129,8 @@ public class ImageFrame extends JFrame
     
     protected ImageThumbnailGenerator thumbnailer;
     
+    protected boolean           allowCloseWindow;
+    
     protected static int REDUCED_SIZE = -1;
     protected static int FULL_SIZE    =  1;
     
@@ -140,10 +147,24 @@ public class ImageFrame extends JFrame
     {
         this.workbench = workbench;
         this.wbPane = wbPane;
-        
+        this.allowCloseWindow = true;
         this.defaultThumbIcon = IconManager.getIcon("image", IconSize.Std32);
         
         setIconImage(IconManager.getImage("AppIcon").getImage());
+        
+        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        addWindowListener(new WindowAdapter()
+        {
+            @Override
+            public void windowClosing(WindowEvent e)
+            {
+                if (allowCloseWindow)
+                {
+                    setVisible(false);
+                    wbPane.setImageFrameVisible(false);
+                }
+            }
+        });
         
         Dimension minSize = new Dimension(mapSize, mapSize);
         cardImageLabel.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -157,11 +178,15 @@ public class ImageFrame extends JFrame
         builder.add(loadImgBtn, cc.xy(2, 4));
         
         noCardImageMessagePanel = builder.getPanel();
+        noCardImageMessagePanel.setPreferredSize(minSize);
+        noCardImageMessagePanel.setSize(minSize);
         
         builder = new PanelBuilder(new FormLayout("f:p:g,c:p,f:p:g", "f:p:g,c:p,f:p:g"));
         builder.add(new JLabel(getResourceString("WB_NO_ROW_SELECTED"), SwingConstants.CENTER), cc.xy(2,2));
         
         noRowSelectedMessagePanel = builder.getPanel();
+        noRowSelectedMessagePanel.setPreferredSize(minSize);
+        noRowSelectedMessagePanel.setSize(minSize);
         
         mainPane = new JPanel(new BorderLayout());
         mainPane.setSize(minSize);
@@ -405,10 +430,12 @@ public class ImageFrame extends JFrame
         if (lastDisplayedSize == null || lastDisplayedSize == REDUCED_SIZE)
         {
             image = rowImage.getImage();
+            reduceMI.setSelected(true);
         }
         else
         {
             image = rowImage.getFullSizeImage();
+            origMI.setSelected(true);
         }
         
         cardImageLabel.setIcon(image);
@@ -453,6 +480,9 @@ public class ImageFrame extends JFrame
         setTitle(getResourceString("WB_NO_IMAGES_LINKED"));
         setStatusBarText(null);
         enableMenus(false);
+        Dimension prefSize = noCardImageMessagePanel.getPreferredSize();
+        mainPane.setSize(prefSize);
+        mainPane.setPreferredSize(prefSize);
         validate();
         repaint();
     }
@@ -469,6 +499,9 @@ public class ImageFrame extends JFrame
         setTitle(getResourceString("WB_NO_ROW_SELECTED"));
         setStatusBarText(null);
         enableMenus(false);
+        Dimension prefSize = noRowSelectedMessagePanel.getPreferredSize();
+        mainPane.setSize(prefSize);
+        mainPane.setPreferredSize(prefSize);
         validate();
         repaint();
     }
@@ -491,47 +524,94 @@ public class ImageFrame extends JFrame
     public void addImages()
     {
         UsageTracker.incrUsageCount("WB.AddWBRowImage");
-        File[] imageFiles = askUserForImageFiles();
+        
+        final WorkbenchRow wbRow = this.row;
+        
+        final File[] imageFiles = askUserForImageFiles();
         if (imageFiles == null || imageFiles.length == 0)
         {
             return;
         }
         
+        allowCloseWindow = false;
+        this.setEnabled(false);
+        
         log.debug("addImages: " + imageFiles.length + " files selected");
         
-        int lowestNewIndex = Integer.MAX_VALUE;
-        
-        List<WorkbenchRowImage> rowImagesNeedingThumbnails = new Vector<WorkbenchRowImage>();
-        for (File f: imageFiles)
+        SwingWorker loadImagesTask = new SwingWorker()
         {
-            try
+            private List<WorkbenchRowImage> rowImagesNeedingThumbnails = new Vector<WorkbenchRowImage>();
+            
+            @Override
+            public Object construct()
             {
-                // TODO: we need to get this off of the Swing thread, but block the GUI so the user can't do anything until it's done
-                int newIndex = row.addImage(f);
-                if (newIndex < lowestNewIndex)
+                Vector<Integer> newIndexes = new Vector<Integer>();
+                for (int i = 0; i < imageFiles.length; ++i)
                 {
-                    lowestNewIndex = newIndex;
-                }
-                tray.getModel().add(defaultThumbIcon);
-                rowImagesNeedingThumbnails.add(row.getRowImage(newIndex));
-                wbPane.setChanged(true);
-            }
-            catch (IOException e)
-            {
-                statusBar.setErrorMessage("Exception while adding a new image", e);
-            }
-        }
-        
-        if (lowestNewIndex < row.getWorkbenchRowImages().size())
-        {
-            this.imageIndex = lowestNewIndex;
-            tray.setSelectedIndex(imageIndex);
-            showImage();
-        }
-        
-        generateThumbnailsInBackground(rowImagesNeedingThumbnails);
+                    final int index = i;
+                    File f = imageFiles[i];
+                    try
+                    {
+                        int newIndex = wbRow.addImage(f);
 
-        wbPane.repaint();
+                        newIndexes.add(newIndex);
+                        
+                        SwingUtilities.invokeLater(new Runnable()
+                        {
+                            public void run()
+                            {
+                                UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_ADDING_IMAGE_X_OF_Y"), index+1, imageFiles.length), 24);
+                            }
+                        });
+                        
+                        WorkbenchRowImage rowImage = row.getRowImage(newIndex);
+                        rowImagesNeedingThumbnails.add(rowImage);
+                        wbPane.setChanged(true);
+                    }
+                    catch (IOException e)
+                    {
+                        statusBar.setErrorMessage("Exception while adding a new image", e);
+                    }
+                }
+                Collections.sort(newIndexes);
+                return newIndexes;
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public void finished()
+            {
+                Object retVal = get();
+                
+                if (retVal != null && retVal instanceof List)
+                {
+                    Vector<Integer> newIndexes = (Vector<Integer>)retVal;
+                    int lowestNewIndex = newIndexes.get(0);
+
+                    // add a bunch of placeholder icons
+                    for (int i = 0; i < newIndexes.size(); ++i)
+                    {
+                        tray.getModel().add(defaultThumbIcon);
+                    }
+                    wbPane.setChanged(true);
+
+                    if (lowestNewIndex < row.getWorkbenchRowImages().size())
+                    {
+                        imageIndex = lowestNewIndex;
+                        tray.setSelectedIndex(imageIndex);
+                        showImage();
+                    }
+
+                    generateThumbnailsInBackground(rowImagesNeedingThumbnails);
+                }
+                
+                UIRegistry.clearGlassPaneMsg();
+                setEnabled(true);
+                allowCloseWindow = true;
+                wbPane.repaint();
+            }
+        };
+        loadImagesTask.start();
     }
     
     public void replaceImage()
@@ -735,6 +815,7 @@ public class ImageFrame extends JFrame
         
         thumbGenTask.setName("GenThumbs");
         thumbGenTask.setDaemon(true);
+        thumbGenTask.setPriority(Thread.MIN_PRIORITY);
         thumbGenTask.start();
     }
 

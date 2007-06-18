@@ -522,15 +522,6 @@ public class WorkbenchPaneSS extends BaseSubPane
         // setup the JFrame to show images attached to WorkbenchRows
         imageFrame = new ImageFrame(mapSize, this, this.workbench);
         
-        imageFrame.addWindowListener(new WindowAdapter()
-        {
-            @Override
-            public void windowClosing(WindowEvent e)
-            {
-                toggleImageFrameVisible();
-            }
-        });
-        
         setupWorkbenchRowChangeListener();
                 
         // setup the mapping features
@@ -1134,10 +1125,23 @@ public class WorkbenchPaneSS extends BaseSubPane
             spreadSheet.getCellEditor().stopCellEditing();
         }
 
-        // We simply have to toggle the visibility
-        // and add or remove the ListSelectionListener (to avoid loading images when not visible)
         boolean isVisible = imageFrame.isVisible();
-        if (isVisible)
+        
+        setImageFrameVisible(!isVisible);
+    }
+    
+    /**
+     * Shows / Hides the Image Window. 
+     */
+    public void setImageFrameVisible(boolean visible)
+    {
+        if (spreadSheet.getCellEditor() != null)
+        {
+            spreadSheet.getCellEditor().stopCellEditing();
+        }
+
+        // and add or remove the ListSelectionListener (to avoid loading images when not visible)
+        if (!visible)
         {
             // hide the image window
             
