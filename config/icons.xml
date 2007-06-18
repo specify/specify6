@@ -236,7 +236,7 @@
     <!-- MIME type icons -->
     <icon name="audio"              file="audio.png"    sizes="all"/>
     <icon name="video"              file="video.png"    sizes="all"/>
-    <icon name="image"              file="image.png"    sizes="all"/>
+    <icon name="image"              file="Image-Window-B-32x32.png"    sizes="all"/>
     <icon name="unknown"            file="binary.png"    sizes="all"/>
     <icon name="text"               file="text.png"        sizes="all"/>
     <icon name="pdf"                file="pdf.png"        sizes="all"/>
