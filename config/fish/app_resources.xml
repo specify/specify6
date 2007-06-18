@@ -18,8 +18,8 @@
     <!-- Although DataSet Summary is a Report the Workbench groups the labels and reports together -->
     <file level="3" mimetype="jrxml/report" name="wb_items.jrxml" description="Data Set Summary" file="wb_items.jrxml" 
         metadata="tableid=79;reqrs=true;type=Report;action=PrintWBItems;reporttype=Workbench;icon=Reports16"/>
-    <!--
+   
     <file level="3" mimetype="jrxml/report" name="basic_label.jrxml" description="Basic Label" file="basic_label.jrxml" 
         metadata="tableid=79;reqrs=true;type=Report;action=PrintBasicLabel;reporttype=Report;icon=Labels16"/>
-        -->
+        
 </files>

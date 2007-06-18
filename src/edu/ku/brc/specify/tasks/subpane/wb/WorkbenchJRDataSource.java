@@ -85,6 +85,17 @@ public class WorkbenchJRDataSource implements JRDataSource
         Short inx = map.get(field.getName());
         return inx == null ? "" : row.getData(inx);
     }
+    
+    /*
+     * (non-Javadoc)
+     * @see net.sf.jasperreports.engine.JRDataSource#getFieldValue(net.sf.jasperreports.engine.JRField)
+     */
+    public Object getFieldValue(String field)
+    {
+        WorkbenchRow row = workbench.getRow(rowIndex);
+        Short inx = map.get(field);
+        return inx == null ? "" : row.getData(inx);
+    }
 
     /*
      * (non-Javadoc)
@@ -99,4 +110,6 @@ public class WorkbenchJRDataSource implements JRDataSource
         rowIndex++;
         return true;
     }
+    
+    
 }

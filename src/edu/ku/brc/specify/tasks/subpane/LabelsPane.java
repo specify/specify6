@@ -279,6 +279,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
                     
                     parameters.put("RPT_IMAGE_DIR", JasperReportsCache.getImagePath().getAbsolutePath());
                     parameters.put("SUBREPORT_DIR", cachePath.getAbsoluteFile() + File.separator);
+                    parameters.put("DATASOURCE", dataSource);
                     
                     if (recordSet != null)
                     {

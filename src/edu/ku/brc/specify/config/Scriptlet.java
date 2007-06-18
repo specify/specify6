@@ -42,6 +42,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collector;
+import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchJRDataSource;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 
 /*
@@ -482,6 +483,53 @@ public class Scriptlet extends JRDefaultScriptlet
         int quantityResolved = convertInt(QuantityResolvedArg);
         return count - quantityReturned - quantityResolved;
     }
+      
+   /**
+    * Creates a formated label from a given datasource
+    * @param dataSource the WorkbenchJRDataSource
+    * @return label string value
+    */
+   public String formatDetermination(Object dataSource)
+   {
+	   
+	   String label = new String(); 
+	   String data = new String();
+	   
+	   if(dataSource instanceof WorkbenchJRDataSource){
+		   WorkbenchJRDataSource rowDataSource = (WorkbenchJRDataSource)dataSource;
+		   String isCurrent = rowDataSource.getFieldValue("isCurrent").toString();  
+		   System.out.println("iscurrent:"+isCurrent);
+		   //assume 1 if isCurrent has no value
+		  if((isCurrent == "true") || (isCurrent == ""))
+		   {
+			   data = rowDataSource.getFieldValue("genus1").toString();
+			   
+			   if(data!= null)
+			   {
+				   label = "<style isBold=\"true\">"+data+" ";
+				   
+				   data = rowDataSource.getFieldValue("species1").toString();
+				   label = label.concat(data+" \\ </style>");
+				   
+				   data = rowDataSource.getFieldValue("speciesAuthorLastName1").toString();
+				  if(data!="")
+				  {
+					  label = label.concat(data+",");
+				   
+					  data = rowDataSource.getFieldValue("speciesAuthorFirstName1").toString();
+					  label = label.concat(data);
+				  }   
+			   }
+		  }else
+		  {
+			//use 2
+		  } 
+	   }
+	   //else
+	   System.out.println(label);
+	   return  label;
+   }
+   
 }
 
 
