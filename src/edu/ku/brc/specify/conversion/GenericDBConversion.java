@@ -294,7 +294,7 @@ public class GenericDBConversion
         //"Agent",
         //"AgentAddress",
         "Authors",
-        //"BiologicalObjectAttributes", // Turn back on when datamodel checked in
+        "BiologicalObjectAttributes", // Turn back on when datamodel checked in
         "BiologicalObjectRelation",
         "BiologicalObjectRelationType",
         "Borrow",
@@ -323,7 +323,7 @@ public class GenericDBConversion
         "GeologicTimeBoundary",
         //"GeologicTimePeriod",
         "GroupPersons",
-        //"Habitat",   // Turn back on when datamodel checked in
+        "Habitat",   // Turn back on when datamodel checked in
         "ImageAgents",
         "ImageCollectionObjects",
         "ImageLocalities",
@@ -337,7 +337,7 @@ public class GenericDBConversion
         "Observation",
         "OtherIdentifier",
         "Permit",
-        //"Preparation", // Turn back on when datamodel checked in
+        "Preparation", // Turn back on when datamodel checked in
         "Project",
         "ProjectCollectionObjects",
         "ReferenceWork",
@@ -348,7 +348,7 @@ public class GenericDBConversion
         "TaxonCitation",
         "TaxonName",
         "TaxonomicUnitType",
-        //"TaxonomyType"
+        "TaxonomyType"
         };
 
         //shouldCreateMapTables = false;
@@ -655,7 +655,7 @@ public class GenericDBConversion
         //};
         
 
-        String[] tablesToMoveOver = {
+        String[] tablesToMoveOver = {"CollectingEvent",
                                     "AccessionAgent",
                                     "Accession",
                                     "AccessionAuthorization",
@@ -663,7 +663,7 @@ public class GenericDBConversion
                                     //"Agent",
                                     //"AgentAddress",
                                     "Author",
-                                    //"BiologicalObjectAttributes", // Turn back on when datamodel checked in
+                                    "BiologicalObjectAttributes", // Turn back on when datamodel checked in
                                     "Borrow",
                                     "BorrowAgent",
                                     "BorrowMaterial",
@@ -681,7 +681,7 @@ public class GenericDBConversion
                                     "ExchangeIn",
                                     "ExchangeOut",
                                     "GroupPerson",
-                                    //"Habitat", // Turn back on when datamodel checked in
+                                    "Habitat", // Turn back on when datamodel checked in
                                     "Journal",
                                     "Loan",
                                     "LoanAgent",
@@ -691,7 +691,7 @@ public class GenericDBConversion
                                     "LocalityCitation",
                                     "OtherIdentifier",
                                     "Permit",
-                                    //"Preparation", // Turn back on when datamodel checked in
+                                    "Preparation", // Turn back on when datamodel checked in
                                     "Project",
                                     "ProjectCollectionObjects",
                                     "ReferenceWork",
@@ -729,9 +729,9 @@ public class GenericDBConversion
        tableMaps.put("taxoncitation",            createFieldNameMap(new String[] {"TaxonID", "TaxonNameID"}));
 
        // Turn back on when datamodel checked in
-       //tableMaps.put("colobjattributes",         createFieldNameMap(getColObjAttributeMappings()));
-       //tableMaps.put("preparationattributes",    createFieldNameMap(getPrepAttributeMappings()));
-       //tableMaps.put("habitatattributes",        createFieldNameMap(getHabitatAttributeMappings()));
+       tableMaps.put("colobjattributes",         createFieldNameMap(getColObjAttributeMappings()));
+       tableMaps.put("preparationattributes",    createFieldNameMap(getPrepAttributeMappings()));
+       tableMaps.put("habitatattributes",        createFieldNameMap(getHabitatAttributeMappings()));
        
        //Map<String, Map<String, String>> tableDateMaps = new Hashtable<String, Map<String, String>>();
        //tableDateMaps.put("collectingevent", createFieldNameMap(new String[] {"TaxonID", "TaxonNameID"}));
@@ -871,6 +871,7 @@ public class GenericDBConversion
     {
         return new String[] {
                 "BiologicalObjectTypeId",
+                "BiologicalObjectAttributesID",
                 "SexId",
                 "StageId",
                 "Number34",
@@ -2461,7 +2462,7 @@ public class GenericDBConversion
      * Converts all the CollectionObject Physical records and CollectionObjectCatalog Records into the new schema Preparation table.
      * @return true if no errors
      */
-    public boolean createPreparationRecords(final Map<String, PrepType> prepTypeMap)
+    public boolean convertPreparationRecords(final Map<String, PrepType> prepTypeMap)
     {
         deleteAllRecordsFromTable(newDBConn, "preparation");
 
@@ -2502,7 +2503,7 @@ public class GenericDBConversion
             for (String name : oldFieldNames)
             {
                 oldNameIndex.put(name, inx++);
-                //System.out.println(name+" "+(inx-1));
+                System.out.println(name+" "+(inx-1));
             }
             Hashtable<String, String> newToOld = new Hashtable<String, String>();
             newToOld.put("PreparationID", "CollectionObjectID");
@@ -2517,20 +2518,22 @@ public class GenericDBConversion
             
             if (rs.last())
             {
-
                 setProcess(0, rs.getRow()); 
-
                 rs.first();
                 
             } else
             {
                 rs.close();
                 stmt.close();
-
                 setProcess(0, 0); 
-
                 return true;
             }
+            
+            Statement prepStmt = oldDBConn.createStatement();
+            
+            IdMapperIFace colObjIdMapper = idMapperMgr.get("preparation", "PreparationID");
+            colObjIdMapper.setShowLogErrors(false);
+            System.out.println(colObjIdMapper.get(472888554L));
             
             Integer   idIndex = oldNameIndex.get("CollectionObjectID");
             int       count   = 0;
@@ -2538,7 +2541,6 @@ public class GenericDBConversion
             {
                 Long      preparedById = null;
                 Date      preparedDate = null;
-
 
                 boolean   checkForPreps = false;
                 if (checkForPreps)
@@ -2604,7 +2606,34 @@ public class GenericDBConversion
 
                     } else if (newFieldName.equals("DerivedFromIDX"))
                     {
-                        //
+                        // skip
+                        
+                    } else if (newFieldName.equals("PreparationAttributesID"))
+                    {
+                        Long   id   = rs.getLong(idIndex+1);
+                        Object data = colObjIdMapper.get(id);
+                        if (data == null)
+                        {
+                            //throw new RuntimeException("Couldn't map ID for new  PreparationAttributesID [CollectionObjectID]["+id+"]");
+                            str.append("NULL");
+                        } else
+                        {
+                            if (id.intValue() == 472888554)
+                            {
+                                int x = 0;
+                                x++;
+                            }
+                            ResultSet prepRS = prepStmt.executeQuery("select PreparationID from preparation where PreparationID = "+id);
+                            if (prepRS.first())
+                            {
+                                str.append(getStrValue(data));
+                            } else
+                            {
+                                str.append("NULL");
+                            }
+                            prepRS.close();
+                        }
+                        
                     } else if (newFieldName.equals("Count"))
                     {
                         Integer value = rs.getInt("Count");
@@ -2692,7 +2721,7 @@ public class GenericDBConversion
                                 data = idMapper.get(rs.getLong(index));
                             } else
                             {
-                                System.out.println("No Map for [collectionobject]["+mappedName+"]");
+                                throw new RuntimeException("No Map for [collectionobject]["+mappedName+"]");
                             }
                         }
                         str.append(getStrValue(data, newFieldMetaData.get(i).getType()));
@@ -2704,7 +2733,7 @@ public class GenericDBConversion
                 //log.info("\n"+str.toString());
                 if (hasFrame)
                 {
-                    if (count % 500 == 0)
+                    if (count % 100 == 0)
                     {
                         setProcess(count);
                     }
@@ -2742,6 +2771,7 @@ public class GenericDBConversion
                 //if (count == 1) break;
             } while (rs.next());
             
+            prepStmt.close();
             
             if (hasFrame)
             {
@@ -2781,7 +2811,7 @@ public class GenericDBConversion
         }
         
         Map<String, String> colNewToOldMap = createFieldNameMap(new String[] {
-                "CollectionObjectID", "BiologicalObjectID", //meg is this right?
+                "CollectionObjectID", "BiologicalObjectID", // meg is this right?
                 "IsCurrent",           "Current1",  
                 "DeterminedDate",      "Date1", 
                 "TaxonID",             "TaxonNameID"});

@@ -39,90 +39,7 @@
 		-->
 		
 		<!-- Specify mapping files. -->
-		<!--
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/RecordSet.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/RecordSetItem.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/InfoRequest.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/Accession.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/AccessionAgent.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/AccessionAuthorization.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/Address.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/Agent.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/AppResourceDefault.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/AppResource.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/AppResourceData.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/Attachment.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/AttachmentMetadata.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/AttributeDef.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Author.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/BorrowAgent.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Borrow.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/BorrowMaterial.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/BorrowReturnMaterial.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/CatalogSeries.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/CollectingEvent.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/CollectingEventAttr.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/CollectingTrip.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/CollectionObjectCitation.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/CollectionObject.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/CollectionObjectAttr.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/CollectionObjDef.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Collector.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Container.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/ContainerItem.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/DataType.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/Deaccession.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/DeaccessionAgent.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/DeaccessionPreparation.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/DeterminationCitation.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Determination.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/DeterminationStatus.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/ExchangeIn.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/ExchangeOut.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Geography.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/GeographyTreeDef.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/GeographyTreeDefItem.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/GeologicTimePeriod.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/GeologicTimePeriodTreeDef.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/GeologicTimePeriodTreeDefItem.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/GroupPerson.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Journal.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/LoanAgent.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Loan.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/LoanPhysicalObject.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/LoanReturnPhysicalObject.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/LocalityCitation.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Locality.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Location.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/LocationTreeDef.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/LocationTreeDefItem.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/OtherIdentifier.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Permit.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/PickList.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/PickListItem.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Preparation.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/PreparationAttr.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/PrepType.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/ProjectCollectionObject.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Project.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/ReferenceWork.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/RepositoryAgreement.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/Shipment.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/SpecifyUser.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/Stratigraphy.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/TaxonCitation.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/Taxon.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/TaxonTreeDef.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/TaxonTreeDefItem.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/UserGroup.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/UserPermission.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/ViewSetObj.hbm.xml"/>
-	    <mapping resource="edu/ku/brc/specify/datamodel/hbm/Workbench.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/WorkbenchDataItem.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/WorkbenchTemplate.hbm.xml"/>
-		<mapping resource="edu/ku/brc/specify/datamodel/hbm/WorkbenchTemplateMappingItem.hbm.xml"/>
-		-->
-		
+	
 		<mapping class="edu.ku.brc.specify.datamodel.Accession"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AccessionAgent"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AccessionAuthorization"/>
@@ -148,6 +65,7 @@
 		<mapping class="edu.ku.brc.specify.datamodel.CollectionObjectAttr"/>
 		<mapping class="edu.ku.brc.specify.datamodel.CollectionObjDef"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Collector"/>
+		<mapping class="edu.ku.brc.specify.datamodel.ColObjAttributes"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Container"/>
 		<mapping class="edu.ku.brc.specify.datamodel.ContainerItem"/>
 		<mapping class="edu.ku.brc.specify.datamodel.DataType"/>
@@ -157,6 +75,7 @@
 		<mapping class="edu.ku.brc.specify.datamodel.DeterminationCitation"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Determination"/>
 		<mapping class="edu.ku.brc.specify.datamodel.DeterminationStatus"/>
+		<mapping class="edu.ku.brc.specify.datamodel.Division"/>
 		<mapping class="edu.ku.brc.specify.datamodel.ExchangeIn"/>
 		<mapping class="edu.ku.brc.specify.datamodel.ExchangeOut"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Geography"/>
@@ -166,7 +85,9 @@
 		<mapping class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef"/>
 		<mapping class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem"/>
 		<mapping class="edu.ku.brc.specify.datamodel.GroupPerson"/>
+		<mapping class="edu.ku.brc.specify.datamodel.HabitatAttributes"/>
 		<mapping class="edu.ku.brc.specify.datamodel.InfoRequest"/>
+		<mapping class="edu.ku.brc.specify.datamodel.Institution"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Journal"/>
 		<mapping class="edu.ku.brc.specify.datamodel.LoanAgent"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Loan"/>
@@ -182,6 +103,7 @@
 		<mapping class="edu.ku.brc.specify.datamodel.PickList"/>
 		<mapping class="edu.ku.brc.specify.datamodel.PickListItem"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Preparation"/>
+		<mapping class="edu.ku.brc.specify.datamodel.PreparationAttributes"/>
 		<mapping class="edu.ku.brc.specify.datamodel.PreparationAttr"/>
 		<mapping class="edu.ku.brc.specify.datamodel.PrepType"/>
 		<mapping class="edu.ku.brc.specify.datamodel.ProjectCollectionObject"/>

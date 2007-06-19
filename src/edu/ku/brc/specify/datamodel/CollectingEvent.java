@@ -87,6 +87,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
      protected CollectingTrip collectingTrip;
      protected Set<AttributeIFace> attrs;
      protected Set<Attachment> attachments;
+     protected HabitatAttributes habitatAttributes;
 
 
     // Constructors
@@ -102,9 +103,6 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
         this.collectingEventId = collectingEventId;
     }
    
-    
-    
-
     // Initializer
     @Override
     public void initialize()
@@ -132,6 +130,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
         stratigraphy = null;
         attrs = new HashSet<AttributeIFace>();
         attachments = new HashSet<Attachment>();
+        habitatAttributes = null;
     }
     // End Initializer
 
@@ -483,6 +482,19 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     {
         this.attrs.add(attr);
         attr.setCollectingEvent(this);
+    }
+    
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    @JoinColumn(name = "HabitatAttributesID", unique = false, nullable = true, insertable = true, updatable = true)
+    public HabitatAttributes getHabitatAttributes()
+    {
+        return habitatAttributes;
+    }
+
+    public void setHabitatAttributes(HabitatAttributes habitatAttributes)
+    {
+        this.habitatAttributes = habitatAttributes;
     }
 
     // Done Add Methods

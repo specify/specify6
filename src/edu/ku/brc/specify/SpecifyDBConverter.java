@@ -264,7 +264,7 @@ public class SpecifyDBConverter
         {
         	GenericDBConversion.setShouldCreateMapTables(startfromScratch);
 
-            GenericDBConversion.setShouldDeleteMapTables(startfromScratch);
+            GenericDBConversion.setShouldDeleteMapTables(false);
             
             frame.setOverall(0, 15);
             SwingUtilities.invokeLater(new Runnable() {
@@ -463,7 +463,7 @@ public class SpecifyDBConverter
                     {
                         Map<String, PrepType> prepTypeMap = conversion.createPreparationTypesFromUSys();
                         prepTypeMap.put("n/a", prepTypeMap.get("misc"));
-                        conversion.createPreparationRecords(prepTypeMap);
+                        conversion.convertPreparationRecords(prepTypeMap);
                     }
                     
                     conversion.createCollectionRecords();

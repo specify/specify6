@@ -28,6 +28,8 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Calendar;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -37,6 +39,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 /**
@@ -49,7 +53,7 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
 
     // Fields
 
-    protected Long           addressId;
+    protected Long              addressId;
     protected String            address;
     protected String            address2;
     protected String            city;
@@ -66,6 +70,9 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
     protected String            fax;
     protected String            roomOrBuilding;
      
+    // New Fields
+    protected Calendar          startDate;
+    protected Calendar          endDate;
 
     // Constructors
 
@@ -100,6 +107,10 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
         phone2 = null;
         fax = null;
         roomOrBuilding = null;
+        
+        // New
+        startDate = null;
+        endDate = null;
         
     }
     // End Initializer
@@ -300,6 +311,43 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
 
     public void setIsPrimary(Boolean isPrimary) {
         this.isPrimary = isPrimary;
+    }
+    
+    /**
+     * @return the endDate
+     */
+    @Transient
+    @Temporal(TemporalType.DATE)
+    @Column(name = "EndDate", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getEndDate()
+    {
+        return endDate;
+    }
+
+    /**
+     * @param endDate the endDate to set
+     */
+    public void setEndDate(Calendar endDate)
+    {
+        this.endDate = endDate;
+    }
+
+    /**
+     * @return the startDate
+     */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "StartDate", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getStartDate()
+    {
+        return startDate;
+    }
+
+    /**
+     * @param startDate the startDate to set
+     */
+    public void setStartDate(Calendar startDate)
+    {
+        this.startDate = startDate;
     }
 
     /* (non-Javadoc)

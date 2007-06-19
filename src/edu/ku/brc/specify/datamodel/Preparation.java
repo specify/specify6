@@ -63,21 +63,22 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
 
     // Fields    
 
-     protected Long preparationId;
-     protected String text1;
-     protected String text2;
-     protected Integer count;
-     protected String storageLocation;
-     protected String remarks;
-     protected Calendar preparedDate;
-     protected Set<LoanPhysicalObject> loanPhysicalObjects;
-     protected Set<AttributeIFace> attrs;
-     protected PrepType prepType;
-     protected CollectionObject collectionObject;
-     protected Agent preparedByAgent;
-     protected Location location;
-     protected Set<Attachment>          attachments;
-     protected Set<DeaccessionPreparation> deaccessionPreparations;
+    protected Long                        preparationId;
+    protected String                      text1;
+    protected String                      text2;
+    protected Integer                     count;
+    protected String                      storageLocation;
+    protected String                      remarks;
+    protected Calendar                    preparedDate;
+    protected Set<LoanPhysicalObject>     loanPhysicalObjects;
+    protected Set<AttributeIFace>         attrs;
+    protected PrepType                    prepType;
+    protected CollectionObject            collectionObject;
+    protected Agent                       preparedByAgent;
+    protected Location                    location;
+    protected Set<Attachment>             attachments;
+    protected Set<DeaccessionPreparation> deaccessionPreparations;
+    protected PreparationAttributes       preparationAttributes;
 
 
     // Constructors
@@ -116,6 +117,8 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
         location = null;
         attachments = new HashSet<Attachment>();
         deaccessionPreparations = new HashSet<DeaccessionPreparation>();
+        preparationAttributes = null;
+
     }
     // End Initializer
 
@@ -355,6 +358,20 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
 
    public void setDeaccessionPreparations(Set<DeaccessionPreparation> deaccessionPreparations) {
        this.deaccessionPreparations = deaccessionPreparations;
+   }
+   
+   /**
+   *
+   */
+   @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+   @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+   @JoinColumn(name = "PreparationAttributesID", unique = false, nullable = true, insertable = true, updatable = true)
+   public PreparationAttributes getPreparationAttributes() {
+       return this.preparationAttributes;
+   }
+
+   public void setPreparationAttributes(PreparationAttributes preparationAttributes) {
+       this.preparationAttributes = preparationAttributes;
    }
 
     // Add Methods

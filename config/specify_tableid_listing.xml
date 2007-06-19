@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last Used Id is 93 or 502
+    Last Used Id is 96 or 502
     
     PLEASE Keep this file in alphabetical order! 
 
@@ -77,6 +77,9 @@
             <display objtitle="Determination Status" view="DeterminationStatus" searchdlg="" newobjdlg=""/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.DeterminationStatusBusRules</businessrule>          
         </table>
+        <table name="edu.ku.brc.specify.datamodel.Division" id="96">
+            <display view="Division"/>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.ExchangeIn" id="39"/>
         <table name="edu.ku.brc.specify.datamodel.ExchangeOut" id="40"/>
         <table name="edu.ku.brc.specify.datamodel.Geography" id="3" workbench="true" query="true">
@@ -99,6 +102,9 @@
         <table name="edu.ku.brc.specify.datamodel.HabitatAttributes" id="92"/>
         <table name="edu.ku.brc.specify.datamodel.InfoRequest" id="50">
             <display view="InfoRequest"/>
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.Institution" id="94">
+            <display view="Institution"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.Journal" id="51" query="true">
             <display view="Journal"/>
@@ -172,8 +178,10 @@
         <table name="edu.ku.brc.specify.datamodel.Workbench" id="79"/>
         <table name="edu.ku.brc.specify.datamodel.WorkbenchDataItem" id="80"/>
         <table name="edu.ku.brc.specify.datamodel.WorkbenchRow" id="90"/>
+        <table name="edu.ku.brc.specify.datamodel.WorkbenchRowImage" id="95"/>
         <table name="edu.ku.brc.specify.datamodel.WorkbenchTemplate" id="81"/>
         <table name="edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem" id="82"/>
+        <table name="edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem" id="95"/>
     </database>
 
 </tableIdMapping>

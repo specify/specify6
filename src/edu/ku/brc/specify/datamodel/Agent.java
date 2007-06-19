@@ -100,7 +100,11 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     protected Set<ExchangeOut>              exchangeOutCatalogedBys;
     protected Set<Attachment>               attachments;
     protected Set<RepositoryAgreement>      repositoryAgreements;
-     
+    
+    protected Division                      division;
+    protected Institution                   instTechContact;
+    protected Institution                   instContentContact;
+
     // From AgentAddress
     protected String                        jobTitle;
     protected String                        email;
@@ -166,6 +170,10 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
         exchangeOutCatalogedBys = new HashSet<ExchangeOut>();
         attachments = new HashSet<Attachment>();
         repositoryAgreements = new HashSet<RepositoryAgreement>();
+        
+        division = null;
+        instTechContact = null;
+        instContentContact = null;
         
         // Agent
         jobTitle = null;
@@ -580,16 +588,56 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     }
 
     /**
-     *
-     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "originator")
-    public Set<RepositoryAgreement> getRepositoryAgreements() {
-        return this.repositoryAgreements;
-    }
+    *
+    */
+   @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "originator")
+   public Set<RepositoryAgreement> getRepositoryAgreements() {
+       return this.repositoryAgreements;
+   }
 
-    public void setRepositoryAgreements(Set<RepositoryAgreement> repositoryAgreements) {
-        this.repositoryAgreements = repositoryAgreements;
-    }
+   public void setRepositoryAgreements(Set<RepositoryAgreement> repositoryAgreements) {
+       this.repositoryAgreements = repositoryAgreements;
+   }
+
+   /**
+    *  The Division this Agent belongs to.
+    */
+   @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+   @JoinColumn(name = "DivisionID", unique = false, nullable = true, insertable = true, updatable = true)
+   public Division getDivision() {
+       return this.division;
+   }
+   
+   public void setDivision(Division division) {
+       this.division = division;
+   }
+
+   /**
+    *  The Institution for Technical Contact.
+    */
+   @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+   @JoinColumn(name = "InstitutionID", unique = false, nullable = true, insertable = true, updatable = true)
+   public Institution getInstTechContact() {
+       return this.instTechContact;
+   }
+   
+   public void setInstTechContact(Institution instTechContact) {
+       this.instTechContact = instTechContact;
+   }
+
+   /**
+    *  The Institution for Technical Contact.
+    */
+   @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+   @JoinColumn(name = "InstitutionCCID", unique = false, nullable = true, insertable = true, updatable = true)
+   public Institution getInstContentContact() {
+       return this.instContentContact;
+   }
+   
+   public void setInstContentContact(Institution instContentContact) {
+       this.instContentContact = instContentContact;
+   }
+
 
     //----------------------------------------------------
     // Agent Address

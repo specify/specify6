@@ -48,6 +48,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cascade;
@@ -63,7 +64,10 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
  */
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
-@Table(name = "collectionobject")
+@Table(name = "collectionobject", uniqueConstraints = {
+        @UniqueConstraint(columnNames={"CatalogSeriesID", "CatalogNumber"} ) 
+        } 
+)
 @org.hibernate.annotations.Table(appliesTo="collectionobject", indexes =
     {   @Index (name="FieldNumberIDX", columnNames={"fieldNumber"}),
         @Index (name="CatalogedDateIDX", columnNames={"CatalogedDate"}),
@@ -111,6 +115,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     protected Agent                         cataloger;
     protected Set<Attachment>               attachments;
     protected Container                     container;
+    protected ColObjAttributes              colObjAttributes;
 
     // Constructors
 
@@ -170,6 +175,8 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
         cataloger             = null;
         attachments           = new HashSet<Attachment>();
         container             = null;
+        
+        colObjAttributes      = null;
         
         if (true)
         {
@@ -521,6 +528,20 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
 
     public void setCollectingEvent(CollectingEvent collectingEvent) {
         this.collectingEvent = collectingEvent;
+    }
+
+    /**
+     *
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    @JoinColumn(name = "ColObjAttributesID", unique = false, nullable = true, insertable = true, updatable = true)
+    public ColObjAttributes getColObjAttributes() {
+        return this.colObjAttributes;
+    }
+
+    public void setColObjAttributes(ColObjAttributes colObjAttributes) {
+        this.colObjAttributes = colObjAttributes;
     }
 
     /**
