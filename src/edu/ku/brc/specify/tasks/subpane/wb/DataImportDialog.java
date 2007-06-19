@@ -153,7 +153,7 @@ public class DataImportDialog extends JDialog implements ActionListener
     private int highestColumnCount;
     
     private short geoDataCol = -1;
-    private short imageDataCol = -1;
+    private Vector<Short> imageDataCols = new Vector<Short>();
 
     /**
      * Constructor for Import Dialog for a csv
@@ -740,13 +740,13 @@ public class DataImportDialog extends JDialog implements ActionListener
         }
         if (value.equals(DataImport.IMAGE_PATH_HEADING))
         {
-            imageDataCol = colNum;
+            imageDataCols.add(colNum);
         }
     }
     
     private boolean isUserCol(short colNum)
     {
-        return geoDataCol != colNum && imageDataCol != colNum;
+        return geoDataCol != colNum && !imageDataCols.contains(colNum);
     }
   
     /**

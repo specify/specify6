@@ -75,12 +75,15 @@ public class XLSExport implements DataExport
      * @param workSheet
      * writes headers for imagePath and geocoord (bg) data columns
      */
-    protected void writeExtraHeaders(final HSSFSheet workSheet, boolean imageDataPresent, boolean geoDataPresent)
+    protected void writeExtraHeaders(final HSSFSheet workSheet, int imgCols)
     {
         HSSFRow hssfRow = workSheet.getRow(0);
         short cellNum = hssfRow.getLastCellNum();
         hssfRow.createCell(++cellNum).setCellValue(DataImport.GEO_DATA_HEADING);
-        hssfRow.createCell(++cellNum).setCellValue(DataImport.IMAGE_PATH_HEADING);
+        for (int c = 0; c < imgCols; c++)
+        {
+            hssfRow.createCell(++cellNum).setCellValue(DataImport.IMAGE_PATH_HEADING);
+        }
     }
 
     /**
@@ -225,8 +228,8 @@ public class XLSExport implements DataExport
                 Workbench         workBench = wbRow.getWorkbench();
                 WorkbenchTemplate template  = workBench.getWorkbenchTemplate();
                 short             numCols   = (short)template.getWorkbenchTemplateMappingItems().size();
-                boolean imageDataPresent = false;
                 boolean geoDataPresent = false;
+                int imgCols = 0;
                 
                 colTypes = bldColTypes(template);
                 for (Object rowObj : data)
@@ -255,20 +258,29 @@ public class XLSExport implements DataExport
                     //if (row.getCardImage() != null)
                     if (row.getRowImage(0) != null)
                     {
-                        imageDataPresent = true;
                         if (!rowHasGeoData)
                         {
                            colNum++; 
                         }
-                        HSSFCell cell = hssfRow.createCell(colNum);
-                        cell.setCellType(HSSFCell.CELL_TYPE_STRING);
-                        setCellValue(cell, getImagePaths(row));
+                        int imgIdx = 0;
+                        WorkbenchRowImage img = row.getRowImage(imgIdx++);
+                        while (img != null)
+                        {
+                            HSSFCell cell = hssfRow.createCell(colNum++);
+                            cell.setCellType(HSSFCell.CELL_TYPE_STRING);
+                            setCellValue(cell, img.getCardImageFullPath());
+                            img = row.getRowImage(imgIdx++);
+                        }
+                        if (imgIdx-1 > imgCols)
+                        {
+                            imgCols = imgIdx-1;
+                        }
                     }
                     
                 }
-                if (imageDataPresent || geoDataPresent)
+                if (imgCols > 0 || geoDataPresent)
                 {
-                    writeExtraHeaders(workSheet, imageDataPresent, geoDataPresent);
+                    writeExtraHeaders(workSheet, imgCols);
                 }
             }
         }
@@ -282,20 +294,4 @@ public class XLSExport implements DataExport
         }
     }
     
-    private String getImagePaths(final WorkbenchRow row)
-    {
-        String result = "";
-        int order = 0;
-        WorkbenchRowImage img = row.getRowImage(order++);
-        while (img != null)
-        {
-            if (order > 1)
-            {
-                result = result.concat("; ");
-            }
-            result = result.concat(img.getCardImageFullPath());
-            img = row.getRowImage(order++);
-        }
-        return result;
-    }
 }

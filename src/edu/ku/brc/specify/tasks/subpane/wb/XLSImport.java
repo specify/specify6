@@ -6,6 +6,8 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -32,6 +34,7 @@ import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.ui.DateWrapper;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author timbo
@@ -43,7 +46,7 @@ import edu.ku.brc.ui.DateWrapper;
 public class XLSImport extends DataImport implements DataImportIFace
 {
     private static final Logger log = Logger.getLogger(XLSImport.class);
-    private short cardImageCol = -1;
+    private Vector<Short> cardImageCols = new Vector<Short>();
     private short geoCol = -1;
     protected ConfigureExternalDataIFace config;
     
@@ -59,7 +62,7 @@ public class XLSImport extends DataImport implements DataImportIFace
                 {
                     if (header.equals(IMAGE_PATH_HEADING))
                     {
-                        cardImageCol = c;
+                        cardImageCols.add(c);
                     }
                     if (header.equals(GEO_DATA_HEADING))
                     {
@@ -211,28 +214,24 @@ public class XLSImport extends DataImport implements DataImportIFace
 
     private void addImageInfo(final HSSFRow row, final WorkbenchRow wbRow)
     {
-        if (cardImageCol != -1)
+        for (Short c : cardImageCols)
         {
-           HSSFCell c = row.getCell(cardImageCol);
-           if (c != null)
-           {
-               String imagePath = c.getStringCellValue();
-               if (imagePath != null)
-               {
-                    String[] paths = imagePath.split("; ");
-                    for (String path : paths)
+            HSSFCell imgCell = row.getCell(c);
+            if (imgCell != null)
+            {
+                String imagePath = imgCell.getStringCellValue();
+                if (imagePath != null)
+                {
+                    try
                     {
-                        try
-                        {
-                            wbRow.addImage(new File(path));
-                        }
-                        catch (IOException e)
-                        {
-                            System.out.println("OH NO!!!!!");
-                        }
+                        wbRow.addImage(new File(imagePath));
+                    }
+                    catch (IOException e)
+                    {
+                        UIRegistry.getStatusBar().setErrorMessage(e.getMessage());
                     }
                 }
-           }
+            }
         }
     }
     
