@@ -50,10 +50,20 @@ import edu.ku.brc.ui.UIHelper;
 public class BasicSQLUtils
 {
     protected static final Logger           log               = Logger.getLogger(BasicSQLUtils.class);
+    
+    // These are the configuration Options for a View
+    public static final int HIDE_ALL_ERRORS         = 0;  // Hhow no errors (Silent)
+    public static final int SHOW_NAME_MAPPING_ERROR = 1;  // Show Errors when mapping from Old Name to New Name
+    public static final int SHOW_VAL_MAPPING_ERROR  = 2;  // Show Errors when mapping from Old Name to New Name
+    public static final int SHOW_NULL_FK            = 4;  // Show Error When a Foreign Key is Null and shouldn't be
+    public static final int SHOW_FK_LOOKUP          = 8;  // Show Error when Foreign Key is not null but couldn't be mapped to a new value
+    public static final int SHOW_ALL                = SHOW_NAME_MAPPING_ERROR | SHOW_VAL_MAPPING_ERROR | SHOW_FK_LOOKUP | SHOW_NULL_FK;
+    
+    protected static    int showErrors           = SHOW_ALL;
+    
     protected static SimpleDateFormat dateTimeFormatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
     protected static SimpleDateFormat dateFormatter     = new SimpleDateFormat("yyyy-MM-dd");
     protected static Calendar         calendar          = new GregorianCalendar();
-    protected static boolean          showMappingError  = true;
 
     protected static BasicSQLUtils    basicSQLUtils = new  BasicSQLUtils();
 
@@ -73,6 +83,16 @@ public class BasicSQLUtils
         //
     }
 
+    public static int getShowErrors()
+    {
+        return showErrors;
+    }
+
+    public static void setShowErrors(final int showErrors)
+    {
+        BasicSQLUtils.showErrors = showErrors;
+    }
+
     /**
      * Sets the SQL connection
      * @param connection the SQL Connection
@@ -82,24 +102,6 @@ public class BasicSQLUtils
         dbConn = connection;
     }
 
-    /**
-     * Sets whether mapping column errors should be displayed
-     * @param showMappingError true - shows erros, false does not
-     */
-    public static void setShowMappingError(boolean showMappingError)
-    {
-        BasicSQLUtils.showMappingError = showMappingError;
-    }
-
-    /**
-     * Returns whether it should display mapping errors
-     * @return whether it should display mapping errors
-     */
-    public static boolean isShowMappingError()
-    {
-        return showMappingError;
-    }
-    
     /**
      * Sets a UI feedback frame.
      * @param frame the frame
@@ -811,7 +813,7 @@ public class BasicSQLUtils
                         {
                             columnIndex = fromHash.get(oldMappedColName);
 
-                        } else if (showMappingError &&
+                        } else if (isOptionOn(SHOW_NAME_MAPPING_ERROR) &&
                                    (ignoreMappingFieldNames == null || ignoreMappingFieldNames.get(colName) == null))
                         {
                             log.error("No Map for table ["+fromTableName+"] from New Name[" + colName + "] to Old Name["+oldMappedColName+"]");
@@ -840,24 +842,24 @@ public class BasicSQLUtils
                                 {
                                     dataObj = null;
                                     
-                                    if (showMappingError)
+                                    if (isOptionOn(SHOW_NULL_FK))
                                     {
-                                        log.info("Unable to Map Primary Id[NULL] old Name["+oldMappedColName+"] ["+columnIndex+"]");
+                                        log.error("Unable to Map Primary Id[NULL] old Name["+oldMappedColName+"] ["+columnIndex+"]");
                                     }
                                 }
                                 else
                                 {
                                     dataObj = idMapper.get(oldPrimaryKeyId);
                                     
-                                    if (dataObj == null)
+                                    if (dataObj == null && isOptionOn(SHOW_FK_LOOKUP))
                                     {
-                                        log.info("Unable to Map Primary Id["+oldPrimaryKeyId+"] old Name["+oldMappedColName+"]");
+                                        log.error("Unable to Map Primary Id["+oldPrimaryKeyId+"] old Name["+oldMappedColName+"]");
                                     }
                                 }
 
                             } else
                             {
-                                if (ignoreMappingFieldIDs == null || ignoreMappingFieldIDs.get(oldMappedColName) == null)
+                                if (isOptionOn(SHOW_NAME_MAPPING_ERROR) && ignoreMappingFieldIDs == null || ignoreMappingFieldIDs.get(oldMappedColName) == null)
                                 {
                                     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                                     // XXX Temporary fix so it doesn't hide other errors
@@ -865,6 +867,7 @@ public class BasicSQLUtils
                                     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                                     if (!oldMappedColName.equals("RankID"))
                                     {
+                                        idMapperMgr.dumpKeys();
                                         log.error("No ID Map for ["+fromTableName+"] Old Column Name["+oldMappedColName+"]");
                                     }
                                 }
@@ -934,7 +937,7 @@ public class BasicSQLUtils
                             str.append(getStrValue(dataObj, fieldMetaData.getType()));
                         }
 
-                    } else if (idMapperMgr != null && colName != null && colName.endsWith("ID") && oneToOneIDHash != null && oneToOneIDHash.get(colName) != null)
+                    } else if (idMapperMgr != null && colName.endsWith("ID") && oneToOneIDHash != null && oneToOneIDHash.get(colName) != null)
                     {
                         
                         IdMapperIFace idMapper = idMapperMgr.get(toTableName, colName);
@@ -950,7 +953,11 @@ public class BasicSQLUtils
                             {
                                 if (i > 0) str.append(", ");
                                 str.append("NULL");
-                                //log.error("For Table[" + fromTableName + "] mapping new Column Name[" + colName + "] ID["+id+"] was not mapped");
+                                
+                                if (isOptionOn(SHOW_VAL_MAPPING_ERROR))
+                                {
+                                    log.error("For Table[" + fromTableName + "] mapping new Column Name[" + colName + "] ID["+id+"] was not mapped");
+                                }
                             }
                         }
                     }
@@ -966,7 +973,7 @@ public class BasicSQLUtils
                             newColValue = "NULL";
                             //System.out.println("ignoreMappingFieldNames" + ignoreMappingFieldNames);
                             //System.out.println("ignoreMappingFieldNames.get(colName)" + ignoreMappingFieldNames.get(colName));
-                            if (showMappingError &&
+                            if (isOptionOn(SHOW_NAME_MAPPING_ERROR) &&
                                 (ignoreMappingFieldNames == null || ignoreMappingFieldNames.get(colName) == null))
                             {
                                 log.error("For Table[" + fromTableName + "] mapping new Column Name[" + colName + "] was not mapped");
@@ -1033,56 +1040,6 @@ public class BasicSQLUtils
         return true;
     }
     
-    protected static Object fixID(final IdMapperMgr idMapperMgr,
-                                  final String      fromTableName,
-                                  final String      oldMappedColName,
-                                  final ResultSet   rs,
-                                  final Integer     columnIndex) throws SQLException
-    {
-        Object        dataObj  = null;
-        IdMapperIFace idMapper = idMapperMgr.get(fromTableName, oldMappedColName);
-        if (idMapper != null)
-        {
-            long oldPrimaryKeyId = rs.getLong(columnIndex);
-
-            // if the value was null, getInt() returns 0
-            // use wasNull() to distinguish real 0 from a null return
-            if( rs.wasNull())
-            {
-                dataObj = null;
-                
-                if (showMappingError)
-                {
-                    log.info("Unable to Map Primary Id[NULL] old Name["+oldMappedColName+"]");
-                }
-            }
-            else
-            {
-                dataObj = idMapper.get(oldPrimaryKeyId);
-                
-                if (dataObj == null)
-                {
-                    log.info("Unable to Map Primary Id["+oldPrimaryKeyId+"] old Name["+oldMappedColName+"]");
-                }
-            }
-
-        } else
-        {
-            if (ignoreMappingFieldIDs == null || ignoreMappingFieldIDs.get(oldMappedColName) == null)
-            {
-                // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                // XXX Temporary fix so it doesn't hide other errors
-                // Josh has promised his first born if he doesn't fix this!
-                // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                if (!oldMappedColName.equals("RankID"))
-                {
-                    log.error("No ID Map for ["+fromTableName+"] Old Column Name["+oldMappedColName+"]");
-                }
-            }
-        }
-        return dataObj;
-    }
-
     /**
      * Takes a list of names and creates a string with the names comma separated
      * @param list the list of names (or field names)
@@ -1208,7 +1165,10 @@ public class BasicSQLUtils
         return -1;
     }
 
-
+    public static boolean isOptionOn(final int opt)
+    {
+        return (showErrors & opt) == opt;
+    }
 
     //-----------------------------------------------------------------------
     //-- Inner Classes

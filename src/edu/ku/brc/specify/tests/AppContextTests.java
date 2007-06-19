@@ -62,6 +62,7 @@ public class AppContextTests extends TestCase
     
     public void testAppContextSnigleCatalogSeries()
     {
+        /*
         String databaseName  = "fish";
         String userName      = "rods";
         String catSeriesName = "Bees";
@@ -85,7 +86,7 @@ public class AppContextTests extends TestCase
         assertTrue(SpecifyAppContextMgr.getInstance().setContext(databaseName, userName, false) == AppContextMgr.CONTEXT_STATUS.OK);
         
 
-        /*
+        
         // These are taken from the disciplines.xml file
         Hashtable<Integer, String> hash = new Hashtable<Integer, String>();
         hash.put(0, "Collection");

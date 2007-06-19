@@ -14,9 +14,7 @@
  */
 package edu.ku.brc.specify.datamodel;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -25,15 +23,11 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 
 /**
 
@@ -43,17 +37,15 @@ import org.hibernate.annotations.CascadeType;
 @Table(name = "catalogseries")
 public class CatalogSeries extends DataModelObjBase implements java.io.Serializable, Comparable<CatalogSeries>
 {
-    protected static List<CatalogSeries> currentCatalogSeries = new ArrayList<CatalogSeries>();
+    protected static CatalogSeries currentCatalogSeries = null;
     
     // Fields
-
-     protected Long catalogSeriesId;
-     protected String seriesName;
-     protected String catalogSeriesPrefix;
-     protected String remarks;
-     protected Set<CollectionObjDef> collectionObjDefItems;
-     protected Set<AppResourceDefault> appResourceDefaults;
-     
+    protected Long                       catalogSeriesId;
+    protected String                     seriesName;
+    protected String                     catalogSeriesPrefix;
+    protected String                     remarks;
+    protected CollectionObjDef           collectionObjDef;
+    protected Set<AppResourceDefault>    appResourceDefaults;
 
     // Constructors
 
@@ -67,22 +59,14 @@ public class CatalogSeries extends DataModelObjBase implements java.io.Serializa
         this.catalogSeriesId = catalogSeriesId;
     }
 
-    public static List<CatalogSeries> getCurrentCatalogSeries()
+    public static CatalogSeries getCurrentCatalogSeries()
     {
         return currentCatalogSeries;
     }
 
-    public static void setCurrentCatalogSeries(List<CatalogSeries> currentCatalogSeries)
+    public static void setCurrentCatalogSeries(final CatalogSeries currentCatalogSeries)
     {
-        if (currentCatalogSeries != CatalogSeries.currentCatalogSeries)
-        {
-            CatalogSeries.currentCatalogSeries.clear();
-        
-            if (currentCatalogSeries != null)
-            {
-                CatalogSeries.currentCatalogSeries.addAll(currentCatalogSeries);
-            }
-        }
+        CatalogSeries.currentCatalogSeries = currentCatalogSeries;
     }
 
     // Initializer
@@ -90,14 +74,12 @@ public class CatalogSeries extends DataModelObjBase implements java.io.Serializa
     public void initialize()
     {
         super.init();
-        catalogSeriesId = null;
-        //isTissueSeries = null;
-        seriesName = null;
-        catalogSeriesPrefix = null;
-        remarks = null;
-        collectionObjDefItems = new HashSet<CollectionObjDef>();
-        //tissue = null;
-        appResourceDefaults = new HashSet<AppResourceDefault>();
+        catalogSeriesId       = null;
+        seriesName            = null;
+        catalogSeriesPrefix   = null;
+        remarks               = null;
+        collectionObjDef      = null;
+        appResourceDefaults   = new HashSet<AppResourceDefault>();
     }
     // End Initializer
 
@@ -190,27 +172,15 @@ public class CatalogSeries extends DataModelObjBase implements java.io.Serializa
     /**
      *
      */
-    @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
-    @JoinTable(name = "catseries_colobjdef", joinColumns = { @JoinColumn(name = "CatalogSeriesID", unique = false, nullable = false, insertable = true, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "CollectionObjDefID", unique = false, nullable = false, insertable = true, updatable = false) })
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    public Set<CollectionObjDef> getCollectionObjDefItems() {
-        return this.collectionObjDefItems;
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "CollectionObjDefID", unique = false, nullable = true, insertable = true, updatable = true)
+    public CollectionObjDef getCollectionObjDef() {
+        return this.collectionObjDef;
     }
 
-    public void setCollectionObjDefItems(Set<CollectionObjDef> collectionObjDefItems) {
-        this.collectionObjDefItems = collectionObjDefItems;
+    public void setCollectionObjDef(CollectionObjDef collectionObjDef) {
+        this.collectionObjDef = collectionObjDef;
     }
-
-//    /**
-//     *
-//     */
-//    public CatalogSeries getTissue() {
-//        return this.tissue;
-//    }
-//
-//    public void setTissue(CatalogSeries tissue) {
-//        this.tissue = tissue;
-//    }
     
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "catalogSeries")
     public Set<AppResourceDefault> getAppResourceDefaults()
@@ -236,22 +206,6 @@ public class CatalogSeries extends DataModelObjBase implements java.io.Serializa
 
 
     // Add Methods
-
-    public void addCollectionObjDefItems(final CollectionObjDef collectionObjDefItem)
-    {
-        this.collectionObjDefItems.add(collectionObjDefItem);
-        collectionObjDefItem.getCatalogSeries().add(this);
-    }
-
-    // Done Add Methods
-
-    // Delete Methods
-
-    public void removeCollectionObjDefItems(final CollectionObjDef collectionObjDefItem)
-    {
-        this.collectionObjDefItems.remove(collectionObjDefItem);
-        collectionObjDefItem.getCatalogSeries().remove(this);
-    }
 
     // Delete Add Methods
     

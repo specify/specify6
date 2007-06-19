@@ -580,14 +580,14 @@ public class BuildSampleDatabase
         CollectionObjDef cod = collectionObjDef;
         Calendar catDate = Calendar.getInstance();
         catDate.set(2006, 01, 29);
-        collObjs.add(createCollectionObject(100.0f, "RCS100", agents.get(0), cs, cod,  3, ce1, catDate, "BuildSampleDatabase"));
-        collObjs.add(createCollectionObject(101.0f, "RCS101", agents.get(0), cs, cod,  2, ce1, catDate, "BuildSampleDatabase"));
-        collObjs.add(createCollectionObject(102.0f, "RCS102", agents.get(1), cs, cod,  7, ce1, catDate, "BuildSampleDatabase"));
-        collObjs.add(createCollectionObject(103.0f, "RCS103", agents.get(1), cs, cod, 12, ce1, catDate, "BuildSampleDatabase"));
-        collObjs.add(createCollectionObject(104.0f, "RCS104", agents.get(2), cs, cod,  8, ce2, catDate, "BuildSampleDatabase"));
-        collObjs.add(createCollectionObject(105.0f, "RCS105", agents.get(2), cs, cod,  1, ce2, catDate, "BuildSampleDatabase"));
-        collObjs.add(createCollectionObject(106.0f, "RCS106", agents.get(2), cs, cod,  1, ce2, catDate, "BuildSampleDatabase"));
-        collObjs.add(createCollectionObject(107.0f, "RCS107", agents.get(3), cs, cod,  1, ce2, catDate, "BuildSampleDatabase"));
+        collObjs.add(createCollectionObject(100.0f, "RCS100", agents.get(0), cs,  3, ce1, catDate, "BuildSampleDatabase"));
+        collObjs.add(createCollectionObject(101.0f, "RCS101", agents.get(0), cs,  2, ce1, catDate, "BuildSampleDatabase"));
+        collObjs.add(createCollectionObject(102.0f, "RCS102", agents.get(1), cs,  7, ce1, catDate, "BuildSampleDatabase"));
+        collObjs.add(createCollectionObject(103.0f, "RCS103", agents.get(1), cs, 12, ce1, catDate, "BuildSampleDatabase"));
+        collObjs.add(createCollectionObject(104.0f, "RCS104", agents.get(2), cs,  8, ce2, catDate, "BuildSampleDatabase"));
+        collObjs.add(createCollectionObject(105.0f, "RCS105", agents.get(2), cs,  1, ce2, catDate, "BuildSampleDatabase"));
+        collObjs.add(createCollectionObject(106.0f, "RCS106", agents.get(2), cs,  1, ce2, catDate, "BuildSampleDatabase"));
+        collObjs.add(createCollectionObject(107.0f, "RCS107", agents.get(3), cs,  1, ce2, catDate, "BuildSampleDatabase"));
         
         AttributeDef colObjAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "MoonPhase", cod, null);//meg added cod
         CollectionObjectAttr colObjAttr = createCollectionObjectAttr(collObjs.get(0), colObjAttrDef, "Full", null);

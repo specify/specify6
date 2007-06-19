@@ -39,9 +39,9 @@ public class SpecifySecurityMgr  extends SecurityMgr
     public SpecifySecurityMgr()
     {
         super();
-        String databaseName = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getDatabaseName();
-        String userName = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getUserName();
-        List<CatalogSeries> catSeries = CatalogSeries.getCurrentCatalogSeries();
+        //String databaseName = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getDatabaseName();
+        //String userName = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getUserName();
+        //List<CatalogSeries> catSeries = CatalogSeries.getCurrentCatalogSeries();
         //((SpecifyAppContextMgr)AppContextMgr.getInstance()).getDiscipline(name)
         //((SpecifyAppContextMgr)AppContextMgr.getInstance()).getDiscipline(name)
         //.getNumOfCatalogSeriesForUser();

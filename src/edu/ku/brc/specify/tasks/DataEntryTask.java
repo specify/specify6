@@ -510,7 +510,7 @@ public class DataEntryTask extends BaseTask
                 CollectionObject colObj = (CollectionObject)dataObj;
                 if (colObj.getCatalogSeries() == null)
                 {
-                    CatalogSeries catSeries = CatalogSeries.getCurrentCatalogSeries().get(0);
+                    CatalogSeries catSeries = CatalogSeries.getCurrentCatalogSeries();
                     colObj.setCatalogSeries(catSeries); 
                 }
                 

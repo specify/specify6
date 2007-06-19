@@ -124,7 +124,7 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
 @SuppressWarnings("serial")
 public class Specify extends JPanel implements DatabaseLoginListener
 {
-    private static final boolean isRelease          = true;
+    private static final boolean isRelease          = false;
     private static final Logger  log                = Logger.getLogger(Specify.class);
     
     public static final boolean IS_DEVELOPMENT     = true;
@@ -151,7 +151,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
     protected GhostGlassPane     glassPane;
 
-    private boolean              isWorkbenchOnly     = true;
+    private boolean              isWorkbenchOnly     = false;
     
     private String               appName             = "Specify";
     private String               appVersion          = "6.0";
@@ -972,7 +972,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 dbLoginPanel.getWindow().setVisible(false);
             }
             
-            if (CatalogSeries.getCurrentCatalogSeries().size() == 0)
+            if (CatalogSeries.getCurrentCatalogSeries() == null)
             {
                 
                 // TODO This is really bad because there is a Database Login with no Specify login

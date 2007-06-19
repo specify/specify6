@@ -149,6 +149,8 @@ public class GenericDBConversion
     
     protected ProgressFrame        frame    = null;
     protected boolean              hasFrame = false;
+    
+    protected Hashtable<String, Long> catalogSeriesHash = new Hashtable<String, Long>();
 
     /**
      * "Old" means the database you want to copy "from"
@@ -302,7 +304,7 @@ public class GenericDBConversion
         "BorrowMaterial",
         "BorrowReturnMaterial",
         //"BorrowShipments",
-        "CatalogSeries",
+        //"CatalogSeries",
         "CatalogSeriesDefinition",
         "CollectingEvent",
         //"Collection",
@@ -488,7 +490,7 @@ public class GenericDBConversion
             "CollectionObjectCitation", "ReferenceWorkID", "ReferenceWork", "ReferenceWorkID",
             "CollectionObjectCitation", "BiologicalObjectID", "CollectionObject", "CollectionObjectID",
 
-            "Stratigraphy", "GeologicTimePeriodID", "GeologicTimePeriod", "GeologicTimePeriodID",
+            //"Stratigraphy", "GeologicTimePeriodID", "GeologicTimePeriod", "GeologicTimePeriodID", // MOVE to convertGTP
 
             //"Deaccession", "CollectionID", "Collection", "CollectionID",
             //"Deaccession", "TypeID", "Type", "TypeID",
@@ -669,7 +671,7 @@ public class GenericDBConversion
                                     "BorrowMaterial",
                                     "BorrowReturnMaterial",
                                     //"BorrowShipment",
-                                    "CatalogSeries",
+                                    //"CatalogSeries",
                                     "CollectingEvent",
                                     "CollectionObjectCitation",
                                     "Collector",
@@ -699,6 +701,18 @@ public class GenericDBConversion
                                     "Stratigraphy",
                                     "TaxonCitation",
        };
+        
+        // This is because Meg Mapped the name of certain Date fields differently 
+        // between the different sp4_xxxxx databases
+        String oldDeaccessionDateFieldName           = "Date1";
+        String oldLoanReturnPhysicalObjDateFieldName = "Date1";
+        String oldRefWorkDateFieldName               = "Date1";
+        if (oldDBName.equals("sp4_cranbrook"))
+        {
+            oldDeaccessionDateFieldName           = "Date";
+            oldLoanReturnPhysicalObjDateFieldName = "DateField";
+            oldRefWorkDateFieldName               = "DateField";
+        }
 
        // This maps old column names to new column names, they must be in pairs
        // Ths Table Name is the "TO Table" name
@@ -713,18 +727,17 @@ public class GenericDBConversion
        tableMaps.put("collectingevent",          createFieldNameMap(new String[] {"StratigraphyID", "CollectingEventID", "TaxonID", "TaxonNameID"}));
        tableMaps.put("collectionobjectcitation", createFieldNameMap(new String[] {"CollectionObjectID", "BiologicalObjectID"}));
        tableMaps.put("collector",                createFieldNameMap(new String[] {"OrderNumber", "Order1", "CollectorID", "CollectorsID"}));
-       tableMaps.put("deaccession",              createFieldNameMap(new String[] {"DeaccessionDate", "Date1"}));
+       tableMaps.put("deaccession",              createFieldNameMap(new String[] {"DeaccessionDate", oldDeaccessionDateFieldName}));
        tableMaps.put("deaccessionagent",         createFieldNameMap(new String[] {"AgentID", "AgentAddressID","DeaccessionAgentID","DeaccessionAgentsID"}));
        //tableMaps.put("determination", createFieldNameMap(new String[] {"CollectionObjectID", "BiologicalObjectID", "IsCurrent", "Current1", "DeterminationDate", "Date1", "TaxonID", "TaxonNameID"}));
-       //tableMaps.put("loanreturnphysicalobject", createFieldNameMap(new String[] {"DateField", "Date1"}));
        tableMaps.put("groupperson",              createFieldNameMap(new String[] {"GroupPersonID", "GroupPersonsID"}));
        tableMaps.put("loan",                     createFieldNameMap(new String[] {"IsGift", "Category", "IsClosed", "Closed"}));
        tableMaps.put("loanagent",                createFieldNameMap(new String[] {"AgentID", "AgentAddressID","LoanAgentID","LoanAgentsID"}));
        tableMaps.put("loanphysicalobject",       createFieldNameMap(new String[] {"PreparationID", "PhysicalObjectID"}));
-       tableMaps.put("loanreturnphysicalobject", createFieldNameMap(new String[] {"ReturnedDate", "Date1"}));
+       tableMaps.put("loanreturnphysicalobject", createFieldNameMap(new String[] {"ReturnedDate", oldLoanReturnPhysicalObjDateFieldName}));
        tableMaps.put("permit",                   createFieldNameMap(new String[] {"IssuedByID", "IssuerID", "IssuedToID", "IssueeID"}));
        tableMaps.put("projectcollectionobjects", createFieldNameMap(new String[] {"ProjectCollectionObjectID", "ProjectCollectionObjectsID"}));
-       tableMaps.put("referencework",            createFieldNameMap(new String[] {"WorkDate", "Date1", "IsPublished", "Published"}));
+       tableMaps.put("referencework",            createFieldNameMap(new String[] {"WorkDate", oldRefWorkDateFieldName, "IsPublished", "Published"}));
        tableMaps.put("stratigraphy",             createFieldNameMap(new String[] {"LithoGroup", "Group1"}));
        tableMaps.put("taxoncitation",            createFieldNameMap(new String[] {"TaxonID", "TaxonNameID"}));
 
@@ -737,15 +750,14 @@ public class GenericDBConversion
        //tableDateMaps.put("collectingevent", createFieldNameMap(new String[] {"TaxonID", "TaxonNameID"}));
        //tableMaps.put("locality", createFieldNameMap(new String[] {"NationalParkName", "", "ParentID", "TaxonParentID"}));
        
-
-       BasicSQLUtils.setShowMappingError(true);//TODO meg change back to false
        for (String tableName : tablesToMoveOver)
        {
            String fromTableName = tableName.toLowerCase();
            String toTableName   = fromTableName;
            
            BasicSQLUtils.setOneToOneIDHash(null);
-           BasicSQLUtils.setShowMappingError(true);
+           
+           int errorsToShow = BasicSQLUtils.SHOW_ALL;
 
            TableStats tblStats = new TableStats(oldDBConn, fromTableName, newDBConn, toTableName);
            tableStatHash.put(fromTableName, tblStats);
@@ -777,6 +789,30 @@ public class GenericDBConversion
                String[] ignoredFields = {"Visibility", "VisibilitySetBy"};
                BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);  
            }
+           else if (fromTableName.equals("loanreturnphysicalobject")) 
+           {
+               errorsToShow &= ~BasicSQLUtils.SHOW_NULL_FK; // Turn off this error for DeaccessionPhysicalObjectID
+           }
+           else if (fromTableName.equals("referencework")) 
+           {
+               errorsToShow &= ~BasicSQLUtils.SHOW_NULL_FK; // Turn off this error for ContainingReferenceWorkID
+           }
+           else if (fromTableName.equals("shipment")) 
+           {
+               errorsToShow &= ~BasicSQLUtils.SHOW_NULL_FK; // Turn off this error for ShippedByID
+           }
+           else if (fromTableName.equals("stratigraphy")) 
+           {
+               errorsToShow &= ~BasicSQLUtils.SHOW_NULL_FK; // Turn off this error for GeologicTimePeriodID
+           }
+           else if (fromTableName.equals("borrowreturnmaterial")) 
+           {
+               errorsToShow &= ~BasicSQLUtils.SHOW_NULL_FK; // Turn off this error for ReturnedByID
+           }
+           else if (fromTableName.equals("permit")) 
+           {
+               errorsToShow &= ~BasicSQLUtils.SHOW_NULL_FK; // Turn off this error for IssueeID, IssuerID
+           }
            else if (fromTableName.equals("collectionobject")) 
            {
                // The First name is the name of the new column that is an ID of a One-to-One releationship
@@ -787,9 +823,12 @@ public class GenericDBConversion
            }
            else if (fromTableName.equals("collectingevent")) 
            {
-               String[] ignoredFields = {"Visibility", "VisibilitySetBy", "CollectingTripID", "EndDateVerbatim", "EndDatePrecision", "StartDateVerbatim", "StartDatePrecision", "HabitatAttributesID"};
+               String[] ignoredFields = {"Visibility", "VisibilitySetBy", "CollectingTripID", "EndDateVerbatim", 
+                                         "EndDatePrecision", "StartDateVerbatim", "StartDatePrecision", "HabitatAttributesID"};
                BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields); 
                BasicSQLUtils.setOneToOneIDHash(createFieldNameMap(new String[] {"HabitatAttributesID", "HabitatAttributesID"}));
+               
+               errorsToShow &= ~BasicSQLUtils.SHOW_NULL_FK; // Turn off this error for LocalityID
 
            }
            else if (fromTableName.equals("determination"))
@@ -823,15 +862,6 @@ public class GenericDBConversion
                BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(null);
            }
            
-           if (tableName.equals("BorrowReturnMaterial") || 
-                   tableName.equals("LoanReturnPhysicalObject") ||
-                   tableName.equals("ReferenceWork") ||
-                   tableName.equals("Shipment") ||
-                   tableName.equals("Stratigraphy"))
-           {
-               BasicSQLUtils.setShowMappingError(false);
-           }
-           
            if (fromTableName.equals("accessionagent") ||
                fromTableName.equals("accessionauthorization") ||
                fromTableName.equals("author") ||
@@ -843,14 +873,11 @@ public class GenericDBConversion
                fromTableName.equals("loanagent"))
            {
                fromTableName = fromTableName + "s";
-               /*if (!copyTable(oldDBConn, newDBConn, "select * from " + fromTableName + "s", tableName + "s", tableName, tableMaps.get(fromTableName), null))
-               {
-                   log.error("Table ["+tableName+"] didn't copy correctly.");
-                   break;
-               }*/
            }
            
            deleteAllRecordsFromTable(toTableName);
+           
+           BasicSQLUtils.setShowErrors(errorsToShow);
            
            if (!copyTable(oldDBConn, newDBConn, fromTableName, toTableName, tableMaps.get(toTableName), null))
            {
@@ -863,7 +890,7 @@ public class GenericDBConversion
 
            tblStats.collectStats();
        }
-       BasicSQLUtils.setShowMappingError(true);
+       BasicSQLUtils.setShowErrors(BasicSQLUtils.SHOW_ALL);
     }
     
     
@@ -1196,92 +1223,6 @@ public class GenericDBConversion
     }
 
     /**
-     * Create a default user.
-     * @param userName the user name
-     * @return the record id
-     */
-    public long createDefaultUser(final String userName, 
-                                  final String userType, 
-                                  final String title,
-                                  final String firstName,
-                                  final String middleInit,
-                                  final String lastName,
-                                  final String abbreviation,
-                                  final String email)
-    {
-        //TODO: rewrite the following table descriptions
-        /*
-         describe usergroup;
-            +-------------+-------------+------+-----+---------+----------------+
-            | Field       | Type        | Null | Key | Default | Extra          |
-            +-------------+-------------+------+-----+---------+----------------+
-            | UserGroupID | int(11)     | NO   | PRI |         | auto_increment |
-            | Name        | varchar(64) | YES  |     |         |                |
-            | Remarks     | text        | YES  |     |         |                |
-            +-------------+-------------+------+-----+---------+----------------+
-
-         describe specifyuser;
-            +---------------+-------------+------+-----+---------+----------------+
-            | Field         | Type        | Null | Key | Default | Extra          |
-            +---------------+-------------+------+-----+---------+----------------+
-            | SpecifyUserID | int(11)     | NO   | PRI |         | auto_increment |
-            | Name          | varchar(64) | NO   |     |         |                |
-            | EMail         | varchar(64) | YES  |     |         |                |
-            | UserType      | varchar(32) | NO   |     |         |                |
-            | PrivLevel     | smallint(6) | NO   |     |         |                |
-            | UserGroupID   | int(11)     | YES  | MUL |         |                |
-            +---------------+-------------+------+-----+---------+----------------+
-
-         */
-
-        try
-        {
-            Statement  updateStatement = newDBConn.createStatement();
-
-            BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "usergroup");
-            BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "specifyuser");
-
-            String updateStr = "INSERT INTO usergroup (TimestampCreated,TimestampModified,LastEditedBy,UserGroupId,Name,Remarks) VALUES ('"+nowStr+"','"+nowStr+"',null,null,'admin2', '')";
-            updateStatement.executeUpdate(updateStr);
-            updateStatement.clearBatch();
-            updateStatement.close();
-            updateStatement = null;
-
-            //long userGroupId = BasicSQLUtils.getHighestId(newDBConn, "UserGroupID", "usergroup");
-
-            updateStatement = newDBConn.createStatement();
-            strBuf = new StringBuilder(128);
-            strBuf.append("INSERT INTO specifyuser (SpecifyUserID,TimestampCreated,TimestampModified,LastEditedBy,Name,EMail,UserType,PrivLevel,AgentID) VALUES (");
-            strBuf.append("NULL,"); // SpecifyUserID
-            strBuf.append("'" + nowStr + "',"); // TimestampCreated
-            strBuf.append("'" + nowStr + "',"); // TimestampModified
-            strBuf.append("NULL,"); // LastEditedBy
-            strBuf.append("'"+userName+"',");
-            strBuf.append("'"+"email@email.edu"+"',");
-            strBuf.append("'"+userType+"',");
-            strBuf.append("0,");
-            strBuf.append("NULL");
-            //strBuf.append(userGroupId+")");
-            strBuf.append(")");
-            updateStatement.executeUpdate(strBuf.toString());
-            updateStatement.clearBatch();
-            updateStatement.close();
-            updateStatement = null;
-
-            long specifyUserId = BasicSQLUtils.getHighestId(newDBConn, "SpecifyUserID", "specifyuser");
-            return specifyUserId;
-
-        } catch (SQLException e)
-        {
-            log.error(strBuf.toString());
-            e.printStackTrace();
-            log.error(e);
-            throw new RuntimeException(e);
-        }
-    }
-
-
-    /**
      * Create a data type.
      * @param taxonomyTypeName the name
      * @return the ID (record id) of the data type
@@ -1343,18 +1284,19 @@ public class GenericDBConversion
      */
     public boolean convertCollectionObjectDefs(final long specifyUserId)
     {
-        // The Old Table catalogseriesdefinition is being converted to collectionobjdef
-        IdMapperIFace catalogSeriesMapper = idMapperMgr.get("CatalogSeries", "CatalogSeriesID");
-        IdMapperIFace taxonomyTypeMapper  = idMapperMgr.get("TaxonomyType", "TaxonomyTypeID");
-
         try
         {
+            // The Old Table catalogseriesdefinition is being converted to collectionobjdef
+            //IdMapperIFace catalogSeriesMapper = idMapperMgr.addTableMapper("CatalogSeries", "CatalogSeriesID");
+            IdMapperIFace taxonomyTypeMapper  = idMapperMgr.get("TaxonomyType", "TaxonomyTypeID");
+
             // Create a Hashtable to track which IDs have been handled during the conversion process
             BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "datatype");
             BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "collectionobjdef");
-            BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "catseries_colobjdef");
+            BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "catalogseries");
+            //BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "catseries_colobjdef");
 
-            Hashtable<Long, Long> taxonomyTypeIDToColObjID     = new Hashtable<Long, Long>();
+            Hashtable<Long, Long> newColObjIDTotaxonomyTypeID     = new Hashtable<Long, Long>();
             Hashtable<Long, String>  taxonomyTypeIDToTaxonomyName = new Hashtable<Long, String>();
 
             // First, create a CollectionObjDef for TaxonomyType record
@@ -1419,8 +1361,8 @@ public class GenericDBConversion
                 Statement updateStatement = newDBConn.createStatement();
                 StringBuilder strBuf2 = new StringBuilder();
                 strBuf2.append("INSERT INTO collectionobjdef (CollectionObjDefID, TimestampModified, Discipline, Name, TimestampCreated, LastEditedBy, DataTypeID, SpecifyUserID, GeographyTreeDefID, GeologicTimePeriodTreeDefID, LocationTreeDefID, TaxonTreeDefID) VALUES (");
-                strBuf2.append(taxonomyTypeMapper.get(taxonomyTypeID)+","); // TimestampModified
-                strBuf2.append("'"+dateFormatter.format(new Date())+"',");
+                strBuf2.append(taxonomyTypeMapper.get(taxonomyTypeID)+","); 
+                strBuf2.append("'"+dateFormatter.format(new Date())+"',"); // TimestampModified
                 strBuf2.append("'"+discipline.getTitle()+"',");
                 strBuf2.append("'"+discipline.getName()+"',");
                 strBuf2.append("'"+dateFormatter.format(new Date())+"',");  // TimestampCreated
@@ -1441,10 +1383,12 @@ public class GenericDBConversion
                 recordCnt++;
 
                 Long colObjDefID = BasicSQLUtils.getHighestId(newDBConn, "CollectionObjDefID", "collectionobjdef");
-                taxonomyTypeIDToColObjID.put(taxonomyTypeID, colObjDefID);
+                
+                newColObjIDTotaxonomyTypeID.put(colObjDefID, taxonomyTypeID);
 
                 log.info("Created new collectionobjdef["+taxonomyTypeName+"] is dataType ["+dataTypeId+"]");
             }
+            
             rs.close();
             stmt.close();
             log.info("CollectionObjDef Records: "+ recordCnt);
@@ -1453,37 +1397,68 @@ public class GenericDBConversion
             {
                 // Now convert over all CatalogSeries
     
-                String sql = "Select catalogseries.CatalogSeriesID, taxonomytype.TaxonomyTypeID From catalogseries Inner Join catalogseriesdefinition ON " +
+                String sql = "Select catalogseries.CatalogSeriesID, catalogseries.SeriesName, taxonomytype.TaxonomyTypeName, " +
+                             "catalogseries.CatalogSeriesPrefix, catalogseries.Remarks, catalogseries.LastEditedBy, catalogseriesdefinition.CatalogSeriesDefinitionID, " +
+                             "taxonomytype.TaxonomyTypeID From catalogseries Inner Join catalogseriesdefinition ON " +
                              "catalogseries.CatalogSeriesID = catalogseriesdefinition.CatalogSeriesID Inner Join collectiontaxonomytypes ON " +
                              "catalogseriesdefinition.ObjectTypeID = collectiontaxonomytypes.BiologicalObjectTypeID Inner Join taxonomytype ON " +
-                             "collectiontaxonomytypes.TaxonomyTypeID = taxonomytype.TaxonomyTypeID";
+                             "collectiontaxonomytypes.TaxonomyTypeID = taxonomytype.TaxonomyTypeID order by catalogseries.CatalogSeriesID";
                 log.info(sql);
     
                 stmt = oldDBConn.createStatement();
                 rs   = stmt.executeQuery(sql.toString());
     
-                 recordCnt = 0;
-                 while (rs.next())
-                 {
-                     long catalogSeriesID = rs.getLong(1);
-                     long taxonomyTypeID  = rs.getLong(2);
+                Hashtable<String, Boolean> seriesNameHash = new Hashtable<String, Boolean>();
+                
+                recordCnt = 0;
+                while (rs.next())
+                {
+                     long   catalogSeriesID = rs.getLong(1);
+                     String seriesName      = rs.getString(2);
+                     String taxTypeName     = rs.getString(3);
+                     String prefix          = rs.getString(4);
+                     String remarks         = rs.getString(5);
+                     String lastEditBy      = rs.getString(6);
+                     //long   catSeriesDefID  = rs.getLong(7);
+                     long   taxonomyTypeID  = rs.getLong(8);
+                     
+                     String newSeriesName = seriesName + " " + taxTypeName;
+                     if (seriesNameHash.get(newSeriesName) != null)
+                     {
+                         log.error("Rebuilt Collection Name ["+ newSeriesName +"] is not unique.");
+                      } else
+                     {
+                         seriesNameHash.put(seriesName, true);
+                     }
     
                      // Now craete the proper record in the  Join Table
     
-                     long newCatalogSeriesID = catalogSeriesMapper.get(catalogSeriesID);
+                     //long newCatalogSeriesID = catalogSeriesMapper.get(catalogSeriesID);
                      long newColObjdefID     = taxonomyTypeMapper.get(taxonomyTypeID);
     
                      Statement updateStatement = newDBConn.createStatement();
                      strBuf.setLength(0);
-                     strBuf.append("INSERT INTO catseries_colobjdef (CatalogSeriesID,CollectionObjDefID) VALUES (");
-                     strBuf.append(newCatalogSeriesID+", ");
-                     strBuf.append(newColObjdefID+")");
+                     strBuf.append("INSERT INTO catalogseries (CollectionObjDefID, SeriesName, CatalogSeriesPrefix, Remarks, LastEditedBy, TimestampCreated, TimestampModified) VALUES (");
+                     strBuf.append(newColObjdefID+",");
+                     strBuf.append(getStrValue(newSeriesName)+",");
+                     strBuf.append(getStrValue(prefix)+",");
+                     strBuf.append(getStrValue(remarks)+",");
+                     strBuf.append(getStrValue(lastEditBy)+",");
+                     strBuf.append("'"+dateFormatter.format(new Date())+"',"); // TimestampModified
+                     strBuf.append("'"+dateFormatter.format(new Date())+"'");  // TimestampCreated
+                     strBuf.append(")");
     
-                     log.info("CatalogSeries Join["+newCatalogSeriesID+"]["+newColObjdefID+"]");
+                     //System.out.println(strBuf.toString());
+                     
                      updateStatement.executeUpdate(strBuf.toString());
                      updateStatement.clearBatch();
                      updateStatement.close();
                      updateStatement = null;
+                     
+                     Long newCatSeriesID = BasicSQLUtils.getHighestId(newDBConn, "CatalogSeriesID", "catalogseries");
+                     catalogSeriesHash.put(catalogSeriesID+"_"+taxonomyTypeID, newCatSeriesID);
+                     
+                     log.info("CatalogSeries New["+newCatSeriesID+"] ["+seriesName+"] ["+prefix+"] ["+newColObjdefID+"]");
     
                      recordCnt++;
     
@@ -3035,13 +3010,9 @@ public class GenericDBConversion
     public boolean createCollectionRecords()
     {
         IdHashMapper colObjTaxonMapper = (IdHashMapper)idMapperMgr.get("ColObjCatToTaxonType");
-        IdMapperIFace     taxonomyTypeMapper  = idMapperMgr.get("TaxonomyType", "TaxonomyTypeID");
-        
         colObjTaxonMapper.setShowLogErrors(false); // NOTE: TURN THIS ON FOR DEBUGGING or running new Databases through it
         
         log.info("colObjTaxonMapper: "+colObjTaxonMapper.size());
-
-        //Hashtable<Integer, Integer> colObjTypeMap = new Hashtable<Integer, Integer>();
 
         deleteAllRecordsFromTable(newDBConn, "collectionobject"); // automatically closes the connection
         try
@@ -3093,8 +3064,6 @@ public class GenericDBConversion
             }
             String tableName = "collectionobject";
 
-            int objTypeInx   = oldNameIndex.get("CollectionObjectTypeID");
-
             log.info(sqlStr);
             ResultSet rs = stmt.executeQuery(sqlStr);
             
@@ -3120,10 +3089,32 @@ public class GenericDBConversion
                     return true;                   
                 }
             }
+            
+            //int catSeriesIdInx = oldNameIndex.get("CatalogSeriesID");
+            
+            Statement stmt2 = oldDBConn.createStatement();
 
             int count = 0;
             do
             {
+                
+                String catIdTaxIdStr = "SELECT collectionobjectcatalog.CollectionObjectCatalogID,collectionobjectcatalog.CatalogSeriesID, collectiontaxonomytypes.TaxonomyTypeID " +
+                                       "FROM collectionobjectcatalog " +  
+                                       "Inner Join collectionobject ON collectionobjectcatalog.CollectionObjectCatalogID = collectionobject.CollectionObjectID " +  
+                                       "Inner Join collectiontaxonomytypes ON collectionobject.CollectionObjectTypeID = collectiontaxonomytypes.BiologicalObjectTypeID " +
+                                       "where collectionobjectcatalog.CollectionObjectCatalogID = " + rs.getLong(1);
+                ResultSet rs2   = stmt2.executeQuery(catIdTaxIdStr);
+                rs2.first();
+                Long catalogSeriesID = rs2.getLong(2);
+                Long taxonomyTypeID  = rs2.getLong(3);
+                Long newCatSeriesId = catalogSeriesHash.get(catalogSeriesID+"_"+taxonomyTypeID);
+                rs2.close();
+                
+                if (newCatSeriesId == null)
+                {
+                    log.error("Can't find "+catalogSeriesID+"_"+taxonomyTypeID);
+                }
+                
                 str.setLength(0);
                 str.append("INSERT INTO collectionobject VALUES (");
                 for (int i=0;i<newFieldMetaData.size();i++)
@@ -3149,38 +3140,14 @@ public class GenericDBConversion
                     {
                         str.append("NULL");
 
-                    } 
-                    else if (newFieldName.equals("Visibility")) //User/Security changes
+                    } else if(newFieldName.equals("CatalogSeriesID")) //User/Security changes
+                    {
+                        str.append(newCatSeriesId);
+                        
+                    } else if(newFieldName.equals("Visibility")) //User/Security changes
                     {
                         str.append(defaultVisibilityLevel);
-                    }
-                    else if (newFieldName.equals("CollectionObjDefID"))
-                    {
-                        try
-                        {
-                            long oldColObjectTypeId = rs.getLong(objTypeInx);
-                            //log.info("1* "+oldColObjectTypeId);
-
-                            Long taxonomyTreeId = colObjTaxonMapper.get(oldColObjectTypeId);
-                            //log.info("2* "+taxonomyTreeId);
-
-                            if (taxonomyTreeId != null)
-                            {
-                                Long newTaxonomyTreeId = taxonomyTypeMapper.get(taxonomyTreeId);
-                                //log.info("3* "+newTaxonomyTreeId);
-    
-                                str.append(Long.toString(newTaxonomyTreeId));
-                            } else
-                            {
-                                //log.debug("Was unable to Map old Index["++"] to get it's TaxonTreeID");
-                                str.append("NULL");
-                            }
-
-                        } catch (Exception ex)
-                        {
-                            str.append("NULL");
-                        }
-
+                            
                     } else if (newFieldName.equals("CountAmt"))
                     {
                         Integer index = oldNameIndex.get("Count1");
@@ -3275,6 +3242,8 @@ public class GenericDBConversion
                 //if (count > 10) break;
             } while (rs.next());
             
+            stmt2.close();
+
             if (hasFrame)
             {
                 setProcess(count);
@@ -3731,7 +3700,7 @@ public class GenericDBConversion
         timestampValues.put("TimestampCreated", "'" + nowStr + "'");
         timestampValues.put("TimestampModified", "'" + nowStr + "'");
 
-    	String[] ignoredFields = {"Remarks", "FullNameDirection"};
+    	String[] ignoredFields = {"Remarks", "FullNameDirection", "LastEditedBy", "TimestampCreated", "TimestampModified"};
     	BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
 
     	log.info("Copying taxonomy tree definitions from 'taxonomytype' table");
@@ -3775,7 +3744,7 @@ public class GenericDBConversion
         timestampValues.put("TimestampCreated", "'" + nowStr + "'");
         timestampValues.put("TimestampModified", "'" + nowStr + "'");
 
-        String[] ignoredFields = {"IsEnforced", "ParentItemID", "Remarks", "IsInFullName", "FullNameSeparator", "TextBefore", "TextAfter"};
+        String[] ignoredFields = {"IsEnforced", "ParentItemID", "Remarks", "IsInFullName", "FullNameSeparator", "TextBefore", "TextAfter", "TimestampCreated", "TimestampModified", "LastEditedBy"};
     	BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
 
     	// Copy over most of the columns in the old table to the new one
@@ -3926,7 +3895,7 @@ public class GenericDBConversion
     	newToOldColMap.put("FullName", "FullTaxonName");
         newToOldColMap.put("IsAccepted", "Accepted");
 
-    	String[] ignoredFields = {"GUID", "Visibility, VisibilitySetBy"};//User/Security changes
+    	String[] ignoredFields = {"GUID", "Visibility", "VisibilitySetBy"}; // User/Security changes
     	//log.error(arg0)
         BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
         
@@ -3936,7 +3905,7 @@ public class GenericDBConversion
         {
             
             Statement stmt = oldDBConn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT count(AcceptedID)  FROM taxonname where AcceptedID <> null");
+            ResultSet rs = stmt.executeQuery("SELECT count(AcceptedID) FROM taxonname where AcceptedID <> null");
             if (rs.first())
             {
                 showMappingErrors = rs.getInt(1) > 0;
@@ -3948,7 +3917,13 @@ public class GenericDBConversion
         {
             ex.printStackTrace();
         }
-        BasicSQLUtils.setShowMappingError(showMappingErrors);
+        
+        int errorsToShow = (BasicSQLUtils.SHOW_NAME_MAPPING_ERROR | BasicSQLUtils.SHOW_VAL_MAPPING_ERROR);
+        if (showMappingErrors)
+        {
+            errorsToShow = errorsToShow | (BasicSQLUtils.SHOW_FK_LOOKUP | BasicSQLUtils.SHOW_NULL_FK);
+        }
+        BasicSQLUtils.setShowErrors(errorsToShow);
 
     	log.info("Copying taxon records from 'taxonname' table");
     	if ( !copyTable(oldDBConn,
@@ -4052,6 +4027,9 @@ public class GenericDBConversion
 		return def;
     }
 
+    /**
+     * @return
+     */
     public boolean convertDeaccessionCollectionObject()
     {
         BasicSQLUtils.deleteAllRecordsFromTable("deaccessionpreparation");
@@ -4060,9 +4038,6 @@ public class GenericDBConversion
         {
             return true;
         }
-        boolean showMappingErrors = BasicSQLUtils.isShowMappingError();
-        
-        BasicSQLUtils.setShowMappingError(false); // turn off notification because of errors with National Parks
         
         Map<String, String> colNewToOldMap = createFieldNameMap(new String[] {"PreparationID", "CollectionObjectID", "DeaccessionPreparationID", "DeaccessionCollectionObjectID"});        
         
@@ -4075,7 +4050,6 @@ public class GenericDBConversion
         }
         BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(null);
         
-        BasicSQLUtils.setShowMappingError(showMappingErrors);   
         return true;
     }
     
@@ -4085,12 +4059,9 @@ public class GenericDBConversion
     public void convertLocality()
     {
         // Ignore these field names from new table schema when mapping IDs
-        BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(new String[] {"NationalParkName", "GUID"});
+        BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(new String[] {"NationalParkName", "GUID", "Visibility", "VisibilitySetBy"});
 
         BasicSQLUtils.deleteAllRecordsFromTable("locality");
-
-        //boolean showMappingErrors = BasicSQLUtils.isShowMappingError();
-        BasicSQLUtils.setShowMappingError(false); // turn off notification because of errors with National Parks
 
         String sql = "select locality.*, geography.* from locality,geography where locality.GeographyID = geography.GeographyID";
 
@@ -4102,7 +4073,6 @@ public class GenericDBConversion
             log.error("Copying locality/geography (fields) to new Locality");
         }
         BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(null);
-        //BasicSQLUtils.setShowMappingError(showMappingErrors);
    }
     
     /**
@@ -4483,6 +4453,7 @@ public class GenericDBConversion
     	int count = 0;
     	
     	IdTableMapper gtpIdMapper = IdMapperMgr.getInstance().addTableMapper("geologictimeperiod", "GeologicTimePeriodID");
+        IdMapperMgr.getInstance().mapForeignKey("Stratigraphy", "GeologicTimePeriodID", "GeologicTimePeriod", "GeologicTimePeriodID");
     	
     	String sql = "SELECT g.GeologicTimePeriodID,g.RankCode,g.Name,g.Standard,g.Remarks,g.TimestampModified,g.TimestampCreated,p1.Age as Upper,p1.AgeUncertainty as UpperUncertainty,p2.Age as Lower,p2.AgeUncertainty as LowerUncertainty FROM geologictimeperiod g, geologictimeboundary p1, geologictimeboundary p2 WHERE g.UpperBoundaryID=p1.GeologicTimeBoundaryID AND g.LowerBoundaryID=p2.GeologicTimeBoundaryID ORDER BY Lower DESC, RankCode";
     	Statement statement = oldDBConn.createStatement();
@@ -5278,7 +5249,7 @@ public class GenericDBConversion
            long count = rsX.getLong(1);
            if (count > 0)
            {
-               throw new RuntimeException("There are "+count+" AgentAddress Records where the AgentID is null and the AddressId is not null!");
+               //throw new RuntimeException("There are "+count+" AgentAddress Records where the AgentID is null and the AddressId is not null!");
            }
            rsX.close();
            stmtX.close();

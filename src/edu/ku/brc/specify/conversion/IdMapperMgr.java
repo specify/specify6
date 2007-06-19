@@ -208,7 +208,7 @@ public class IdMapperMgr
     /**
      * Cleanup map.
      */
-    public void cleanup() throws SQLException
+    public void cleanup()
     {
         for (IdHashMapper mapper : idMappers.values())
         {

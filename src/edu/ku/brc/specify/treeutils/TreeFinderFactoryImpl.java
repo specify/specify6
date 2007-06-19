@@ -74,12 +74,14 @@ public class TreeFinderFactoryImpl extends TreeFinderFactory
     {
         List<TaxonTreeDef> defs = new Vector<TaxonTreeDef>();
         
-        for (CatalogSeries cs: CatalogSeries.getCurrentCatalogSeries())
+        CatalogSeries cs = CatalogSeries.getCurrentCatalogSeries();
+        if (cs != null)
         {
-            for (CollectionObjDef cod: cs.getCollectionObjDefItems())
+            CollectionObjDef cod = cs.getCollectionObjDef();
+            if (cod != null)
             {
                 TaxonTreeDef def = cod.getTaxonTreeDef();
-                if (def!=null)
+                if (def != null)
                 {
                     defs.add(def);
                 }
@@ -99,9 +101,11 @@ public class TreeFinderFactoryImpl extends TreeFinderFactory
     {
         List<GeographyTreeDef> defs = new Vector<GeographyTreeDef>();
         
-        for (CatalogSeries cs: CatalogSeries.getCurrentCatalogSeries())
+        CatalogSeries cs = CatalogSeries.getCurrentCatalogSeries();
+        if (cs != null)
         {
-            for (CollectionObjDef cod: cs.getCollectionObjDefItems())
+            CollectionObjDef cod = cs.getCollectionObjDef();
+            if (cod != null)
             {
                 GeographyTreeDef def = cod.getGeographyTreeDef();
                 if (def!=null)
@@ -124,9 +128,11 @@ public class TreeFinderFactoryImpl extends TreeFinderFactory
     {
         List<GeologicTimePeriodTreeDef> defs = new Vector<GeologicTimePeriodTreeDef>();
         
-        for (CatalogSeries cs: CatalogSeries.getCurrentCatalogSeries())
+        CatalogSeries cs = CatalogSeries.getCurrentCatalogSeries();
+        if (cs != null)
         {
-            for (CollectionObjDef cod: cs.getCollectionObjDefItems())
+            CollectionObjDef cod = cs.getCollectionObjDef();
+            if (cod != null)
             {
                 GeologicTimePeriodTreeDef def = cod.getGeologicTimePeriodTreeDef();
                 if (def!=null)
@@ -149,9 +155,11 @@ public class TreeFinderFactoryImpl extends TreeFinderFactory
     {
         List<LocationTreeDef> defs = new Vector<LocationTreeDef>();
         
-        for (CatalogSeries cs: CatalogSeries.getCurrentCatalogSeries())
+        CatalogSeries cs = CatalogSeries.getCurrentCatalogSeries();
+        if (cs != null)
         {
-            for (CollectionObjDef cod: cs.getCollectionObjDefItems())
+            CollectionObjDef cod = cs.getCollectionObjDef();
+            if (cod != null)
             {
                 LocationTreeDef def = cod.getLocationTreeDef();
                 if (def!=null)

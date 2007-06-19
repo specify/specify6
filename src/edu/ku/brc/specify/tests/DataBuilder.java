@@ -202,7 +202,7 @@ public class DataBuilder
 
         for (CollectionObjDef cod: colObjDefs)
         {
-            catalogSeries.addCollectionObjDefItems(cod);
+            catalogSeries.setCollectionObjDef(cod);
         }
 
         persist(catalogSeries);
@@ -355,7 +355,6 @@ public class DataBuilder
                                                           final String fieldNumber,
                                                           final Agent cataloger,
                                                           final CatalogSeries catalogSeries,
-                                                          final CollectionObjDef colObjDef,
                                                           final int count,
                                                           final CollectingEvent collectingEvent,
                                                           final Calendar catalogedDate,
@@ -370,7 +369,6 @@ public class DataBuilder
         colObj.setCatalogedDateVerbatim(DateFormat.getInstance().format(catalogedDate.getTime()));
         colObj.setCatalogNumber(catalogNumber);
         colObj.setCatalogSeries(catalogSeries);
-        colObj.setCollectionObjDef(colObjDef);
         colObj.setCollectingEvent(collectingEvent);
         colObj.setCountAmt(count);
         colObj.setFieldNumber(fieldNumber);
@@ -1305,7 +1303,6 @@ public class DataBuilder
                                                           final Float catalogNumber,
                                                           final CollectingEvent collectingEvent,
                                                           final ContainerItem containerItem,
-                                                          final CollectionObjDef collectionObjDef,
                                                           final CatalogSeries catalogSeries,
                                                           final Accession accession,
                                                           final Agent cataloger,
@@ -1327,7 +1324,6 @@ public class DataBuilder
         collectionobject.setCatalogNumber(catalogNumber);
         collectionobject.setCollectingEvent(collectingEvent);
         collectionobject.setContainerItem(containerItem);
-        collectionobject.setCollectionObjDef(collectionObjDef);
         collectionobject.setCatalogSeries(catalogSeries);
         collectionobject.setAccession(accession);
         collectionobject.setCataloger(cataloger);

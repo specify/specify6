@@ -15,7 +15,6 @@
 package edu.ku.brc.specify.config;
 
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Frame;
 import java.io.File;
@@ -49,8 +48,8 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.ViewSetObj;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
@@ -166,13 +165,13 @@ public class SpecifyAppContextMgr extends AppContextMgr
      * @return the current Catalog Series or null
      */
     @SuppressWarnings("unchecked")
-    protected List<CatalogSeries> setupCurrentCatalogSeries(final DataProviderSessionIFace sessionArg, final SpecifyUser user, final boolean alwaysAsk)
+    protected CatalogSeries setupCurrentCatalogSeries(final DataProviderSessionIFace sessionArg, final SpecifyUser user, final boolean alwaysAsk)
     {
         final String prefName = mkUserDBPrefName("recent_catalogseries_id");
+        
+        CatalogSeries catSeries = null;
 
-        List<CatalogSeries> catSeries = CatalogSeries.getCurrentCatalogSeries(); // always return a List Object (might be empty)
-
-        if (catSeries.size() == 0 || alwaysAsk)
+        if (CatalogSeries.getCurrentCatalogSeries() == null || alwaysAsk)
         {
             AppPreferences appPrefs    = AppPreferences.getRemote();
             boolean        askToSelect = true;
@@ -181,13 +180,10 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 String recentIds = appPrefs.get(prefName, null);
                 if (StringUtils.isNotEmpty(recentIds))
                 {
-                    List list = sessionArg.getDataList("From CatalogSeries where catalogSeriesId in ("+recentIds + ")");
-                    if (list.size() > 0)
+                    List list = sessionArg.getDataList("From CatalogSeries where catalogSeriesId = " + recentIds);
+                    if (list.size() == 1)
                     {
-                        for (Object obj : list)
-                        {
-                            catSeries.add((CatalogSeries)obj);
-                        }
+                        catSeries   = (CatalogSeries)list.get(0);
                         askToSelect = false;
                     }
                 }
@@ -205,8 +201,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 
                 if (catSeriesHash.size() == 1)
                 {
-                    catSeries.add(catSeriesHash.elements().nextElement());
-                    CatalogSeries.setCurrentCatalogSeries(catSeries);
+                    catSeries = catSeriesHash.elements().nextElement();
 
                 } else if (catSeriesHash.size() > 0)
                 {
@@ -223,10 +218,10 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
                     UIHelper.centerAndShow(dlg);
 
-                    catSeries.clear();
                     if (!dlg.isCancelled())
                     {
-                        catSeries.addAll(dlg.getSelectedObjects());
+                        catSeries = dlg.getSelectedObject();
+                        
                     } else
                     {
                         return null;
@@ -238,133 +233,15 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     // Or for a stand alone Accessions Database there may not be any 
                 }
 
-                if (catSeries.size() > 0)
+                if (catSeries != null)
                 {
-                    StringBuilder strBuf = new StringBuilder();
-                    for (CatalogSeries cs : catSeries)
-                    {
-                        if (strBuf.length() > 0) strBuf.append(", ");
-                        strBuf.append(Long.toString(cs.getCatalogSeriesId()));
-                    }
-                    appPrefs.put(prefName, strBuf.toString());
-                } else
-                {
-                    appPrefs.remove(prefName);
+                    appPrefs.put(prefName, (Long.toString(catSeries.getCatalogSeriesId())));
                 }
             }
         }
         
+        CatalogSeries.setCurrentCatalogSeries(catSeries);
         return catSeries;
-    }
-
-    /**
-     * Sets up the "current" CollectionObjDef by first checking prefs for the most recent primary key,
-     * if it can't get it then it asks the user to select one. (Note: if there is only one it automatically chooses it)
-     * @param catalogSeries the current XatalogSeries
-     * @param alwaysAsk true means always ask which CollectionObjDef
-     * @return the current CollectionObjDef or null
-     */
-    @SuppressWarnings("unchecked")
-    public CollectionObjDef setupCurrentColObjDef(final List<CatalogSeries> catalogSeriesList, final boolean alwaysAsk)
-    {
-        if (catalogSeriesList == null || catalogSeriesList.size() == 0)
-        {
-            return null;
-        }
-        
-        // OK, at this point the user selected more than one CatalogSeries and each of the CatalogSeries
-        // Could have more than one ColObjDef, so the User needs to select a "default ColObjDef. 
-        AppPreferences   appPrefs          = AppPreferences.getRemote();
-        String           recentColObjDefId = mkUserDBPrefName("recent_colobjdef_id");
-        Integer          colObjDefId       = appPrefs.getInt(recentColObjDefId, null);
-        CollectionObjDef colObjDef         = null;
-        
-
-        boolean askForColObjDef   = true;
-        if (!alwaysAsk)
-        {
-            // At this point if we have an ID then check to make sure it is an ID from one of the currently selected
-            // CatalogSeries, and if not then ask for a new one
-            if (colObjDefId != null)
-            {
-                for (CatalogSeries cs : catalogSeriesList)
-                {
-                    for (CollectionObjDef cod : cs.getCollectionObjDefItems())
-                    {
-                        if (cod.getCollectionObjDefId().equals(colObjDefId))
-                        {
-                            askForColObjDef = false;
-                            colObjDef = cod;
-                            break;
-                        }
-                    }
-                    if (!askForColObjDef)
-                    {
-                        break;
-                    }
-                }
-            }
-        }
-        
-        // Either one wasn't selected before OR the ID we got back wasn't in any of the CatalogSeries
-        // So we need to ask for a new one
-        if (askForColObjDef || alwaysAsk)
-        {
-            class CatSeriesColObjDefItem
-            {
-                protected String name;
-                protected CollectionObjDef collectionObjDef;
-                
-                public CatSeriesColObjDefItem(CatalogSeries catSeries, CollectionObjDef colObjDefArg)
-                {
-                    name = catSeries.getSeriesName() + " / " + colObjDefArg.getName();
-                    this.collectionObjDef = colObjDefArg;
-                }
-                
-                public String toString()
-                {
-                    return name;
-                }
-                
-                public CollectionObjDef getColObjDef()
-                {
-                    return collectionObjDef;
-                }
-                
-            }
-            
-            List<CatSeriesColObjDefItem> list = new ArrayList<CatSeriesColObjDefItem>(10);
-            for (CatalogSeries cs : catalogSeriesList)
-            {
-                for (CollectionObjDef cod : cs.getCollectionObjDefItems())
-                {
-                    list.add(new CatSeriesColObjDefItem(cs, cod));
-                }
-            }
-
-            // TODO XXX Need to add a Help Btn to this Dialog
-            ChooseFromListDlg<CatSeriesColObjDefItem> dlg = 
-                new ChooseFromListDlg<CatSeriesColObjDefItem>((Frame)UIRegistry.get(UIRegistry.FRAME),
-                                                              getResourceString("ChooseCatSeriesColObjDef"), 
-                                                              ChooseFromListDlg.OK_BTN, // OK Only
-                                                              list); 
-            dlg.setModal(true);
-
-            UIHelper.centerAndShow(dlg);
-            if (!dlg.isCancelled() && dlg.getSelectedObject() != null) // shouldn't need to check for null (but just in case)
-            {
-                CatSeriesColObjDefItem item = dlg.getSelectedObject();
-                colObjDef = item.getColObjDef();
-             }
-        }
-
-        if (colObjDef != null)
-        {
-            CollectionObjDef.setCurrentCollectionObjDef(colObjDef);
-            appPrefs.putLong(recentColObjDefId, colObjDef.getCollectionObjDefId());
-
-        }
-        return colObjDef;
     }
 
     /**
@@ -517,14 +394,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
         // additional XML Resources.
         
         // Ask the User to choose which CatalogSeries they will be working with
-        CatalogSeries.getCurrentCatalogSeries().clear();
+        CatalogSeries.setCurrentCatalogSeries(null);
         
-        List<CatalogSeries> catalogSeries = setupCurrentCatalogSeries(session, user, startingOver);
+        CatalogSeries catalogSeries = setupCurrentCatalogSeries(session, user, startingOver);
         if (catalogSeries == null)
         {
-            //catalogSeries = new ArrayList<CatalogSeries>();
-            //catalogSeries.addAll(CatalogSeries.getCurrentCatalogSeries());
-            // Return false but on't mess with anything that has been set up so far
+            // Return false but don't mess with anything that has been set up so far
             currentStatus  = currentStatus == CONTEXT_STATUS.Initial ? CONTEXT_STATUS.Error : CONTEXT_STATUS.Ignore;
             return currentStatus;
         }
@@ -539,69 +414,25 @@ public class SpecifyAppContextMgr extends AppContextMgr
         appResourceList.clear();
         viewSetHash.clear();
 
-       List appResDefList = session.getDataList( "From AppResourceDefault where specifyUserId = "+user.getSpecifyUserId());
+        List appResDefList = session.getDataList( "From AppResourceDefault where specifyUserId = "+user.getSpecifyUserId());
 
-
-//       Hashtable<String, AppResource> appResHash = new Hashtable<String, AppResource>();
-       
-       if (catalogSeries.size() == 0)
-       {
-            //throw new RuntimeException("What does it mean if the current user is not assigned to any CatalogSeries?");
-            
-            // Accession / Registrar / Director may not be assigned to any Catalog Series
-            // Or for a stand alone Accessions Database there may not be any 
-
-            CatalogSeries.getCurrentCatalogSeries().clear();
-            CollectionObjDef.setCurrentCollectionObjDef(null);
-            
-            dispHash.put(userType, userType);
-            
-        } else
-        {
+        CollectionObjDef cod = catalogSeries.getCollectionObjDef();
+        CollectionObjDef.setCurrentCollectionObjDef(cod);
     
-            // Set up the CollectionObjectDef for the most common case of one CatalogSeries with one CollecionObjDef
-            CollectionObjDef.setCurrentCollectionObjDef(null);
-            if (catalogSeries.size() == 1)
-            {
-                log.debug("Choosing CatSeries["+catalogSeries.get(0).getSeriesName()+"]");
-                if (catalogSeries.get(0).getCollectionObjDefItems().size() == 1)
-                {
-                    CollectionObjDef.setCurrentCollectionObjDef(catalogSeries.get(0).getCollectionObjDefItems().iterator().next());
-                }
-                
-            } else
-            {
-                // OK, at this point the user selected more than one CatalogSeries and each of the CatalogSeries
-                // Could have more than one ColObjDef, so the User needs to select a "default ColObjDef. 
-                //
-                // Also note that this set the "default" CollectionObjDef
-                setupCurrentColObjDef(catalogSeries, startingOver);
-            }
             
-            log.debug("Adding AppResourceDefs from Catalog Series and ColObjDefs");
-            for (CatalogSeries cs : catalogSeries)
-            {
-                log.debug("CatSeries["+cs.getSeriesName()+"]");
-                for (CollectionObjDef cod : cs.getCollectionObjDefItems())
-                {
-                    log.debug("  ColObjDef["+cod.getName()+"]");
-                    
-                    dispHash.put(cod.getDiscipline(), cod.getDiscipline());
-                    
-                    AppResourceDefault appResourceDef = find(appResDefList, user, cs, cod);
-                    if (appResourceDef != null)
-                    {
-                        log.debug("Adding1 "+getAppResDefAsString(appResourceDef));
-                        appResourceList.add(appResourceDef);
-                        /*for (AppResource ap : appResourceDef.getPersistedAppResources())
-                        {
-                            appResHash.put(ap.getName(), ap);
-                        }*/
-                        
-                    }
-                }
-            }
+        log.debug("Adding AppResourceDefs from Catalog Series and ColObjDefs");
+
+        log.debug("  ColObjDef["+cod.getName()+"]");
+        
+        dispHash.put(cod.getDiscipline(), cod.getDiscipline());
+        
+        AppResourceDefault appResourceDef = find(appResDefList, user, catalogSeries, cod);
+        if (appResourceDef != null)
+        {
+            log.debug("Adding1 "+getAppResDefAsString(appResourceDef));
+            appResourceList.add(appResourceDef);
         }
+
 
         // Add Backstop for Discipline and User Type
         for (String discipline : dispHash.keySet())
@@ -615,7 +446,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 appResDef.setDisciplineType(discipline);
                 appResDef.setUserType(userType);
                 appResDef.setSpecifyUser(user);//added to fix not-null constraints
-                appResDef.setCatalogSeries(CatalogSeries.getCurrentCatalogSeries().get(0));
+                appResDef.setCatalogSeries(CatalogSeries.getCurrentCatalogSeries());
                 appResDef.setCollectionObjDef(CollectionObjDef.getCurrentCollectionObjDef());
                 
                 log.debug("Adding2 "+getAppResDefAsString(appResDef));
@@ -638,8 +469,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 appResDef.setDisciplineType(discipline);
                 appResDef.setSpecifyUser(user);
                 
-                appResDef.setCatalogSeries(CatalogSeries.getCurrentCatalogSeries().size() > 0 ? CatalogSeries.getCurrentCatalogSeries().get(0) : null);
-                appResDef.setCollectionObjDef(CollectionObjDef.getCurrentCollectionObjDef());
+                appResDef.setCatalogSeries(catalogSeries);
+                appResDef.setCollectionObjDef(cod);
 
                 log.debug("Adding3 "+getAppResDefAsString(appResDef));
                 appResourceList.add(appResDef);
@@ -1057,7 +888,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     public PickListItemIFace getDefaultPickListItem(final String pickListName, final String title, final boolean ask)
     {
         PickListItemIFace dObj        = null;
-        CatalogSeries     catSeries   = CatalogSeries.getCurrentCatalogSeries().get(0);
+        CatalogSeries     catSeries   = CatalogSeries.getCurrentCatalogSeries();
         String            prefName    = (catSeries != null ? catSeries.getIdentityTitle() : "") + pickListName + "_DefaultId";
         AppPreferences    appPrefs    = AppPreferences.getRemote();
         String            idStr       = appPrefs.get(prefName, null);
@@ -1117,7 +948,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                                              final boolean ask, 
                                              boolean useAllItems)
     {
-        CatalogSeries    catSeries   = CatalogSeries.getCurrentCatalogSeries().get(0);
+        CatalogSeries    catSeries   = CatalogSeries.getCurrentCatalogSeries();
         FormDataObjIFace dObj        = null;
         String           prefName    = (catSeries != null ? catSeries.getIdentityTitle() : "") + prefPrefix + "_DefaultId";
         AppPreferences   appPrefs    = AppPreferences.getRemote();

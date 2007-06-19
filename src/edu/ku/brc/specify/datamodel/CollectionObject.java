@@ -106,7 +106,6 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     protected Set<AttributeIFace>           attrs;
     protected Set<Preparation>              preparations;
     protected Set<Determination>            determinations;
-    protected CollectionObjDef              collectionObjDef;
     protected Set<ProjectCollectionObject>  projectCollectionObjects;
     // protected Set<DeaccessionPreparation> deaccessionPreparations;
     protected Set<OtherIdentifier>          otherIdentifiers;
@@ -166,7 +165,6 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
         attrs                 = new HashSet<AttributeIFace>();
         preparations          = new HashSet<Preparation>();
         determinations        = new HashSet<Determination>();
-        collectionObjDef      = null;
         projectCollectionObjects = new HashSet<ProjectCollectionObject>();
         //deaccessionPreparations = new HashSet<DeaccessionPreparation>();
         otherIdentifiers      = new HashSet<OtherIdentifier>();
@@ -605,19 +603,6 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
 
     public void setDeterminations(Set<Determination> determinations) {
         this.determinations = determinations;
-    }
-
-    /**
-     *
-     */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "CollectionObjDefID", unique = false, nullable = true, insertable = true, updatable = true)
-    public CollectionObjDef getCollectionObjDef() {
-        return this.collectionObjDef;
-    }
-
-    public void setCollectionObjDef(CollectionObjDef collectionObjDef) {
-        this.collectionObjDef = collectionObjDef;
     }
 
     /**

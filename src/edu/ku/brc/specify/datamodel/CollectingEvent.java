@@ -63,30 +63,30 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
 
     // Fields    
 
-     protected Long collectingEventId;
-     protected String stationFieldNumber;
-     protected String method;
-     protected String verbatimDate;
-     protected Calendar startDate;
-     protected Short startDatePrecision;
-     protected String startDateVerbatim;
-     protected Calendar endDate;
-     protected Short endDatePrecision;
-     protected String endDateVerbatim;
-     protected Short startTime;
-     protected Short endTime;
-     protected String verbatimLocality;
-     protected Integer groupPermittedToView;
-     protected String remarks;
-     protected Integer visibility;
-     protected String visibilitySetBy;
-     protected Set<CollectionObject> collectionObjects;
-     protected Set<Collector> collectors;
-     protected Locality locality;
-     protected Stratigraphy stratigraphy;
-     protected CollectingTrip collectingTrip;
-     protected Set<AttributeIFace> attrs;
-     protected Set<Attachment> attachments;
+     protected Long                  collectingEventId;
+    protected String                stationFieldNumber;
+    protected String                method;
+    protected String                verbatimDate;
+    protected Calendar              startDate;
+    protected Short                 startDatePrecision;
+    protected String                startDateVerbatim;
+    protected Calendar              endDate;
+    protected Short                 endDatePrecision;
+    protected String                endDateVerbatim;
+    protected Short                 startTime;
+    protected Short                 endTime;
+    protected String                verbatimLocality;
+    protected Integer               groupPermittedToView;
+    protected String                remarks;
+    protected Integer               visibility;
+    protected String                visibilitySetBy;
+    protected Set<CollectionObject> collectionObjects;
+    protected Set<Collector>        collectors;
+    protected Locality              locality;
+    protected Stratigraphy          stratigraphy;
+    protected CollectingTrip        collectingTrip;
+    protected Set<AttributeIFace>   attrs;
+    protected Set<Attachment>       attachments;
      protected HabitatAttributes habitatAttributes;
 
 
@@ -308,7 +308,8 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     /**
      *      * Original statement (literal quotation) of the location of the CollectingEvent as given by the Collector.
      */
-    @Column(name = "VerbatimLocality", length=255, unique = false, nullable = true, insertable = true, updatable = true)
+    @Lob
+    @Column(name = "VerbatimLocality", length=2048, unique = false, nullable = true, insertable = true, updatable = true)
     public String getVerbatimLocality() {
         return this.verbatimLocality;
     }

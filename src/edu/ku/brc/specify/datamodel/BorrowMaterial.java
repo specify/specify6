@@ -38,6 +38,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -174,7 +175,8 @@ public class BorrowMaterial extends DataModelObjBase implements java.io.Serializ
     /**
      *      * Notes concerning the return of the material
      */
-    @Column(name = "OutComments", length=255, unique = false, nullable = true, insertable = true, updatable = true)
+    @Lob
+    @Column(name = "OutComments", length=1024, unique = false, nullable = true, insertable = true, updatable = true)
     public String getOutComments() {
         return this.outComments;
     }
@@ -186,7 +188,8 @@ public class BorrowMaterial extends DataModelObjBase implements java.io.Serializ
     /**
      *      * Notes concerning the receipt of the material
      */
-    @Column(name = "InComments", length=255, unique = false, nullable = true, insertable = true, updatable = true)
+    @Lob
+    @Column(name = "InComments", length=1024, unique = false, nullable = true, insertable = true, updatable = true)
     public String getInComments() {
         return this.inComments;
     }

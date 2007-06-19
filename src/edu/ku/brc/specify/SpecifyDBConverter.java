@@ -62,8 +62,8 @@ import edu.ku.brc.specify.tests.DataBuilder;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.ProgressFrame;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * Create more sample data, letting Hibernate persist it for us.
@@ -200,8 +200,8 @@ public class SpecifyDBConverter
      */
     protected static void convertDB(final String oldDatabaseName, final String databaseName) throws Exception
     {
-        boolean doAll            = true; // when converting
-        boolean startfromScratch = true; // when converting
+        boolean doAll            = true; 
+        boolean startfromScratch = true; 
 
         System.out.println("************************************************************");
         System.out.println("From "+oldDatabaseName+" to "+databaseName);
@@ -263,7 +263,6 @@ public class SpecifyDBConverter
         try
         {
         	GenericDBConversion.setShouldCreateMapTables(startfromScratch);
-
             GenericDBConversion.setShouldDeleteMapTables(false);
             
             frame.setOverall(0, 15);
@@ -323,11 +322,15 @@ public class SpecifyDBConverter
                 log.info("Converting Geologic Time Period.");
                 // GTP needs to be converted here so the stratigraphy conversion can use
                 // the IDs
-                boolean doGTP = true;
-                if( doGTP || doAll )
+                boolean doGTP = false;
+                if (doGTP || doAll )
                 {
                 	GeologicTimePeriodTreeDef treeDef = conversion.convertGTPDefAndItems();
                 	conversion.convertGTP(treeDef);
+                } else
+                {
+                    idMapperMgr.addTableMapper("geologictimeperiod", "GeologicTimePeriodID");
+                    idMapperMgr.mapForeignKey("Stratigraphy", "GeologicTimePeriodID", "GeologicTimePeriod", "GeologicTimePeriodID");
                 }
 
                 frame.incOverall();
@@ -352,7 +355,7 @@ public class SpecifyDBConverter
 
                 frame.setDesc("Converting CollectionObjectDefs.");
                 log.info("Converting CollectionObjectDefs.");
-                boolean convertCatalogSeriesDef = false;
+                boolean convertCatalogSeriesDef = true;
                 if (convertCatalogSeriesDef || doAll)
                 {
                     DataBuilder.getSession().beginTransaction();
@@ -366,6 +369,8 @@ public class SpecifyDBConverter
                     String           email            = initPrefs.getProperty("useragent.email", "rods@ku.edu");
                     String           userType         = initPrefs.getProperty("useragent.usertype", "CollectionManager");   
                     
+                    BasicSQLUtils.deleteAllRecordsFromTable(newConn, "usergroup");
+                    BasicSQLUtils.deleteAllRecordsFromTable(newConn, "specifyuser");
                     UserGroup userGroup = DataBuilder.createUserGroup("admin2");
                     
                     Criteria criteria = DataBuilder.getSession().createCriteria(Agent.class);
@@ -456,7 +461,7 @@ public class SpecifyDBConverter
 
                 frame.setDesc("Converting CollectionObjects");
                 log.info("Converting CollectionObjects");
-                boolean doCollectionObjects = false;
+                boolean doCollectionObjects = true;
                 if (doCollectionObjects || doAll)
                 {
                     if (true)

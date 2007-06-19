@@ -73,7 +73,6 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
     protected TaxonTreeDef              taxonTreeDef;
     protected Set<Locality>             localities;
     protected Set<AppResourceDefault>   appResourceDefaults;
-    protected Set<CollectionObject>     collectionObjects;
     protected Set<UserPermission>       userPermissions;
      
 
@@ -117,7 +116,6 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
         locationTreeDef = null;
         taxonTreeDef = null;
         localities = new HashSet<Locality>();
-        collectionObjects = new HashSet<CollectionObject>();
         appResourceDefaults = new HashSet<AppResourceDefault>();
     }
     // End Initializer
@@ -202,7 +200,7 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
     /**
      *
      */
-    @ManyToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="collectionObjDefItems")
+    @OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="collectionObjDef")
     @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<CatalogSeries> getCatalogSeries() {
         return this.catalogSeries;
@@ -258,7 +256,7 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
      */
     @ManyToOne
     @Cascade( {CascadeType.SAVE_UPDATE} )
-    @JoinColumn(name="GeologicTimePeriodTreeDefID", unique=true, nullable=false, insertable=true, updatable=true)
+    @JoinColumn(name="GeologicTimePeriodTreeDefID", unique=false, nullable=false, insertable=true, updatable=true)
     public GeologicTimePeriodTreeDef getGeologicTimePeriodTreeDef() {
         return this.geologicTimePeriodTreeDef;
     }
@@ -352,7 +350,7 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
     public void addCatalogSeries(final CatalogSeries catalogSeriesArg)
     {
         this.catalogSeries.add(catalogSeriesArg);
-        catalogSeriesArg.getCollectionObjDefItems().add(this);
+        catalogSeriesArg.setCollectionObjDef(this);
     }
 
     public void addAttributeDefs(final AttributeDef attributeDef)
@@ -367,11 +365,6 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
         localitiesArg.getCollectionObjDefs().add(this);
     }
     
-    public void addCollectionObject(final CollectionObject collectionObject)
-    {
-        this.collectionObjects.add(collectionObject);
-        collectionObject.setCollectionObjDef(this);
-    }
     public void addUserPermission(final UserPermission userPermission)
     {
         this.userPermissions.add(userPermission);
@@ -384,7 +377,7 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
     public void removeCatalogSeries(final CatalogSeries catalogSeriesArg)
     {
         this.catalogSeries.remove(catalogSeriesArg);
-        catalogSeriesArg.getCollectionObjDefItems().remove(this);
+        catalogSeriesArg.setCollectionObjDef(null);
     }
 
     public void removeAttributeDefs(final AttributeDef attributeDef)
@@ -392,12 +385,6 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
         this.attributeDefs.remove(attributeDef);
         attributeDef.setCollectionObjDef(null);
     }
-    public void removeCollectionObject(final CollectionObject collectionObject)
-    {
-        this.collectionObjects.remove(collectionObject);
-        collectionObject.setCollectionObjDef(null);
-    }
-    
     public void removeLocalities(final Locality localitiesArg)
     {
         this.localities.remove(localitiesArg);
@@ -439,23 +426,4 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
     {
         return 26;
     }
-
-    /**
-     * @return the collectionObjects
-     */
-    @OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="collectionObjDef")
-    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
-    public Set<CollectionObject> getCollectionObjects()
-    {
-        return this.collectionObjects;
-    }
-
-    /**
-     * @param collectionObjects the collectionObjects to set
-     */
-    public void setCollectionObjects(Set<CollectionObject> collectionObjects)
-    {
-        this.collectionObjects = collectionObjects;
-    }
-
 }
