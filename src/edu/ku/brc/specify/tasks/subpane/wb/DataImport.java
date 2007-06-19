@@ -23,6 +23,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.DataImportIFace.Status;
 public class DataImport
 {
     protected Vector<DataImportTruncation> truncations;
+    protected Vector<String>    messages;
     protected Status                     status = DataImportIFace.Status.None;
     // maximum length of text to be assigned to a workbench cell
 
@@ -57,6 +58,11 @@ public class DataImport
         return this.truncations;
     }
     
+    public Vector<String> getMessages()
+    {
+        return this.messages;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.wb.DataImportIFace#getStatus()
      */
@@ -69,6 +75,7 @@ public class DataImport
     {
         super();
         truncations = new Vector<DataImportTruncation>(10);
+        messages = new Vector<String>(10);
     }
     
 

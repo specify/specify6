@@ -17,6 +17,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -87,34 +88,54 @@ public class ImportDataFileInfo
      */
     protected void showModifiedData()
     {
-        JPanel mainPane = new JPanel(new BorderLayout());
-        JLabel msg = new JLabel(getResourceString("WB_TRUNCATIONS"));
-        msg.setFont(msg.getFont().deriveFont(Font.BOLD));
-        mainPane.add(msg, BorderLayout.NORTH);
-        String[] heads = new String[3];
-        String[][] vals = new String[importer.getTruncations().size()][3];
-        heads[0] = getResourceString("WB_ROW");
-        heads[1] = getResourceString("WB_COLUMN");
-        heads[2] = getResourceString("WB_TRUNCATED");
-        int row = 0;
-        for (DataImportTruncation trunc : importer.getTruncations())
+        if (importer.getTruncations().size() > 0)
         {
-            vals[row][0] = String.valueOf(trunc.getRow());
-            vals[row][1] = trunc.getColHeader();
-            if (vals[row][1].equals(""))
+            JPanel mainPane = new JPanel(new BorderLayout());
+            JLabel msg = new JLabel(getResourceString("WB_TRUNCATIONS"));
+            msg.setFont(msg.getFont().deriveFont(Font.BOLD));
+            mainPane.add(msg, BorderLayout.NORTH);
+            String[] heads = new String[3];
+            String[][] vals = new String[importer.getTruncations().size()][3];
+            heads[0] = getResourceString("WB_ROW");
+            heads[1] = getResourceString("WB_COLUMN");
+            heads[2] = getResourceString("WB_TRUNCATED");
+            int row = 0;
+            for (DataImportTruncation trunc : importer.getTruncations())
             {
-                vals[row][1] = String.valueOf(trunc.getCol()+1);
+                vals[row][0] = String.valueOf(trunc.getRow());
+                vals[row][1] = trunc.getColHeader();
+                if (vals[row][1].equals(""))
+                {
+                    vals[row][1] = String.valueOf(trunc.getCol() + 1);
+                }
+                vals[row++][2] = trunc.getExcluded();
             }
-            vals[row++][2] = trunc.getExcluded();
+
+            JTable mods = new JTable(vals, heads);
+
+            mainPane.add(new JScrollPane(mods), BorderLayout.CENTER);
+
+            CustomFrame cwin = new CustomFrame(getResourceString(MODIFIED_IMPORT_DATA),
+                    CustomFrame.OKHELP, mainPane);
+            cwin.setHelpContext("WorkbenchImportData"); //help context could be more specific
+            UIHelper.centerAndShow(cwin);
         }
-        
-        JTable mods = new JTable(vals, heads);
-        
-        mainPane.add(new JScrollPane(mods), BorderLayout.CENTER);
-        
-        CustomFrame cwin = new CustomFrame(getResourceString(MODIFIED_IMPORT_DATA), CustomFrame.OKHELP, mainPane);
-        cwin.setHelpContext("WorkbenchImportData"); //help context could be more specific
-        UIHelper.centerAndShow(cwin);
+        if (importer.getMessages().size() > 0)
+        {
+            JPanel mainPane = new JPanel(new BorderLayout());
+            JTextArea msgs = new JTextArea();
+            msgs.setRows(importer.getMessages().size());
+            for (String msg : importer.getMessages())
+            {
+                msgs.append(msg);
+                msgs.append("\n");
+            }
+            mainPane.add(msgs, BorderLayout.CENTER);
+            CustomFrame cwin = new CustomFrame(getResourceString(MODIFIED_IMPORT_DATA),
+                    CustomFrame.OKHELP, mainPane);
+            cwin.setHelpContext("WorkbenchImportData"); //help context could be more specific
+            UIHelper.centerAndShow(cwin);
+        }
     }
     
     /**
@@ -125,7 +146,7 @@ public class ImportDataFileInfo
     public DataImportIFace.Status loadData(final Workbench workbench)
     {
         DataImportIFace.Status result = importer.getData(workbench);
-        if (result == DataImportIFace.Status.Modified && importer.getTruncations().size() > 0) 
+        if (result == DataImportIFace.Status.Modified) 
         {
             showModifiedData();
         }

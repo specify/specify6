@@ -45,4 +45,9 @@ public interface DataImportIFace
      * @return info on cells truncated during last import
      */
     public Vector<DataImportTruncation> getTruncations();
+    
+    /**
+     * @return messages generated during last import
+     */
+    public Vector<String> getMessages();
 }

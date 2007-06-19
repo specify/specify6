@@ -203,7 +203,7 @@ public class XLSImport extends DataImport implements DataImportIFace
                     addGeoInfo(row, wbRow);
                     numRows++;
                 }
-                return status = this.truncations.size() == 0 ? DataImportIFace.Status.Valid : DataImportIFace.Status.Modified;
+                return status = this.truncations.size() == 0 && this.messages.size() == 0 ? DataImportIFace.Status.Valid : DataImportIFace.Status.Modified;
             } catch (IOException ex)
             {
                 log.error(ex);
@@ -229,6 +229,14 @@ public class XLSImport extends DataImport implements DataImportIFace
                     catch (IOException e)
                     {
                         UIRegistry.getStatusBar().setErrorMessage(e.getMessage());
+                        StringBuilder errMsg = new StringBuilder(getResourceString("WB_IMG_IMPORT_ERROR"));
+                        errMsg.append(": ");
+                        errMsg.append(getResourceString("WB_ROW"));
+                        errMsg.append(" ");
+                        errMsg.append(row.getRowNum());
+                        errMsg.append(", ");
+                        errMsg.append(imagePath);
+                        messages.add(errMsg.toString());
                     }
                 }
             }
