@@ -14,11 +14,15 @@
  */
 package edu.ku.brc.ui;
 
+
+import java.awt.Component;
 import java.awt.Graphics;
-import java.awt.Image;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
+import java.awt.Image;
 import java.net.URL;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -43,15 +47,16 @@ import edu.ku.brc.helpers.XMLHelper;
  * @author rods
  *
  */
-public class IconManager
+public class IconManager extends Component
 {
     private static final Logger log = Logger.getLogger(IconManager.class);
 
-    // Icon Size Enumerations
     public enum IconSize {
         Std32(32, false, false),
         Std24(24, false, false),
         Std16(16, false, false),
+       
+        
         Std8(8, false, false),
         Std32Fade(32, true, false),
         Std24Fade(24, true, false),
@@ -65,6 +70,8 @@ public class IconManager
         Std24FadeBW(24, true, true),
         Std16FadeBW(16, true, true),
         Std8FadeBW(8, true, true),
+        
+        
         NonStd(-1, false, false);
 
         IconSize(final int size, final boolean faded, final boolean blackWhite)
@@ -94,6 +101,7 @@ public class IconManager
 
     protected Class<?>                        appClass = null;
     protected Hashtable<String, IconEntry> entries = new Hashtable<String, IconEntry>();
+    
 
     /**
      *
@@ -127,8 +135,9 @@ public class IconManager
      * @param id the size of the icon
      * @return the icon that was created at the "id" size
      */
-    public static IconEntry register(final String iconName, final String fileName, final IconSize id)
+   public static IconEntry register(final String iconName, final String fileName, final IconSize id)
     {
+	   
         URL url = getImagePath(fileName);
 
         if (url == null)
@@ -138,38 +147,45 @@ public class IconManager
 
         ImageIcon icon = null;
         try
-        {
-            icon = new ImageIcon(url);
-
+        {	
+            icon = new ImageIcon(url);  
         } catch (NullPointerException ex)
         {
             log.error("Image at URL ["+url+"] couldn't be loaded.");
         }
-        
-        return icon != null ? register(iconName, icon, id) : null;
+       
+        return icon != null ? register(iconName, icon, url, id) : null;
+       
     }
+   
+   
 
     /**
      * Registers an icon (group or category), it creates an icon of "id" size and stores it
      * @param iconName the group name of icons of various sizes
+     * @param icon the icon to be stored
+     * @param path the URL of the icon
      * @param id the size of the icon
      * @return the icon that was created at the "id" size
      */
-    public static IconEntry register(final String iconName, final ImageIcon icon, final IconSize id)
+   public static IconEntry register(final String iconName, final ImageIcon icon, final URL path, final IconSize id)
     {
         if (icon != null)
         {
             IconEntry entry = new IconEntry(iconName);
-            entry.add(id, icon);
+    
+            entry.add(id, path);
             instance.entries.put(iconName, entry);
+        	
             return entry;
-
         }
         // else
         log.error("Can't register null icon name["+iconName+"] Size:"+id.toString());
         return null;
     }
+    
 
+    
     public static IconSize getIconSize(int size, boolean bw, boolean faded)
     {
         if (size != 32 && size != 24 && size != 16)
@@ -216,15 +232,16 @@ public class IconManager
     {
         if (icon != null)
         {
-            ImageIcon scaledIcon = new ImageIcon(icon.getImage().getScaledInstance(scaledIconSize.size(),
-                    scaledIconSize.size(), Image.SCALE_SMOOTH));
-            return scaledIcon;
-        }
+    		
+        	ImageIcon scaledIcon = new ImageIcon(instance.getFastScale(icon, iconSize, scaledIconSize));
+        	//ImageIcon scaledIcon = new ImageIcon(icon.getImage().getScaledInstance(scaledIconSize.size(),
+              //     scaledIconSize.size(), Image.SCALE_SMOOTH));
+        	return scaledIcon;	
+        } 
         // else
         log.error("Couldn't find icon [" + iconSize + "] to scale to [" + scaledIconSize + "]");
         return null;
     }
-
 
     /**
      * Returns an icon of a specified size
@@ -234,28 +251,32 @@ public class IconManager
      */
     public static ImageIcon getIcon(final String iconName, final IconSize id)
     {
+    	//original size icon
         ImageIcon icon = getIcon(iconName);
         if (icon == null)
         {
             return null;
         }
-        
+         
         icon = getScaledIcon(icon, null, id);
         return icon;
     }
     
     /**
-     * Gets an icon as it's "base" size or meaning its opriginal size.
+     * Gets an icon as it's "base" size or meaning its original size.
      * @param iconName the name of the icon
      * @return the un-sized icon
      */
     public static ImageIcon getIcon(final String iconName)
     {
+    	
         if (iconName == null)
         {
             throw new NullPointerException("icon name should not be null!");
         }
 
+        //create icon 
+        
         IconEntry entry = instance.entries.get(iconName);
         if (entry != null)
         {
@@ -294,6 +315,7 @@ public class IconManager
             if (root != null)
             {
                 Hashtable<String, String> aliases = new Hashtable<String, String>();
+                
                 List<?> boxes = root.selectNodes("/icons/icon");
                 for ( Iterator<?> iter = boxes.iterator(); iter.hasNext(); )
                 {
@@ -307,17 +329,22 @@ public class IconManager
                     if (StringUtils.isNotEmpty(alias))
                     {
                         aliases.put(name, alias);
-                        
+
                     } else if (sizes == null || sizes.length() == 0 || sizes.toLowerCase().equals("all"))
                     {
+                        
                         //log.info("["+name+"]["+sizes+"]["+file+"]");
-                        IconEntry entry = register(name, file, IconManager.IconSize.Std32);
+                    	//this is the cache of the icons, i want to just cache filename
+                        /*IconEntry entry = register(name, file, IconManager.IconSize.Std32);
                         if (entry != null)
                         {
-                            entry.addScaled(IconSize.Std32, IconSize.Std24);
-                            entry.addScaled(IconSize.Std32, IconSize.Std16);
-                        }
-
+                           entry.addScaled( IconSize.Std32, IconSize.Std24);
+                           entry.addScaled( IconSize.Std32, IconSize.Std16); 
+                        }*/
+                    	//---------do not need to addScaled, the image will scale when it is needed
+                    	
+                    	register(name, file, IconManager.IconSize.Std32);
+                    	
                     } else if (sizes.toLowerCase().equals("nonstd"))
                     {
                         register(name, file, IconSize.NonStd);
@@ -400,5 +427,51 @@ public class IconManager
         return getIcon(imageName, id);
     }
 
-
+   
+  
+    /**
+     * Gets a scaled icon and if it doesn't exist it creates one and scales it
+     * @param icon image to be scaled
+     * @param iconSize the icon size (Std)
+     * @param scaledIconSize the new scaled size in pixels
+     * @return the scaled icon
+     */
+    public Image getFastScale(final ImageIcon icon, final IconSize iconSize, final IconSize scaledIconSize)
+    {
+    	if(icon != null)
+    	{
+    		int width = scaledIconSize.size();
+    		int height = scaledIconSize.size();
+    				
+    		if((width < 0) || (height < 0))
+    		{	//image is nonstd, revert to original size
+    			width = icon.getIconWidth();
+    			height = icon.getIconHeight();
+    		}
+    		
+    		Image imgMemory = createImage(icon.getImage().getSource());
+    		//make sure all pixels in the image were loaded
+    		imgMemory = new ImageIcon(imgMemory).getImage();
+    		
+    		BufferedImage thumbImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+    		
+			Graphics2D    graphics2D = thumbImage.createGraphics();
+			graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, 
+										RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+			graphics2D.drawImage(imgMemory, 0, 0, 
+								width, 
+								height, null);
+			graphics2D.dispose();
+			
+			imgMemory = thumbImage;
+			return imgMemory;
+			
+    	}
+    	//else
+    	log.error("Couldn't find icon [" + iconSize + "] to scale to [" + scaledIconSize + "]");
+    	return null;
+    }
+ 
 }
+
+

@@ -12,8 +12,10 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
 package edu.ku.brc.ui;
 
+import java.net.URL;
 import java.util.Hashtable;
 
 import javax.swing.ImageIcon;
@@ -21,7 +23,7 @@ import javax.swing.ImageIcon;
 import edu.ku.brc.ui.IconManager.IconSize;
 
 /**
- * An entry in the IconCacheManager
+ * An entry in the IconManager
  *
  * @code_status Beta
  * 
@@ -29,12 +31,9 @@ import edu.ku.brc.ui.IconManager.IconSize;
  *
  */
 public class IconEntry
-{
-    //private static final Logger log = Logger.getLogger(IconManager.class);
-    
+{ 
     private String name;
-    private Hashtable<IconSize, ImageIcon> icons = new Hashtable<IconSize, ImageIcon>();
-    
+    private Hashtable<IconSize, URL> icons = new Hashtable<IconSize, URL>();
     /**
      * 
      * @param name the name of the icon entry
@@ -52,45 +51,41 @@ public class IconEntry
     public ImageIcon getIcon(final IconSize id)
     {
         //log.debug("Getting["+name+"]["+id.toString()+"]");
-        return icons.get(id);
+        return makeIcon(icons.get(id));
     }
     
     /**
-     * Adds an icon of a particular size
+     * Adds an icon URL of a particular size
      * @param id the IconSize
-     * @param icon the icon to be added
+     * @param path the URL of the icon to be added
      */
-    public void add(final IconSize id, final ImageIcon icon)
+    public void add(final IconSize id, final URL path)
     {
         //log.debug("Putting["+name+"]["+id.toString()+"]");
-        icons.put(id, icon);
+    	icons.put(id,path);
     }
 
-
-    /**
-     * Adds an icon of a particular size
-     * @param id the IconSize
-     * @param newId the new size
-     */
-    public void addScaled(final IconSize id, final IconSize newId)
+    /*
+    do not need addScaled, the image will scale when it is called. 
+    public void addScaled(final IconSize id, final IconSize newId)	
     {
         //log.debug("Putting["+name+"]["+id.toString()+"]");
         icons.put(newId, getScaledIcon(id, newId));
-    }
-
+    }*/
+    
+    
 
     /**
-     * Gets a scaled icon and if it doesn't exist it creates one and scales it
+     * Gets a scaled icon and ,if it doesn't exist it creates one and scales it
      * @param iconSize the icon size (Std)
      * @param scaledIconSize the new scaled size in pixels
      * @return the scaled icon
-     */
-    public ImageIcon getScaledIcon(final IconSize iconSize, final IconSize scaledIconSize)
+     */     
+   public ImageIcon getScaledIcon(final IconSize iconSize, final IconSize scaledIconSize)
     {
-        ImageIcon scaledIcon = IconManager.getScaledIcon(icons.get(iconSize), iconSize, scaledIconSize);
-        icons.put(scaledIconSize, scaledIcon);
-        return scaledIcon;
-
+	   ImageIcon scaledIcon = IconManager.getScaledIcon(makeIcon(icons.get(iconSize)), iconSize, scaledIconSize);
+      
+    	return scaledIcon;
     }
     
     public ImageIcon getIcon()
@@ -103,18 +98,18 @@ public class IconEntry
             }
             case 1:
             {
-                return icons.values().iterator().next();
+            	return makeIcon(icons.values().iterator().next());
             }
             default:
             {
-                ImageIcon icon = icons.get(IconSize.NonStd);
+                ImageIcon icon = makeIcon(icons.get(IconSize.NonStd));
                 if (icon!=null)
                 {
                     return icon;
                 }
                 for (IconSize size: IconSize.values())
                 {
-                    icon = icons.get(size);
+                	icon = makeIcon(icons.get(size));
                     if (icon!=null)
                     {
                         return icon;
@@ -135,5 +130,26 @@ public class IconEntry
         return name;
     }
     
+    /**
+     * Returns an icon from a given URL
+     * @param path the URL of the icon
+     * @return the icon from that path
+     */
+    public ImageIcon makeIcon(URL path)
+    {
+    	ImageIcon icon = new ImageIcon(path);
+    	return icon;
+    	
+    }
+    
+    /**
+     * Return URL
+     * @return Return URL
+     */
+    public URL getURL(final IconSize id)
+    {
+    	return icons.get(id);
+    }
+   
     
 }
