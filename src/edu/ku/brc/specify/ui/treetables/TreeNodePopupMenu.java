@@ -28,6 +28,11 @@ public class TreeNodePopupMenu extends JPopupMenu
 	protected JList list;
 	@SuppressWarnings("unchecked")
 	protected TreeTableViewer ttv;
+    protected JMenuItem delete;
+    protected JMenuItem find;
+    protected JMenuItem edit;
+    protected JMenuItem newChild;
+    protected JMenuItem subtree;
 	
 	/**
 	 *
@@ -38,28 +43,19 @@ public class TreeNodePopupMenu extends JPopupMenu
 	{
 		this.ttv = owner;
 		
-		JMenuItem subtree = new JMenuItem("Subtree");
-//		JMenuItem expand = new JMenuItem("Expand all descendants");
-		JMenuItem find = new JMenuItem("Find next");
-		JMenuItem edit = new JMenuItem("Edit...");
-		JMenuItem delete = new JMenuItem("Delete");
-		JMenuItem newChild = new JMenuItem("New child...");
-		
-		subtree.addActionListener(new ActionListener()
+		subtree = new JMenuItem("Subtree");
+        find = new JMenuItem("Find next");
+        edit = new JMenuItem("Edit...");
+        delete = new JMenuItem("Delete");
+        newChild = new JMenuItem("New child...");
+        
+        subtree.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent ae)
 			{
 				ttv.showSubtreeOfSelection(list);
 			}
 		});
-
-//		expand.addActionListener(new ActionListener()
-//		{
-//			public void actionPerformed(ActionEvent ae)
-//			{
-//				ttv.expandAllDescendantsOfSelection(list);
-//			}
-//		});
 
 		find.addActionListener(new ActionListener()
 		{
@@ -100,7 +96,6 @@ public class TreeNodePopupMenu extends JPopupMenu
 		});
 		
 		this.add(subtree);
-//		this.add(expand);
 		this.add(find);
 		this.add(edit);
 		this.add(delete);
@@ -116,4 +111,14 @@ public class TreeNodePopupMenu extends JPopupMenu
 	{
 		return list;
 	}
+    
+    public void setDeleteEnabled(boolean enable)
+    {
+        delete.setEnabled(enable);
+    }
+
+    public void setNewEnabled(boolean enable)
+    {
+        newChild.setEnabled(enable);
+    }
 }

@@ -53,7 +53,23 @@ public class TaxonBusRules extends BaseBusRules
     @Override
     public boolean okToDelete(Object dataObj)
     {
-        // TODO Auto-generated method stub
+        if (dataObj instanceof Taxon)
+        {
+            Taxon node = (Taxon)dataObj;
+            if (node.getDeterminations().isEmpty())
+            {
+                // now check all the children
+                for (Taxon child: node.getChildren())
+                {
+                    if (!okToDelete(child))
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+        
         return false;
     }
 

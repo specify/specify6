@@ -854,6 +854,10 @@ public class Specify extends JPanel implements DatabaseLoginListener
     		{
     			log.warn("Error while saving long term cache mapping.",e1);
     		}
+            
+            // clear the contents of the short term cache
+            log.info("Clearing the short term cache");
+            UIRegistry.getShortTermFileCache().clear();
     
             if (topFrame != null)
             {
@@ -1084,10 +1088,10 @@ public class Specify extends JPanel implements DatabaseLoginListener
             //    System.out.println("["+su.getName()+"]");
             //}
 
-            List list = session.getDataList(SpecifyUser.class, "name", "guest");
+            List<SpecifyUser> list = session.getDataList(SpecifyUser.class, "name", "guest");
             if (list.size() == 1)
             {
-                SpecifyUser user      = (SpecifyUser)list.get(0);
+                SpecifyUser user      = list.get(0);
                 Agent       userAgent = user.getAgent();
                 if (StringUtils.isNotEmpty(userNameStr))
                 {
@@ -1261,7 +1265,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
       }
       
       SwingUtilities.invokeLater(new Runnable() {
-          public void run()
+          @SuppressWarnings("synthetic-access")
+        public void run()
           {
     	      // Set App Name, MUST be done very first thing!
               UIRegistry.setAppName("Specify");              

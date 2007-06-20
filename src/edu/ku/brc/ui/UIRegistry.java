@@ -805,7 +805,7 @@ public class UIRegistry
         {
             try
             {
-                instance.shortTermCache = new FileCache("shortTermCache");
+                instance.shortTermCache = new FileCache();
             } catch (Exception ex)
             {
                 ex.printStackTrace();
@@ -1451,6 +1451,7 @@ public class UIRegistry
             setEnabled(false);
         }       
 
+        @SuppressWarnings("synthetic-access")
         public void actionPerformed(ActionEvent e)
         {
             log.debug("Ctrl-f hit from with UIRegistry - passing action onto the SearchReplacePanel");
@@ -1477,6 +1478,7 @@ public class UIRegistry
 
         /**
          */
+        @SuppressWarnings("synthetic-access")
         public void setSearchReplacePanel(SearchReplacePanel panel)
         {
             if (panel==null)log.error("Search panel is null but shouldn't be");

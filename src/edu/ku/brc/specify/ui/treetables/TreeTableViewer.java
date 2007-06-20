@@ -301,18 +301,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             }
         });
         
-        JButton toggle0 = new JButton(icon_toggle);
-        toggle0.setSize(20,20);
-        toggle0.setToolTipText("Toggle View Mode");
-        toggle0.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent ae)
-            {
-                toggleViewMode();
-            }
-        });
-
-        JButton syncViews0 = new JButton(icon_syncViews);
+        final JButton syncViews0 = new JButton(icon_syncViews);
         syncViews0.setSize(20,20);
         syncViews0.setToolTipText("Sync w/ Other View");
         syncViews0.addActionListener(new ActionListener()
@@ -322,7 +311,20 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 syncViewWithOtherView(lists[0]);
             }
         });
+        syncViews0.setEnabled(false);
         
+        JButton toggle0 = new JButton(icon_toggle);
+        toggle0.setSize(20,20);
+        toggle0.setToolTipText("Toggle View Mode");
+        toggle0.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                toggleViewMode();
+                syncViews0.setEnabled(mode == DUAL_VIEW_MODE);
+            }
+        });
+
         JButton newChild0 = new JButton(icon_newChild);
         newChild0.setSize(20,20);
         newChild0.setToolTipText("Add Child to Selection");
@@ -415,7 +417,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         {
             public void actionPerformed(ActionEvent ae)
             {
-                showSubtreeOfSelection(lists[0]);
+                showSubtreeOfSelection(lists[1]);
             }
         });
         
@@ -426,7 +428,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         {
             public void actionPerformed(ActionEvent ae)
             {
-                showWholeTree(lists[0]);
+                showWholeTree(lists[1]);
             }
         });
 
@@ -437,7 +439,18 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         {
             public void actionPerformed(ActionEvent ae)
             {
-                selectParentOfSelection(lists[0]);
+                selectParentOfSelection(lists[1]);
+            }
+        });
+        
+        final JButton syncViews1 = new JButton(icon_syncViews);
+        syncViews1.setSize(20,20);
+        syncViews1.setToolTipText("Sync w/ Other View");
+        syncViews1.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                syncViewWithOtherView(lists[1]);
             }
         });
         
@@ -449,20 +462,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             public void actionPerformed(ActionEvent ae)
             {
                 toggleViewMode();
+                syncViews1.setEnabled(mode == DUAL_VIEW_MODE);
             }
         });
 
-        JButton syncViews1 = new JButton(icon_syncViews);
-        syncViews1.setSize(20,20);
-        syncViews1.setToolTipText("Sync w/ Other View");
-        syncViews1.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent ae)
-            {
-                syncViewWithOtherView(lists[0]);
-            }
-        });
-        
         JButton newChild1 = new JButton(icon_newChild);
         newChild1.setSize(20,20);
         newChild1.setToolTipText("Add Child to Selection");
@@ -470,7 +473,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         {
             public void actionPerformed(ActionEvent ae)
             {
-                addChildToSelectedNode(lists[0]);
+                addChildToSelectedNode(lists[1]);
             }
         });
         addButtons[1] = newChild1;
@@ -482,7 +485,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         {
             public void actionPerformed(ActionEvent ae)
             {
-                editSelectedNode(lists[0]);
+                editSelectedNode(lists[1]);
             }
         });
 
@@ -493,7 +496,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         {
             public void actionPerformed(ActionEvent ae)
             {
-                deleteSelectedNode(lists[0]);
+                deleteSelectedNode(lists[1]);
             }
         });
         deleteButtons[1] = deleteNode1;
@@ -1122,15 +1125,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	protected void newTreeableSelected(ListSelectionEvent e)
 	{
 		TreeDataGhostDropJList sourceList = (TreeDataGhostDropJList)e.getSource();
-		T t = (T)sourceList.getSelectedValue();
-		if( t == null )
-		{
-			setStatusBarText(null);
-			return;
-		}
-		
-		setStatusBarText(t.getFullName());
+        T t = (T)sourceList.getSelectedValue();
 
+        // update the state of the 'delete' and 'add' buttons
         JButton addButton = null;
         JButton deleteButton = null;
         if (sourceList == lists[0])
@@ -1143,8 +1140,24 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             addButton = addButtons[1];
             deleteButton = deleteButtons[1];
         }
-        deleteButton.setEnabled(listModel.canDeleteNode(t));
-        addButton.setEnabled(listModel.canAddChildToNode(t));
+        // these calls should work even if t is null
+        boolean canDelete   = listModel.canDeleteNode(t);
+        boolean canAddChild = listModel.canAddChildToNode(t);
+        
+        deleteButton.setEnabled(canDelete);
+        addButton.setEnabled(canAddChild);
+        
+        popupMenu.setDeleteEnabled(canDelete);
+        popupMenu.setNewEnabled(canAddChild);
+        
+        String fullname = null;
+		if( t != null )
+		{
+            fullname = t.getFullName();
+		}
+		
+        // this will clear the status bar if nothing is selected or show the fullname if a node is selected
+		setStatusBarText(fullname);
 	}
 
 	/**

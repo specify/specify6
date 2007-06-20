@@ -202,7 +202,11 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
             return true;
         }
         
-        return busRule.okToDelete(o);
+        Session session = getNewSession(o);
+        boolean okToDelete = busRule.okToDelete(o);
+        session.close();
+        
+        return okToDelete;
     }
     
     /* (non-Javadoc)
@@ -298,6 +302,13 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
     public synchronized boolean canAddChildToNode(T node)
     {
         log.trace("enter");
+        
+        if (node == null)
+        {
+            log.trace("exit");
+            return false;
+        }
+        
         if (node.getDefinitionItem().getChild() != null)
         {
             log.trace("exit");
