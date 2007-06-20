@@ -768,7 +768,7 @@
             
             <desc><![CDATA[DeterminationStatus Data Entry Form]]></desc>
             <columnDef>p,3dlu,p,2dlu,p:g</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p</rowDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
                 <row>
@@ -779,8 +779,12 @@
                     <cell type="field" id="1" name="name" uitype="text" isrequired="true"/> 
                 </row>
                 <row>
-                    <cell type="label" labelfor="2" label="Remarks"/>
-                    <cell type="field" id="2" name="remarks" uitype="textarea" cols="50" colspan="3"/>
+                    <cell type="label" labelfor="2" label="Is Current"/>
+                    <cell type="field" id="2" name="isCurrent" uitype="checkbox" isrequired="true"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="Remarks"/>
+                    <cell type="field" id="3" name="remarks" uitype="textarea" cols="50" colspan="3"/>
                 </row>
             </rows>
         </viewdef>
@@ -814,7 +818,7 @@
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             
-            <desc><![CDATA[DeterminationStatus Data Entry Form]]></desc>
+            <desc><![CDATA[CollectionObjDef Data Entry Form]]></desc>
             <columnDef>p,3dlu,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>            
             
