@@ -562,9 +562,9 @@ public class BuildSampleDatabase
         // Determination Status (Must be done here)
         ////////////////////////////////
         log.info("Creating determinations status");
-        DeterminationStatus current    = createDeterminationStatus("Current","Test Status");
-        DeterminationStatus notCurrent = createDeterminationStatus("Not current","Test Status");
-        DeterminationStatus incorrect  = createDeterminationStatus("Incorrect","Test Status");
+        DeterminationStatus current    = createDeterminationStatus("Current","Test Status", true);
+        DeterminationStatus notCurrent = createDeterminationStatus("Not current","Test Status", false);
+        DeterminationStatus incorrect  = createDeterminationStatus("Incorrect","Test Status", false);
         
         dataObjects.add(current);
         dataObjects.add(notCurrent);

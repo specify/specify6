@@ -45,6 +45,7 @@ import javax.persistence.Transient;
 public class DeterminationStatus extends DataModelObjBase implements Serializable
 {
     protected Long               determinationStatusId;
+    protected Boolean            isCurrent;
     protected String             name;
     protected String             remarks;
     protected Set<Determination> determinations;
@@ -128,6 +129,23 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
     public void setName(String name)
     {
         this.name = name;
+    }
+
+    /**
+     * @return the isCurrent
+     */
+    @Column(name = "IsCurrent", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getIsCurrent()
+    {
+        return isCurrent;
+    }
+
+    /**
+     * @param isCurrent the isCurrent to set
+     */
+    public void setIsCurrent(Boolean isCurrent)
+    {
+        this.isCurrent = isCurrent;
     }
 
     @Lob

@@ -389,11 +389,12 @@ public class DataBuilder
         return colObj;
     }
 
-    public static DeterminationStatus createDeterminationStatus(final String name, final String remarks)
+    public static DeterminationStatus createDeterminationStatus(final String name, final String remarks, final boolean isCurrent)
     {
         DeterminationStatus status = new DeterminationStatus();
         status.initialize();
         status.setName(name);
+        status.setIsCurrent(isCurrent);
         status.setRemarks(remarks);
 
         persist(status);
