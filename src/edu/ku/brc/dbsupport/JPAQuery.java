@@ -60,7 +60,7 @@ public class JPAQuery implements CustomQuery
         // NOTE: This return true if it executed correctly
         inError = false;
         
-        Session session = null;
+        Session session = HibernateUtil.getNewSession();
         
         try
         {
@@ -86,6 +86,7 @@ public class JPAQuery implements CustomQuery
         } catch (Exception ex)
         {
             log.error(ex);
+            ex.printStackTrace();
             inError = true;
             
         } finally
