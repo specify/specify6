@@ -1,0 +1,1895 @@
+CREATE TABLE [dbo].[Accession] (
+	[AccessionID] [int] NOT NULL ,
+	[CollectionID] [int] NOT NULL ,
+	[Number] [nvarchar] (30) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[Status] [nvarchar] (30) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Type] [nvarchar] (30) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[VerbatimDate] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[DateAccessioned] [int] NULL ,
+	[DateReceived] [int] NULL ,
+	[Text1] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text2] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text3] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Number1] [float] NULL ,
+	[Number2] [float] NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[StatusID] [int] NULL ,
+	[TypeID] [int] NULL ,
+	[YesNo1] [smallint] NULL ,
+	[YesNo2] [smallint] NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[AccessionAgents] (
+	[AccessionAgentsID] [int] NOT NULL ,
+	[AccessionID] [int] NOT NULL ,
+	[AgentAddressID] [int] NOT NULL ,
+	[Role] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[RoleID] [int] NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[AccessionAuthorizations] (
+	[AccessionAuthorizationsID] [int] NOT NULL ,
+	[AccessionID] [int] NOT NULL ,
+	[PermitID] [int] NOT NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[Address] (
+	[AddressID] [int] NOT NULL ,
+	[Address] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[City] [nvarchar] (32) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[State] [nvarchar] (32) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Country] [nvarchar] (32) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Postalcode] [nvarchar] (32) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[Agent] (
+	[AgentID] [int] NOT NULL ,
+	[AgentType] [tinyint] NOT NULL ,
+	[FirstName] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[LastName] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[MiddleInitial] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Title] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Interests] [nvarchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Abbreviation] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Name] [nvarchar] (120) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[ParentOrganizationID] [int] NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimestampModified] [datetime] NOT NULL ,
+	[TimestampCreated] [datetime] NOT NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[AgentAddress] (
+	[AgentAddressID] [int] NOT NULL ,
+	[TypeOfAgentAddressed] [smallint] NULL ,
+	[AddressID] [int] NULL ,
+	[AgentID] [int] NULL ,
+	[OrganizationID] [int] NULL ,
+	[JobTitle] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Phone1] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Phone2] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Fax] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[RoomOrBuilding] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Email] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[URL] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[IsCurrent] [smallint] NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[Authors] (
+	[AuthorsID] [int] NOT NULL ,
+	[AgentID] [int] NOT NULL ,
+	[ReferenceWorkID] [int] NOT NULL ,
+	[Order] [smallint] NOT NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[BiologicalObjectAttributes] (
+	[BiologicalObjectAttributesID] [int] NOT NULL ,
+	[BiologicalObjectTypeID] [int] NOT NULL ,
+	[Sex] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Age] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Stage] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Weight] [float] NULL ,
+	[Length] [float] NULL ,
+	[GosnerStage] [tinyint] NULL ,
+	[SnoutVentLength] [float] NULL ,
+	[Activity] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[LengthTail] [float] NULL ,
+	[ReproductiveCondition] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Condition] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[LengthTarsus] [float] NULL ,
+	[LengthWing] [float] NULL ,
+	[LengthHead] [float] NULL ,
+	[LengthBody] [float] NULL ,
+	[LengthMiddleToe] [float] NULL ,
+	[LengthBill] [float] NULL ,
+	[TotalExposedCulmen] [float] NULL ,
+	[MaxLength] [float] NULL ,
+	[MinLength] [float] NULL ,
+	[LengthHindFoot] [float] NULL ,
+	[LengthForeArm] [float] NULL ,
+	[LengthTragus] [float] NULL ,
+	[LengthEar] [float] NULL ,
+	[EarFromNotch] [float] NULL ,
+	[Wingspan] [float] NULL ,
+	[LengthGonad] [float] NULL ,
+	[WidthGonad] [float] NULL ,
+	[LengthHeadBody] [float] NULL ,
+	[Width] [float] NULL ,
+	[HeightFinalWhorl] [float] NULL ,
+	[InsideHeightAperture] [float] NULL ,
+	[InsideWidthAperture] [float] NULL ,
+	[NumberWhorls] [smallint] NULL ,
+	[OuterLipThickness] [float] NULL ,
+	[Mantle] [float] NULL ,
+	[Height] [float] NULL ,
+	[Diameter] [float] NULL ,
+	[BranchingAt] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text1] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text2] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text3] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text4] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text5] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[SexID] [int] NULL ,
+	[StageID] [int] NULL ,
+	[YesNo1] [smallint] NULL ,
+	[YesNo2] [smallint] NULL ,
+	[YesNo3] [smallint] NULL ,
+	[Number1] [float] NULL ,
+	[Number2] [float] NULL ,
+	[Number3] [float] NULL ,
+	[Number4] [float] NULL ,
+	[Number5] [float] NULL ,
+	[Number6] [float] NULL ,
+	[Number7] [float] NULL ,
+	[Text6] [nvarchar] (100) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text7] [nvarchar] (100) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[YesNo4] [smallint] NULL ,
+	[YesNo5] [smallint] NULL ,
+	[YesNo6] [smallint] NULL ,
+	[YesNo7] [smallint] NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[BiologicalObjectRelation] (
+	[BiologicalObjectRelationID] [int] NOT NULL ,
+	[BiologicalObjectID] [int] NOT NULL ,
+	[RelatedBiologicalObjectID] [int] NOT NULL ,
+	[BiologicalObjectRelationTypeID] [int] NOT NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[BiologicalObjectRelationType] (
+	[BiologicalObjectRelationTypeID] [int] NOT NULL ,
+	[RelationshipName] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[LeftSideRoleName] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[RightSideRoleName] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[IsReflexive] [smallint] NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[Borrow] (
+	[BorrowID] [int] NOT NULL ,
+	[CollectionID] [int] NOT NULL ,
+	[InvoiceNumber] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[ReceivedDate] [int] NULL ,
+	[OriginalDueDate] [int] NULL ,
+	[DateClosed] [int] NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text1] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text2] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Number1] [float] NULL ,
+	[Number2] [float] NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Closed] [smallint] NULL ,
+	[YesNo1] [smallint] NULL ,
+	[YesNo2] [smallint] NULL ,
+	[CurrentDueDate] [int] NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[BorrowAgents] (
+	[BorrowAgentsID] [int] NOT NULL ,
+	[BorrowID] [int] NOT NULL ,
+	[AgentAddressID] [int] NOT NULL ,
+	[Role] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[RoleID] [int] NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[BorrowMaterial] (
+	[BorrowMaterialID] [int] NOT NULL ,
+	[BorrowID] [int] NOT NULL ,
+	[MaterialNumber] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[Description] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Quantity] [smallint] NULL ,
+	[OutComments] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[InComments] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[QuantityResolved] [smallint] NULL ,
+	[QuantityReturned] [smallint] NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[BorrowReturnMaterial] (
+	[BorrowReturnMaterialID] [int] NOT NULL ,
+	[BorrowMaterialID] [int] NOT NULL ,
+	[Date] [int] NULL ,
+	[Quantity] [smallint] NULL ,
+	[ReturnedByID] [int] NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[BorrowShipments] (
+	[BorrowShipmentsID] [int] NOT NULL ,
+	[BorrowID] [int] NOT NULL ,
+	[ShipmentID] [int] NOT NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[CatalogSeries] (
+	[CatalogSeriesID] [int] NOT NULL ,
+	[CollectionID] [int] NOT NULL ,
+	[SeriesName] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[CatalogSeriesPrefix] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[CatalogSeriesDefinition] (
+	[CatalogSeriesDefinitionID] [int] NOT NULL ,
+	[CatalogSeriesID] [int] NOT NULL ,
+	[ObjectTypeID] [int] NOT NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[CollectingEvent] (
+	[CollectingEventID] [int] NOT NULL ,
+	[BiologicalObjectTypeCollectedID] [int] NOT NULL ,
+	[LocalityID] [int] NULL ,
+	[StationFieldNumber] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Method] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[VerbatimDate] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[StartDate] [int] NULL ,
+	[EndDate] [int] NULL ,
+	[StartTime] [smallint] NULL ,
+	[EndTime] [smallint] NULL ,
+	[VerbatimLocality] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[GroupPermittedToView] [int] NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[MethodID] [int] NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[Collection] (
+	[CollectionID] [int] NOT NULL ,
+	[CollectionName] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[CollectionIdentifier] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[OrganizationID] [int] NULL ,
+	[Description] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text1] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text2] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Number1] [float] NULL ,
+	[Number2] [float] NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[YesNo1] [smallint] NULL ,
+	[YesNo2] [smallint] NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[CollectionObject] (
+	[CollectionObjectID] [int] NOT NULL ,
+	[DerivedFromID] [int] NULL ,
+	[ContainerID] [int] NULL ,
+	[CollectionObjectTypeID] [int] NULL ,
+	[FieldNumber] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[CollectingEventID] [int] NULL ,
+	[Description] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[PreparationMethod] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[ContainerType] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[ContainerTypeID] [int] NULL ,
+	[Text1] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text2] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Number1] [float] NULL ,
+	[Number2] [float] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[PreparationMethodID] [int] NULL ,
+	[YesNo1] [smallint] NULL ,
+	[YesNo2] [smallint] NULL ,
+	[Count] [int] NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[GroupPermittedToView] [int] NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[CollectionObjectCatalog] (
+	[CollectionObjectCatalogID] [int] NOT NULL ,
+	[CollectionObjectTypeID] [int] NOT NULL ,
+	[CatalogSeriesID] [int] NULL ,
+	[SubNumber] [int] NULL ,
+	[Name] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Modifier] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[AccessionID] [int] NULL ,
+	[CatalogerID] [int] NULL ,
+	[CatalogedDate] [int] NULL ,
+	[Location] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Deaccessioned] [smallint] NULL ,
+	[CatalogNumber] [float] NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[CollectionObjectCitation] (
+	[CollectionObjectCitationID] [int] NOT NULL ,
+	[ReferenceWorkID] [int] NOT NULL ,
+	[BiologicalObjectID] [int] NOT NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[CollectionObjectType] (
+	[CollectionObjectTypeID] [int] NOT NULL ,
+	[CollectionObjectTypeName] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Category] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[CollectionTaxonomyTypes] (
+	[CollectionTaxonomyTypesID] [int] NOT NULL ,
+	[CollectionID] [int] NOT NULL ,
+	[BiologicalObjectTypeID] [int] NOT NULL ,
+	[TaxonomyTypeID] [int] NOT NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[DisplaySubSpecificTaxaLevelIndicators] [int] NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[Collectors] (
+	[CollectorsID] [int] NOT NULL ,
+	[CollectingEventID] [int] NOT NULL ,
+	[AgentID] [int] NOT NULL ,
+	[Order] [int] NOT NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[DATAVIEWS] (
+	[ClassName] [nvarchar] (40) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[ClassDescription] [nvarchar] (40) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Description] [nvarchar] (40) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Template] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Name] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[Deaccession] (
+	[DeaccessionID] [int] NOT NULL ,
+	[CollectionID] [int] NOT NULL ,
+	[Type] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[DeaccessionNumber] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Date] [int] NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text1] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text2] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Number1] [float] NULL ,
+	[Number2] [float] NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TypeID] [int] NULL ,
+	[YesNo1] [smallint] NULL ,
+	[YesNo2] [smallint] NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[DeaccessionAgents] (
+	[DeaccessionAgentsID] [int] NOT NULL ,
+	[DeaccessionID] [int] NOT NULL ,
+	[AgentAddressID] [int] NOT NULL ,
+	[Role] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[RoleID] [int] NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[DeaccessionCollectionObject] (
+	[DeaccessionCollectionObjectID] [int] NOT NULL ,
+	[DeaccessionID] [int] NOT NULL ,
+	[CollectionObjectID] [int] NOT NULL ,
+	[Quantity] [smallint] NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[Determination] (
+	[DeterminationID] [int] NOT NULL ,
+	[Current] [bit] NOT NULL ,
+	[DeterminerID] [int] NULL ,
+	[TypeStatusName] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TaxonNameID] [int] NULL ,
+	[BiologicalObjectID] [int] NULL ,
+	[PreparationID] [int] NULL ,
+	[BiologicalObjectTypeID] [int] NOT NULL ,
+	[Date] [int] NULL ,
+	[Confidence] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Method] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[FeatureOrBasis] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text1] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text2] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Number1] [float] NULL ,
+	[Number2] [float] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TypeStatusNameID] [int] NULL ,
+	[ConfidenceID] [int] NULL ,
+	[MethodID] [int] NULL ,
+	[YesNo1] [smallint] NULL ,
+	[YesNo2] [smallint] NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[DeterminationCitation] (
+	[DeterminationCitationID] [int] NOT NULL ,
+	[ReferenceWorkID] [int] NOT NULL ,
+	[DeterminationID] [int] NOT NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[ExchangeIn] (
+	[ExchangeInID] [int] NOT NULL ,
+	[ExchangeDate] [int] NULL ,
+	[QuantityExchanged] [smallint] NULL ,
+	[CollectionID] [int] NOT NULL ,
+	[ReceivedFromOrganizationID] [int] NOT NULL ,
+	[CatalogedByID] [int] NOT NULL ,
+	[DescriptionOfMaterial] [nvarchar] (120) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text1] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text2] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Number1] [float] NULL ,
+	[Number2] [float] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[YesNo1] [smallint] NULL ,
+	[YesNo2] [smallint] NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[ExchangeOut] (
+	[ExchangeOutID] [int] NOT NULL ,
+	[ExchangeDate] [int] NULL ,
+	[QuantityExchanged] [smallint] NOT NULL ,
+	[CollectionID] [int] NOT NULL ,
+	[SentToOrganizationID] [int] NOT NULL ,
+	[CatalogedByID] [int] NOT NULL ,
+	[ShipmentID] [int] NOT NULL ,
+	[DescriptionOfMaterial] [nvarchar] (120) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text1] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text2] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Number1] [float] NULL ,
+	[Number2] [float] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[YesNo1] [smallint] NULL ,
+	[YesNo2] [smallint] NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[Geography] (
+	[GeographyID] [int] NOT NULL ,
+	[CurrentID] [int] NULL ,
+	[ContinentOrOcean] [nvarchar] (100) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Country] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[State] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[County] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[IslandGroup] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Island] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[WaterBody] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Drainage] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[FullGeographicName] [nvarchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[TimestampVersion] [smalldatetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[IsCurrent] [smallint] NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[GeologicTimeBoundary] (
+	[GeologicTimeBoundaryID] [int] NOT NULL ,
+	[Age] [real] NULL ,
+	[AgeUncertainty] [real] NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[TimestampVersion] [smalldatetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[GeologicTimePeriod] (
+	[GeologicTimePeriodID] [int] NOT NULL ,
+	[RankCode] [int] NULL ,
+	[RankName] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Name] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[UpperBoundaryID] [int] NULL ,
+	[LowerBoundaryID] [int] NULL ,
+	[Standard] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[TimestampVersion] [smalldatetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[GroupPersons] (
+	[GroupPersonsID] [int] NOT NULL ,
+	[GroupID] [int] NOT NULL ,
+	[MemberID] [int] NOT NULL ,
+	[Order] [smallint] NOT NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[Habitat] (
+	[HabitatID] [int] NOT NULL ,
+	[BiologicalObjectTypeCollectedID] [int] NOT NULL ,
+	[AirTempC] [float] NULL ,
+	[WaterTempC] [float] NULL ,
+	[WaterpH] [float] NULL ,
+	[Turbidity] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Clarity] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Salinity] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[SoilType] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[SoilPh] [float] NULL ,
+	[SoilTempC] [float] NULL ,
+	[SoilMoisture] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Slope] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Vegetation] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[HabitatType] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Current] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Substrate] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[SubstrateMoisture] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[HeightAboveGround] [float] NULL ,
+	[NearestNeighbor] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[MinDepth] [float] NULL ,
+	[MaxDepth] [float] NULL ,
+	[HostTaxonID] [int] NULL ,
+	[Text1] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text2] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Number1] [float] NULL ,
+	[Number2] [float] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[HabitatTypeID] [int] NULL ,
+	[YesNo1] [smallint] NULL ,
+	[YesNo2] [smallint] NULL ,
+	[Number3] [float] NULL ,
+	[Number4] [float] NULL ,
+	[Number5] [float] NULL ,
+	[Text3] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text4] [nvarchar] (100) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text5] [nvarchar] (100) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[YesNo3] [smallint] NULL ,
+	[YesNo4] [smallint] NULL ,
+	[YesNo5] [smallint] NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[Image] (
+	[ImageID] [int] NOT NULL ,
+	[MadeByID] [int] NULL ,
+	[MadeDate] [int] NULL ,
+	[CopyrightOwnerID] [int] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[ImageAgents] (
+	[ImageAgentsID] [int] NOT NULL ,
+	[ImageID] [int] NOT NULL ,
+	[AgentID] [int] NOT NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[ImageCollectionObjects] (
+	[ImageCollectionObjectsID] [int] NOT NULL ,
+	[ImageID] [int] NOT NULL ,
+	[CollectionlObjectID] [int] NOT NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[ImageLocalities] (
+	[ImageLocalitiesID] [int] NOT NULL ,
+	[ImageID] [int] NOT NULL ,
+	[LocalityID] [int] NOT NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[Journal] (
+	[JournalID] [int] NOT NULL ,
+	[JournalName] [nvarchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[JournalAbbreviation] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[Loan] (
+	[LoanID] [int] NOT NULL ,
+	[ShipmentID] [int] NULL ,
+	[CollectionID] [int] NOT NULL ,
+	[LoanNumber] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[LoanDate] [int] NULL ,
+	[CurrentDueDate] [int] NULL ,
+	[OriginalDueDate] [int] NULL ,
+	[DateClosed] [int] NULL ,
+	[Category] [tinyint] NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text1] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text2] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Number1] [float] NULL ,
+	[Number2] [float] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Closed] [smallint] NULL ,
+	[YesNo1] [smallint] NULL ,
+	[YesNo2] [smallint] NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[LoanAgents] (
+	[LoanAgentsID] [int] NOT NULL ,
+	[LoanID] [int] NOT NULL ,
+	[AgentAddressID] [int] NOT NULL ,
+	[Role] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[RoleID] [int] NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[LoanPhysicalObject] (
+	[LoanPhysicalObjectID] [int] NOT NULL ,
+	[PhysicalObjectID] [int] NULL ,
+	[LoanID] [int] NOT NULL ,
+	[Quantity] [smallint] NULL ,
+	[DescriptionOfMaterial] [nvarchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[OutComments] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[InComments] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[QuantityResolved] [smallint] NULL ,
+	[QuantityReturned] [smallint] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[LoanReturnPhysicalObject] (
+	[LoanReturnPhysicalObjectID] [int] NOT NULL ,
+	[LoanPhysicalObjectID] [int] NULL ,
+	[Date] [int] NULL ,
+	[Quantity] [smallint] NULL ,
+	[ReceivedByID] [int] NULL ,
+	[DeaccessionPhysicalObjectID] [int] NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[Locality] (
+	[LocalityID] [int] NOT NULL ,
+	[GeographyID] [int] NULL ,
+	[NamedPlace] [nvarchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[RelationToNamedPlace] [nvarchar] (120) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[LocalityName] [nvarchar] (120) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[BaseMeridian] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Range] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[RangeDirection] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Township] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TownshipDirection] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Section] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[SectionPart] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[VerbatimElevation] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[OriginalElevationUnit] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[MinElevation] [real] NULL ,
+	[MaxElevation] [real] NULL ,
+	[ElevationMethod] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[ElevationAccuracy] [real] NULL ,
+	[OriginalLatLongUnit] [int] NULL ,
+	[LatLongType] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Latitude1] [decimal](12, 10) NULL ,
+	[Longitude1] [decimal](13, 10) NULL ,
+	[Latitude2] [decimal](12, 10) NULL ,
+	[Longitude2] [decimal](13, 10) NULL ,
+	[LatLongMethod] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[LatLongAccuracy] [float] NULL ,
+	[Datum] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[GroupPermittedToView] [int] NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text1] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text2] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Number1] [float] NULL ,
+	[Number2] [float] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[ElevationMethodID] [int] NULL ,
+	[LatLongTypeID] [int] NULL ,
+	[LatLongMethodID] [int] NULL ,
+	[YesNo1] [smallint] NULL ,
+	[YesNo2] [smallint] NULL ,
+	[Lat1Text] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Lat2Text] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Long1Text] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Long2Text] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[NamedPlaceExtent] [float] NULL ,
+	[GeoRefAccuracyUnits] [nvarchar] (20) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[GeoRefDetRef] [nvarchar] (100) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[GeoRefDetDate] [int] NULL ,
+	[GeoRefDetBy] [int] NULL ,
+	[NoGeoRefBecause] [nvarchar] (100) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[GeoRefRemarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[GeoRefVerificationStatus] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[LocalityCitation] (
+	[LocalityCitationID] [int] NOT NULL ,
+	[ReferenceWorkID] [int] NOT NULL ,
+	[LocalityID] [int] NOT NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[Observation] (
+	[ObservationID] [int] NOT NULL ,
+	[BiologicalObjectID] [int] NOT NULL ,
+	[ObservationMethod] [nvarchar] (24) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Count] [smallint] NULL ,
+	[Description] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Activity] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text1] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text2] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Number1] [float] NULL ,
+	[Number2] [float] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[ObservationMethodID] [int] NULL ,
+	[YesNo1] [smallint] NULL ,
+	[YesNo2] [smallint] NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[OtherIdentifier] (
+	[OtherIdentifierID] [int] NOT NULL ,
+	[CollectionObjectID] [int] NOT NULL ,
+	[Identifier] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[Permit] (
+	[PermitID] [int] NOT NULL ,
+	[IssuerID] [int] NULL ,
+	[IssueeID] [int] NULL ,
+	[PermitNumber] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[Type] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[IssuedDate] [int] NULL ,
+	[StartDate] [int] NULL ,
+	[EndDate] [int] NULL ,
+	[RenewalDate] [int] NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text1] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text2] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Number1] [float] NULL ,
+	[Number2] [float] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TypeID] [int] NULL ,
+	[YesNo1] [smallint] NULL ,
+	[YesNo2] [smallint] NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[Preparation] (
+	[PreparationID] [int] NOT NULL ,
+	[PhysicalObjectTypeID] [int] NOT NULL ,
+	[PreparedByID] [int] NULL ,
+	[PreparedDate] [int] NULL ,
+	[Medium] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[MediumID] [int] NULL ,
+	[PartInformation] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[StartBoxNumber] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[EndBoxNumber] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[StartSlideNumber] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[EndSlideNumber] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[SectionOrientation] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[SectionWidth] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Size] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[URL] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Identifier] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[NestLining] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[NestMaterial] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[NestLocation] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[SetMark] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[CollectedEggCount] [int] NULL ,
+	[CollectedParasiteEggCount] [int] NULL ,
+	[FieldEggCount] [int] NULL ,
+	[FieldParasiteEggCount] [int] NULL ,
+	[EggIncubationStage] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[EggDescription] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[ParasiteTaxonNameID] [int] NULL ,
+	[Format] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[StorageInfo] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[PreparationType] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[PreparationTypeID] [int] NULL ,
+	[ContainerType] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[ContainerTypeID] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[DNAConcentration] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Volume] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text1] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text2] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Number1] [float] NULL ,
+	[Number2] [float] NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[NestCollected] [smallint] NULL ,
+	[YesNo1] [smallint] NULL ,
+	[YesNo2] [smallint] NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[Project] (
+	[ProjectID] [int] NOT NULL ,
+	[ProjectName] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[ProjectDescription] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[URL] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[StartDate] [int] NULL ,
+	[EndDate] [int] NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text1] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text2] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Number1] [float] NULL ,
+	[Number2] [float] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[YesNo1] [smallint] NULL ,
+	[YesNo2] [smallint] NULL ,
+	[ProjectAgentID] [int] NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[ProjectCollectionObjects] (
+	[ProjectCollectionObjectsID] [int] NOT NULL ,
+	[ProjectID] [int] NOT NULL ,
+	[CollectionObjectID] [int] NOT NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[REPORTS] (
+	[Number] [int] NULL ,
+	[Name] [nvarchar] (40) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[DataViewName] [nvarchar] (40) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Description] [nvarchar] (40) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Template] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[GroupPermittedToView] [int] NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[RaveProject] (
+	[ProjectName] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[RaveProjectBlob] [image] NULL ,
+	[ProjectDesc] [nvarchar] (200) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[ReferenceWork] (
+	[ReferenceWorkID] [int] NOT NULL ,
+	[JournalID] [int] NULL ,
+	[ContainingReferenceWorkID] [int] NULL ,
+	[ReferenceWorkType] [tinyint] NOT NULL ,
+	[Title] [nvarchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Publisher] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[PlaceOfPublication] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Date] [nvarchar] (25) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Volume] [nvarchar] (25) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Pages] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[URL] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[LibraryNumber] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text1] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text2] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Number1] [float] NULL ,
+	[Number2] [float] NULL ,
+	[TimestampCreated] [datetime] NOT NULL ,
+	[TimestampModified] [datetime] NOT NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[Published] [smallint] NULL ,
+	[YesNo1] [smallint] NULL ,
+	[YesNo2] [smallint] NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[Shipment] (
+	[ShipmentID] [int] NOT NULL ,
+	[ShipmentDate] [int] NULL ,
+	[ShipperID] [int] NULL ,
+	[ShipmentNumber] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[ShippedToID] [int] NULL ,
+	[ShippedByID] [int] NULL ,
+	[ShipmentMethod] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[NumberOfPackages] [smallint] NULL ,
+	[Weight] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[InsuredForAmount] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text1] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text2] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Number1] [float] NULL ,
+	[Number2] [float] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[ShipmentMethodID] [int] NULL ,
+	[YesNo1] [smallint] NULL ,
+	[YesNo2] [smallint] NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[Sound] (
+	[SoundID] [int] NOT NULL ,
+	[RecordedByID] [int] NULL ,
+	[RecordedDate] [int] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[SoundEventStorage] (
+	[SoundEventStorageID] [int] NOT NULL ,
+	[SoundEventID] [int] NULL ,
+	[SoundRecordingID] [int] NULL ,
+	[SoundRecordingPosition] [nvarchar] (100) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text1] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text2] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Number1] [float] NULL ,
+	[Number2] [float] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[YesNo1] [smallint] NULL ,
+	[YesNo2] [smallint] NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[Stratigraphy] (
+	[StratigraphyID] [int] NOT NULL ,
+	[GeologicTimePeriodID] [int] NULL ,
+	[SuperGroup] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Group] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Formation] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Member] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Bed] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text1] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text2] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Number1] [float] NULL ,
+	[Number2] [float] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[YesNo1] [smallint] NULL ,
+	[YesNo2] [smallint] NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[TaxonCitation] (
+	[TaxonCitationID] [int] NOT NULL ,
+	[ReferenceWorkID] [int] NULL ,
+	[TaxonNameID] [int] NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text1] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Text2] [nvarchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Number1] [float] NULL ,
+	[Number2] [float] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[YesNo1] [smallint] NULL ,
+	[YesNo2] [smallint] NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[TaxonName] (
+	[TaxonNameID] [int] NOT NULL ,
+	[ParentTaxonNameID] [int] NULL ,
+	[TaxonomyTypeID] [int] NOT NULL ,
+	[AcceptedID] [int] NULL ,
+	[TaxonomicUnitTypeID] [int] NULL ,
+	[TaxonomicSerialNumber] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TaxonName] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[UnitInd1] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[UnitName1] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[UnitInd2] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[UnitName2] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[UnitInd3] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[UnitName3] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[UnitInd4] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[UnitName4] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[FullTaxonName] [nvarchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[CommonName] [nvarchar] (100) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Author] [nvarchar] (100) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Source] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[GroupPermittedToView] [int] NULL ,
+	[EnvironmentalProtectionStatus] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Remarks] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[NodeNumber] [int] NULL ,
+	[HighestChildNodeNumber] [int] NULL ,
+	[TimestampCreated] [datetime] NULL ,
+	[TimestampModified] [datetime] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Accepted] [smallint] NULL ,
+	[RankID] [int] NULL ,
+	[GroupNumber] [nvarchar] (20) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[TaxonomicUnitType] (
+	[TaxonomicUnitTypeID] [int] NOT NULL ,
+	[Kingdom] [tinyint] NULL ,
+	[RankID] [smallint] NULL ,
+	[RankName] [nvarchar] (15) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[DirectParentRankID] [smallint] NULL ,
+	[RequiredParentRankID] [smallint] NULL ,
+	[TaxonomyTypeID] [int] NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[TaxonomyType] (
+	[TaxonomyTypeID] [int] NOT NULL ,
+	[KingdomID] [int] NULL ,
+	[TaxonomyTypeName] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TreeInfoUpToDate] [bit] NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSAccessionARole] (
+	[USYSAccessionARoleID] [int] NOT NULL ,
+	[InterfaceID] [int] NULL ,
+	[FieldSetSubTypeID] [int] NULL ,
+	[Role] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSAccessionStatus] (
+	[USYSAccessionStatusID] [int] NOT NULL ,
+	[InterfaceID] [int] NULL ,
+	[FieldSetSubTypeID] [int] NULL ,
+	[Status] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSAccessionType] (
+	[USYSAccessionTypeID] [int] NOT NULL ,
+	[InterfaceID] [int] NULL ,
+	[FieldSetSubTypeID] [int] NULL ,
+	[Type] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSActionHotKey] (
+	[ActionID] [int] NOT NULL ,
+	[ActionName] [varchar] (100) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[HotKey] [varchar] (25) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSAutoReports] (
+	[AutoReportName] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[ReportName] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[QueryName] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Parameters] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Prompts] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[DoPrompts] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[DefaultValues] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[DefaultValues2] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Operators] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSBiologicalSex] (
+	[USYSBiologicalSexID] [int] NOT NULL ,
+	[InterfaceID] [int] NULL ,
+	[FieldSetSubTypeID] [int] NULL ,
+	[Sex] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSBiologicalStage] (
+	[USYSBiologicalStageID] [int] NOT NULL ,
+	[InterfaceID] [int] NULL ,
+	[FieldSetSubTypeID] [int] NULL ,
+	[Stage] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSBorrowAgenRole] (
+	[USYSBorrowAgenRoleID] [int] NOT NULL ,
+	[InterfaceID] [int] NULL ,
+	[FieldSetSubTypeID] [int] NULL ,
+	[Role] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSCatalogNumber] (
+	[CatalogSeriesID] [int] NOT NULL ,
+	[CatalogNumber] [int] NOT NULL ,
+	[CollectionObjectID] [int] NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSCollObjPrepMeth] (
+	[USYSCollObjPrepMethID] [int] NOT NULL ,
+	[InterfaceID] [int] NULL ,
+	[FieldSetSubTypeID] [int] NULL ,
+	[PreparationMethod] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSCollectingGroupPermittedTo] (
+	[USYSCollectingGroupPermittedToID] [int] NOT NULL ,
+	[InterfaceID] [int] NULL ,
+	[FieldSetSubTypeID] [int] NULL ,
+	[GroupPermittedToView] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSCollectingMethod] (
+	[USYSCollectingMethodID] [int] NOT NULL ,
+	[InterfaceID] [int] NULL ,
+	[FieldSetSubTypeID] [int] NULL ,
+	[Method] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSCollectionContainerType] (
+	[USYSCollectionContainerTypeID] [int] NOT NULL ,
+	[InterfaceID] [int] NULL ,
+	[FieldSetSubTypeID] [int] NULL ,
+	[ContainerType] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSDataDefinition] (
+	[TableName] [nvarchar] (60) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TableDesc] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[FieldName] [nvarchar] (60) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[FieldDesc] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSDateMaskTypes] (
+	[TypeID] [int] NULL ,
+	[Name] [nvarchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Example] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSDeaccessioRole] (
+	[USYSDeaccessioRoleID] [int] NOT NULL ,
+	[InterfaceID] [int] NULL ,
+	[FieldSetSubTypeID] [int] NULL ,
+	[Role] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSDeaccessioType] (
+	[USYSDeaccessioTypeID] [int] NOT NULL ,
+	[InterfaceID] [int] NULL ,
+	[FieldSetSubTypeID] [int] NULL ,
+	[Type] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSDefaultQueryDef] (
+	[DefaultQueryDefID] [int] NOT NULL ,
+	[FieldSetType] [int] NOT NULL ,
+	[DefType] [char] (10) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[QueryType] [char] (10) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[QueryName] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[UserName] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSDeterminatConfidence] (
+	[USYSDeterminatConfidenceID] [int] NOT NULL ,
+	[InterfaceID] [int] NULL ,
+	[FieldSetSubTypeID] [int] NULL ,
+	[Confidence] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSDeterminatMethod] (
+	[USYSDeterminatMethodID] [int] NOT NULL ,
+	[InterfaceID] [int] NULL ,
+	[FieldSetSubTypeID] [int] NULL ,
+	[Method] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSDeterminatTypeStatusName] (
+	[USYSDeterminatTypeStatusNameID] [int] NOT NULL ,
+	[InterfaceID] [int] NULL ,
+	[FieldSetSubTypeID] [int] NULL ,
+	[TypeStatusName] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSDiGIR] (
+	[DiGIRName] [nvarchar] (250) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[DiGIRServerName] [nvarchar] (250) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[LastDiGIRDataUpdate] [datetime] NULL ,
+	[UpdateIntervalInDays] [int] NULL ,
+	[UpdateTimeInHours] [int] NULL ,
+	[CacheStructureUptodate] [tinyint] NULL ,
+	[DarwinCoreVersion] [nvarchar] (100) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSDiGIRConcept] (
+	[ColumnNumber] [int] NOT NULL ,
+	[DiGIRConceptName] [varchar] (200) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[DiGIRName] [nvarchar] (250) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSFieldTypes] (
+	[TypeID] [int] NULL ,
+	[Name] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSFullTextCatalog] (
+	[FullTextCatalogID] [int] NOT NULL ,
+	[CatalogName] [nvarchar] (100) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[TableName] [nvarchar] (100) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[DatabaseName] [nvarchar] (100) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[LinkedFieldSet] [int] NULL ,
+	[FieldsetSubTypeID] [int] NULL ,
+	[BasedOnDefaultForm] [tinyint] NULL ,
+	[KeyFlds] [varchar] (100) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[GeneratingQueryName] [nvarchar] (100) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Description] [nvarchar] (400) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[UpdateIntervalInHours] [int] NULL ,
+	[UpdateTimeInHours] [int] NULL ,
+	[DoLiveUpdates] [tinyint] NULL ,
+	[LastUpdate] [datetime] NULL ,
+	[CatalogClass] [int] NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSFullTextField] (
+	[FullTextFieldID] [int] NOT NULL ,
+	[FullTextCatalogID] [int] NOT NULL ,
+	[ColumnIndex] [int] NULL ,
+	[FieldName] [nvarchar] (100) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[Caption] [nvarchar] (100) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[SkipWords] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[PunctuationChars] [nvarchar] (400) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[WhitespaceChars] [nvarchar] (400) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Description] [nvarchar] (400) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Active] [tinyint] NOT NULL ,
+	[UpToDate] [tinyint] NULL ,
+	[NeedsToBeRegenerated] [tinyint] NULL ,
+	[NeedsToBeReIndexed] [tinyint] NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSFullTextUpdates] (
+	[FullTextFieldID] [int] NOT NULL ,
+	[KeyID] [int] NOT NULL ,
+	[ColumnContents] [int] NULL ,
+	[ColumnContentsText] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[UpdateTimeStamp] [datetime] NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSHabitatHabitatType] (
+	[USYSHabitatHabitatTypeID] [int] NOT NULL ,
+	[InterfaceID] [int] NULL ,
+	[FieldSetSubTypeID] [int] NULL ,
+	[HabitatType] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSLanguages] (
+	[LanguagesID] [int] NOT NULL ,
+	[DefaultPrefLang] [int] NOT NULL ,
+	[BackupLang] [int] NOT NULL ,
+	[Mode] [int] NOT NULL ,
+	[BlobOfLanguage] [image] NULL ,
+	[CtrlCapBlobOfLanguage] [image] NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSLatLongMaskTypes] (
+	[TypeID] [int] NULL ,
+	[Name] [nvarchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Example] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSLatLongType] (
+	[TypeID] [int] NULL ,
+	[Name] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSLoanAgentsRole] (
+	[USYSLoanAgentsRoleID] [int] NOT NULL ,
+	[InterfaceID] [int] NULL ,
+	[FieldSetSubTypeID] [int] NULL ,
+	[Role] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSLocalityElevationMethod] (
+	[USYSLocalityElevationMethodID] [int] NOT NULL ,
+	[InterfaceID] [int] NULL ,
+	[FieldSetSubTypeID] [int] NULL ,
+	[ElevationMethod] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSLocalityGroupPermittedToVi] (
+	[USYSLocalityGroupPermittedToViID] [int] NOT NULL ,
+	[InterfaceID] [int] NULL ,
+	[FieldSetSubTypeID] [int] NULL ,
+	[GroupPermittedToView] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSLocalityLatLongMethod] (
+	[USYSLocalityLatLongMethodID] [int] NOT NULL ,
+	[InterfaceID] [int] NULL ,
+	[FieldSetSubTypeID] [int] NULL ,
+	[LatLongMethod] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSMetaControl] (
+	[ControlID] [int] NOT NULL ,
+	[ControlSerialNumber] [int] NOT NULL ,
+	[ObjectID] [int] NOT NULL ,
+	[InterfaceID] [int] NOT NULL ,
+	[FieldSetSubTypeID] [int] NULL ,
+	[Required] [bit] NOT NULL ,
+	[Caption] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[ReadSecurity] [int] NULL ,
+	[WriteSecurity] [int] NULL ,
+	[Description] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[DefaultText] [nvarchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[DefaultNumber] [float] NULL ,
+	[MinNumber] [float] NULL ,
+	[MaxNumber] [float] NULL ,
+	[WidthNumberOrText] [tinyint] NULL ,
+	[PrecNumber] [tinyint] NULL ,
+	[Mask] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[DefaultDate] [int] NULL ,
+	[DateMaskType] [tinyint] NULL ,
+	[ButtonType] [tinyint] NULL ,
+	[RelatedTableOrder] [nvarchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[LookupTableName] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[DefaultIndex] [int] NULL ,
+	[PickListType] [tinyint] NULL ,
+	[RelatedSubTypeValues] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[DefaultLatLong] [real] NULL ,
+	[LatLongMaskType] [smallint] NULL ,
+	[DefaultCheckBox] [smallint] NULL ,
+	[MaxCount] [int] NULL ,
+	[ContinuationText] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[SeparatorText] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[SQLExpr] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[DisplayFormatStream] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[DisplayQueryStream] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[CountRelatedRecs] [bit] NOT NULL ,
+	[RelatedCountCaption] [nvarchar] (60) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[SumRelatedFieldName] [nvarchar] (60) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[SumRelatedCaption] [nvarchar] (60) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[AggregateColumns] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[ThemeName] [nvarchar] (128) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSMetaControlLayout] (
+	[ControlID] [int] NULL ,
+	[FullForm] [bit] NOT NULL ,
+	[ControlType] [smallint] NULL ,
+	[Visible] [bit] NOT NULL ,
+	[ShowCaptionOnForm] [bit] NOT NULL ,
+	[Top] [smallint] NULL ,
+	[Left] [smallint] NULL ,
+	[Width] [smallint] NULL ,
+	[Height] [smallint] NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSMetaDefaultControl] (
+	[ControlSerialNumber] [int] NOT NULL ,
+	[ObjectID] [int] NULL ,
+	[FieldSetSubTypeID] [int] NULL ,
+	[Required] [bit] NOT NULL ,
+	[Caption] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[ReadSecurity] [int] NULL ,
+	[WriteSecurity] [int] NULL ,
+	[Description] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[DefaultText] [nvarchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[DefaultNumber] [float] NULL ,
+	[MinNumber] [float] NULL ,
+	[MaxNumber] [float] NULL ,
+	[WidthNumberOrText] [tinyint] NULL ,
+	[PrecNumber] [tinyint] NULL ,
+	[Mask] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[DefaultDate] [int] NULL ,
+	[DateMaskType] [tinyint] NULL ,
+	[ButtonType] [tinyint] NULL ,
+	[RelatedTableOrder] [nvarchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[LookupTableName] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[DefaultIndex] [int] NULL ,
+	[PickListType] [tinyint] NULL ,
+	[RelatedSubTypeValues] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[DefaultLatLong] [real] NULL ,
+	[LatLongMaskType] [smallint] NULL ,
+	[DefaultCheckBox] [smallint] NULL ,
+	[MaxCount] [int] NULL ,
+	[ContinuationText] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[SeparatorText] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[SQLExpr] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[DisplayFormatStream] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[DisplayQueryStream] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[CountRelatedRecs] [bit] NOT NULL ,
+	[RelatedCountCaption] [nvarchar] (60) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[SumRelatedFieldName] [nvarchar] (60) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[SumRelatedCaption] [nvarchar] (60) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[AggregateColumns] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSMetaDefaultControlLayout] (
+	[ControlSerialNumber] [int] NULL ,
+	[FullForm] [bit] NOT NULL ,
+	[ControlType] [smallint] NULL ,
+	[Visible] [bit] NOT NULL ,
+	[ShowCaptionOnForm] [bit] NOT NULL ,
+	[Top] [smallint] NULL ,
+	[Left] [smallint] NULL ,
+	[Width] [smallint] NULL ,
+	[Height] [smallint] NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSMetaFieldSet] (
+	[FieldSetID] [int] NOT NULL ,
+	[FieldSetName] [nvarchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[FieldSetCaption] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[FieldSetFromClause] [nvarchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[SubTypeFieldName] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSMetaFieldSetSubType] (
+	[FieldSetSubTypeID] [int] NOT NULL ,
+	[FieldSetID] [int] NULL ,
+	[FieldValue] [tinyint] NULL ,
+	[TextForValue] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Fieldsetname] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSMetaInterface] (
+	[InterfaceID] [int] NOT NULL ,
+	[InterfaceName] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSMetaObject] (
+	[ObjectID] [int] NOT NULL ,
+	[ObjectType] [int] NULL ,
+	[ObjectName] [nvarchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[ObjectDescription] [nvarchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[FieldSetID] [int] NULL ,
+	[RelatedObjectID] [int] NULL ,
+	[CascadeDelete] [bit] NOT NULL ,
+	[RelatedFieldObjectID] [int] NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSMetaRelationshipSubTypeRule] (
+	[RelationshipSubTypeRuleID] [int] NOT NULL ,
+	[ObjectOneID] [int] NOT NULL ,
+	[ObjectOneTable] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[ObjectOneField] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[ObjectTwoID] [int] NOT NULL ,
+	[ObjectTwoTable] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[ObjectTwoField] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[ObjectOneSubTypeID] [int] NULL ,
+	[ObjectTwoSubTypeID] [int] NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSMetaSubTypeContents] (
+	[SubTypeContentsID] [int] NOT NULL ,
+	[FieldSetSubTypeID] [int] NULL ,
+	[ObjectName] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Required] [bit] NOT NULL ,
+	[ObjectType] [int] NULL ,
+	[RelatedObjectName] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[RelatedFieldSetName] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSMetaSubTypeField] (
+	[FieldSetName] [nvarchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[SubTypeFieldName] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSObservatioObservationMetho] (
+	[USYSObservatioObservationMethoID] [int] NOT NULL ,
+	[InterfaceID] [int] NULL ,
+	[FieldSetSubTypeID] [int] NULL ,
+	[ObservationMethod] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSPermitType] (
+	[USYSPermitTypeID] [int] NOT NULL ,
+	[InterfaceID] [int] NULL ,
+	[FieldSetSubTypeID] [int] NULL ,
+	[Type] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSPreparatioContainerType] (
+	[USYSPreparatioContainerTypeID] [int] NOT NULL ,
+	[InterfaceID] [int] NULL ,
+	[FieldSetSubTypeID] [int] NULL ,
+	[ContainerType] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSPreparatioMedium] (
+	[USYSPreparatioMediumID] [int] NOT NULL ,
+	[InterfaceID] [int] NULL ,
+	[FieldSetSubTypeID] [int] NULL ,
+	[Medium] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSPreparatioPreparationType] (
+	[USYSPreparatioPreparationTypeID] [int] NOT NULL ,
+	[InterfaceID] [int] NULL ,
+	[FieldSetSubTypeID] [int] NULL ,
+	[PreparationType] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSQuery] (
+	[QueryID] [int] NOT NULL ,
+	[FieldSetID] [int] NULL ,
+	[QueryType] [varchar] (300) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[QueryName] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Description] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TreeStructure] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Fields] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[SelectDistinct] [bit] NOT NULL ,
+	[SQLStatement] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[DataView] [image] NULL ,
+	[LastEditedBy] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[SimpleTaxa] [bit] NOT NULL ,
+	[AbbreviatedExpand] [bit] NOT NULL ,
+	[HideTree] [int] NULL ,
+	[UseSerProc] [int] NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSQueryInterfaces] (
+	[QueryID] [int] NULL ,
+	[InterfaceID] [int] NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSSecurityTypes] (
+	[TypeID] [int] NULL ,
+	[Name] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSShipmentShipmentMethod] (
+	[USYSShipmentShipmentMethodID] [int] NOT NULL ,
+	[InterfaceID] [int] NULL ,
+	[FieldSetSubTypeID] [int] NULL ,
+	[ShipmentMethod] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSSpecifyAdmin] (
+	[ID] [int] NOT NULL ,
+	[junk] [char] (10) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSSpecifyFullAccessUser] (
+	[ID] [int] NOT NULL ,
+	[junk] [char] (10) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSSpecifyGuest] (
+	[ID] [int] NOT NULL ,
+	[junk] [char] (10) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSSpecifyLimitedAccessUser] (
+	[ID] [int] NOT NULL ,
+	[junk] [char] (10) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSSpecifyManager] (
+	[ID] [int] NOT NULL ,
+	[junk] [char] (10) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSStatistics] (
+	[SpecimenCataloged] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[CountriesRepresented] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TaxaRepresented] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[SpecimenOnLoan] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[OpenLoans] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[Geopercentref] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TypeSpecimen] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[SpecimenCatWeek] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[SpecimenCatMonth] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[SpecimenCatYear] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TimeStamp] [datetime] NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSTaxonNameGroupPermittedToV] (
+	[USYSTaxonNameGroupPermittedToVID] [int] NOT NULL ,
+	[InterfaceID] [int] NULL ,
+	[FieldSetSubTypeID] [int] NULL ,
+	[GroupPermittedToView] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSTempRequired] (
+	[TableName] [nvarchar] (60) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[FieldName] [nvarchar] (60) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSUserPreferences] (
+	[UserName] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL ,
+	[CurrentInterface] [int] NOT NULL ,
+	[GroupPermittedToViewImportedData] [int] NOT NULL ,
+	[ShowInvalidTaxonEntries] [bit] NOT NULL ,
+	[NewRecordSetup] [int] NOT NULL ,
+	[PopupAutoClose] [int] NOT NULL ,
+	[ShowTaxaCounts] [bit] NOT NULL ,
+	[DefaultDateMaskType] [int] NULL ,
+	[DefaultLatLongMaskType] [int] NULL ,
+	[DefaultDateMaskSeparator] [nvarchar] (10) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[ShowWizardOnStartUp] [bit] NOT NULL ,
+	[ShowWizardInfoDialogs] [bit] NOT NULL ,
+	[ShowCompleteFilterExpansion] [bit] NOT NULL ,
+	[AutoAssignCatalogNumbers] [bit] NOT NULL ,
+	[DataEntryFormColorCombo] [smallint] NULL ,
+	[ReportDesignerEnabled] [bit] NOT NULL ,
+	[AutoUpdateTaxaTree] [bit] NOT NULL ,
+	[ITISServer] [nvarchar] (80) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[ADLServer] [nvarchar] (80) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[UseDefaultInternetBrowser] [bit] NOT NULL ,
+	[UseGridDisplayCancelOption] [bit] NOT NULL ,
+	[DefaultSerialProcessingStatus] [bit] NOT NULL ,
+	[ShowLatLongDir] [bit] NOT NULL ,
+	[SeriesDisplayFormat] [int] NULL ,
+	[CommandTimeout] [int] NULL ,
+	[PrefLang] [int] NULL ,
+	[PrefLang2] [int] NULL ,
+	[StatsFormDisplayInterval] [int] NULL ,
+	[CustomMenu] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[ShowPrntDupsDlg] [bit] NULL ,
+	[PreferredThemes] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[UserFilter] [nvarchar] (128) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSVersion] (
+	[VersionNumber] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[VersionName] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[VersionNotes] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[VersionCopyrightStuff] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSWebQueryForm] (
+	[QueryName] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[QueryForm] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[WebConfigTableName] [nvarchar] (100) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSWebQueryLog] (
+	[IPAddress] [varchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[QueryName] [varchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[ParamInfo] [varchar] (255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[RecordsReturned] [bigint] NULL ,
+	[LogDate] [datetime] NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[USYSWebQueryTemplate] (
+	[TemplateName] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[TemplateForm] [ntext] COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[WebAdmin] (
+	[CollectionTitle] [nvarchar] (200) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[CollectionImage] [nvarchar] (200) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[WebUser] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[WebPassword] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[ODBCName] [nvarchar] (50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL ,
+	[LogTable] [nvarchar] (80) COLLATE SQL_Latin1_General_CP1_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
