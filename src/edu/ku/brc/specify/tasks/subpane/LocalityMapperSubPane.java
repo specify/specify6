@@ -140,7 +140,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
 
         progressLabel.setText("Loading Locality Data and Maps...");
 
-        localityMapper.addTimingTarget(this);
+        //localityMapper.addTimingTarget(this);
 
         setBackground(Color.WHITE);
 
@@ -740,11 +740,6 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
         }
     }
 
-	public void timingEvent(long arg0, long arg1, float arg2)
-	{
-		this.repaint();
-	}
-
 	public void begin()
 	{
         // ignore
@@ -754,4 +749,14 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
 	{
         // ignore
 	}
+
+    public void repeat()
+    {
+        // ignore
+    }
+
+    public void timingEvent(float fraction)
+    {
+        this.repaint();
+    }
 }

@@ -26,10 +26,12 @@ import javax.swing.JLabel;
 
 import org.apache.commons.httpclient.HttpException;
 import org.apache.log4j.Logger;
-import org.jdesktop.animation.timing.Cycle;
-import org.jdesktop.animation.timing.Envelope;
-import org.jdesktop.animation.timing.TimingController;
+//import org.jdesktop.animation.timing.Cycle;
+//import org.jdesktop.animation.timing.Envelope;
+//import org.jdesktop.animation.timing.TimingController;
+import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTarget;
+import org.jdesktop.animation.timing.Animator.RepeatBehavior;
 
 import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.SimpleCircleIcon;
@@ -117,7 +119,7 @@ public class LocalityMapper implements TimingTarget
 	/** Percentage of animation that is completed. */
 	protected float				percent;
 	/** Animation manager. */
-	protected TimingController	animator;
+	protected Animator	animator;
 	/** Start location of the current animation. */
 	protected MapLocationIFace			animStartLoc;
 	/** End location of the current animation. */
@@ -156,21 +158,10 @@ public class LocalityMapper implements TimingTarget
         marker = new SimpleCircleIcon(8, Color.BLACK);
         currentLocMarker = new SimpleCircleIcon(8, Color.BLACK);
 
-		// setup the animation Cycle
-		int resolution = 0;
+		// setup the animation
 		int duration = 750;
-
-		Cycle cycle = new Cycle(duration,resolution);
-
-		// setup the animation Envelope
-		double repeatCount = 1;
-		int start = 0;
-		Envelope.RepeatBehavior repeatBehavior = Envelope.RepeatBehavior.REVERSE;
-		Envelope.EndBehavior endBehavior = Envelope.EndBehavior.HOLD;
-		Envelope env = new Envelope(repeatCount,start,repeatBehavior,endBehavior);
-
-		// setup the TimingController (the animation controller)
-		animator = new TimingController(cycle,env,this);
+        int repeatCount = 1;
+        animator = new Animator(duration,repeatCount,RepeatBehavior.REVERSE,this);
 		animator.setAcceleration(0.45f);
 		animator.setDeceleration(0.45f);
 	}
@@ -274,7 +265,7 @@ public class LocalityMapper implements TimingTarget
 				Point endPoint = markerLocations.get(endIndex);
 				double arrowLength = GraphicsUtils.distance(startPoint, endPoint);
 				int duration = (int)(arrowLength/arrowSpeed);
-				animator.getCycle().setDuration(duration);
+				animator.setDuration(duration);
 
 				// normalize the acceleration to be 0->full_speed in 500 ms
 				// deceleration is the same (full_speed->0 in 500 ms)
@@ -1284,10 +1275,7 @@ public class LocalityMapper implements TimingTarget
 		return icon;
 	}
 
-	/**
-	 * Sets the initial state of animation related fields.  This is
-	 * called by the TimingController just before an animation begins.
-	 *
+	/* (non-Javadoc)
 	 * @see org.jdesktop.animation.timing.TimingTarget#begin()
 	 */
 	public void begin()
@@ -1296,10 +1284,7 @@ public class LocalityMapper implements TimingTarget
 		this.animationInProgress = true;
 	}
 
-	/**
-	 * Sets the finalized state of animation related fields.  This is
-	 * called by the TimingController just after an animation ends.
-	 *
+	/* (non-Javadoc)
 	 * @see org.jdesktop.animation.timing.TimingTarget#end()
 	 */
 	public void end()
@@ -1307,18 +1292,23 @@ public class LocalityMapper implements TimingTarget
 		this.animationInProgress = false;
 	}
 
-	/**
-	 * Provides callback method for animation progress notifications.
-	 *
-	 * @see org.jdesktop.animation.timing.TimingTarget#timingEvent(long, long, float)
-	 * @param cycleElapsedTime the total time in milliseconds elapsed in the current <code>Cycle</code>
-	 * @param totalElapsedTime the total time in milliseconds elapsed since the start of the first cycle
-	 * @param percentDone the fraction of completion between the start and end of the current cycle. Note that on reversing cycles (<code>Envelope.RepeatBehavior.REVERSE</code>) the fraction decreases from 1.0 to 0 on backwards-running cycles.
-	 */
-	public void timingEvent(long cycleElapsedTime, long totalElapsedTime, float percentDone)
-	{
-		this.percent = percentDone;
-	}
+
+    /* (non-Javadoc)
+     * @see org.jdesktop.animation.timing.TimingTarget#repeat()
+     */
+    public void repeat()
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.jdesktop.animation.timing.TimingTarget#timingEvent(float)
+     */
+    public void timingEvent(float fraction)
+    {
+        this.percent = fraction;
+    }
 
 	/**
 	 * Defines requirements for objects that receive callbacks from a 

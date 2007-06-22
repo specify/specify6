@@ -264,5 +264,9 @@
     <icon name="LatLonRectTopLeft"     file="LatLonRectTopLeft.gif"     sizes="all"/>
     <icon name="LatLonRectBottomRight" file="LatLonRectBottomRight.gif" sizes="all"/>
     
+    <!-- Tree Node Find Widget -->
+    <icon name="Top"				file="RightSideUp.png"		sizes="all"/>
+    <icon name="Bottom"				file="LeftSideDown.png"		sizes="all"/>
+    <icon name="Both"				file="UpAndDown.png"		sizes="all"/>
     
 </icons>
