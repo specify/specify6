@@ -28,7 +28,6 @@ import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.treeutils.TreeDataService;
 import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.ui.treetables.TreeDefinitionEditor;
-import edu.ku.brc.specify.ui.treetables.TreeNodeFindWidget;
 import edu.ku.brc.specify.ui.treetables.TreeTableViewer;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
@@ -52,9 +51,6 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
     
     /** The menu items provided by this task. */
     protected List<MenuItemDesc> menuItems;
-    
-    /** The tree node searching widget provided by this task. */
-    protected TreeNodeFindWidget finderWidget;
     
     /** A list of {@link TreeTableViewer}s already visible that are handled by this task. */
     protected Vector<TreeTableViewer<T,D,I>> visibleTTVs;
@@ -111,10 +107,6 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
 	{
 		NavBox actions = new NavBox(getResourceString("Actions"));
 
-		NavBox find = new NavBox(getResourceString("FindNode"));
-		finderWidget = new TreeNodeFindWidget(this);
-		find.add((NavBoxItemIFace)(finderWidget));
-		
         final NavBox admin = new NavBox(getResourceString("AdministrationTasks"));
         ActionListener openTreeDefEd = new ActionListener()
         {
@@ -142,7 +134,6 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
         treeViewerNavBox = NavBox.createBtn(treeViewerLabel, "TreeViewer", IconManager.IconSize.Std16,openTreeDefEd);
 
         navBoxes.addElement(actions);
-		navBoxes.addElement(find);
         navBoxes.addElement(admin);
 	}
 	
@@ -188,16 +179,6 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
     	visibleTTVs.add(ttv);
     	addSubPaneToMgr(ttv);
     	return ttv;
-	}
-	
-	/**
-     * Returns a handle to the UI widget for performing a search on the tree nodes.
-     * 
-	 * @return the tree node searching UI widget.
-	 */
-	public TreeNodeFindWidget getFinderWidget()
-	{
-		return finderWidget;
 	}
 	
 	/* (non-Javadoc)
@@ -340,25 +321,4 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
     		visibleTreeDefEditors.remove(defEd);
     	}
 	}
-
-	/* (non-Javadoc)
-	 * @see edu.ku.brc.af.tasks.BaseTask#subPaneShown(edu.ku.brc.af.core.SubPaneIFace)
-	 */
-	@Override
-	public void subPaneShown(SubPaneIFace subPane)
-	{
-		// TODO Auto-generated method stub
-		super.subPaneShown(subPane);
-		
-		if(subPane instanceof TreeTableViewer)
-		{
-			finderWidget.setEnabled(true);
-		}
-		else
-		{
-			finderWidget.setEnabled(false);
-		}
-	}
-    
-    
 }
