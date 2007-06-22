@@ -134,7 +134,7 @@ public class AccessionAgent extends DataModelObjBase implements java.io.Serializ
     /**
      *      * Role the agent played in the accession process
      */
-    @Column(name = "Role", unique = false, nullable = false, insertable = true, updatable = true, length = 32)
+    @Column(name = "Role", unique = false, nullable = false, insertable = true, updatable = true, length = 50)
     public String getRole() {
         return this.role;
     }

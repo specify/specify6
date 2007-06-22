@@ -128,7 +128,7 @@ public class DeaccessionAgent extends DataModelObjBase implements java.io.Serial
     /**
      *      * Role agent played in deaccession
      */
-    @Column(name = "Role", unique = false, nullable = false, insertable = true, updatable = true, length = 32)
+    @Column(name = "Role", unique = false, nullable = false, insertable = true, updatable = true, length = 50)
     public String getRole() {
         return this.role;
     }
