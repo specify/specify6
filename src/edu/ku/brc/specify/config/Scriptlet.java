@@ -498,7 +498,7 @@ public class Scriptlet extends JRDefaultScriptlet
 	   if(dataSource instanceof WorkbenchJRDataSource){
 		   WorkbenchJRDataSource rowDataSource = (WorkbenchJRDataSource)dataSource;
 		   String isCurrent = rowDataSource.getFieldValue("isCurrent").toString();  
-		   System.out.println("iscurrent:"+isCurrent);
+		
 		   //assume 1 if isCurrent has no value
 		  if((isCurrent == "true") || (isCurrent == ""))
 		   {
@@ -526,7 +526,7 @@ public class Scriptlet extends JRDefaultScriptlet
 		  } 
 	   }
 	   //else
-	   System.out.println(label);
+	  
 	   return  label;
    }
    
