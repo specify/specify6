@@ -15,6 +15,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JTextPane;
+import javax.swing.WindowConstants;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
@@ -421,6 +422,7 @@ public class VersionCheckerTask extends BaseTask
     protected void displayUpdatesAvailablePopup(List<String> availableUpdates)
     {
         UpdatesAvailableDialog updatesPopup = new UpdatesAvailableDialog();
+        updatesPopup.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         updatesPopup.setAvailableUpdates(availableUpdates);
         updatesPopup.setAlwaysOnTop(true);
         updatesPopup.setSize(300,100);
