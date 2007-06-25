@@ -624,6 +624,11 @@ public class ImageFrame extends JFrame
             row.setImage(imageIndex, imageFile);
             wbPane.setChanged(true);
             
+            WorkbenchRowImage rowImage = row.getRowImage(imageIndex);
+            Vector<WorkbenchRowImage> needNewThumbs = new Vector<WorkbenchRowImage>();
+            needNewThumbs.add(rowImage);
+            generateThumbnailsInBackground(needNewThumbs);
+            
             // call showImage() to update the visible image
             showImage();
         }
