@@ -245,6 +245,7 @@ public class GraphicsUtils
         ImageIO.write(scaled, "jpeg", output);
 
         byte[] outputBytes = output.toByteArray();
+        output.close();
 
         return outputBytes;
     }

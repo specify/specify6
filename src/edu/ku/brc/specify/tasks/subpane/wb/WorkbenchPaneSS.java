@@ -2654,12 +2654,12 @@ public class WorkbenchPaneSS extends BaseSubPane
             if (rv == JOptionPane.YES_OPTION)
             {
                 saveObject();
-    
-            } else if (rv == JOptionPane.CANCEL_OPTION)
+            }
+            else if (rv == JOptionPane.CANCEL_OPTION)
             {
-                retStatus = false;
-                
-            } else if (rv == JOptionPane.NO_OPTION)
+                return false;
+            }
+            else if (rv == JOptionPane.NO_OPTION)
             {
                 // nothing
             }
@@ -2675,6 +2675,9 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             ((WorkbenchTask)task).closing(this);
             //UIRegistry.unregisterAction(workbench.getName()+"_AddRow");
+            
+            imageFrame.dispose();
+            mapFrame.dispose();
         }
         
         return retStatus;
@@ -2837,8 +2840,8 @@ public class WorkbenchPaneSS extends BaseSubPane
          * @see javax.swing.AbstractCellEditor#isCellEditable(java.util.EventObject)
          */
         @Override
-        public boolean isCellEditable(EventObject e) 
-        { 
+        public boolean isCellEditable(EventObject e)
+        {
             return true; 
         }
 

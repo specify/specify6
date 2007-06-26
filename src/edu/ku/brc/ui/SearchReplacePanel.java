@@ -264,7 +264,6 @@ public class SearchReplacePanel extends JPanel
         cancelButton.setIcon(IconManager.getIcon("Close"));
         cancelButton.setMargin(new Insets(0, 0, 0, 0));
         cancelButton.setBorder(null);
-
         findLabel = new JLabel(getResourceString("FIND") + ": ", SwingConstants.RIGHT);
 
         nextButton = new JButton(getResourceString("NEXT"));//, new ImageIcon(Specify.class.getResource("images/down.png")));

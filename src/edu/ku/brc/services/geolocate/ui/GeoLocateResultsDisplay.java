@@ -16,7 +16,6 @@ import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -334,21 +333,5 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener
             return null;
         }
         
-    }
-    
-    public static void main(String[] args)
-    {
-        JFrame f = new JFrame();
-        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
-        GeorefResultSet resSet = GeoLocate.getGeoLocateResults("US", "LA", "Tangipahoa Parish", "Tangipahoa R. approx. 1 mi. E of Independence, LA on bridge of Highway 40");
-        
-        GeoLocateResultsDisplay geoLocateResultsDisplay = new GeoLocateResultsDisplay();
-        geoLocateResultsDisplay.setGeoLocateQueryAndResults("Tangipahoa R. approx. 1 mi. E of Independence, LA on bridge of Highway 40", "Tangipahoa Parish", "LA", "US", resSet);
-        f.add(geoLocateResultsDisplay);
-        
-        f.pack();
-        
-        f.setVisible(true);
     }
 }

@@ -8,21 +8,16 @@ package edu.ku.brc.services.mapping;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.List;
 import java.util.Vector;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 
 import org.apache.commons.httpclient.HttpException;
 import org.apache.log4j.Logger;
@@ -1375,61 +1370,61 @@ public class LocalityMapper implements TimingTarget
     }
 
     
-    // I commented out this code so it doesn't get compiled in.  However, if I ever need to come back and retest this class, I'll need this again.
-    public static void main(String[] args)
-    {
-        // some test points
-//        SimpleMapLocation l1 = new SimpleMapLocation(38.877,-94.871,null,null);
-//        SimpleMapLocation l2 = new SimpleMapLocation(38.875,-94.875,null,null);
-//        SimpleMapLocation l3 = new SimpleMapLocation(38.879,-94.877,null,null);
-//        SimpleMapLocation l4 = new SimpleMapLocation(38.871,-94.879,null,null);
-
-        SimpleMapLocation l1 = new SimpleMapLocation(38.662,-95.574,null,null);
-//        SimpleMapLocation l2 = new SimpleMapLocation(38.875,-94.875,null,null);
-//        SimpleMapLocation l3 = new SimpleMapLocation(38.879,-94.877,null,null);
-//        SimpleMapLocation l4 = new SimpleMapLocation(38.871,-94.879,null,null);
-
-        LocalityMapper lm = new LocalityMapper();
-        lm.addLocationAndLabel(l1, null);
-//        lm.addLocationAndLabel(l2, null);
-//        lm.addLocationAndLabel(l3, null);
-//        lm.addLocationAndLabel(l4, null);
-        lm.setShowArrows(false);
-        lm.setDotColor(Color.YELLOW);
-     
-        JFrame f = new JFrame();
-        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        final JLabel mapLabel = new JLabel();
-        int w = 400;
-        int h = 250;
-        Dimension dimension = new Dimension(w,h);
-        mapLabel.setSize(dimension);
-        mapLabel.setPreferredSize(dimension);
-        f.add(mapLabel);
-        
-        lm.setMaxMapWidth(w);
-        lm.setMaxMapHeight(h);
-
-        MapperListener l = new MapperListener()
-        {
-            public void exceptionOccurred(Exception e)
-            {
-                final StringWriter result = new StringWriter();
-                final PrintWriter printWriter = new PrintWriter(result);
-                e.printStackTrace(printWriter);
-
-                mapLabel.setText("<html><pre> " + result.toString() + "</pre></html>");
-            }
-            public void mapReceived(Icon map)
-            {
-                mapLabel.setIcon(map);
-            }
-        };
-        
-        f.pack();
-
-        lm.getMap(l);
-        
-        f.setVisible(true);
-    }
+//    // I commented out this code so it doesn't get compiled in.  However, if I ever need to come back and retest this class, I'll need this again.
+//    public static void main(String[] args)
+//    {
+//        // some test points
+////        SimpleMapLocation l1 = new SimpleMapLocation(38.877,-94.871,null,null);
+////        SimpleMapLocation l2 = new SimpleMapLocation(38.875,-94.875,null,null);
+////        SimpleMapLocation l3 = new SimpleMapLocation(38.879,-94.877,null,null);
+////        SimpleMapLocation l4 = new SimpleMapLocation(38.871,-94.879,null,null);
+//
+//        SimpleMapLocation l1 = new SimpleMapLocation(38.662,-95.574,null,null);
+////        SimpleMapLocation l2 = new SimpleMapLocation(38.875,-94.875,null,null);
+////        SimpleMapLocation l3 = new SimpleMapLocation(38.879,-94.877,null,null);
+////        SimpleMapLocation l4 = new SimpleMapLocation(38.871,-94.879,null,null);
+//
+//        LocalityMapper lm = new LocalityMapper();
+//        lm.addLocationAndLabel(l1, null);
+////        lm.addLocationAndLabel(l2, null);
+////        lm.addLocationAndLabel(l3, null);
+////        lm.addLocationAndLabel(l4, null);
+//        lm.setShowArrows(false);
+//        lm.setDotColor(Color.YELLOW);
+//     
+//        JFrame f = new JFrame();
+//        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        final JLabel mapLabel = new JLabel();
+//        int w = 400;
+//        int h = 250;
+//        Dimension dimension = new Dimension(w,h);
+//        mapLabel.setSize(dimension);
+//        mapLabel.setPreferredSize(dimension);
+//        f.add(mapLabel);
+//        
+//        lm.setMaxMapWidth(w);
+//        lm.setMaxMapHeight(h);
+//
+//        MapperListener l = new MapperListener()
+//        {
+//            public void exceptionOccurred(Exception e)
+//            {
+//                final StringWriter result = new StringWriter();
+//                final PrintWriter printWriter = new PrintWriter(result);
+//                e.printStackTrace(printWriter);
+//
+//                mapLabel.setText("<html><pre> " + result.toString() + "</pre></html>");
+//            }
+//            public void mapReceived(Icon map)
+//            {
+//                mapLabel.setIcon(map);
+//            }
+//        };
+//        
+//        f.pack();
+//
+//        lm.getMap(l);
+//        
+//        f.setVisible(true);
+//    }
 }

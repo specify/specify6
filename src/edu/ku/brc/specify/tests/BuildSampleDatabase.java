@@ -88,6 +88,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
@@ -886,7 +887,7 @@ public class BuildSampleDatabase
         }
         
         ////////////////////////////////
-        // Workbeanch
+        // Workbench
         ////////////////////////////////
         
         // setup a template and its mapping items
@@ -978,6 +979,79 @@ public class BuildSampleDatabase
             }
         }
         
+        // create a workbench that uses the old, single-image capabilities
+        Workbench         workBench2  = createWorkbench(user, name + " (pre-conversion)", "These are the remarks", "field_notebook.cvs", wbTemplate);
+        dataObjects.add(workBench2);
+
+        // create a bunch of rows for the workbench
+        for (int i = 1; i <= 14; ++i)
+        {
+            WorkbenchRow wbRow = workBench2.addRow();
+            WorkbenchDataItem wbdi0 = createWorkbenchDataItem(wbRow, "RS-10" + i, 0);
+            
+            // just to make the dates look a little random
+            int date = (i*547) % 31 + 1;
+            String dateStr = "0" + Integer.toString(date);
+            dateStr = dateStr.substring(dateStr.length()-2);
+            WorkbenchDataItem wbdi1 = createWorkbenchDataItem(wbRow, "03/" + dateStr + "/2007", 1);
+            WorkbenchDataItem wbdi2 = createWorkbenchDataItem(wbRow, "CN-10" + i, 2);
+            
+            String boolValAsStr = null;
+            switch (i % 3)
+            {
+                case 0:
+                {
+                    boolValAsStr = "true";
+                    break;
+                }
+                case 1:
+                {
+                    boolValAsStr = "false";
+                    break;
+                }
+                case 2:
+                {
+                    boolValAsStr = "";
+                    break;
+                }
+            }
+            boolValAsStr = "";
+            WorkbenchDataItem wbdi3 = createWorkbenchDataItem(wbRow, boolValAsStr, 3);
+            
+            WorkbenchRowImage wbRowImage = null;
+            
+            File f = new File("demo_files" + File.separator + "card" + i + (i == 2 ? ".png" : ".jpg"));
+            if (f.exists())
+            {
+                try
+                {
+                    // NOTE: this is not scaling the images to the proper sizes.  Since this is just sample DB/test code, this isn't a problem.
+                    byte[] imageData = FileUtils.readFileToByteArray(f);
+                    wbRow.setCardImageData(imageData);
+                    wbRow.setCardImageFullPath(f.getAbsolutePath());
+                }
+                catch (IOException e)
+                {
+                    log.error("Unable to add card image to workbench row", e);
+                }
+            }
+
+            dataObjects.add(wbRow);
+            dataObjects.add(wbdi0);
+            dataObjects.add(wbdi1);
+            dataObjects.add(wbdi2);
+            if (wbRowImage != null)
+            {
+                dataObjects.add(wbRowImage);
+            }
+            
+            // since some of these values will be "", the data item might be null
+            if (wbdi3 != null)
+            {
+                dataObjects.add(wbdi3);
+            }
+        }
+
         
         frame.setProcess(++createStep);
                

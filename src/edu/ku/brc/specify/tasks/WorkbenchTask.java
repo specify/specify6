@@ -17,6 +17,7 @@ package edu.ku.brc.specify.tasks;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Frame;
@@ -31,6 +32,7 @@ import java.sql.Statement;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -90,6 +92,7 @@ import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
+import edu.ku.brc.specify.datamodel.WorkbenchRowImage;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.exporters.ExportFileConfigurationFactory;
@@ -1558,7 +1561,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             
             // Make sure we have a session but use an existing one if it is passed in
             DataProviderSessionIFace tmpSession = session;
-            if (session == null)
+            if (tmpSession == null)
             {
                 tmpSession = DataProviderFactory.getInstance().createSession();
             }
@@ -1568,7 +1571,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             final DataProviderSessionIFace finiSession = tmpSession;
             final SwingWorker worker = new SwingWorker()
             {
-                 @SuppressWarnings("synthetic-access")
+                @SuppressWarnings("synthetic-access")
                 @Override
                 public Object construct()
                 {
@@ -1580,10 +1583,55 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                          }
                          
                          workbench.forceLoad();
+                         
+                         // do the conversion code right here!
+                         boolean convertedAnImage = false;
+                         Set<WorkbenchRow> rows = workbench.getWorkbenchRows();
+                         if (rows != null)
+                         {
+                             for (WorkbenchRow row: rows)
+                             {
+                                 // move any single images over to the wb row image table
+                                 Set<WorkbenchRowImage> rowImages = row.getWorkbenchRowImages();
+                                 if (rowImages == null)
+                                 {
+                                     rowImages = new HashSet<WorkbenchRowImage>();
+                                     row.setWorkbenchRowImages(rowImages);
+                                 }
+                                 if (row.getCardImageFullPath() != null && row.getCardImageData() != null && row.getCardImageData().length > 0)
+                                 {
+                                     // create the WorkbenchRowImage record
+                                     WorkbenchRowImage rowImage = new WorkbenchRowImage();
+                                     rowImage.initialize();
+                                     rowImage.setCardImageData(row.getCardImageData());
+                                     rowImage.setCardImageFullPath(row.getCardImageFullPath());
+                                     rowImage.setImageOrder(0);
+                                     
+                                     // clear the fields holding the single-image data
+                                     row.setCardImageData(null);
+                                     row.setCardImageFullPath(null);
 
+                                     // connect the image and the row
+                                     rowImage.setWorkbenchRow(row);
+                                     rowImages.add(rowImage);
+                                     
+                                     convertedAnImage = true;
+                                 }
+                             }
+                         }
+                         
                          WorkbenchPaneSS workbenchPane = new WorkbenchPaneSS(workbench.getName(), thisTask, workbench, showImageView);
                          addSubPaneToMgr(workbenchPane);
-                         
+
+                         if (convertedAnImage)
+                         {
+                             Component topFrame = UIRegistry.get(UIRegistry.TOPFRAME);
+                             String message     = getResourceString("WB_DATASET_IMAGE_CONVERSION_NOTIFICATION");
+                             String msgTitle    = getResourceString("WB_DATASET_IMAGE_CONVERSION_NOTIFICATION_TITLE");
+                             JOptionPane.showMessageDialog(topFrame, message, msgTitle, JOptionPane.INFORMATION_MESSAGE);
+                             workbenchPane.setChanged(true);
+                         }
+
                          RolloverCommand roc = getNavBtnById(workbenchNavBox, workbench.getWorkbenchId(), "workbench");
                          if (roc != null)
                          {
