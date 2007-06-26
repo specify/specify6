@@ -12,10 +12,10 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
-import java.awt.Toolkit;
 import java.awt.dnd.DnDConstants;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -419,7 +419,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		treeListPanels[0].setLayout(new BorderLayout());
 		treeListPanels[0].add(scrollers[0], BorderLayout.CENTER);
 		treeListPanels[0].add(buttonPanel0,BorderLayout.EAST);
-        findPanel = new FindPanel(this);
+        findPanel = new FindPanel(this, FindPanel.CONTRACTED);
         treeListPanels[0].add(findPanel, BorderLayout.SOUTH);
         
         // button panel for bottom tree list
@@ -569,12 +569,12 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             }
         };
         
-        this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "Find");
+        this.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_DOWN_MASK), "Find");
         this.getActionMap().put("Find", findAction);
         
-        lists[0].getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), findAction);
+        lists[0].getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_DOWN_MASK), findAction);
         lists[0].getActionMap().put("Find", findAction);
-        lists[1].getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), findAction);
+        lists[1].getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_DOWN_MASK), findAction);
         lists[1].getActionMap().put("Find", findAction);
         
         // force the selection-sensative buttons to initialize properly

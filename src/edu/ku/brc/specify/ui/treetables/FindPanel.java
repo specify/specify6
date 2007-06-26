@@ -13,11 +13,9 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.WindowConstants;
 
 import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTarget;
@@ -26,7 +24,6 @@ import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.tasks.DualViewSearchable;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.MultiStateToggleButton;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.IconManager.IconSize;
 
 public class FindPanel extends JPanel implements TimingTarget
@@ -47,10 +44,10 @@ public class FindPanel extends JPanel implements TimingTarget
     protected boolean shrinking = false;
     protected boolean expanding = false;
     
-    private static final int EXPANDED = 1;
-    private static final int CONTRACTED = -1;
+    public static final int EXPANDED = 1;
+    public static final int CONTRACTED = -1;
     
-    public FindPanel(DualViewSearchable views)
+    public FindPanel(DualViewSearchable views, int startingMode)
     {
         this.setLayout(new BoxLayout(this,BoxLayout.LINE_AXIS));
         this.views = views;
@@ -126,6 +123,10 @@ public class FindPanel extends JPanel implements TimingTarget
         });
         
         mode = EXPANDED;
+        if (startingMode == CONTRACTED)
+        {
+            mode = startingMode;
+        }
         prefSize = super.getPreferredSize();
         contractedSize = new Dimension(prefSize.width,0);
     }
@@ -154,7 +155,7 @@ public class FindPanel extends JPanel implements TimingTarget
         shrinking = true;
 
         // start animation to shrink the panel
-        Animator expander = new Animator(450,this);
+        Animator expander = new Animator(300,this);
         expander.start();
     }
     
@@ -211,7 +212,6 @@ public class FindPanel extends JPanel implements TimingTarget
     public Dimension getMaximumSize()
     {
         return getPreferredSize();
-        
     }
     
     public void begin()
@@ -238,6 +238,7 @@ public class FindPanel extends JPanel implements TimingTarget
         Component c = getParent();
         c.invalidate();
         c.doLayout();
+        c.validate();
         c.repaint();
     }
 
@@ -256,46 +257,15 @@ public class FindPanel extends JPanel implements TimingTarget
         }
         
         prefSize.height = (int)(super.getPreferredSize().height * sizeFrac);
-        System.out.println(fraction + ":" + prefSize.height);
         
         Component c = getParent();
         c.invalidate();
         c.doLayout();
+        c.validate();
         c.repaint();
         
         this.invalidate();
         this.repaint();
         this.validate();
-    }
-
-    /**
-     * @param args
-     */
-    public static void main(String[] args)
-    {
-        JFrame f = new JFrame();
-        f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        
-        UIRegistry.register(UIRegistry.TOPFRAME, f);
-
-        final FindPanel fp = new FindPanel(null);
-        fp.expand();
-
-        JButton expand = new JButton("Show find widget");
-        expand.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent ae)
-            {
-                fp.expand();
-            }
-        });
-        
-        BoxLayout layout = new BoxLayout(f.getContentPane(),BoxLayout.PAGE_AXIS);
-        f.setLayout(layout);
-        f.getContentPane().add(expand);
-        f.getContentPane().add(fp);
-        
-        f.pack();
-        f.setVisible(true);
     }
 }
