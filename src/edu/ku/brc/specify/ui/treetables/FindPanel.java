@@ -161,12 +161,12 @@ public class FindPanel extends JPanel implements TimingTarget
     
     protected void findClicked()
     {
-        views.find(entryField.getText(), getWhere(), false);
+        views.find(entryField.getText(), getWhere(), true);
     }
     
     protected void nextClicked()
     {
-        views.findNext(entryField.getText(), getWhere(), false);
+        views.findNext(entryField.getText(), getWhere(), true);
     }
     
     protected int getWhere()

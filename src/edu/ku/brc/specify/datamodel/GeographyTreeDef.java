@@ -47,6 +47,7 @@ import org.hibernate.annotations.CascadeType;
 @SuppressWarnings("serial")
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
+@org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "geographytreedef")
 public class GeographyTreeDef extends DataModelObjBase implements java.io.Serializable, TreeDefIface<Geography, GeographyTreeDef, GeographyTreeDefItem>
 {
@@ -353,4 +354,9 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
         return 44;
     }
 
+    @Override
+    public String toString()
+    {
+        return getIdentityTitle();
+    }
 }

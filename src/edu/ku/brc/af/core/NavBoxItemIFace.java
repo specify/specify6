@@ -75,4 +75,9 @@ public interface NavBoxItemIFace extends Comparable<NavBoxItemIFace>
      */
     public void setEnabled(boolean enabled);
 
+    /**
+     * Determines if the {@link NavBoxItemIFace} is enabled or not.
+     * @return true if enabled, false otherwise
+     */
+    public boolean isEnabled();
 }

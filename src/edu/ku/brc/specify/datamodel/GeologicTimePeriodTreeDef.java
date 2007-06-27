@@ -47,6 +47,7 @@ import org.hibernate.annotations.CascadeType;
 @SuppressWarnings("serial")
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
+@org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "geologictimeperiodtreedef")
 public class GeologicTimePeriodTreeDef extends DataModelObjBase implements java.io.Serializable, TreeDefIface<GeologicTimePeriod, GeologicTimePeriodTreeDef, GeologicTimePeriodTreeDefItem>
 {
@@ -384,4 +385,9 @@ public class GeologicTimePeriodTreeDef extends DataModelObjBase implements java.
         return 47;
     }
 
+    @Override
+    public String toString()
+    {
+        return getIdentityTitle();
+    }
 }

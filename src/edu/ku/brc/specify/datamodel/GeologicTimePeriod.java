@@ -56,6 +56,7 @@ import edu.ku.brc.specify.treeutils.GeologicTimePeriodComparator;
 @SuppressWarnings("serial")
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
+@org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "geologictimeperiod")
 public class GeologicTimePeriod extends DataModelObjBase implements java.io.Serializable, Treeable<GeologicTimePeriod,GeologicTimePeriodTreeDef,GeologicTimePeriodTreeDefItem>{
 

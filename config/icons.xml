@@ -41,7 +41,6 @@
     <icon name="ColObj"     file="catobj_fish.gif" sizes="all"/>
     <icon name="Address"    file="address.gif" sizes="all"/>
     <icon name="Location"   file="location.gif" sizes="all"/>
-    <icon name="Geologic Time Period" file="clock.png" sizes="all"/>
     <icon name="CollectingEvent" file="collevent.gif" sizes="all"/>
     <icon name="Accession"  file="accession.gif" sizes="all"/>
     <icon name="Permit"     file="permit.png" sizes="all"/>
@@ -116,6 +115,11 @@
     <icon name="Collection Object Attributes" alias="ColObjAttributes"/>
     <icon name="Habitat Attributes"     alias="ColObjAttributes"/>
     <icon name="Preparation Attributes" alias="ColObjAttributes"/>
+    
+    <icon name="TaxonTreeDef"              alias="Taxon"/>
+    <icon name="GeographyTreeDef"          alias="Geography"/>
+    <icon name="GeologicTimePeriodTreeDef" alias="GeologicTimePeriod"/>
+    <icon name="LocationTreeDef"           alias="Location"/>
     
     <icon name="Startup"	            alias="AppIcon"/>
     

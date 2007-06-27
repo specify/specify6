@@ -28,8 +28,8 @@ import org.hibernate.annotations.CascadeType;
 @SuppressWarnings("serial")
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
-@Table(name = "taxontreedefitem")
 @org.hibernate.annotations.Proxy(lazy = false)
+@Table(name = "taxontreedefitem")
 public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, TreeDefItemIface<Taxon,TaxonTreeDef,TaxonTreeDefItem>
 {
 	protected Long				    taxonTreeDefItemId;

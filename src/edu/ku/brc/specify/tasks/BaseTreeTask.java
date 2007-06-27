@@ -15,6 +15,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
@@ -35,6 +36,7 @@ import edu.ku.brc.specify.treeutils.TreeDataService;
 import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.ui.treetables.TreeDefinitionEditor;
 import edu.ku.brc.specify.ui.treetables.TreeTableViewer;
+import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.RolloverCommand;
@@ -61,6 +63,8 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
     /** The class of {@link TreeDefIface} handled by this task. */
     protected Class<D> treeDefClass;
     
+    protected List<D> defs;
+    
     protected Hashtable<SubPaneIFace, NavBoxItemIFace> viewToButtonMap = new Hashtable<SubPaneIFace, NavBoxItemIFace>();
     protected Hashtable<D,NavBoxItemIFace> defToButtonMap = new Hashtable<D, NavBoxItemIFace>();
     
@@ -74,6 +78,10 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
     public static final String SWITCH_VIEW_TYPE = "SwitchViewType";
     
     protected static DataFlavor TREE_DEF_FLAVOR = new DataFlavor(TreeDefIface.class,TreeDefIface.class.getName());
+
+    protected RolloverCommand openTreeCmdBtn;
+
+    protected RolloverCommand editDefCmdBtn;
     
 	/**
      * Constructor.
@@ -98,9 +106,9 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
 		{
 			isInitialized = true;
             TreeDataService<T,D,I> dataService = TreeDataServiceFactory.createService();
-			List<D> defs = dataService.getAllTreeDefs(treeDefClass);
-			createMenus(defs);
-			createNavBoxes(defs);
+			defs = dataService.getAllTreeDefs(treeDefClass);
+			createMenus();
+			createNavBoxes();
             
             if (commandTypeString != null)
             {
@@ -114,13 +122,17 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
      * 
 	 * @param defs
 	 */
-	protected void createNavBoxes(@SuppressWarnings("unused") List<D> defs)
+	protected void createNavBoxes()
 	{
+	    String editTreeDef = getResourceString("EditTreeDef");
+        String viewTree    = getResourceString("ViewTree");
+        String switchViews = getResourceString("SwitchViews");
+
         NavBox actionsBox = new NavBox(getResourceString("Actions"),false,false);
-        
-        RolloverCommand openTreeCmdBtn    = (RolloverCommand)makeDnDNavBtn(actionsBox, "view tree", null, new CommandAction(commandTypeString,OPEN_TREE), null, false, false);
-        RolloverCommand editDefCmdBtn     = (RolloverCommand)makeDnDNavBtn(actionsBox, "edit tree def", null, new CommandAction(commandTypeString,EDIT_TREE_DEF), null, false, false);
-        NavBoxItemIFace switchViewTypeBtn = NavBox.createBtn("swithc view type", null, null, new ActionListener()
+
+        openTreeCmdBtn = (RolloverCommand)makeDnDNavBtn(actionsBox, viewTree, null, new CommandAction(commandTypeString,OPEN_TREE), null, false, false);
+        editDefCmdBtn = (RolloverCommand)makeDnDNavBtn(actionsBox, editTreeDef, null, new CommandAction(commandTypeString,EDIT_TREE_DEF), null, false, false);
+        NavBoxItemIFace switchViewTypeBtn = NavBox.createBtn(switchViews, null, null, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -139,7 +151,8 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
             CommandAction cmd = new CommandAction(commandTypeString,OPEN_TREE);
             cmd.setProperty(OPEN_TREE, def);
             
-            final NavBoxButton navItem = (NavBoxButton)makeDnDNavBtn(defsBox, def.getName(), null, cmd, null, true, false);
+            String iconName = treeDefClass.getSimpleName();
+            final NavBoxButton navItem = (NavBoxButton)makeDnDNavBtn(defsBox, def.getName(), iconName, cmd, null, true, false);
             navItem.addDragDataFlavor(TREE_DEF_FLAVOR);
             navItem.addDropDataFlavor(TREE_DEF_FLAVOR);
             
@@ -170,7 +183,7 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
      * 
 	 * @param defs a list of tree definitions handled by this task
 	 */
-	protected void createMenus(@SuppressWarnings("unused") List<D> defs)
+	protected void createMenus()
 	{
         JMenuItem menuItem = new JMenuItem(menuItemText);
         menuItem.setMnemonic(menuItemMnemonic.charAt(0));
@@ -204,6 +217,10 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
         {
             button.setEnabled(false);
             viewToButtonMap.put(ttv, button);
+
+            // see if all the defs are in use
+            // if so, disable the "open tree" and "edit def" buttons
+            updateActionButtonStates();
         }
         
     	return ttv;
@@ -215,7 +232,7 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
 	public TreeDefinitionEditor<T,D,I> openTreeDefEditor(D treeDef)
 	{
         ContextMgr.requestContext(this);
-	    String tabName = getResourceString("TreeDefEditor");
+        String tabName = getResourceString("TreeDefEditor") + ": " + treeDef.getName();
 	    TreeDefinitionEditor<T,D,I> defEditor = new TreeDefinitionEditor<T,D,I>(treeDef,tabName,this);
         addSubPaneToMgr(defEditor);
         
@@ -224,11 +241,40 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
         {
             button.setEnabled(false);
             viewToButtonMap.put(defEditor, button);
+
+            // see if all the defs are in use
+            // if so, disable the "open tree" and "edit def" buttons
+            updateActionButtonStates();
         }
 
         return defEditor;
 	}
     
+    /**
+     * Checks to see if all tree defs are in use (open tree viewer or def editor)
+     * and disables the "open tree" and "edit def" buttons if so.
+     */
+	protected void updateActionButtonStates()
+	{
+	    // see if all the defs are in use
+	    // if so, disable the "open tree" and "edit def" buttons
+	    boolean allUsed = true;
+	    for (D def: defs)
+	    {
+	        if (defToButtonMap.get(def) == null)
+	        {
+	            allUsed = false;
+	            break;
+	        }
+	    }
+	    openTreeCmdBtn.setEnabled(!allUsed);
+	    editDefCmdBtn.setEnabled(!allUsed);
+	}
+    
+	/**
+	 * Switches the current view from {@link TreeTableViewer} to {@link TreeDefinitionEditor}
+     * or vice versa.  If the current view is neither of these, this does nothing.
+	 */
 	@SuppressWarnings("unchecked")
     protected void switchViewType()
 	{
@@ -297,14 +343,30 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
     @Override
 	public void subPaneRemoved(SubPaneIFace subPane)
 	{
+        if (!subPane.getTask().equals(this))
+        {
+            // we don't care about this subpane being closed
+            // it's not one of ours
+            return;
+        }
+
         // update the nav box buttons for the tree defs
         NavBoxItemIFace button = viewToButtonMap.get(subPane);
         if (button != null)
         {
             button.setEnabled(true);
+
+            viewToButtonMap.remove(subPane);
+            
+            // make sure these are enabled since we must have at least one unused tree def now
+            openTreeCmdBtn.setEnabled(true);
+            editDefCmdBtn.setEnabled(true);
         }
 	}
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#doCommand(edu.ku.brc.ui.CommandAction)
+     */
     @Override
     public void doCommand(CommandAction cmdAction)
     {
@@ -312,7 +374,7 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
         
         if (cmdAction.isType(commandTypeString))
         {
-            D treeDef = getTreeDefFromCommand(cmdAction.getData());
+            D treeDef = getTreeDefFromCommandOrUser(cmdAction.getData());
             if (cmdAction.getAction().equals(OPEN_TREE) && treeDef != null)
             {
                 showTree(treeDef);
@@ -324,8 +386,15 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
         }
     }
     
+    /**
+     * Inspects the given object to see if it contains a {@link TreeDefIface}, asking the user
+     * to choose one otherwise.
+     * 
+     * @param cmdActionObj a CommandAction object (hopefully)
+     * @return the embedded or user-chosen {@link TreeDefIface}
+     */
     @SuppressWarnings("unchecked")
-    protected D getTreeDefFromCommand(Object cmdActionObj)
+    protected D getTreeDefFromCommandOrUser(Object cmdActionObj)
     {
         if (cmdActionObj != null && cmdActionObj instanceof CommandAction)
         {
@@ -340,6 +409,28 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
         // this happens when the user simply clicks the "open tree" or "edit def" buttons
         System.out.println("Ask user for a def");
         
-        return null;
+        String chooseText = getResourceString("ChooseTreeDef");
+        List<D> unopenDefs = new Vector<D>(defs.size());
+        for (D def: defs)
+        {
+            NavBoxItemIFace button = defToButtonMap.get(def);
+            if (button == null || button.isEnabled())
+            {
+                unopenDefs.add(def);
+            }
+        }
+        if (unopenDefs.size() == 0)
+        {
+            UIRegistry.getStatusBar().setErrorMessage("All existing tree definitions are already open.");
+            return null;
+        }
+        if (unopenDefs.size() == 1)
+        {
+            return unopenDefs.get(0);
+        }
+        
+        ChooseFromListDlg<D> listDialog = new ChooseFromListDlg<D>((JFrame)UIRegistry.get(UIRegistry.FRAME), chooseText, unopenDefs);
+        listDialog.setVisible(true);
+        return listDialog.getSelectedObject();
     }
 }

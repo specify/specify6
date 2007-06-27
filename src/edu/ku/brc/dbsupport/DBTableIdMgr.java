@@ -623,9 +623,10 @@ public class DBTableIdMgr
 
 		public String getShortClassName()
 		{
+            // TODO: replace calls to this with a call to classObj.getSimpleName();
+            
 			int inx = className.lastIndexOf('.');
 			return inx == -1 ? className : className.substring(inx + 1);
-
 		}
 
 		public int getTableId()

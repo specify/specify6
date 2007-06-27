@@ -37,8 +37,8 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
 @SuppressWarnings("serial")
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
-@Table(name = "taxon")
 @org.hibernate.annotations.Proxy(lazy = false)
+@Table(name = "taxon")
 @org.hibernate.annotations.Table(appliesTo="taxon", indexes =
     {   @Index (name="TaxonGuidIDX", columnNames={"Guid"}),
         @Index (name="TaxonomicSerialNumberIDX", columnNames={"TaxonomicSerialNumber"}),

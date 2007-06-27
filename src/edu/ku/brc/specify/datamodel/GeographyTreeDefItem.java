@@ -50,6 +50,7 @@ import org.hibernate.annotations.CascadeType;
 @SuppressWarnings("serial")
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
+@org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "geographytreedefitem")
 public class GeographyTreeDefItem extends DataModelObjBase implements Serializable, TreeDefItemIface<Geography,GeographyTreeDef,GeographyTreeDefItem>
 {

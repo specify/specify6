@@ -35,8 +35,8 @@ import edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator;
 @SuppressWarnings("serial")
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
-@Table(name = "location")
 @org.hibernate.annotations.Proxy(lazy = false)
+@Table(name = "location")
 public class Location extends DataModelObjBase implements Serializable, Treeable<Location,LocationTreeDef,LocationTreeDefItem>{
 
     /**

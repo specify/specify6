@@ -156,7 +156,7 @@ public class ChooseFromListDlg<T> extends JDialog
      * 
      * @param frame parent frame
      * @param title the title of the dialog
-     * @param desc the list to be selected from
+     * @param desc
      * @param itemList the list to be selected from
      * @param whichBtns mask describing which buttons to create
      * @param helpContext  help context identifier
@@ -177,7 +177,7 @@ public class ChooseFromListDlg<T> extends JDialog
         this.whichBtns   = whichBtns;
         this.helpContext = helpContext;
 
-        setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));
+        setLocationRelativeTo(frame);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
 
@@ -242,7 +242,7 @@ public class ChooseFromListDlg<T> extends JDialog
         
         setModal(true);
 
-        setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));
+        setLocationRelativeTo(frame);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
 

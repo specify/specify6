@@ -25,8 +25,8 @@ import org.hibernate.annotations.CascadeType;
 @SuppressWarnings("serial")
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
-@Table(name = "locationtreedef")
 @org.hibernate.annotations.Proxy(lazy = false)
+@Table(name = "locationtreedef")
 public class LocationTreeDef extends DataModelObjBase implements java.io.Serializable, TreeDefIface<Location, LocationTreeDef, LocationTreeDefItem>
 {
 	protected Long				   locationTreeDefId;
@@ -335,4 +335,9 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
         return 59;
     }
 
+    @Override
+    public String toString()
+    {
+        return getIdentityTitle();
+    }
 }
