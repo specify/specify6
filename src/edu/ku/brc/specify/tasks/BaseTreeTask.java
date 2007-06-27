@@ -8,6 +8,7 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Hashtable;
@@ -34,7 +35,10 @@ import edu.ku.brc.specify.treeutils.TreeDataService;
 import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.ui.treetables.TreeDefinitionEditor;
 import edu.ku.brc.specify.ui.treetables.TreeTableViewer;
-import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.RolloverCommand;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * A base task that provides functionality in common to all tasks
@@ -58,10 +62,18 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
     protected Class<D> treeDefClass;
     
     protected Hashtable<SubPaneIFace, NavBoxItemIFace> viewToButtonMap = new Hashtable<SubPaneIFace, NavBoxItemIFace>();
+    protected Hashtable<D,NavBoxItemIFace> defToButtonMap = new Hashtable<D, NavBoxItemIFace>();
     
     protected String menuItemText;
     protected String menuItemMnemonic;
     protected String starterPaneText;
+    protected String commandTypeString;
+    
+    public static final String OPEN_TREE        = "OpenTree";
+    public static final String EDIT_TREE_DEF    = "EditTreeDef";
+    public static final String SWITCH_VIEW_TYPE = "SwitchViewType";
+    
+    protected static DataFlavor TREE_DEF_FLAVOR = new DataFlavor(TreeDefIface.class,TreeDefIface.class.getName());
     
 	/**
      * Constructor.
@@ -89,6 +101,11 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
 			List<D> defs = dataService.getAllTreeDefs(treeDefClass);
 			createMenus(defs);
 			createNavBoxes(defs);
+            
+            if (commandTypeString != null)
+            {
+                CommandDispatcher.register(commandTypeString,this);
+            }
 		}
 	}
 	
@@ -99,26 +116,34 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
 	 */
 	protected void createNavBoxes(@SuppressWarnings("unused") List<D> defs)
 	{
+        NavBox actionsBox = new NavBox(getResourceString("Actions"),false,false);
+        
+        RolloverCommand openTreeCmdBtn    = (RolloverCommand)makeDnDNavBtn(actionsBox, "view tree", null, new CommandAction(commandTypeString,OPEN_TREE), null, false, false);
+        RolloverCommand editDefCmdBtn     = (RolloverCommand)makeDnDNavBtn(actionsBox, "edit tree def", null, new CommandAction(commandTypeString,EDIT_TREE_DEF), null, false, false);
+        NavBoxItemIFace switchViewTypeBtn = NavBox.createBtn("swithc view type", null, null, new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                switchViewType();
+            }
+        });
+        actionsBox.add(switchViewTypeBtn);
+        
+        openTreeCmdBtn.addDropDataFlavor(TREE_DEF_FLAVOR);
+        editDefCmdBtn.addDropDataFlavor(TREE_DEF_FLAVOR);
+        
         NavBox defsBox = new NavBox(getResourceString(name),false,true);
         
         for (final D def: defs)
         {
-            // setup the click action for the tree def
-            ActionListener al = new ActionListener()
-            {
-                public void actionPerformed(ActionEvent ae)
-                {
-                    TreeTableViewer<T,D,I> ttv = showTree(def);
-                    Object source = ae.getSource();
-                    if (source instanceof NavBoxItemIFace)
-                    {
-                        NavBoxItemIFace srcButton = (NavBoxItemIFace)ae.getSource();
-                        viewToButtonMap.put(ttv, srcButton);
-                        srcButton.setEnabled(false);
-                    }
-                }
-            };
-            final NavBoxItemIFace navItem = NavBox.createBtn(def.getName(), name, IconManager.IconSize.Std16, al);
+            CommandAction cmd = new CommandAction(commandTypeString,OPEN_TREE);
+            cmd.setProperty(OPEN_TREE, def);
+            
+            final NavBoxButton navItem = (NavBoxButton)makeDnDNavBtn(defsBox, def.getName(), null, cmd, null, true, false);
+            navItem.addDragDataFlavor(TREE_DEF_FLAVOR);
+            navItem.addDropDataFlavor(TREE_DEF_FLAVOR);
+            
+            defToButtonMap.put(def, navItem);
             
             // setup the popup menu for this tree def
             JPopupMenu popup = new JPopupMenu();
@@ -127,17 +152,16 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
             {
                 public void actionPerformed(ActionEvent ae)
                 {
-                    TreeDefinitionEditor<T,D,I> defEditor = openTreeDefEditor(def);
-                    navItem.setEnabled(false);
-                    viewToButtonMap.put(defEditor, navItem);
+                    openTreeDefEditor(def);
                 }
             });
             popup.add(editDefItem);
-            ((NavBoxButton)navItem).setPopupMenu(popup);
+            navItem.setPopupMenu(popup);
             
-            defsBox.add(navItem);
+            defsBox.add((NavBoxItemIFace)navItem);
         }
         
+        navBoxes.add(actionsBox);
         navBoxes.add(defsBox);
 	}
 	
@@ -174,6 +198,14 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
 		String tabName = getResourceString(name) + ": " + treeDef.getName();
     	TreeTableViewer<T,D,I> ttv = new TreeTableViewer<T,D,I>(treeDef,tabName,this);
     	addSubPaneToMgr(ttv);
+        
+        NavBoxItemIFace button = defToButtonMap.get(treeDef);
+        if (button != null)
+        {
+            button.setEnabled(false);
+            viewToButtonMap.put(ttv, button);
+        }
+        
     	return ttv;
 	}
     
@@ -186,7 +218,38 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
 	    String tabName = getResourceString("TreeDefEditor");
 	    TreeDefinitionEditor<T,D,I> defEditor = new TreeDefinitionEditor<T,D,I>(treeDef,tabName,this);
         addSubPaneToMgr(defEditor);
+        
+        NavBoxItemIFace button = defToButtonMap.get(treeDef);
+        if (button != null)
+        {
+            button.setEnabled(false);
+            viewToButtonMap.put(defEditor, button);
+        }
+
         return defEditor;
+	}
+    
+	@SuppressWarnings("unchecked")
+    protected void switchViewType()
+	{
+	    // find out what def this refers to
+	    SubPaneIFace subPane = SubPaneMgr.getInstance().getCurrentSubPane();
+
+	    if (subPane instanceof TreeTableViewer)
+	    {
+	        TreeDefIface treeDef = ((TreeTableViewer)subPane).getTreeDef();
+	        SubPaneMgr.getInstance().closeCurrent();
+	        openTreeDefEditor((D)treeDef);
+	        return;
+	    }
+        else if (subPane instanceof TreeDefinitionEditor)
+        {
+            TreeDefIface treeDef = ((TreeDefinitionEditor)subPane).getDisplayedTreeDef();
+            SubPaneMgr.getInstance().closeCurrent();
+            showTree((D)treeDef);
+            return;
+        }
+	    return;
 	}
 
 	/* (non-Javadoc)
@@ -241,4 +304,42 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
             button.setEnabled(true);
         }
 	}
+
+    @Override
+    public void doCommand(CommandAction cmdAction)
+    {
+        UIRegistry.getStatusBar().setText("");
+        
+        if (cmdAction.isType(commandTypeString))
+        {
+            D treeDef = getTreeDefFromCommand(cmdAction.getData());
+            if (cmdAction.getAction().equals(OPEN_TREE) && treeDef != null)
+            {
+                showTree(treeDef);
+            }
+            else if (cmdAction.getAction().equals(EDIT_TREE_DEF) && treeDef != null)
+            {
+                openTreeDefEditor(treeDef);
+            }
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    protected D getTreeDefFromCommand(Object cmdActionObj)
+    {
+        if (cmdActionObj != null && cmdActionObj instanceof CommandAction)
+        {
+            Object def = ((CommandAction)cmdActionObj).getProperty(OPEN_TREE);
+            if (def != null && def.getClass().isAssignableFrom(treeDefClass))
+            {
+                return (D)def;
+            }
+        }
+        
+        // TODO: ask for a tree def
+        // this happens when the user simply clicks the "open tree" or "edit def" buttons
+        System.out.println("Ask user for a def");
+        
+        return null;
+    }
 }

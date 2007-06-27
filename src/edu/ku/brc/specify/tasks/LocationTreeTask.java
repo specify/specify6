@@ -32,9 +32,10 @@ public class LocationTreeTask extends BaseTreeTask<Location,LocationTreeDef,Loca
         treeDefClass = LocationTreeDef.class;
         icon = IconManager.getIcon(LOCATION,IconManager.IconSize.Std24);
         
-        menuItemText     = getResourceString("LocationMenu");
-        menuItemMnemonic = getResourceString("LocationMnemonic");
-        starterPaneText  = getResourceString("LocationStarterPaneText");
+        menuItemText      = getResourceString("LocationMenu");
+        menuItemMnemonic  = getResourceString("LocationMnemonic");
+        starterPaneText   = getResourceString("LocationStarterPaneText");
+        commandTypeString = LOCATION;
         
         initialize();
 	}

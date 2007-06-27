@@ -46,9 +46,10 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
         treeDefClass = TaxonTreeDef.class;
         icon = IconManager.getIcon(TAXON,IconManager.IconSize.Std24);
         
-        menuItemText     = getResourceString("TaxonMenu");
-        menuItemMnemonic = getResourceString("TaxonMnemonic");
-        starterPaneText  = getResourceString("TaxonStarterPaneText");
+        menuItemText      = getResourceString("TaxonMenu");
+        menuItemMnemonic  = getResourceString("TaxonMnemonic");
+        starterPaneText   = getResourceString("TaxonStarterPaneText");
+        commandTypeString = TAXON;
         
         initialize();
 	}

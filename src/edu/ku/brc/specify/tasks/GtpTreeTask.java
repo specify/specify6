@@ -35,6 +35,7 @@ public class GtpTreeTask extends BaseTreeTask<GeologicTimePeriod,GeologicTimePer
         menuItemText     = getResourceString("GeoTimePeriodMenu");
         menuItemMnemonic = getResourceString("GeoTimePeriodMnemonic");
         starterPaneText  = getResourceString("GeoTimePeriodStarterPaneText");
+        commandTypeString = GTP;
         
         initialize();
 	}
