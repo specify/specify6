@@ -56,6 +56,7 @@ import edu.ku.brc.services.mapping.LocalityMapper.MapLocationIFace;
  */
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
+@org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "locality")
 public class Locality extends DataModelObjBase implements java.io.Serializable, MapLocationIFace {
 

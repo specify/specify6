@@ -50,6 +50,7 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
  */
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
+@org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "accessionagent", uniqueConstraints = { @UniqueConstraint(columnNames = { "Role", "AgentID", "AccessionID" }) })
 public class AccessionAgent extends DataModelObjBase implements java.io.Serializable {
 

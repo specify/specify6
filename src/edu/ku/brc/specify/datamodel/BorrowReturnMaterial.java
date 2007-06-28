@@ -48,6 +48,7 @@ import javax.persistence.Transient;
  */
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
+@org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "borrowreturnmaterial")
 public class BorrowReturnMaterial extends DataModelObjBase implements java.io.Serializable {
 

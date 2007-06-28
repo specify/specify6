@@ -51,6 +51,7 @@ import org.hibernate.annotations.Cascade;
  */
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
+@org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "specifyuser")
 public class SpecifyUser extends DataModelObjBase implements java.io.Serializable
 {

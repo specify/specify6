@@ -64,6 +64,7 @@ import edu.ku.brc.helpers.XMLHelper;
  */
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
+@org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "appresource")
 public class AppResource extends DataModelObjBase implements java.io.Serializable, AppResourceIFace 
 {

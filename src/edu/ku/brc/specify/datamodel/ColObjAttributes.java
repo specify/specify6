@@ -36,6 +36,7 @@ import org.hibernate.annotations.CascadeType;
  */
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
+@org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "colobjattributes", uniqueConstraints = { @UniqueConstraint(columnNames = { "ColObjAttributesID" }) })
 public class ColObjAttributes extends DataModelObjBase
 {

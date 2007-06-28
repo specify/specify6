@@ -35,6 +35,7 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
  */
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
+@org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "institution")
 public class Institution extends DataModelObjBase implements java.io.Serializable 
 {

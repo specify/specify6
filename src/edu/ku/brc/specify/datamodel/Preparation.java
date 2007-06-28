@@ -57,6 +57,7 @@ import edu.ku.brc.dbsupport.AttributeIFace;
  */
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
+@org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "preparation")
 public class Preparation extends DataModelObjBase implements java.io.Serializable, Comparable<Preparation>
 {

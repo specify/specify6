@@ -48,6 +48,7 @@ import edu.ku.brc.dbsupport.AttributeIFace;
  */
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
+@org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "collectingeventattr")
 public class CollectingEventAttr extends DataModelObjBase implements AttributeIFace,java.io.Serializable {
 
