@@ -5,6 +5,8 @@ are not listed since they are 'tied' to the version of the parent library.
 Other versions can be retrieved from their repective websites, but runtime
 compatibility with the 'parent' libraries is not guaranteed.
 
+Libraries:
+----------
 Hibernate								3.2.1 GA
    antlr								dist w/ hibernate
    asm-attrs							dist w/ hibernate
@@ -18,7 +20,7 @@ Hibernate								3.2.1 GA
    jta									dist w/ hibernate
 ant										1.7.0
 	ant-launcher						dist w/ ant
-Derby                                   10.2.2.0
+Derby (derby.jar)                       10.2.2.0
 commons-httpclient						3.0.1
 commons-lang							2.2
 commons-jexl							1.1
@@ -42,3 +44,12 @@ itext									1.4.8
 javacsv									2.0
 jh										2.0_02
 swingx									0.8.0
+
+Missing information:
+--------------------
+hiberante-annotations.jar
+	ejb3-persistence.jar
+ant.jar
+commons-codec.jar
+servlet-api.jar
+
