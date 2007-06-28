@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Properties;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
@@ -28,7 +29,9 @@ import org.dom4j.Element;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.dbsupport.AutoNumberGeneric;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.dbsupport.CollectionAutoNumber;
 import edu.ku.brc.ui.DateWrapper;
 
 /**
@@ -151,6 +154,16 @@ public class UIFieldFormatterMgr
         }
         return list;
     }
+    
+    /**
+     * Returns the DOM it is suppose to load the formatters from.
+     * @return Returns the DOM it is suppose to load the formatters from.
+     */
+    protected Element getDOM() throws Exception
+    {
+        //return XMLHelper.readDOMFromConfigDir("backstop/uiformatters.xml");
+        return AppContextMgr.getInstance().getResourceAsDOM("UIFormatters");
+    }
 
     /**
      * Loads the formats from the config file.
@@ -160,7 +173,7 @@ public class UIFieldFormatterMgr
     {
         try
         {
-            Element root  = AppContextMgr.getInstance().getResourceAsDOM("UIFormatters");
+            Element root  = getDOM();
             if (root != null)
             {
                 List<?> formats = root.selectNodes("/formats/format");
@@ -195,6 +208,11 @@ public class UIFieldFormatterMgr
                         } catch (Exception ex)
                         {
                             log.error("["+typeStr+"]"+ex.toString());
+                        }
+                        
+                        if (type == UIFieldFormatterField.FieldType.year)
+                        {
+                            size = 4;
                         }
                         fields.add(new UIFieldFormatterField(type, size, value, increm));
                         if (increm)
@@ -344,5 +362,24 @@ public class UIFieldFormatterMgr
         {
             formatter.setDateWrapper(new DateWrapper(new SimpleDateFormat(newFormatStr.toString())));
         }
-     }
+    }
+    
+    public static void test()
+    {
+        Properties props = new Properties();
+        props.put("class", "edu.ku.brc.specify.datamodel.Accession");
+        props.put("field", "number");
+        UIFieldFormatter  formatter = UIFieldFormatterMgr.getFormatter("AccessionNumber");
+        AutoNumberGeneric generic   = new AutoNumberGeneric(props);
+        System.out.println("New  Num["+formatter.toPattern()+"]");
+        System.out.println("Next Num["+generic.getNextNumber(formatter, formatter.toPattern())+"]");
+        
+        props = new Properties();
+        props.put("class", "edu.ku.brc.specify.datamodel.CollectionObject");
+        props.put("field", "catalogNumber");
+         formatter = UIFieldFormatterMgr.getFormatter("AccessionNumber");
+        CollectionAutoNumber colAtuoNum   = new CollectionAutoNumber(props);
+        System.out.println("New  Num["+formatter.toPattern()+"]");
+        System.out.println("Next Num["+colAtuoNum.getNextNumber(formatter, formatter.toPattern())+"]");
+    }
 }

@@ -22,6 +22,7 @@ import java.util.Enumeration;
 import java.util.Formatter;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -143,7 +144,7 @@ public class DataObjFieldFormatMgr
                             String externalClassName = getAttr(external, "class", (String)null);
                             if (StringUtils.isNotEmpty(externalClassName))
                             {
-                                Hashtable<String, String> props = new Hashtable<String, String>();
+                                Properties props = new Properties();
                                 
                                 List<?> paramElements = switchElement.selectNodes("param");
                                 for (Object param : paramElements)

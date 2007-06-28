@@ -21,6 +21,7 @@ import java.util.List;
 
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.ui.DateWrapper;
+import edu.ku.brc.util.Pair;
 
 
 /**
@@ -109,6 +110,20 @@ public class UIFieldFormatter
             len += field.getSize();
         }
         return len;
+    }
+    
+    public Pair<Integer, Integer> getIncPosition()
+    {
+        int len = 0;
+        for (UIFieldFormatterField field : fields)
+        {
+            if (field.isIncrementer())
+            {
+                return new Pair<Integer, Integer>(len, len+field.getSize());
+            }
+            len += field.getSize();
+        }
+        return null;
     }
     
     public String toPattern()

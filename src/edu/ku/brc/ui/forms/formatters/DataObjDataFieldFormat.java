@@ -17,7 +17,7 @@
  */
 package edu.ku.brc.ui.forms.formatters;
 
-import java.util.Map;
+import java.util.Properties;
 
 /**
  * @author rods
@@ -35,13 +35,12 @@ public class DataObjDataFieldFormat implements DataObjDataFieldFormatIFace
     protected String             format;
     protected String             value;
     protected DataObjDataField[] fields;
-    protected Class<?>           classObj;
 
-    public DataObjDataFieldFormat(final String name, 
+    public DataObjDataFieldFormat(final String   name, 
                                   final Class<?> dataClass, 
-                                  final boolean isDefault, 
-                                  final String format, 
-                                  final String value,
+                                  final boolean  isDefault, 
+                                  final String   format, 
+                                  final String   value,
                                   final DataObjDataField[] fields)
     {
         this.name       = name;
@@ -66,9 +65,9 @@ public class DataObjDataFieldFormat implements DataObjDataFieldFormatIFace
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace#init(java.util.Map)
+     * @see edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace#init(java.util.Properties)
      */
-    public void init(final String nameArg, final Map<String, String> properties)
+    public void init(final String nameArg, final Properties properties)
     {
         throw new RuntimeException("Not implemented!");
     }
@@ -87,14 +86,6 @@ public class DataObjDataFieldFormat implements DataObjDataFieldFormatIFace
     public String getName()
     {
         return name;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace#getClassObj()
-     */
-    public Class<?> getClassObj()
-    {
-        return classObj;
     }
 
     /* (non-Javadoc)

@@ -107,6 +107,7 @@ import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.db.DatabaseLoginListener;
 import edu.ku.brc.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.CacheManager;
@@ -695,6 +696,35 @@ public class Specify extends JPanel implements DatabaseLoginListener
                             UIHelper.centerAndShow(dialog);
                         }
                     });
+            
+            mi = UIHelper.createMenuItem(menu, "Show Memory Stats", "h", "Show Memory Stats", true, null);
+            mi.addActionListener(new ActionListener()
+                    {
+                        @SuppressWarnings("synthetic-access")
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            UIFieldFormatterMgr.test();
+                            if (true) return;
+                            
+                            System.gc();
+                            System.runFinalization();
+                            
+                            // Get current size of heap in bytes
+                            double meg = 1024.0 * 1024.0;
+                            double heapSize = Runtime.getRuntime().totalMemory() / meg;
+                            
+                            // Get maximum size of heap in bytes. The heap cannot grow beyond this size.
+                            // Any attempt will result in an OutOfMemoryException.
+                            double heapMaxSize = Runtime.getRuntime().maxMemory() / meg;
+                            
+                            // Get amount of free memory within the heap in bytes. This size will increase
+                            // after garbage collection and decrease as new objects are created.
+                            double heapFreeSize = Runtime.getRuntime().freeMemory() / meg;
+                            
+                            UIRegistry.getStatusBar().setText(String.format("Heap Size: %7.2f    Max: %7.2f    Free: %7.2f   Used: %7.2f", heapSize, heapMaxSize, heapFreeSize, (heapSize - heapFreeSize)));
+                        }
+                    });
+
             
             JMenu prefsMenu = new JMenu("Prefs Import/Export");
             menu.add(prefsMenu);

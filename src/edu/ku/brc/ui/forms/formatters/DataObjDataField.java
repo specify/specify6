@@ -41,10 +41,10 @@ public class DataObjDataField
     {
         super();
         
-        this.name = name;
-        this.type = type;
+        this.name   = name;
+        this.type   = type;
         this.format = format;
-        this.sep = sep;
+        this.sep    = sep;
         this.formatterName = formatterName;
     }
     

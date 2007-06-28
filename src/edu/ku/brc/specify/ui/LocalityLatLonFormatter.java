@@ -15,7 +15,7 @@
 package edu.ku.brc.specify.ui;
 
 import java.math.BigDecimal;
-import java.util.Map;
+import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -51,13 +51,13 @@ public class LocalityLatLonFormatter implements DataObjDataFieldFormatIFace
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace#init(java.util.Map)
+     * @see edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace#init(properties)
      */
-    public void init(final String nameArg, Map<String, String> properties)
+    public void init(final String nameArg, final Properties properties)
     {
         name = nameArg;
         
-        String typeStr = properties.get("type"); 
+        String typeStr = properties.getProperty("type"); 
         if (StringUtils.isNotEmpty(typeStr))
         {
             if (typeStr.equals("latitude"))
@@ -76,7 +76,7 @@ public class LocalityLatLonFormatter implements DataObjDataFieldFormatIFace
             throw new RuntimeException("LocalityLatLonFormatter cannot be initialized without a 'type' param");
         }
         
-        String dirStr = properties.get("dir"); 
+        String dirStr = properties.getProperty("dir"); 
         if (StringUtils.isNotEmpty(dirStr))
         {
             if (dirStr.equals("symbol"))
@@ -95,7 +95,7 @@ public class LocalityLatLonFormatter implements DataObjDataFieldFormatIFace
             degreesFMT = LatLonConverter.DEGREES_FORMAT.None;
         }
         
-        String formatStr = properties.get("format"); 
+        String formatStr = properties.getProperty("format"); 
         if (StringUtils.isNotEmpty(formatStr))
         {
             if (formatStr.equals("DDMMMM"))
@@ -113,7 +113,7 @@ public class LocalityLatLonFormatter implements DataObjDataFieldFormatIFace
         }
         
         which = 1;
-        String whichStr = properties.get("which"); 
+        String whichStr = properties.getProperty("which"); 
         if (StringUtils.isNotEmpty(whichStr) && formatStr.equals("2"))
         {
             which = 2;   

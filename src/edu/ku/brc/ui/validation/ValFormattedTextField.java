@@ -155,13 +155,13 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     
             requiredLength = 0;
             
-            StringBuilder strBuf = new StringBuilder(32);
+            /*StringBuilder strBuf = new StringBuilder(32);
             for (UIFieldFormatterField field : fields)
             {
                 requiredLength += field.getSize();
                 strBuf.append(field.getValue());
-            }
-            bgStr = strBuf.toString();
+            }*/
+            bgStr = formatter.toPattern();
     
             if (requiredLength > oldReqLen) // don't let the field shrink
             {
@@ -552,7 +552,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
             this.textField    = textField;
             this.docFormatter = formatter;
             this.limit        = limit;
-            docFields = new UIFieldFormatterField[limit];
+            this.docFields    = new UIFieldFormatterField[limit];
             int inx = 0;
             for (UIFieldFormatterField f : docFormatter.getFields())
             {
@@ -692,10 +692,63 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
                         }
                         str = field.getValue() + str;
                     }
+                } else
+                {
+                    //int offsetinx = offset;
+                    if (docFields[offset].isIncrementer())
+                    {
+                        /*str   = docFields[offset].getValue();
+                        field = docFields[offset + docFields[offset].getValue().length()];
+                        if (!isCharOK(field, str))
+                        {
+                            //getToolkit().beep();
+                            //valState = UIValidatable.ErrorType.Error;
+                            //System.out.println("******* "+(valState));
+                            validateState();
+                            return;
+                        }*/                      
+                    }
                 }
                 //valState = offset + str.length() < requiredLength ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
 
                 super.insertString(offset, str, attr);
+                
+                String text = textField.getText();
+                if (text != null && text.length() < limit)
+                {
+                    int inx =  text.length();
+                    field   = docFields[inx];
+                    if (field != null && (field.getType() == UIFieldFormatterField.FieldType.separator || field.isIncrementer()))
+                    {
+                        StringBuilder sb = new StringBuilder(text.substring(offset + str.length()));
+                        while (field != null && (field.getType() == UIFieldFormatterField.FieldType.separator || field.isIncrementer()))
+                        {
+                            if (field.getType() == UIFieldFormatterField.FieldType.separator)
+                            {
+                                sb.append(field.getValue());
+                                inx++;
+                                
+                            } else
+                            {
+                                for (int i=0;i<field.getSize();i++)
+                                {
+                                    sb.append("#");
+                                }
+                                inx += field.getSize();
+                            }
+                            
+                            if (inx < limit)
+                            {
+                                field = docFields[inx];
+                            } else
+                            {
+                                field = null;
+                            }
+                        }
+                        insertString(offset + str.length(), sb.toString(), attr);
+                    }
+                }
+                
             } else
             {
                 //valState = UIValidatable.ErrorType.Error;

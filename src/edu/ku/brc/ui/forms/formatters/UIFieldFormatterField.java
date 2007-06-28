@@ -14,6 +14,8 @@
  */
 package edu.ku.brc.ui.forms.formatters;
 
+import java.util.Calendar;
+
 /**
  * @author rods
  *
@@ -24,7 +26,7 @@ package edu.ku.brc.ui.forms.formatters;
  */
 public class UIFieldFormatterField
 {
-    public enum FieldType {numeric, alphanumeric, alpha, separator}
+    public enum FieldType {numeric, alphanumeric, alpha, separator, year}
     
     protected FieldType type;
     protected int       size;
@@ -34,11 +36,21 @@ public class UIFieldFormatterField
     public UIFieldFormatterField(final FieldType type, final int size, String value, final boolean incrementer)
     {
         super();
-        // TODO Auto-generated constructor stub
-        this.type = type;
-        this.size = size;
-        this.value = value;
+        
+        this.type        = type;
+        this.size        = size;
+        this.value       = value;
         this.incrementer = incrementer;
+        
+        if (incrementer)
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int i=0;i<size;i++)
+            {
+                sb.append('#');
+            }
+            this.value = sb.toString();
+        }
     }
 
     public int getSize()
@@ -53,6 +65,10 @@ public class UIFieldFormatterField
 
     public String getValue()
     {
+        if (type == FieldType.year)
+        {
+            return String.format("%4d", Calendar.getInstance().get(Calendar.YEAR));
+        }
         return value;
     }
 
