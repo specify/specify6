@@ -250,7 +250,7 @@ public class ResultSetController implements ValidationListener
      */
     public void setLength(final int len)
     {
-        currentInx = len > 0 ? len - 1 : -1;
+        currentInx = len > 0 ? 0 : -1;
         numRecords = len;
         lastInx    = numRecords - 1;
         updateUI(); 
