@@ -153,14 +153,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
             
             fields = formatter.getFields();
     
-            requiredLength = 0;
-            
-            /*StringBuilder strBuf = new StringBuilder(32);
-            for (UIFieldFormatterField field : fields)
-            {
-                requiredLength += field.getSize();
-                strBuf.append(field.getValue());
-            }*/
+            requiredLength = formatter.getLength();
             bgStr = formatter.toPattern();
     
             if (requiredLength > oldReqLen) // don't let the field shrink
