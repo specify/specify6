@@ -209,7 +209,7 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
     /**
      *      * User definable
      */
-    @Column(name = "Text2", length=253005, unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "Text2", length=300, unique = false, nullable = true, insertable = true, updatable = true)
     public String getText2() {
         return this.text2;
     }
