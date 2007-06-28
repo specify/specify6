@@ -67,7 +67,7 @@ public class ValCheckBox extends JCheckBox implements UIValidatable, GetSetValue
             addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
-                    setSelected(currentValue);
+                    setSelected(currentValue != null ? currentValue : false);
                 }
             });
         } else
