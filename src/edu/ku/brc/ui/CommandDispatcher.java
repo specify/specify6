@@ -79,7 +79,7 @@ public class CommandDispatcher
             list.addElement(listener);
         } else
         {
-            throw new RuntimeException("Listener has already been registered. "+listener);
+            log.error("Listener has already been registered. "+listener);
         }
     }
     

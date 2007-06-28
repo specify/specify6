@@ -550,7 +550,7 @@ public class GenericDBConversion
             //"CollectionObject", "PreparationMethodID", "PreparationMethod", "PreparationMethodID",
 
             //"CollectionObjectCatalog", "CollectionObjectTypeID", "CollectionObjectType", "CollectionObjectTypeID",
-            "CollectionObject", "CatalogSeriesID",        "CatalogSeries", "CatalogSeriesID",
+            //"CollectionObject", "CatalogSeriesID",        "CatalogSeries", "CatalogSeriesID",
             "CollectionObject", "AccessionID",            "Accession", "AccessionID",
             "CollectionObject", "CatalogerID",            "Agent", "AgentID",
 
@@ -829,6 +829,8 @@ public class GenericDBConversion
                BasicSQLUtils.setOneToOneIDHash(createFieldNameMap(new String[] {"HabitatAttributesID", "HabitatAttributesID"}));
                
                errorsToShow &= ~BasicSQLUtils.SHOW_NULL_FK; // Turn off this error for LocalityID
+               errorsToShow &= ~BasicSQLUtils.SHOW_VAL_MAPPING_ERROR; // Turn off this error for Habitat
+               
 
            }
            else if (fromTableName.equals("determination"))
@@ -3007,7 +3009,7 @@ public class GenericDBConversion
      * All "logical" records are moved to the CollectionObject table and all "physical" records are moved to the Preparation table.
      * @return true if no errors
      */
-    public boolean createCollectionRecords()
+    public boolean convertCollectionObjects()
     {
         IdHashMapper colObjTaxonMapper = (IdHashMapper)idMapperMgr.get("ColObjCatToTaxonType");
         colObjTaxonMapper.setShowLogErrors(false); // NOTE: TURN THIS ON FOR DEBUGGING or running new Databases through it

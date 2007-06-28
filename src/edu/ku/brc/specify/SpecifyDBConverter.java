@@ -471,7 +471,7 @@ public class SpecifyDBConverter
                         conversion.convertPreparationRecords(prepTypeMap);
                     }
                     
-                    conversion.createCollectionRecords();
+                    conversion.convertCollectionObjects();
                     frame.incOverall();
 
                     
