@@ -3094,10 +3094,11 @@ public class GenericDBConversion
             
             Statement stmt2 = oldDBConn.createStatement();
             
-            int catNum = oldNameIndex.get("CatalogNumber");
+            int    catNum = oldNameIndex.get("CatalogNumber");
 
-            int colObjAttrsNotMapped = 0;
-            int count                = 0;
+            int     colObjAttrsNotMapped = 0;
+            int     count                = 0;
+            boolean skipRecord           = false; 
             do
             {
                 
@@ -3139,6 +3140,13 @@ public class GenericDBConversion
                         colObjId      = getStrValue(recId);
                         catalogNumber = rs.getString(catNum+1);
                         
+                        int subNumber = rs.getInt(oldNameIndex.get("SubNumber"));
+                        if (subNumber < 0)
+                        {
+                            skipRecord = true;
+                            log.error("Collection Object is being skipped because SubNumber is less than zero CatalogNumber["+catalogNumber+"]");
+                            break;
+                        }
 
                     } else if (newFieldName.equals("CatalogedDateVerbatim") ||
                                 newFieldName.equals("ContainerID") ||
@@ -3233,45 +3241,49 @@ public class GenericDBConversion
                     }
 
                 }
-                str.append(")");
-                //log.info("\n"+str.toString());
-                if (hasFrame)
+                
+                if (!skipRecord)
                 {
-                    if (count % 500 == 0) 
+                    str.append(")");
+                    //log.info("\n"+str.toString());
+                    if (hasFrame)
                     {
-                        setProcess(count);
-                    }
-                    
-                } else
-                {
-                    if (count % 2000 == 0) 
+                        if (count % 500 == 0) 
+                        {
+                            setProcess(count);
+                        }
+                        
+                    } else
                     {
-                        log.info("CollectionObject Records: "+count);
+                        if (count % 2000 == 0) 
+                        {
+                            log.info("CollectionObject Records: "+count);
+                        }
                     }
+    
+                    try
+                    {
+                        Statement updateStatement = newDBConn.createStatement();
+                        updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
+                        updateStatement.executeUpdate(str.toString());
+                        updateStatement.clearBatch();
+                        updateStatement.close();
+                        updateStatement = null;
+    
+                    } catch (SQLException e)
+                    {
+                        log.error("Count: "+count);
+                        log.error("Key: ["+colObjId+"]["+catalogNumber+"]");
+                        log.error("SQL: "+str.toString());
+                        e.printStackTrace();
+                        log.error(e);
+                        rs.close();
+                        stmt.close();
+                        throw new RuntimeException(e);
+                    }
+    
+                    count++;
                 }
-
-                try
-                {
-                    Statement updateStatement = newDBConn.createStatement();
-                    updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
-                    updateStatement.executeUpdate(str.toString());
-                    updateStatement.clearBatch();
-                    updateStatement.close();
-                    updateStatement = null;
-
-                } catch (SQLException e)
-                {
-                    log.error("Count: "+count);
-                    log.error("Key: ["+colObjId+"]["+catalogNumber+"]");
-                    log.error("SQL: "+str.toString());
-                    e.printStackTrace();
-                    log.error(e);
-                    rs.close();
-                    stmt.close();
-                    throw new RuntimeException(e);
-                }
-
-                count++;
                 //if (count > 10) break;
             } while (rs.next());
             
