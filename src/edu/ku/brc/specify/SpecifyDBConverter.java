@@ -45,7 +45,7 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.GenericDBConversion;
 import edu.ku.brc.specify.conversion.IdMapperMgr;
 import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.CatalogSeries;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.DataType;
@@ -355,8 +355,8 @@ public class SpecifyDBConverter
 
                 frame.setDesc("Converting CollectionObjectDefs.");
                 log.info("Converting CollectionObjectDefs.");
-                boolean convertCatalogSeriesDef = true;
-                if (convertCatalogSeriesDef || doAll)
+                boolean convertCollectionObjDef = true;
+                if (convertCollectionObjDef || doAll)
                 {
                     DataBuilder.getSession().beginTransaction();
                     
@@ -589,45 +589,45 @@ public class SpecifyDBConverter
 
 
 
-                    Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(CatalogSeries.class);
-                    criteria.add(Restrictions.eq("catalogSeriesId", new Integer(0)));
-                    List<?> catalogSeriesList = criteria.list();
+                    Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Collection.class);
+                    criteria.add(Restrictions.eq("collectionId", new Integer(0)));
+                    List<?> collectionList = criteria.list();
 
                     boolean doAddTissues = false;
                     if (doAddTissues)
                     {
-                        deleteAllRecordsFromTable("catalogseries");
+                        deleteAllRecordsFromTable("collection");
                         try
                         {
                             Session session = HibernateUtil.getCurrentSession();
                             HibernateUtil.beginTransaction();
 
-                            CatalogSeries voucherSeries = null;
-                            if (catalogSeriesList.size() == 0)
+                            Collection voucherSeries = null;
+                            if (collectionList.size() == 0)
                             {
-                                voucherSeries = new CatalogSeries();
+                                voucherSeries = new Collection();
                                // voucherSeries.setIsTissueSeries(false);
                                 voucherSeries.setTimestampCreated(new Date());
                                 voucherSeries.setTimestampModified(new Date());
-                                voucherSeries.setCatalogSeriesId(100L);
-                                voucherSeries.setCatalogSeriesPrefix("KUFISH");
-                                voucherSeries.setSeriesName("Fish Collection");
+                                voucherSeries.setCollectionId(100L);
+                                voucherSeries.setCollectionPrefix("KUFISH");
+                                voucherSeries.setCollectionName("Fish Collection");
                                 session.saveOrUpdate(voucherSeries);
 
                             } else
                             {
-                                voucherSeries = (CatalogSeries)catalogSeriesList.get(0);
+                                voucherSeries = (Collection)collectionList.get(0);
                             }
 
                             if (voucherSeries != null)
                             {
-                                CatalogSeries tissueSeries = new CatalogSeries();
+                                Collection tissueSeries = new Collection();
                                // tissueSeries.setIsTissueSeries(true);
                                 tissueSeries.setTimestampCreated(new Date());
                                 tissueSeries.setTimestampModified(new Date());
-                                tissueSeries.setCatalogSeriesId(101L);
-                                tissueSeries.setCatalogSeriesPrefix("KUTIS");
-                                tissueSeries.setSeriesName("Fish Tissue");
+                                tissueSeries.setCollectionId(101L);
+                                tissueSeries.setCollectionPrefix("KUTIS");
+                                tissueSeries.setCollectionName("Fish Tissue");
                                 session.saveOrUpdate(tissueSeries);
 
                                 //voucherSeries.setTissue(tissueSeries);
@@ -645,7 +645,7 @@ public class SpecifyDBConverter
                         return;
                     }
 
-                        Set<CollectionObjDef>  colObjDefSet = conversion.createCollectionObjDef("Fish", dataType, user, null, null);//(CatalogSeries)catalogSeriesList.get(0));
+                        Set<CollectionObjDef>  colObjDefSet = conversion.createCollectionObjDef("Fish", dataType, user, null, null);
 
 
                         Object obj = colObjDefSet.iterator().next();
@@ -698,7 +698,7 @@ public class SpecifyDBConverter
 
             Session session = HibernateUtil.getCurrentSession();
             //start = System.currentTimeMillis();
-            //list = session.createQuery("from catalogseries in class CatalogSeries").setFirstResult(1).setMaxResults(1000).list();
+            //list = session.createQuery("from collection in class Collection").setFirstResult(1).setMaxResults(1000).list();
             //log.info("HIBR ******************** "+(System.currentTimeMillis() - start));
 
 

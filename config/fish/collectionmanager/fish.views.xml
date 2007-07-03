@@ -708,8 +708,8 @@
     			    <cell type="label" labelfor="1" label="Catalog Number" uitype="text"/>
     			    <cell type="field" id="1" name="catalogNumber" format="%.0f" uitype="text"/>
 
-                    <cell type="label" labelfor="2" label="Catalog Series"/>
-    			    <cell type="field" id="2" name="catalogSeries.seriesName" uitype="dsptextfield"/>
+                    <cell type="label" labelfor="2" label="Collection"/>
+    			    <cell type="field" id="2" name="collection.collectionName" uitype="dsptextfield"/>
 
     			    <cell type="label" labelfor="13" label="Exchg"/>
     			    <cell type="field" id="13" name="fieldNumber" uitype="text"/>
@@ -786,7 +786,7 @@
                     <cell type="field" id="1" name="catalogNumber" uitype="text"/>
                     
                     <cell type="label" labelfor="2" label="Collection"/>
-                    <cell type="field" id="2" name="catalogSeries_seriesName" uitype="text" />
+                    <cell type="field" id="2" name="collection_collectionName" uitype="text" />
                 </row>
                 <row>
                     <cell type="label" labelfor="3" label="Accession #"/>

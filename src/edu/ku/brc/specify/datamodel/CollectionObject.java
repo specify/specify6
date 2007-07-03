@@ -66,7 +66,7 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "collectionobject", uniqueConstraints = {
-        @UniqueConstraint(columnNames={"CatalogSeriesID", "CatalogNumber"} ) 
+        @UniqueConstraint(columnNames={"CollectionID", "CatalogNumber"} ) 
         } 
 )
 @org.hibernate.annotations.Table(appliesTo="collectionobject", indexes =
@@ -110,7 +110,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     protected Set<ProjectCollectionObject>  projectCollectionObjects;
     // protected Set<DeaccessionPreparation> deaccessionPreparations;
     protected Set<OtherIdentifier>          otherIdentifiers;
-    protected CatalogSeries                 catalogSeries;
+    protected Collection                    collection;
     protected Accession                     accession;
     protected Agent                         cataloger;
     protected Set<Attachment>               attachments;
@@ -169,7 +169,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
         projectCollectionObjects = new HashSet<ProjectCollectionObject>();
         //deaccessionPreparations = new HashSet<DeaccessionPreparation>();
         otherIdentifiers      = new HashSet<OtherIdentifier>();
-        catalogSeries         = null;
+        collection         = null;
         accession             = null;
         cataloger             = null;
         attachments           = new HashSet<Attachment>();
@@ -209,8 +209,8 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     
     public void initForSearch()
     {
-        catalogSeries = new CatalogSeries();
-        catalogSeries.initialize();
+        collection = new Collection();
+        collection.initialize();
         
         accession = new Accession();
         accession.initialize();
@@ -646,13 +646,13 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    @JoinColumn(name = "CatalogSeriesID", unique = false, nullable = false, insertable = true, updatable = true)
-    public CatalogSeries getCatalogSeries() {
-        return this.catalogSeries;
+    @JoinColumn(name = "CollectionID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Collection getCollection() {
+        return this.collection;
     }
 
-    public void setCatalogSeries(CatalogSeries catalogSeries) {
-        this.catalogSeries = catalogSeries;
+    public void setCollection(Collection collection) {
+        this.collection = collection;
     }
 
     /**

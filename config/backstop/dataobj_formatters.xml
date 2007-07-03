@@ -14,6 +14,9 @@
                 <field>lastName</field>
                 <field sep=", " >firstName</field>
             </fields>
+            <fields value="2">
+                <field>name</field>
+            </fields>
         </switch>
     </format>
     

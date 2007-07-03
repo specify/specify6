@@ -85,7 +85,7 @@ import edu.ku.brc.specify.config.LoggerDialog;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Attachment;
-import edu.ku.brc.specify.datamodel.CatalogSeries;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
@@ -519,8 +519,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
         
         if (!isWorkbenchOnly)
         {
-            // Add Menu for switching CatalogSeries
-            changeCatSeriesBtn = UIHelper.createMenuItem(menu, "Change Catalog Series", "C", "Change Catalog Series", false, null);
+            // Add Menu for switching Collection
+            changeCatSeriesBtn = UIHelper.createMenuItem(menu, "Change Collection", "C", "Change Collection", false, null);
             changeCatSeriesBtn.addActionListener(new ActionListener()
                     {
                         public void actionPerformed(ActionEvent ae)
@@ -536,7 +536,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                         }
                     });
     
-            changeCatSeriesBtn.setEnabled(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getNumOfCatalogSeriesForUser() > 1);
+            changeCatSeriesBtn.setEnabled(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getNumOfCollectionsForUser() > 1);
         }
 
         if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
@@ -972,9 +972,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
         //moved here because context needs to be set before loading prefs, we need to know the SpecifyUser
         AppContextMgr.CONTEXT_STATUS status = AppContextMgr.getInstance().setContext(databaseNameArg, userNameArg, startOver);
         SpecifyAppPrefs.initialPrefs();
-
         
-        //CatalogSeries.setCurrentCatalogSeries(null);
+        //Collection.setCurrentCollection(null);
         //CollectionObjDef.setCurrentCollectionObjDef(null);
         
         // "false" means that it should use any cached values it can find to automatically initialize itself
@@ -995,7 +994,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
             
             if (changeCatSeriesBtn != null)
             {
-                changeCatSeriesBtn.setEnabled(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getNumOfCatalogSeriesForUser() > 1);
+                changeCatSeriesBtn.setEnabled(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getNumOfCollectionsForUser() > 1);
             }
             
         } else if (status == AppContextMgr.CONTEXT_STATUS.Error)
@@ -1006,7 +1005,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 dbLoginPanel.getWindow().setVisible(false);
             }
             
-            if (CatalogSeries.getCurrentCatalogSeries() == null)
+            if (Collection.getCurrentCollection() == null)
             {
                 
                 // TODO This is really bad because there is a Database Login with no Specify login

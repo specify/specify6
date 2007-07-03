@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.SecurityMgr;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
-import edu.ku.brc.specify.datamodel.CatalogSeries;
+import edu.ku.brc.specify.datamodel.Collection;
 
 /**
  * 
@@ -41,10 +41,10 @@ public class SpecifySecurityMgr  extends SecurityMgr
         super();
         //String databaseName = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getDatabaseName();
         //String userName = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getUserName();
-        //List<CatalogSeries> catSeries = CatalogSeries.getCurrentCatalogSeries();
+        //List<Collection> catSeries = Collection.getCurrentCollection();
         //((SpecifyAppContextMgr)AppContextMgr.getInstance()).getDiscipline(name)
         //((SpecifyAppContextMgr)AppContextMgr.getInstance()).getDiscipline(name)
-        //.getNumOfCatalogSeriesForUser();
+        //.getNumOfCollectionForUser();
         // TODO Auto-generated constructor stub
         
         

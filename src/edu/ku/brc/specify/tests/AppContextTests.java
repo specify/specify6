@@ -27,7 +27,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
-import edu.ku.brc.specify.datamodel.CatalogSeries;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.ui.UIRegistry;
 
 public class AppContextTests extends TestCase
@@ -60,28 +60,28 @@ public class AppContextTests extends TestCase
     }
 
     
-    public void testAppContextSnigleCatalogSeries()
+    public void testAppContextSnigleCollection()
     {
         /*
         String databaseName  = "fish";
         String userName      = "rods";
         String catSeriesName = "Bees";
         
-        List<CatalogSeries> catalogSeriesList = new ArrayList<CatalogSeries>();
+        List<Collection> collectionList = new ArrayList<Collection>();
         
-        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(CatalogSeries.class);
-        criteria.add(Expression.eq("seriesName", catSeriesName));
+        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(Collection.class);
+        criteria.add(Expression.eq("collectionName", catSeriesName));
         List list = criteria.list();
         if (list.size() == 1)
         {
-            catalogSeriesList.add((CatalogSeries)list.get(0));
+            collectionList.add((Collection)list.get(0));
             
         } else
         {
-            throw new RuntimeException("Problems with CatalogSeries["+catSeriesName+"] for user["+userName+"]");
+            throw new RuntimeException("Problems with Collection["+catSeriesName+"] for user["+userName+"]");
         }
         
-        CatalogSeries.setCurrentCatalogSeries(catalogSeriesList);
+        Collection.setCurrentCollection(collectionList);
         
         assertTrue(SpecifyAppContextMgr.getInstance().setContext(databaseName, userName, false) == AppContextMgr.CONTEXT_STATUS.OK);
         
@@ -119,15 +119,15 @@ public class AppContextTests extends TestCase
         
         SpecifyUser user = (SpecifyUser)list.get(0);
         
-        CatalogSeries cs = AppContextMgr.getInstance().setupCurrentCatalogSeries(user, false); // false means don't ask if you already have one
+        Collection cs = AppContextMgr.getInstance().setupCurrentCollection(user, false); // false means don't ask if you already have one
         assertNotNull(cs);
         
-        log.info("Selected CatalogSeries: ["+cs.getSeriesName()+"]");
+        log.info("Selected Collection: ["+cs.getSeriesName()+"]");
         
-        cs = AppContextMgr.getInstance().setupCurrentCatalogSeries(user, true); // false means don't ask if you already have one
+        cs = AppContextMgr.getInstance().setupCurrentCollection(user, true); // false means don't ask if you already have one
         assertNotNull(cs);
         
-        log.info("Selected CatalogSeries: ["+cs.getSeriesName()+"]");
+        log.info("Selected Collection: ["+cs.getSeriesName()+"]");
         
         CollectionObjDef cod = AppContextMgr.getInstance().setupCurrentColObjDef(cs, false); // false means don't ask if you already have one
         assertNotNull(cod);

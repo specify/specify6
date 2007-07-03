@@ -65,7 +65,7 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
     protected String                    name;
     protected String                    discipline;
     protected DataType                  dataType;
-    protected Set<CatalogSeries>        catalogSeries;
+    protected Set<Collection>           collection;
     protected SpecifyUser               specifyUser;
     protected Set<AttributeDef>         attributeDefs;
     protected GeographyTreeDef          geographyTreeDef;
@@ -109,7 +109,7 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
         discipline = null;
         dataType = null;
         userPermissions = null;
-        catalogSeries = new HashSet<CatalogSeries>();
+        collection = new HashSet<Collection>();
         specifyUser = null;
         attributeDefs = new HashSet<AttributeDef>();
         geographyTreeDef = null;
@@ -203,12 +203,12 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
      */
     @OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="collectionObjDef")
     @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
-    public Set<CatalogSeries> getCatalogSeries() {
-        return this.catalogSeries;
+    public Set<Collection> getCollection() {
+        return this.collection;
     }
 
-    public void setCatalogSeries(Set<CatalogSeries> catalogSeries) {
-        this.catalogSeries = catalogSeries;
+    public void setCollection(Set<Collection> collection) {
+        this.collection = collection;
     }
 
     /**
@@ -348,10 +348,10 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
 
     // Add Methods
 
-    public void addCatalogSeries(final CatalogSeries catalogSeriesArg)
+    public void addCollection(final Collection collectionArg)
     {
-        this.catalogSeries.add(catalogSeriesArg);
-        catalogSeriesArg.setCollectionObjDef(this);
+        this.collection.add(collectionArg);
+        collectionArg.setCollectionObjDef(this);
     }
 
     public void addAttributeDefs(final AttributeDef attributeDef)
@@ -375,10 +375,10 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
 
     // Delete Methods
 
-    public void removeCatalogSeries(final CatalogSeries catalogSeriesArg)
+    public void removeCollection(final Collection collectionArg)
     {
-        this.catalogSeries.remove(catalogSeriesArg);
-        catalogSeriesArg.setCollectionObjDef(null);
+        this.collection.remove(collectionArg);
+        collectionArg.setCollectionObjDef(null);
     }
 
     public void removeAttributeDefs(final AttributeDef attributeDef)

@@ -58,7 +58,7 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
     // Fields
 
      protected Long             appResourceDefaultId;
-     protected CatalogSeries    catalogSeries;
+     protected Collection       collection;
      protected CollectionObjDef collectionObjDef;
      protected SpecifyUser      specifyUser;
      protected Set<AppResource> persistedAppResources;
@@ -88,7 +88,7 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
     {
         super.init();
         appResourceDefaultId  = null;
-        catalogSeries         = null;
+        collection            = null;
         collectionObjDef      = null;
         specifyUser           = null;
         
@@ -153,20 +153,20 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.AppResourceDefaultIFace#getCatalogSeries()
+     * @see edu.ku.brc.specify.datamodel.AppResourceDefaultIFace#getCollection()
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    @JoinColumn(name = "CatalogSeriesID", unique = false, nullable = true, insertable = true, updatable = true)
-    public CatalogSeries getCatalogSeries() {
-        return this.catalogSeries;
+    @JoinColumn(name = "CollectionID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Collection getCollection() {
+        return this.collection;
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.AppResourceDefaultIFace#setCatalogSeries(edu.ku.brc.specify.datamodel.CatalogSeries)
+     * @see edu.ku.brc.specify.datamodel.AppResourceDefaultIFace#setCollection(edu.ku.brc.specify.datamodel.Collection)
      */
-    public void setCatalogSeries(CatalogSeries catalogSeries) {
-        this.catalogSeries = catalogSeries;
+    public void setCollection(Collection collection) {
+        this.collection = collection;
     }
 
     /* (non-Javadoc)
@@ -285,7 +285,7 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
     public String getVerboseUniqueIdentifer()
     {
         StringBuilder strBuf = new StringBuilder();
-        strBuf.append(""+(catalogSeries != null ? catalogSeries.getSeriesName() : ""));
+        strBuf.append(""+(collection != null ? collection.getCollectionName() : ""));
         strBuf.append(" "+(specifyUser != null ? specifyUser.getName() : ""));
         strBuf.append(" "+(collectionObjDef != null ? collectionObjDef.getName() : ""));
         strBuf.append(" "+(disciplineType != null ? disciplineType : ""));

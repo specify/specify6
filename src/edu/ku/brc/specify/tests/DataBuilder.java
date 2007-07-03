@@ -24,7 +24,7 @@ import edu.ku.brc.specify.datamodel.Borrow;
 import edu.ku.brc.specify.datamodel.BorrowAgent;
 import edu.ku.brc.specify.datamodel.BorrowMaterial;
 import edu.ku.brc.specify.datamodel.BorrowReturnMaterial;
-import edu.ku.brc.specify.datamodel.CatalogSeries;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectingEventAttr;
 import edu.ku.brc.specify.datamodel.CollectingTrip;
@@ -189,33 +189,44 @@ public class DataBuilder
         return colObjDef;
     }
 
-    public static CatalogSeries createCatalogSeries(final String prefix,
-                                                    final String name,
-                                                    final CollectionObjDef[] colObjDefs)
+    public static Collection createCollection(final String prefix,
+                                              final String name,
+                                              final CollectionObjDef[] colObjDefs)
     {
-        CatalogSeries catalogSeries = new CatalogSeries();
-        catalogSeries.initialize();
-        catalogSeries.setCatalogSeriesPrefix(prefix);
-        catalogSeries.setLastEditedBy(null);
-        catalogSeries.setRemarks("These are the remarks");
-        catalogSeries.setSeriesName(name);
+        Collection collection = new Collection();
+        collection.initialize();
+        collection.setCollectionPrefix(prefix);
+        collection.setLastEditedBy(null);
+        collection.setRemarks("These are the remarks");
+        collection.setCollectionName(name);
 
         for (CollectionObjDef cod: colObjDefs)
         {
-            catalogSeries.setCollectionObjDef(cod);
+            collection.setCollectionObjDef(cod);
         }
 
-        persist(catalogSeries);
-        return catalogSeries;
+        persist(collection);
+        return collection;
     }
 
-    public static CatalogSeries createCatalogSeries(final String prefix,
-                                                    final String name,
-                                                    final CollectionObjDef colObjDef)
+    /**
+     * @param prefix
+     * @param name
+     * @param colObjDef
+     * @return
+     */
+    public static Collection createCollection(final String prefix,
+                                              final String name,
+                                              final CollectionObjDef colObjDef)
     {
-        return createCatalogSeries(prefix, name, new CollectionObjDef[] { colObjDef });
+        return createCollection(prefix, name, new CollectionObjDef[] { colObjDef });
     }
 
+    /**
+     * @param locality
+     * @param collectors
+     * @return
+     */
     public static CollectingEvent createCollectingEvent(final Locality locality, final Collector[] collectors)
     {
         CollectingEvent colEv = new CollectingEvent();
@@ -354,7 +365,7 @@ public class DataBuilder
     public static CollectionObject createCollectionObject(final float catalogNumber,
                                                           final String fieldNumber,
                                                           final Agent cataloger,
-                                                          final CatalogSeries catalogSeries,
+                                                          final Collection collection,
                                                           final int count,
                                                           final CollectingEvent collectingEvent,
                                                           final Calendar catalogedDate,
@@ -368,7 +379,7 @@ public class DataBuilder
         colObj.setCatalogedDate(catalogedDate);
         colObj.setCatalogedDateVerbatim(DateFormat.getInstance().format(catalogedDate.getTime()));
         colObj.setCatalogNumber(catalogNumber);
-        colObj.setCatalogSeries(catalogSeries);
+        colObj.setCollection(collection);
         colObj.setCollectingEvent(collectingEvent);
         colObj.setCountAmt(count);
         colObj.setFieldNumber(fieldNumber);
@@ -1196,21 +1207,21 @@ public class DataBuilder
 //        return borrowshipment;
 //    }
 
-    public static CatalogSeries createCatalogSeries(final Boolean isTissueSeries,
+    public static Collection createCollection(final Boolean isTissueSeries,
                                                     final String seriesName,
-                                                    final String catalogSeriesPrefix)//,
-                                                    //final CatalogSeries tissue)
+                                                    final String collectionPrefix)//,
+                                                    //final Collection tissue)
     {
-        CatalogSeries catalogseries = new CatalogSeries();
-        catalogseries.initialize();
-        catalogseries.setTimestampCreated(new Date());
-        catalogseries.setTimestampModified(new Date());
-        //catalogseries.setIsTissueSeries(isTissueSeries);
-        catalogseries.setSeriesName(seriesName);
-        catalogseries.setCatalogSeriesPrefix(catalogSeriesPrefix);
-        //catalogseries.setTissue(tissue);
-        persist(catalogseries);
-        return catalogseries;
+        Collection collection = new Collection();
+        collection.initialize();
+        collection.setTimestampCreated(new Date());
+        collection.setTimestampModified(new Date());
+        //collection.setIsTissueSeries(isTissueSeries);
+        collection.setCollectionName(seriesName);
+        collection.setCollectionPrefix(collectionPrefix);
+        //collection.setTissue(tissue);
+        persist(collection);
+        return collection;
     }
 
     public static CollectingEvent createCollectingEvent(final String stationFieldNumber,
@@ -1304,7 +1315,7 @@ public class DataBuilder
                                                           final Float catalogNumber,
                                                           final CollectingEvent collectingEvent,
                                                           final ContainerItem containerItem,
-                                                          final CatalogSeries catalogSeries,
+                                                          final Collection collection,
                                                           final Accession accession,
                                                           final Agent cataloger,
                                                           final Container container)
@@ -1325,7 +1336,7 @@ public class DataBuilder
         collectionobject.setCatalogNumber(catalogNumber);
         collectionobject.setCollectingEvent(collectingEvent);
         collectionobject.setContainerItem(containerItem);
-        collectionobject.setCatalogSeries(catalogSeries);
+        collectionobject.setCollection(collection);
         collectionobject.setAccession(accession);
         collectionobject.setCataloger(cataloger);
         collectionobject.setContainer(container);

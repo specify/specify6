@@ -177,7 +177,7 @@ public class IdMapperMgr
      */
     public IdMapperIFace get(final String name)
     {
-        return idMappers.get(name.toLowerCase());
+        return idMappers.get(name);
     }
     
     /**

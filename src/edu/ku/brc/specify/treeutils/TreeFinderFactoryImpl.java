@@ -9,7 +9,7 @@ package edu.ku.brc.specify.treeutils;
 import java.util.List;
 import java.util.Vector;
 
-import edu.ku.brc.specify.datamodel.CatalogSeries;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
@@ -66,7 +66,7 @@ public class TreeFinderFactoryImpl extends TreeFinderFactory
     }
     
     /**
-     * Finds the 'first' taxonomy tree associated with the current {@link CatalogSeries}.
+     * Finds the 'first' taxonomy tree associated with the current {@link Collection}.
      * 
      * @return a {@link TaxonTreeDef}
      */
@@ -74,7 +74,7 @@ public class TreeFinderFactoryImpl extends TreeFinderFactory
     {
         List<TaxonTreeDef> defs = new Vector<TaxonTreeDef>();
         
-        CatalogSeries cs = CatalogSeries.getCurrentCatalogSeries();
+        Collection cs = Collection.getCurrentCollection();
         if (cs != null)
         {
             CollectionObjDef cod = cs.getCollectionObjDef();
@@ -93,7 +93,7 @@ public class TreeFinderFactoryImpl extends TreeFinderFactory
     }
     
     /**
-     * Finds the 'first' geography tree associated with the current {@link CatalogSeries}.
+     * Finds the 'first' geography tree associated with the current {@link Collection}.
      * 
      * @return a {@link GeographyTreeDef}
      */
@@ -101,7 +101,7 @@ public class TreeFinderFactoryImpl extends TreeFinderFactory
     {
         List<GeographyTreeDef> defs = new Vector<GeographyTreeDef>();
         
-        CatalogSeries cs = CatalogSeries.getCurrentCatalogSeries();
+        Collection cs = Collection.getCurrentCollection();
         if (cs != null)
         {
             CollectionObjDef cod = cs.getCollectionObjDef();
@@ -120,7 +120,7 @@ public class TreeFinderFactoryImpl extends TreeFinderFactory
     }
     
     /**
-     * Finds the 'first' geologic time period tree associated with the current {@link CatalogSeries}.
+     * Finds the 'first' geologic time period tree associated with the current {@link Collection}.
      * 
      * @return a {@link GeologicTimePeriodTreeDef}
      */
@@ -128,7 +128,7 @@ public class TreeFinderFactoryImpl extends TreeFinderFactory
     {
         List<GeologicTimePeriodTreeDef> defs = new Vector<GeologicTimePeriodTreeDef>();
         
-        CatalogSeries cs = CatalogSeries.getCurrentCatalogSeries();
+        Collection cs = Collection.getCurrentCollection();
         if (cs != null)
         {
             CollectionObjDef cod = cs.getCollectionObjDef();
@@ -147,7 +147,7 @@ public class TreeFinderFactoryImpl extends TreeFinderFactory
     }
     
     /**
-     * Finds the 'first' location tree associated with the current {@link CatalogSeries}.
+     * Finds the 'first' location tree associated with the current {@link Collection}.
      * 
      * @return a {@link LocationTreeDef}
      */
@@ -155,7 +155,7 @@ public class TreeFinderFactoryImpl extends TreeFinderFactory
     {
         List<LocationTreeDef> defs = new Vector<LocationTreeDef>();
         
-        CatalogSeries cs = CatalogSeries.getCurrentCatalogSeries();
+        Collection cs = Collection.getCurrentCollection();
         if (cs != null)
         {
             CollectionObjDef cod = cs.getCollectionObjDef();

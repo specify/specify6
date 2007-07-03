@@ -48,7 +48,7 @@ public class CollectionAutoNumber extends AutoNumberGeneric
         
         Criteria criteria = session.createCriteria(classObj);
         criteria.addOrder( Order.desc(fieldName) );
-        criteria.createCriteria("catalogSeries").add(Restrictions.in("catalogSeriesId", ids));
+        criteria.createCriteria("collection").add(Restrictions.in("collectionId", ids));
         //System.out.println(c2.toString());
         //System.out.println(criteria.toString());
         criteria.setMaxResults(1);

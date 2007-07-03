@@ -58,7 +58,7 @@ import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.config.Discipline;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.AttributeDef;
-import edu.ku.brc.specify.datamodel.CatalogSeries;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
@@ -150,7 +150,7 @@ public class GenericDBConversion
     protected ProgressFrame        frame    = null;
     protected boolean              hasFrame = false;
     
-    protected Hashtable<String, Long> catalogSeriesHash = new Hashtable<String, Long>();
+    protected Hashtable<String, Long> collectionHash = new Hashtable<String, Long>();
 
     /**
      * "Old" means the database you want to copy "from"
@@ -280,13 +280,13 @@ public class GenericDBConversion
     {
         /*String[] tableNames =
         {
-                "CatalogSeries",
+                "Collection",
                 "CatalogSeriesDefinition",
                 "TaxonName",
                 "TaxonomicUnitType"                
         };*/
 
-        //These are the names as they occur in teh old datamodel
+        // These are the names as they occur in the old datamodel
         String[] tableNames =
         {
         "Accession",
@@ -304,7 +304,7 @@ public class GenericDBConversion
         "BorrowMaterial",
         "BorrowReturnMaterial",
         //"BorrowShipments",
-        //"CatalogSeries",
+        //"Collection",
         "CatalogSeriesDefinition",
         "CollectingEvent",
         //"Collection",
@@ -409,7 +409,7 @@ public class GenericDBConversion
         }
 
 
-        //When you run in to this table1.field, go to that table2 and look up the id
+        // When you run in to this table1.field, go to that table2 and look up the id
         String[] mappings = {
             "BorrowReturnMaterial", "BorrowMaterialID", "BorrowMaterial", "BorrowMaterialID",
             "BorrowReturnMaterial", "ReturnedByID", "Agent", "AgentID",
@@ -527,7 +527,7 @@ public class GenericDBConversion
             // ??? "GeologicTimePeriod", "UpperBoundaryID", "UpperBoundary", "UpperBoundaryID",
             // ??? "GeologicTimePeriod", "LowerBoundaryID", "LowerBoundary", "LowerBoundaryID",
 
-            //"CatalogSeriesDefinition", "CatalogSeriesID", "CatalogSeries", "CatalogSeriesID",
+            //"CatalogSeriesDefinition", "CatalogSeriesID", "Collection", "CatalogSeriesID",
             //"CatalogSeriesDefinition", "ObjectTypeID", "ObjectType", "ObjectTypeID",
 
             // (not needed) "CollectionObject", "DerivedFromID", "DerivedFrom", "DerivedFromID",
@@ -550,7 +550,7 @@ public class GenericDBConversion
             //"CollectionObject", "PreparationMethodID", "PreparationMethod", "PreparationMethodID",
 
             //"CollectionObjectCatalog", "CollectionObjectTypeID", "CollectionObjectType", "CollectionObjectTypeID",
-            //"CollectionObject", "CatalogSeriesID",        "CatalogSeries", "CatalogSeriesID",
+            //"CollectionObject", "CollectionID",           "CatalogSeries", "CatalogSeriesID",
             "CollectionObject", "AccessionID",            "Accession", "AccessionID",
             "CollectionObject", "CatalogerID",            "Agent", "AgentID",
 
@@ -571,7 +571,7 @@ public class GenericDBConversion
             "DeterminationCitation", "ReferenceWorkID", "ReferenceWork", "ReferenceWorkID",
             "DeterminationCitation", "DeterminationID", "Determination", "DeterminationID",
 
-            //"CatalogSeries", "CollectionID", "Collection", "CollectionID",
+            //"Collection", "CollectionID", "Collection", "CollectionID",
 
             "OtherIdentifier", "CollectionObjectID", "CollectionObject", "CollectionObjectID",
 
@@ -671,7 +671,7 @@ public class GenericDBConversion
                                     "BorrowMaterial",
                                     "BorrowReturnMaterial",
                                     //"BorrowShipment",
-                                    //"CatalogSeries",
+                                    //"Collection",
                                     "CollectingEvent",
                                     "CollectionObjectCitation",
                                     "Collector",
@@ -830,7 +830,6 @@ public class GenericDBConversion
                
                errorsToShow &= ~BasicSQLUtils.SHOW_NULL_FK; // Turn off this error for LocalityID
                errorsToShow &= ~BasicSQLUtils.SHOW_VAL_MAPPING_ERROR; // Turn off this error for Habitat
-               
 
            }
            else if (fromTableName.equals("determination"))
@@ -1289,13 +1288,12 @@ public class GenericDBConversion
         try
         {
             // The Old Table catalogseriesdefinition is being converted to collectionobjdef
-            //IdMapperIFace catalogSeriesMapper = idMapperMgr.addTableMapper("CatalogSeries", "CatalogSeriesID");
             IdMapperIFace taxonomyTypeMapper  = idMapperMgr.get("TaxonomyType", "TaxonomyTypeID");
 
             // Create a Hashtable to track which IDs have been handled during the conversion process
             BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "datatype");
             BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "collectionobjdef");
-            BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "catalogseries");
+            BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "collection");
             //BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "catseries_colobjdef");
 
             Hashtable<Long, Long> newColObjIDTotaxonomyTypeID     = new Hashtable<Long, Long>();
@@ -1365,8 +1363,8 @@ public class GenericDBConversion
                 strBuf2.append("INSERT INTO collectionobjdef (CollectionObjDefID, TimestampModified, Discipline, Name, TimestampCreated, LastEditedBy, DataTypeID, SpecifyUserID, GeographyTreeDefID, GeologicTimePeriodTreeDefID, LocationTreeDefID, TaxonTreeDefID) VALUES (");
                 strBuf2.append(taxonomyTypeMapper.get(taxonomyTypeID)+","); 
                 strBuf2.append("'"+dateFormatter.format(new Date())+"',"); // TimestampModified
-                strBuf2.append("'"+discipline.getTitle()+"',");
                 strBuf2.append("'"+discipline.getName()+"',");
+                strBuf2.append("'"+discipline.getTitle()+"',");
                 strBuf2.append("'"+dateFormatter.format(new Date())+"',");  // TimestampCreated
                 strBuf2.append("NULL,"); // lastEditedBy
                 strBuf2.append(dataTypeId+",");
@@ -1397,7 +1395,7 @@ public class GenericDBConversion
 
             if (taxonomyTypeMapper.size() > 0)
             {
-                // Now convert over all CatalogSeries
+                // Now convert over all Collection
     
                 String sql = "Select catalogseries.CatalogSeriesID, catalogseries.SeriesName, taxonomytype.TaxonomyTypeName, " +
                              "catalogseries.CatalogSeriesPrefix, catalogseries.Remarks, catalogseries.LastEditedBy, catalogseriesdefinition.CatalogSeriesDefinitionID, " +
@@ -1435,12 +1433,11 @@ public class GenericDBConversion
     
                      // Now craete the proper record in the  Join Table
     
-                     //long newCatalogSeriesID = catalogSeriesMapper.get(catalogSeriesID);
                      long newColObjdefID     = taxonomyTypeMapper.get(taxonomyTypeID);
     
                      Statement updateStatement = newDBConn.createStatement();
                      strBuf.setLength(0);
-                     strBuf.append("INSERT INTO catalogseries (CollectionObjDefID, SeriesName, CatalogSeriesPrefix, Remarks, LastEditedBy, TimestampCreated, TimestampModified) VALUES (");
+                     strBuf.append("INSERT INTO collection (CollectionObjDefID, CollectionName, CollectionPrefix, Remarks, LastEditedBy, TimestampCreated, TimestampModified) VALUES (");
                      strBuf.append(newColObjdefID+",");
                      strBuf.append(getStrValue(newSeriesName)+",");
                      strBuf.append(getStrValue(prefix)+",");
@@ -1457,16 +1454,16 @@ public class GenericDBConversion
                      updateStatement.close();
                      updateStatement = null;
                      
-                     Long newCatSeriesID = BasicSQLUtils.getHighestId(newDBConn, "CatalogSeriesID", "catalogseries");
-                     catalogSeriesHash.put(catalogSeriesID+"_"+taxonomyTypeID, newCatSeriesID);
+                     Long newCatSeriesID = BasicSQLUtils.getHighestId(newDBConn, "CollectionID", "collection");
+                     collectionHash.put(catalogSeriesID+"_"+taxonomyTypeID, newCatSeriesID);
                      
-                     log.info("CatalogSeries New["+newCatSeriesID+"] ["+seriesName+"] ["+prefix+"] ["+newColObjdefID+"]");
+                     log.info("Collection New["+newCatSeriesID+"] ["+seriesName+"] ["+prefix+"] ["+newColObjdefID+"]");
     
                      recordCnt++;
     
                  } // while
     
-                 log.info("CatalogSeries Join Records: "+ recordCnt);
+                 log.info("Collection Join Records: "+ recordCnt);
                  rs.close();
                  stmt.close();
             } else
@@ -3011,8 +3008,11 @@ public class GenericDBConversion
      */
     public boolean convertCollectionObjects()
     {
-        IdHashMapper colObjTaxonMapper = (IdHashMapper)idMapperMgr.get("ColObjCatToTaxonType");
+        idMapperMgr.dumpKeys();
+        IdHashMapper colObjTaxonMapper = (IdHashMapper)idMapperMgr.get("ColObjCatToTaxonType".toLowerCase());
+        IdHashMapper colObjAttrMapper  = (IdHashMapper)idMapperMgr.get("biologicalobjectattributes_BiologicalObjectAttributesID");
         colObjTaxonMapper.setShowLogErrors(false); // NOTE: TURN THIS ON FOR DEBUGGING or running new Databases through it
+        colObjAttrMapper.setShowLogErrors(false);
         
         log.info("colObjTaxonMapper: "+colObjTaxonMapper.size());
 
@@ -3092,11 +3092,12 @@ public class GenericDBConversion
                 }
             }
             
-            //int catSeriesIdInx = oldNameIndex.get("CatalogSeriesID");
-            
             Statement stmt2 = oldDBConn.createStatement();
+            
+            int catNum = oldNameIndex.get("CatalogNumber");
 
-            int count = 0;
+            int colObjAttrsNotMapped = 0;
+            int count                = 0;
             do
             {
                 
@@ -3105,17 +3106,21 @@ public class GenericDBConversion
                                        "Inner Join collectionobject ON collectionobjectcatalog.CollectionObjectCatalogID = collectionobject.CollectionObjectID " +  
                                        "Inner Join collectiontaxonomytypes ON collectionobject.CollectionObjectTypeID = collectiontaxonomytypes.BiologicalObjectTypeID " +
                                        "where collectionobjectcatalog.CollectionObjectCatalogID = " + rs.getLong(1);
+                //log.info(catIdTaxIdStr);
                 ResultSet rs2   = stmt2.executeQuery(catIdTaxIdStr);
                 rs2.first();
                 Long catalogSeriesID = rs2.getLong(2);
                 Long taxonomyTypeID  = rs2.getLong(3);
-                Long newCatSeriesId = catalogSeriesHash.get(catalogSeriesID+"_"+taxonomyTypeID);
+                Long newCatSeriesId = collectionHash.get(catalogSeriesID+"_"+taxonomyTypeID);
                 rs2.close();
                 
                 if (newCatSeriesId == null)
                 {
                     log.error("Can't find "+catalogSeriesID+"_"+taxonomyTypeID);
                 }
+                
+                String catalogNumber = null;
+                String colObjId      = null;
                 
                 str.setLength(0);
                 str.append("INSERT INTO collectionobject VALUES (");
@@ -3124,11 +3129,16 @@ public class GenericDBConversion
                     if (i > 0) str.append(", ");
 
                     String newFieldName = newFieldMetaData.get(i).getName();
-
+                    
                     if (i == 0)
                     {
-                        Integer  recId  = count+1;
+                        Integer  recId  = count + 1;
+                        
                         str.append(getStrValue(recId));
+                        
+                        colObjId      = getStrValue(recId);
+                        catalogNumber = rs.getString(catNum+1);
+                        
 
                     } else if (newFieldName.equals("CatalogedDateVerbatim") ||
                                 newFieldName.equals("ContainerID") ||
@@ -3142,9 +3152,28 @@ public class GenericDBConversion
                     {
                         str.append("NULL");
 
-                    } else if(newFieldName.equals("CatalogSeriesID")) //User/Security changes
+                    } else if (newFieldName.equals("CollectionID")) //User/Security changes
                     {
                         str.append(newCatSeriesId);
+                        
+                    } else if (newFieldName.equals("ColObjAttributesID")) //User/Security changes
+                    {
+                        Object idObj = rs.getObject(1);
+                        if (idObj != null)
+                        {
+                            Long newId = colObjAttrMapper.get(rs.getLong(1));
+                            if (newId != null)
+                            {
+                                str.append(getStrValue(newId));
+                            } else
+                            {
+                                colObjAttrsNotMapped++;
+                                str.append("NULL");
+                            }
+                        } else
+                        {
+                            str.append("NULL");
+                        }
                         
                     } else if(newFieldName.equals("Visibility")) //User/Security changes
                     {
@@ -3233,6 +3262,8 @@ public class GenericDBConversion
                 } catch (SQLException e)
                 {
                     log.error("Count: "+count);
+                    log.error("Key: ["+colObjId+"]["+catalogNumber+"]");
+                    log.error("SQL: "+str.toString());
                     e.printStackTrace();
                     log.error(e);
                     rs.close();
@@ -3243,6 +3274,8 @@ public class GenericDBConversion
                 count++;
                 //if (count > 10) break;
             } while (rs.next());
+            
+            log.info("ColObjAttributes not mapped: "+colObjAttrsNotMapped);
             
             stmt2.close();
 
@@ -3539,21 +3572,21 @@ public class GenericDBConversion
      * @param dataType dataType
      * @param user user
      * @param taxaTreeDef taxaTreeDef
-     * @param  catalogSeries catalogSeries
+     * @param  collection collection
      * @return set of objects
      */
     public Set<CollectionObjDef> createCollectionObjDef(final String          name,
                                                         final DataType        dataType,
                                                         final SpecifyUser     user,
                                                         final TaxonTreeDef taxaTreeDef,
-                                                        final CatalogSeries   catalogSeries)
+                                                        final Collection   collection)
     {
         try
         {
-            Set<CatalogSeries> catalogSeriesSet = new HashSet<CatalogSeries>();
-            if (catalogSeries != null)
+            Set<Collection> collectionSet = new HashSet<Collection>();
+            if (collection != null)
             {
-                catalogSeriesSet.add(catalogSeries);
+                collectionSet.add(collection);
             }
 
             Session session = HibernateUtil.getCurrentSession();
@@ -3567,7 +3600,7 @@ public class GenericDBConversion
 
             colObjDef.setTaxonTreeDef(taxaTreeDef);
 
-            colObjDef.setCatalogSeries(catalogSeriesSet);
+            colObjDef.setCollection(collectionSet);
 
             session.save(colObjDef);
 

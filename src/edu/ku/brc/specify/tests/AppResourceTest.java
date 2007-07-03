@@ -28,7 +28,7 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
-import edu.ku.brc.specify.datamodel.CatalogSeries;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.ui.UIRegistry;
@@ -94,21 +94,21 @@ public class AppResourceTest extends TestCase
         List list = criteria.list();
         SpecifyUser user = (SpecifyUser)list.get(0); // assumes user is already there
 
-        // Now get the List of CatalogSeries owned by this user
-        String queryStr = "select cs From CollectionObjDef as cod Inner Join cod.specifyUser as user Inner Join cod.catalogSeries as cs where user.specifyUserId = "+user.getSpecifyUserId();
+        // Now get the List of Collection owned by this user
+        String queryStr = "select cs From CollectionObjDef as cod Inner Join cod.specifyUser as user Inner Join cod.collection as cs where user.specifyUserId = "+user.getSpecifyUserId();
         Query query = HibernateUtil.getCurrentSession().createQuery(queryStr);
         list = query.list();
-        log.info("Found "+list.size()+" CatalogSeries for User");
+        log.info("Found "+list.size()+" Collection for User");
 
         // Add them into a "real" list
-        List<CatalogSeries> catSeries = new ArrayList<CatalogSeries>();
+        List<Collection> catSeries = new ArrayList<Collection>();
         for (Object obj : list)
         {
-            catSeries.add((CatalogSeries)obj);
+            catSeries.add((Collection)obj);
         }
 
-        // Set up the CatalogSeries "context" manually
-        CatalogSeries.setCurrentCatalogSeries(catSeries);
+        // Set up the Collection "context" manually
+        Collection.setCurrentCollection(catSeries);
 
 
         contextMgr.setContext("fish", userName, false);
@@ -140,21 +140,21 @@ public class AppResourceTest extends TestCase
 
         SpecifyUser.setCurrentUser(user);
 
-        // Now get the List of CatalogSeries owned by this user
-        queryStr = "select cs From CollectionObjDef as cod Inner Join cod.specifyUser as user Inner Join cod.catalogSeries as cs where user.specifyUserId = "+user.getSpecifyUserId();
+        // Now get the List of Collection owned by this user
+        queryStr = "select cs From CollectionObjDef as cod Inner Join cod.specifyUser as user Inner Join cod.collection as cs where user.specifyUserId = "+user.getSpecifyUserId();
         query = HibernateUtil.getCurrentSession().createQuery(queryStr);
         list = query.list();
-        log.info("Found "+list.size()+" CatalogSeries for User");
+        log.info("Found "+list.size()+" Collection for User");
 
         // Add them into a "real" list
-        catSeries = new ArrayList<CatalogSeries>();
+        catSeries = new ArrayList<Collection>();
         for (Object obj : list)
         {
-            catSeries.add((CatalogSeries)obj);
+            catSeries.add((Collection)obj);
         }
 
-        // Set up the CatalogSeries "context" manually
-        CatalogSeries.setCurrentCatalogSeries(catSeries);
+        // Set up the Collection "context" manually
+        Collection.setCurrentCollection(catSeries);
 
 
         contextMgr.setContext("fish", userName, false);

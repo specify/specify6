@@ -35,15 +35,15 @@ import javax.persistence.Transient;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "catalogseries")
-public class CatalogSeries extends DataModelObjBase implements java.io.Serializable, Comparable<CatalogSeries>
+@Table(name = "collection")
+public class Collection extends DataModelObjBase implements java.io.Serializable, Comparable<Collection>
 {
-    protected static CatalogSeries currentCatalogSeries = null;
+    protected static Collection currentCollection = null;
     
     // Fields
-    protected Long                       catalogSeriesId;
-    protected String                     seriesName;
-    protected String                     catalogSeriesPrefix;
+    protected Long                       collectionId;
+    protected String                     collectionName;
+    protected String                     collectionPrefix;
     protected String                     remarks;
     protected CollectionObjDef           collectionObjDef;
     protected Set<AppResourceDefault>    appResourceDefaults;
@@ -51,23 +51,23 @@ public class CatalogSeries extends DataModelObjBase implements java.io.Serializa
     // Constructors
 
     /** default constructor */
-    public CatalogSeries() {
+    public Collection() {
         //
     }
 
     /** constructor with id */
-    public CatalogSeries(Long catalogSeriesId) {
-        this.catalogSeriesId = catalogSeriesId;
+    public Collection(Long collectionId) {
+        this.collectionId = collectionId;
     }
 
-    public static CatalogSeries getCurrentCatalogSeries()
+    public static Collection getCurrentCollection()
     {
-        return currentCatalogSeries;
+        return currentCollection;
     }
 
-    public static void setCurrentCatalogSeries(final CatalogSeries currentCatalogSeries)
+    public static void setCurrentCollection(final Collection currentCollection)
     {
-        CatalogSeries.currentCatalogSeries = currentCatalogSeries;
+        Collection.currentCollection = currentCollection;
     }
 
     // Initializer
@@ -75,9 +75,9 @@ public class CatalogSeries extends DataModelObjBase implements java.io.Serializa
     public void initialize()
     {
         super.init();
-        catalogSeriesId       = null;
-        seriesName            = null;
-        catalogSeriesPrefix   = null;
+        collectionId          = null;
+        collectionName        = null;
+        collectionPrefix      = null;
         remarks               = null;
         collectionObjDef      = null;
         appResourceDefaults   = new HashSet<AppResourceDefault>();
@@ -91,9 +91,9 @@ public class CatalogSeries extends DataModelObjBase implements java.io.Serializa
      */
     @Id
     @GeneratedValue
-    @Column(name = "CatalogSeriesID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getCatalogSeriesId() {
-        return this.catalogSeriesId;
+    @Column(name = "CollectionID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Long getCollectionId() {
+        return this.collectionId;
     }
 
     /**
@@ -104,7 +104,7 @@ public class CatalogSeries extends DataModelObjBase implements java.io.Serializa
     @Override
     public Long getId()
     {
-        return this.catalogSeriesId;
+        return this.collectionId;
     }
 
     /* (non-Javadoc)
@@ -114,11 +114,11 @@ public class CatalogSeries extends DataModelObjBase implements java.io.Serializa
     @Override
     public Class<?> getDataClass()
     {
-        return CatalogSeries.class;
+        return Collection.class;
     }
 
-    public void setCatalogSeriesId(Long catalogSeriesId) {
-        this.catalogSeriesId = catalogSeriesId;
+    public void setCollectionId(Long collectionId) {
+        this.collectionId = collectionId;
     }
 
 //    /**
@@ -135,25 +135,25 @@ public class CatalogSeries extends DataModelObjBase implements java.io.Serializa
     /**
      *      * Textual name for Catalog series. E.g. Main specimen collection
      */
-    @Column(name = "SeriesName", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
-    public String getSeriesName() {
-        return this.seriesName;
+    @Column(name = "CollectionName", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    public String getCollectionName() {
+        return this.collectionName;
     }
 
-    public void setSeriesName(String seriesName) {
-        this.seriesName = seriesName;
+    public void setCollectionName(String collectionName) {
+        this.collectionName = collectionName;
     }
 
     /**
      *      * Text Displayed with Catalog numbers. E.g. 'KU'
      */
-    @Column(name = "CatalogSeriesPrefix", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
-    public String getCatalogSeriesPrefix() {
-        return this.catalogSeriesPrefix;
+    @Column(name = "CollectionPrefix", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    public String getCollectionPrefix() {
+        return this.collectionPrefix;
     }
 
-    public void setCatalogSeriesPrefix(String catalogSeriesPrefix) {
-        this.catalogSeriesPrefix = catalogSeriesPrefix;
+    public void setCollectionPrefix(String collectionPrefix) {
+        this.collectionPrefix = collectionPrefix;
     }
 
     /**
@@ -183,7 +183,7 @@ public class CatalogSeries extends DataModelObjBase implements java.io.Serializa
         this.collectionObjDef = collectionObjDef;
     }
     
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "catalogSeries")
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collection")
     public Set<AppResourceDefault> getAppResourceDefaults()
     {
         return appResourceDefaults;
@@ -197,12 +197,12 @@ public class CatalogSeries extends DataModelObjBase implements java.io.Serializa
     @Override
     public String toString()
     {
-        return seriesName;
+        return collectionName;
     }
     
-    public int compareTo(CatalogSeries obj)
+    public int compareTo(Collection obj)
     {
-        return seriesName.compareTo(obj.seriesName);
+        return collectionName.compareTo(obj.collectionName);
     }
 
 
@@ -218,7 +218,7 @@ public class CatalogSeries extends DataModelObjBase implements java.io.Serializa
     @Transient
     public String getIdentityTitle()
     {
-        return seriesName;
+        return collectionName;
     }
 
     /* (non-Javadoc)

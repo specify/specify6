@@ -51,7 +51,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.CatalogSeries;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.CollectionObject;
@@ -508,10 +508,10 @@ public class DataEntryTask extends BaseTask
             if (dataObj instanceof CollectionObject)
             {
                 CollectionObject colObj = (CollectionObject)dataObj;
-                if (colObj.getCatalogSeries() == null)
+                if (colObj.getCollection() == null)
                 {
-                    CatalogSeries catSeries = CatalogSeries.getCurrentCatalogSeries();
-                    colObj.setCatalogSeries(catSeries); 
+                    Collection catSeries = Collection.getCurrentCollection();
+                    colObj.setCollection(catSeries); 
                 }
                 
                 if (colObj.getCollectingEvent() == null)

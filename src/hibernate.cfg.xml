@@ -56,7 +56,7 @@
 		<mapping class="edu.ku.brc.specify.datamodel.Borrow"/>
 		<mapping class="edu.ku.brc.specify.datamodel.BorrowMaterial"/>
 		<mapping class="edu.ku.brc.specify.datamodel.BorrowReturnMaterial"/>
-		<mapping class="edu.ku.brc.specify.datamodel.CatalogSeries"/>
+		<mapping class="edu.ku.brc.specify.datamodel.Collection"/>
 		<mapping class="edu.ku.brc.specify.datamodel.CollectingEvent"/>
 		<mapping class="edu.ku.brc.specify.datamodel.CollectingEventAttr"/>
 		<mapping class="edu.ku.brc.specify.datamodel.CollectingTrip"/>

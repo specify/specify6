@@ -340,7 +340,7 @@ public class FormEditor implements DatabaseLoginListener
 
         Agent[] agents = createAgentsInMemory();
 
-        CatalogSeries catalogSeries = createCatalogSeries("KUFSH", "Fish", collectionObjDef);
+        Collection collection = createCollection("KUFSH", "Fish", collectionObjDef);
 
 
         // Create Collecting Event
@@ -369,7 +369,7 @@ public class FormEditor implements DatabaseLoginListener
                                                   (String)values[i+1],
                                                   null,
                                                   (Agent)values[i+2],
-                                                  catalogSeries,
+                                                  collection,
                                                   collectionObjDef,
                                                   (Integer)values[+3],
                                                   colEv);
@@ -507,7 +507,7 @@ public class FormEditor implements DatabaseLoginListener
        // {
             //comp.invalidate();
 
-            //contentPane.add(new CatalogSeriesWizard(null), BorderLayout.CENTER);
+            //contentPane.add(new CollectionWizard(null), BorderLayout.CENTER);
 
 
             contentPane.doLayout();
