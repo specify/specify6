@@ -54,41 +54,45 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
      */
     protected static final Logger log = Logger.getLogger(Taxon.class);
 
-	protected Long				taxonId;
-	protected String				taxonomicSerialNumber;
-	protected String				guid;
-	protected String				name;
-	protected String				remarks;
-	protected String				unitInd1;
-	protected String				unitName1;
-	protected String				unitInd2;
-	protected String				unitName2;
-	protected String				unitInd3;
-	protected String				unitName3;
-	protected String				unitInd4;
-	protected String				unitName4;
-	protected String				fullName;
-	protected String				commonName;
-	protected String				author;
-	protected String				source;
-	protected Integer				groupPermittedToView;
-	protected String				environmentalProtectionStatus;
-	protected Integer				nodeNumber;
-	protected Integer				highestChildNodeNumber;
-	protected Boolean					isAccepted;
-	protected Integer				rankId;
-	protected String				groupNumber;
-    protected Integer visibility;
-    protected String visibilitySetBy;
-	protected Set<Taxon>			acceptedChildren;
-	protected Taxon					acceptedTaxon;
-	protected Set<Determination>	determinations;
-	protected Set<TaxonCitation>	taxonCitations;
-	protected TaxonTreeDef			definition;
-	protected TaxonTreeDefItem		definitionItem;
-	protected Taxon					parent;
-    protected Set<Attachment>          attachments;
-	protected Set<Taxon>			children;
+	protected Long                 taxonId;
+	protected String               taxonomicSerialNumber;
+	protected String               guid;
+	protected String               name;
+	protected String               remarks;
+	protected String               unitInd1;
+	protected String               unitName1;
+	protected String               unitInd2;
+	protected String               unitName2;
+	protected String               unitInd3;
+	protected String               unitName3;
+	protected String               unitInd4;
+	protected String               unitName4;
+	protected String               fullName;
+	protected String               commonName;
+	protected String               author;
+	protected String               source;
+	protected String               environmentalProtectionStatus;
+	protected Integer              nodeNumber;
+	protected Integer              highestChildNodeNumber;
+	protected Boolean              isAccepted;
+	protected Boolean              isValid;
+	protected Integer              rankId;
+	protected String               groupNumber;
+    protected Integer              groupPermittedToView;
+	protected Integer              visibility;
+	protected String               visibilitySetBy;
+	protected Boolean              isHybrid;
+	protected Taxon                hybridParent1;
+	protected Taxon                hybridParent2;
+	protected Set<Taxon>           acceptedChildren;
+	protected Taxon                acceptedTaxon;
+	protected Set<Determination>   determinations;
+	protected Set<TaxonCitation>   taxonCitations;
+	protected TaxonTreeDef         definition;
+	protected TaxonTreeDefItem     definitionItem;
+	protected Taxon                parent;
+	protected Set<Attachment>      attachments;
+	protected Set<Taxon>           children;
 
 	/** default constructor */
 	public Taxon()
@@ -422,7 +426,8 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.highestChildNodeNumber = highestChildNodeNumber;
 	}
 
-    @Column(name="IsAccepted", unique=false, nullable=true, insertable=true, updatable=true)	public Boolean getIsAccepted()
+    @Column(name="IsAccepted", unique=false, nullable=true, insertable=true, updatable=true)
+    public Boolean getIsAccepted()
 	{
 		return this.isAccepted;
 	}
@@ -485,6 +490,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
     }
     
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "acceptedTaxon")
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
 	public Set<Taxon> getAcceptedChildren()
 	{
 		return this.acceptedChildren;
@@ -509,6 +515,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	}
 
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "taxon")
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
 	public Set<Determination> getDeterminations()
 	{
 		return determinations;
@@ -520,20 +527,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	}
 
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "taxon")
-    @Cascade( { 
-        //CascadeType.ALL,
-        CascadeType.DELETE,
-        CascadeType.DELETE_ORPHAN,
-        CascadeType.EVICT,
-        CascadeType.LOCK,
-        CascadeType.MERGE,
-        CascadeType.PERSIST,
-        //CascadeType.REFRESH,
-        CascadeType.REMOVE,
-        CascadeType.REPLICATE,
-        CascadeType.SAVE_UPDATE
-    })
-    
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
 	public Set<TaxonCitation> getTaxonCitations()
 	{
 		return this.taxonCitations;
@@ -611,19 +605,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	}
 
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "taxon")
-    @Cascade( {
-        //CascadeType.ALL,
-        CascadeType.DELETE,
-        CascadeType.DELETE_ORPHAN,
-        CascadeType.EVICT,
-        CascadeType.LOCK,
-        CascadeType.MERGE,
-        CascadeType.PERSIST,
-        //CascadeType.REFRESH,
-        CascadeType.REMOVE,
-        CascadeType.REPLICATE,
-        CascadeType.SAVE_UPDATE
-        })
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     public Set<Attachment> getAttachments()
     {
         return attachments;
