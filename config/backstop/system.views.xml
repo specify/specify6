@@ -269,8 +269,11 @@
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[New Taxon Node Form]]></desc>
+            <enableRules>
+                <rule id="acceptedTaxon"><![CDATA[!isAccepted.isSelected()]]></rule>
+            </enableRules>
             <columnDef>p,3dlu,p,8dlu,p</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
             
             <rows>
                 <row>
@@ -311,6 +314,16 @@
                 <row>
                     <cell type="label" labelfor="evp" label="Environmental Protection Status"/>
                     <cell type="field" id="evp" uitype="text" name="environmentalProtectionStatus"/>
+                </row>
+               
+                <row>
+                	<cell type="label" labelfor="isAccepted" label="Is Accepted?"/>
+                	<cell type="field" id="isAccepted" uitype="checkbox" name="isAccepted"/>
+                </row>
+                
+                <row>
+                	<cell type="label" labelfor="acceptedTaxon" label="Accepted Taxon"/>
+                	<cell type="field" id="acceptedTaxon" isrequired="true" uitype="treequerycbx" initialize="name=Taxon;type=taxon;title=Taxon" name="acceptedTaxon"/>
                 </row>
             </rows>
         </viewdef>
