@@ -7,19 +7,26 @@ compatibility with the 'parent' libraries is not guaranteed.
 
 Libraries:
 ----------
-Hibernate								3.2.1 GA
-   antlr								dist w/ hibernate
-   asm-attrs							dist w/ hibernate
-   asm									dist w/ hibernate
-   cglib								dist w/ hibernate
-   commons-collections					dist w/ hibernate
-   commons-logging						dist w/ hibernate
-   dom4j								dist w/ hibernate
-   ehcache								dist w/ hibernate
-   jdbc2_0-stdext						dist w/ hibernate
-   jta									dist w/ hibernate
+Hibernate								3.2.4.SP1
+   antlr								dist w/ hibernate  (2.7.6)
+   asm-attrs							dist w/ hibernate  (?)
+   asm									dist w/ hibernate  (?)
+   cglib								dist w/ hibernate  (2.1.3)
+   commons-collections					dist w/ hibernate  (2.1.1)
+   commons-logging						dist w/ hibernate  (1.0.4)
+   dom4j								dist w/ hibernate  (1.6.1)
+   ehcache								dist w/ hibernate  (1.2.3)
+   jdbc2_0-stdext						dist w/ hibernate  (?)
+   jta									dist w/ hibernate  (?)
+   c3p0									dist w/ hibernate  (0.9.1)
+
+Hibernate Annotations                   3.3.0 GA
+	ejb3-persistence                    dist w/ hibernate annotations
+	hibernate-commons-annotations       dist w/ hibernate annotations
+
 ant										1.7.0
 	ant-launcher						dist w/ ant
+
 Derby (derby.jar)                       10.2.2.0
 commons-httpclient						3.0.1
 commons-lang							2.2
@@ -33,8 +40,10 @@ looks (JGoodies)						2.1.1
 lucene									2.0.0
 log4j									1.2.14
 poi										2.5.1 final 20040804
+
 jfreechart								1.0.3
 	jcommon								dist w/ jfreechart
+
 mail (JavaMail from Sun)				1.4
 jasper reports							1.3.0
 TimingFramework							0.55
@@ -47,9 +56,6 @@ swingx									0.8.0
 
 Missing information:
 --------------------
-hiberante-annotations.jar
-	ejb3-persistence.jar
-ant.jar
 commons-codec.jar
 servlet-api.jar
 
