@@ -86,6 +86,8 @@
 			<string>$JAVAROOT/ehcache.jar</string>
 			<string>$JAVAROOT/ejb3-persistence.jar</string>
 			<string>$JAVAROOT/hibernate-annotations.jar</string>
+			<string>$JAVAROOT/hibernate-commons-annotations.jar</string>
+			<string>$JAVAROOT/c3p0.jar</string>
 			<string>$JAVAROOT/hibernate3.jar</string>
 			<string>$JAVAROOT/jdbc2_0-stdext.jar</string>
 			<string>$JAVAROOT/jta.jar</string>
