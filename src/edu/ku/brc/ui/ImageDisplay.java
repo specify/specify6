@@ -47,7 +47,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.util.FileCache;
 
 /**
- * This class is repsonsible for displaying an image.The ImageDisplay will resize the image approriately to fit within its space
+ * This class is responsible for displaying an image.The ImageDisplay will resize the image approriately to fit within its space
  * and it will keep the image proportional.
  * 
  * @code_status Beta
