@@ -1254,7 +1254,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 }
                 return true;
             }
-            JOptionPane.showMessageDialog(UIRegistry.getMostRecentFrame(), 
+            JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow(), 
                                           String.format(getResourceString("WB_WRONG_IMAGE_TYPE"), 
                                                   new Object[] {FilenameUtils.getExtension(fullPath)}),
                                           UIRegistry.getResourceString("Warning"), 
@@ -1314,7 +1314,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         final int lat1TextColIndex = workbench.getColumnIndex(locTabId, "Lat1Text");
         final int long1TextColIndex = workbench.getColumnIndex(locTabId, "Long1Text");
 
-        JFrame mainFrame = (JFrame)UIRegistry.get(UIRegistry.TOPFRAME);
+        JFrame mainFrame = (JFrame)UIRegistry.getTopWindow();
         
         String title = "GeoRefConv";
         String description = "GeoRefConvDesc";
@@ -2042,7 +2042,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
 
         // create the UI for displaying the BG results
-        JFrame topFrame = (JFrame)UIRegistry.get(UIRegistry.TOPFRAME);
+        JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
         GeoLocateResultsChooser bgResChooser = new GeoLocateResultsChooser(topFrame,"GEOLocate Results Chooser",withResults);
         
         List<GeorefResult> results = bgResChooser.getResultsChosen();
@@ -2224,7 +2224,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                     if (numRecordsWithResults == 0)
                     {
                         statusBar.setText(getResourceString("NO_BG_RESULTS"));
-//                        JOptionPane.showMessageDialog(UIRegistry.get(UIRegistry.TOPFRAME),
+//                        JOptionPane.showMessageDialog(UIRegistry.getTopWindow(),
 //                                getResourceString("NO_BG_RESULTS"),
 //                                getResourceString("NO_RESULTS"), JOptionPane.INFORMATION_MESSAGE);
                         return;
@@ -2299,7 +2299,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected void displayBioGeomancerResults(List<WorkbenchRow> rows)
     {
         // create the UI for displaying the BG results
-        JFrame topFrame = (JFrame)UIRegistry.get(UIRegistry.TOPFRAME);
+        JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
         BioGeomancerResultsChooser bgResChooser = new BioGeomancerResultsChooser(topFrame,"BioGeomancer Results Chooser",rows);
         
         List<BioGeomancerResultStruct> results = bgResChooser.getResultsChosen();
@@ -2575,7 +2575,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     {
         if (hasChanged)
         {
-            JFrame topFrame = (JFrame)UIRegistry.get(UIRegistry.TOPFRAME);
+            JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
             int rv = JOptionPane.showConfirmDialog(topFrame,
                         getResourceString("SaveChanges"),
                         getResourceString("SaveChangesTitle"),
@@ -2646,7 +2646,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         boolean retStatus = true;
         if (hasChanged)
         {
-            JFrame topFrame = (JFrame)UIRegistry.get(UIRegistry.TOPFRAME);
+            JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
             int rv = JOptionPane.showConfirmDialog(topFrame,
                                                    getResourceString("SaveChanges"),
                                                    getResourceString("SaveChangesTitle"),

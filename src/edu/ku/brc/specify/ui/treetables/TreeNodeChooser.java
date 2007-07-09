@@ -83,7 +83,7 @@ public class TreeNodeChooser extends JPanel implements ActionListener, ListSelec
         add(treeViewer,BorderLayout.CENTER);
         add(southPanel,BorderLayout.SOUTH);
         
-        JFrame topFrame = (JFrame)UIRegistry.get(UIRegistry.TOPFRAME);
+        JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
         dialog = new JDialog(topFrame,"Find and select a node",true);
         dialog.pack();
         dialog.setSize(treeViewer.getMinimumSize().width, dialog.getHeight() + treeViewer.getMinimumSize().height);

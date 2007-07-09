@@ -19,9 +19,11 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.HeadlessException;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -32,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -46,7 +47,6 @@ import javax.swing.event.ListSelectionListener;
 import org.apache.log4j.Logger;
 import org.apache.lucene.search.Hits;
 
-import com.jgoodies.forms.builder.ButtonBarBuilder;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -61,6 +61,7 @@ import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.specify.tasks.subpane.ExpressTableResults;
 import edu.ku.brc.specify.tasks.subpane.ExpressTableResultsBase;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
 import edu.ku.brc.ui.forms.MultiView;
@@ -80,7 +81,7 @@ import edu.ku.brc.ui.forms.persist.View;
  *
  */
 @SuppressWarnings("serial")
-public class DBObjSearchDialog extends JDialog implements ActionListener, ExpressSearchResultsPaneIFace, ViewBasedSearchDialogIFace
+public class DBObjSearchDialog extends CustomDialog implements ActionListener, ExpressSearchResultsPaneIFace, ViewBasedSearchDialogIFace
 {
     private static final Logger log  = Logger.getLogger(DBObjSearchDialog.class);
 
@@ -93,14 +94,14 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
     protected String         className;
     protected String         idFieldName;
     protected String         searchName;
+    protected String         viewSetName;
+    protected String         viewName;
     
     // UI
-    protected boolean        isCancelled    = true;
-    protected JButton        cancelBtn;
-    protected JButton        okBtn;
+    protected Window         parent;
     protected JTextField     searchText;
 
-    protected JPanel         contentPanel;
+    protected JPanel         panel;
     protected JScrollPane    scrollPane;
     protected JTable         table;
 
@@ -116,9 +117,9 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
     protected String         sqlStr;
 
     protected Hashtable<String, Object> dataMap = new Hashtable<String, Object>();
-
+    
     /**
-     * Constructs a search dialog from form infor and from search info
+     * Constructs a search dialog from form infor and from search info.
      * @param viewSetName the viewset name
      * @param viewName the form name from the viewset
      * @param searchName the search name, this is looked up by name in the "search_config.xml" file
@@ -127,7 +128,7 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
      * @param idFieldName the name of the field in the clas that is the primary key which is filled in from the search table id
      * @throws HeadlessException an exception
      */
-    public DBObjSearchDialog(final Frame  parentFrame,
+    public DBObjSearchDialog(final Frame  parent,
                              final String viewSetName, 
                              final String viewName, 
                              final String searchName,
@@ -135,13 +136,56 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
                              final String className,
                              final String idFieldName) throws HeadlessException
     {
-        super(parentFrame, title, true);
+        //this((Window)parent, viewSetName, viewName, searchName, className, idFieldName);
+        super(parent, title, true, null);
         
+        this.parent      = parent;
         this.className   = className;
         this.idFieldName = idFieldName;  
-        this.searchName  = searchName;  
+        this.searchName  = searchName;
+        this.viewSetName = viewSetName;
+        this.viewName    = viewName;
+        
+        init();
+    }
+    
+    /**
+     * Constructs a search dialog from form infor and from search info.
+     * @param viewSetName the viewset name
+     * @param viewName the form name from the viewset
+     * @param searchName the search name, this is looked up by name in the "search_config.xml" file
+     * @param title the title (should be already localized before passing in)
+     * @param className the name of the class to be created from the selected results
+     * @param idFieldName the name of the field in the clas that is the primary key which is filled in from the search table id
+     * @throws HeadlessException an exception
+     */
+    public DBObjSearchDialog(final Dialog parent,
+                             final String viewSetName, 
+                             final String viewName, 
+                             final String searchName,
+                             final String title,
+                             final String className,
+                             final String idFieldName) throws HeadlessException
+    {
+        super(parent, title, true, OK_BTN | CANCEL_BTN, null);
+        
+        this.parent      = parent;
+        this.className   = className;
+        this.idFieldName = idFieldName;  
+        this.searchName  = searchName;
+        this.viewSetName = viewSetName;
+        this.viewName    = viewName;
+        
+        init();
+    }
 
-
+    /**
+     * Common initializer.
+     * @param viewSetName the viewset name
+     * @param viewName the form name from the viewset
+     */
+    protected void init()
+    {
         ExpressResultsTableInfo tblInfo = ExpressSearchTask.getTableInfoByName(searchName);
         if (tblInfo != null)
         {
@@ -152,25 +196,20 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
            
            sqlStr = tableInfo.getViewSql();
 
-           createUI(viewSetName, viewName, title);
-           
-           setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));
+           setLocationRelativeTo(UIRegistry.getTopWindow());
            setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
            
        } else
        {
            throw new RuntimeException("Couldn't find search name["+searchName+"] in the search_config.xml");
        }
-
     }
 
     /**
      * Creates the Default UI.
      *
      */
-    protected void createUI(final String viewSetName, 
-                            final String viewName, 
-                            final String title)
+    public void createUI()
     {
         searchText = new JTextField(30);
         searchBtn  = new JButton(getResourceString("Search"));
@@ -178,7 +217,7 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
         {
             public void actionPerformed(ActionEvent e)
             {
-                contentPanel.removeAll();
+                panel.removeAll();
 
                 form.getDataFromUI();
 
@@ -254,47 +293,26 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
             }
         }
 
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
+        //setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
+        JPanel cPanel = new JPanel(new BorderLayout());
 
         PanelBuilder    builder    = new PanelBuilder(new FormLayout("p,1dlu,p", "p,2dlu,p,2dlu,p"));
         CellConstraints cc         = new CellConstraints();
 
-        //builder.addSeparator(getResourceString("AgentSearchTitle"), cc.xywh(1,1,3,1));
         builder.add(form.getUIComponent(), cc.xy(1,1));
         builder.add(searchBtn, cc.xy(3,1));
 
-        panel.add(builder.getPanel(), BorderLayout.NORTH);
-        contentPanel = new JPanel(new NavBoxLayoutManager(0,2));
+        cPanel.add(builder.getPanel(), BorderLayout.NORTH);
+        panel = new JPanel(new NavBoxLayoutManager(0,2));
 
-
-        scrollPane = new JScrollPane(contentPanel);
-        panel.add(scrollPane, BorderLayout.CENTER);
+        scrollPane = new JScrollPane(panel);
+        cPanel.add(scrollPane, BorderLayout.CENTER);
         scrollPane.setPreferredSize(new Dimension(300,200));
 
-        // Bottom Button UI
-        cancelBtn = new JButton(getResourceString("Cancel"));
-        okBtn = new JButton(getResourceString("OK"));
-
-        okBtn.addActionListener(this);
-        getRootPane().setDefaultButton(okBtn);
-
-        ButtonBarBuilder btnBuilder = new ButtonBarBuilder();
-        btnBuilder.addGlue();
-        btnBuilder.addGriddedButtons(new JButton[] { cancelBtn, okBtn });
-
-        cancelBtn.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent ae)
-            {
-                setVisible(false);
-            }
-        });
-
-        panel.add(btnBuilder.getPanel(), BorderLayout.SOUTH);
-
-        setContentPane(panel);
-        pack();
+        contentPanel = cPanel;
+        
+        super.createUI();
+        
         updateUI();
     }
 
@@ -332,10 +350,10 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
 
         if (etrb != null)
         {
-            contentPanel.remove(etrb);
+            panel.remove(etrb);
             etrb.cleanUp();
         }
-        contentPanel.add(etrb = new ExpressTableResults(this, results, false));
+        panel.add(etrb = new ExpressTableResults(this, results, false));
         
         table = etrb.getTable();
         table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -372,10 +390,10 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
     {
         etrbTable.cleanUp();
         
-        contentPanel.remove(etrbTable);
-        contentPanel.invalidate();
-        contentPanel.doLayout();
-        contentPanel.repaint();
+        panel.remove(etrbTable);
+        panel.invalidate();
+        panel.doLayout();
+        panel.repaint();
 
         scrollPane.revalidate();
         scrollPane.doLayout();
@@ -396,7 +414,7 @@ public class DBObjSearchDialog extends JDialog implements ActionListener, Expres
      */
     public void revalidateScroll()
     {
-        contentPanel.invalidate();
+        panel.invalidate();
         scrollPane.revalidate();
     }
 

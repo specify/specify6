@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.ui;
 
-import java.awt.Frame;
+import java.awt.Window;
 
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
@@ -48,7 +48,7 @@ public interface ViewBasedDialogFactoryIFace
      * @param name the name of the DBObjSearchDialog to return
      * @return a DBObjSearchDialog by name
      */
-    public ViewBasedSearchDialogIFace createSearchDialog(Frame frame, String name);
+    public ViewBasedSearchDialogIFace createSearchDialog(Window frame, String name);
 
    /**
      * Creates a Frame/Dialog from the Factory by name.
@@ -61,7 +61,7 @@ public interface ViewBasedDialogFactoryIFace
      * @param type the type of frame (Frame or Dialog) model or non-model
      * @return the object (Frame) displaying the form
      */
-    public ViewBasedDisplayIFace createDisplay(Frame       frame, 
+    public ViewBasedDisplayIFace createDisplay(Window      frame, 
                                                String      name,
                                                String      frameTitle,
                                                String      closeBtnTitle,

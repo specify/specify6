@@ -356,7 +356,7 @@ public class VersionCheckerTask extends BaseTask
     protected void showErrorPopup()
     {
         String updateError = getResourceString("UpdateError");
-        JOptionPane.showMessageDialog(UIRegistry.get(UIRegistry.TOPFRAME),
+        JOptionPane.showMessageDialog(UIRegistry.getTopWindow(),
                                       updateError,
                                       getResourceString("Error"),
                                       JOptionPane.ERROR_MESSAGE);
@@ -445,7 +445,7 @@ public class VersionCheckerTask extends BaseTask
          */
         public UpdatesAvailableDialog()
         {
-            super((JFrame)UIRegistry.get(UIRegistry.TOPFRAME), getResourceString("VER_CHK_TITLE"), false, CustomDialog.OK_BTN, null);
+            super((JFrame)UIRegistry.getTopWindow(), getResourceString("VER_CHK_TITLE"), false, CustomDialog.OK_BTN, null);
             content.setContentType("text/html");
             content.setEditable(false);
             content.setOpaque(false);

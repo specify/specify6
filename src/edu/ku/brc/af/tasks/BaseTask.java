@@ -772,7 +772,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      */
     public static RecordSetIFace askForRecordSet(final int tableId)
     {
-        ChooseRecordSetDlg dlg = new ChooseRecordSetDlg((Frame)UIRegistry.get(UIRegistry.TOPFRAME), tableId);
+        ChooseRecordSetDlg dlg = new ChooseRecordSetDlg((Frame)UIRegistry.getTopWindow(), tableId);
         if (dlg.hasRecordSets())
         {
             if (dlg.getRecordSets().size() == 1)

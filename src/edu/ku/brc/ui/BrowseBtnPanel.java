@@ -173,7 +173,7 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
          */
         public void actionPerformed(ActionEvent e)
         {
-            int returnVal = chooser.showOpenDialog(UIRegistry.get(UIRegistry.TOPFRAME));
+            int returnVal = chooser.showOpenDialog(UIRegistry.getTopWindow());
             if (returnVal == JFileChooser.APPROVE_OPTION)
             {
                 txtField.setText(chooser.getSelectedFile().getAbsolutePath());

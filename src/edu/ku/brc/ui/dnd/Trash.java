@@ -205,7 +205,7 @@ public class Trash extends JComponent implements GhostActionable
      */
     protected void openTrashCan()
     {
-        TrashCanDlg dlg = new TrashCanDlg((Frame)UIRegistry.get(UIRegistry.TOPFRAME));
+        TrashCanDlg dlg = new TrashCanDlg((Frame)UIRegistry.getTopWindow());
         dlg.setVisible(true);        
     }
     

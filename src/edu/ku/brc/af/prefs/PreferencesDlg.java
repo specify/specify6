@@ -96,7 +96,7 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
      */
     public PreferencesDlg(final boolean addSearchUI)
     {
-        super((Frame)UIRegistry.get(UIRegistry.TOPFRAME), getResourceString("preferences"), true, null);
+        super((Frame)UIRegistry.getTopWindow(), getResourceString("preferences"), true, null);
 
         createUI();
         initAsToolbar(addSearchUI);

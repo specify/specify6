@@ -748,8 +748,8 @@ public class FormEditor implements DatabaseLoginListener
 
         builder = new PanelBuilder(new FormLayout("p", "p"), contentPane);
 
-        UIRegistry.register(UIRegistry.TOPFRAME, mainFrame);
-
+        UIRegistry.setTopWindow(mainFrame);
+        
         JMenuBar menuBar = createMenus();
         if (menuBar != null)
         {

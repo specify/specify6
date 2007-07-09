@@ -196,7 +196,7 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
             if (!EMailHelper.sendMsg(smtpStr, usernameStr, passwordStr, emailStr, emailStr, testMessage, htmlMsg, EMailHelper.HTML_TEXT, null))
             {
                 // XXX Get response error message from Helper and display it.
-                //JOptionPane.showMessageDialog(UIRegistry.get(UIRegistry.TOPFRAME), "Error Sending EMail");
+                //JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), "Error Sending EMail");
                 checkerIcons[0].setIcon(exclaimIcon);
                 checkerLabels[0].setText(EMailHelper.getLastErrorMsg());
             } else
@@ -237,7 +237,7 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
                 checkerIcons[1].setIcon(exclaimIcon);
                 checkerLabels[1].setText(ex.toString());
 
-                JOptionPane.showMessageDialog(UIRegistry.get(UIRegistry.TOPFRAME), ex.toString());
+                JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), ex.toString());
                 ex.printStackTrace();
             }
 
@@ -483,11 +483,11 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
             if (!status)
             {
                 // XXX Get response error message from Helper and display it.
-                JOptionPane.showMessageDialog(UIRegistry.get(UIRegistry.TOPFRAME), "Error Sending EMail"); // XXX I18N
+                JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), "Error Sending EMail"); // XXX I18N
                 
             } else
             {
-                JOptionPane.showMessageDialog(UIRegistry.get(UIRegistry.TOPFRAME), "Message Sent\nCheck your mailbox to see if it worked.");
+                JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), "Message Sent\nCheck your mailbox to see if it worked.");
             }
             parentDlg.setVisible(false);
             parentDlg.dispose();

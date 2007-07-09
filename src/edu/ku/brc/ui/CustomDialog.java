@@ -417,6 +417,14 @@ public class CustomDialog extends JDialog
     @Override
     public void setVisible(final boolean visible)
     {
+        if (visible)
+        {
+            UIRegistry.pushWindow(this);
+        } else
+        {
+            UIRegistry.popWindow(this);
+        }
+        
         if (okBtn == null && visible)
         {
             createUI();

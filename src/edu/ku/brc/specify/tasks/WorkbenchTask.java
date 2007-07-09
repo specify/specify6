@@ -643,7 +643,7 @@ public class WorkbenchTask extends BaseTask
                                          final Workbench workbench)
     {
         ViewBasedDisplayDialog editorDlg = new ViewBasedDisplayDialog(
-                (Frame)UIRegistry.get(UIRegistry.TOPFRAME),
+                (Frame)UIRegistry.getTopWindow(),
                 "Global",
                 viewSetName,
                 null,
@@ -1625,7 +1625,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
 
                          if (convertedAnImage)
                          {
-                             Component topFrame = UIRegistry.get(UIRegistry.TOPFRAME);
+                             Component topFrame = UIRegistry.getTopWindow();
                              String message     = getResourceString("WB_DATASET_IMAGE_CONVERSION_NOTIFICATION");
                              String msgTitle    = getResourceString("WB_DATASET_IMAGE_CONVERSION_NOTIFICATION_TITLE");
                              JOptionPane.showMessageDialog(topFrame, message, msgTitle, JOptionPane.INFORMATION_MESSAGE);
@@ -1845,7 +1845,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     public static boolean askUserForReportProps()
     {
         ViewBasedDisplayDialog editorDlg = new ViewBasedDisplayDialog(
-                (Frame)UIRegistry.get(UIRegistry.TOPFRAME),
+                (Frame)UIRegistry.getTopWindow(),
                 "Global",
                 "ReportProperties",
                 null,
@@ -2532,7 +2532,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             // Now, if none of the files were good we tell them and then quit the import task
             if (fileList.size() == 0)
             {
-                JOptionPane.showMessageDialog(UIRegistry.getMostRecentFrame(), 
+                JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow(), 
                         String.format(getResourceString("WB_WRONG_IMG_NO_IMAGES"), 
                                 new Object[] {badExtStrBuf.toString()}),
                         UIRegistry.getResourceString("Warning"), 
@@ -2545,7 +2545,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             // So let them choose if they want to continue.
             Object[] options = { getResourceString("Continue"), getResourceString("Stop")};
             
-            if (JOptionPane.showOptionDialog(UIRegistry.getMostRecentFrame(), 
+            if (JOptionPane.showOptionDialog(UIRegistry.getMostRecentWindow(), 
                         String.format(getResourceString("WB_WRONG_IMG_SOME_IMAGES"), new Object[] {badExtStrBuf.toString()}),
                         title, JOptionPane.YES_NO_OPTION,
                         JOptionPane.WARNING_MESSAGE, null, options, options[1]) == JOptionPane.NO_OPTION)
@@ -2691,7 +2691,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         {
             return UIRegistry.displayConfirmLocalized("WB_ERROR_LOAD_IMAGE", key,  getResourceString("Continue"), "WB_STOP_LOADING", JOptionPane.ERROR_MESSAGE);
         }
-        JOptionPane.showMessageDialog(UIRegistry.get(UIRegistry.TOPFRAME), getResourceString(key), getResourceString("WB_ERROR_LOAD_IMAGE"), JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), getResourceString(key), getResourceString("WB_ERROR_LOAD_IMAGE"), JOptionPane.ERROR_MESSAGE);
         return false;
         
     }

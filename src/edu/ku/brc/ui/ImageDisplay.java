@@ -137,8 +137,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
            }
         }
 
-		int returnVal = chooser.showOpenDialog(UIRegistry
-				.get(UIRegistry.TOPFRAME));
+		int returnVal = chooser.showOpenDialog(UIRegistry.getTopWindow());
 		if (returnVal == JFileChooser.APPROVE_OPTION)
 		{
 			File file = new File(chooser.getSelectedFile().getAbsolutePath());

@@ -416,7 +416,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         top.setLayout(new BorderLayout());
         add(top, BorderLayout.NORTH);
 
-        UIRegistry.register(UIRegistry.TOPFRAME, topFrame);
+        UIRegistry.setTopWindow(topFrame);
 
         menuBar = createMenus();
         if (menuBar != null)
@@ -824,7 +824,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
             tabPane.add(getResourceString("Error"), getLogFilePanel(true));
             tabPane.add("Specify", getLogFilePanel(false));
             
-            CustomDialog dialog = new CustomDialog((JFrame)UIRegistry.get(UIRegistry.TOPFRAME), getResourceString("LOG_FILES_TITLE"), true, CustomDialog.OK_BTN, tabPane);
+            CustomDialog dialog = new CustomDialog((JFrame)UIRegistry.getTopWindow(), getResourceString("LOG_FILES_TITLE"), true, CustomDialog.OK_BTN, tabPane);
             dialog.setOkLabel(getResourceString("Close"));
             dialog.createUI();
             dialog.setSize(800, 600);

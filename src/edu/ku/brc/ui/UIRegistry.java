@@ -24,6 +24,7 @@ import java.awt.KeyboardFocusManager;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
@@ -37,6 +38,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.Stack;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -90,7 +92,6 @@ public class UIRegistry
     public static final String FRAME        = "frame";
     public static final String MENUBAR      = "menubar";
     public static final String TOOLBAR      = "toolbar";
-    public static final String TOPFRAME     = "topframe";
     public static final String GLASSPANE    = "glasspane";
     public static final String MAINPANE     = "mainpane";
     public static final String RECENTFRAME  = "recentframe";
@@ -114,7 +115,9 @@ public class UIRegistry
     protected static final UIRegistry instance = new UIRegistry();
 
     // Data Members
-    protected Hashtable<String, Component> components = new Hashtable<String, Component>();
+    protected Hashtable<String, Component> components  = new Hashtable<String, Component>();
+    protected Window                       topWindow   = null;
+    protected Stack<Window>                windowStack = new Stack<Window>();
 
     protected Hashtable<String, Hashtable<String, JComponent>> uiItems = new Hashtable<String, Hashtable<String, JComponent>>();
 
@@ -482,6 +485,80 @@ public class UIRegistry
     }
 
     /**
+     * Returns a UI component by name.
+     * @param name the name of the component to be retrieved
+     * @return a UI component by name
+     */
+    public static Window getTopWindow()
+    {
+        return instance.topWindow;
+    }
+    
+    public static void setTopWindow(final Window window)
+    {
+        instance.topWindow = window;
+    }
+
+    /**
+     * Returns the most recent frame to be used, but note that there is no magic here. You
+     * must set the the most recent frame in order for it to be used by someone else. The one
+     * thing it does do for you, is that if you forgot to set it and someone else uses it it does
+     * check to make sure it is not null AND visible. If either of these are true then it returns the TOPFRAME.
+     * 
+     * @return Returns the most recent frame to be used, but note that there is no magic here. You
+     * must set the the most recent frame in order for it to be used by someone else. The one
+     * thing it does do for you, is that if you forgot to set it and someone else uses it it does
+     * check to make sure it is not null AND visible. If either of these are true then it returns the TOPFRAME.
+     */
+    public static Window getMostRecentWindow()
+    {
+        Window recent = instance.windowStack.size() > 0 ? instance.windowStack.peek() : null;
+        return recent == null || !recent.isVisible() ? instance.topWindow : recent;
+    }
+    
+    /**
+     * Pushes Window onto the Stack.
+     * @param window pushed onto the Window stack
+     */
+    public static void pushWindow(final Window window)
+    {
+        instance.windowStack.push(window);
+    }
+    
+    /**
+     * Pops Windo off the Stack.
+     * @param window the window
+     * @return pops window off the window stack
+     */
+    public static Window popWindow(final Window requester)
+    {
+        if (instance.windowStack.size() > 0)
+        {
+            int index = instance.windowStack.indexOf(requester);
+            if (index == -1)
+            {
+                log.error("Trying to pop Window not on the stack ");
+                
+            } else if (index < instance.windowStack.size()-1)
+            {
+                log.error("Popping Window lower on Window stack than the Top ["+(instance.windowStack.size()-1)+"] poping index["+index+"]");
+                // Now Pop other windows so it does get out of wack
+                while (instance.windowStack.peek() != requester)
+                {
+                    instance.windowStack.pop();
+                }
+            } else
+            {
+                return instance.windowStack.pop();
+            }
+        } else
+        {
+            log.error("Trying to pop Window off an empty stack.");
+        }
+        return null;
+    }
+
+    /**
      * Returns the main ResourceBundle.
      * @return Returns the main ResourceBundle
      */
@@ -668,7 +745,7 @@ public class UIRegistry
         SwingUtilities.invokeLater(new Runnable() {
             public void run()
             {
-                JFrame frame = ((JFrame)instance.components.get(TOPFRAME));
+                JFrame frame = ((JFrame)instance.topWindow);
                 assert frame != null : "The top frame has not been registered";
                 frame.repaint();
             }
@@ -685,29 +762,12 @@ public class UIRegistry
     }
 
     /**
-     * Returns the most recent frame to be used, but note that there is no magic here. You
-     * must set the the most recent frame in order for it to be used by someone else. The one
-     * thing it does do for you, is that if you forgot to set it and someone else uses it it does
-     * check to make sure it is not null AND visible. If either of these are true then it returns the TOPFRAME.
-     * 
-     * @return Returns the most recent frame to be used, but note that there is no magic here. You
-     * must set the the most recent frame in order for it to be used by someone else. The one
-     * thing it does do for you, is that if you forgot to set it and someone else uses it it does
-     * check to make sure it is not null AND visible. If either of these are true then it returns the TOPFRAME.
-     */
-    public static Component getMostRecentFrame()
-    {
-        Component recent = instance.components.get(RECENTFRAME);
-        return recent == null || !recent.isVisible() ? instance.components.get(TOPFRAME) : recent;
-    }
-
-    /**
      * Display an Error dialog.
      * @param msg the message to be displayed
      */
     public static void displayErrorDlg(final String msg)
     {
-         JOptionPane.showMessageDialog(getMostRecentFrame(), msg, getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
+         JOptionPane.showMessageDialog(getMostRecentWindow(), msg, getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
     }
 
     /**
@@ -716,7 +776,7 @@ public class UIRegistry
      */
     public static void displayErrorDlgLocalized(final String key)
     {
-         JOptionPane.showMessageDialog(getMostRecentFrame(), getResourceString(key), getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
+         JOptionPane.showMessageDialog(getMostRecentWindow(), getResourceString(key), getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
     }
 
     /**
@@ -737,7 +797,7 @@ public class UIRegistry
         // Custom button text
         Object[] options = { keyBtn1, keyBtn2 };
         
-        return JOptionPane.showOptionDialog(getMostRecentFrame(), msg, 
+        return JOptionPane.showOptionDialog(getMostRecentWindow(), msg, 
                 title, JOptionPane.YES_NO_OPTION,
                 iconOption, null, options, options[1]) == JOptionPane.YES_OPTION;
     }

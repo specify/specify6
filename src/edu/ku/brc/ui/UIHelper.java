@@ -26,6 +26,7 @@ import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -174,7 +175,7 @@ public final class UIHelper
      */
     public static void centerWindow(java.awt.Window window)
     {
-        JFrame topFrame = (JFrame)UIRegistry.get(UIRegistry.TOPFRAME);
+        JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
         Insets screenInsets = null;
         Rectangle screenRect = null;
         
@@ -229,7 +230,7 @@ public final class UIHelper
     public static void positionFrameRelativeToTopFrame(final JFrame frame)
     {
         // not sure of safest surest way to get main window???
-        JFrame topFrame = (JFrame) UIRegistry.get(UIRegistry.TOPFRAME);
+        JFrame topFrame = (JFrame) UIRegistry.getTopWindow();
 
         // for now this just sets the top of frame to the top of topFrame
         // if there is room on the left side of topFrame, frame is set so it's right edge is next to topFrame's left edge.
@@ -1086,7 +1087,7 @@ public final class UIHelper
         if (useDialog)
         {
             JDialog.setDefaultLookAndFeelDecorated(false); 
-            DatabaseLoginDlg dlg = new DatabaseLoginDlg((Frame)UIRegistry.get(UIRegistry.TOPFRAME), listener);
+            DatabaseLoginDlg dlg = new DatabaseLoginDlg((Frame)UIRegistry.getTopWindow(), listener);
             JDialog.setDefaultLookAndFeelDecorated(true); 
             dlg.setDoAutoLogin(doAutoLoginNow);
             dlg.setDoAutoClose(doAutoClose);
@@ -1338,18 +1339,18 @@ public final class UIHelper
     }
     
     /**
-     * Walks parents until it gets to a frame
+     * Walks parents until it gets to a Window
      * @param comp the current component whiching for its parent
      * @return the parent frame
      */
-    public static Frame getFrame(final Component comp)
+    public static Window getWindow(final Component comp)
     {
         Component parent = comp.getParent();
         do
         {
-            if (parent instanceof Frame)
+            if (parent instanceof Window)
             {
-                return (Frame)parent;
+                return (Window)parent;
             }
             parent = parent.getParent();
         } while (parent != null);
@@ -1357,6 +1358,16 @@ public final class UIHelper
         return null;
     }
     
+    /**
+     * Walks parents until it gets to a frame
+     * @param comp the current component whiching for its parent
+     * @return the parent frame
+     */
+    public static Frame getFrame(final Component comp)
+    {
+        Window window = UIHelper.getWindow(comp);
+        return window instanceof Frame ? (Frame)window : (Frame)UIRegistry.getTopWindow();
+    }
     
     /**
      * Helper to create an icon button.

@@ -190,7 +190,7 @@ public class PickListTestApp
         mainFrame = new JFrame("Specify Form Editor");
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        UIRegistry.register(UIRegistry.TOPFRAME, mainFrame);
+        UIRegistry.setTopWindow(mainFrame);
         
         // Create and set up the content pane.
         contentPane = buildContentPane();

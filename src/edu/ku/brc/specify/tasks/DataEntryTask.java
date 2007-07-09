@@ -51,8 +51,8 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.PrepType;
@@ -492,7 +492,7 @@ public class DataEntryTask extends BaseTask
     // CommandListener Interface
     //-------------------------------------------------------
     
-    protected void openNewView(final FormPane formPane)
+    protected void openNewView(@SuppressWarnings("unused") final FormPane formPane)
     {
         // nothing
     }

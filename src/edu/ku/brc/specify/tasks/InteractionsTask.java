@@ -578,7 +578,7 @@ public class InteractionsTask extends BaseTask
 
         } else
         {
-            ChooseFromListDlg<NavBoxItemIFace> dlg = new ChooseFromListDlg<NavBoxItemIFace>((Frame)UIRegistry.get(UIRegistry.TOPFRAME),
+            ChooseFromListDlg<NavBoxItemIFace> dlg = new ChooseFromListDlg<NavBoxItemIFace>((Frame)UIRegistry.getTopWindow(),
                                                                                             getResourceString("ChooseInvoice"), 
                                                                                             invoiceList, 
                                                                                             IconManager.getIcon(name, IconManager.IconSize.Std24));
@@ -713,10 +713,10 @@ public class InteractionsTask extends BaseTask
         
         if (printLoan)
         {
-            //DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             try
             {
-                //session.attach(loan);
+                session.attach(loan);
                 if (loan.getShipments().size() == 0)
                 {
                     UIRegistry.displayErrorDlg(getResourceString("NO_SHIPMENTS_ERROR"));
@@ -760,10 +760,10 @@ public class InteractionsTask extends BaseTask
                 }
             } finally
             {
-                //if (session != null)
-                //{
-                //    session.close();
-                //}
+                if (session != null)
+                {
+                    session.close();
+                }
             }
         }
     }
@@ -795,7 +795,7 @@ public class InteractionsTask extends BaseTask
                     final Hashtable<String, String> emailPrefs = new Hashtable<String, String>();
                     if (!EMailHelper.isEMailPrefsOK(emailPrefs))
                     {
-                        JOptionPane.showMessageDialog(UIRegistry.get(UIRegistry.TOPFRAME), 
+                        JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
                                 getResourceString("NO_EMAIL_PREF_INFO"), 
                                 getResourceString("NO_EMAIL_PREF_INFO_TITLE"), JOptionPane.WARNING_MESSAGE);
                         return;
@@ -809,7 +809,7 @@ public class InteractionsTask extends BaseTask
                     emailPrefs.put("bodytext", "");
                     emailPrefs.put("attachedFileName", tempExcelFileName.getName());
                     
-                    final Frame topFrame = (Frame)UIRegistry.get(UIRegistry.TOPFRAME);
+                    final Frame topFrame = (Frame)UIRegistry.getTopWindow();
                     final ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog(topFrame,
                                                   "SystemSetup",
                                                   "SendMail",
@@ -1071,14 +1071,7 @@ public class InteractionsTask extends BaseTask
                     setUpDraggable(nbi, new DataFlavor[]{Trash.TRASH_FLAVOR, INFOREQUEST_FLAVOR}, new NavBoxAction("", ""));
                 }
             }
-        } else if (cmdAction.getData() instanceof Loan)
-        {
-            if (cmdAction.isAction(INSERT_CMD_ACT) || cmdAction.isAction(UPDATE_CMD_ACT))
-            {
-               checkToPrintLoan(cmdAction);
-            }
         }
-
     }
     
     /**
@@ -1097,7 +1090,7 @@ public class InteractionsTask extends BaseTask
             {
                 if (((RecordSetIFace)cmdAction.getData()).getDbTableId() != cmdAction.getTableId())
                 {
-                    JOptionPane.showMessageDialog(UIRegistry.get(UIRegistry.TOPFRAME), 
+                    JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
                                                   getResourceString("ERROR_RECORDSET_TABLEID"), 
                                                   getResourceString("Error"), 
                                                   JOptionPane.ERROR_MESSAGE);
@@ -1201,6 +1194,10 @@ public class InteractionsTask extends BaseTask
             if (cmdAction.isAction(DataEntryTask.VIEW_WAS_OPENED))
             {
                 adjustLoanForm((FormPane)cmdAction.getData());
+                
+            } else if (cmdAction.isAction("Save"))
+            {
+                checkToPrintLoan(cmdAction);
             }
             
         } else if (cmdAction.isType(INTERACTIONS))

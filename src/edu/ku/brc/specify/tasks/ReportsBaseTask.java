@@ -276,7 +276,7 @@ public class ReportsBaseTask extends BaseTask
 
         } else
         {
-            ChooseFromListDlg<NavBoxItemIFace> dlg = new ChooseFromListDlg<NavBoxItemIFace>((Frame)UIRegistry.get(UIRegistry.TOPFRAME),
+            ChooseFromListDlg<NavBoxItemIFace> dlg = new ChooseFromListDlg<NavBoxItemIFace>((Frame)UIRegistry.getTopWindow(),
                                                                                             getResourceString("ChooseLabel"),
                                                                                             reportsList, 
                                                                                             IconManager.getIcon(name, IconManager.IconSize.Std24));

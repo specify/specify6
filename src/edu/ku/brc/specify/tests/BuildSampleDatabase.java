@@ -489,6 +489,9 @@ public class BuildSampleDatabase
         // KU
         addrs.add(createAddress(ku, null, null, "Lawrence", "KS", "USA", "66045"));
         
+        // User Agent Address
+        addrs.add(createAddress(userAgent, "1214 East Street", null, "Grinnell", "IA", "USA", "56060"));
+                
         dataObjects.addAll(agents);
         dataObjects.addAll(addrs);
         

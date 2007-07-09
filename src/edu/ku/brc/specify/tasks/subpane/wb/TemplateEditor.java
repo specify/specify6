@@ -478,7 +478,7 @@ public class TemplateEditor extends CustomDialog
         Clipboard       sysClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         sysClipboard.setContents(stsel, stsel);
         
-        CustomDialog dialog = new CustomDialog((JFrame)UIRegistry.get(UIRegistry.TOPFRAME), "Mappings", true, CustomDialog.OK_BTN, panel);
+        CustomDialog dialog = new CustomDialog((JFrame)UIRegistry.getTopWindow(), "Mappings", true, CustomDialog.OK_BTN, panel);
         dialog.setVisible(true);
     }
     

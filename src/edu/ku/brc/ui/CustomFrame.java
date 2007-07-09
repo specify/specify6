@@ -84,12 +84,10 @@ public class CustomFrame extends JFrame
      * 
      * @param frame parent frame
      * @param title the title of the dialog
-     * @param isModal whether or not it is model
      * @param contentPanel the contentpane
      * @throws HeadlessException
      */
     public CustomFrame(final String    title, 
-                       final boolean   isModal,
                        final Component contentPanel) throws HeadlessException
     {
         this(title, OK_BTN | CANCEL_BTN, contentPanel);
@@ -305,6 +303,14 @@ public class CustomFrame extends JFrame
     @Override
     public void setVisible(final boolean visible)
     {
+        if (visible)
+        {
+            UIRegistry.pushWindow(this);
+        } else
+        {
+            UIRegistry.popWindow(this);
+        }
+        
         if (okBtn == null && visible)
         {
             createUI();

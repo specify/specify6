@@ -112,6 +112,8 @@ public class EMailHelper
                                   String mimeType,
                                   File   fileAttachment)
     {
+    
+    	
         Properties props = System.getProperties();
         props.put("mail.smtp.host", host);
         props.put( "mail.smtp.auth", "true");
@@ -254,13 +256,16 @@ public class EMailHelper
             AppPreferences appPrefs = AppPreferences.getRemote();
             if (StringUtils.isNotEmpty(passwordText))
             {
-                System.out.println(passwordText);
+            	
+                System.out.println("chagned to: "+passwordText);
                 appPrefs.put("settings.email.password", Encryption.encrypt(passwordText));
             }
         }
 
         return passwordText;
     } 
+    
+    
 
     /**
      * Returns whether all the email prefs needed for sending mail have been filled in.
@@ -359,7 +364,7 @@ public class EMailHelper
         return acctType != AccountType.Unknown &&
                isNotEmpty(usernameStr) && isNotEmpty(passwordStr) && isNotEmpty(emailStr) &&
                isNotEmpty(smtpStr) && isNotEmpty(serverNameStr) &&
-               (acctType == AccountType.IMAP || isNotEmpty(localMailBoxStr));
+               (acctType == AccountType.IMAP || acctType == AccountType.POP3 || isNotEmpty(localMailBoxStr));
     }
 
     /**
@@ -436,7 +441,7 @@ public class EMailHelper
 
             if (!hasEMailSettings(usernameStr, passwordStr, emailStr, smtpStr, serverNameStr, acctTypeStr, localMailBoxStr))
             {
-                JOptionPane.showMessageDialog(UIRegistry.getMostRecentFrame(), getResourceString("emailsetnotvalid"));
+                JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow(), getResourceString("emailsetnotvalid"));
             }
 
             // Open Local Box if POP
@@ -707,5 +712,81 @@ public class EMailHelper
         return true;
     }
     
+    
+   
+    
+    public static Boolean correctPassword(Hashtable<String, String> emailPrefs)
+    {
 
+    	if(hasEMailSettings())
+    	{
+    		if(!isEMailPrefsOK(emailPrefs))
+	    	{
+	    		System.err.println("not everything is filled in");
+	    		JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
+	                    getResourceString("NO_EMAIL_PREF_INFO"), 
+	                    getResourceString("NO_EMAIL_PREF_INFO_TITLE"), JOptionPane.WARNING_MESSAGE);
+	            
+	    		return false;
+	    	}
+	    	
+	    	
+	    	//get remote prefs
+	    	AppPreferences remotePrefs = AppPreferences.getRemote();
+	    	//get remote password
+	    	String remotePassword = Encryption.decrypt(remotePrefs.get("settings.email.password",null ));
+	    	
+	    	//get current password
+	    	String userPassword = Encryption.decrypt(emailPrefs.get("password"));
+	    	
+	    	if(StringUtils.isBlank(userPassword) || !remotePassword.equals(userPassword))
+	    	{
+	    		System.out.println("try again...");
+	    		userPassword = askForPassword((Frame)UIRegistry.getTopWindow());
+	    	}
+	    	if(remotePassword.equals(userPassword))
+	    	{
+	    		System.out.println("fine");
+	    		return true;
+	    	}
+	    	
+    	
+    	}
+    	//else
+    	return false;
+    }
+    //tries to match the pasword in the email prefs panal.
+    public static Boolean correctPassword(String password)
+    {
+    	if(hasEMailSettings())
+    	{
+    		//get remote prefs
+	    	AppPreferences remotePrefs = AppPreferences.getRemote();
+	    	//get remote password
+	    	String remotePassword = Encryption.decrypt(remotePrefs.get("settings.email.password",null ));
+	    	
+	    	
+	    	if(StringUtils.isBlank(password) || !remotePassword.equals(password))
+	    	{
+	    		
+	    		System.out.println("try again: "+password +" != " + remotePassword);
+	    		password = askForPassword((Frame)UIRegistry.getTopWindow());
+	    		//if the new password is correct and they pressed save, then save it
+	    		//dont save the old password
+	    	}
+	    	
+	    	//get remote again, as password may have changed if the user clicked save
+	    	remotePrefs = AppPreferences.getRemote();
+	    	
+	    	if(remotePassword.equals(password))
+	    	{
+	    		System.out.println("fine");
+	    		return true;
+	    	}
+    	}
+    	//else
+    	return false;
+    }
+    
+    
 }

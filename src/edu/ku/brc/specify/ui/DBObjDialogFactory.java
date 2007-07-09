@@ -16,7 +16,9 @@ package edu.ku.brc.specify.ui;
 
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 
+import java.awt.Dialog;
 import java.awt.Frame;
+import java.awt.Window;
 import java.util.Hashtable;
 import java.util.Iterator;
 
@@ -129,31 +131,42 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
     //----------------------------------------------------------
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.ViewBasedDialogFactoryIFace#createSearchDialog(java.awt.Frame, java.lang.String)
+     * @see edu.ku.brc.ui.ViewBasedDialogFactoryIFace#createSearchDialog(java.awt.Window, java.lang.String)
      */
-    public ViewBasedSearchDialogIFace createSearchDialog(final Frame parent, final String name)
+    public ViewBasedSearchDialogIFace createSearchDialog(final Window parent, final String name)
     {
         DialogInfo info =  instance.searchDialogs.get(name);
         if (info != null)
         {
-            return new DBObjSearchDialog(parent,
-                                         info.getViewSetName(),
-                                         info.getViewName(),
-                                         info.getSearchName(),
-                                         info.getTitle(),
-                                         info.getClassName(),
-                                         info.getIdFieldName()
-                                         );
-        } else
-        {
-            throw new RuntimeException("Couldn't create object implementing ViewBasedSearchDialogIFace by name["+name+"]");
+            if (parent instanceof Frame)
+            {
+                return new DBObjSearchDialog((Frame)parent,
+                        info.getViewSetName(),
+                        info.getViewName(),
+                        info.getSearchName(),
+                        info.getTitle(),
+                        info.getClassName(),
+                        info.getIdFieldName()
+                        );
+            }
+            // else
+            return new DBObjSearchDialog((Dialog)parent,
+                    info.getViewSetName(),
+                    info.getViewName(),
+                    info.getSearchName(),
+                    info.getTitle(),
+                    info.getClassName(),
+                    info.getIdFieldName()
+                    );                
         }
+        // else
+        throw new RuntimeException("Couldn't create object implementing ViewBasedSearchDialogIFace by name["+name+"]");
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.ViewBasedDialogFactoryIFace#createDisplay(java.lang.String, java.lang.String, java.lang.String, boolean, int, edu.ku.brc.ui.ViewBasedDialogFactoryIFace.FRAME_TYPE)
+     * @see edu.ku.brc.ui.ViewBasedDialogFactoryIFace#createDisplay(java.awt.Window, java.lang.String, java.lang.String, java.lang.String, boolean, int, edu.ku.brc.ui.ViewBasedDialogFactoryIFace.FRAME_TYPE)
      */
-    public ViewBasedDisplayIFace createDisplay(final Frame      parent, 
+    public ViewBasedDisplayIFace createDisplay(final Window     parent, 
                                                final String     name,
                                                final String     frameTitle,
                                                final String     closeBtnTitle,
@@ -175,9 +188,21 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
                                                  info.getIdFieldName(),
                                                  isEdit,
                                                  options);
+            } else if (parent instanceof Frame)
+            {
+                return new ViewBasedDisplayDialog((Frame)parent,
+                                                  info.getViewSetName(),
+                                                  info.getViewName(),
+                                                  info.getSearchName(),
+                                                  frameTitle,
+                                                  closeBtnTitle,
+                                                  info.getClassName(),
+                                                  info.getIdFieldName(),
+                                                  isEdit,
+                                                  options);
             } else
             {
-                return new ViewBasedDisplayDialog(parent,
+                return new ViewBasedDisplayDialog((Dialog)parent,
                                                   info.getViewSetName(),
                                                   info.getViewName(),
                                                   info.getSearchName(),
@@ -188,10 +213,9 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
                                                   isEdit,
                                                   options);
             }
-        } else
-        {
-            throw new RuntimeException("Couldn't create ViewBasedDisplayFrame by name["+name+"]");
         }
+        // else
+        throw new RuntimeException("Couldn't create ViewBasedDisplayFrame by name["+name+"]");
     }
 
     //-----------------------------------------------------

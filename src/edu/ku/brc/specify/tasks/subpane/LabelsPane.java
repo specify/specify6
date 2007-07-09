@@ -463,6 +463,8 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
             } catch (Exception ex)
             {
                 log.error(ex);
+                ex.printStackTrace();
+                
                 listener.compileComplete(null);
             }
             listener     = null;

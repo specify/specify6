@@ -31,7 +31,7 @@ public class DiGIRExporter implements RecordSetExporter
      */
     public void exportRecordSet(RecordSet data, Properties reqParams)
     {
-        JFrame topFrame = (JFrame)UIRegistry.get(UIRegistry.TOPFRAME);
+        JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
         Icon icon = IconManager.getIcon(NAME);
         JOptionPane.showMessageDialog(topFrame, "Not yet implemented", NAME + " data export", JOptionPane.ERROR_MESSAGE, icon);
     }
@@ -41,7 +41,7 @@ public class DiGIRExporter implements RecordSetExporter
      */
     public void exportList(List<?> data, Properties reqParams)
     {
-        JFrame topFrame = (JFrame)UIRegistry.get(UIRegistry.TOPFRAME);
+        JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
         Icon icon = IconManager.getIcon(NAME);
         JOptionPane.showMessageDialog(topFrame, "Not yet implemented", NAME + " data export", JOptionPane.ERROR_MESSAGE, icon);
     }

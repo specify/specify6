@@ -411,7 +411,7 @@ public class InfoRequestTask extends BaseTask
                     final Hashtable<String, String> emailPrefs = new Hashtable<String, String>();
                     if (!isEMailPrefsOK(emailPrefs))
                     {
-                        JOptionPane.showMessageDialog(UIRegistry.get(UIRegistry.TOPFRAME), 
+                        JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
                                 getResourceString("NO_EMAIL_PREF_INFO"), 
                                 getResourceString("NO_EMAIL_PREF_INFO_TITLE"), JOptionPane.WARNING_MESSAGE);
                         return;
@@ -427,7 +427,7 @@ public class InfoRequestTask extends BaseTask
                     values.put("bodytext", "");
                     values.put("attachedFileName", tempExcelFileName.getName());
                     
-                    final ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame)UIRegistry.get(UIRegistry.TOPFRAME),
+                    final ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame)UIRegistry.getTopWindow(),
                                                   "SystemSetup",
                                                   "SendMail",
                                                   null,

@@ -20,7 +20,6 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Frame;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -43,8 +42,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -53,6 +50,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
@@ -62,7 +60,6 @@ import org.apache.log4j.Logger;
 import org.hibernate.StaleObjectStateException;
 
 import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.factories.ButtonBarFactory;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
@@ -79,11 +76,14 @@ import edu.ku.brc.dbsupport.StaleObjectException;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.ui.ColorChooser;
 import edu.ku.brc.ui.ColorWrapper;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.JAutoCompComboBox;
 import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
@@ -295,7 +295,7 @@ public class FormViewObj implements Viewable,
         
         if (mvParent != null && mvParent.isTopLevel())
         {
-            scrollPane = new JScrollPane(mainComp, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            scrollPane = new JScrollPane(mainComp, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             scrollPane.setBorder(null);
         }
         
@@ -548,58 +548,26 @@ public class FormViewObj implements Viewable,
      */
     protected static void showValidationInfo(final Viewable viewable)
     {
-        if (true)
+        final FormValidatorInfo formInfo = new FormValidatorInfo(viewable);
+
+        PanelBuilder panelBuilder = new PanelBuilder(new FormLayout("p", "p,5px,p"));
+        panelBuilder.add(formInfo, cc.xy(1,1));
+        
+        CustomDialog dialog = new CustomDialog(UIHelper.getFrame(viewable.getUIComponent()), viewable.getValidator().getName(), true, CustomDialog.OK_BTN, panelBuilder.getPanel())
         {
-            FormValidatorInfo formInfo = new FormValidatorInfo(viewable);
-
-            Frame frame = UIHelper.getFrame(viewable.getUIComponent());
-            if (frame == null) // should never be null
+            @Override
+            public void setVisible(final boolean visible)
             {
-                frame = (Frame)UIRegistry.get(UIRegistry.TOPFRAME);
-            }
-            JDialog dialog = new JDialog(frame);
-            dialog.setTitle(viewable.getValidator().getName());
-            PanelBuilder panelBuilder = new PanelBuilder(new FormLayout("p", "p,5px,p"));
-            panelBuilder.add(formInfo, cc.xy(1,1));
-
-            class Closer implements ActionListener
-            {
-                protected JDialog           parent;
-                protected FormValidatorInfo formValInfo;
-
-                public Closer(final JDialog parent, final FormValidatorInfo formValInfo)
+                if (!visible)
                 {
-                    this.parent = parent;
-                    this.formValInfo = formValInfo;
-                }
-                public void actionPerformed(ActionEvent e)
-                {
-                    parent.setVisible(false);
-                    formValInfo.cleanUp();
-                    parent.dispose();
-                    parent      = null;
-                    formValInfo = null;
-                }
+                    formInfo.cleanUp();
+                } 
+                super.setVisible(visible);
             }
-
-            JButton closeBtn = new JButton("Close");
-            panelBuilder.add(ButtonBarFactory.buildOKBar(closeBtn), cc.xy(1,3));
-            closeBtn.addActionListener(new Closer(dialog, formInfo));
-
-            dialog.setContentPane(panelBuilder.getPanel());
-            dialog.pack();
-            UIHelper.centerAndShow(dialog);
-
-        } else
-        {
-            FormValidatorInfo formInfo = new FormValidatorInfo(viewable);
-            JFrame frame = new JFrame();
-            frame.setContentPane(formInfo);
-            frame.pack();
-            frame.setSize(frame.getPreferredSize());
-            UIHelper.centerAndShow(frame);
-        }
-
+        };
+        dialog.setOkLabel(getResourceString("Close"));
+        UIHelper.centerAndShow(dialog);
+        dialog.dispose();
     }
 
 
@@ -760,7 +728,7 @@ public class FormViewObj implements Viewable,
                      mv.showView((AltView)((JComboBox)ae.getSource()).getSelectedItem());
                 }
             }
-        };
+        }
 
         if (cbx != null)
         {
@@ -1140,6 +1108,7 @@ public class FormViewObj implements Viewable,
                 carryFwdDataObj = dataObj;
             }
 
+            CommandDispatcher.dispatch(new CommandAction("Data_Entry", "Save", dataObj));
 
         } catch (StaleObjectException e) // was StaleObjectStateException
         {
@@ -1484,10 +1453,9 @@ public class FormViewObj implements Viewable,
         if (fi != null)
         {
             return fi.getComp();
-        } else
-        {
-            throw new RuntimeException("Couldn't find FieldInfo for ID["+id+"]");
         }
+        // else
+        throw new RuntimeException("Couldn't find FieldInfo for ID["+id+"]");
     }
 
      /* (non-Javadoc)
@@ -1499,10 +1467,9 @@ public class FormViewObj implements Viewable,
         if (fi != null)
         {
             return (JLabel)fi.getComp();
-        } else
-        {
-            throw new RuntimeException("Couldn't find FieldInfo for ID["+id+"]");
         }
+        // else
+        throw new RuntimeException("Couldn't find FieldInfo for ID["+id+"]");
     }
 
     /* (non-Javadoc)
@@ -2178,10 +2145,9 @@ public class FormViewObj implements Viewable,
                     if (((FormCellSubView)fieldInfo.getFormCell()).isSingleValueFromSet())
                     {
                         return ((MultiView)comp).getData();
-                    } else
-                    {
-                        return null;
-                    }
+                    } 
+                    // else
+                    return null;
 
                 } else if (comp instanceof JTextField)
                 {
@@ -2194,10 +2160,9 @@ public class FormViewObj implements Viewable,
                         PickListItemIFace pli = (PickListItemIFace)((JAutoCompComboBox)comp).getSelectedItem();
                         return pli.getValueObject() == null ? pli.getValue() : pli.getValueObject();
 
-                    } else
-                    {
-                        return ((JComboBox)comp).getSelectedItem().toString();
                     }
+                    // else
+                    return ((JComboBox)comp).getSelectedItem().toString();
 
                 } else if (comp instanceof JLabel)
                 {
