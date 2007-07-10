@@ -18,9 +18,12 @@
 package edu.ku.brc.ui.forms.formatters;
 
 /**
+ * This describes a single field that is used as part of a DataObjectFormatter. The fields are appended together to 
+ * construct the final value.
+ * 
  * @author rods
  *
- * @code_status Beta
+ * @code_status Complete.
  *
  * Created Date: Jan 17, 2007
  *

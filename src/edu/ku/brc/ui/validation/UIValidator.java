@@ -29,10 +29,10 @@ import org.apache.commons.jexl.JexlContext;
 import org.apache.log4j.Logger;
 
 /**
- *  Validates a single UI Component the component is to be referred to in the validation script as "obj"
-
+ *  Validates a single UI Component the component is to be referred to in the validation script as "obj".
+ *
  * @code_status Beta
- **
+ *
  * @author rods
  *
  */
@@ -111,6 +111,18 @@ public class UIValidator
         if (uiv != null && type != Type.OK)
         {
             uiv.setAsNew(isNew);
+        }
+    }
+
+    /**
+     * Tells the UI Control that the form is "new" and to not show validation errors until it has focus.
+     * @param isNew true if it is a new form, false if not
+     */
+    public void setChanged(boolean isChanged)
+    {
+        if (uiv != null)
+        {
+            uiv.setChanged(isChanged);
         }
     }
 

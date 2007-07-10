@@ -66,6 +66,8 @@ public class ExpressResultsTableInfo
     protected String[]                  colNames      = null;
     protected String[]                  colLabels     = null;
     protected boolean[]                 visCols       = null;
+    protected String[]                  formatters    = null;
+    
     protected Hashtable<String, String> outOfDate     = new Hashtable<String, String>();
 
     //protected int                       tableType;
@@ -177,9 +179,10 @@ public class ExpressResultsTableInfo
             List captionItems = viewElement.selectNodes("captions/caption");
             if (captionItems.size() > 0)
             {
-                colNames  = new String[captionItems.size()];
-                colLabels = new String[captionItems.size()];
-                visCols   = new boolean[captionItems.size()];
+                colNames   = new String[captionItems.size()];
+                colLabels  = new String[captionItems.size()];
+                visCols    = new boolean[captionItems.size()];
+                formatters = new String[captionItems.size()];
                 int i = 0;
                 for ( Iterator capIter = captionItems.iterator(); capIter.hasNext(); )
                 {
@@ -189,6 +192,10 @@ public class ExpressResultsTableInfo
                     String vc = captionElement.attributeValue("visible");
                     visCols[i] = vc == null || vc.length() == 0 || !vc.toLowerCase().equals("false");
                     visColCount += visCols[i] ? 1 : 0;
+                    
+                    String fmtName  = captionElement.attributeValue("formatter");
+                    formatters[i]   = StringUtils.isNotEmpty(fmtName) ? fmtName : null;
+
                     i++;
                 }
             } else
@@ -274,6 +281,16 @@ public class ExpressResultsTableInfo
         return getMappedArray(colLabels);
     }
 
+    /**
+     * Returns an array with the formatter name mappined, return null if no formatting.
+     * @return Returns an array with the formatter name mappined, return null if no formatting.
+     */
+
+    public String[] getFormatters()
+    {
+        return getMappedArray(formatters);
+    }
+    
     /**
      * Returns an array with the column mappings, return null if all columns are to be shown.
      * @return Returns an array with the column mappings, return null if all columns are to be shown

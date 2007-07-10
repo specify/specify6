@@ -703,9 +703,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
                         @SuppressWarnings("synthetic-access")
                         public void actionPerformed(ActionEvent ae)
                         {
-                            UIFieldFormatterMgr.test();
-                            if (true) return;
-                            
                             System.gc();
                             System.runFinalization();
                             

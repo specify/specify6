@@ -60,8 +60,13 @@ public interface ViewBasedDisplayIFace
     public boolean isEditMode();
 
     /**
-     * Tells the Display that it is being shutdown
+     * Tells the Display that it is being shutdown.
      */
     public void shutdown();
+    
+    /**
+     * Disposes of native resources.
+     */
+    public void dispose();
 
 }

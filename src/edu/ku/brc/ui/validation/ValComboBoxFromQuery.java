@@ -498,7 +498,6 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         
         frame.showDisplay(true);
 
-
     }
 
     /**
@@ -626,12 +625,13 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                 list.add(newVal.toString());
                 comboBox.setSelectedIndex(0);
                 valState = UIValidatable.ErrorType.Valid;
+                editBtn.setEnabled(true);
+                
             } else
             {
                 comboBox.setSelectedIndex(-1);
                 valState = UIValidatable.ErrorType.Incomplete;
             }
-            editBtn.setEnabled(false);
 
         } else
         {
@@ -890,6 +890,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         {
             multiView.unregisterDisplayFrame(frame);
         }
+        frame.dispose();
         frame = null;
     }
 }

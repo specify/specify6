@@ -142,6 +142,7 @@ public class ExpressTableResults extends ExpressTableResultsBase implements SQLE
                      rsm.addDisplayColIndexes(visCols);
                 }
                 rsm.setColumnNames(tableInfo.getColLabels());
+                rsm.setFormatters(tableInfo.getFormatters());
         
                 table.setModel(rsm);
         

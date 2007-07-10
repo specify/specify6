@@ -58,6 +58,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.StaleObjectStateException;
+import org.hibernate.exception.ConstraintViolationException;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -100,6 +101,7 @@ import edu.ku.brc.ui.validation.FormValidator;
 import edu.ku.brc.ui.validation.FormValidatorInfo;
 import edu.ku.brc.ui.validation.UIValidatable;
 import edu.ku.brc.ui.validation.UIValidator;
+import edu.ku.brc.ui.validation.ValFormattedTextField;
 import edu.ku.brc.ui.validation.ValidationListener;
 
 /**
@@ -449,7 +451,7 @@ public class FormViewObj implements Viewable,
             }
         }
         
-        return altViewsListArg.size() > 1 ? new MenuSwitcherPanel(mvParentArg, viewArg, altViewArg, altViewsListArg) : null;
+        return altViewsListArg.size() > 1 ? new MenuSwitcherPanel(mvParentArg, altViewArg, altViewsListArg) : null;
     }
     
     /**
@@ -903,6 +905,22 @@ public class FormViewObj implements Viewable,
         }
         return true;
     }
+    
+    /**
+     * Increments to the next number in the series.
+     */
+    public void updateAutoNumbers()
+    {
+        for (FieldInfo fieldInfo : controlsById.values())
+        {
+            Component comp = fieldInfo.getComp();
+            if (comp instanceof ValFormattedTextField)
+            {
+                ((ValFormattedTextField)comp).updateAutoNumbers();
+            }
+        }
+
+    }
 
     /**
      * Creates a new Record and adds it to the List and dataSet if necessary
@@ -1005,6 +1023,130 @@ public class FormViewObj implements Viewable,
         }
         this.setDataIntoUI();
     }
+    
+    /**
+     * This method enables us to loop when there is a duplicate key
+     * @param dataObj the data object to be saved
+     * @return the merged object, or null if there was an error.
+     */
+    protected Object saveToDB(final Object dataObjArg)
+    {
+        boolean isDuplicateError = false;
+        boolean tryAgain         = false;
+        int     numTries         = 0;
+        
+        Object dObj = null;
+        do
+        {
+            try
+            {
+                numTries++;
+                
+                mvParent.updateAutoNumbers();
+                
+                this.getDataFromUI();
+
+                traverseToGetDataFromForms(mvParent);
+                
+                log.debug("saveObject checking businessrules for [" + (dataObjArg != null ? dataObjArg.getClass(): "null") + "]");
+                if (businessRules != null && businessRules.processBusinessRules(dataObjArg) == BusinessRulesIFace.STATUS.Error)
+                {
+                    StringBuilder strBuf = new StringBuilder();
+                    for (String s : businessRules.getWarningsAndErrors())
+                    {
+                        strBuf.append(s);
+                        strBuf.append("\n");
+                    }
+                    JOptionPane.showMessageDialog(null, strBuf, getResourceString("Error"), JOptionPane.ERROR_MESSAGE); 
+                    return null;
+                }
+                
+                // XXX RELEASE - Need to walk the form tree and set them manually
+                FormHelper.updateLastEdittedInfo(dataObjArg);
+                
+                if (numTries == 1)
+                {
+                    // Delete the cached Items
+                    Vector<Object> deletedItems = mvParent != null ? mvParent.getDeletedItems() : null;
+                    if (deletedItems != null)
+                    {
+                        session.beginTransaction();
+                        for (Object obj : deletedItems)
+                        {
+                            session.delete(obj);
+                        }
+                        deletedItems.clear();
+                        session.commit();
+                        session.flush();
+                    }
+                }
+    
+                session.beginTransaction();
+    
+                if (businessRules != null)
+                {
+                    businessRules.beforeSave(dataObjArg);
+                }
+                
+                dObj = session.merge(dataObjArg);
+                log.debug("CurrentDO "+dataObjArg.getClass().getSimpleName()+" "+dataObjArg.hashCode()+"  Merged: "+dObj.getClass().getSimpleName()+" "+dObj.hashCode());
+
+                            
+                session.saveOrUpdate(dObj);
+                session.commit();
+                session.flush();
+                
+                tryAgain = false;
+                
+            } catch (StaleObjectException e) // was StaleObjectStateException
+            {
+                session.rollback();
+                recoverFromStaleObject("UPDATE_DATA_STALE");
+                
+            } catch (ConstraintViolationException e)
+            {
+                log.error(e);
+                log.error(e.getSQLException());
+                log.error(e.getSQLException().getSQLState());
+                
+                // This check here works for MySQL in English "Duplicate entry"
+                // we can add other Databases as we go
+                // The idea of this code is that if we are certain it failed on a constraint because
+                // of a duplicate key error then we will try a couple of more times.
+                //
+                // The number 5 and 3 below are completely arbitrary, I just choose them
+                // because they seemed right.
+                //
+                String errMsg = e.getSQLException().toString();
+                if (StringUtils.isNotEmpty(errMsg) && errMsg.indexOf("Duplicate entry") > -1)
+                {
+                    isDuplicateError = true;
+                }
+                
+                tryAgain = (isDuplicateError && numTries < 5) || (!isDuplicateError && numTries < 3);
+
+                isDuplicateError = false;
+                
+                // Ok, we tried a couple of times and have decided to give up.
+                if (!tryAgain)
+                {
+                    recoverFromStaleObject("DUPLICATE_KEY_ERROR");
+                }
+
+            }
+            catch (Exception e)
+            {
+                log.error("******* " + e);
+                e.printStackTrace();
+                session.rollback();
+                
+                recoverFromStaleObject("UNRECOVERABLE_DB_ERROR");
+            }
+            
+        } while (tryAgain);
+        
+        return dObj;
+    }
 
     /**
      * Save any changes to the current object
@@ -1020,54 +1162,10 @@ public class FormViewObj implements Viewable,
         setSession(session);
         
         //log.info("saveObject "+hashCode() + " Session ["+(session != null ? session.hashCode() : "null")+"]");
-        try
+
+        Object dObj = saveToDB(dataObj);
+        if (dObj != null)
         {
-            this.getDataFromUI();
-
-            traverseToGetDataFromForms(mvParent);
-            
-            log.debug("saveObject checking businessrules for [" + (dataObj != null ? dataObj.getClass(): "null") + "]");
-            if (businessRules != null && businessRules.processBusinessRules(dataObj) == BusinessRulesIFace.STATUS.Error)
-            {
-                StringBuilder strBuf = new StringBuilder();
-                for (String s : businessRules.getWarningsAndErrors())
-                {
-                    strBuf.append(s);
-                    strBuf.append("\n");
-                }
-                JOptionPane.showMessageDialog(null, strBuf, getResourceString("Error"), JOptionPane.ERROR_MESSAGE); 
-                return;
-            }
-            
-            FormHelper.updateLastEdittedInfo(dataObj);
-            
-            // Delete the cached Items
-            Vector<Object> deletedItems = mvParent != null ? mvParent.getDeletedItems() : null;
-            if (deletedItems != null)
-            {
-                session.beginTransaction();
-                for (Object obj : deletedItems)
-                {
-                    session.delete(obj);
-                }
-                deletedItems.clear();
-                session.commit();
-                session.flush();
-            }
-
-            session.beginTransaction();
-
-            if (businessRules != null)
-            {
-                businessRules.beforeSave(dataObj);
-            }
-            
-            Object dObj = session.merge(dataObj);
-                        
-            session.saveOrUpdate(dObj);
-            session.commit();
-            session.flush();
-
             if (businessRules != null)
             {
                 businessRules.afterSave(dataObj);
@@ -1079,12 +1177,7 @@ public class FormViewObj implements Viewable,
                 mvParent.clearValidators();
             }
             
-            if (list != null)
-            {
-                int index = list.indexOf(dataObj);
-                list.remove(dataObj);
-                list.indexOf(dObj, index);
-            }
+            replaceDataObjInList(dataObj, dObj);
             
             if (origDataSet != null)
             {
@@ -1093,16 +1186,16 @@ public class FormViewObj implements Viewable,
             }
             
             dataObj = dObj;
-            
+        
             log.info("Session Saved[ and Flushed "+session.hashCode()+"]");
             
+            setDataIntoUI();
+
             // Not calling setHasNewData because we need to traverse and setHasNewData doesn't
             formIsInNewDataMode = false;
             traverseToToSetAsNew(mvParent, false, true); // last arg means it should traverse
             updateControllerUI();
             
-            setDataIntoUI();
-
             if (doCarryForward)
             {
                 carryFwdDataObj = dataObj;
@@ -1110,26 +1203,35 @@ public class FormViewObj implements Viewable,
 
             CommandDispatcher.dispatch(new CommandAction("Data_Entry", "Save", dataObj));
 
-        } catch (StaleObjectException e) // was StaleObjectStateException
-        {
-            session.rollback();
-            recoverFromStaleObject("UPDATE_DATA_STALE");
+            if (saveBtn!=null)
+            {
+                saveBtn.setEnabled(false);
+            }
             
-        } catch (Exception e)
-        {
-            log.error("******* " + e);
-            e.printStackTrace();
-            session.rollback();
+            if (session != null && (mvParent == null || mvParent.isTopLevel()))
+            {
+                session.close();
+                session = null;
+            }
         }
-        if (saveBtn!=null)
+    }
+    
+    protected void replaceDataObjInList(final Object oldDO, final Object newDO)
+    {
+        log.debug("Replacing "+oldDO.getClass().getSimpleName()+" "+oldDO.hashCode()+" with "+newDO.getClass().getSimpleName()+" "+newDO.hashCode());
+        if (list != null)
         {
-            saveBtn.setEnabled(false);
-        }
-        
-        if (session != null && (mvParent == null || mvParent.isTopLevel()))
-        {
-            session.close();
-            session = null;
+            int index = list.indexOf(oldDO);
+            if (index > -1)
+            {
+                list.remove(oldDO);
+                log.error("Removed " + oldDO.getClass().getSimpleName()+" "+oldDO.hashCode() + " from list.");
+                list.insertElementAt(newDO, index);
+                log.error("list length: "+list.size()+"    inx: "+index); 
+            } else
+            {
+                log.error("************ " + oldDO.getClass().getSimpleName()+" "+oldDO.hashCode() + " couldn't be found in list.");
+            }
         }
     }
 
@@ -1316,11 +1418,15 @@ public class FormViewObj implements Viewable,
             log.error(ex);
         }
     }
-
+    
     /**
-     * Sets the focus to the first control in the form.
+     * This will choose the first focusable UI component that doesn't have a value. 
+     * BUT! It always chooses a JTextField over anything else.
+     * (NOTE: We may want a non-JTextField that is required to override a JTextField that is not.)
+     * 
+     * @return the focusable first object.
      */
-    public void focusFirstFormControl()
+    public Component getFirstFocusable()
     {
         int       insertPos = Integer.MAX_VALUE;
         Component focusable = null;
@@ -1334,8 +1440,11 @@ public class FormViewObj implements Viewable,
                 Object val = ((GetSetValueIFace)comp).getValue();
                 if (val == null || (val instanceof String && StringUtils.isEmpty((String)val)))
                 {
-                    if (compFI.getInsertPos() < insertPos)
+                    boolean override = focusable instanceof JTextField && !(comp instanceof JTextField);
+                    
+                    if (compFI.getInsertPos() < insertPos || override)
                     {
+
                         if (comp instanceof UIValidatable)
                         {
 
@@ -1344,7 +1453,11 @@ public class FormViewObj implements Viewable,
                         {
                             focusable = comp;
                         }
-                        insertPos = compFI.getInsertPos();
+                        
+                        if (!override) // keep the same (lower) position as the original
+                        {
+                            insertPos = compFI.getInsertPos();
+                        }
                     }
                 }
             }
@@ -1355,19 +1468,23 @@ public class FormViewObj implements Viewable,
             }
         }
         
+        if (focusable instanceof JTextField && !(first instanceof JTextField))
+        {
+            return focusable;
+        }
+        
+        return first != null ? first : focusable;
+    }
+
+    /**
+     * Sets the focus to the first control in the form.
+     */
+    public void focusFirstFormControl()
+    {
+        Component focusable = getFirstFocusable();
         if (focusable != null)
         {
-            //KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager(); 
-            //System.out.println(focusManager.getFocusOwner()+" "+focusManager.getFocusedWindow());
-            //System.out.println("["+focusable.isFocusable()+"]");
-            //focusable.setFocusable(true);
-            focusable.requestFocusInWindow();  // XXX This doesn't work for the main form, why? Somebody is stealing the focus.
-            //System.out.println("["+focusable+"]");
-            
-        } else if (first != null)
-        {
-            first.requestFocus();
-            //System.out.println("*["+first+"]");
+            focusable.requestFocus();
         }
     }
 
@@ -1553,7 +1670,7 @@ public class FormViewObj implements Viewable,
             if (rsController.getDelRecBtn() != null)
             {
                 boolean enableDelBtn = dataObj != null && (businessRules == null || businessRules.okToDelete(this.dataObj));// && list != null && list.size() > 0;
-                log.info(formViewDef.getName()+" Enabling The Del Btn: "+enableDelBtn);
+                //log.info(formViewDef.getName()+" Enabling The Del Btn: "+enableDelBtn);
                 /*if (!enableDelBtn)
                 {
                     //log.debug("  parentDataObj != null    ["+(parentDataObj != null) + "]");
@@ -1569,7 +1686,7 @@ public class FormViewObj implements Viewable,
             if (rsController.getNewRecBtn() != null)
             {
                 boolean enableNewBtn = dataObj != null || parentDataObj != null || mvParent.isTopLevel();
-                log.info(formViewDef.getName()+" Enabling The New Btn: "+enableNewBtn);
+                //log.info(formViewDef.getName()+" Enabling The New Btn: "+enableNewBtn);
                 /*if (isEditting)
                 {
                     log.debug(formViewDef.getName()+" ["+(dataObj != null) + "] ["+(parentDataObj != null)+"]["+(mvParent.isTopLevel())+"] "+enableNewBtn);
@@ -1643,6 +1760,7 @@ public class FormViewObj implements Viewable,
             if (list.size() > 0)
             {
                 this.dataObj = list.get(0);
+                log.debug("Getting DO from list "+this.dataObj.getClass().getSimpleName()+" "+this.dataObj.hashCode());
             } else
             {
                 this.dataObj = null;
@@ -1971,7 +2089,7 @@ public class FormViewObj implements Viewable,
         {
             formValidator.reset(MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT));
 
-            listFieldChanges();
+            //listFieldChanges();
         }
         
         

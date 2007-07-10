@@ -37,9 +37,12 @@ import edu.ku.brc.ui.forms.DataObjectGettableFactory;
 
 
 /**
+ * This class manages all the Data Object Formatters. A DataObjectFormatter is used to create a string representation 
+ * of a data object. Much of the time this is a single field, but saometimes it is a concatentation of several fields.
+ * 
  * @author rods
  *
- * @code_status Beta
+ * @code_status Complete
  *
  * Created Date: Jan 17, 2007
  *
@@ -65,10 +68,10 @@ public class DataObjFieldFormatMgr
     protected DataObjFieldFormatMgr()
     {
         Object[] initTypeData = {"string", String.class, 
-                                "int",     Integer.class, 
-                                "float",   Float.class, 
-                                "double",  Double.class, 
-                                "boolean", Boolean.class};
+                                 "int",     Integer.class, 
+                                 "float",   Float.class, 
+                                 "double",  Double.class, 
+                                 "boolean", Boolean.class};
         for (int i=0;i<initTypeData.length;i++)
         {
             typeHash.put((String)initTypeData[i], (Class)initTypeData[i+1]);
@@ -146,25 +149,26 @@ public class DataObjFieldFormatMgr
                             {
                                 Properties props = new Properties();
                                 
-                                List<?> paramElements = switchElement.selectNodes("param");
+                                List<?> paramElements = external.selectNodes("param");
                                 for (Object param : paramElements)
                                 {
-                                    String typeStr = getAttr((Element)param, "type", null);
+                                    String nameStr = getAttr((Element)param, "name", null);
                                     String val     = StringUtils.deleteWhitespace(((Element)param).getTextTrim());
-                                    if (StringUtils.isNotEmpty(typeStr) && StringUtils.isNotEmpty(val))
+                                    if (StringUtils.isNotEmpty(nameStr) && StringUtils.isNotEmpty(val))
                                     {
-                                        props.put(typeStr, val);
+                                        props.put(nameStr, val);
                                     }
-                                    try 
-                                    {
-                                        DataObjDataFieldFormatIFace fmt = Class.forName(name).asSubclass(DataObjDataFieldFormatIFace.class).newInstance();
-                                        fmt.init(name, props);
-                                        switchFormatter.add(fmt);
-                                        
-                                    } catch (Exception ex)
-                                    {
-                                        log.error(ex);
-                                    }
+                                }
+                                try 
+                                {
+                                    DataObjDataFieldFormatIFace fmt = Class.forName(externalClassName).asSubclass(DataObjDataFieldFormatIFace.class).newInstance();
+                                    fmt.init(name, props);
+                                    switchFormatter.add(fmt);
+                                    
+                                } catch (Exception ex)
+                                {
+                                    log.error(ex);
+                                    ex.printStackTrace();
                                 }
                             } else
                             {
@@ -185,9 +189,9 @@ public class DataObjFieldFormatMgr
                                 {
                                     Element  fieldElement  = (Element)fldObj;
                                     String   fieldName     = fieldElement.getTextTrim();
-                                    String   dataTypeStr   = getAttr(fieldElement, "type", "string");
-                                    String   formatStr     = getAttr(fieldElement, "format", null);
-                                    String   sepStr        = getAttr(fieldElement, "sep", null);
+                                    String   dataTypeStr   = getAttr(fieldElement, "type",      "string");
+                                    String   formatStr     = getAttr(fieldElement, "format",    null);
+                                    String   sepStr        = getAttr(fieldElement, "sep",       null);
                                     String   formatterName = getAttr(fieldElement, "formatter", null);
                                     
                                     Class<?> classObj      = typeHash.get(dataTypeStr);
@@ -265,10 +269,9 @@ public class DataObjFieldFormatMgr
         {
             return getDataFormatter(dataObj, switcherFormatter);
             
-        } else
-        {
-            log.error("Couldn't find a switchable name ["+formatName+"]");
         }
+        // else
+        log.error("Couldn't find a switchable name ["+formatName+"]");
 
         return null;
     }
@@ -479,10 +482,9 @@ public class DataObjFieldFormatMgr
             }
             return aggStr.toString();
             
-        } else
-        {
-            log.error("Aggegrator was null.");
         }
+        // else
+        log.error("Aggegrator was null.");
         return null;
     }
     
@@ -502,10 +504,9 @@ public class DataObjFieldFormatMgr
             {
                 return instance.formatInternal(dff, dataObj);
                 
-            } else
-            {
-                log.error("Couldn't find DataObjDataFieldFormat for ["+sf.getName()+"] value["+dataObj+"]");
             }
+            // else
+            log.error("Couldn't find DataObjDataFieldFormat for ["+sf.getName()+"] value["+dataObj+"]");
         } else
         {
             log.error("Couldn't find DataObjSwitchFormatter for class ["+formatName+"]"); 
@@ -528,15 +529,12 @@ public class DataObjFieldFormatMgr
             if (dff != null)
             {
                 return instance.formatInternal(dff, dataObj);
-                
-            } else
-            {
-                log.error("Couldn't find DataObjDataFieldFormat for ["+sf.getName()+"] value["+dataObj+"]");
             }
-        } else
-        {
-            log.error("Couldn't find DataObjSwitchFormatter for class ["+dataClass.getName()+"]"); 
+            // else
+            log.error("Couldn't find DataObjDataFieldFormat for ["+sf.getName()+"] value["+dataObj+"]");
         }
+        // else
+        log.error("Couldn't find DataObjSwitchFormatter for class ["+dataClass.getName()+"]"); 
         return null;
     }
 
@@ -567,11 +565,9 @@ public class DataObjFieldFormatMgr
             {
                 return instance.aggregateInternal(items, agg);
                 
-            } else
-            {
-                log.error("Couldn't find Aggegrator ["+aggName+"]");
             }
-            
+            // else
+            log.error("Couldn't find Aggegrator ["+aggName+"]");
         }
         // else
         return "";
@@ -612,10 +608,9 @@ public class DataObjFieldFormatMgr
         {
             return instance.aggregateInternal(items, defAgg);
             
-        } else
-        {
-            log.error("Could find aggregator of class ["+dataClass.getCanonicalName()+"]");
         }
+        // else
+        log.error("Could find aggregator of class ["+dataClass.getCanonicalName()+"]");
         return "";
     }
 }

@@ -110,7 +110,7 @@ public class DataObjSwitchFormatter
 
 
     /**
-     * Returns the field name.s
+     * Returns the field names.
      * @return the field name
      */
     public String getFieldName()
@@ -173,7 +173,7 @@ public class DataObjSwitchFormatter
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.DataObjectFormatterIFace#format(java.lang.Object)
      */
-    public String format(Object dataObj)
+    public String format(@SuppressWarnings("unused") Object dataObj)
     {
         throw new RuntimeException("This method cannot be called on this type of object");
     }

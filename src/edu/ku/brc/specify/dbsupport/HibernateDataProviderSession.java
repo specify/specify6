@@ -47,8 +47,8 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     private static final Logger log = Logger.getLogger(HibernateDataProviderSession.class);
     
     // Used for checking to see if we have any dangling creates without closes
-    //protected static      int creates = 0;
-    //protected static      int closes  = 0;
+    protected static      int creates = 0;
+    protected static      int closes  = 0;
     
     protected Session     session         = null;
     protected Exception   recentException = null;
@@ -62,8 +62,8 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     public HibernateDataProviderSession()
     {
         session = HibernateUtil.getNewSession();
-        //creates++;
-        //log.info(" Creates: "+creates+"  Closes: "+closes+" Dif: "+(creates-closes));
+        creates++;
+        log.info(" Creates: "+creates+"  Closes: "+closes+" Dif: "+(creates-closes));
     }
     
     /**
@@ -709,8 +709,8 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
      */
     public void close()
     {
-        //closes++;
-        //log.info("*Creates: "+creates+"  Closes: "+closes+" Dif: "+(creates-closes));
+        closes++;
+        log.info("*Creates: "+creates+"  Closes: "+closes+" Dif: "+(creates-closes));
         
         if (session != null)
         {

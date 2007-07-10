@@ -183,15 +183,30 @@ public class FormValidator implements ValidationListener, DataChangeListener
     /**
      * Tells all the validators that are required not to validate
      */
-    public void setAllUIValidatorsToNew(boolean isNew)
+    public void setUIValidatorsToNew(boolean isNew)
     {
         if (enabled)
         {
-            this.hasChanged = false;
             for (UIValidator uiv : validators)
             {
                 uiv.setAsNew(isNew);
             }
+            updateValidationBtnUIState();
+        }
+    }
+    
+    /**
+     * 
+     */
+    public void setUIValidatorsToNotChanged()
+    {
+        this.hasChanged = false;
+        for (UIValidator uiv : validators)
+        {
+            uiv.setChanged(false);
+        }
+        if (enabled)
+        {
             updateValidationBtnUIState();
         }
     }

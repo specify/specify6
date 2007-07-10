@@ -38,7 +38,7 @@ import org.dom4j.Node;
 
 import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatter;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.ui.validation.TypeSearchForQueryFactory;
 
@@ -559,10 +559,10 @@ public class ViewLoader
                                 case formattedtext:
                                 {
                                     validationRule = getAttr(cellElement, "validation", "formatted");
-                                    dspUITypeStr   = getAttr(cellElement, "dspuitype", "dsptextfield");
+                                    dspUITypeStr   = getAttr(cellElement, "dspuitype", "formattedtext");
                                     if (isNotEmpty(uiFieldFormatter))
                                     {
-                                        UIFieldFormatter formatter = UIFieldFormatterMgr.getFormatter(uiFieldFormatter);
+                                        UIFieldFormatterIFace formatter = UIFieldFormatterMgr.getFormatter(uiFieldFormatter);
                                         if (formatter == null)
                                         {
                                             log.error("Couldn't find formatter["+uiFieldFormatter+"]");

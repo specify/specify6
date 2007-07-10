@@ -51,7 +51,7 @@ import edu.ku.brc.ui.forms.persist.FormCellSubView;
  */
 public class PanelViewable extends JPanel implements ViewBuilderIFace
 {
-    public enum PanelType {Unknown, Panel, ButtonBar};
+    public enum PanelType {Unknown, Panel, ButtonBar}
     
     protected DefaultFormBuilder builder;
     protected CellConstraints    cc = new CellConstraints();
@@ -166,7 +166,7 @@ public class PanelViewable extends JPanel implements ViewBuilderIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.ViewBuilderIFace#setDataObjectRep(edu.ku.brc.ui.forms.DraggableRecordIdentifier)
      */
-    public void setDataObjectRep(final DraggableRecordIdentifier draggableRI)
+    public void setDataObjectRep(@SuppressWarnings("unused") final DraggableRecordIdentifier draggableRI)
     {
         // not supported
     }

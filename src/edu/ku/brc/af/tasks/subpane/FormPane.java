@@ -1,6 +1,7 @@
 package edu.ku.brc.af.tasks.subpane;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.util.List;
 import java.util.Set;
 
@@ -397,10 +398,10 @@ public class FormPane extends DroppableTaskPane
     {
         if (multiView != null)
         {
-            Viewable viewable = multiView.getCurrentView();
-            if (viewable != null && viewable instanceof FormViewObj)
+            FormViewObj formViewObj = multiView.getCurrentViewAsFormViewObj();
+            if (formViewObj != null)
             {
-                return ((FormViewObj)viewable).checkForChanges();
+                return formViewObj.checkForChanges();
             }
         }
         return true;
@@ -413,6 +414,15 @@ public class FormPane extends DroppableTaskPane
     public ImageIcon getIcon()
     {
         return icon;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.subpane.BaseSubPane#getFirstFocusable()
+     */
+    @Override
+    public Component getFirstFocusable()
+    {
+        return multiView != null ? multiView.getFirstFocusable() : null;
     }
 
 }

@@ -277,7 +277,14 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
                     winDim.width += currentComp.getPreferredSize().width - oldSize.width;
                     setSize(winDim);
                     currentComp.setSize(new Dimension(currentComp.getPreferredSize().width, oldSize.height));
-                    startAnimation(this, comp, currentComp.getPreferredSize().height - oldSize.height, false);
+                    
+                    // With Animation
+                    //startAnimation(this, comp, currentComp.getPreferredSize().height - oldSize.height, false);
+                    
+                    // Without Animation
+                    comp.setVisible(true);
+                    winDim.height += currentComp.getPreferredSize().height - oldSize.height;
+                    setSize(winDim);
                 }
             }
         }

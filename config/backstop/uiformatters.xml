@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <formats>
     <format name="AccessionNumber" class="edu.ku.brc.specify.datamodel.Accession" default="true">
-        <autonumber>edu.ku.brc.specify.dbsupport.AccessionAutoNumber</autonumber>
+        <!-- <autonumber>edu.ku.brc.specify.dbsupport.AccessionAutoNumber</autonumber> -->
         <field size="4" type="year" value="YEAR"/>
         <field size="1" type="separator" value="-"/>
         <field size="2" type="alphanumeric" value="AA"/>
@@ -24,5 +24,13 @@
     <format name="Date" type="date"/>
     <format name="PartialDateMonth" type="date" partialdate="Month"/>
     <format name="PartialDateYear" type="date" partialdate="Year"/>
+    
+    <!--
+    <format name="CatalogNumber" class="edu.ku.brc.specify.datamodel.CollectionObject" default="true">
+        <autonumber>edu.ku.brc.specify.dbsupport.CollectionAutoNumber</autonumber>
+        <external>edu.ku.brc.specify.ui.CatalogNumberUIFieldFormatter</external>
+    </format>
+    -->
+    
     
 </formats>

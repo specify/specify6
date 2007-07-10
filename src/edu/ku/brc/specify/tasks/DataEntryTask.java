@@ -224,7 +224,8 @@ public class DataEntryTask extends BaseTask
                     
                 } else
                 {
-                    SubPaneMgr.getInstance().replacePane(starterPane, formPane);
+                    SubPaneMgr.getInstance().removePane(starterPane);
+                    SubPaneMgr.getInstance().addPane(formPane);
                     starterPane = null;
                 }
                 

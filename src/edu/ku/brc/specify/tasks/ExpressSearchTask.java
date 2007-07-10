@@ -335,6 +335,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
             } catch (Exception ex)
             {
                 log.error(ex);
+                ex.printStackTrace();
             }
             
             // This is sort of bad because it assumes the Task has already been created

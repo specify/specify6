@@ -6,16 +6,16 @@
         -->
         <pref title="Formatting" icon="Data_Entry" panelClass="edu.ku.brc.specify.prefs.FormattingPrefsPanel"/>
         <pref title="System"      icon="SystemSetup"     panelClass="edu.ku.brc.specify.prefs.CachePrefs"/>
-    </section>
+     </section>
     
-    <!--
-        <section title="settings">
+    
+    <section title="settings">
         <pref title="email" icon="Browse" panelClass="edu.ku.brc.specify.prefs.EMailPrefsPanel"/>
-        </section>
+    </section>
         
-        <section title="misc">
+    <section title="misc">
         <pref title="Misc." icon="Search" panelClass="edu.ku.brc.specify.prefs.MiscPrefsPanel"/>
-        </section>
-    -->
+    </section>
+   
     
 </prefs>

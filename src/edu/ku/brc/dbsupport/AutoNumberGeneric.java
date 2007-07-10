@@ -17,7 +17,7 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 
 import edu.ku.brc.ui.forms.DataGetterForObj;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatter;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -34,11 +34,17 @@ public class AutoNumberGeneric implements AutoNumberIFace
     protected String           fieldName = null;
     protected DataGetterForObj getter    = new DataGetterForObj();
     
+    /**
+     * 
+     */
     public AutoNumberGeneric()
     {
         // no op
     }
     
+    /**
+     * @param properties
+     */
     public AutoNumberGeneric(final Properties properties)
     {
         String className = properties.getProperty("class");
@@ -60,11 +66,20 @@ public class AutoNumberGeneric implements AutoNumberIFace
         
     }
     
-    protected String getFirstValue(final UIFieldFormatter formatter)
+    /**
+     * @param formatter
+     * @return
+     */
+    protected String getFirstValue(final UIFieldFormatterIFace formatter)
     {
         return null;
     }
     
+    /**
+     * @param session
+     * @return
+     * @throws Exception
+     */
     protected Object getHighestObject(final Session session) throws Exception
     {
         List list = session.createCriteria(classObj).addOrder( Order.desc(fieldName) ).setMaxResults(1).list();
@@ -78,7 +93,7 @@ public class AutoNumberGeneric implements AutoNumberIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.AutoNumberIFace#getNextNumber(edu.ku.brc.ui.forms.formatters.UIFieldFormatter, java.lang.String)
      */
-    public String getNextNumber(final UIFieldFormatter formatter, final String value)
+    public String getNextNumber(final UIFieldFormatterIFace formatter, final String value)
     {
         Session session = null;
         try
@@ -93,8 +108,11 @@ public class AutoNumberGeneric implements AutoNumberIFace
             
             String largestVal = (String)getter.getFieldValue(dataObj, fieldName);
             int    incr       =  getIncValue(formatter, largestVal);
-            incr++;
-            return buildNewNumber(formatter, value, incr);
+            if (incr > -1)
+            {
+                incr++;
+                return buildNewNumber(formatter, value, incr);
+            }
             
         } catch (Exception ex)
         {
@@ -116,7 +134,7 @@ public class AutoNumberGeneric implements AutoNumberIFace
      * @param value the value that the incrementer portion will be extracted from
      * @return the integer portion for the incrementer part
      */
-    public static int getIncValue(final UIFieldFormatter formatter, final String value)
+    public int getIncValue(final UIFieldFormatterIFace formatter, final String value)
     {
         if (StringUtils.isNotEmpty(value) && value.length() == formatter.getLength())
         {
@@ -124,7 +142,10 @@ public class AutoNumberGeneric implements AutoNumberIFace
             if (pos != null)
             {
                 String fieldStr = value.substring(pos.first, pos.second);
-                return Integer.parseInt(fieldStr);
+                if (StringUtils.isNumeric(fieldStr))
+                {
+                    return Integer.parseInt(fieldStr);
+                }
             } else
             {
                 throw new RuntimeException("Formatter ["+formatter.getName()+"] doesn't have an incrementer field.");
@@ -140,7 +161,7 @@ public class AutoNumberGeneric implements AutoNumberIFace
      * @param incVal the inc value that will be substituted in
      * @return the new formatted value
      */
-    public static String buildNewNumber(final UIFieldFormatter formatter, final String value, final int incVal)
+    public String buildNewNumber(final UIFieldFormatterIFace formatter, final String value, final int incVal)
     {
         if (StringUtils.isNotEmpty(value) && value.length() == formatter.getLength())
         {
@@ -156,10 +177,9 @@ public class AutoNumberGeneric implements AutoNumberIFace
                 }
                 return sb.toString();
                 
-            } else
-            {
-                throw new RuntimeException("Formatter ["+formatter.getName()+"] doesn't have an incrementer field.");
             }
+            // else
+            throw new RuntimeException("Formatter ["+formatter.getName()+"] doesn't have an incrementer field.");
         }
         return null;
     }

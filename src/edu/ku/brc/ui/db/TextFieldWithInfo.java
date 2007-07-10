@@ -168,7 +168,8 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
         frame.setCloseListener(this);
         frame.setData(dataObj);
         frame.showDisplay(true);
-
+        frame.dispose();
+        
         if (multiView != null)
         {
             multiView.registerDisplayFrame(frame);

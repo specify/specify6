@@ -227,7 +227,19 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         }
     }
 
-
+    /**
+     * @return the form's first focusable object.
+     */
+    public Component getFirstFocusable()
+    {
+        FormViewObj formView = getCurrentViewAsFormViewObj();
+        if (formView != null)
+        {
+            return formView.getFirstFocusable();
+        }
+        return null;
+    }
+    
     /**
      * Returns a Collection of the Viewables
      * @return  a Collection of the Viewables
@@ -260,10 +272,10 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                 viewable.getDataFromUI();
                 if (viewable.getValidator() != null && viewable.getValidator().hasChanged())
                 {
-                    if (FormHelper.updateLastEdittedInfo(viewable.getDataObj()))
-                    {
-                        viewable.setDataIntoUI();
-                    }
+                    //if (FormHelper.updateLastEdittedInfo(viewable.getDataObj()))
+                    //{
+                    //    viewable.setDataIntoUI();
+                    //}
                 }
             }
             // XXX For the Demo I can't figure out why a Different session is being checked when I try
@@ -330,7 +342,9 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
             Viewable viewable = e.nextElement();
             if (viewable.getValidator() != null)
             {
-                viewable.getValidator().setAllUIValidatorsToNew(isNewForm);
+                FormValidator fv = viewable.getValidator();
+                fv.setUIValidatorsToNew(isNewForm);
+                fv.setUIValidatorsToNotChanged();
                 viewable.setHasNewData(isNewForm);
             }
         }
@@ -968,6 +982,26 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
             mv.setSession(session);
         }
     }
+    
+    /**
+     * Increments to the next number in the series.
+     */
+    public void updateAutoNumbers()
+    {
+        FormViewObj formViewObj = getCurrentViewAsFormViewObj();
+        if (formViewObj != null)
+        {
+            //if (formViewObj.getValidator() != null && formViewObj.getValidator().hasChanged())
+            //{
+                formViewObj.updateAutoNumbers();
+            //}
+        }
+        
+        for (MultiView mv : kids)
+        {
+            mv.updateAutoNumbers();
+        }
+    }
 
     /**
      * Tells the MultiView the MV that it is being shutdown to be disposed.
@@ -1002,6 +1036,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
             for (ViewBasedDisplayIFace vbd : displayFrames)
             {
                 vbd.shutdown();
+                vbd.dispose();
             }
             displayFrames.clear();
         }

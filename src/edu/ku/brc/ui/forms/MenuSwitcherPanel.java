@@ -37,7 +37,6 @@ import edu.ku.brc.ui.DropDownButtonStateful;
 import edu.ku.brc.ui.DropDownMenuInfo;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.forms.persist.AltView;
-import edu.ku.brc.ui.forms.persist.View;
 import edu.ku.brc.ui.forms.persist.ViewDef;
 
 /**
@@ -62,7 +61,6 @@ public class MenuSwitcherPanel extends JPanel
      * @param altViewsListArg
      */
     public MenuSwitcherPanel(final MultiView       mvParent, 
-                             final View            view, 
                              final AltView         altView, 
                              final Vector<AltView> altViewsList)
     {
@@ -90,7 +88,7 @@ public class MenuSwitcherPanel extends JPanel
             for (String selectorVal : selectorValHash.keySet())
             {
                 Vector<AltView> avList = selectorValHash.get(selectorVal);
-                DropDownButtonStateful switcherUI = createSwitcher(mvParent, view, altView, avList);
+                DropDownButtonStateful switcherUI = createSwitcher(mvParent, avList);
                 add(switcherUI, selectorVal);
                 switcherHash.put(selectorVal, switcherUI);
             }
@@ -98,7 +96,7 @@ public class MenuSwitcherPanel extends JPanel
         } else
         {
             setLayout(new BorderLayout());
-            DropDownButtonStateful switcherUI = createSwitcher(mvParent, view, altView, altViewsList);
+            DropDownButtonStateful switcherUI = createSwitcher(mvParent, altViewsList);
             add(switcherUI, BorderLayout.CENTER);
             switcherHash.put("0", switcherUI);
             selectorValHash.put("0", altViewsList);
@@ -128,14 +126,10 @@ public class MenuSwitcherPanel extends JPanel
     /**
      * Creates a special drop "switcher UI" component for switching between the Viewables in the MultiView.
      * @param mvParentArg the MultiView Parent
-     * @param viewArg the View
-     * @param altViewArg the AltView
      * @param altViewsListArg the Vector of AltView that will contains the ones in the Drop Down
      * @return the special combobox
      */
     protected DropDownButtonStateful createSwitcher(final MultiView       mvParentArg, 
-                                                    final View            viewArg, 
-                                                    final AltView         altViewArg, 
                                                     final Vector<AltView> altViewsListArg)
     {
         DropDownButtonStateful switcher = null;

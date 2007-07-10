@@ -16,6 +16,7 @@
 package edu.ku.brc.af.tasks.subpane;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 
 import javax.swing.Icon;
 import javax.swing.JComponent;
@@ -132,6 +133,14 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
         return this;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.SubPaneIFace#getFirstFocusable()
+     */
+    public Component getFirstFocusable()
+    {
+        return null;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.SubPaneIFace#getMultiView()
      */

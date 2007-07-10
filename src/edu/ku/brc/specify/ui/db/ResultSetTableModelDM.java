@@ -24,6 +24,7 @@ import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.ui.DateWrapper;
+import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 
 /**
  *
@@ -182,6 +183,10 @@ public class ResultSetTableModelDM extends ResultSetTableModel
                 
             }
             Object data = displayColIndexes != null ? resultSet.getObject(displayColIndexes[column]+1) : resultSet.getObject(column+1);
+            if (formatters[colArg] != null)
+            {
+                return DataObjFieldFormatMgr.format(data, formatters[colArg]);
+            }
             /*System.out.println(data != null ? data.getClass().getSimpleName() : "");
             if (data != null)
             {

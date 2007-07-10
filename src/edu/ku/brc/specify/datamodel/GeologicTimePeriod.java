@@ -64,7 +64,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
      * A <code>Logger</code> object used for all log messages eminating from
      * this class.
      */
-    protected static final Logger log = Logger.getLogger(Geography.class);
+    protected static final Logger log = Logger.getLogger(GeologicTimePeriod.class);
 
 	protected Long						    geologicTimePeriodId;
 	protected Integer						rankId;

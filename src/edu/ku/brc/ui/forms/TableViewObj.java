@@ -47,6 +47,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -78,8 +79,8 @@ import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.forms.persist.AltView;
@@ -421,7 +422,7 @@ public class TableViewObj implements Viewable,
         ((DefaultTableCellRenderer)table.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
         
         DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-        renderer.setHorizontalAlignment(JLabel.CENTER);
+        renderer.setHorizontalAlignment(SwingConstants.CENTER);
 
         TableColumnModel tableColModel = table.getColumnModel();
         for (int i=0;i<tableColModel.getColumnCount();i++)
@@ -502,7 +503,7 @@ public class TableViewObj implements Viewable,
         }
         */
 
-        tableScroller = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        tableScroller = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         //mainBuilder.add(tableScroller, cc.xy(1, mainCompRowInx));
         mainComp.add(tableScroller, BorderLayout.CENTER);
         
@@ -572,51 +573,49 @@ public class TableViewObj implements Viewable,
         final ViewBasedDisplayIFace dialog = UIHelper.createDataObjectDialog(altView, mainComp, dObj, MultiView.isOptionOn(options, MultiView.IS_EDITTING), false);
         if (dialog != null)
         {
-            if (isEdit)
+            dialog.setCloseListener(new PropertyChangeListener()
             {
-                dialog.setCloseListener(new PropertyChangeListener()
+                @SuppressWarnings("unchecked")
+                public void propertyChange(PropertyChangeEvent evt)
                 {
-                    @SuppressWarnings("unchecked")
-                    public void propertyChange(PropertyChangeEvent evt)
+                    String action = evt.getPropertyName();
+                    if (action.equals("OK"))
                     {
-                        String action = evt.getPropertyName();
-                        if (action.equals("OK"))
+                        dialog.getMultiView().getDataFromUI();
+                        if (mvParent != null)
                         {
-                            dialog.getMultiView().getDataFromUI();
-                            if (mvParent != null)
+                            tellMultiViewOfChange();
+                            
+                            Object daObj = dialog.getMultiView().getData();
+                            parentDataObj.addReference((FormDataObjIFace)daObj, dataSetFieldName);
+                            if (isNew)
                             {
-                                tellMultiViewOfChange();
+                                dataObjList.add(daObj);
                                 
-                                Object daObj = dialog.getMultiView().getData();
-                                parentDataObj.addReference((FormDataObjIFace)daObj, dataSetFieldName);
-                                if (isNew)
+                                Collections.sort((List)dataObjList);                          
+                                if (origDataSet != null)
                                 {
-                                    dataObjList.add(daObj);
-                                    
-                                    Collections.sort((List)dataObjList);                          
-                                    if (origDataSet != null)
-                                    {
-                                        origDataSet.add(daObj);
-                                    }
+                                    origDataSet.add(daObj);
                                 }
-                                model.fireDataChanged();
-                                table.invalidate();
-                                
-                                JComponent comp = mvParent.getTopLevel();
-                                comp.validate();
-                                comp.repaint();
                             }
-        
+                            model.fireDataChanged();
+                            table.invalidate();
+                            
+                            JComponent comp = mvParent.getTopLevel();
+                            comp.validate();
+                            comp.repaint();
                         }
-                        else if (action.equals("Cancel"))
-                        {
-                            log.warn("User clicked Cancel");
-                        }
+    
                     }
-                });
-            }
+                    else if (action.equals("Cancel"))
+                    {
+                        log.warn("User clicked Cancel");
+                    }
+                }
+            });
             dialog.setData(dObj);
             dialog.showDisplay(true);
+            dialog.dispose();
         }
     }
     
@@ -1441,7 +1440,7 @@ public class TableViewObj implements Viewable,
     // AppPrefsChangeListener
     //-------------------------------------------------
 
-    protected void setColorOnControls(final int colorType, final Color color)
+    protected void setColorOnControls(@SuppressWarnings("unused") final int colorType, @SuppressWarnings("unused") final Color color)
     {
         /*
         for (ColumnInfo fieldInfo : controlsById.values())
@@ -1769,14 +1768,8 @@ public class TableViewObj implements Viewable,
                     Set<?> objSet = (Set)dataVal;
                     return DataObjFieldFormatMgr.aggregate(objSet, objSet.iterator().next().getClass());
                     
-                } else
-                {
-                    //log.error("No formatter for ["+dataVal+"]");
-                }
-                
+                } 
                 return dataVal;
-
-                
                 //return dataGetter.getFieldValue(rowObj, colInfo.getFullCompName());
             }
             return null;
@@ -1793,11 +1786,9 @@ public class TableViewObj implements Viewable,
             if (obj != null)
             {
                 return obj.getClass();
-                
-            } else
-            {
-                return String.class;
             }
+            // else
+            return String.class;
         }
 
         public void setValueAt(Object aValue, int rowIndex, int columnIndex)

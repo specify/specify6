@@ -172,7 +172,7 @@
         default="true"
         >
         <switch single="true">
-            <external class="edu.ku.brc.specify.ui.LatLonFormatter">
+            <external class="edu.ku.brc.specify.ui.LocalityLatLonFormatter">
                 <param name="type">latitude</param>
                 <param name="dir">symbol</param>
                 <param name="format">DDDDDD</param>
@@ -187,12 +187,22 @@
         default="true"
         >
         <switch single="true">
-            <external class="edu.ku.brc.specify.ui.LatLonFormatter">
+            <external class="edu.ku.brc.specify.ui.LocalityLatLonFormatter">
                 <param name="type">longitude</param>
                 <param name="dir">symbol</param>
                 <param name="format">DDDDDD</param>
                 <param name="which">1</param>
             </external>
+        </switch>
+    </format>
+    
+    <format
+        name="CatalogNumber"
+        class="java.lang.String"
+        default="true"
+        >
+        <switch single="true">
+            <external class="edu.ku.brc.specify.ui.CatalogNumberFormatter"/>
         </switch>
     </format>
     

@@ -288,7 +288,8 @@ public class ViewFactory
      * @return ValFormattedTextField
      */
     protected JTextField createFormattedTextField(final FormValidator validator,
-                                                  final FormCellField cellField)
+                                                  final FormCellField cellField,
+                                                  final boolean       isViewOnly)
     {
         log.debug(cellField.getName()+"  "+cellField.getUIFieldFormatter());
         ValFormattedTextField textField;// = new ValFormattedTextField(cellField.getUIFieldFormatter());
@@ -299,7 +300,7 @@ public class ViewFactory
             // deliberately ignore "cellField.isChangeListenerOnly()"
             // pass in false instead
 
-            textField = new ValFormattedTextField(cellField.getUIFieldFormatter());
+            textField = new ValFormattedTextField(cellField.getUIFieldFormatter(), isViewOnly);
             textField.setRequired(cellField.isRequired());
             
             validator.hookupTextField(textField,
@@ -311,10 +312,17 @@ public class ViewFactory
 
         } else
         {
-            textField = new ValFormattedTextField(cellField.getUIFieldFormatter());
+            textField = new ValFormattedTextField(cellField.getUIFieldFormatter(), isViewOnly);
         }
-
-        textField.setEditable(!cellField.isReadOnly());
+        
+        if (isViewOnly)
+        {
+            changeTextFieldUIForDisplay(textField, cellField.getPropertyAsBoolean("transparent", false));
+        } else
+        {
+            textField.setEditable(!cellField.isReadOnly());
+        }
+        
 
         return textField;
     }
@@ -583,14 +591,14 @@ public class ViewFactory
     }
     
     /**
-     * Creates an ImageDisplay control,
+     * Creates an ImageDisplay control.
      * @param cellField FormCellField info
      * @param mode indicates whether in Edit or View mode
+     * @param validator the validator
      * @return the control
      */
     protected ImageDisplay createImageDisplay(final FormCellField cellField,
                                               final AltView.CreationMode mode,
-                                              final MultiView parent,
                                               final FormValidator validator)
     {
         int w = 150;
@@ -844,7 +852,7 @@ public class ViewFactory
                             break;
                         
                         case formattedtext:
-                            compToAdd = createFormattedTextField(validator, cellField);
+                            compToAdd = createFormattedTextField(validator, cellField, mode == AltView.CreationMode.View);
                             addToValidator = validator == null; // might already added to validator
                             break;
                             
@@ -872,7 +880,7 @@ public class ViewFactory
 
                             
                         case image:
-                            compToAdd = createImageDisplay(cellField, mode, parent, validator);
+                            compToAdd = createImageDisplay(cellField, mode, validator);
                             addToValidator = (validator != null);
                             break;
 
@@ -1403,70 +1411,68 @@ public class ViewFactory
                 processRows(parentView, formViewDef, null, tableViewObj, altView.getMode(), labelsForHash, validator, formViewDef.getRows());
                 return tableViewObj;
                 
-            } else
-            {
-                FormViewDef formViewDef = (FormViewDef)altView.getViewDef();
-                
-                Hashtable<String, JLabel> labelsForHash = new Hashtable<String, JLabel>();
-                
-                /*
-                ValidatedJPanel validatedPanel = null;
-                FormValidator   validator      = null;
-                if (altView.isValidated())
-                {
-                    validatedPanel = new ValidatedJPanel();
-                    validator      = validatedPanel.getFormValidator();
-                    validator.setDataChangeNotification(true);
-                }
-                */
-                
-                TableViewObj tableViewObj = new TableViewObj(view, altView, parentView, null, options);
-    
-                //Object currDataObj = tableViewObj.getCurrentDataObj();
-    
-                processRows(parentView, formViewDef, null, tableViewObj, altView.getMode(), labelsForHash, validator, formViewDef.getRows());
-
+            }
+            // else
+            FormViewDef formViewDef = (FormViewDef)altView.getViewDef();
+            
+            Hashtable<String, JLabel> labelsForHash = new Hashtable<String, JLabel>();
+            
             /*
-            if (validatedPanel != null)
+            ValidatedJPanel validatedPanel = null;
+            FormValidator   validator      = null;
+            if (altView.isValidated())
             {
-                validatedPanel.addPanel(formViewObj.getPanel());
-
-                // Here we add all the components whether they are used or not
-                // XXX possible optimization is to only load the ones being used (although I am not sure how we will know that)
-                Map<String, Component> mapping = formViewObj.getControlMapping();
-                for (String id : mapping.keySet())
-                {
-                    validatedPanel.addValidationComp(id, mapping.get(id));
-                }
-                Map<String, String> enableRules = formViewDef.getEnableRules();
-
-                // Load up validation Rules
-                FormValidator fv = validatedPanel.getFormValidator();
-                formViewObj.setValidator(fv);
-                
-                fv.setName(formViewDef.getName()); // For Debugging
-
-                for (String id : enableRules.keySet())
-                {
-                    fv.addEnableRule(id, enableRules.get(id));
-                }
-
-                // Load up labels and associate them with there component
-                for (String idFor : labelsForHash.keySet())
-                {
-                    fv.addUILabel(idFor, labelsForHash.get(idFor));
-                }
-
-                formViewObj.setFormComp(validatedPanel);
-                
-            } else
-            {
-                formViewObj.setFormComp(formViewObj.getPanel());
+                validatedPanel = new ValidatedJPanel();
+                validator      = validatedPanel.getFormValidator();
+                validator.setDataChangeNotification(true);
             }
+            */
+            
+            TableViewObj tableViewObj = new TableViewObj(view, altView, parentView, null, options);
+
+            //Object currDataObj = tableViewObj.getCurrentDataObj();
+
+            processRows(parentView, formViewDef, null, tableViewObj, altView.getMode(), labelsForHash, validator, formViewDef.getRows());
+
+        /*
+        if (validatedPanel != null)
+        {
+            validatedPanel.addPanel(formViewObj.getPanel());
+
+            // Here we add all the components whether they are used or not
+            // XXX possible optimization is to only load the ones being used (although I am not sure how we will know that)
+            Map<String, Component> mapping = formViewObj.getControlMapping();
+            for (String id : mapping.keySet())
+            {
+                validatedPanel.addValidationComp(id, mapping.get(id));
+            }
+            Map<String, String> enableRules = formViewDef.getEnableRules();
+
+            // Load up validation Rules
+            FormValidator fv = validatedPanel.getFormValidator();
+            formViewObj.setValidator(fv);
+            
+            fv.setName(formViewDef.getName()); // For Debugging
+
+            for (String id : enableRules.keySet())
+            {
+                fv.addEnableRule(id, enableRules.get(id));
+            }
+
+            // Load up labels and associate them with there component
+            for (String idFor : labelsForHash.keySet())
+            {
+                fv.addUILabel(idFor, labelsForHash.get(idFor));
+            }
+
+            formViewObj.setFormComp(validatedPanel);
+            
+        } else
+        {
+            formViewObj.setFormComp(formViewObj.getPanel());
+        }
 */
-            return tableViewObj;
-
-            }
+          return tableViewObj;
 
         } catch (Exception e)
         {

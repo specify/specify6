@@ -19,6 +19,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
 import edu.ku.brc.dbsupport.AutoNumberGeneric;
+import edu.ku.brc.specify.datamodel.CollectionObject;
 
 /**
  * @author rod
@@ -30,17 +31,29 @@ import edu.ku.brc.dbsupport.AutoNumberGeneric;
  */
 public class CollectionAutoNumber extends AutoNumberGeneric
 {
-
+    /**
+     * Default Constructor. 
+     */
     public CollectionAutoNumber()
     {
         super();
+        
+        classObj  = CollectionObject.class;
+        fieldName = "fieldNumber";
     }
 
+    /**
+     * Constructor with args.
+     * @param properties the args
+     */
     public CollectionAutoNumber(final Properties properties)
     {
         super(properties);
     }
-    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.AutoNumberGeneric#getHighestObject(org.hibernate.Session)
+     */
     protected Object getHighestObject(final Session session) throws Exception
     {
         Vector<Long> ids = new Vector<Long>();

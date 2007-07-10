@@ -14,6 +14,8 @@
  */
 package edu.ku.brc.af.core;
 
+import java.awt.Component;
+
 import javax.swing.Icon;
 import javax.swing.JComponent;
 
@@ -62,6 +64,12 @@ public interface SubPaneIFace
      * @return the UI component of the pane
      */
     public JComponent getUIComponent();
+    
+    /**
+     * Returns the UI component of the pane.
+     * @return the UI component of the pane
+     */
+    public Component getFirstFocusable();
     
     /**
      * Returns the MultiView for the SubPane (may return null).

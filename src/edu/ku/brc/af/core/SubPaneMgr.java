@@ -15,6 +15,8 @@
 package edu.ku.brc.af.core;
 
 import java.awt.Component;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -23,6 +25,7 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.Action;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -66,6 +69,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         addChangeListener(this);
 
         setOpaque(true); // this is so the tabs are painted correctly against the BG color of the TabbedPane
+       
     }
 
     /**
@@ -107,6 +111,13 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         if (pane == null)
         {
             throw new NullPointerException("Null name or pane when adding to SubPaneMgr");
+        }
+        
+        Component firstFocusable = pane.getFirstFocusable();
+        if (firstFocusable != null)
+        {
+            //log.error("firstFocusable: "+firstFocusable);
+            pane.getUIComponent().addComponentListener(new TabSelectionFocusGainListener(firstFocusable));
         }
         
         UIRegistry.getStatusBar().setText("");
@@ -566,4 +577,42 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
        }
     }
 
+    
+    public class TabSelectionFocusGainListener implements ComponentListener
+    {
+        protected Component focusable;
+
+        public TabSelectionFocusGainListener(final Component focusable)
+        {
+            super();
+            this.focusable = focusable;
+        }
+
+        public void componentResized(ComponentEvent e)
+        {
+        }
+
+        public void componentMoved(ComponentEvent e)
+        {
+        }
+
+        public void componentShown(ComponentEvent e)
+        {
+            if (focusable != null)
+            {
+                
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run()
+                    {
+                        focusable.requestFocusInWindow();
+                        focusable = null;
+                    }
+                });
+            }
+        }
+
+        public void componentHidden(ComponentEvent e)
+        {
+        }
+    }
 }

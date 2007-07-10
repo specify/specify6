@@ -176,6 +176,16 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
                 fv.registerOKButton(okBtn);
             }
         }
+        
+        if (okBtn != null)
+        {
+            okBtn.addActionListener(this);
+        }
+        
+        if (cancelBtn != null)
+        {
+            cancelBtn.addActionListener(this);
+        }
     }
 
     /**

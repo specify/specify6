@@ -46,7 +46,8 @@ public class ResultSetTableModel extends AbstractTableModel
     protected int               currentRow  = 0;
     protected int               numRows     = 0;
     protected String[]          columnNames = null; 
-
+    protected String[]          formatters = null;
+    
 
     /**
      * Construct with a ResultSet.
@@ -342,6 +343,15 @@ public class ResultSetTableModel extends AbstractTableModel
     public void setColumnNames(String[] columnNames)
     {
         this.columnNames = columnNames;
+    }
+
+    /**
+     * Sets the column names.
+     * @param columnNames the array of column names
+     */
+    public void setFormatters(String[] formatters)
+    {
+        this.formatters = formatters;
     }
 
 }

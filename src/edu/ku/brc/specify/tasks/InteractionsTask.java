@@ -684,85 +684,88 @@ public class InteractionsTask extends BaseTask
      */
     protected void checkToPrintLoan(final CommandAction cmdAction)
     {
-        Loan loan = (Loan)cmdAction.getData();
-        
-        Boolean     printLoan   = null;
-        FormViewObj formViewObj = getCurrentFormViewObj();
-        if (formViewObj != null)
+        if (cmdAction.getData() instanceof Loan)
         {
-            Component comp = formViewObj.getControlByName("generateInvoice");
-            if (comp instanceof JCheckBox)
+            Loan loan = (Loan)cmdAction.getData();
+            
+            Boolean     printLoan   = null;
+            FormViewObj formViewObj = getCurrentFormViewObj();
+            if (formViewObj != null)
             {
-                printLoan = ((JCheckBox)comp).isSelected();
+                Component comp = formViewObj.getControlByName("generateInvoice");
+                if (comp instanceof JCheckBox)
+                {
+                    printLoan = ((JCheckBox)comp).isSelected();
+                }
             }
-        }
-        
-        if (printLoan == null)
-        {
-            Object[] options = {getResourceString("CreateLoanInvoice"), getResourceString("Cancel")};
-            int n = JOptionPane.showOptionDialog(UIRegistry.get(UIRegistry.FRAME),
-                                                String.format(getResourceString("CreateLoanInvoiceForNum"), new Object[] {(loan.getLoanNumber())}),
-                                                getResourceString("CreateLoanInvoice"),
-                                                JOptionPane.YES_NO_OPTION,
-                                                JOptionPane.QUESTION_MESSAGE,
-                                                null,     //don't use a custom Icon
-                                                options,  //the titles of buttons
-                                                options[0]); //default button title
-            printLoan = n == 0;
-        }
-        
-        if (printLoan)
-        {
-            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            try
+            
+            if (printLoan == null)
             {
-                session.attach(loan);
-                if (loan.getShipments().size() == 0)
+                Object[] options = {getResourceString("CreateLoanInvoice"), getResourceString("Cancel")};
+                int n = JOptionPane.showOptionDialog(UIRegistry.get(UIRegistry.FRAME),
+                                                    String.format(getResourceString("CreateLoanInvoiceForNum"), new Object[] {(loan.getLoanNumber())}),
+                                                    getResourceString("CreateLoanInvoice"),
+                                                    JOptionPane.YES_NO_OPTION,
+                                                    JOptionPane.QUESTION_MESSAGE,
+                                                    null,     //don't use a custom Icon
+                                                    options,  //the titles of buttons
+                                                    options[0]); //default button title
+                printLoan = n == 0;
+            }
+            
+            if (printLoan)
+            {
+                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                try
                 {
-                    UIRegistry.displayErrorDlg(getResourceString("NO_SHIPMENTS_ERROR"));
-                    
-                } else if (loan.getShipments().size() > 1)
-                {
-                    // XXX Do we allow them to pick a shipment or print all?
-                    UIRegistry.displayErrorDlg(getResourceString("MULTI_SHIPMENTS_NOT_SUPPORTED"));
-                    
-                } else
-                {
-                    // XXX At the moment this is just checking to see if there is at least one "good/valid" shipment
-                    // but the hard part will be sending the correct info so the report can be printed
-                    // using bouth a Loan Id and a Shipment ID, and at some point distinguishing between using
-                    // the shipped by versus the shipper.
-                    Shipment shipment = loan.getShipments().iterator().next();
-                    if (shipment.getShippedBy() == null)
+                    session.attach(loan);
+                    if (loan.getShipments().size() == 0)
                     {
-                        UIRegistry.displayErrorDlg(getResourceString("SHIPMENT_MISSING_SHIPPEDBY"));
-                    } else if (shipment.getShippedBy().getAddresses().size() == 0)
+                        UIRegistry.displayErrorDlg(getResourceString("NO_SHIPMENTS_ERROR"));
+                        
+                    } else if (loan.getShipments().size() > 1)
                     {
-                        UIRegistry.displayErrorDlg(getResourceString("SHIPPEDBY_MISSING_ADDR"));
-                    } else if (shipment.getShippedTo() == null)
-                    {
-                        UIRegistry.displayErrorDlg(getResourceString("SHIPMENT_MISSING_SHIPPEDTO"));
-                    } else if (shipment.getShippedTo().getAddresses().size() == 0)
-                    {
-                        UIRegistry.displayErrorDlg(getResourceString("SHIPPEDTO_MISSING_ADDR"));
+                        // XXX Do we allow them to pick a shipment or print all?
+                        UIRegistry.displayErrorDlg(getResourceString("MULTI_SHIPMENTS_NOT_SUPPORTED"));
+                        
                     } else
                     {
-                        //session.close();
-                        //session = null;
-                        
-                        RecordSet rs = new RecordSet();
-                        rs.initialize();
-                        rs.setName(loan.getIdentityTitle());
-                        rs.setDbTableId(loan.getTableId());
-                        rs.addItem(loan.getId());
-                        printLoan(null, rs);
+                        // XXX At the moment this is just checking to see if there is at least one "good/valid" shipment
+                        // but the hard part will be sending the correct info so the report can be printed
+                        // using bouth a Loan Id and a Shipment ID, and at some point distinguishing between using
+                        // the shipped by versus the shipper.
+                        Shipment shipment = loan.getShipments().iterator().next();
+                        if (shipment.getShippedBy() == null)
+                        {
+                            UIRegistry.displayErrorDlg(getResourceString("SHIPMENT_MISSING_SHIPPEDBY"));
+                        } else if (shipment.getShippedBy().getAddresses().size() == 0)
+                        {
+                            UIRegistry.displayErrorDlg(getResourceString("SHIPPEDBY_MISSING_ADDR"));
+                        } else if (shipment.getShippedTo() == null)
+                        {
+                            UIRegistry.displayErrorDlg(getResourceString("SHIPMENT_MISSING_SHIPPEDTO"));
+                        } else if (shipment.getShippedTo().getAddresses().size() == 0)
+                        {
+                            UIRegistry.displayErrorDlg(getResourceString("SHIPPEDTO_MISSING_ADDR"));
+                        } else
+                        {
+                            //session.close();
+                            //session = null;
+                            
+                            RecordSet rs = new RecordSet();
+                            rs.initialize();
+                            rs.setName(loan.getIdentityTitle());
+                            rs.setDbTableId(loan.getTableId());
+                            rs.addItem(loan.getId());
+                            printLoan(null, rs);
+                        }
                     }
-                }
-            } finally
-            {
-                if (session != null)
+                } finally
                 {
-                    session.close();
+                    if (session != null)
+                    {
+                        session.close();
+                    }
                 }
             }
         }

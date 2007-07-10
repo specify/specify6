@@ -92,7 +92,7 @@ public class CollectorActionListener implements ActionListener
                                                                     FRAME_TYPE.DIALOG);
         dialog.setData(agent);
         dialog.showDisplay(true);
-        
+        dialog.dispose();
     }
 
 }

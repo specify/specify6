@@ -36,6 +36,7 @@ import edu.ku.brc.ui.forms.DataObjectGettableFactory;
 import edu.ku.brc.ui.forms.DataObjectSettable;
 import edu.ku.brc.ui.forms.DataObjectSettableFactory;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatter;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.ui.validation.UIValidatable;
 import edu.ku.brc.ui.validation.ValFormattedTextField;
@@ -75,15 +76,16 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace, UIPlugina
     protected boolean            isRequired     = false;
     protected boolean            isChanged      = false;
     protected boolean            isNew          = false;
+    protected boolean            isViewOnly     = false;
     
     protected ValFormattedTextField textField;
     
     /**
      * Constrcutor.
      */
-    public PartialDateUI()
+    public PartialDateUI(final boolean isViewOnly)
     {
-
+        this.isViewOnly = isViewOnly;
     }
     
     /**
@@ -91,7 +93,7 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace, UIPlugina
      */
     protected void createUI()
     {
-        textField = new ValFormattedTextField("Date");
+        textField = new ValFormattedTextField("Date", isViewOnly);
         
         String[] formatKeys = {"PARTIAL_DATE_FULL", "PARTIAL_DATE_MONTH", "PARTIAL_DATE_YEAR"};
         String[] labels     = new String[formatKeys.length];
@@ -129,7 +131,7 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace, UIPlugina
         {
             public void run()
             {
-                UIFieldFormatter formatter = UIFieldFormatterMgr.getDateFormmater(type);
+                UIFieldFormatterIFace formatter = UIFieldFormatterMgr.getDateFormmater(type);
                 //System.out.println(type+" ["+formatter+"]");
                 if (formatter != null)
                 {

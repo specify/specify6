@@ -213,6 +213,7 @@ public class IconViewObj implements Viewable
             ViewBasedDisplayIFace dialog = UIHelper.createDataObjectDialog(altView, mainComp, selection, MultiView.isOptionOn(viewOptions, MultiView.IS_EDITTING), false);
             dialog.setData(selection);
             dialog.showDisplay(true);
+            dialog.dispose();
         }
     }
         
@@ -257,6 +258,7 @@ public class IconViewObj implements Viewable
                 });
                 dialog.setData(selection);
                 dialog.showDisplay(true);
+                dialog.dispose();
             }
         });
     }
@@ -336,6 +338,7 @@ public class IconViewObj implements Viewable
                 dialog.setData(newObject);
 
                 dialog.showDisplay(true);
+                dialog.dispose();
             }
         });
     }

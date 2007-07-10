@@ -9,7 +9,7 @@
  */
 package edu.ku.brc.dbsupport;
 
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatter;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 
 /**
  * @author rod
@@ -22,6 +22,6 @@ import edu.ku.brc.ui.forms.formatters.UIFieldFormatter;
 public interface AutoNumberIFace
 {
 
-    public abstract String getNextNumber(final UIFieldFormatter formatter, String value);
+    public abstract String getNextNumber(final UIFieldFormatterIFace formatter, String value);
     
 }

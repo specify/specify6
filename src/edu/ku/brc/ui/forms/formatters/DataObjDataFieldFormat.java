@@ -20,6 +20,10 @@ package edu.ku.brc.ui.forms.formatters;
 import java.util.Properties;
 
 /**
+ * This class represents a single format. A DataobjectFormatter can switch between formats for a given field's value.
+ * So either there is one of these (meaning the format is not switchable) or there is multiple formats.<br><br>
+ * For example, an agent is formatted difgferently depending on whether it is a pareson or an organization.
+ * 
  * @author rods
  *
  * @code_status Beta

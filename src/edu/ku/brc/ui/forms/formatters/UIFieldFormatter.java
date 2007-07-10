@@ -14,29 +14,30 @@
  */
 package edu.ku.brc.ui.forms.formatters;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.List;
 
-import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.AutoNumberIFace;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.util.Pair;
 
 
 /**
+ * This class describes a format for a string. The format is divided up into fields and each field has a type
+ * describing what kind of values it can accept.
+ * 
  * @author rods
  *
- * @code_status Alpha
+ * @code_status Beta
  *
  * Created Date: Jan 17, 2007
  *
  */
-public class UIFieldFormatter
+public class UIFieldFormatter implements UIFieldFormatterIFace
 {
-    public enum PartialDateEnum {None, Full, Month, Year};
+    public enum PartialDateEnum {None, Full, Month, Year}
     
     protected String               name;
+    protected String               title;
     protected Class                dataClass;
     protected boolean              isDate;
     protected PartialDateEnum      partialDateType;
@@ -44,64 +45,134 @@ public class UIFieldFormatter
     protected List<UIFieldFormatterField> fields;
     protected boolean              isIncrementer;
     protected DateWrapper          dateWrapper = null;
+    protected AutoNumberIFace      autoNumber  = null;
 
-    public UIFieldFormatter(final String  name, 
-                            final boolean isDate, 
+    /**
+     * Constructor.
+     * @param name the unique name of the formatter
+     * @param isDate whether it is a date formatter
+     * @param partialDateType the type of date formatter (if it is one)
+     * @param dataClass the class of data that it operates on
+     * @param isDefault whether it is the default formatter
+     * @param isIncrementer whether it can/should increment the value
+     * @param fields the list of fields that make up the formatter
+     */
+    public UIFieldFormatter(final String          name, 
+                            final boolean         isDate, 
                             final PartialDateEnum partialDateType,
-                            final Class   dataClass,
-                            final boolean isDefault,
-                            final boolean isIncrementer,
+                            final Class           dataClass,
+                            final boolean         isDefault,
+                            final boolean         isIncrementer,
                             final List<UIFieldFormatterField> fields)
     {
-        this.name      = name;
-        this.dataClass = dataClass;
+        this.name            = name;
+        this.dataClass       = dataClass;
         this.partialDateType = partialDateType;
-        this.isDate    = isDate;
-        this.isDefault = isDefault;
-        this.fields    = fields;
-        this.isIncrementer = isIncrementer;
+        this.isDate          = isDate;
+        this.isDefault       = isDefault;
+        this.fields          = fields;
+        this.isIncrementer   = isIncrementer;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getTitle()
+     */
+    public String getTitle()
+    {
+        return title;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#setTitle(java.lang.String)
+     */
+    public void setTitle(String title)
+    {
+        this.title = title;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getFields()
+     */
     public List<UIFieldFormatterField> getFields()
     {
         return fields;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#setName(java.lang.String)
+     */
+    public void setName(final String name)
+    {
+        this.name = name;
+    }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getName()
+     */
     public String getName()
     {
         return name;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#isDate()
+     */
     public boolean isDate()
     {
         return isDate;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getDataClass()
+     */
     public Class getDataClass()
     {
         return dataClass;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#isDefault()
+     */
     public boolean isDefault()
     {
         return isDefault;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#setDefault(boolean)
+     */
+    public void setDefault(boolean isDefault)
+    {
+        this.isDefault = isDefault;
+    }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#isIncrementer()
+     */
     public boolean isIncrementer()
     {
         return isIncrementer;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#setIncrementer(boolean)
+     */
     public void setIncrementer(boolean isIncrementer)
     {
         this.isIncrementer = isIncrementer;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getPartialDateType()
+     */
     public PartialDateEnum getPartialDateType()
     {
         return partialDateType;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getLength()
+     */
     public int getLength()
     {
         int len = 0;
@@ -112,6 +183,9 @@ public class UIFieldFormatter
         return len;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getIncPosition()
+     */
     public Pair<Integer, Integer> getIncPosition()
     {
         int len = 0;
@@ -126,6 +200,9 @@ public class UIFieldFormatter
         return null;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#toPattern()
+     */
     public String toPattern()
     {
         StringBuilder str = new StringBuilder();
@@ -136,21 +213,80 @@ public class UIFieldFormatter
         return str.toString();
     }
     
-    /**
-     * @return the dateWrapper
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getDateWrapper()
      */
     public DateWrapper getDateWrapper()
     {
         return dateWrapper;
     }
 
-    /**
-     * Sets Date Wrapper.
-     * @param dateWrapper the dateWrapper to set
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#setDateWrapper(edu.ku.brc.ui.DateWrapper)
      */
     public void setDateWrapper(final DateWrapper dateWrapper)
     {
         this.dateWrapper = dateWrapper;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#isOutBoundFormatter()
+     */
+    public boolean isOutBoundFormatter()
+    {
+        return false;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#formatOutBound(java.lang.Object)
+     */
+    public Object formatOutBound(final Object data)
+    {
+        throw new RuntimeException("Can't call this when isOutBoundFormatter returns false.");
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getAutoNumber()
+     */
+    public AutoNumberIFace getAutoNumber()
+    {
+        return autoNumber;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getAutoNumber(edu.ku.brc.dbsupport.AutoNumberIFace)
+     */
+    public void setAutoNumber(AutoNumberIFace autoNumber)
+    {
+        this.autoNumber = autoNumber;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getNextNumber(java.lang.String)
+     */
+    public String getNextNumber(String value)
+    {
+        if (autoNumber != null)
+        {
+            return autoNumber.getNextNumber(this, value);
+        }
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#formatInBound(java.lang.Object)
+     */
+    public Object formatInBound(Object data)
+    {
+        throw new RuntimeException("Can't call this when isInBoundFormatter returns false.");
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#isInBoundFormatter()
+     */
+    public boolean isInBoundFormatter()
+    {
+        return false;
     }
 
     /* (non-Javadoc)
@@ -167,52 +303,26 @@ public class UIFieldFormatter
         return s.toString();
     }
 
-    /**
-     * This is work in progress.
-     * @return the next formatted ID
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#isUserInputNeeded()
      */
-    public String getNextId()
+    public boolean isUserInputNeeded()
     {
-        // For Demo
-        try
+        for (UIFieldFormatterField f : fields)
         {
-            Connection conn = DBConnection.getInstance().createConnection();
-            Statement  stmt = conn.createStatement();
-            // MySQL should use Hibernate
-            ResultSet  rs   = stmt.executeQuery("select "+name+" from "+dataClass.getSimpleName()+" order by "+name+" desc limit 0,1");
-            if (rs.first())
+            UIFieldFormatterField.FieldType type = f.getType();
+            if (type != UIFieldFormatterField.FieldType.alphanumeric ||
+                type != UIFieldFormatterField.FieldType.alpha)
             {
-                String numStr      = rs.getString(1);
-                int    offsetStart = 1;
-                int    offsetEnd   = numStr.length();
-                for (UIFieldFormatterField ff : fields)
-                {
-                    if (!ff.isIncrementer())
-                    {
-                        offsetStart += ff.getSize();
-                    } else
-                    {
-                        offsetEnd = offsetStart + ff.getSize();
-                        break;
-                    }
-                }
-                int num = Integer.parseInt(numStr.substring(offsetStart, offsetEnd));
-                num++;
-                return String.format("2006-%03d", new Object[] {num});
+                return true;
                 
-            } else
+            } else if (type != UIFieldFormatterField.FieldType.numeric && !f.isIncrementer())
             {
-                return "2006-001";
+                return true;
             }
         }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-        return null;
+        return false;
     }
-    
-    
 }
 
 

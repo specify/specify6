@@ -27,6 +27,7 @@ import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatter;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterField;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 
 /**
  * @author rods
@@ -85,7 +86,7 @@ public class FormattedDateValidator implements FormattedTextValidatorIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.validation.FormattedTextValidatorIFace#isValid(edu.ku.brc.ui.forms.formatters.UIFieldFormatter, java.lang.String)
      */
-    public boolean validate(final UIFieldFormatter formatter, final String value)
+    public boolean validate(final UIFieldFormatterIFace formatter, final String value)
     {
         reason = "";
         //Calendar cal = Calendar.getInstance();
@@ -292,7 +293,7 @@ public class FormattedDateValidator implements FormattedTextValidatorIFace
 
        for (String dateStr : dates)
        {
-           for (UIFieldFormatter formatter : getDateFormatters())
+           for (UIFieldFormatterIFace formatter : getDateFormatters())
            {
                boolean isValid = formattedDateValidator.validate(formatter, dateStr);
 

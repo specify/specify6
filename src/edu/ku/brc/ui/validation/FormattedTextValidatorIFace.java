@@ -17,7 +17,7 @@
  */
 package edu.ku.brc.ui.validation;
 
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatter;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 
 /**
  * @author rods
@@ -30,7 +30,7 @@ import edu.ku.brc.ui.forms.formatters.UIFieldFormatter;
 public interface FormattedTextValidatorIFace
 {
 
-    public boolean validate(UIFieldFormatter fomatter, String value);
+    public boolean validate(UIFieldFormatterIFace fomatter, String value);
     
     public boolean isValid();
     

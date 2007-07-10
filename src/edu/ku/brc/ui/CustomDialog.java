@@ -185,11 +185,19 @@ public class CustomDialog extends JDialog
     }
     
     /**
+     * @return the main panel.
+     */
+    protected JPanel createMainPanel()
+    {
+        return new JPanel(new BorderLayout());
+    }
+    
+    /**
      * Create the UI for the dialog.
      */
     public void createUI()
     {
-        mainPanel = new JPanel(new BorderLayout());
+        mainPanel = createMainPanel();
         mainPanel.setBorder(BorderFactory.createEmptyBorder(0, 2, 5, 2));
 
         if (contentPanel != null)

@@ -46,8 +46,8 @@ import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatter;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterField;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 
 /**
@@ -75,15 +75,17 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     protected boolean                     isRequired     = false;
     protected boolean                     isChanged      = false;
     protected boolean                     isNew          = false;
+    protected boolean                     isViewOnly     = false;
     protected Color                       bgColor        = null;
 
     protected int                         requiredLength = 0;
     protected Object[]                    formatObj      = null;
+    protected boolean                     shouldIgnoreNotifyDoc = true;
 
     protected JFormattedDoc               document;
     protected String                      defaultValue   = null;
 
-    protected UIFieldFormatter            formatter;
+    protected UIFieldFormatterIFace       formatter;
     protected List<UIFieldFormatterField> fields         = null;
     
     protected Object                      origValue      = null;
@@ -108,10 +110,12 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
      * Constructor
      * @param formatterName the formatters name
      */
-    public ValFormattedTextField(final String formatterName)
+    public ValFormattedTextField(final String formatterName, final boolean isViewOnly)
     {
         super();
 
+        this.isViewOnly = isViewOnly;
+        
         init();
         
         inner = getInsets();
@@ -137,13 +141,17 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
                     }
                 });
 
+        if (!isViewOnly)
+        {
+            super.setEnabled(formatter.isUserInputNeeded());
+        }
     }
     
     /**
      * Sets the formatter.
      * @param formatterName the formatter to use
      */
-    protected void setFormatterInternal(final UIFieldFormatter formatterArg)
+    protected void setFormatterInternal(final UIFieldFormatterIFace formatterArg)
     {
         if (formatter != formatterArg && formatterArg != null)
         {
@@ -171,7 +179,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
      * Sets the formatter and reset the current value into the new format.
      * @param formatterName the formatter to use
      */
-    public void setFormatter(final UIFieldFormatter formatter)
+    public void setFormatter(final UIFieldFormatterIFace formatter)
     {
         Object currentValue = isChanged ? getValue() : origValue;
         
@@ -241,9 +249,20 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     @Override
     public void setEnabled(boolean enabled)
     {
-        super.setEnabled(enabled);
-
-        setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
+        if (!isViewOnly)
+        {
+            boolean isNeeded = formatter.isUserInputNeeded();
+            if (enabled && isNeeded)
+            {
+                super.setEnabled(isNeeded);
+                
+            } else
+            {
+                super.setEnabled(enabled);
+            }
+    
+            setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
+        }
     }
 
     /* (non-Javadoc)
@@ -252,7 +271,8 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     @Override
     public void setText(final String text)
     {
-        document.setIgnoreNotify(true);
+        document.setIgnoreNotify(shouldIgnoreNotifyDoc);
+        bgStr = StringUtils.isNotEmpty(text) ? "" : formatter.toPattern();
         super.setText(text);
         document.setIgnoreNotify(false);
     }
@@ -274,7 +294,37 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     {
         super.setText(text);
     }
+    
+    /**
+     * Increments to the next number in the series.
+     */
+    public void updateAutoNumbers()
+    {
+        String nextNum = formatter.getNextNumber(getText());
+        if (StringUtils.isNotEmpty(nextNum))
+        {
+            try
+            {
+                shouldIgnoreNotifyDoc = false;
+                setValue(nextNum, nextNum);
+                bgStr = "";
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+            shouldIgnoreNotifyDoc = true;
+        }
+    }
 
+    /**
+     * @param isViewOnly the isViewOnly to set
+     */
+    public void setViewOnly(boolean isViewOnly)
+    {
+        this.isViewOnly = isViewOnly;
+    }
+    
     //--------------------------------------------------
     //-- UIValidatable Interface
     //--------------------------------------------------
@@ -308,7 +358,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
      */
     public boolean isRequired()
     {
-        return isRequired;
+        return isRequired && !isViewOnly;
     }
 
     /* (non-Javadoc)
@@ -316,8 +366,11 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
      */
     public void setRequired(boolean isRequired)
     {
-        setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
-        this.isRequired = isRequired;
+        if (!isViewOnly)
+        {
+            setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
+            this.isRequired = isRequired;
+        }
     }
 
     /* (non-Javadoc)
@@ -367,17 +420,25 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
      */
     public UIValidatable.ErrorType validateState()
     {
-        String data = getText();
-        if (StringUtils.isEmpty(data))
+        if (isViewOnly)
         {
-            valState = isRequired ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
-
+            valState = UIValidatable.ErrorType.Valid;
+        } else if (formatter.isUserInputNeeded())
+        {
+            String data = getText();
+            if (StringUtils.isEmpty(data))
+            {
+                valState = isRequired ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
+    
+            } else
+            {
+                valState = data.length() != requiredLength ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
+            }
         } else
         {
-            valState = data.length() != requiredLength ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
+            valState = UIValidatable.ErrorType.Valid;
         }
-        //System.out.println("#### validateState "+ getText()+"  "+data.length() +"  "+ requiredLength+"  "+valState);
-
+            //System.out.println("#### validateState "+ getText()+"  "+data.length() +"  "+ requiredLength+"  "+valState);
         return valState;
     }
 
@@ -460,7 +521,13 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
             origValue = value;
         }
         
-        setText(data);
+        if (formatter != null && formatter.isInBoundFormatter())
+        {
+            setText((String)formatter.formatInBound(data));
+        } else
+        {
+            setText(data);
+        }
         
         if (undoManager != null)
         {
@@ -497,7 +564,15 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
 
         }
         // else
-        return getText();
+        String val = getText();
+        if (formatter.isOutBoundFormatter())
+        {
+            if (StringUtils.isNotEmpty(val))
+            {
+                return formatter.formatOutBound(getText());
+            }
+        }
+        return val;
 
     }
 
@@ -530,7 +605,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     {
         protected int                     limit;
         protected ValFormattedTextField   textField;
-        protected UIFieldFormatter        docFormatter;
+        protected UIFieldFormatterIFace   docFormatter;
         protected UIFieldFormatterField[] docFields;
 
         /**
@@ -539,7 +614,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
          * @param formatter the formatter
          * @param limit the lengthof the format
          */
-        public JFormattedDoc(ValFormattedTextField textField, UIFieldFormatter formatter, int limit)
+        public JFormattedDoc(ValFormattedTextField textField, UIFieldFormatterIFace formatter, int limit)
         {
             super();
             this.textField    = textField;

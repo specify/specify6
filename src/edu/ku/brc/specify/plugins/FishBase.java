@@ -101,7 +101,8 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
         frame.setCloseListener(this);
         frame.setData(null);
         frame.showDisplay(true);
-
+        frame.dispose();
+        
         multiView = frame.getMultiView();
 
         if (multiView != null)

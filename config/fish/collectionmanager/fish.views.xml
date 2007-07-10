@@ -712,7 +712,8 @@
     			    <cell type="field" id="2" name="collection.collectionName" uitype="dsptextfield"/>
 
     			    <cell type="label" labelfor="13" label="Exchg"/>
-    			    <cell type="field" id="13" name="fieldNumber" uitype="text"/>
+    			    <!-- TESTING ONLY <cell type="field" id="13" name="fieldNumber" uitype="formattedtext" uifieldformatter="CatalogNumber" /> -->
+    			    <cell type="field" id="13" name="fieldNumber" uitype="formattedtext" uifieldformatter="CatalogNumber" />
     			</row>
     			<row>
                  <cell type="label" labelfor="3" label="Accession #"/>
