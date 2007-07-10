@@ -32,6 +32,7 @@
 		-->
 		
 		<!-- c3p0 connection pooling -->
+		<!-- 
 	    <property name="hibernate.c3p0.min_size">3</property>
 		<property name="hibernate.c3p0.max_size">10</property>
 		<property name="hibernate.c3p0.initialPoolSize">4</property>
@@ -40,6 +41,7 @@
 		<property name="hibernate.c3p0.acquireIncrement">2</property>
 		<property name="hibernate.c3p0.idleConnectionTestPeriod">15</property>
 		<property name="hibernate.c3p0.maxStatements">10</property>
+		-->
 		
 		<!-- Specify mapping files. -->
 	
