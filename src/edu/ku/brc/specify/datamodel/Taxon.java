@@ -54,11 +54,19 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
      */
     protected static final Logger log = Logger.getLogger(Taxon.class);
 
+    // ID
 	protected Long                 taxonId;
+	
+    // names
+	protected String               name;
+    protected String               fullName;
+    protected String               commonName;
+    
+    // scientific identifiers
 	protected String               taxonomicSerialNumber;
 	protected String               guid;
-	protected String               name;
-	protected String               remarks;
+	
+	// ITIS fields
 	protected String               unitInd1;
 	protected String               unitName1;
 	protected String               unitInd2;
@@ -67,21 +75,27 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	protected String               unitName3;
 	protected String               unitInd4;
 	protected String               unitName4;
-	protected String               fullName;
-	protected String               commonName;
+	
+	// reference info
 	protected String               author;
 	protected String               source;
+	
+    protected String               remarks;
 	protected String               environmentalProtectionStatus;
-	protected Integer              nodeNumber;
-	protected Integer              highestChildNodeNumber;
+	
+	// taxonomic qualifiers
 	protected Boolean              isAccepted;
 	protected Boolean              isValid;
+    protected Boolean              isHybrid;
+
+	// non-user fields
+	protected Integer              nodeNumber;
+    protected Integer              highestChildNodeNumber;
 	protected Integer              rankId;
 	protected String               groupNumber;
     protected Integer              groupPermittedToView;
 	protected Integer              visibility;
 	protected String               visibilitySetBy;
-	protected Boolean              isHybrid;
 	protected Taxon                hybridParent1;
 	protected Taxon                hybridParent2;
 	protected Set<Taxon>           acceptedChildren;
@@ -205,6 +219,39 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.taxonId = taxonId;
 	}
 
+    @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    public String getName()
+    {
+        return this.name;
+    }
+
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
+    @Column(name = "FullName", unique = false, nullable = true, insertable = true, updatable = true)
+    public String getFullName()
+    {
+        return this.fullName;
+    }
+
+    public void setFullName(String fullName)
+    {
+        this.fullName = fullName;
+    }
+
+    @Column(name = "CommonName", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    public String getCommonName()
+    {
+        return this.commonName;
+    }
+
+    public void setCommonName(String commonName)
+    {
+        this.commonName = commonName;
+    }
+
     @Column(name = "TaxonomicSerialNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
 	public String getTaxonomicSerialNumber()
 	{
@@ -225,17 +272,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	public void setGuid(String guid)
 	{
 		this.guid = guid;
-	}
-
-    @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
-	public String getName()
-	{
-		return this.name;
-	}
-
-	public void setName(String name)
-	{
-		this.name = name;
 	}
 
     @Lob
@@ -336,28 +372,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	public void setUnitName4(String unitName4)
 	{
 		this.unitName4 = unitName4;
-	}
-
-    @Column(name = "FullName", unique = false, nullable = true, insertable = true, updatable = true)
-	public String getFullName()
-	{
-		return this.fullName;
-	}
-
-	public void setFullName(String fullName)
-	{
-		this.fullName = fullName;
-	}
-
-    @Column(name = "CommonName", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
-	public String getCommonName()
-	{
-		return this.commonName;
-	}
-
-	public void setCommonName(String commonName)
-	{
-		this.commonName = commonName;
 	}
 
     @Column(name = "Author", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
