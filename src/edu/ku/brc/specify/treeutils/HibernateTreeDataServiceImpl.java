@@ -706,7 +706,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
     {
         if (o instanceof Treeable)
         {
-            Treeable<?,?,?> t = (Treeable)o;
+            Treeable<?,?,?> t = (Treeable<?,?,?>)o;
             return t.getTreeId() + " " + t.getName() + " 0x" + Integer.toHexString(t.hashCode());
         }
         return o.toString();
