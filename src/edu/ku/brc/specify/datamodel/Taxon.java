@@ -529,7 +529,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	}
 
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "taxon")
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
 	public Set<Determination> getDeterminations()
 	{
 		return determinations;

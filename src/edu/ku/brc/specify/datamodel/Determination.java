@@ -378,7 +378,6 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
      * 
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     @JoinColumn(name = "CollectionObjectID", unique = false, nullable = false, insertable = true, updatable = true)
     public CollectionObject getCollectionObject() 
     {
