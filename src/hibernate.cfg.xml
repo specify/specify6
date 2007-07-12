@@ -15,9 +15,7 @@
 	    <property name="hibernate.connection.password">rods</property>
 	    -->
 	    
-		<!-- Use the Hibernate built-in pool for tests. -->
 		<property name="hibernate.use_identifer_rollback">true</property>
-		
 		
         <!-- Use JTA for Transactions -->
         <!--
@@ -32,19 +30,16 @@
 		-->
 		
 		<!-- c3p0 connection pooling -->
-		<!-- 
-	    <property name="hibernate.c3p0.min_size">3</property>
-		<property name="hibernate.c3p0.max_size">10</property>
-		<property name="hibernate.c3p0.initialPoolSize">4</property>
-		<property name="hibernate.c3p0.timeout">45</property>
-		<property name="hibernate.c3p0.acquireRetryAttempts">30</property>
-		<property name="hibernate.c3p0.acquireIncrement">2</property>
-		<property name="hibernate.c3p0.idleConnectionTestPeriod">15</property>
-		<property name="hibernate.c3p0.maxStatements">10</property>
+		<!-- the hibernate.c3p0.max_size property MUST BE EXPLICITLY set for Hibernate to use C3P0 -->
+	    <property name="hibernate.c3p0.min_size">2</property>
+		<property name="hibernate.c3p0.max_size">100</property>
+		<property name="hibernate.c3p0.initialPoolSize">3</property>
+		<!--
+		<property name="hibernate.c3p0.maxIdleTime">60</property> 
 		-->
+		<property name="hibernate.c3p0.idleConnectionTestPeriod">60</property>
 		
 		<!-- Specify mapping files. -->
-	
 		<mapping class="edu.ku.brc.specify.datamodel.Accession"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AccessionAgent"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AccessionAuthorization"/>

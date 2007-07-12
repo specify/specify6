@@ -30,12 +30,7 @@ import edu.ku.brc.dbsupport.StaleObjectException;
 
 /**
  * This is a wrapper around Hibernate Session so we don't have to pollute our class with Hibernate and we could switch it
- * out for a networked version later.<br><br>
- * 
- * Note: We need to handle losing a connection here in this code or whereever you have direct calls to Hibernate.
- * I don't like that we need to do everything twice, but that is the best approach after a lot of research. Alos, note that I
- * didn't put the try/catch for JDBCConnectionException around everything, (i.e. flush, beginTransaction, close) because those
- * should happen only after a valid session has been created. 
+ * out for a networked version later.
  * 
  * @author rods
  *
@@ -82,17 +77,9 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     {
         if (session != null)
         {
-            //log.debug(session.hashCode());
-           
-            try
-            {
-                session.refresh(dataObj);
-                
-            } catch (JDBCConnectionException ex)
-            {
-                HibernateUtil.rebuildSessionFactory();
-                session.refresh(dataObj);
-            }
+            log.debug(session.hashCode());
+            session.refresh(dataObj);
+ 
             return true;
         }
         
@@ -108,16 +95,8 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     {
         if (session != null)
         {
-            //log.debug(session.hashCode());
-            try
-            {
-                session.delete(dataObj);
-                
-            } catch (JDBCConnectionException ex)
-            {
-                HibernateUtil.rebuildSessionFactory();
-                session.delete(dataObj);
-            }
+            log.debug(session.hashCode());
+            session.delete(dataObj);
  
             return true;
         }
@@ -142,15 +121,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     {
         if (session != null)
         {
-            try
-            {
-                return session.merge(dataObj);
-                
-            } catch (JDBCConnectionException ex)
-            {
-                HibernateUtil.rebuildSessionFactory();
-                return session.merge(dataObj);
-            }
+            return session.merge(dataObj);
         }
         log.error("Session was null.", new NullPointerException("Session was null"));
         return null;
@@ -164,17 +135,8 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     {
         if (session != null)
         {
-            try
-            {
-                Query query = session.createQuery(sqlStr);
-                return query.list();
-                
-            } catch (JDBCConnectionException ex)
-            {
-                HibernateUtil.rebuildSessionFactory();
-                Query query = session.createQuery(sqlStr);
-                return query.list();
-            }
+            Query query = session.createQuery(sqlStr);
+            return query.list();
         }
         
         log.error("Session was null.", new NullPointerException("Session was null"));
@@ -191,17 +153,8 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     {
         if (session != null)
         {
-            try
-            {
-                Query q = session.createQuery("FROM " + clazz.getName());
-                return q.list();
-                
-            } catch (JDBCConnectionException ex)
-            {
-                HibernateUtil.rebuildSessionFactory();
-                Query q = session.createQuery("FROM " + clazz.getName());
-                return q.list();
-            }
+            Query q = session.createQuery("FROM " + clazz.getName());
+            return q.list();
 
             // this is the old method, which returns multiple copies of any result that
             // has any EAGER loaded relationships
@@ -220,17 +173,8 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     @SuppressWarnings("unchecked")
     public <T> List<T>  getDataList(Class<T> clsObject, String fieldName, boolean isDistinct)
     {
-        try
-        {
-            Query query = session.createQuery("SELECT DISTINCT " + fieldName + " FROM " + clsObject.getName() + " WHERE " + fieldName + " <> NULL");
-            return query.list();
-            
-        } catch (JDBCConnectionException ex)
-        {
-            HibernateUtil.rebuildSessionFactory();
-            Query query = session.createQuery("SELECT DISTINCT " + fieldName + " FROM " + clsObject.getName() + " WHERE " + fieldName + " <> NULL");
-            return query.list();
-        }
+        Query query = session.createQuery("SELECT DISTINCT " + fieldName + " FROM " + clsObject.getName() + " WHERE " + fieldName + " <> NULL");
+        return query.list();
     }
 
     
@@ -242,19 +186,9 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     {
         if (session != null)
         {
-            try
-            {
-                Criteria criteria = session.createCriteria(clsObject);
-                criteria.add(compareType == DataProviderSessionIFace.CompareType.Equals ? Restrictions.eq(fieldName, value) : Restrictions.eq(fieldName, value));
-                return criteria.list();  
-                
-            } catch (JDBCConnectionException ex)
-            {
-                HibernateUtil.rebuildSessionFactory();
-                Criteria criteria = session.createCriteria(clsObject);
-                criteria.add(compareType == DataProviderSessionIFace.CompareType.Equals ? Restrictions.eq(fieldName, value) : Restrictions.eq(fieldName, value));
-                return criteria.list();  
-            }
+            Criteria criteria = session.createCriteria(clsObject);
+            criteria.add(compareType == DataProviderSessionIFace.CompareType.Equals ? Restrictions.eq(fieldName, value) : Restrictions.eq(fieldName, value));
+            return criteria.list();           
         }
         
         log.error("Session was null.", new NullPointerException("Session was null"));
@@ -270,22 +204,10 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     {
         if (session != null)
         {
-            try
-            {
-                Criteria criteria = session.createCriteria(clsObject);
-                criteria.add(compareType == DataProviderSessionIFace.CompareType.Equals ? Restrictions.eq(fieldName, value) : Restrictions.eq(fieldName, value));
-                List<T> list = criteria.list();
-                return list == null || list.size() == 0 ? null : list.get(0);
-                
-            } catch (JDBCConnectionException ex)
-            {
-                HibernateUtil.rebuildSessionFactory();
-                
-                Criteria criteria = session.createCriteria(clsObject);
-                criteria.add(compareType == DataProviderSessionIFace.CompareType.Equals ? Restrictions.eq(fieldName, value) : Restrictions.eq(fieldName, value));
-                List<T> list = criteria.list();
-                return list == null || list.size() == 0 ? null : list.get(0);
-            }
+            Criteria criteria = session.createCriteria(clsObject);
+            criteria.add(compareType == DataProviderSessionIFace.CompareType.Equals ? Restrictions.eq(fieldName, value) : Restrictions.eq(fieldName, value));
+            List<T> list = criteria.list();
+            return list == null || list.size() == 0 ? null : list.get(0);
         }
         
         log.error("Session was null.", new NullPointerException("Session was null"));
@@ -347,15 +269,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     {
         if (session != null)
         {
-            try
-            {
-                return (T)session.get(clsObj, id);
-                
-            } catch (JDBCConnectionException ex)
-            {
-                HibernateUtil.rebuildSessionFactory();
-                return (T)session.get(clsObj, id);
-            }
+            return (T)session.get(clsObj, id);
         }
         
         log.error("Session was null.", new NullPointerException("Session was null"));
@@ -363,22 +277,13 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
         return null;
     }
     
-
-    /**
-     * Internal implementation.
-     * @param <T> class 
-     * @param clsObject class object
-     * @param fieldName field name
-     * @param value value
-     * @param compareType compare type
-     * @return num
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#getDataCount(java.lang.Class, java.lang.String, java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace.CompareType)
      */
-    public <T> Integer getDataCountInternal(Class<T> clsObject, String fieldName, Object value, DataProviderSessionIFace.CompareType compareType)
+    public <T> Integer getDataCount(Class<T> clsObject, String fieldName, Object value, DataProviderSessionIFace.CompareType compareType)
     {
         if (session != null)
         {
-            checkAndReconnect();
-            
             Criteria criteria = session.createCriteria(clsObject);
             criteria.add(compareType == DataProviderSessionIFace.CompareType.Equals ? Restrictions.eq(fieldName, value) : Restrictions.eq(fieldName, value));
             criteria.setProjection(Projections.rowCount());
@@ -404,30 +309,6 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#getDataCount(java.lang.Class, java.lang.String, java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace.CompareType)
-     */
-    public <T> Integer getDataCount(Class<T> clsObject, String fieldName, Object value, DataProviderSessionIFace.CompareType compareType)
-    {
-        if (session != null)
-        {
-            try
-            {
-                return getDataCountInternal(clsObject, fieldName, value, compareType);
-                
-            } catch (JDBCConnectionException ex)
-            {
-                HibernateUtil.rebuildSessionFactory();
-                return getDataCountInternal(clsObject, fieldName, value, compareType);
-            }
-        }
-        
-        log.error("Session was null.", new NullPointerException("Session was null"));
-
-        return 0;
-    }
-
-    
-    /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#load(java.lang.Class, java.lang.Long)
      */
     @SuppressWarnings("unchecked")
@@ -435,15 +316,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     {
         if (session != null)
         {
-            try
-            {
-                return (T)session.load(clsObj, id);
-                
-            } catch (JDBCConnectionException ex)
-            {
-                HibernateUtil.rebuildSessionFactory();
-                return (T)session.load(clsObj, id);
-            }
+            return (T)session.load(clsObj, id);
         }
         
         log.error("Session was null.", new NullPointerException("Session was null"));
@@ -458,17 +331,8 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     {
         if (session != null)
         {
-            try
-            {
-                List<?> list = getDataList(sqlStr);
-                return list != null && list.size() > 0 ? list.get(0) : null;
-                
-            } catch (JDBCConnectionException ex)
-            {
-                HibernateUtil.rebuildSessionFactory();
-                List<?> list = getDataList(sqlStr);
-                return list != null && list.size() > 0 ? list.get(0) : null;
-            }
+            List<?> list = getDataList(sqlStr);
+            return list != null && list.size() > 0 ? list.get(0) : null;
         }
         
         log.error("Session was null.", new NullPointerException("Session was null"));
@@ -491,17 +355,8 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     {
         if (session != null)
         {
-            try
-            {
-                session.evict(clsObject);
-                HibernateUtil.getSessionFactory().evict(clsObject);
-                
-            } catch (JDBCConnectionException ex)
-            {
-                HibernateUtil.rebuildSessionFactory();
-                session.evict(clsObject);
-                HibernateUtil.getSessionFactory().evict(clsObject);
-            }
+            session.evict(clsObject);
+            HibernateUtil.getSessionFactory().evict(clsObject);
             
         } else
         {
@@ -516,15 +371,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     {
         if (session != null)
         {
-            try
-            {
-                session.evict(dataObj);
-                
-            } catch (JDBCConnectionException ex)
-            {
-                HibernateUtil.rebuildSessionFactory();
-                session.evict(dataObj);
-            }
+            session.evict(dataObj);
         } else
         {
             log.error("Session was null.", new NullPointerException("Session was null"));
@@ -538,15 +385,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     {
         if (session != null)
         {
-            try
-            {
-                session.lock(dataObj, LockMode.NONE);
-                
-            } catch (JDBCConnectionException ex)
-            {
-                HibernateUtil.rebuildSessionFactory();
-                session.lock(dataObj, LockMode.NONE);
-            }
+            session.lock(dataObj, LockMode.NONE);
             
         } else
         {
@@ -561,18 +400,8 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     {
         if (session != null)
         {
-            try
-            {
-                deleteObjectFromList();
-                session.save(dataObj);
-                
-            } catch (JDBCConnectionException ex)
-            {
-                HibernateUtil.rebuildSessionFactory();
-                deleteObjectFromList();
-                session.save(dataObj);
-            }
-
+            deleteObjectFromList();
+            session.save(dataObj);
             return true;
         }
         
@@ -588,17 +417,8 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     {
         if (session != null)
         {
-            try
-            {
-                deleteObjectFromList();
-                session.saveOrUpdate(dataObj);
-                
-            } catch (JDBCConnectionException ex)
-            {
-                HibernateUtil.rebuildSessionFactory();
-                deleteObjectFromList();
-                session.saveOrUpdate(dataObj);
-            }
+            deleteObjectFromList();
+            session.saveOrUpdate(dataObj);
             return true;
         }
         
@@ -614,17 +434,8 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     {
         if (session != null)
         {
-            try
-            {
-                deleteObjectFromList();
-                session.update(dataObj);
-                
-            } catch (JDBCConnectionException ex)
-            {
-                HibernateUtil.rebuildSessionFactory();
-                deleteObjectFromList();
-                session.update(dataObj);
-            }
+            deleteObjectFromList();
+            session.update(dataObj);
             return true;
         }
         
