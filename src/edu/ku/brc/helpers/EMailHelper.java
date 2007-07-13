@@ -32,6 +32,7 @@ import javax.activation.FileDataSource;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.AuthenticationFailedException;
 import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.Store;
@@ -44,6 +45,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
+import javax.swing.JTextField;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -91,7 +93,7 @@ public class EMailHelper
     }
 
     /**
-     * Send an email.
+     * Send an email. Also sends it as a gmail if applicable, and does password checking.
      * @param host host of SMTP server
      * @param userName username of email account
      * @param password password of email account
@@ -112,123 +114,161 @@ public class EMailHelper
                                   String mimeType,
                                   File   fileAttachment)
     {
-    
+    	if(isGmailEmail()){
+    		return sendMsgAsGMail(host,userName,password,fromEMailAddr,toEMailAddr,subject,bodyText,mimeType,fileAttachment);
+    	}
+    	else
+    	{
     	
-        Properties props = System.getProperties();
-        props.put("mail.smtp.host", host);
-        props.put( "mail.smtp.auth", "true");
-
-        Session session = Session.getInstance(props, null);
-
-        session.setDebug(instance.isDebugging);
-        if (instance.isDebugging)
-        {
-            log.debug("Host:     " + host);
-            log.debug("UserName: " + userName);
-            log.debug("Password: " + password);
-            log.debug("From:     " + fromEMailAddr);
-            log.debug("To:       " + toEMailAddr);
-            log.debug("Subject:  " + subject);
-        }
-
-
-        try
-        {
-            // create a message
-            MimeMessage msg = new MimeMessage(session);
-
-            msg.setFrom(new InternetAddress(fromEMailAddr));
-            if (toEMailAddr.indexOf(",") > -1)
-            {
-                StringTokenizer st = new StringTokenizer(toEMailAddr, ",");
-                InternetAddress[] address = new InternetAddress[st.countTokens()];
-                int i = 0;
-                while (st.hasMoreTokens())
-                {
-                    String toStr = st.nextToken().trim();
-                    address[i++] = new InternetAddress(toStr);
-                }
-                msg.setRecipients(Message.RecipientType.TO, address);
-            } else
-            {
-                InternetAddress[] address = {new InternetAddress(toEMailAddr)};
-                msg.setRecipients(Message.RecipientType.TO, address);
-            }
-            msg.setSubject(subject);
-            
-            //msg.setContent( aBodyText , "text/html;charset=\"iso-8859-1\"");
-
-            // create the second message part
-            if (fileAttachment != null)
-            {
-                // create and fill the first message part
-                MimeBodyPart mbp1 = new MimeBodyPart();
-                mbp1.setContent(bodyText, mimeType);//"text/html;charset=\"iso-8859-1\"");
-                //mbp1.setContent(bodyText, "text/html;charset=\"iso-8859-1\"");
-
-                MimeBodyPart mbp2 = new MimeBodyPart();
-
-               // attach the file to the message
-                FileDataSource fds = new FileDataSource(fileAttachment);
-                mbp2.setDataHandler(new DataHandler(fds));
-                mbp2.setFileName(fds.getName());
-
-                // create the Multipart and add its parts to it
-                Multipart mp = new MimeMultipart();
-                mp.addBodyPart(mbp1);
-                mp.addBodyPart(mbp2);
-
-                // add the Multipart to the message
-                msg.setContent(mp);
-
-            } else
-            {
-                // add the Multipart to the message
-                msg.setContent(bodyText, mimeType);
-            }
-
-
-            // set the Date: header
-            msg.setSentDate(new Date());
-
-            // send the message
-            //Transport.send(msg);
-
-            SMTPTransport t = (SMTPTransport)session.getTransport("smtp");
-            try {
-                t.connect(host, userName, password);
-
-                t.sendMessage(msg, msg.getAllRecipients());
-
-            } catch (Exception e)
-            {
-                log.error(e);
-                
-            } finally
-            {
-
-                 log.debug("Response: " + t.getLastServerResponse());
-                 t.close();
-            }
-
-
-        } catch (MessagingException mex)
-        {
-            instance.lastErrorMsg = mex.toString();
-
-            //mex.printStackTrace();
-            Exception ex = null;
-            if ((ex = mex.getNextException()) != null) {
-              ex.printStackTrace();
-              instance.lastErrorMsg = instance.lastErrorMsg + ", " + ex.toString();
-            }
-            return false;
-            
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-        return true;
+	    	Boolean fail = false;
+	    	ArrayList<String> userAndPass = new ArrayList<String>();
+	    	
+	        Properties props = System.getProperties();
+	        props.put("mail.smtp.host", host);
+	        props.put( "mail.smtp.auth", "true");
+	
+	        Session session = Session.getInstance(props, null);
+	
+	        session.setDebug(instance.isDebugging);
+	        if (instance.isDebugging)
+	        {
+	            log.debug("Host:     " + host);
+	            log.debug("UserName: " + userName);
+	            log.debug("Password: " + password);
+	            log.debug("From:     " + fromEMailAddr);
+	            log.debug("To:       " + toEMailAddr);
+	            log.debug("Subject:  " + subject);
+	        }
+	
+	
+	        try
+	        {
+	            // create a message
+	            MimeMessage msg = new MimeMessage(session);
+	
+	            msg.setFrom(new InternetAddress(fromEMailAddr));
+	            if (toEMailAddr.indexOf(",") > -1)
+	            {
+	                StringTokenizer st = new StringTokenizer(toEMailAddr, ",");
+	                InternetAddress[] address = new InternetAddress[st.countTokens()];
+	                int i = 0;
+	                while (st.hasMoreTokens())
+	                {
+	                    String toStr = st.nextToken().trim();
+	                    address[i++] = new InternetAddress(toStr);
+	                }
+	                msg.setRecipients(Message.RecipientType.TO, address);
+	            } else
+	            {
+	                InternetAddress[] address = {new InternetAddress(toEMailAddr)};
+	                msg.setRecipients(Message.RecipientType.TO, address);
+	            }
+	            msg.setSubject(subject);
+	            
+	            //msg.setContent( aBodyText , "text/html;charset=\"iso-8859-1\"");
+	
+	            // create the second message part
+	            if (fileAttachment != null)
+	            {
+	                // create and fill the first message part
+	                MimeBodyPart mbp1 = new MimeBodyPart();
+	                mbp1.setContent(bodyText, mimeType);//"text/html;charset=\"iso-8859-1\"");
+	                //mbp1.setContent(bodyText, "text/html;charset=\"iso-8859-1\"");
+	
+	                MimeBodyPart mbp2 = new MimeBodyPart();
+	
+	               // attach the file to the message
+	                FileDataSource fds = new FileDataSource(fileAttachment);
+	                mbp2.setDataHandler(new DataHandler(fds));
+	                mbp2.setFileName(fds.getName());
+	
+	                // create the Multipart and add its parts to it
+	                Multipart mp = new MimeMultipart();
+	                mp.addBodyPart(mbp1);
+	                mp.addBodyPart(mbp2);
+	
+	                // add the Multipart to the message
+	                msg.setContent(mp);
+	
+	            } else
+	            {
+	                // add the Multipart to the message
+	                msg.setContent(bodyText, mimeType);
+	            }
+	
+	
+	            // set the Date: header
+	            msg.setSentDate(new Date());
+	
+	            // send the message
+	            //Transport.send(msg);
+	            do{
+		            SMTPTransport t = (SMTPTransport)session.getTransport("smtp");
+		            try {
+		                t.connect(host, userName, password);
+		
+		                t.sendMessage(msg, msg.getAllRecipients());
+		                
+		                fail = false;
+		
+		            }catch (MessagingException mex)
+		            {
+		                instance.lastErrorMsg = mex.toString();
+		                
+		                Exception ex = null;
+		                if ((ex = mex.getNextException()) != null) {
+		                  ex.printStackTrace();
+		                  instance.lastErrorMsg = instance.lastErrorMsg + ", " + ex.toString();
+		                }
+		                
+		                //wrong username or password, get new one
+		                if(mex.toString().equals("javax.mail.AuthenticationFailedException")){
+		                	fail = true;
+		                	userAndPass = askForUserAndPassword((Frame)UIRegistry.get(UIRegistry.TOPFRAME));
+		                	
+		                	if(userAndPass == null)
+		                	{//the user is done
+		                		return false;
+		                	}else
+		                	{//try again
+		                		userName = userAndPass.get(0);
+		                		password = userAndPass.get(1);
+		                	}
+		                }
+		            }
+		            finally
+		            {
+		
+		                 log.debug("Response: " + t.getLastServerResponse());
+		                 t.close();
+		                
+		            }
+		            
+	            }while(fail);
+	
+	        } catch (MessagingException mex)
+	        {
+	            instance.lastErrorMsg = mex.toString();
+	            
+	            
+	            mex.printStackTrace();
+	            Exception ex = null;
+	            if ((ex = mex.getNextException()) != null) {
+	              ex.printStackTrace();
+	              instance.lastErrorMsg = instance.lastErrorMsg + ", " + ex.toString();
+	            }
+	            return false;
+	            
+	        } catch (Exception ex)
+	        {
+	            ex.printStackTrace();
+	        }
+	        
+	        if(fail){
+	        	return false;
+	        }//else
+	        return true;
+    	}
     }
     
     /**
@@ -249,6 +289,7 @@ public class EMailHelper
         builder.add(savePassword, cc.xy(3,3));
         JOptionPane.showConfirmDialog(topframe, builder.getPanel(), 
                 getResourceString("PASSWORD_TITLE"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+       
         
         String passwordText = new String(passField.getPassword());
         if (savePassword.isSelected())
@@ -256,13 +297,64 @@ public class EMailHelper
             AppPreferences appPrefs = AppPreferences.getRemote();
             if (StringUtils.isNotEmpty(passwordText))
             {
-            	
-                System.out.println("chagned to: "+passwordText);
-                appPrefs.put("settings.email.password", Encryption.encrypt(passwordText));
+            	appPrefs.put("settings.email.password", Encryption.encrypt(passwordText));
             }
         }
 
         return passwordText;
+    } 
+   
+    /**
+     * Asks for a username and password.
+     * @param topframe the parent frame
+     * @return the list of user[index 1] and password[index 2], or 'null' if cancel was pressed
+     */
+    public static ArrayList<String> askForUserAndPassword(final Frame topframe)
+    {
+    	ArrayList<String> userAndPass = new ArrayList<String>();
+    	//get remote prefs
+    	AppPreferences remotePrefs = AppPreferences.getRemote();
+    	//get remote password
+    	String remoteUsername = remotePrefs.get("settings.email.username",null );
+    	
+        PanelBuilder    builder   = new PanelBuilder(new FormLayout("p,2px,p", "p,2px,p,2px,p"));
+        CellConstraints cc        = new CellConstraints();
+        JLabel          plabel     = new JLabel(getResourceString("password")+":", JLabel.RIGHT);
+        JLabel          ulabel     = new JLabel(getResourceString("username")+":", JLabel.RIGHT);
+        JPasswordField  passField = new JPasswordField(25);
+        JTextField  	userField = new JTextField(remoteUsername, 25);
+        JCheckBox       savePassword = new JCheckBox(getResourceString("SAVE_PASSWORD"));
+
+        
+        builder.add(ulabel, cc.xy(1,1));
+        builder.add(userField, cc.xy(3,1));
+        builder.add(plabel, cc.xy(1,3));
+        builder.add(passField, cc.xy(3,3));
+        builder.add(savePassword, cc.xy(3,5));
+        
+        Integer option = JOptionPane.showConfirmDialog(topframe, builder.getPanel(), 
+                getResourceString("PASSWORD_TITLE"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+        String passwordText = new String(passField.getPassword());
+        String userText = new String(userField.getText());
+        
+        if (savePassword.isSelected())
+        {
+            
+            if (StringUtils.isNotEmpty(passwordText))
+            {
+            	remotePrefs.put("settings.email.password", Encryption.encrypt(passwordText));
+            }
+        }
+        
+        if(option == JOptionPane.CANCEL_OPTION)
+        {
+        	return null;
+        }//else
+        
+        userAndPass.add(0, userText);
+        userAndPass.add(1, passwordText);
+        return userAndPass;
     } 
     
     
@@ -441,7 +533,7 @@ public class EMailHelper
 
             if (!hasEMailSettings(usernameStr, passwordStr, emailStr, smtpStr, serverNameStr, acctTypeStr, localMailBoxStr))
             {
-                JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow(), getResourceString("emailsetnotvalid"));
+                JOptionPane.showMessageDialog(UIRegistry.getMostRecentFrame(), getResourceString("emailsetnotvalid"));
             }
 
             // Open Local Box if POP
@@ -584,6 +676,9 @@ public class EMailHelper
                                   String mimeType,
                                   File   fileAttachment)
     {
+    	Boolean fail = false;
+    	ArrayList<String> userAndPass = new ArrayList<String>();
+    	
         Properties props = System.getProperties();
         
         props.put("mail.smtp.host", host);
@@ -674,24 +769,51 @@ public class EMailHelper
 
             // send the message
             //Transport.send(msg);
-
-            SMTPTransport t = (SMTPTransport)session.getTransport("smtp");
-            try {
-                t.connect(host, userName, password);
-
-                t.sendMessage(msg, msg.getAllRecipients());
-
-            } catch (Exception e)
-            {
-                log.error(e);
-                
-            } finally
-            {
-
-                 log.debug("Response: " + t.getLastServerResponse());
-                 t.close();
-            }
-
+            do{
+	            SMTPTransport t = (SMTPTransport)session.getTransport("smtp");
+	            try {
+	                t.connect(host, userName, password);
+	
+	                t.sendMessage(msg, msg.getAllRecipients());
+	                
+	                fail = false;
+	            } /*catch (Exception e)
+	            {
+	                log.error(e);
+	                
+	            }*/
+	            catch (MessagingException mex)
+	            {
+	                instance.lastErrorMsg = mex.toString();
+	                
+	                Exception ex = null;
+	                if ((ex = mex.getNextException()) != null) {
+	                  ex.printStackTrace();
+	                  instance.lastErrorMsg = instance.lastErrorMsg + ", " + ex.toString();
+	                }
+	                
+	                //wrong username or password, get new one
+	                if(mex.toString().equals("javax.mail.AuthenticationFailedException")){
+	                	fail = true;
+	                	userAndPass = askForUserAndPassword((Frame)UIRegistry.get(UIRegistry.TOPFRAME));
+	                	
+	                	if(userAndPass == null)
+	                	{//the user is done
+	                		return false;
+	                	}else
+	                	{//try again
+	                		userName = userAndPass.get(0);
+	                		password = userAndPass.get(1);
+	                	}
+	                }
+	            }
+	            finally
+	            {
+	
+	                 log.debug("Response: " + t.getLastServerResponse());
+	                 t.close();
+	            }
+            }while(fail);
 
         } catch (MessagingException mex)
         {
@@ -709,12 +831,16 @@ public class EMailHelper
         {
             ex.printStackTrace();
         }
+        
+        if(fail){
+        	return false;
+        }//else
         return true;
     }
     
     
    
-    
+    /*
     public static Boolean correctPassword(Hashtable<String, String> emailPrefs)
     {
 
@@ -723,7 +849,7 @@ public class EMailHelper
     		if(!isEMailPrefsOK(emailPrefs))
 	    	{
 	    		System.err.println("not everything is filled in");
-	    		JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
+	    		JOptionPane.showMessageDialog(UIRegistry.get(UIRegistry.TOPFRAME), 
 	                    getResourceString("NO_EMAIL_PREF_INFO"), 
 	                    getResourceString("NO_EMAIL_PREF_INFO_TITLE"), JOptionPane.WARNING_MESSAGE);
 	            
@@ -742,7 +868,7 @@ public class EMailHelper
 	    	if(StringUtils.isBlank(userPassword) || !remotePassword.equals(userPassword))
 	    	{
 	    		System.out.println("try again...");
-	    		userPassword = askForPassword((Frame)UIRegistry.getTopWindow());
+	    		userPassword = askForPassword((Frame)UIRegistry.get(UIRegistry.TOPFRAME));
 	    	}
 	    	if(remotePassword.equals(userPassword))
 	    	{
@@ -754,39 +880,23 @@ public class EMailHelper
     	}
     	//else
     	return false;
+    }*/
+    
+   
+    
+    public static boolean isGmailEmail(){
+    	
+    	 String smtpStr  = AppPreferences.getRemote().get("settings.email.smtp", null);
+    	 
+    	 if(smtpStr.equals("smtp.gmail.com"))
+    	 {
+    		 return true;
+    	 }
+    	 //else
+    	 return false;
     }
-    //tries to match the pasword in the email prefs panal.
-    public static Boolean correctPassword(String password)
-    {
-    	if(hasEMailSettings())
-    	{
-    		//get remote prefs
-	    	AppPreferences remotePrefs = AppPreferences.getRemote();
-	    	//get remote password
-	    	String remotePassword = Encryption.decrypt(remotePrefs.get("settings.email.password",null ));
-	    	
-	    	
-	    	if(StringUtils.isBlank(password) || !remotePassword.equals(password))
-	    	{
-	    		
-	    		System.out.println("try again: "+password +" != " + remotePassword);
-	    		password = askForPassword((Frame)UIRegistry.getTopWindow());
-	    		//if the new password is correct and they pressed save, then save it
-	    		//dont save the old password
-	    	}
-	    	
-	    	//get remote again, as password may have changed if the user clicked save
-	    	remotePrefs = AppPreferences.getRemote();
-	    	
-	    	if(remotePassword.equals(password))
-	    	{
-	    		System.out.println("fine");
-	    		return true;
-	    	}
-    	}
-    	//else
-    	return false;
-    }
+    
+   
     
     
 }
