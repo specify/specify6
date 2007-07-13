@@ -66,7 +66,7 @@
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{Family}]]></textFieldExpression>
 			</textField>
-		 	<textField>
+		 	<textField isStretchWithOverflow="true">
 				<reportElement key="textField" x="0" y="56" width="283" height="12"/>
 				<box topBorder="None" topBorderColor="#0" leftBorder="None" leftBorderColor="#0" bottomBorder="None" bottomBorderColor="#0" rightBorder="None" rightBorderColor="#0"/>
 				<textElement isStyledText="true" >
