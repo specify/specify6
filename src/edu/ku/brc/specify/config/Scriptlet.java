@@ -30,8 +30,11 @@ package edu.ku.brc.specify.config;
 
 import java.text.DecimalFormat;
 import java.util.Calendar;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.Vector;
 
 import net.sf.jasperreports.engine.JRDefaultScriptlet;
 import net.sf.jasperreports.engine.JRScriptletException;
@@ -494,40 +497,121 @@ public class Scriptlet extends JRDefaultScriptlet
 	   
 	   String label = new String(); 
 	   String data = new String();
+	   String styleInfo = new String();
 	   
 	   if(dataSource instanceof WorkbenchJRDataSource){
 		   WorkbenchJRDataSource rowDataSource = (WorkbenchJRDataSource)dataSource;
-		   String isCurrent = rowDataSource.getFieldValue("isCurrent").toString();  
+		   String isCurrent1 = rowDataSource.getFieldValue("isCurrent1").toString(); 
+		   String isCurrent2 = rowDataSource.getFieldValue("isCurrent2").toString();
 		
 		   //assume 1 if isCurrent has no value
-		  if((isCurrent == "true") || (isCurrent == ""))
+		  if((isCurrent1.equals("true")))
 		   {
-			   data = rowDataSource.getFieldValue("genus1").toString();
-			   
-			   if(data!= null)
-			   {
-				   label = "<style isBold=\"true\">"+data+" ";
-				   
-				   data = rowDataSource.getFieldValue("species1").toString();
-				   label = label.concat(data+" \\ </style>");
-				   
-				   data = rowDataSource.getFieldValue("speciesAuthorLastName1").toString();
-				  if(data!="")
-				  {
-					  label = label.concat(data+",");
-				   
-					  data = rowDataSource.getFieldValue("speciesAuthorFirstName1").toString();
-					  label = label.concat(data);
-				  }   
-			   }
-		  }else
+			
+			  Vector<String> labelNames = isCurrent1Labels();
+			  
+			  //create label
+              for (Enumeration e = labelNames.elements(); e.hasMoreElements();)
+              {
+            	  data = rowDataSource.getFieldValue( (String)e.nextElement() ).toString();
+            	  
+            	  try{
+            		  
+            		  if(!data.isEmpty())
+                      {
+            			 styleInfo = (String)e.nextElement();
+                    	  //if there is specific style info
+                    	  if(styleInfo.startsWith("<style"))
+                    	  	{
+                    		  	label = label.concat(styleInfo + data + " </style>");
+                    		}else//no style
+                    		{
+                    			label = label.concat(styleInfo + data+" ");	
+                    		}
+                      }
+            		  
+            	  }catch(NoSuchElementException ex){
+            		  log.error(ex);
+            		  return label;
+            	  }
+              	
+              }
+              
+		  }else if(isCurrent2.equals("true"))//use isCurrent 2 values
 		  {
-			//use 2
+			  
+			  Vector<String> labelNames = isCurrent2Labels();
+			  
+			  //create label
+              for (Enumeration e = labelNames.elements(); e.hasMoreElements();)
+              {
+            	  data = rowDataSource.getFieldValue( (String)e.nextElement() ).toString();
+            	  
+            	  try{
+            		  
+            		  if(!data.isEmpty())
+                      {
+            			 styleInfo = (String)e.nextElement();
+                    	  //if there is specific style info
+                    	  if(styleInfo.startsWith("<style"))
+                    	  	{
+                    		  	label = label.concat(styleInfo + data + " </style>");
+                    		}else//no style
+                    		{
+                    			label = label.concat(styleInfo + data+" ");	
+                    		}
+                      }
+            		  
+            	  }catch(NoSuchElementException ex){
+            		  log.error(ex);
+            		  return label;
+            	  }
+              	
+              }
 		  } 
 	   }
 	   //else
-	  
 	   return  label;
+   }
+   
+   //create the order and style information of the label.
+   //add the determiner name first, followed by its style information.
+   public Vector<String> isCurrent1Labels()
+   {
+	   Vector<String> labelNames = new Vector<String>(); 
+		  labelNames.add("genus1");					labelNames.add("<style isItalic=\"true\">");
+		  labelNames.add("speciesQualifier1");		labelNames.add("");
+		  labelNames.add("species1");				labelNames.add("<style isItalic=\"true\">");
+		  labelNames.add("speciesAuthorFirstName1");	labelNames.add("");
+		  labelNames.add("speciesAuthorLastName1");	labelNames.add("");
+		  labelNames.add("subspeciesQualifier1");	labelNames.add("");
+		  labelNames.add("subspecies1");				labelNames.add("<style isItalic=\"true\">");
+		  labelNames.add("infraAuthorFirstName1");	labelNames.add("");
+		  labelNames.add("infraAuthorLastName1");	labelNames.add("");
+		  labelNames.add("varietyQualifier1");		labelNames.add("var.");
+		  labelNames.add("variety1");				labelNames.add("<style isItalic=\"true\">");
+		  
+	return labelNames;
+   }
+   
+   // create the order and style information of the label.
+   //add the determiner name first, followed by its style information.
+   public Vector<String> isCurrent2Labels()
+   {
+	   Vector<String> labelNames = new Vector<String>(); 
+		  labelNames.add("genus2");					labelNames.add("<style isItalic=\"true\">");
+		  labelNames.add("speciesQualifier2");		labelNames.add("");
+		  labelNames.add("species2");				labelNames.add("<style isItalic=\"true\">");
+		  labelNames.add("speciesAuthorFirstName2");	labelNames.add("");
+		  labelNames.add("speciesAuthorLastName2");	labelNames.add("");
+		  labelNames.add("subspeciesQualifier2");	labelNames.add("");
+		  labelNames.add("subspecies2");				labelNames.add("<style isItalic=\"true\">");
+		  labelNames.add("infraAuthorFirstName2");	labelNames.add("");
+		  labelNames.add("infraAuthorLastName2");	labelNames.add("");
+		  labelNames.add("varietyQualifier2");		labelNames.add("var.");
+		  labelNames.add("variety2");				labelNames.add("<style isItalic=\"true\">");
+		  
+	return labelNames;
    }
    
 }
