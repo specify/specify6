@@ -433,20 +433,4 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
         listDialog.setVisible(true);
         return listDialog.getSelectedObject();
     }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.Taskable#isShowDefault()
-     */
-    public boolean isShowDefault()
-    {
-        return false;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.Taskable#isStarterPane()
-     */
-    public boolean isStarterPane()
-    {
-        return false;
-    }
 }
