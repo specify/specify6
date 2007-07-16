@@ -132,6 +132,7 @@ public class DataEntryTask extends BaseTask
            
             navBoxes.addElement(viewsNavBox);
         }
+        isShowDefault = true;
     }
     
     /**
@@ -146,7 +147,7 @@ public class DataEntryTask extends BaseTask
     }
     
     /**
-     * Returns a icon defined by the view, if not found then it by the Clas, if not found then it returns the one for the task
+     * Returns a icon defined by the view, if not found then it by the Class, if not found then it returns the one for the task
      * @param view the view 
      * @return the icon for the view
      */
@@ -157,7 +158,7 @@ public class DataEntryTask extends BaseTask
         {
             try
             {
-                Class clsObj = Class.forName(view.getClassName());
+                Class<?> clsObj = Class.forName(view.getClassName());
                 imgIcon = IconManager.getIcon(clsObj.getSimpleName(), IconManager.IconSize.Std16);
                 
             } catch (Exception ex) {}
@@ -250,7 +251,7 @@ public class DataEntryTask extends BaseTask
             try
             {
                 DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                List data = session.getDataList(sqlStr);
+                List<?> data = session.getDataList(sqlStr);
                 session.close();
                 
                 if (data != null && data.size() > 0)
@@ -342,8 +343,8 @@ public class DataEntryTask extends BaseTask
                 Element esDOM = AppContextMgr.getInstance().getResourceAsDOM("DataEntryTaskInit"); // Describes the definitions of the full text search
                 if (esDOM != null)
                 {
-                    List tables = esDOM.selectNodes("/views/view");
-                    for ( Iterator iter = tables.iterator(); iter.hasNext(); )
+                    List<?> tables = esDOM.selectNodes("/views/view");
+                    for ( Iterator<?> iter = tables.iterator(); iter.hasNext(); )
                     {
                         Element element     = (Element)iter.next();
                         String  nameStr     = getAttr(element, "name", "N/A");

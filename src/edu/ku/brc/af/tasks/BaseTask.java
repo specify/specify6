@@ -47,6 +47,7 @@ import edu.ku.brc.af.core.SubPaneMgrListener;
 import edu.ku.brc.af.core.TaskCommandDef;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.ToolBarItemDesc;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.subpane.DroppableFormObject;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
@@ -114,7 +115,8 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     // Data Members needed for support "recent form pane" management
     protected FormPane            recentFormPane       = null;
 
-
+    protected boolean             isShowDefault        = false;
+    
     /**
      * Default Constructor 
      * (when this is used the extending class MUST manually set the Name, Title and Icon).
@@ -263,7 +265,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
                                             final String        iconName,
                                             final CommandAction cmdAction,
                                             final CommandAction delCmdAction,
-                                            final Class         flavorClass,
+                                            final Class<?>      flavorClass,
                                             final String        dragFlavor,
                                             final String        dropFlavor)
 {
@@ -764,7 +766,23 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     {
         return isVisible;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.Taskable#isShowDefault()
+     */
+    public boolean isShowDefault()
+    {
+        return AppPreferences.getRemote().getBoolean("task.isShowDefault."+name, isShowDefault);
+    }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.Taskable#isStarterPane()
+     */
+    public boolean isStarterPane()
+    {
+        return starterPane != null;
+    }
+    
     /**
      * Displays UI that asks the user to select a predefined label.
      * @param tableId the table id

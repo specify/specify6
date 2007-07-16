@@ -106,5 +106,15 @@ public interface Taskable
      * @return a the start pane for the task.
      */
     public abstract SubPaneIFace getStarterPane();
+    
+    /**
+     * @return returns whether the current pane for the task is the starter pane.
+     */
+    public abstract boolean isStarterPane();
+    
+    /**
+     * @return returns whether it should show the default starter pane when the last SubPane is closed.
+     */
+    public abstract boolean isShowDefault();
 
 }

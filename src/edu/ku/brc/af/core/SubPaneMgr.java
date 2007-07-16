@@ -481,22 +481,54 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         SubPaneIFace subPane = this.getCurrentSubPane();
         if(subPane != null)
         {
-            // If there is only one pane left and there is only one tasks that provides UI
+            // If there is only one pane left and there is only one tasks that provide UI
             // then we cannot let it close.
-            boolean wasLastPane = panes.size() == 1  && TaskMgr.getToolbarTaskCount() == 1;
+            boolean wasLastSingleTaskPane = panes.size() == 1  && TaskMgr.getToolbarTaskCount() == 1;
 
-            if (!this.removePane(subPane) && panes.size() > 0)
-            {
-                return;
-            }
-            
             Taskable task = subPane.getTask();
-            if (task != null && wasLastPane)
+            if (task != null)
             {
-                subPane = task.getStarterPane();
-                addPane(subPane);
+                System.out.println(countPanesByTask(task)+" "+!task.isStarterPane()+" "+!task.isShowDefault());
+                if (!wasLastSingleTaskPane && !task.isStarterPane() && task.isShowDefault() && countPanesByTask(task) == 1)
+                {
+                    int index = this.indexOfComponent(subPane.getUIComponent());
+                    if (index < 0)
+                    {
+                        log.error("Couldn't find index for panel ["+subPane.getPaneName()+"] ");
+                    }
+                    
+                    replacePane(subPane, task.getStarterPane());
+                    
+                } else if (!this.removePane(subPane) && panes.size() > 0)
+                {
+                    return;
+                }
+                
+                if (wasLastSingleTaskPane)
+                {
+                    subPane = task.getStarterPane();
+                    addPane(subPane);
+                }
             }
         }
+    }
+    
+    /**
+     * Counts up the number of SubPanes with the same Task.
+     * @param task the task in question
+     * @return the number of SubPanes sharing that task
+     */
+    protected int countPanesByTask(final Taskable task)
+    {
+        int cnt = 0;
+        for (SubPaneIFace sp : panes.values())
+        {
+            if (sp.getTask() == task)
+            {
+                cnt++;
+            }
+        }
+        return cnt;
     }
 
     /**
