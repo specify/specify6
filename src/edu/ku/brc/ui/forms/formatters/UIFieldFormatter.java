@@ -327,7 +327,6 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#isNumericOnly()
      */
-    @Override
     public boolean isNumericOnly()
     {
         return false;
