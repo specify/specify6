@@ -371,11 +371,10 @@ public class AppPrefsCache
         {
             return dateEntry.getDateWrapper();
             
-        } else
-        {
-            dateEntry = instance.new DateFormatCacheEntry(getDefaultDatePattern(), section, pref, attrName);
-            getInstance().hash.put(makeKey(section, pref, attrName), dateEntry);
         }
+        // else
+        dateEntry = instance.new DateFormatCacheEntry(getDefaultDatePattern(), section, pref, attrName);
+        getInstance().hash.put(makeKey(section, pref, attrName), dateEntry);
         return dateEntry.getDateWrapper();
     }
 

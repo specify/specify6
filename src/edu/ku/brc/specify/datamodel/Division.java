@@ -14,17 +14,23 @@
  */
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.Lob;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 
@@ -158,7 +164,12 @@ public class Division extends DataModelObjBase implements java.io.Serializable
     /**
      * @return the members
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "division")
+    @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
+    @JoinTable(
+            name="division_agents",
+            joinColumns = {@JoinColumn(name="DivisionID")},
+            inverseJoinColumns= {@JoinColumn(name="AgentID")})
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     public Set<Agent> getMembers()
     {
         return members;

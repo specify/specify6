@@ -323,6 +323,17 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
         }
         return false;
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#isNumericOnly()
+     */
+    @Override
+    public boolean isNumericOnly()
+    {
+        return false;
+    }
+    
+    
 }
 
 

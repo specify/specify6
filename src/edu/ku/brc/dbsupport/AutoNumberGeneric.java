@@ -70,7 +70,7 @@ public class AutoNumberGeneric implements AutoNumberIFace
      * @param formatter
      * @return
      */
-    protected String getFirstValue(final UIFieldFormatterIFace formatter)
+    protected String getFirstValue(@SuppressWarnings("unused")final UIFieldFormatterIFace formatter)
     {
         return null;
     }

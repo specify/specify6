@@ -138,6 +138,11 @@ public interface UIFieldFormatterIFace
      * @return true if part of the format needs user input, false it is auto-generated.
      */
     public abstract boolean isUserInputNeeded();
+    
+    /**
+     * @return whether this supports just numeric formats.
+     */
+    public abstract boolean isNumericOnly();
 
     //-----------------------------------------------------------------------
     // The Data Specific Methods

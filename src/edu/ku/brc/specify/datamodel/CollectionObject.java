@@ -28,9 +28,6 @@
  */
 package edu.ku.brc.specify.datamodel;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
@@ -56,7 +53,6 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.dbsupport.AttributeIFace;
-import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 /**
@@ -98,7 +94,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     // protected String altCatalogNumber;
     protected Integer                       groupPermittedToView;
     protected Boolean                       deaccessioned;
-    protected Float                         catalogNumber;
+    protected String                        catalogNumber;
     protected Integer                       visibility;
     protected String                        visibilitySetBy;
     protected CollectingEvent               collectingEvent;
@@ -116,6 +112,9 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     protected Set<Attachment>               attachments;
     protected Container                     container;
     protected ColObjAttributes              colObjAttributes;
+    
+    protected Set<CollectionRelationship>   leftSideRels;
+    protected Set<CollectionRelationship>   rightSideRels;
 
     // Constructors
 
@@ -177,32 +176,8 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
         
         colObjAttributes      = null;
         
-        if (true)
-        {
-            // XXX For Demo
-            try
-            {
-                Connection conn = DBConnection.getInstance().createConnection();
-                if (conn != null)
-                {
-                    Statement  stmt = conn.createStatement();
-                    ResultSet  rs   = stmt.executeQuery("select CatalogNumber from collectionobject order by CatalogNumber desc"); // can't use  limit 0,1
-                    if (rs.next())
-                    {
-                        Float catNum = rs.getFloat(1);
-                        catalogNumber = catNum + 1;
-                    } else
-                    {
-                        catalogNumber = 1.0F;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                ex.printStackTrace();
-            }
-        }
-
+        leftSideRels          = new HashSet<CollectionRelationship>();
+        rightSideRels         = new HashSet<CollectionRelationship>();
 
     }
     // End Initializer
@@ -476,12 +451,12 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *
      */
-    @Column(name = "CatalogNumber", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getCatalogNumber() {
+    @Column(name = "CatalogNumber", unique = false, nullable = true, insertable = true, updatable = true, length=32)
+    public String getCatalogNumber() {
         return this.catalogNumber;
     }
 
-    public void setCatalogNumber(Float catalogNumber) {
+    public void setCatalogNumber(String catalogNumber) {
         this.catalogNumber = catalogNumber;
     }
     
@@ -708,6 +683,34 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     public void setContainer(Container container) {
         this.container = container;
     }
+    
+    /**
+     * 
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "leftSide")
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    public Set<CollectionRelationship> getLeftSideRels() {
+        return this.leftSideRels;
+    }
+    
+    public void setLeftSideRels(Set<CollectionRelationship> leftSideRels) {
+        this.leftSideRels = leftSideRels;
+    }
+
+    /**
+     * 
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "rightSide")
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    public Set<CollectionRelationship> getRightSideRels() {
+        return this.rightSideRels;
+    }
+    
+    public void setRightSideRels(Set<CollectionRelationship> rightSideRels) {
+        this.rightSideRels = rightSideRels;
+    }
+
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#addReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
@@ -820,18 +823,11 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     {
 
         //first conditional required for when collection object table is empty??
-        if(catalogNumber==null)
+        if (catalogNumber == null)
         {
             return super.getIdentityTitle();
         }
-        String title = null;
-        if (StringUtils.isNotEmpty(title))
-        {
-            title = catalogNumber.toString();
-        } else
-        {
-            title = fieldNumber;
-        }
+        String title = StringUtils.isNotEmpty(catalogNumber) ? catalogNumber : fieldNumber;
         return title != null ? title : super.getIdentityTitle();
     }
     

@@ -53,10 +53,9 @@ public class AskForDirectory
         if (chooser.showDialog(parent, "Select Directory") == JFileChooser.CANCEL_OPTION) // XXX LOCALIZE
         {
             throw new NoSuchElementException("The External File Repository needs a valid directory.");// XXX LOCALIZE
-        } else 
-        {
-            return chooser.getSelectedFile().getAbsolutePath();
-        } 
+        }
+        // else
+        return chooser.getSelectedFile().getAbsolutePath();
     }
     
     /**

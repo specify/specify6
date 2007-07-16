@@ -527,6 +527,8 @@ public class ViewFactory
         textField.setBorder(BorderFactory.createEmptyBorder(insets.top, insets.left, insets.bottom, insets.bottom));
         textField.setForeground(Color.BLACK);
         textField.setEditable(false);
+        textField.setFocusable(false);
+        
         if (isTransparent)
         {
             textField.setOpaque(false);
@@ -1493,6 +1495,7 @@ public class ViewFactory
     public TableViewObj buildRecordSetTableViewable(final View        view,
                                                     final AltView     altView,
                                                     final MultiView   parentView,
+                                                    @SuppressWarnings("unused")
                                                     final int         options)
     {
         RecordSetTableViewObj rsTableViewObj = null;

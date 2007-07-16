@@ -101,6 +101,7 @@ import edu.ku.brc.ui.validation.FormValidator;
 import edu.ku.brc.ui.validation.FormValidatorInfo;
 import edu.ku.brc.ui.validation.UIValidatable;
 import edu.ku.brc.ui.validation.UIValidator;
+import edu.ku.brc.ui.validation.ValComboBoxFromQuery;
 import edu.ku.brc.ui.validation.ValFormattedTextField;
 import edu.ku.brc.ui.validation.ValidationListener;
 
@@ -1088,8 +1089,14 @@ public class FormViewObj implements Viewable,
                     businessRules.beforeSave(dataObjArg);
                 }
                 
-                dObj = session.merge(dataObjArg);
-                log.debug("CurrentDO "+dataObjArg.getClass().getSimpleName()+" "+dataObjArg.hashCode()+"  Merged: "+dObj.getClass().getSimpleName()+" "+dObj.hashCode());
+                if (dataObjArg != null && ((FormDataObjIFace)dataObjArg).getId() != null)
+                {
+                    dObj = session.merge(dataObjArg);
+                } else
+                {
+                    dObj = dataObjArg;
+                }
+                log.debug("CurrentDO "+(dataObjArg != null ? dataObjArg.getClass().getSimpleName()+" "+dataObjArg.hashCode() : "N/A")+"  Merged: "+dObj.getClass().getSimpleName()+" "+dObj.hashCode());
 
                             
                 session.saveOrUpdate(dObj);
@@ -1218,19 +1225,28 @@ public class FormViewObj implements Viewable,
     
     protected void replaceDataObjInList(final Object oldDO, final Object newDO)
     {
-        log.debug("Replacing "+oldDO.getClass().getSimpleName()+" "+oldDO.hashCode()+" with "+newDO.getClass().getSimpleName()+" "+newDO.hashCode());
+        if (oldDO != null && newDO != null)
+        {
+            log.debug("Replacing "+oldDO.getClass().getSimpleName()+" "+oldDO.hashCode()+" with "+newDO.getClass().getSimpleName()+" "+newDO.hashCode());
+        }
         if (list != null)
         {
             int index = list.indexOf(oldDO);
             if (index > -1)
             {
                 list.remove(oldDO);
-                log.error("Removed " + oldDO.getClass().getSimpleName()+" "+oldDO.hashCode() + " from list.");
+                if (oldDO != null)
+                {
+                    log.error("Removed " + oldDO.getClass().getSimpleName()+" "+oldDO.hashCode() + " from list.");
+                }
                 list.insertElementAt(newDO, index);
                 log.error("list length: "+list.size()+"    inx: "+index); 
             } else
             {
-                log.error("************ " + oldDO.getClass().getSimpleName()+" "+oldDO.hashCode() + " couldn't be found in list.");
+                if (oldDO != null)
+                {
+                    log.error("************ " + oldDO.getClass().getSimpleName()+" "+oldDO.hashCode() + " couldn't be found in list.");
+                }
             }
         }
     }
@@ -1317,15 +1333,18 @@ public class FormViewObj implements Viewable,
 
             try
             {
-                session.beginTransaction();
                 // Clear the items in the "deleted" cahe because they will be deleted anyway.
-                if (mvParent != null)
+                if (mvParent != null && mvParent.getDeletedItems() != null)
                 {
                     mvParent.getDeletedItems().clear();
                 }
-                session.delete(dataObj);
-                session.commit();
-                session.flush();
+                if (((FormDataObjIFace)dataObj).getId() != null)
+                {
+                    session.beginTransaction();
+                    session.delete(dataObj);
+                    session.commit();
+                    session.flush();
+                }
                 
             } catch (edu.ku.brc.dbsupport.StaleObjectException e)
             {
@@ -1435,11 +1454,15 @@ public class FormViewObj implements Viewable,
         {
             Component comp = compFI.getComp();
 
-            if (comp.isEnabled() && comp instanceof GetSetValueIFace)
+            if (comp.isEnabled() && comp.isFocusable() && comp instanceof GetSetValueIFace)
             {
                 Object val = ((GetSetValueIFace)comp).getValue();
                 if (val == null || (val instanceof String && StringUtils.isEmpty((String)val)))
                 {
+                    if (comp instanceof ValComboBoxFromQuery)
+                    {
+                        continue;
+                    }
                     boolean override = focusable instanceof JTextField && !(comp instanceof JTextField);
                     
                     if (compFI.getInsertPos() < insertPos || override)
@@ -1460,11 +1483,11 @@ public class FormViewObj implements Viewable,
                         }
                     }
                 }
-            }
-            
-            if (compFI.getInsertPos() == 0)
-            {
-                first = comp;
+                
+                if (compFI.getInsertPos() == 0)
+                {
+                    first = comp;
+                }
             }
         }
         
@@ -2886,7 +2909,7 @@ public class FormViewObj implements Viewable,
             
         } else
         {
-            dataObj = list.get(newIndex);    
+            dataObj = listDO;    
         }       
 
         setDataIntoUI();

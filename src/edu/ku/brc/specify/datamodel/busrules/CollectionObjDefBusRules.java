@@ -14,13 +14,17 @@
  */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import static edu.ku.brc.specify.tests.DataBuilder.createTaxonTreeDef;
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
-import edu.ku.brc.specify.datamodel.DataType;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 public class CollectionObjDefBusRules extends BaseBusRules
 {   
+    //private final Logger         log      = Logger.getLogger(CollectionObjDefBusRules.class);
+    
     /**
      * 
      */
@@ -35,12 +39,49 @@ public class CollectionObjDefBusRules extends BaseBusRules
     @Override
     public boolean okToDelete(Object dataObj)
     {
+        /*
+        CollectionObjDef cod = (CollectionObjDef)dataObj;
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            // load workbenches so they aren't lazy
+            // this is needed later on when the new WB is added to the template 
+            session.attach(cod);
+
+            if (cod.getLocalities().size() > 0)
+            {
+                return false;
+            }
+            if (cod.getAttributeDefs().size() > 0)
+            {
+                return false;
+            }
+            if (cod.getCollection().size() > 0)
+            {
+                return false;
+            }
+            if (cod.getAppResourceDefaults().size() > 0)
+            {
+                return false;
+            }
+            return true;
+            
+        } catch (Exception ex)
+        {
+            log.error(ex);
+            
+        } finally 
+        {
+            session.close();
+        }
+*/
+        
         if (!okToDelete("colobjdef_locality", "CollectionObjDefID", ((FormDataObjIFace)dataObj).getId()))
         {
             return false;
         }
         
-        if (!okToDelete("catseries_colobjdef", "CollectionObjDefID", ((FormDataObjIFace)dataObj).getId()))
+        if (!okToDelete("collection", "CollectionObjDefID", ((FormDataObjIFace)dataObj).getId()))
         {
             return false;
         }
@@ -50,7 +91,7 @@ public class CollectionObjDefBusRules extends BaseBusRules
             return false;
         }
         
-        if (!okToDelete("appresourcefefault", "CollectionObjDefID", ((FormDataObjIFace)dataObj).getId()))
+        if (!okToDelete("appresourcedefault", "CollectionObjDefID", ((FormDataObjIFace)dataObj).getId()))
         {
             return false;
         }
@@ -58,12 +99,38 @@ public class CollectionObjDefBusRules extends BaseBusRules
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#beforeSave(java.lang.Object)
+     */
+    @Override
+    public void beforeSave(Object dataObj)
+    {
+        super.beforeSave(dataObj);
+        
+        CollectionObjDef cod = (CollectionObjDef)dataObj;
+        if (cod.getSpecifyUser() == null)
+        {
+            cod.setSpecifyUser(SpecifyUser.getCurrentUser());
+        }
+        
+        if (cod.getTaxonTreeDef() == null)
+        {
+            TaxonTreeDef taxonTreeDef = createTaxonTreeDef("Sample Taxon Tree Def");
+            cod.setTaxonTreeDef(taxonTreeDef);
+        }
+        
+        if (cod.getAppResourceDefaults() == null)
+        {
+            //cod.setTaxonTreeDef(taxonTreeDef);
+        }
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#deleteMsg(java.lang.Object)
      */
     @Override
     public String getDeleteMsg(final Object dataObj)
     {
-        if (dataObj instanceof DataType)
+        if (dataObj instanceof CollectionObjDef)
         {
             return getLocalizedMessage("COLLECTIONOBJDEF_DELETED", ((CollectionObjDef)dataObj).getName());
         }

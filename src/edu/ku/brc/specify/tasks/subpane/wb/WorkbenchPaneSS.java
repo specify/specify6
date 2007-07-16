@@ -2768,16 +2768,16 @@ public class WorkbenchPaneSS extends BaseSubPane
         protected JTextField          textField;
         protected int                 length;
         protected LengthInputVerifier verifier;
-        protected JButton             saveBtn;
+        protected JButton             gcSaveBtn;
         
         //protected UndoManager undoManager = new UndoManager();
 
-        public GridCellEditor(final JTextField textField, final String caption, final int length, final JButton saveBtn)
+        public GridCellEditor(final JTextField textField, final String caption, final int length, final JButton gcSaveBtn)
         {
             super(textField);
             this.textField = textField;
             this.length    = length;
-            this.saveBtn   = saveBtn;
+            this.gcSaveBtn = gcSaveBtn;
             
             verifier = new LengthInputVerifier(caption, length);
             textField.setInputVerifier(verifier);
@@ -2809,7 +2809,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             if (!verifier.verify(textField))
             {
-                saveBtn.setEnabled(false);
+                gcSaveBtn.setEnabled(false);
             }
         }
 
@@ -2821,7 +2821,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             if (!verifier.verify(textField))
             {
-                saveBtn.setEnabled(false);
+                gcSaveBtn.setEnabled(false);
                 return false;
             }
             return super.stopCellEditing();

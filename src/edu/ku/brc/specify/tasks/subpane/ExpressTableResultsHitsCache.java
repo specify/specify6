@@ -89,15 +89,6 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
     public void fillTable()
     {
         HitsTableModel hitsModel = new HitsTableModel();
-
-        // Must be done before setting it into the table
-        int[] visCols = tableInfo.getDisplayColIndexes();
-        if (visCols != null)
-        {
-             hitsModel.setDisplayColIndexes(visCols);
-        }
-
-        colLabels = tableInfo.getColLabels();
         
         table.setModel(hitsModel);
 
@@ -166,12 +157,12 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
          */
         public String getColumnName(int column)
         {
-            return colLabels[column];
+            return tableInfo.getColInfo()[column].getColName();
         }
 
         public int getColumnCount()
         {
-            return cols != null ? cols.length : colLabels.length;
+            return cols != null ? cols.length : tableInfo.getColInfo().length;
         }
 
         public int getRowCount()

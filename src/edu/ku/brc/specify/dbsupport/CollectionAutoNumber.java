@@ -19,6 +19,8 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
 import edu.ku.brc.dbsupport.AutoNumberGeneric;
+import edu.ku.brc.specify.datamodel.CatalogNumberingScheme;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 
 /**
@@ -39,7 +41,7 @@ public class CollectionAutoNumber extends AutoNumberGeneric
         super();
         
         classObj  = CollectionObject.class;
-        fieldName = "fieldNumber";
+        fieldName = "catalogNumber";
     }
 
     /**
@@ -56,14 +58,17 @@ public class CollectionAutoNumber extends AutoNumberGeneric
      */
     protected Object getHighestObject(final Session session) throws Exception
     {
+        CatalogNumberingScheme cns = Collection.getCurrentCollection().getCatalogNumberingScheme();
+        
         Vector<Long> ids = new Vector<Long>();
-        ids.add(1L);
+        for (Collection collection : cns.getCollections())
+        {
+            ids.add(collection.getCollectionId());
+        }
         
         Criteria criteria = session.createCriteria(classObj);
         criteria.addOrder( Order.desc(fieldName) );
         criteria.createCriteria("collection").add(Restrictions.in("collectionId", ids));
-        //System.out.println(c2.toString());
-        //System.out.println(criteria.toString());
         criteria.setMaxResults(1);
         List list = criteria.list();
         if (list.size() == 1)

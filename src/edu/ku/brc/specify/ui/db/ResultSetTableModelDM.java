@@ -24,7 +24,8 @@ import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.ui.DateWrapper;
-import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 
 /**
  *
@@ -41,8 +42,7 @@ public class ResultSetTableModelDM extends ResultSetTableModel
     // Static Data Members
     private static final Logger log = Logger.getLogger(ResultSetTableModelDM.class);
    
-    private int[] displayIndexes    = null;
-    private int[] displayColIndexes = null;
+    private int[] displayRowIndexes = null;
     
     /**
      * Construct with a ResultSet
@@ -60,20 +60,19 @@ public class ResultSetTableModelDM extends ResultSetTableModel
      */
     public int getColumnCount()
     {
-        if (columnNames != null)
+        if (captionInfo != null)
         {
-            return columnNames.length;
+            return captionInfo.length;
         }
         try
         {
-            return metaData == null ? 0 : (displayColIndexes != null ? displayColIndexes.length : metaData.getColumnCount());
+            return metaData == null ? 0 : (captionInfo != null ? captionInfo.length : metaData.getColumnCount());
             
         } catch (SQLException ex)
         {
             log.error("In getColumnCount", ex);
         }
         return 0;
-
     }
 
     /**
@@ -83,9 +82,17 @@ public class ResultSetTableModelDM extends ResultSetTableModel
      */
     public Class<?> getColumnClass(int column)
     {
-        return classNames.size() == 0 ? String.class : 
-            (displayColIndexes != null ? (Class)classNames.elementAt(displayColIndexes[column]) : 
-                (Class)classNames.elementAt(column));
+        if (classNames.size() == 0)
+        {
+            return String.class; 
+        }
+        
+        if (captionInfo != null)
+        { 
+            return classNames.elementAt(captionInfo[column].getPosIndex()); 
+        }
+        
+        return classNames.elementAt(column);
     }
 
     /**
@@ -94,12 +101,9 @@ public class ResultSetTableModelDM extends ResultSetTableModel
      */
     public String getColumnName(int column)
     {
-        if (columnNames != null)
+        if (captionInfo != null)
         {
-            return columnNames[column];
-            
-            //return displayColIndexes != null ? columnNames[displayColIndexes[column]] : 
-            //                                   columnNames[column];
+            return captionInfo[column].getColName();
         }
         
         if (metaData == null)
@@ -109,8 +113,8 @@ public class ResultSetTableModelDM extends ResultSetTableModel
         
         try
         {
-            return displayColIndexes != null ? metaData.getColumnName(displayColIndexes[column]+1) : 
-                                               metaData.getColumnName(column+1);          
+            return captionInfo != null ? metaData.getColumnName(captionInfo[column].getPosIndex()+1) : 
+                                         metaData.getColumnName(column+1);          
         } catch (SQLException ex)
         {
             return "N/A";
@@ -123,7 +127,7 @@ public class ResultSetTableModelDM extends ResultSetTableModel
      */
     public int getRowCount()
     {
-      return displayIndexes != null ? displayIndexes.length : numRows;
+      return displayRowIndexes != null ? displayRowIndexes.length : numRows;
     }
     
     /**
@@ -140,9 +144,9 @@ public class ResultSetTableModelDM extends ResultSetTableModel
         
         try
         {
-            if (displayIndexes != null)
+            if (displayRowIndexes != null)
             {
-                if (!resultSet.absolute(displayIndexes[row]+1))
+                if (!resultSet.absolute(displayRowIndexes[row]+1))
                 {
                     log.error("Error doing resultSet.absolute("+row+")");
                     return null;
@@ -182,20 +186,19 @@ public class ResultSetTableModelDM extends ResultSetTableModel
                 }
                 
             }
-            Object data = displayColIndexes != null ? resultSet.getObject(displayColIndexes[column]+1) : resultSet.getObject(column+1);
-            if (formatters[colArg] != null)
+            
+            Object data    = resultSet.getObject(captionInfo[column].getPosIndex()+1);
+            String fmtName = captionInfo[colArg].getFormatter();
+            if (fmtName != null)
             {
-                return DataObjFieldFormatMgr.format(data, formatters[colArg]);
-            }
-            /*System.out.println(data != null ? data.getClass().getSimpleName() : "");
-            if (data != null)
-            {
-                if (data instanceof Date)
+                UIFieldFormatterIFace formatter = UIFieldFormatterMgr.getFormatter(fmtName);
+                if (formatter != null && formatter.isInBoundFormatter())
                 {
-                    return scrDateFormat.format((Date)data);
+                    return formatter.formatInBound(data);
                 }
-            }*/
-            return data;//displayColIndexes != null ? resultSet.getObject(displayColIndexes[column]+1) : resultSet.getObject(column+1);
+                log.error("Couldn't find UIFieldFormatterIFace ["+fmtName+"] or doesn't support In Bound formatting. InBnd["+formatter != null ? formatter.isInBoundFormatter() : "???"+"]");
+            }
+            return data;
             
         } catch (SQLException ex)
         {
@@ -212,8 +215,7 @@ public class ResultSetTableModelDM extends ResultSetTableModel
      */
     public void initializeDisplayIndexes()
     {
-        displayIndexes    = null;
-        //displayColIndexes = null;
+        displayRowIndexes    = null;
     }
  
     /**
@@ -224,20 +226,7 @@ public class ResultSetTableModelDM extends ResultSetTableModel
     {
         if (indexes != null)
         {
-            displayIndexes = indexes;
-            this.fireTableDataChanged();
-        }
-    }
-   
-    /**
-     * Sets the display indexes to display only a portion of the recordset
-     * @param indexes the array of indexes
-     */
-    public void addDisplayColIndexes(int[] indexes)
-    {
-        if (indexes != null)
-        {
-            displayColIndexes = indexes;
+            displayRowIndexes = indexes;
             this.fireTableDataChanged();
         }
     }
@@ -291,7 +280,7 @@ public class ResultSetTableModelDM extends ResultSetTableModel
             {
                 for (int i=0;i<rows.length;i++)
                 {
-                    int rowInx = displayIndexes != null ? displayIndexes[rows[i]] : rows[i];
+                    int rowInx = displayRowIndexes != null ? displayRowIndexes[rows[i]] : rows[i];
                     if (resultSet.absolute(rowInx+1))
                     {
                         rs.addItem(resultSet.getLong(column));

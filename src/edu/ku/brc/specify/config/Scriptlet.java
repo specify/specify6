@@ -172,7 +172,7 @@ public class Scriptlet extends JRDefaultScriptlet
      * @return Formats a String to a float to a String
      * @throws JRScriptletException xxx
      */
-    public String formatCatNo(String floatStr) throws JRScriptletException
+    public String formatCatNo(String floatStr)
     {
         if (floatStr == null)
         {
@@ -198,7 +198,7 @@ public class Scriptlet extends JRDefaultScriptlet
      * @return Formats a float to a string
      * @throws JRScriptletException
      */
-    public String format(Float floatVar) throws JRScriptletException
+    public String format(Float floatVar)
     {
         if (floatVar == null)
         {
@@ -223,10 +223,11 @@ public class Scriptlet extends JRDefaultScriptlet
         }
 
         if (isLat)
+        {
             return floatVal.floatValue() > 0.0 ? "N" : "S";
-        else
-            return floatVal.floatValue() > 0.0 ? "E" : "W";
-
+        }
+        // else
+        return floatVal.floatValue() > 0.0 ? "E" : "W";
     }
 
     /**
@@ -251,7 +252,7 @@ public class Scriptlet extends JRDefaultScriptlet
      * @return Formats a float string into a lat/lon with "N","S","E", "W"
      * @throws JRScriptletException
      */
-    public String degrees(Float floatStr, boolean isLat) throws JRScriptletException
+    public String degrees(Float floatStr, boolean isLat)
     {
         if (floatStr == null)
         {
@@ -288,7 +289,7 @@ public class Scriptlet extends JRDefaultScriptlet
      * @return Formats a String with a float value as a degrees
      * @throws JRScriptletException XXX
      */
-    public String degrees(String floatStr, boolean isLat) throws JRScriptletException
+    public String degrees(String floatStr, boolean isLat)
     {
         return degrees(new Float(Float.parseFloat(floatStr)), isLat);
     }
@@ -302,7 +303,7 @@ public class Scriptlet extends JRDefaultScriptlet
      * @return Formats a Lat,Lon into a single string where the values are separated by a comma
      * @throws JRScriptletException XXX
      */
-    public String locality(Object desc, Float lat, Float lon) throws JRScriptletException
+    public String locality(Object desc, Float lat, Float lon)
     {
 
         StringBuffer strBuf = new StringBuffer();
@@ -341,10 +342,8 @@ public class Scriptlet extends JRDefaultScriptlet
     	{
     		return "GIFT";
     	}
-    	else
-    	{
-    		return "LOAN";
-    	}
+    	// else
+  		return "LOAN";
     }
     
     /**

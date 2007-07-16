@@ -58,6 +58,7 @@ import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.config.Discipline;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.AttributeDef;
+import edu.ku.brc.specify.datamodel.CatalogNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObjDef;
 import edu.ku.brc.specify.datamodel.CollectionObject;
@@ -150,7 +151,9 @@ public class GenericDBConversion
     protected ProgressFrame        frame    = null;
     protected boolean              hasFrame = false;
     
-    protected Hashtable<String, Long> collectionHash = new Hashtable<String, Long>();
+    protected Hashtable<String, Long>   collectionHash   = new Hashtable<String, Long>();
+    protected Hashtable<String, String> prefixHash       = new Hashtable<String, String>();
+    protected Hashtable<String, Long>   catNumSchemeHash = new Hashtable<String, Long>();
 
     /**
      * "Old" means the database you want to copy "from"
@@ -1294,7 +1297,7 @@ public class GenericDBConversion
             BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "datatype");
             BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "collectionobjdef");
             BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "collection");
-            //BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "catseries_colobjdef");
+            //BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "collection_colobjdef");
 
             Hashtable<Long, Long> newColObjIDTotaxonomyTypeID     = new Hashtable<Long, Long>();
             Hashtable<Long, String>  taxonomyTypeIDToTaxonomyName = new Hashtable<Long, String>();
@@ -1430,34 +1433,55 @@ public class GenericDBConversion
                      {
                          seriesNameHash.put(seriesName, true);
                      }
-    
+                     
+                     Session session = HibernateUtil.getNewSession();
+                     CatalogNumberingScheme cns = new CatalogNumberingScheme();
+                     cns.initialize();
+                     cns.setSchemeClassName("");
+                     cns.setSchemeName(newSeriesName);
+                     Transaction trans = session.beginTransaction();
+                     session.save(cns);
+                     trans.commit();
+                     
+                     Long catNumSchemeId = cns.getCatalogNumberingSchemeId();
+                     //catNumSchemeHash.put(hashKey, catNumSchemeId);
+                     session.close();
+                     
                      // Now craete the proper record in the  Join Table
     
                      long newColObjdefID     = taxonomyTypeMapper.get(taxonomyTypeID);
     
                      Statement updateStatement = newDBConn.createStatement();
                      strBuf.setLength(0);
-                     strBuf.append("INSERT INTO collection (CollectionObjDefID, CollectionName, CollectionPrefix, Remarks, LastEditedBy, TimestampCreated, TimestampModified) VALUES (");
+                     strBuf.append("INSERT INTO collection (CollectionObjDefID, CollectionName, CollectionPrefix, Remarks, CatalogNumberingSchemeID, LastEditedBy, TimestampCreated, TimestampModified) VALUES (");
                      strBuf.append(newColObjdefID+",");
                      strBuf.append(getStrValue(newSeriesName)+",");
                      strBuf.append(getStrValue(prefix)+",");
                      strBuf.append(getStrValue(remarks)+",");
+                     strBuf.append(catNumSchemeId.toString()+",");
                      strBuf.append(getStrValue(lastEditBy)+",");
                      strBuf.append("'"+dateFormatter.format(new Date())+"',"); // TimestampModified
                      strBuf.append("'"+dateFormatter.format(new Date())+"'");  // TimestampCreated
                      strBuf.append(")");
     
-                     //System.out.println(strBuf.toString());
+                     System.out.println(strBuf.toString());
                      
                      updateStatement.executeUpdate(strBuf.toString());
                      updateStatement.clearBatch();
                      updateStatement.close();
                      updateStatement = null;
                      
+                     String hashKey = catalogSeriesID+"_"+taxonomyTypeID;
+                     
                      Long newCatSeriesID = BasicSQLUtils.getHighestId(newDBConn, "CollectionID", "collection");
-                     collectionHash.put(catalogSeriesID+"_"+taxonomyTypeID, newCatSeriesID);
+                     collectionHash.put(hashKey, newCatSeriesID);
+                     if (StringUtils.isNotEmpty(prefix))
+                     {
+                         prefixHash.put(hashKey, prefix);
+                     }
                      
                      log.info("Collection New["+newCatSeriesID+"] ["+seriesName+"] ["+prefix+"] ["+newColObjdefID+"]");
+                     
     
                      recordCnt++;
     
@@ -3006,7 +3030,7 @@ public class GenericDBConversion
      * All "logical" records are moved to the CollectionObject table and all "physical" records are moved to the Preparation table.
      * @return true if no errors
      */
-    public boolean convertCollectionObjects()
+    public boolean convertCollectionObjects(final boolean useNumericCatNumbers, final boolean usePrefix)
     {
         idMapperMgr.dumpKeys();
         IdHashMapper colObjTaxonMapper = (IdHashMapper)idMapperMgr.get("ColObjCatToTaxonType".toLowerCase());
@@ -3094,14 +3118,13 @@ public class GenericDBConversion
             
             Statement stmt2 = oldDBConn.createStatement();
             
-            int    catNum = oldNameIndex.get("CatalogNumber");
+            int    catNumInx = oldNameIndex.get("CatalogNumber");
 
             int     colObjAttrsNotMapped = 0;
             int     count                = 0;
             boolean skipRecord           = false; 
             do
             {
-                
                 String catIdTaxIdStr = "SELECT collectionobjectcatalog.CollectionObjectCatalogID,collectionobjectcatalog.CatalogSeriesID, collectiontaxonomytypes.TaxonomyTypeID " +
                                        "FROM collectionobjectcatalog " +  
                                        "Inner Join collectionobject ON collectionobjectcatalog.CollectionObjectCatalogID = collectionobject.CollectionObjectID " +  
@@ -3110,9 +3133,10 @@ public class GenericDBConversion
                 //log.info(catIdTaxIdStr);
                 ResultSet rs2   = stmt2.executeQuery(catIdTaxIdStr);
                 rs2.first();
-                Long catalogSeriesID = rs2.getLong(2);
-                Long taxonomyTypeID  = rs2.getLong(3);
-                Long newCatSeriesId = collectionHash.get(catalogSeriesID+"_"+taxonomyTypeID);
+                Long   catalogSeriesID = rs2.getLong(2);
+                Long   taxonomyTypeID  = rs2.getLong(3);
+                Long   newCatSeriesId  = collectionHash.get(catalogSeriesID+"_"+taxonomyTypeID);
+                String prefix          = prefixHash.get(catalogSeriesID+"_"+taxonomyTypeID);
                 rs2.close();
                 
                 if (newCatSeriesId == null)
@@ -3137,8 +3161,17 @@ public class GenericDBConversion
                         
                         str.append(getStrValue(recId));
                         
-                        colObjId      = getStrValue(recId);
-                        catalogNumber = rs.getString(catNum+1);
+                        colObjId = getStrValue(recId);
+                        
+                        if (useNumericCatNumbers)
+                        {
+                            catalogNumber = String.format("%09d",rs.getInt(catNumInx+1) );
+                            
+                        } else
+                        {
+                            float catNum  = rs.getFloat(catNumInx+1);
+                            catalogNumber = (usePrefix && StringUtils.isNotEmpty(prefix) ? (prefix + "-") : "") + String.format("%9.0f", catNum).trim();
+                        }
                         
                         int subNumber = rs.getInt(oldNameIndex.get("SubNumber"));
                         if (subNumber < 0)
@@ -3183,6 +3216,10 @@ public class GenericDBConversion
                             str.append("NULL");
                         }
                         
+                    } else if(newFieldName.equals("CatalogNumber"))
+                    {
+                        str.append(catalogNumber);
+                            
                     } else if(newFieldName.equals("Visibility")) //User/Security changes
                     {
                         str.append(defaultVisibilityLevel);
@@ -3612,7 +3649,7 @@ public class GenericDBConversion
 
             colObjDef.setTaxonTreeDef(taxaTreeDef);
 
-            colObjDef.setCollection(collectionSet);
+            colObjDef.setCollections(collectionSet);
 
             session.save(colObjDef);
 

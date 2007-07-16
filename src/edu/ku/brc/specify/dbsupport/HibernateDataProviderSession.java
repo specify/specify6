@@ -42,8 +42,9 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     private static final Logger log = Logger.getLogger(HibernateDataProviderSession.class);
     
     // Used for checking to see if we have any dangling creates without closes
-    protected static      int creates = 0;
-    protected static      int closes  = 0;
+    protected static int     createsCounts = 0;
+    protected static int     closesCounts  = 0;
+    protected static boolean SHOW_COUNTS = false; // XXX RELEASE
     
     protected Session     session         = null;
     protected Exception   recentException = null;
@@ -57,8 +58,11 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     public HibernateDataProviderSession()
     {
         session = HibernateUtil.getNewSession();
-        creates++;
-        log.info(" Creates: "+creates+"  Closes: "+closes+" Dif: "+(creates-closes));
+        if (SHOW_COUNTS)
+        {
+            createsCounts++;
+            log.debug(" Creates: "+createsCounts+"  Closes: "+closesCounts+" Dif: "+(createsCounts-closesCounts));
+        }
     }
     
     /**
@@ -293,13 +297,12 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
             {
                 return 0;
                 
-            } else
+            }
+            // else
+            Object countObj = countList.get(0);
+            if (countObj instanceof Integer)
             {
-                Object countObj = countList.get(0);
-                if (countObj instanceof Integer)
-                {
-                    return (Integer)countObj;
-                }
+                return (Integer)countObj;
             }
         }
         
@@ -520,8 +523,11 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
      */
     public void close()
     {
-        closes++;
-        log.info("*Creates: "+creates+"  Closes: "+closes+" Dif: "+(creates-closes));
+        if (SHOW_COUNTS)
+        {
+            closesCounts++;
+            log.info("*Creates: "+createsCounts+"  Closes: "+closesCounts+" Dif: "+(createsCounts-closesCounts));
+        }
         
         if (session != null)
         {

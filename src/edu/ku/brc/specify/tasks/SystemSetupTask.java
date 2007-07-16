@@ -141,6 +141,12 @@ public class SystemSetupTask extends BaseTask
                     startEditor(DeterminationStatus.class, name, "DeterminationStatus");
                 }
             })); // I18N
+            sysNavBox.add(NavBox.createBtnWithTT("Collections", name, "", IconManager.IconSize.Std16, new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    startEditor(edu.ku.brc.specify.datamodel.Collection.class, name, "Collection");
+                }
+            })); // I18N
             navBoxes.addElement(sysNavBox);
            
 

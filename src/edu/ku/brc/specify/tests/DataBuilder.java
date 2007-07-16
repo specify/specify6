@@ -24,6 +24,7 @@ import edu.ku.brc.specify.datamodel.Borrow;
 import edu.ku.brc.specify.datamodel.BorrowAgent;
 import edu.ku.brc.specify.datamodel.BorrowMaterial;
 import edu.ku.brc.specify.datamodel.BorrowReturnMaterial;
+import edu.ku.brc.specify.datamodel.CatalogNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectingEventAttr;
@@ -191,6 +192,7 @@ public class DataBuilder
 
     public static Collection createCollection(final String prefix,
                                               final String name,
+                                              final CatalogNumberingScheme catalogNumberingScheme,
                                               final CollectionObjDef[] colObjDefs)
     {
         Collection collection = new Collection();
@@ -199,7 +201,9 @@ public class DataBuilder
         collection.setLastEditedBy(null);
         collection.setRemarks("These are the remarks");
         collection.setCollectionName(name);
-
+        collection.setCatalogNumberingScheme(catalogNumberingScheme);
+        catalogNumberingScheme.getCollections().add(collection);
+        
         for (CollectionObjDef cod: colObjDefs)
         {
             collection.setCollectionObjDef(cod);
@@ -217,9 +221,10 @@ public class DataBuilder
      */
     public static Collection createCollection(final String prefix,
                                               final String name,
+                                              final CatalogNumberingScheme numberingScheme,
                                               final CollectionObjDef colObjDef)
     {
-        return createCollection(prefix, name, new CollectionObjDef[] { colObjDef });
+        return createCollection(prefix, name, numberingScheme, new CollectionObjDef[] { colObjDef });
     }
 
     /**
@@ -362,7 +367,7 @@ public class DataBuilder
         return collector;
     }
 
-    public static CollectionObject createCollectionObject(final float catalogNumber,
+    public static CollectionObject createCollectionObject(final String catalogNumber,
                                                           final String fieldNumber,
                                                           final Agent cataloger,
                                                           final Collection collection,
@@ -1312,7 +1317,7 @@ public class DataBuilder
                                                           //final String altCatalogNumber,
                                                           final Integer groupPermittedToView,
                                                           final Boolean deaccessioned,
-                                                          final Float catalogNumber,
+                                                          final String catalogNumber,
                                                           final CollectingEvent collectingEvent,
                                                           final ContainerItem containerItem,
                                                           final Collection collection,
@@ -1463,8 +1468,8 @@ public class DataBuilder
     }
 
     public static DeaccessionPreparation createDeaccessionPreparation(final Short quantity,
-                                                                                final CollectionObject collectionObject,
-                                                                                final Deaccession deaccession)
+                                                                      final CollectionObject collectionObject,
+                                                                      final Deaccession deaccession)
     {
         DeaccessionPreparation deaccessionpreparation = new DeaccessionPreparation();
         deaccessionpreparation.initialize();
@@ -2108,6 +2113,19 @@ public class DataBuilder
         usergroup.setName(name);
         persist(usergroup);
         return usergroup;
+    }
+    
+    public static CatalogNumberingScheme createCatalogNumberingScheme(final String schemeName,
+                                                                      final String schemeClassName,
+                                                                      final boolean isNumericOnly)
+    {
+        CatalogNumberingScheme cns = new CatalogNumberingScheme();
+        cns.initialize();
+        cns.setSchemeName(schemeName);
+        cns.setSchemeClassName(schemeClassName);
+        cns.setIsNumericOnly(isNumericOnly);
+        persist(cns);
+        return cns;
     }
 
     public static Workbench createWorkbench(final SpecifyUser user,

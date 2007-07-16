@@ -177,30 +177,33 @@ public final class FormHelper
      */
     public static boolean addToParent(final Object parentDataObj, final Object newDataObj)
     {
-        try
+        if (parentDataObj != null)
         {
-            String methodName = "add" + newDataObj.getClass().getSimpleName();
-            log.debug("Invoking method["+methodName+"] on Object "+parentDataObj.getClass().getSimpleName());
-    
-            Method method = parentDataObj.getClass().getMethod(methodName, new Class[] {newDataObj.getClass()});
-            method.invoke(parentDataObj, new Object[] {newDataObj});
-            log.debug("Adding ["+newDataObj+"] to parent Set["+parentDataObj+"]");
-    
-            return true;
-    
-        } catch (NoSuchMethodException ex)
-        {
-            ex.printStackTrace();
-    
-        } catch (IllegalAccessException ex)
-        {
-            ex.printStackTrace();
-    
-        } catch (InvocationTargetException ex)
-        {
-            ex.printStackTrace();
+            try
+            {
+                String methodName = "add" + newDataObj.getClass().getSimpleName();
+                
+                log.debug("Invoking method["+methodName+"] on Object "+(parentDataObj != null ? parentDataObj.getClass().getSimpleName() : " parent is null"));
+        
+                Method method = parentDataObj.getClass().getMethod(methodName, new Class[] {newDataObj.getClass()});
+                method.invoke(parentDataObj, new Object[] {newDataObj});
+                log.debug("Adding ["+newDataObj+"] to parent Set["+parentDataObj+"]");
+        
+                return true;
+        
+            } catch (NoSuchMethodException ex)
+            {
+                ex.printStackTrace();
+        
+            } catch (IllegalAccessException ex)
+            {
+                ex.printStackTrace();
+        
+            } catch (InvocationTargetException ex)
+            {
+                ex.printStackTrace();
+            }
         }
-    
         return false;
     }
 

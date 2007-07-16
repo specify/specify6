@@ -60,6 +60,7 @@ import org.dom4j.Element;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
+import edu.ku.brc.af.core.ERTIJoinColInfo;
 import edu.ku.brc.af.core.ExpressResultsTableInfo;
 import edu.ku.brc.af.core.ExpressSearchResults;
 import edu.ku.brc.af.core.MenuItemDesc;
@@ -270,7 +271,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
         for ( Iterator iter = tableItems.iterator(); iter.hasNext(); )
         {
             Element                 tableElement = (Element)iter.next();
-            ExpressResultsTableInfo ti           = new ExpressResultsTableInfo(tableElement, ExpressResultsTableInfo.LOAD_TYPE.Both, isExpressSearch);
+            ExpressResultsTableInfo ti           = new ExpressResultsTableInfo(tableElement, isExpressSearch);
             if (byIdHash.get(ti.getId()) == null)
             {
                 byIdHash.put(ti.getId(), ti);
@@ -281,10 +282,10 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
                     
                     if (!ti.isIndexed())
                     {
-                        ExpressResultsTableInfo.JoinColInfo joinCols[] = ti.getJoins();
+                        ERTIJoinColInfo joinCols[] = ti.getJoins();
                         if (joinCols != null)
                         {
-                            for (ExpressResultsTableInfo.JoinColInfo jci :  joinCols)
+                            for (ERTIJoinColInfo jci :  joinCols)
                             {
                                 List<ExpressResultsTableInfo> list = joinIdToTableInfoHash.get(jci.getJoinTableId());
                                 if (list == null)
@@ -557,10 +558,10 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
                 if (results == null)
                 {
                     Integer joinColTableId = null;
-                    ExpressResultsTableInfo.JoinColInfo joinCols[] = erti.getJoins();
+                    ERTIJoinColInfo joinCols[] = erti.getJoins();
                     if (joinCols != null)
                     {
-                        for (ExpressResultsTableInfo.JoinColInfo jci :  joinCols)
+                        for (ERTIJoinColInfo jci :  joinCols)
                         {
                             if (tblInfo.getTableId().equals(jci.getJoinTableId()))
                             {

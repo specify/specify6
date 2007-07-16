@@ -135,14 +135,8 @@ public class ExpressTableResults extends ExpressTableResultsBase implements SQLE
                 
                 ResultSetTableModelDM rsm = new ResultSetTableModelDM(resultSet);
                 table.setRowSelectionAllowed(true);
-                
-                int[] visCols = tableInfo.getDisplayColIndexes();
-                if (visCols != null)
-                {
-                     rsm.addDisplayColIndexes(visCols);
-                }
-                rsm.setColumnNames(tableInfo.getColLabels());
-                rsm.setFormatters(tableInfo.getFormatters());
+
+                rsm.setCaptionInfo(tableInfo.getVisibleCaptionInfo());
         
                 table.setModel(rsm);
         

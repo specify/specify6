@@ -623,55 +623,55 @@ public class FormValidator implements ValidationListener, DataChangeListener
     }
 
     /**
-     * Validates all or some of the field.
-     * @param validateAll indicates all field should be validated
-     * @param type if validateAll is false, then validate only the fields with a
-     * validator of this type.
+     * Validates the fields.
      */
-    protected void validateForm(final boolean validateAll)
+    public void validateForm()
     {
-        log.debug("validateForm ["+name+"]");
-
-        ignoreValidationNotifications = true;
-
-        processRulesAreOK = processFormRules();
-        
-        formValidationState = UIValidatable.ErrorType.Valid;
-
-        // We need to go ahead and validate everything even if processFormRules fails
-        // because the user will need the visual feed back on the form for which fields are in error
-        for (DataChangeNotifier dcn : dcNotifiers.values())
+        if (enabled)
         {
-            dcn.manualCheckForDataChanged();
+            log.debug("validateForm ["+name+"]");
+    
+            ignoreValidationNotifications = true;
+    
+            processRulesAreOK = processFormRules();
             
-            UIValidator uiv = dcn.getUIV();
-            if (uiv != null && !uiv.validate())
+            formValidationState = UIValidatable.ErrorType.Valid;
+    
+            // We need to go ahead and validate everything even if processFormRules fails
+            // because the user will need the visual feed back on the form for which fields are in error
+            for (DataChangeNotifier dcn : dcNotifiers.values())
             {
-                switch (uiv.getUIV().getState())
+                dcn.manualCheckForDataChanged();
+                
+                UIValidator uiv = dcn.getUIV();
+                if (uiv != null && !uiv.validate())
                 {
-                    case Valid :
-                         break;
-                 
-                    case Incomplete:
-                         if (formValidationState == UIValidatable.ErrorType.Valid)
-                         {
-                             formValidationState = UIValidatable.ErrorType.Incomplete;
-                         }
-                         break;
-                 
-                    case Error :
-                         formValidationState = UIValidatable.ErrorType.Error;
-                         break;
-                 }
+                    switch (uiv.getUIV().getState())
+                    {
+                        case Valid :
+                             break;
+                     
+                        case Incomplete:
+                             if (formValidationState == UIValidatable.ErrorType.Valid)
+                             {
+                                 formValidationState = UIValidatable.ErrorType.Incomplete;
+                             }
+                             break;
+                     
+                        case Error :
+                             formValidationState = UIValidatable.ErrorType.Error;
+                             break;
+                     }
+                }
             }
+    
+            updateValidationBtnUIState();
+            
+            // when validating for OK we always leave it enabled
+            //turnOnOKButton(true);
+    
+            ignoreValidationNotifications = false;
         }
-
-        updateValidationBtnUIState();
-        
-        // when validating for OK we always leave it enabled
-        //turnOnOKButton(true);
-
-        ignoreValidationNotifications = false;
     }
     
     /**
@@ -691,19 +691,6 @@ public class FormValidator implements ValidationListener, DataChangeListener
                     dcn.setDataChanged(true);
                 }
             }
-        }
-    }
-
-    /**
-     * Validate all the fields, period.
-     */
-    public void validateForm()
-    {
-        // Because we call it manually it will turn off validation notifications
-        //validateForm(true, UIValidator.Type.Changed); // second arg doesn't matter
-        if (enabled)
-        {
-            validateForm(true);
         }
     }
 

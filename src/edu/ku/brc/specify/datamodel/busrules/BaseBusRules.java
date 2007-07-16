@@ -80,40 +80,45 @@ public abstract class BaseBusRules implements BusinessRulesIFace
      * @param id the Record ID to check
      * @return true means it can be deleted, false means it found something
      */
-    protected boolean okToDelete(final String tableName, final String columnName, final long id)
+    protected boolean okToDelete(final String tableName, final String columnName, final Long id)
     {
-        Connection conn = null;
-        Statement  stmt = null;
-        try
+        if (id != null)
         {
-            conn = DBConnection.getInstance().createConnection();
-            stmt = conn.createStatement();
-
-            return okToDelete(conn, stmt, tableName, columnName, id);
-            
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-            
-        } finally
-        {
-            try 
+            Connection conn = null;
+            Statement  stmt = null;
+            try
             {
-                if (stmt != null)
-                {
-                    stmt.close();
-                }
-                if (conn != null)
-                {
-                    conn.close();
-                }
+                conn = DBConnection.getInstance().createConnection();
+                stmt = conn.createStatement();
+    
+                return okToDelete(conn, stmt, tableName, columnName, id);
                 
             } catch (Exception ex)
             {
                 ex.printStackTrace();
+                
+            } finally
+            {
+                try 
+                {
+                    if (stmt != null)
+                    {
+                        stmt.close();
+                    }
+                    if (conn != null)
+                    {
+                        conn.close();
+                    }
+                    
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
             }
+            return false;
         }
-        return false;
+        // else
+        return true;
     }
 
     /**

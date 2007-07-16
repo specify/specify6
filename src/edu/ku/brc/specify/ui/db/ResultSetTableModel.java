@@ -24,6 +24,7 @@ import javax.swing.table.AbstractTableModel;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.ERTICaptionInfo;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 
@@ -45,8 +46,8 @@ public class ResultSetTableModel extends AbstractTableModel
     protected Vector<Class>     classNames  = new Vector<Class>();
     protected int               currentRow  = 0;
     protected int               numRows     = 0;
-    protected String[]          columnNames = null; 
-    protected String[]          formatters = null;
+
+    protected ERTICaptionInfo[] captionInfo = null;
     
 
     /**
@@ -122,9 +123,9 @@ public class ResultSetTableModel extends AbstractTableModel
      */
     public int getColumnCount()
     {
-        if (columnNames != null)
+        if (captionInfo != null)
         {
-            return columnNames.length;
+            return captionInfo.length;
         }
         
         try
@@ -154,9 +155,9 @@ public class ResultSetTableModel extends AbstractTableModel
      */
     public String getColumnName(int column)
     {
-        if (columnNames != null)
+        if (captionInfo != null)
         {
-            return columnNames[column];
+            return captionInfo[column].getColName();
             
         }
         if (metaData == null)
@@ -308,17 +309,16 @@ public class ResultSetTableModel extends AbstractTableModel
 
                 return rs;
 
-            } else
-            {
-                for (int i=0;i<rows.length;i++)
-                {
-                    if (resultSet.absolute(rows[i]))
-                    {
-                        rs.addItem(resultSet.getLong(column+1));
-                    }
-                }
-
             }
+            // else
+            for (int i=0;i<rows.length;i++)
+            {
+                if (resultSet.absolute(rows[i]))
+                {
+                    rs.addItem(resultSet.getLong(column+1));
+                }
+            }
+
         } catch (Exception ex)
         {
             log.error(ex);
@@ -328,30 +328,20 @@ public class ResultSetTableModel extends AbstractTableModel
 
 
     /**
+     * Sets the Caption Info.
+     * @param captionInfo the info
+     */
+    public void setCaptionInfo(ERTICaptionInfo[] captionInfo)
+    {
+        this.captionInfo = captionInfo;
+    }
+
+    /**
      * Returns the column names.
      * @return the array of Column names
      */
-    public String[] getColumnNames()
+    public ERTICaptionInfo[] getCaptionInfo()
     {
-        return columnNames;
+        return captionInfo;
     }
-
-    /**
-     * Sets the column names.
-     * @param columnNames the array of column names
-     */
-    public void setColumnNames(String[] columnNames)
-    {
-        this.columnNames = columnNames;
-    }
-
-    /**
-     * Sets the column names.
-     * @param columnNames the array of column names
-     */
-    public void setFormatters(String[] formatters)
-    {
-        this.formatters = formatters;
-    }
-
 }

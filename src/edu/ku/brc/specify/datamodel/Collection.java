@@ -29,6 +29,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
 /**
 
  */
@@ -47,7 +50,8 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     protected String                     remarks;
     protected CollectionObjDef           collectionObjDef;
     protected Set<AppResourceDefault>    appResourceDefaults;
-
+    protected CatalogNumberingScheme     catalogNumberingScheme;
+    
     // Constructors
 
     /** default constructor */
@@ -75,12 +79,13 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     public void initialize()
     {
         super.init();
-        collectionId          = null;
-        collectionName        = null;
-        collectionPrefix      = null;
-        remarks               = null;
-        collectionObjDef      = null;
-        appResourceDefaults   = new HashSet<AppResourceDefault>();
+        collectionId           = null;
+        collectionName         = null;
+        collectionPrefix       = null;
+        remarks                = null;
+        collectionObjDef       = null;
+        appResourceDefaults    = new HashSet<AppResourceDefault>();
+        catalogNumberingScheme = null;
     }
     // End Initializer
 
@@ -170,11 +175,24 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     }
 
 
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    @JoinColumn(name = "CatalogNumberingSchemeID", unique = false, nullable = false, insertable = true, updatable = true)
+    public CatalogNumberingScheme getCatalogNumberingScheme()
+    {
+        return catalogNumberingScheme;
+    }
+
+    public void setCatalogNumberingScheme(CatalogNumberingScheme catalogNumberingScheme)
+    {
+        this.catalogNumberingScheme = catalogNumberingScheme;
+    }
+
     /**
      *
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "CollectionObjDefID", unique = false, nullable = true, insertable = true, updatable = true)
+    @JoinColumn(name = "CollectionObjDefID", unique = false, nullable = false, insertable = true, updatable = true)
     public CollectionObjDef getCollectionObjDef() {
         return this.collectionObjDef;
     }

@@ -402,6 +402,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
     {
         this.attachments = attachments;
     }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#addReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
      */

@@ -74,6 +74,7 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
     // New Fields
     protected Calendar          startDate;
     protected Calendar          endDate;
+    protected String            positionHeld;
 
     // Constructors
 
@@ -112,6 +113,7 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
         // New
         startDate = null;
         endDate = null;
+        positionHeld = null;
         
     }
     // End Initializer
@@ -349,6 +351,23 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
     public void setStartDate(Calendar startDate)
     {
         this.startDate = startDate;
+    }
+
+    /**
+     * @return the position to set
+     */
+    @Column(name = "PositionHeld", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    public String getPositionHeld()
+    {
+        return positionHeld;
+    }
+
+    /**
+     * @param positionHeld position held at the time
+     */
+    public void setPositionHeld(String positionHeld)
+    {
+        this.positionHeld = positionHeld;
     }
 
     /* (non-Javadoc)

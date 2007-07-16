@@ -297,14 +297,14 @@ public class TableViewObj implements Viewable,
                         editButton.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent e)
                             {
-                                editRow(table.getSelectedRow(), isEditting, false);
+                                editRow(table.getSelectedRow(), false);
                             }
                         });
                         
                         newButton.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent e)
                             {
-                                editRow(table.getSelectedRow(), isEditting, true);
+                                editRow(table.getSelectedRow(), true);
                             }
                         });
                         
@@ -340,7 +340,7 @@ public class TableViewObj implements Viewable,
                          editButton.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent e)
                             {
-                                editRow(table.getSelectedRow(), isEditting, false);
+                                editRow(table.getSelectedRow(), false);
                             }
                         });
                          PanelBuilder builder = new PanelBuilder(new FormLayout("f:1px:g,p,10px", "p"));
@@ -463,7 +463,7 @@ public class TableViewObj implements Viewable,
                 if ( e.getClickCount() == 2 )
                 {
                     int index = table.getSelectedRow();
-                    editRow(index, isEditting, false);
+                    editRow(index, false);
                 }
             }
         });
@@ -554,7 +554,7 @@ public class TableViewObj implements Viewable,
      * @param isEdit whether we are editing or view
      * @param isNew hwther the object is new
      */
-    protected void editRow(final int rowIndex, final boolean isEdit, final boolean isNew)
+    protected void editRow(final int rowIndex, final boolean isNew)
     {
         FormDataObjIFace dObj = null;
         if (isNew)

@@ -471,7 +471,9 @@ public class SpecifyDBConverter
                         conversion.convertPreparationRecords(prepTypeMap);
                     }
                     
-                    conversion.convertCollectionObjects();
+                    // Arg1 - Use Numeric Catalog Number
+                    // Arg2 - Use the Prefix from Catalog Series
+                    conversion.convertCollectionObjects(true, false);
                     frame.incOverall();
 
                     

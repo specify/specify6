@@ -34,6 +34,7 @@ import org.apache.lucene.store.FSDirectory;
 import org.hibernate.Transaction;
 import org.hibernate.type.Type;
 
+import edu.ku.brc.af.core.ERTIJoinColInfo;
 import edu.ku.brc.af.core.ExpressResultsTableInfo;
 import edu.ku.brc.af.core.ExpressSearchIndexer;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
@@ -209,7 +210,7 @@ public class AuditInterceptor  extends edu.ku.brc.dbsupport.AuditInterceptor
      * @throws IOException
      */
     protected void update(final FormDataObjIFace        formObj, 
-                          final ExpressResultsTableInfo tblInfo) throws IOException
+                          final ExpressResultsTableInfo tblInfo)
     {
         /*
         if (indexer == null)
@@ -291,10 +292,10 @@ public class AuditInterceptor  extends edu.ku.brc.dbsupport.AuditInterceptor
                         }
                     }
                     
-                    ExpressResultsTableInfo.JoinColInfo[] joinColInfo = tblInfo.getJoins();
+                    ERTIJoinColInfo[] joinColInfo = tblInfo.getJoins();
                     if (joinColInfo != null)
                     {
-                        for (ExpressResultsTableInfo.JoinColInfo jci : joinColInfo)
+                        for (ERTIJoinColInfo jci : joinColInfo)
                         {
                             if (jci.getJoinTableIdAsInt() == formObj.getTableId())
                             {

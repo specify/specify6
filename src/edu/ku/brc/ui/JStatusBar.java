@@ -30,6 +30,8 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -98,7 +100,7 @@ public class JStatusBar extends JPanel
             StringBuilder str = new StringBuilder("f:p:g");
             for (int size : sectionSize)
             {
-                str.append("," + size + "dlu");
+                str.append(",max(p;" + size + "dlu)");
                 str.append(",p");
             }
             PanelBuilder sbBldr = new PanelBuilder(new FormLayout(str.toString(), "p"));
@@ -108,7 +110,7 @@ public class JStatusBar extends JPanel
             for (int i=0;i<sectionSize.length;i++)
             {
                 labels[i] = new JLabel(" ", SwingConstants.CENTER);
-                labels[i].setBorder(new EndsBorder(i == sectionSize.length-1));
+                labels[i].setBorder(new CompoundBorder(new EndsBorder(i == sectionSize.length-1), new EmptyBorder(0,5,0,5)));
                 sbBldr.add(labels[i], cc.xy(i+2, 1));
             }
             builder.add(sbBldr.getPanel(), cc.xy(1,1));

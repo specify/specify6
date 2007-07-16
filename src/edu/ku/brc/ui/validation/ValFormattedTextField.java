@@ -46,6 +46,7 @@ import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.forms.ViewFactory;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterField;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
@@ -81,6 +82,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     protected int                         requiredLength = 0;
     protected Object[]                    formatObj      = null;
     protected boolean                     shouldIgnoreNotifyDoc = true;
+    protected boolean                     doSetText      = false; 
 
     protected JFormattedDoc               document;
     protected String                      defaultValue   = null;
@@ -143,7 +145,14 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
 
         if (!isViewOnly)
         {
-            super.setEnabled(formatter.isUserInputNeeded());
+            if (!formatter.isUserInputNeeded())
+            {
+                ViewFactory.changeTextFieldUIForDisplay(this, false);
+                
+            } else
+            {
+                super.setEnabled(true);
+            }
         }
     }
     
@@ -273,7 +282,9 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     {
         document.setIgnoreNotify(shouldIgnoreNotifyDoc);
         bgStr = StringUtils.isNotEmpty(text) ? "" : formatter.toPattern();
+        doSetText = true;
         super.setText(text);
+        doSetText = false;
         document.setIgnoreNotify(false);
     }
 
@@ -423,7 +434,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
         if (isViewOnly)
         {
             valState = UIValidatable.ErrorType.Valid;
-        } else if (formatter.isUserInputNeeded())
+        } else if (formatter != null && formatter.isUserInputNeeded())
         {
             String data = getText();
             if (StringUtils.isEmpty(data))
@@ -689,9 +700,38 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
         @Override
         public void remove(int offset, int len)
         {
+            // We can't let them try to delete separator's or incrementers
+            if (!doSetText && len < limit && (docFields[offset].isIncrementer() || docFields[offset].getType() == UIFieldFormatterField.FieldType.separator))
+            {
+                int pos = getCaretPosition();
+                setCaretPosition(pos-docFields[offset].getSize());
+                return;
+            }
+            
             try
             {
-                super.remove(offset, len);
+                // Work our way to end to see if there is anything 
+                /*boolean restTypable = true;
+                int     inx         = offset;
+                while (inx >= 0 && restTypable)
+                {
+                    if (!docFields[inx].isIncrementer() && docFields[inx].getType() != UIFieldFormatterField.FieldType.separator)
+                    {
+                        restTypable = false;
+                    }
+                    inx++;
+                }*/
+                
+                //if (!restTypable)
+                //{
+                    int l = this.getLength()-offset;
+                    super.remove(offset, l);
+                    
+                //} else
+                //{
+                //    super.remove(offset, len);
+                //}
+                
                 validateState();
 
             } catch (BadLocationException ex)
@@ -714,6 +754,15 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
 
             if (str.length() > 1)
             {
+                if (!doSetText)
+                {
+                    int len = Math.min(str.length(), limit);
+                    if (len < limit && docFields[len-1].isIncrementer())
+                    {
+                        return;
+                    }
+                }
+                
                 if (okToInsertText(str))
                 {
                     // This way truncates incoming values

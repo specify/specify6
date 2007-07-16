@@ -706,14 +706,13 @@
     		    </row>    		    
     			<row>
     			    <cell type="label" labelfor="1" label="Catalog Number" uitype="text"/>
-    			    <cell type="field" id="1" name="catalogNumber" format="%.0f" uitype="text"/>
+    			    <cell type="field" id="1" name="catalogNumber" uitype="formattedtext" uifieldformatter="CatalogNumber"/>
 
                     <cell type="label" labelfor="2" label="Collection"/>
     			    <cell type="field" id="2" name="collection.collectionName" uitype="dsptextfield"/>
 
     			    <cell type="label" labelfor="13" label="Exchg"/>
-    			    <!-- TESTING ONLY <cell type="field" id="13" name="fieldNumber" uitype="formattedtext" uifieldformatter="CatalogNumber" /> -->
-    			    <cell type="field" id="13" name="fieldNumber" uitype="formattedtext" uifieldformatter="CatalogNumber" />
+    			    <cell type="field" id="13" name="fieldNumber" uitype="text"/>
     			</row>
     			<row>
                  <cell type="label" labelfor="3" label="Accession #"/>
@@ -1529,7 +1528,7 @@
                     <cell type="field" id="1" name="catalogedDate" uitype="formattedtext" uifieldformatter="Date"/>
                     
                     <cell type="label" labelfor="2" label="Catalog Number" uitype="text"/>
-                    <cell type="field" id="2" name="catalogNumber" format="%.0f" uitype="text"/>
+                    <cell type="field" id="2" name="catalogNumber" uitype="formattedtext" uifieldformatter="CatalogNumber"/>
                                       
                     <cell type="label" labelfor="3" label="Field No"/>
                     <cell type="field" id="3" name="fieldNumber" uitype="text"/>

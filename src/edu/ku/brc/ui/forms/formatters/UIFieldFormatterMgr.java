@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.ui.forms.formatters;
 
+import java.security.AccessController;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -41,13 +42,13 @@ import edu.ku.brc.ui.DateWrapper;
  */
 public class UIFieldFormatterMgr
 {
+    public static final String factoryName = "edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr";
     
-
     private static final Logger log = Logger.getLogger(UIFieldFormatterMgr.class);
-    protected static UIFieldFormatterMgr instance = new UIFieldFormatterMgr();
+    
+    protected static UIFieldFormatterMgr instance = null;
 
-    protected Hashtable<String, UIFieldFormatterIFace> hash = new Hashtable<String, UIFieldFormatterIFace>();
-
+    private Hashtable<String, UIFieldFormatterIFace> hash = new Hashtable<String, UIFieldFormatterIFace>();
 
     /**
      * Protected Constructor
@@ -63,7 +64,49 @@ public class UIFieldFormatterMgr
      */
     public static UIFieldFormatterMgr getInstance()
     {
-        return instance;
+        if (instance != null)
+        {
+            return instance;
+        }
+        
+        if (StringUtils.isEmpty(factoryName))
+        {
+            return instance = new UIFieldFormatterMgr();
+        }
+        
+        // else
+        String factoryNameStr = AccessController.doPrivileged(new java.security.PrivilegedAction<String>() {
+                public String run() {
+                    return System.getProperty(factoryName);
+                    }
+                });
+            
+        if (StringUtils.isNotEmpty(factoryNameStr)) 
+        {
+            try 
+            {
+                return instance = (UIFieldFormatterMgr)Class.forName(factoryNameStr).newInstance();
+                 
+            } catch (Exception e) 
+            {
+                InternalError error = new InternalError("Can't instantiate UIFieldFormatterMgr factory " + factoryNameStr);
+                error.initCause(e);
+                throw error;
+            }
+        }
+        // should not happen
+        throw new RuntimeException("Can't instantiate UIFieldFormatterMgr factory [" + factoryNameStr+"]");
+    }
+
+    /**
+     * Returns a formatter by name
+     * @param name the name of the format
+     * @return return a formatter if it is there, returns null if it isn't
+     */
+    protected UIFieldFormatterIFace getFormatterInternal(final String name)
+    {
+        return hash.get(name);
+
     }
 
     /**
@@ -73,7 +116,7 @@ public class UIFieldFormatterMgr
      */
     public static UIFieldFormatterIFace getFormatter(final String name)
     {
-        return instance.hash.get(name);
+        return getInstance().getFormatterInternal(name);
 
     }
 
@@ -83,10 +126,10 @@ public class UIFieldFormatterMgr
      * @param clazz the class of the data tghat the formatter is used for.
      * @return return a formatter if it is there, returns null if it isn't
      */
-    public static UIFieldFormatterIFace getFormatter(final Class clazz)
+    public UIFieldFormatterIFace getFormatterInternal(final Class clazz)
     {
         UIFieldFormatterIFace formatter = null;
-        for (Enumeration<UIFieldFormatterIFace> e=instance.hash.elements();e.hasMoreElements();)
+        for (Enumeration<UIFieldFormatterIFace> e=hash.elements();e.hasMoreElements();)
         {
             UIFieldFormatterIFace f = e.nextElement();
             if (clazz == f.getDataClass())
@@ -104,6 +147,18 @@ public class UIFieldFormatterMgr
         return formatter;
     }
     
+
+    /**
+     * Returns a formatter by data class. Returns the "default" formatter and if no default
+     * is set it returns the first one it finds.
+     * @param clazz the class of the data tghat the formatter is used for.
+     * @return return a formatter if it is there, returns null if it isn't
+     */
+    public static UIFieldFormatterIFace getFormatter(final Class clazz)
+    {
+        return getInstance().getFormatterInternal(clazz);
+    }
+    
     /**
      * Returns a Date Formatter for a given type of Partial Date.
      * @param type the type of Partial Date formatter.
@@ -111,7 +166,7 @@ public class UIFieldFormatterMgr
      */
     public static UIFieldFormatterIFace getDateFormmater(UIFieldFormatter.PartialDateEnum type)
     {
-        for (Enumeration<UIFieldFormatterIFace> e=instance.hash.elements();e.hasMoreElements();)
+        for (Enumeration<UIFieldFormatterIFace> e=getInstance().hash.elements();e.hasMoreElements();)
         {
             UIFieldFormatterIFace f = e.nextElement();
             //System.out.println("["+Date.class+"]["+f.getDataClass()+"] "+f.getPartialDateType());
@@ -132,7 +187,7 @@ public class UIFieldFormatterMgr
     {
         Vector<UIFieldFormatterIFace> list         = new Vector<UIFieldFormatterIFace>();
         UIFieldFormatterIFace         defFormatter = null;
-        for (Enumeration<UIFieldFormatterIFace> e=instance.hash.elements();e.hasMoreElements();)
+        for (Enumeration<UIFieldFormatterIFace> e=getInstance().hash.elements();e.hasMoreElements();)
         {
             UIFieldFormatterIFace f = e.nextElement();
             if (clazz == f.getDataClass())

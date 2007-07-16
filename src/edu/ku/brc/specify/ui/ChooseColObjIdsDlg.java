@@ -36,6 +36,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListModel;
+import javax.swing.SwingConstants;
 
 import org.apache.log4j.Logger;
 
@@ -90,7 +91,7 @@ public class ChooseColObjIdsDlg extends JDialog implements ActionListener
         JPanel panel = new JPanel(new BorderLayout());
         //panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         
-        panel.add(new JLabel(getResourceString("ChooseRecordSet"), IconManager.getImage(RecordSetTask.RECORD_SET, IconManager.IconSize.Std24), JLabel.LEFT), BorderLayout.NORTH);
+        panel.add(new JLabel(getResourceString("ChooseRecordSet"), IconManager.getImage(RecordSetTask.RECORD_SET, IconManager.IconSize.Std24), SwingConstants.LEFT), BorderLayout.NORTH);
 
         try
         {

@@ -85,7 +85,6 @@ public abstract class ExpressTableResultsBase extends JPanel implements Comparab
     protected JPanel                   morePanel      = null;
     protected Color                    bannerColor    = new Color(30, 144, 255);    // XXX PREF
     protected int                      topNumEntries  = 7;
-    protected String[]                 colLabels;
     protected ExpressSearchResults     results;
     protected ExpressResultsTableInfo  tableInfo;
 
@@ -111,7 +110,7 @@ public abstract class ExpressTableResultsBase extends JPanel implements Comparab
         table.setRowSelectionAllowed(true);
         setBackground(table.getBackground());
 
-        GradiantLabel vl = new GradiantLabel(tableInfo.getTitle(), JLabel.LEFT);
+        GradiantLabel vl = new GradiantLabel(tableInfo.getTitle(), SwingConstants.LEFT);
         vl.setForeground(bannerColor);
         vl.setTextColor(Color.WHITE);
 
@@ -273,7 +272,7 @@ public abstract class ExpressTableResultsBase extends JPanel implements Comparab
         ((DefaultTableCellRenderer)table.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
         
         DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-        renderer.setHorizontalAlignment(JLabel.CENTER);
+        renderer.setHorizontalAlignment(SwingConstants.CENTER);
 
         TableColumnModel tableColModel = table.getColumnModel();
         for (int i=0;i<tableColModel.getColumnCount();i++)

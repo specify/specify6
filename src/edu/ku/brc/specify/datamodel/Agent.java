@@ -40,6 +40,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -101,7 +102,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     protected Set<Attachment>               attachments;
     protected Set<RepositoryAgreement>      repositoryAgreements;
     
-    protected Division                      division;
+    protected Set<Division>                 divisions;
     protected Institution                   instTechContact;
     protected Institution                   instContentContact;
 
@@ -171,7 +172,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
         attachments = new HashSet<Attachment>();
         repositoryAgreements = new HashSet<RepositoryAgreement>();
         
-        division = null;
+        divisions = new HashSet<Division>();
         instTechContact = null;
         instContentContact = null;
         
@@ -602,14 +603,14 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
    /**
     *  The Division this Agent belongs to.
     */
-   @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-   @JoinColumn(name = "DivisionID", unique = false, nullable = true, insertable = true, updatable = true)
-   public Division getDivision() {
-       return this.division;
+   @ManyToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy="members")
+   @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+   public Set<Division> getDivisions() {
+       return this.divisions;
    }
    
-   public void setDivision(Division division) {
-       this.division = division;
+   public void setDivisions(Set<Division> divisions) {
+       this.divisions = divisions;
    }
 
    /**

@@ -47,9 +47,12 @@ import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.ViewSetObj;
 import edu.ku.brc.ui.ChooseFromListDlg;
+import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.ToggleButtonChooserDlg.Type;
 import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
@@ -147,7 +150,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     public int getNumOfCollectionsForUser()
     {
-        String sqlStr = "select count(cs) From CollectionObjDef as cod Inner Join cod.specifyUser as user Inner Join cod.collection as cs where user.specifyUserId = "+user.getSpecifyUserId();
+        String sqlStr = "select count(cs) From CollectionObjDef as cod Inner Join cod.specifyUser as user Inner Join cod.collections as cs where user.specifyUserId = "+user.getSpecifyUserId();
         
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         Object                   result     = session.getData(sqlStr);
@@ -169,7 +172,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     {
         final String prefName = mkUserDBPrefName("recent_collection_id");
         
-        Collection collection = null;
+        Collection collection = Collection.getCurrentCollection();
 
         if (Collection.getCurrentCollection() == null || alwaysAsk)
         {
@@ -209,11 +212,28 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     
                     List<Collection> list = new Vector<Collection>();
                     list.addAll(collectionHash.values());
+                    int selectColInx = -1;
+                    if (collection != null)
+                    {
+                        int i = 0;
+                        for (Collection c : list)
+                        {
+                            if (c.getId().intValue() == collection.getId().intValue())
+                            {
+                                selectColInx = i;
+                                break;
+                            }
+                            i++;
+                        }
+                    }
 
                     ToggleButtonChooserDlg<Collection> dlg = new ToggleButtonChooserDlg<Collection>((Frame)UIRegistry.get(UIRegistry.FRAME),
-                                                                                                  "Choose a Collection", 
-                                                                                                  list); // TODO I18N
-                    //dlg.setSelectedObjects(catSeries);
+                                                                                                  "Choose a Collection",  // TODO I18N
+                                                                                                  null,
+                                                                                                  list,
+                                                                                                  IconManager.getIcon("Collection"),
+                                                                                                  CustomDialog.OKCANCEL, Type.RadioButton);
+                    dlg.setSelectedIndex(selectColInx);
                     dlg.setModal(true);
 
                     UIHelper.centerAndShow(dlg);
@@ -221,10 +241,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     if (!dlg.isCancelled())
                     {
                         collection = dlg.getSelectedObject();
-                        
-                    } else
-                    {
-                        return null;
                     }
                     
                 } else
@@ -394,8 +410,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
         // additional XML Resources.
         
         // Ask the User to choose which Collection they will be working with
-        Collection.setCurrentCollection(null);
-        
         Collection collection = setupCurrentCollection(session, user, startingOver);
         if (collection == null)
         {

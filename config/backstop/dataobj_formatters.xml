@@ -197,16 +197,6 @@
     </format>
     
     <format
-        name="CatalogNumber"
-        class="java.lang.String"
-        default="true"
-        >
-        <switch single="true">
-            <external class="edu.ku.brc.specify.ui.CatalogNumberFormatter"/>
-        </switch>
-    </format>
-    
-    <format
         name="Locality"
         class="edu.ku.brc.specify.datamodel.Locality"
         default="true"
@@ -217,6 +207,44 @@
             </fields>
         </switch>
     </format>
+    
+    <format
+        name="CollectionObjDef"
+        class="edu.ku.brc.specify.datamodel.CollectionObjDef"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field>name</field>
+            </fields>
+        </switch>
+    </format>
+    
+    <format
+        name="GeologicTimePeriodTreeDef"
+        class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field>name</field>
+            </fields>
+        </switch>
+    </format>
+    
+    <format
+        name="CatalogNumberingScheme"
+        class="edu.ku.brc.specify.datamodel.CatalogNumberingScheme"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field>schemeName</field>
+            </fields>
+        </switch>
+    </format>
+    
+    
     
     <aggregators>
         <aggregator name="AccessionAuthorization" class="edu.ku.brc.specify.datamodel.AccessionAuthorization" separator="; " count="" ending="" format="AccessionAuthorization" default="true"/>

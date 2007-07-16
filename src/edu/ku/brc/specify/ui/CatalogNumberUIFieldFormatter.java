@@ -178,7 +178,7 @@ public class CatalogNumberUIFieldFormatter implements UIFieldFormatterIFace
      */
     public boolean isOutBoundFormatter()
     {
-        return true;
+        return isNumericCatalogNumber;
     }
     
     /* (non-Javadoc)
@@ -186,20 +186,23 @@ public class CatalogNumberUIFieldFormatter implements UIFieldFormatterIFace
      */
     public Object formatOutBound(final Object data)
     {
-        if (data != null && data instanceof String)
+        if (isNumericCatalogNumber)
         {
-            String dataStr = (String)data;
-            if (StringUtils.isNotEmpty(dataStr))
+            if (data != null && data instanceof String)
             {
-                if (isNumericCatalogNumber && dataStr.equals(pattern))
+                String dataStr = (String)data;
+                if (StringUtils.isNotEmpty(dataStr))
                 {
-                    return pattern;
+                    if (isNumericCatalogNumber && dataStr.equals(pattern))
+                    {
+                        return pattern;
+                    }
+                    String fmtStr = "%0" + numericLength + "d";
+                    return String.format(fmtStr, Integer.parseInt((String)data));
                 }
-                String fmtStr = "%0" + numericLength + "d";
-                return String.format(fmtStr, Integer.parseInt((String)data));
             }
         }
-        return "";
+        return data;
     }
 
     /* (non-Javadoc)
@@ -207,13 +210,16 @@ public class CatalogNumberUIFieldFormatter implements UIFieldFormatterIFace
      */
     public Object formatInBound(Object data)
     {
-        if (data != null)
-        {
-            if (isNumericCatalogNumber && data != null && data instanceof String && StringUtils.isEmpty(data.toString()))
+        if (isNumericCatalogNumber)
+        {        
+            if (data != null)
             {
-                return pattern;
+                if (isNumericCatalogNumber && data instanceof String && StringUtils.isEmpty(data.toString()))
+                {
+                    return pattern;
+                }
+                return StringUtils.stripStart(data.toString(), "0");
             }
-            return StringUtils.stripStart(data.toString(), "0");
         }
         return data;
     }
@@ -223,7 +229,7 @@ public class CatalogNumberUIFieldFormatter implements UIFieldFormatterIFace
      */
     public boolean isInBoundFormatter()
     {
-        return true;
+        return isNumericCatalogNumber;
     }
     
     /* (non-Javadoc)
@@ -267,24 +273,31 @@ public class CatalogNumberUIFieldFormatter implements UIFieldFormatterIFace
      */
     public boolean isUserInputNeeded()
     {
-        if (isNumericCatalogNumber)
+        if (!isNumericCatalogNumber)
         {
-            return false;
-        }
-        
-        for (UIFieldFormatterField f : fields)
-        {
-            UIFieldFormatterField.FieldType type = f.getType();
-            if (type != UIFieldFormatterField.FieldType.alphanumeric ||
-                type != UIFieldFormatterField.FieldType.alpha)
+            for (UIFieldFormatterField f : fields)
             {
-                return true;
-                
-            } else if (type != UIFieldFormatterField.FieldType.numeric && !f.isIncrementer())
-            {
-                return true;
+                UIFieldFormatterField.FieldType type = f.getType();
+                if (type != UIFieldFormatterField.FieldType.alphanumeric ||
+                    type != UIFieldFormatterField.FieldType.alpha)
+                {
+                    return true;
+                    
+                } else if (type != UIFieldFormatterField.FieldType.numeric && !f.isIncrementer())
+                {
+                    return true;
+                }
             }
         }
         return false;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#isNumericOnly()
+     */
+    @Override
+    public boolean isNumericOnly()
+    {
+        return isNumericCatalogNumber;
     }
 }

@@ -54,6 +54,8 @@ import edu.ku.brc.dbsupport.QueryResultsListener;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.ui.forms.persist.FormViewDef;
 
 /**
@@ -83,9 +85,9 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
     protected Thread                    thread;
     protected File                      lucenePath        = null;
     protected Element                   esDOM             = null;
-    protected double                    numRows            = 0;
-    protected IndexWriter               optWriter          = null;
-    protected DateFormat                formatter    = new SimpleDateFormat("yyyyMMdd");
+    protected double                    numRows           = 0;
+    protected IndexWriter               optWriter         = null;
+    protected DateFormat                dateFormatter     = new SimpleDateFormat("yyyyMMdd");
     
     protected long                      termsIndexed      = 0;
     protected boolean                   isCancelled       = false;
@@ -242,29 +244,34 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
     }
 
     /**
+     * @param doc
      * @param rs
-     * @param secondaryKey
+     * @param index
+     * @param fieldName
+     * @param ci
      * @param objClass
+     * @return
+     * @throws SQLException
      */
-    public String indexValue(final Document   doc,
-                              final ResultSet  rs,
-                              final int        index,
-                              final String     fieldName,
-                              final String     secondaryKey,
-                              final Class      objClass) throws SQLException
+    public String indexValue(final Document    doc,
+                             final ResultSet   rs,
+                             final int         index,
+                             final String      fieldName,
+                             final ERTIColInfo colInfo,
+                             final Class       objClass) throws SQLException
     {
         String value = null;
 
         // There may be a better way to express this,
         // but this is very explicit as to whether it is indexed as a Keyword or not
-        if (secondaryKey == null)
+        if (colInfo.getSecondaryKey() == null)
         {
             if (objClass == java.sql.Date.class)
             {
                 Date date = rs.getDate(index);
                 if (date != null)
                 {
-                    value = formatter.format(date);
+                    value = dateFormatter.format(date);
                     if (fieldName == null)
                     {
                         doc.add(new Field(fieldName, value, Field.Store.YES, Field.Index.UN_TOKENIZED));
@@ -282,8 +289,21 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                 String str = rs.getString(index);
                 if (isNotEmpty(str))
                 {
-                    value = str;
-                    doc.add(new Field("contents", str, Field.Store.NO, Field.Index.TOKENIZED));
+                    String fmtName = colInfo.getFormatter();
+                    if (fmtName != null)
+                    {
+                        UIFieldFormatterIFace formatter = UIFieldFormatterMgr.getFormatter(fmtName);
+                        if (formatter != null && formatter.isOutBoundFormatter())
+                        {
+                            value = (String)formatter.formatInBound(str);
+                        }
+                        log.error("Couldn't find UIFieldFormatterIFace ["+fmtName+"] or doesn't support Out Bound formatting. OutBdn["+ (formatter != null ? formatter.isOutBoundFormatter() : "???")+"]");
+
+                    } else
+                    {
+                        value = str;
+                    }
+                    doc.add(new Field("contents", value, Field.Store.NO, Field.Index.TOKENIZED));
                     //doc.add(Field.UnStored("contents", str));
                 }
             }
@@ -295,7 +315,7 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                 Date date = rs.getDate(index);
                 if (date != null)
                 {
-                    value = formatter.format(date);
+                    value = dateFormatter.format(date);
                     if (fieldName == null)
                     {
                         doc.add(new Field(fieldName, value, Field.Store.YES, Field.Index.UN_TOKENIZED));
@@ -313,8 +333,21 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                 String str = rs.getString(index);
                 if (isNotEmpty(str))
                 {
-                    value = str;
-                    doc.add(new Field("contents", str, Field.Store.NO, Field.Index.TOKENIZED));
+                    String fmtName = colInfo.getFormatter();
+                    if (fmtName != null)
+                    {
+                        UIFieldFormatterIFace formatter = UIFieldFormatterMgr.getFormatter(fmtName);
+                        if (formatter != null && formatter.isOutBoundFormatter())
+                        {
+                            value = (String)formatter.formatInBound(str);
+                        
+                        }
+                        log.error("Couldn't find UIFieldFormatterIFace ["+fmtName+"] or doesn't support Out Bound formatting. OutBdn["+(formatter != null ? formatter.isOutBoundFormatter() : "???")+"]");
+                    } else
+                    {
+                        value = str;
+                    }
+                    doc.add(new Field("contents", value, Field.Store.NO, Field.Index.TOKENIZED));
                     //doc.add(Field.UnStored("contents", str));
                 }
             }
@@ -342,8 +375,8 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
     {
         boolean    useHitsCache = tableInfo.isUseHitsCache();
         
-        ExpressResultsTableInfo.ColInfo     colInfo[]     = tableInfo.getCols();
-        ExpressResultsTableInfo.JoinColInfo joinColInfo[] = tableInfo.getJoins();
+        ERTIColInfo     colInfo[]     = tableInfo.getColInfo();
+        ERTIJoinColInfo joinColInfo[] = tableInfo.getJoins();
 
         StringBuilder strBuf = new StringBuilder(128);
 
@@ -396,7 +429,7 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                 {
                     strBuf.setLength(0);
                     
-                    for (ExpressResultsTableInfo.JoinColInfo jci : joinColInfo)
+                    for (ERTIJoinColInfo jci : joinColInfo)
                     {
                         doc.add(new Field(jci.getJoinTableId(), resultset.getString(jci.getPosition()), Field.Store.YES, Field.Index.NO));
                     }
@@ -404,13 +437,13 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                     
                     for (int i=0;i<colInfo.length;i++)
                     {
-                        ExpressResultsTableInfo.ColInfo ci = colInfo[i];
+                        ERTIColInfo ci = colInfo[i];
                         if (i > 0)
                         {
                             int inx = ci.getPosition();
                             String value = indexValue(doc, resultset, inx,
                                                       rsmd.getColumnName(inx),
-                                                      ci.getSecondaryKey(),
+                                                      ci,
                                                       classes[inx]);
                             if (value != null)
                             {
@@ -439,17 +472,17 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
 
                 } else
                 {
-                    for (ExpressResultsTableInfo.JoinColInfo jci : joinColInfo)
+                    for (ERTIJoinColInfo jci : joinColInfo)
                     {
                         doc.add(new Field(jci.getJoinTableId(), resultset.getString(jci.getPosition()), Field.Store.YES, Field.Index.NO));
                     }
                     
                     for (int i=0;i<colInfo.length;i++)
                     {
-                        ExpressResultsTableInfo.ColInfo ci = colInfo[i];
+                        ERTIColInfo ci = colInfo[i];
                         int inx = ci.getPosition();
 
-                        if (indexValue(doc, resultset, inx, rsmd.getColumnName(inx), ci.getSecondaryKey(), classes[inx]) != null)
+                        if (indexValue(doc, resultset, inx, rsmd.getColumnName(inx), ci, classes[inx]) != null)
                         {
                             cnt++;
                             termsIndexed++;
@@ -526,7 +559,7 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                 }
                 log.debug("Row ["+numRows+"] to index in ["+tableInfo.getTitle()+"].");
 
-                indexQuery(sectionIndex, writer, tableInfo,trigger, rs);
+                indexQuery(sectionIndex, writer, tableInfo, trigger, rs);
 
                 rs.close();
 
@@ -585,7 +618,7 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
      * @param writer
      * @param form
      */
-    protected void indexViewForm(final IndexWriter writer, final FormViewDef form) throws IOException
+    protected void indexViewForm(final IndexWriter writer, final FormViewDef form)
     {
         /*
         // separator, field, label, subview
@@ -630,7 +663,7 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
      * @param writer
      * @param form
      */
-    protected void indexViewTable(final IndexWriter writer, final FormViewDef form) throws IOException
+    protected void indexViewTable(final IndexWriter writer, final FormViewDef form)
     {
         /*
         for (FormColumn formCol : form.getColumns())
@@ -669,7 +702,8 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
      * Indexes all the fields and forms in the forms
      *
      */
-    protected long indexForms(final IndexWriter writer) throws IOException
+    protected long indexForms(@SuppressWarnings("unused")
+    final IndexWriter writer)
     {
         /*
         // Count up how many View we are going to process
@@ -726,7 +760,8 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
      * Indexes all the fields and forms in the forms
      *
      */
-    protected long indexLabels(final IndexWriter writer)
+    protected long indexLabels(@SuppressWarnings("unused")
+    final IndexWriter writer)
     {
         // TODO FIX ME! Indexing labels
         
@@ -832,7 +867,7 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
             for (Object obj : tables)
             {
                 Element tableElement = (Element)obj;
-                ExpressResultsTableInfo tableInfo = new ExpressResultsTableInfo(tableElement, ExpressResultsTableInfo.LOAD_TYPE.Building, true);
+                ExpressResultsTableInfo tableInfo = new ExpressResultsTableInfo(tableElement, true);
                 if (isNotEmpty(tableInfo.getBuildSql()))
                 {
                     tableInfoList.add(tableInfo);

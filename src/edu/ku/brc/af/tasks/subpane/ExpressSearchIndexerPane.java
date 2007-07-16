@@ -51,6 +51,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JSeparator;
+import javax.swing.SwingConstants;
 import javax.swing.border.EtchedBorder;
 
 import org.apache.log4j.Logger;
@@ -68,6 +69,8 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.ERTIColInfo;
+import edu.ku.brc.af.core.ERTIJoinColInfo;
 import edu.ku.brc.af.core.ExpressResultsTableInfo;
 import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.af.core.SubPaneMgr;
@@ -85,6 +88,8 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.ui.forms.persist.FormViewDef;
 
 /**
@@ -245,7 +250,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                 container.add(noIndexFile ? new QueryResultsDataObj(oldTimestamp) : new QueryResultsDataObj(1,1));
                 list.add(container);
                 
-                JLabel label = new JLabel(namesHash.get(nameStr)+":", JLabel.RIGHT);
+                JLabel label = new JLabel(namesHash.get(nameStr)+":", SwingConstants.RIGHT);
                 label.setFont(captionFont);
 
                 builder.add(label, cc.xy(col,row));
@@ -302,25 +307,25 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         configureBtn.setVerticalLayout(true);
         buildBtn.setVerticalLayout(true);
 
-        JLabel label = new JLabel(getResourceString("ESIndexerCaption"), JLabel.CENTER);
+        JLabel label = new JLabel(getResourceString("ESIndexerCaption"), SwingConstants.CENTER);
         label.setFont(captionFont);
 
         int row = 1;
         builder.add(label, cc.xywh(1,row,3,1));
         row += 2;
-        builder.add(new JSeparator(JSeparator.HORIZONTAL), cc.xywh(1,row,3,1));
+        builder.add(new JSeparator(SwingConstants.HORIZONTAL), cc.xywh(1,row,3,1));
         row += 2;
         builder.add(resultsPanel, cc.xywh(1,row,3,1));
         row += 2;
         builder.add(forceChkbx, cc.xywh(1,row, 3, 1));
         row += 2;
-        builder.add(new JSeparator(JSeparator.HORIZONTAL), cc.xywh(1,row,3,1));
+        builder.add(new JSeparator(SwingConstants.HORIZONTAL), cc.xywh(1,row,3,1));
         row += 2;
         builder.add(configureBtn, cc.xy(1,row));
         builder.add(buildBtn, cc.xy(3,row));
         row += 2;
 
-        explainLabel = new JLabel(getResourceString("UpdatingES"), JLabel.CENTER);
+        explainLabel = new JLabel(getResourceString("UpdatingES"), SwingConstants.CENTER);
         //explainLabel.setFont(new Font(getFont().getFontName(), Font.ITALIC, getFont().getSize()));
         builder.add(explainLabel, cc.xywh(1,row,3,1));
         row += 2;
@@ -385,30 +390,36 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
     }
     
     /**
+     * @param doc
      * @param rs
-     * @param secondaryKey
+     * @param index
+     * @param fieldName
+     * @param colInfo
      * @param objClass
+     * @param dateFormatter
+     * @return
+     * @throws SQLException
      */
-    public String indexValue(final Document doc,
-                              final ResultSet rs,
-                              final int index,
-                              final String fieldName,
-                              final String secondaryKey,
-                              final Class objClass,
-                              final DateFormat formatter) throws SQLException
+    public String indexValue(final Document    doc,
+                             final ResultSet   rs,
+                             final int         index,
+                             final String      fieldName,
+                             final ERTIColInfo colInfo,
+                             final Class       objClass,
+                             final DateFormat  dateFormatter) throws SQLException
     {
         String value = null;
 
         // There may be a better way to express this,
         // but this is very explicit as to whether it is indexed as a Keyword or not
-        if (secondaryKey == null)
+        if (colInfo.getSecondaryKey() == null)
         {
             if (objClass == java.sql.Date.class)
             {
                 Date date = rs.getDate(index);
                 if (date != null)
                 {
-                    value = formatter.format(date);
+                    value = dateFormatter.format(date);
                     if (fieldName == null)
                     {
                         doc.add(new Field(fieldName, value, Field.Store.YES, Field.Index.UN_TOKENIZED));
@@ -426,8 +437,21 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                 String str = rs.getString(index);
                 if (isNotEmpty(str))
                 {
-                    value = str;
-                    doc.add(new Field("contents", str, Field.Store.NO, Field.Index.TOKENIZED));
+                    String fmtName = colInfo.getFormatter();
+                    if (fmtName != null)
+                    {
+                        UIFieldFormatterIFace formatter = UIFieldFormatterMgr.getFormatter(fmtName);
+                        if (formatter != null && formatter.isOutBoundFormatter())
+                        {
+                            value = (String)formatter.formatInBound(str);
+                        
+                        }
+                        log.error("Couldn't find UIFieldFormatterIFace ["+fmtName+"] or doesn't support Out Bound formatting. OutBdn["+formatter != null ? formatter.isOutBoundFormatter() : "???"+"]");
+                    } else
+                    {
+                        value = str;
+                    }
+                    doc.add(new Field("contents", value, Field.Store.NO, Field.Index.TOKENIZED));
                     //doc.add(Field.UnStored("contents", str));
                 }
             }
@@ -439,7 +463,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                 Date date = rs.getDate(index);
                 if (date != null)
                 {
-                    value = formatter.format(date);
+                    value = dateFormatter.format(date);
                     if (fieldName == null)
                     {
                         doc.add(new Field(fieldName, value, Field.Store.YES, Field.Index.UN_TOKENIZED));
@@ -457,8 +481,21 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                 String str = rs.getString(index);
                 if (isNotEmpty(str))
                 {
-                    value = str;
-                    doc.add(new Field(secondaryKey, str, Field.Store.YES, Field.Index.UN_TOKENIZED));
+                    String fmtName = colInfo.getFormatter();
+                    if (fmtName != null)
+                    {
+                        UIFieldFormatterIFace formatter = UIFieldFormatterMgr.getFormatter(fmtName);
+                        if (formatter != null && formatter.isOutBoundFormatter())
+                        {
+                            value = (String)formatter.formatInBound(str);
+                        
+                        }
+                        log.error("Couldn't find UIFieldFormatterIFace ["+fmtName+"] or doesn't support Out Bound formatting. OutBdn["+formatter != null ? formatter.isOutBoundFormatter() : "???"+"]");
+                    } else
+                    {
+                        value = str;
+                    }
+                    doc.add(new Field(colInfo.getSecondaryKey(), value, Field.Store.YES, Field.Index.UN_TOKENIZED));
                     //doc.add(Field.Keyword(secondaryKey, str));
                 }
             }
@@ -482,8 +519,8 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         Statement  dbStatement  = null;
         boolean    useHitsCache = tableInfo.isUseHitsCache();
         
-        ExpressResultsTableInfo.ColInfo     colInfo[]     = tableInfo.getCols();
-        ExpressResultsTableInfo.JoinColInfo joinColInfo[] = tableInfo.getJoins();
+        ERTIColInfo     colInfo[]     = tableInfo.getColInfo();
+        ERTIJoinColInfo joinColInfo[] = tableInfo.getJoins();
 
         StringBuilder strBuf = new StringBuilder(128);
 
@@ -564,20 +601,20 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                         {
                             strBuf.setLength(0);
                             
-                            for (ExpressResultsTableInfo.JoinColInfo jci : joinColInfo)
+                            for (ERTIJoinColInfo jci : joinColInfo)
                             {
                                 doc.add(new Field(jci.getJoinTableId(), rs.getString(jci.getPosition()), Field.Store.YES, Field.Index.UN_TOKENIZED));
                             }
                             
                             for (int i=0;i<colInfo.length;i++)
                             {
-                                ExpressResultsTableInfo.ColInfo ci = colInfo[i];
+                                ERTIColInfo ci = colInfo[i];
                                 if (i > 0)
                                 {
                                     int inx = ci.getPosition();
                                     String value = indexValue(doc, rs, inx,
                                                               rsmd.getColumnName(inx),
-                                                              ci.getSecondaryKey(),
+                                                              ci,
                                                               classes[inx],
                                                               formatter);
                                     if (value != null)
@@ -609,7 +646,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
 
                         } else
                         {
-                            for (ExpressResultsTableInfo.JoinColInfo jci : joinColInfo)
+                            for (ERTIJoinColInfo jci : joinColInfo)
                             {
                                 //if (jci.getJoinTableId().equals("5"))
                                 //{
@@ -620,10 +657,10 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                             
                             for (int i=0;i<colInfo.length;i++)
                             {
-                                ExpressResultsTableInfo.ColInfo ci = colInfo[i];
+                                ERTIColInfo ci = colInfo[i];
                                 int inx = ci.getPosition();
 
-                                if (indexValue(doc, rs, inx, rsmd.getColumnName(inx), ci.getSecondaryKey(),
+                                if (indexValue(doc, rs, inx, rsmd.getColumnName(inx), ci,
                                                classes[inx], formatter) != null)
                                 {
                                     cnt++;
@@ -686,21 +723,21 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
 
         progressBar.setIndeterminate(false);
 
-        indvLabel         = new JLabel("", JLabel.RIGHT);
-        globalLabel       = new JLabel(getResourceString("Indexing_Descr"), JLabel.RIGHT);
+        indvLabel         = new JLabel("", SwingConstants.RIGHT);
+        globalLabel       = new JLabel(getResourceString("Indexing_Descr"), SwingConstants.RIGHT);
         globalProgressBar = new JProgressBar();
 
         cancelBtn = new JButton(getResourceString("CancelIndexing"));
         closeBtn  = new JButton(getResourceString("Close"));
         closeBtn.setVisible(false);
 
-        JLabel label = new JLabel(getResourceString("UpdatingES"), JLabel.CENTER);
+        JLabel label = new JLabel(getResourceString("UpdatingES"), SwingConstants.CENTER);
         label.setFont(captionFont);
 
         int row = 1;
         builder.add(label, cc.xywh(1,row,3,1));
         row +=2;
-        builder.add(new JSeparator(JSeparator.HORIZONTAL), cc.xywh(1,row,3,1));
+        builder.add(new JSeparator(SwingConstants.HORIZONTAL), cc.xywh(1,row,3,1));
         row += 2;
         builder.add(indvLabel, cc.xy(1,row));
         builder.add(progressBar, cc.xy(3,row));
@@ -744,7 +781,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
      * @param writer
      * @param form
      */
-    protected void indexViewForm(final IndexWriter writer, final FormViewDef form) throws IOException
+    protected void indexViewForm(final IndexWriter writer, final FormViewDef form)
     {
         /*
         // separator, field, label, subview
@@ -789,7 +826,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
      * @param writer
      * @param form
      */
-    protected void indexViewTable(final IndexWriter writer, final FormViewDef form) throws IOException
+    protected void indexViewTable(final IndexWriter writer, final FormViewDef form)
     {
         /*
         for (FormColumn formCol : form.getColumns())
@@ -828,7 +865,8 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
      * Indexes all the fields and forms in the forms
      *
      */
-    protected long indexForms(final IndexWriter writer) throws IOException
+    protected long indexForms(@SuppressWarnings("unused")
+    final IndexWriter writer)
     {
         /*
         // Count up how many View we are going to process
@@ -885,7 +923,8 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
      * Indexes all the fields and forms in the forms
      *
      */
-    protected long indexLabels(final IndexWriter writer)
+    protected long indexLabels(@SuppressWarnings("unused")
+    final IndexWriter writer)
     {
         /*
         // TODO FIX ME! Indexing labels
@@ -1004,7 +1043,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                 for (Object obj : tables)
                 {
                     Element                  tableElement = (Element)obj;
-                    ExpressResultsTableInfo  tableInfo    = new ExpressResultsTableInfo(tableElement, ExpressResultsTableInfo.LOAD_TYPE.Building, true);
+                    ExpressResultsTableInfo  tableInfo    = new ExpressResultsTableInfo(tableElement, true);
                     
                     // Each Table was checked and outOfDateHash contains the names of the tables that need updating
                     // usually there is just one table
@@ -1027,7 +1066,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
             for (Object obj : tables)
             {
                 Element                  tableElement = (Element)obj;
-                ExpressResultsTableInfo  tableInfo    = new ExpressResultsTableInfo(tableElement, ExpressResultsTableInfo.LOAD_TYPE.Building, true);
+                ExpressResultsTableInfo  tableInfo    = new ExpressResultsTableInfo(tableElement, true);
                 
                 // Each Table was checked and outOfDateHash contains the names of the tables that need updating
                 // usually there is just one table
@@ -1081,12 +1120,13 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         } catch (Exception ex)
         {
             log.error(ex);
+            ex.printStackTrace();
         }
 
         // OK, we are done But did we complete or cancel?
 
-        indvLabel.setHorizontalAlignment(JLabel.CENTER);
-        globalLabel.setHorizontalAlignment(JLabel.CENTER);
+        indvLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        globalLabel.setHorizontalAlignment(SwingConstants.CENTER);
         progressBar.setVisible(false);
         globalProgressBar.setVisible(false);
         cancelBtn.setVisible(false);
@@ -1281,7 +1321,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
     {
         //JOptionPane.showMessageDialog(this, getResourceString("ERROR_CREATNG_BARCHART"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); // XXX LOCALIZE
 
-        //addCompletedComp(new JLabel(getResourceString("ERROR_CREATNG_BARCHART"), JLabel.CENTER));
+        //addCompletedComp(new JLabel(getResourceString("ERROR_CREATNG_BARCHART"), SwingConstants.CENTER));
     }
     
     //------------------------------------------------

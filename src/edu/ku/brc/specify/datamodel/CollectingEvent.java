@@ -64,7 +64,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
 
     // Fields    
 
-     protected Long                  collectingEventId;
+    protected Long                  collectingEventId;
     protected String                stationFieldNumber;
     protected String                method;
     protected String                verbatimDate;
@@ -88,7 +88,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     protected CollectingTrip        collectingTrip;
     protected Set<AttributeIFace>   attrs;
     protected Set<Attachment>       attachments;
-     protected HabitatAttributes habitatAttributes;
+    protected HabitatAttributes habitatAttributes;
 
 
     // Constructors

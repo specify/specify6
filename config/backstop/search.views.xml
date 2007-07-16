@@ -62,6 +62,26 @@
             </altviews>
         </view>
         
+        <view 
+            name="CollectionObjDefSearch"
+            class="edu.ku.brc.specify.datamodel.CollectionObjDef"
+            resourcelabels="false">
+            <desc><![CDATA[The CollectionObjDef Search Form]]></desc>
+            <altviews>
+                <altview name="CollectionObjDefSearch" viewdef="CollectionObjDefSearch" label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+        
+        <view 
+            name="CatalogNumberingScheme"
+            class="edu.ku.brc.specify.datamodel.CatalogNumberingScheme"
+            resourcelabels="false">
+            <desc><![CDATA[The CatalogNumberingScheme Search Form]]></desc>
+            <altviews>
+                <altview name="CatalogNumberingSchemeSearch" viewdef="CatalogNumberingSchemeSearch" label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+        
         
     </views>
     
@@ -253,6 +273,54 @@
                 <row>
                     <cell type="label" labelfor="1" label="Name"/>
                     <cell type="field" id="1" name="Name" isrequired="true" uitype="text"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef type="form"
+            name="CollectionObjDefSearch"
+            class="edu.ku.brc.specify.datamodel.CollectionObjDef"
+            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[The CollectionObjDef Search Form]]></desc>
+            <enableRules/>
+            
+            <columnDef>p,3dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="Name" isrequired="true" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Discipline"/>
+                    <cell type="field" id="2" name="Discipline" isrequired="true" uitype="text"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef type="form"
+            name="CatalogNumberingSchemeSearch"
+            class="edu.ku.brc.specify.datamodel.CatalogNumberingScheme"
+            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[The CatalogNumberingScheme Search Form]]></desc>
+            <enableRules/>
+            
+            <columnDef>p,3dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="SchemeName" isrequired="true" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Is Numeric"/>
+                    <cell type="field" id="2" name="IsNumericOnly" isrequired="true" uitype="text"/>
                 </row>
             </rows>
         </viewdef>

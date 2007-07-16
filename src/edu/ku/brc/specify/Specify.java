@@ -25,6 +25,8 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -337,6 +339,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         System.setProperty("edu.ku.brc.ui.db.PickListDBAdapterFactory", "edu.ku.brc.specify.ui.db.PickListDBAdapterFactory");   // Needed By the Auto Cosmplete UI
         System.setProperty("edu.ku.brc.ui.db.TreeFinderFactory",        "edu.ku.brc.specify.treeutils.TreeFinderFactoryImpl");  // needed for treequerycbx components
         System.setProperty(CustomQueryFactory.factoryName,              "edu.ku.brc.specify.dbsupport.SpecifyCustomQueryFactory");
+        System.setProperty(UIFieldFormatterMgr.factoryName,             "edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr");    // Needed for CatalogNumberign
     }
 
     /**
@@ -436,7 +439,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
         mainPanel = new MainPanel();
 
-        int[] sections = {30, 50};
+        int[] sections = {5, 5};
         statusField = new JStatusBar(sections);
         statusField.setErrorIcon(IconManager.getIcon("Error", IconManager.IconSize.Std16));
         statusField.setWarningIcon(IconManager.getIcon("Warning", IconManager.IconSize.Std16));
@@ -536,7 +539,13 @@ public class Specify extends JPanel implements DatabaseLoginListener
                         }
                     });
     
-            changeCatSeriesBtn.setEnabled(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getNumOfCollectionsForUser() > 1);
+            
+            
+            menu.addMouseListener(new MouseAdapter() {
+                public void mousePressed(MouseEvent e) {
+                    changeCatSeriesBtn.setEnabled(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getNumOfCollectionsForUser() > 1);
+                }
+            });
         }
 
         if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
@@ -624,14 +633,14 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
 
         menu = UIHelper.createMenu(mb, "TabsMenu", "TabsMneu");
-        /*mi = UIHelper.createMenuItem(menu, "Close Current", "C", "Close C", false, null);
+        mi = UIHelper.createMenuItem(menu, "Close Current", "C", "Close C", false, null); // XXX I18N
         mi.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent ae)
                     {
                         SubPaneMgr.getInstance().closeCurrent();
                     }
-                });*/
+                });
 
         Action closeAll = new AbstractAction() {
             public void actionPerformed(ActionEvent ae)
@@ -985,6 +994,9 @@ public class Specify extends JPanel implements DatabaseLoginListener
     
                 topFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
                 UIRegistry.register(UIRegistry.FRAME, topFrame);
+            } else
+            {
+                SubPaneMgr.getInstance().closeAll();
             }
             
             initStartUpPanels(databaseNameArg, userNameArg);
@@ -1022,6 +1034,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
             dbLoginPanel.getWindow().setVisible(false);
             dbLoginPanel = null;
         }
+        setDatabaseNameAndCollection();
     }
     
     /**
@@ -1178,13 +1191,22 @@ public class Specify extends JPanel implements DatabaseLoginListener
             }
         }
         
+        
         restartApp(databaseName, userName, false, firstTime);
         
         statusField.setSectionText(0, userName);
-        statusField.setSectionText(1, databaseName);
         
         AppPreferences.setConnectedToDB(true);
-
+    }
+    
+    /**
+     * Sets the Database Name and the Collection Name into the Status Bar. 
+     */
+    protected void setDatabaseNameAndCollection()
+    {
+        String dbName = databaseName + (Collection.getCurrentCollection() != null ? " : "+Collection.getCurrentCollection().getCollectionName() :"");
+        statusField.setSectionText(1, dbName);
+  
     }
 
     /* (non-Javadoc)

@@ -116,10 +116,9 @@ public class TypeSearchForQueryFactory
                                              tblInfo.getNewObjDialog(),
                                              tblInfo.getObjTitle());
     
-            } else
-            {
-                log.error("Table with ID["+typeSearchInfo.getTableId()+"] not found.");
             }
+            // else
+            log.error("Table with ID["+typeSearchInfo.getTableId()+"] not found.");
         } else
         {
             log.error("Object Type Search Name ["+name+"] not found.");
@@ -139,10 +138,9 @@ public class TypeSearchForQueryFactory
         {
             return typeSearchInfo.getFormatName();
             
-        } else
-        {
-            log.error("Object Type Search Name ["+name+"] not found.");
-        }
+        }            
+        // else
+        log.error("Object Type Search Name ["+name+"] not found.");
         return null;
     }
 
@@ -173,10 +171,9 @@ public class TypeSearchForQueryFactory
                                                 tblInfo.getObjTitle());
 
     
-            } else
-            {
-                log.error("Table with ID["+typeSearchInfo.getTableId()+"] not found.");
             }
+            // else
+            log.error("Table with ID["+typeSearchInfo.getTableId()+"] not found.");
         } else
         {
             log.error("Object Type Search Name ["+name+"] not found.");

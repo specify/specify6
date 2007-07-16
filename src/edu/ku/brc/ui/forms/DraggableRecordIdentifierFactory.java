@@ -79,11 +79,11 @@ public class DraggableRecordIdentifierFactory
                 error.initCause(e);
                 throw error;
             }
-        } else
-        {
-            // If not, then create the "default" factory
-            instance = new DraggableRecordIdentifierFactory();
         }
+        // else
+        // If not, then create the "default" factory
+        instance = new DraggableRecordIdentifierFactory();
+        
         return null;
     }
 

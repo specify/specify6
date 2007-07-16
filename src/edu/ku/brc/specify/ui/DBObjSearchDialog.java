@@ -52,6 +52,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.ERTICaptionInfo;
 import edu.ku.brc.af.core.ExpressResultsTableInfo;
 import edu.ku.brc.af.core.ExpressSearchResults;
 import edu.ku.brc.af.core.NavBoxLayoutManager;
@@ -223,11 +224,10 @@ public class DBObjSearchDialog extends CustomDialog implements ActionListener, E
 
                 StringBuilder strBuf = new StringBuilder(256);
                 int cnt = 0;
-                String[] columnNames = tableInfo.getColNames();
-                for (String colName : columnNames)
+                for (ERTICaptionInfo captionInfo : tableInfo.getVisibleCaptionInfo())
                 {
-                    Object value  = dataMap.get(colName);
-                    log.debug("Column Name["+colName+"] Value["+value+"]");
+                    Object value  = dataMap.get(captionInfo.getColName());
+                    log.debug("Column Name["+captionInfo.getColName()+"] Value["+value+"]");
                     if (value != null)
                     {
                         String valStr = value.toString();
@@ -237,12 +237,12 @@ public class DBObjSearchDialog extends CustomDialog implements ActionListener, E
                             {
                                 strBuf.append(" OR ");
                             }
-                            strBuf.append(" lower("+colName+") like '#$#"+valStr+"#$#'");
+                            strBuf.append(" lower("+captionInfo.getColName()+") like '#$#"+valStr+"#$#'");
                             cnt++;
                         }
                     } else
                     {
-                        log.debug("DataMap was null for Column Name["+colName+"] make sure there is a field of this name in the form.");
+                        log.debug("DataMap was null for Column Name["+captionInfo.getColName()+"] make sure there is a field of this name in the form.");
                     }
                 }
                 

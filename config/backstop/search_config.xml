@@ -14,7 +14,7 @@
                 </sql>
                 <cols>
                    <col pos="1" id="true">CollectionObjectID</col>
-                   <col pos="2">CatalogNumber</col>
+                   <col pos="2" formatter="CatalogNumber">CatalogNumber</col>
                    <col pos="3">CatalogedDate</col>
                    <col pos="4">FieldNumber</col>
                 </cols>
@@ -25,7 +25,7 @@
                 </sql>
                 <captions>
                     <caption col="CollectionObjectID" text="CollectionObjectID" visible="false"/>
-                    <caption col="CatalogNumber" text="Catalog Number"/>
+                    <caption col="CatalogNumber" text="Catalog Number" formatter="CatalogNumber"/>
                     <caption col="CatalogedDate" text="Cataloged Date"/>
                     <caption col="FieldNumber" text="Field Number"/>
                 </captions>
@@ -387,7 +387,7 @@ where collectingevent.CollectingEventID in (%s) order by StartDate]]>
                 </sql>
                 <cols>
                     <col pos="1" id="true">collectionobject.CollectionObjectID</col>
-                    <col pos="2">collectionobject.CatalogNumber</col>
+                    <col pos="2" formatter="CatalogNumber">collectionobject.CatalogNumber</col>
                     <col pos="3">collectionobject.CatalogedDate</col>
                     <col pos="4">taxon.FullName</col>
                     <join pos="5" tableid="9">determination.CollectionObjectID</join>
@@ -402,7 +402,7 @@ where collectingevent.CollectingEventID in (%s) order by StartDate]]>
                 </sql>
                 <captions>
                     <caption col="collectionobject.CollectionObjectID" text="CollectionObjectID" visible="false"/>
-                    <caption col="collectionobject.CatalogNumber" text="Catalog Number"/>
+                    <caption col="collectionobject.CatalogNumber" text="Catalog Number" formatter="CatalogNumber"/>
                     <caption col="collectionobject.CatalogedDate" text="Cataloged Date"/>
                     <caption col="taxon.FullName" text="Taxon Name"/>
                 </captions>
@@ -830,6 +830,45 @@ accession.DateAccessioned, accession.DateReceived FROM accession WHERE (%s)]]>
                 <recordset tabletype="65" col="1"/>
             </detailView>
         </table>
+        
+        <table id="105" tableid="26" name="CollectionObjDefSearch" title="Collection Obj Def" priority="1" color="30, 144, 255">
+            <outofdate/>
+            <index>
+                <sql/>
+                <cols/>
+            </index>
+            <detailView icon="">
+                <sql>
+                    <![CDATA[SELECT CollectionObjDefID, Name, Discipline FROM collectionobjdef WHERE (%s)]]>
+                </sql>
+                <captions>
+                    <caption col="CollectionObjDefID" text="CollectionObjDefID"  visible="false"/>
+                    <caption col="Name" text="Name"/>
+                    <caption col="Discipline" text="Discipline"/>
+                </captions>
+                <recordset tabletype="26" col="1"/>
+            </detailView>
+        </table>  
+              
+        <table id="106" tableid="97" name="CatalogNumberingSchemeSearch" title="Catalog Numbering Scheme" priority="1" color="30, 144, 255">
+            <outofdate/>
+            <index>
+                <sql/>
+                <cols/>
+            </index>
+            <detailView icon="">
+                <sql>
+                    <![CDATA[SELECT CatalogNumberingSchemeID, SchemeName, IsNumericOnly FROM catalognumberingscheme WHERE (%s)]]>
+                </sql>
+                <captions>
+                    <caption col="CatalogNumberingSchemeID" text="CatalogNumberingSchemeID"  visible="false"/>
+                    <caption col="SchemeName" text="Name"/>
+                    <caption col="IsNumericOnly" text="Is Numeric"/>
+                </captions>
+                <recordset tabletype="97" col="1"/>
+            </detailView>
+        </table>  
+              
         
     </generic>
 </searches>

@@ -47,6 +47,8 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
+import edu.ku.brc.ui.forms.FormDataObjIFace;
+
 /**
 
  */
@@ -65,7 +67,7 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
     protected String                    name;
     protected String                    discipline;
     protected DataType                  dataType;
-    protected Set<Collection>           collection;
+    protected Set<Collection>           collections;
     protected SpecifyUser               specifyUser;
     protected Set<AttributeDef>         attributeDefs;
     protected GeographyTreeDef          geographyTreeDef;
@@ -109,7 +111,7 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
         discipline = null;
         dataType = null;
         userPermissions = null;
-        collection = new HashSet<Collection>();
+        collections = new HashSet<Collection>();
         specifyUser = null;
         attributeDefs = new HashSet<AttributeDef>();
         geographyTreeDef = null;
@@ -203,12 +205,12 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
      */
     @OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="collectionObjDef")
     @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
-    public Set<Collection> getCollection() {
-        return this.collection;
+    public Set<Collection> getCollections() {
+        return this.collections;
     }
 
-    public void setCollection(Set<Collection> collection) {
-        this.collection = collection;
+    public void setCollections(Set<Collection> collections) {
+        this.collections = collections;
     }
 
     /**
@@ -283,7 +285,8 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
     /**
      *      * @hibernate.one-to-one
      */
-    @OneToOne
+    @OneToOne(cascade={})
+    @Cascade( {CascadeType.ALL} )
     @JoinColumn(name="TaxonTreeDefID")
     public TaxonTreeDef getTaxonTreeDef() {
         return this.taxonTreeDef;
@@ -343,59 +346,75 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
         return buffer.toString();
     }
 
-
-
-
     // Add Methods
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#addReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
+     */
+    @Override
+    public void addReference(FormDataObjIFace ref, String refType)
+    {
+        if (ref instanceof Collection)
+        {
+            this.collections.add((Collection)ref);
+            ((Collection)ref).setCollectionObjDef(this);
+            
+        } else if (ref instanceof AttributeDef)
+        {
+            this.attributeDefs.add((AttributeDef)ref);
+            ((AttributeDef)ref).setCollectionObjDef(this);
 
-    public void addCollection(final Collection collectionArg)
-    {
-        this.collection.add(collectionArg);
-        collectionArg.setCollectionObjDef(this);
-    }
+        } else if (ref instanceof Locality)
+        {
+            this.localities.add((Locality)ref);
+            ((Locality)ref).getCollectionObjDefs().add(this);
+            
+        } else if (ref instanceof UserPermission)
+        {
+            userPermissions.add((UserPermission)ref);
+            ((UserPermission)ref).setCollectionObjDef(this);
 
-    public void addAttributeDefs(final AttributeDef attributeDef)
-    {
-        this.attributeDefs.add(attributeDef);
-        attributeDef.setCollectionObjDef(this);
-    }
-
-    public void addLocalities(final Locality localitiesArg)
-    {
-        this.localities.add(localitiesArg);
-        localitiesArg.getCollectionObjDefs().add(this);
-    }
-    
-    public void addUserPermission(final UserPermission userPermission)
-    {
-        this.userPermissions.add(userPermission);
-        userPermission.setCollectionObjDef(this);
+        } else
+        {
+            throw new RuntimeException("Adding Object ["+ref.getClass().getSimpleName()+"] and the refType is null.");
+        }
     }
     // Done Add Methods
 
     // Delete Methods
 
-    public void removeCollection(final Collection collectionArg)
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#removeReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
+     */
+    @Override
+    public void removeReference(FormDataObjIFace ref, String refType)
     {
-        this.collection.remove(collectionArg);
-        collectionArg.setCollectionObjDef(null);
+        if (ref instanceof Collection)
+        {
+            collections.remove(ref);
+            ((Collection)ref).setCollectionObjDef(null);
+                
+        } else if (ref instanceof AttributeDef)
+        {
+            attributeDefs.remove(ref);
+            ((AttributeDef)ref).setCollectionObjDef(null);
+            
+        } else if (ref instanceof Locality)
+        {
+            localities.remove(ref);
+            ((Locality)ref).setCollectionObjDefs(null);
+            
+        } else if (ref instanceof UserPermission)
+        {
+            this.userPermissions.remove(ref);
+            ((UserPermission)ref).setCollectionObjDef(null);
+            
+        } else
+        {
+            throw new RuntimeException("Removing Object ["+ref.getClass().getSimpleName()+"] and the refType is null.");
+        }
     }
 
-    public void removeAttributeDefs(final AttributeDef attributeDef)
-    {
-        this.attributeDefs.remove(attributeDef);
-        attributeDef.setCollectionObjDef(null);
-    }
-    public void removeLocalities(final Locality localitiesArg)
-    {
-        this.localities.remove(localitiesArg);
-        localitiesArg.getCollectionObjDefs().remove(this);
-    }
-    public void removeUserPermission(final UserPermission userPermission)
-    {
-        this.userPermissions.remove(userPermission);
-        userPermission.setCollectionObjDef(null);
-    }
     // Delete Add Methods
     
     

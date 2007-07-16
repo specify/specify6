@@ -7,7 +7,7 @@
  */
 package edu.ku.brc.specify.tests;
 
-import static edu.ku.brc.specify.tests.DataBuilder.createAccession;
+import static edu.ku.brc.specify.tests.DataBuilder.*;
 import static edu.ku.brc.specify.tests.DataBuilder.createAccessionAgent;
 import static edu.ku.brc.specify.tests.DataBuilder.createAddress;
 import static edu.ku.brc.specify.tests.DataBuilder.createAgent;
@@ -113,6 +113,7 @@ import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.AttributeDef;
+import edu.ku.brc.specify.datamodel.CatalogNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectingEventAttr;
@@ -253,7 +254,10 @@ public class BuildSampleDatabase
         dataObjects.addAll(locs);
         dataObjects.addAll(gtps);
         
-        Collection collection = createCollection("Fish", "Fish", collectionObjDef);
+        CatalogNumberingScheme cns = createCatalogNumberingScheme("CatalogNumber", "", true);
+        dataObjects.add(cns);
+
+        Collection collection = createCollection("Fish", "Fish", cns, collectionObjDef);
         dataObjects.add(collection);
 
         return dataObjects;
@@ -315,7 +319,7 @@ public class BuildSampleDatabase
         dataObjects.add(userGroup);
         dataObjects.add(user);
         dataObjects.add(dataType);
-        dataObjects.add(taxonTreeDef);
+        //dataObjects.add(taxonTreeDef);
         
         Journal journal = createJournalsAndReferenceWork();
         List<ReferenceWork> rwList = new Vector<ReferenceWork>();
@@ -357,7 +361,10 @@ public class BuildSampleDatabase
         dataObjects.add(createPickList("DataType",            tableType,      "datatype",            null, "DataType",            true, -1));
         dataObjects.add(createPickList("Department",          tableFieldType, "accession",         "text1" ,       null,          true, -1));
         dataObjects.add(createPickList("AgentTitle",          tableFieldType, "agent",             "title" ,       null,          true, -1));
-        dataObjects.add(createPickList("PrepType",            tableType,      "preptype",            null, "PrepType",            true, -1));
+        dataObjects.add(createPickList("PrepType",            tableType,      "preptype",           null, "PrepType",             true, -1));
+        dataObjects.add(createPickList("CollectionObjDef",    tableType,      "collectionobjdef",   null, "CollectionObjDef",     true, -1));
+        dataObjects.add(createPickList("GeologicTimePeriodTreeDef", tableType, "geologictimeperiodtreedef", null, "GeologicTimePeriodTreeDef", true, -1));
+        dataObjects.add(createPickList("CatalogNumberingScheme", tableType, "catalognumberingscheme", null, "CatalogNumberingScheme", true, -1));
         
         String[] types = {"State", "Federal", "International", "US Dept Fish and Wildlife", "<no data>"};
         dataObjects.add(createPickList("PermitType", true, types));
@@ -555,11 +562,14 @@ public class BuildSampleDatabase
         
         frame.setProcess(++createStep);
                 
+        CatalogNumberingScheme cns = createCatalogNumberingScheme("CatalogNumber", "", true);
+        dataObjects.add(cns);
+        
         ////////////////////////////////
-        // catalog series
+        // Create Collection
         ////////////////////////////////
         log.info("Creating a catalog series");
-        Collection collection = createCollection("KUFSH", "Fish", collectionObjDef);
+        Collection collection = createCollection("KUFSH", "Fish", cns, collectionObjDef);
         dataObjects.add(collection);
         
         ////////////////////////////////
@@ -584,15 +594,16 @@ public class BuildSampleDatabase
         CollectionObjDef cod     = collectionObjDef;
         Calendar         catDate = Calendar.getInstance();
         catDate.set(2006, 01, 29);
-        String prefix = "000000";//"RSC";
-        collObjs.add(createCollectionObject(100.0f, prefix + "100", agents.get(0), col,  3, ce1, catDate, "BuildSampleDatabase"));
-        collObjs.add(createCollectionObject(101.0f, prefix + "101", agents.get(0), col,  2, ce1, catDate, "BuildSampleDatabase"));
-        collObjs.add(createCollectionObject(102.0f, prefix + "102", agents.get(1), col,  7, ce1, catDate, "BuildSampleDatabase"));
-        collObjs.add(createCollectionObject(103.0f, prefix + "103", agents.get(1), col, 12, ce1, catDate, "BuildSampleDatabase"));
-        collObjs.add(createCollectionObject(104.0f, prefix + "104", agents.get(2), col,  8, ce2, catDate, "BuildSampleDatabase"));
-        collObjs.add(createCollectionObject(105.0f, prefix + "105", agents.get(2), col,  1, ce2, catDate, "BuildSampleDatabase"));
-        collObjs.add(createCollectionObject(106.0f, prefix + "106", agents.get(2), col,  1, ce2, catDate, "BuildSampleDatabase"));
-        collObjs.add(createCollectionObject(107.0f, prefix + "107", agents.get(3), col,  1, ce2, catDate, "BuildSampleDatabase"));
+        
+        String prefix = "000000";
+        collObjs.add(createCollectionObject(prefix + "100", "RSC100", agents.get(0), col,  3, ce1, catDate, "BuildSampleDatabase"));
+        collObjs.add(createCollectionObject(prefix + "101", "RSC101", agents.get(0), col,  2, ce1, catDate, "BuildSampleDatabase"));
+        collObjs.add(createCollectionObject(prefix + "102", "RSC102", agents.get(1), col,  7, ce1, catDate, "BuildSampleDatabase"));
+        collObjs.add(createCollectionObject(prefix + "103", "RSC103", agents.get(1), col, 12, ce1, catDate, "BuildSampleDatabase"));
+        collObjs.add(createCollectionObject(prefix + "104", "RSC104", agents.get(2), col,  8, ce2, catDate, "BuildSampleDatabase"));
+        collObjs.add(createCollectionObject(prefix + "105", "RSC105", agents.get(2), col,  1, ce2, catDate, "BuildSampleDatabase"));
+        collObjs.add(createCollectionObject(prefix + "106", "RSC106", agents.get(2), col,  1, ce2, catDate, "BuildSampleDatabase"));
+        collObjs.add(createCollectionObject(prefix + "107", "RSC107", agents.get(3), col,  1, ce2, catDate, "BuildSampleDatabase"));
         
         AttributeDef colObjAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "MoonPhase", cod, null);//meg added cod
         CollectionObjectAttr colObjAttr = createCollectionObjectAttr(collObjs.get(0), colObjAttrDef, "Full", null);

@@ -171,10 +171,30 @@
         <view name="CollectionObjDef"
             class="edu.ku.brc.specify.datamodel.CollectionObjDef"
             resourcelabels="false">
-            <desc><![CDATA[The DataType Object form.]]></desc>
+            <desc><![CDATA[The CollectionObjDef Object form.]]></desc>
             <altviews>
                 <altview name="CollectionObjDef Edit View" viewdef="CollectionObjDef" label="View" mode="view" validated="false"/>
                 <altview name="CollectionObjDef Edit" viewdef="CollectionObjDef" label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+        
+        <view name="CatalogNumberingScheme"
+            class="edu.ku.brc.specify.datamodel.CatalogNumberingScheme"
+            resourcelabels="false">
+            <desc><![CDATA[The CatalogNumberingScheme Object form.]]></desc>
+            <altviews>
+                <altview name="CatalogNumberingScheme Edit View" viewdef="CatalogNumberingScheme" label="View" mode="view" validated="false"/>
+                <altview name="CatalogNumberingScheme Edit" viewdef="CatalogNumberingScheme" label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+        
+        <view name="Collection"
+            class="edu.ku.brc.specify.datamodel.Collection"
+            resourcelabels="false">
+            <desc><![CDATA[The Collection Object form.]]></desc>
+            <altviews>
+                <altview name="Collection View" viewdef="Collection" label="View" mode="view" validated="false"/>
+                <altview name="Collection Edit" viewdef="Collection" label="Edit" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -217,7 +237,7 @@
                     <cell type="field" id="sizeLimit" name="sizeLimit" uitype="text" cols="5" isrequired="true"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="items" label="Items"/>
+           birds         <cell type="label" labelfor="items" label="Items"/>
                     <cell type="panel" id="outerPanel" name="outerPanel" coldef="max(120px;p),5px,p" rowdef="p">
                         <rows>
                             <row>
@@ -851,10 +871,80 @@
                     <cell type="label" labelfor="3" label="Discipline"/>
                     <cell type="field" id="3" name="discipline" uitype="text"/>
                 </row>
+                <row>
+                    <cell type="label" labelfor="4" label="GTP Tree Def"/>
+                    <cell type="field" id="4" name="geologicTimePeriodTreeDef" uitype="combobox" picklist="GeologicTimePeriodTreeDef" isrequired="true"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="Collection" id="5" name="collections" colspan="4"/>
+                </row>
+                
             </rows>
         </viewdef>
         
+        <viewdef
+            type="form"
+            name="Collection"
+            class="edu.ku.brc.specify.datamodel.Collection"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Collection Data Entry Form]]></desc>
+            <columnDef>p,3dlu,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>            
+            
+            <rows>
+                <row>
+                    <cell type="separator" label="Collection" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="collectionName" uitype="text" isrequired="true"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Prefix"/>
+                    <cell type="field" id="2" name="collectionPrefix" uitype="text" isrequired="false"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="Collection Object Def"/>
+                    <cell type="field" id="3" name="collectionObjDef" uitype="combobox" picklist="CollectionObjDef" isrequired="true"/>
+                </row>
+                
+                <row>
+                    <cell type="label" labelfor="4" label="Numbering Scheme"/>
+                    <cell type="field" id="4" name="catalogNumberingScheme" uitype="combobox" picklist="CatalogNumberingScheme" isrequired="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5" label="Remarks"/>
+                    <cell type="field" id="5" name="remarks" uitype="textarea" colspan="2"/>
+                </row>
+            </rows>
+        </viewdef>
         
+        <viewdef type="form"
+            name="CatalogNumberingScheme"
+            class="edu.ku.brc.specify.datamodel.CatalogNumberingScheme"
+            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[The CatalogNumberingScheme Search Form]]></desc>
+            <enableRules/>
+            
+            <columnDef>p,3dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="schemeName" isrequired="true" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Is Numeric"/>
+                    <cell type="field" id="2" name="isNumericOnly" isrequired="true" uitype="text"/>
+                </row>
+            </rows>
+        </viewdef>
+
     </viewdefs>
         
 </viewset>
