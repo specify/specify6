@@ -83,31 +83,37 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
     protected String               remarks;
 	protected String               environmentalProtectionStatus;
 	
-	// taxonomic qualifiers
-	protected Boolean              isAccepted;
-	protected Boolean              isValid;
+    // for hybrid support
     protected Boolean              isHybrid;
+    protected Taxon                hybridParent1;
+    protected Taxon                hybridParent2;
+    protected Set<Taxon>           hybridChildren1;
+    protected Set<Taxon>           hybridChildren2;
 
-	// non-user fields
-	protected Integer              nodeNumber;
-    protected Integer              highestChildNodeNumber;
-	protected Integer              rankId;
-	protected String               groupNumber;
-    protected Integer              groupPermittedToView;
-	protected Integer              visibility;
-	protected String               visibilitySetBy;
-	protected Taxon                hybridParent1;
-	protected Taxon                hybridParent2;
-	protected Set<Taxon>           acceptedChildren;
-	protected Taxon                acceptedTaxon;
+    // for synonym support
+    protected Boolean              isAccepted;
+    protected Taxon                acceptedTaxon;
+    protected Set<Taxon>           acceptedChildren;
+
+    // tree structure fields
+    protected Taxon                parent;
+    protected Set<Taxon>           children;
+    protected TaxonTreeDef         definition;
+    protected TaxonTreeDefItem     definitionItem;
+    
+    // relationships with other tables
 	protected Set<Determination>   determinations;
 	protected Set<TaxonCitation>   taxonCitations;
-	protected TaxonTreeDef         definition;
-	protected TaxonTreeDefItem     definitionItem;
-	protected Taxon                parent;
 	protected Set<Attachment>      attachments;
-	protected Set<Taxon>           children;
 
+    // non-user fields
+    protected Integer              nodeNumber;
+    protected Integer              highestChildNodeNumber;
+    protected Integer              rankId;
+    protected String               groupNumber;
+    protected Integer              visibility;
+    protected String               visibilitySetBy;
+    
 	/** default constructor */
 	public Taxon()
 	{
@@ -155,7 +161,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		commonName = null;
 		author = null;
 		source = null;
-		groupPermittedToView = null;
 		environmentalProtectionStatus = null;
 		nodeNumber = null;
 		highestChildNodeNumber = null;
@@ -163,6 +168,10 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		rankId = null;
 		groupNumber = null;
         visibility = null;
+        hybridParent1 = null;
+        hybridParent2 = null;
+        hybridChildren1 = new HashSet<Taxon>();
+        hybridChildren2 = new HashSet<Taxon>();
 		acceptedChildren = new HashSet<Taxon>();
 		determinations = new HashSet<Determination>();
 		acceptedTaxon = null;
@@ -396,17 +405,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.source = source;
 	}
 
-    @Column(name = "GroupPermittedToView", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
-	public Integer getGroupPermittedToView()
-	{
-		return this.groupPermittedToView;
-	}
-
-	public void setGroupPermittedToView(Integer groupPermittedToView)
-	{
-		this.groupPermittedToView = groupPermittedToView;
-	}
-
     @Column(name = "EnvironmentalProtectionStatus", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
 	public String getEnvironmentalProtectionStatus()
 	{
@@ -491,6 +489,17 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
         return true;
     }
     
+    @Column(name="IsHybrid", unique=false, nullable=true, insertable=true, updatable=true)
+    public Boolean getIsHybrid()
+    {
+        return isHybrid;
+    }
+
+    public void setIsHybrid(Boolean isHybrid)
+    {
+        this.isHybrid = isHybrid;
+    }
+
     /**
      * 
      */
@@ -527,6 +536,76 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	{
 		this.acceptedTaxon = acceptedTaxon;
 	}
+
+    /**
+     * If this object represents a hybrid taxon, this returns the primary parent of the taxon.
+     * 
+     * @returnthe the primary parent of the taxon, or null if the object doesn't represent a hybrid taxon
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    @JoinColumn(name = "HybridParent1ID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Taxon getHybridParent1()
+    {
+        return hybridParent1;
+    }
+
+    public void setHybridParent1(Taxon hybridParent1)
+    {
+        this.hybridParent1 = hybridParent1;
+    }
+
+    /**
+     * If this object represents a hybrid taxon, this returns the secondary parent of the taxon.
+     * 
+     * @return the the secondary parent of the taxon, or null if the object doesn't represent a hybrid taxon
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    @JoinColumn(name = "HybridParent2ID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Taxon getHybridParent2()
+    {
+        return hybridParent2;
+    }
+
+    public void setHybridParent2(Taxon hybridParent2)
+    {
+        this.hybridParent2 = hybridParent2;
+    }
+
+    /**
+     * Returns the set of Taxon objects where this object is the hybridParent1 value.
+     * 
+     * @return the set of Taxon objects where this object is the hybridParent1 value.
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "hybridParent1")
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    public Set<Taxon> getHybridChildren1()
+    {
+        return hybridChildren1;
+    }
+
+    public void setHybridChildren1(Set<Taxon> hybridChildren1)
+    {
+        this.hybridChildren1 = hybridChildren1;
+    }
+
+    /**
+     * Returns the set of Taxon objects where this object is the hybridParent2 value.
+     * 
+     * @return the set of Taxon objects where this object is the hybridParent2 value.
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "hybridParent2")
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    public Set<Taxon> getHybridChildren2()
+    {
+        return hybridChildren2;
+    }
+
+    public void setHybridChildren2(Set<Taxon> hybridChildren2)
+    {
+        this.hybridChildren2 = hybridChildren2;
+    }
 
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "taxon")
 	public Set<Determination> getDeterminations()
