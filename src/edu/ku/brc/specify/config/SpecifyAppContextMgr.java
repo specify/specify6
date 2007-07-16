@@ -194,7 +194,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
             if (askToSelect)
             {
-                String queryStr = "select cs From CollectionObjDef as cod Inner Join cod.specifyUser as user Inner Join cod.collection as cs where user.specifyUserId = "+user.getSpecifyUserId();
+                String queryStr = "select cs From CollectionObjDef as cod Inner Join cod.specifyUser as user Inner Join cod.collections as cs where user.specifyUserId = "+user.getSpecifyUserId();
                 Hashtable<String, Collection> collectionHash = new Hashtable<String, Collection>();
                 for (Object obj : sessionArg.getDataList(queryStr))
                 {
