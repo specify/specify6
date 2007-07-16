@@ -163,6 +163,7 @@ public class InteractionsTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.Taskable#initialize()
      */
+    @Override
     public void initialize()
     {
         if (!isInitialized)
@@ -294,6 +295,7 @@ public class InteractionsTask extends BaseTask
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.core.Taskable#getNavBoxes()
      */
+    @Override
     public java.util.List<NavBoxIFace> getNavBoxes()
     {
         initialize();
@@ -311,6 +313,7 @@ public class InteractionsTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.BaseTask#getStarterPane()
      */
+    @Override
     public SubPaneIFace getStarterPane()
     {
         return starterPane = new SimpleDescPane(title, this, "Please select an Interaction");
@@ -319,6 +322,7 @@ public class InteractionsTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.Taskable#getToolBarItems()
      */
+    @Override
     public List<ToolBarItemDesc> getToolBarItems()
     {
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
@@ -335,6 +339,7 @@ public class InteractionsTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.Taskable#getMenuItems()
      */
+    @Override
     public List<MenuItemDesc> getMenuItems()
     {
         Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
@@ -345,6 +350,7 @@ public class InteractionsTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.Taskable#getTaskClass()
      */
+    @Override
     public Class<? extends BaseTask> getTaskClass()
     {
         return this.getClass();
@@ -492,6 +498,7 @@ public class InteractionsTask extends BaseTask
             {
                 final SwingWorker worker = new SwingWorker()
                 {
+                    @Override
                     public Object construct()
                     {
                         JStatusBar statusBar = UIRegistry.getStatusBar();
@@ -545,6 +552,7 @@ public class InteractionsTask extends BaseTask
                     }
 
                     //Runs on the event-dispatching thread.
+                    @Override
                     public void finished()
                     {
                         JStatusBar statusBar = UIRegistry.getStatusBar();
@@ -1183,6 +1191,7 @@ public class InteractionsTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#doCommand(edu.ku.brc.ui.CommandAction)
      */
+    @Override
     @SuppressWarnings("unchecked")
     public void doCommand(final CommandAction cmdAction)
     {
