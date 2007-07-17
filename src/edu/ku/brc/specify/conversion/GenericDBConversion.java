@@ -3979,8 +3979,10 @@ public class GenericDBConversion
     	newToOldColMap.put("FullName", "FullTaxonName");
         newToOldColMap.put("IsAccepted", "Accepted");
 
-    	String[] ignoredFields = {"GUID", "Visibility", "VisibilitySetBy"}; // User/Security changes
-    	//log.error(arg0)
+    	// Ignore new fields
+        // These were added for supporting the new security model and hybrids
+    	String[] ignoredFields = {"GUID", "Visibility", "VisibilitySetBy", "IsHybrid", "HybridParent1ID", "HybridParent2ID"};
+    	
         BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
         
         // AcceptedID is typically NULL unless they are using synonimies
