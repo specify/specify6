@@ -69,6 +69,6 @@ public interface TreeDefIface<N extends Treeable<N,D,I>,
     
 	public Class<N> getNodeClass();
 	public I getDefItemByRank(Integer rank);
-	public I getDefItemByName(String name);
+	//public I getDefItemByName(String name);
 	public boolean canChildBeReparentedToNode(N child,N newParent);
 }
