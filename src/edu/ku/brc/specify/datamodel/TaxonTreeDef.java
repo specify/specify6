@@ -225,24 +225,25 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
 		return null;
 	}
 	
-	/**
-	 * Returns the <code>TreeDefinitionItemIface</code> object associated with the called
-	 * <code>TreeDefinitionIface</code> object and having the given name.
-	 * 
-	 * @param name the name of the returned def item
-	 * @return the definition item
-	 */
-	public TaxonTreeDefItem getDefItemByName(String defItemName)
-	{
-		for( TaxonTreeDefItem item: treeDefItems )
-		{
-			if( item.getName().equals(defItemName) )
-			{
-				return item;
-			}
-		}
-		return null;
-	}
+    // Use of this method is unsafe.  If the user i18ns the name of the tree def levels, this method would not work the way we expect.
+//	/**
+//	 * Returns the <code>TreeDefinitionItemIface</code> object associated with the called
+//	 * <code>TreeDefinitionIface</code> object and having the given name.
+//	 * 
+//	 * @param name the name of the returned def item
+//	 * @return the definition item
+//	 */
+//	public TaxonTreeDefItem getDefItemByName(String defItemName)
+//	{
+//		for( TaxonTreeDefItem item: treeDefItems )
+//		{
+//			if( item.getName().equals(defItemName) )
+//			{
+//				return item;
+//			}
+//		}
+//		return null;
+//	}
 	
 	/**
 	 * Determines if the child node can be reparented to newParent while not

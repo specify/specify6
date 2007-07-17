@@ -240,24 +240,24 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
 		return null;
 	}
 	
-	/**
-	 * Returns the <code>TreeDefinitionItemIface</code> object associated with the called
-	 * <code>TreeDefinitionIface</code> object and having the given name.
-	 * 
-	 * @param name the name of the returned def item
-	 * @return the definition item
-	 */
-	public LocationTreeDefItem getDefItemByName(String defItemName)
-	{
-		for( LocationTreeDefItem item: treeDefItems )
-		{
-			if( item.getName().equals(defItemName) )
-			{
-				return item;
-			}
-		}
-		return null;
-	}
+//	/**
+//	 * Returns the <code>TreeDefinitionItemIface</code> object associated with the called
+//	 * <code>TreeDefinitionIface</code> object and having the given name.
+//	 * 
+//	 * @param name the name of the returned def item
+//	 * @return the definition item
+//	 */
+//	public LocationTreeDefItem getDefItemByName(String defItemName)
+//	{
+//		for( LocationTreeDefItem item: treeDefItems )
+//		{
+//			if( item.getName().equals(defItemName) )
+//			{
+//				return item;
+//			}
+//		}
+//		return null;
+//	}
 	
 	/**
 	 * Determines if the child node can be reparented to newParent while not

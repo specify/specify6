@@ -259,24 +259,24 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
 		return null;
 	}
 	
-	/**
-	 * Returns the <code>TreeDefinitionItemIface</code> object associated with the called
-	 * <code>TreeDefinitionIface</code> object and having the given name.
-	 * 
-	 * @param name the name of the returned def item
-	 * @return the definition item
-	 */
-	public GeographyTreeDefItem getDefItemByName(String defItemName)
-	{
-		for( GeographyTreeDefItem item: treeDefItems )
-		{
-			if( item.getName().equals(defItemName) )
-			{
-				return item;
-			}
-		}
-		return null;
-	}
+//	/**
+//	 * Returns the <code>TreeDefinitionItemIface</code> object associated with the called
+//	 * <code>TreeDefinitionIface</code> object and having the given name.
+//	 * 
+//	 * @param name the name of the returned def item
+//	 * @return the definition item
+//	 */
+//	public GeographyTreeDefItem getDefItemByName(String defItemName)
+//	{
+//		for( GeographyTreeDefItem item: treeDefItems )
+//		{
+//			if( item.getName().equals(defItemName) )
+//			{
+//				return item;
+//			}
+//		}
+//		return null;
+//	}
 	
 	/**
 	 * Determines if the child node can be reparented to newParent while not
