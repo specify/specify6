@@ -48,7 +48,7 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     protected String                     collectionName;
     protected String                     collectionPrefix;
     protected String                     remarks;
-    protected CollectionObjDef           collectionObjDef;
+    protected CollectionType           collectionType;
     protected Set<AppResourceDefault>    appResourceDefaults;
     protected CatalogNumberingScheme     catalogNumberingScheme;
     
@@ -83,7 +83,7 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
         collectionName         = null;
         collectionPrefix       = null;
         remarks                = null;
-        collectionObjDef       = null;
+        collectionType       = null;
         appResourceDefaults    = new HashSet<AppResourceDefault>();
         catalogNumberingScheme = null;
     }
@@ -192,13 +192,13 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
      *
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "CollectionObjDefID", unique = false, nullable = false, insertable = true, updatable = true)
-    public CollectionObjDef getCollectionObjDef() {
-        return this.collectionObjDef;
+    @JoinColumn(name = "CollectionTypeID", unique = false, nullable = false, insertable = true, updatable = true)
+    public CollectionType getCollectionType() {
+        return this.collectionType;
     }
 
-    public void setCollectionObjDef(CollectionObjDef collectionObjDef) {
-        this.collectionObjDef = collectionObjDef;
+    public void setCollectionType(CollectionType collectionType) {
+        this.collectionType = collectionType;
     }
     
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collection")

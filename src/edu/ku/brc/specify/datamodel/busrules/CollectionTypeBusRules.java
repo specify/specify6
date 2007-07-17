@@ -16,21 +16,21 @@ package edu.ku.brc.specify.datamodel.busrules;
 
 import static edu.ku.brc.specify.tests.DataBuilder.createTaxonTreeDef;
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
-import edu.ku.brc.specify.datamodel.CollectionObjDef;
+import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 
-public class CollectionObjDefBusRules extends BaseBusRules
+public class CollectionTypeBusRules extends BaseBusRules
 {   
-    //private final Logger         log      = Logger.getLogger(CollectionObjDefBusRules.class);
+    //private final Logger         log      = Logger.getLogger(CollectionTypeBusRules.class);
     
     /**
      * 
      */
-    public CollectionObjDefBusRules()
+    public CollectionTypeBusRules()
     {
-        super(CollectionObjDef.class);    
+        super(CollectionType.class);    
     }
 
     /* (non-Javadoc)
@@ -40,27 +40,27 @@ public class CollectionObjDefBusRules extends BaseBusRules
     public boolean okToDelete(Object dataObj)
     {
         /*
-        CollectionObjDef cod = (CollectionObjDef)dataObj;
+        CollectionType ct = (CollectionType)dataObj;
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
             // load workbenches so they aren't lazy
             // this is needed later on when the new WB is added to the template 
-            session.attach(cod);
+            session.attach(ct);
 
-            if (cod.getLocalities().size() > 0)
+            if (ct.getLocalities().size() > 0)
             {
                 return false;
             }
-            if (cod.getAttributeDefs().size() > 0)
+            if (ct.getAttributeDefs().size() > 0)
             {
                 return false;
             }
-            if (cod.getCollection().size() > 0)
+            if (ct.getCollection().size() > 0)
             {
                 return false;
             }
-            if (cod.getAppResourceDefaults().size() > 0)
+            if (ct.getAppResourceDefaults().size() > 0)
             {
                 return false;
             }
@@ -76,22 +76,22 @@ public class CollectionObjDefBusRules extends BaseBusRules
         }
 */
         
-        if (!okToDelete("colobjdef_locality", "CollectionObjDefID", ((FormDataObjIFace)dataObj).getId()))
+        if (!okToDelete("colobjdef_locality", "CollectionTypeID", ((FormDataObjIFace)dataObj).getId()))
         {
             return false;
         }
         
-        if (!okToDelete("collection", "CollectionObjDefID", ((FormDataObjIFace)dataObj).getId()))
+        if (!okToDelete("collection", "CollectionTypeID", ((FormDataObjIFace)dataObj).getId()))
         {
             return false;
         }
         
-        if (!okToDelete("attributedef", "CollectionObjDefID", ((FormDataObjIFace)dataObj).getId()))
+        if (!okToDelete("attributedef", "CollectionTypeID", ((FormDataObjIFace)dataObj).getId()))
         {
             return false;
         }
         
-        if (!okToDelete("appresourcedefault", "CollectionObjDefID", ((FormDataObjIFace)dataObj).getId()))
+        if (!okToDelete("appresourcedefault", "CollectionTypeID", ((FormDataObjIFace)dataObj).getId()))
         {
             return false;
         }
@@ -106,21 +106,21 @@ public class CollectionObjDefBusRules extends BaseBusRules
     {
         super.beforeSave(dataObj);
         
-        CollectionObjDef cod = (CollectionObjDef)dataObj;
-        if (cod.getSpecifyUser() == null)
+        CollectionType ct = (CollectionType)dataObj;
+        if (ct.getSpecifyUser() == null)
         {
-            cod.setSpecifyUser(SpecifyUser.getCurrentUser());
+            ct.setSpecifyUser(SpecifyUser.getCurrentUser());
         }
         
-        if (cod.getTaxonTreeDef() == null)
+        if (ct.getTaxonTreeDef() == null)
         {
             TaxonTreeDef taxonTreeDef = createTaxonTreeDef("Sample Taxon Tree Def");
-            cod.setTaxonTreeDef(taxonTreeDef);
+            ct.setTaxonTreeDef(taxonTreeDef);
         }
         
-        if (cod.getAppResourceDefaults() == null)
+        if (ct.getAppResourceDefaults() == null)
         {
-            //cod.setTaxonTreeDef(taxonTreeDef);
+            //ct.setTaxonTreeDef(taxonTreeDef);
         }
     }
 
@@ -130,9 +130,9 @@ public class CollectionObjDefBusRules extends BaseBusRules
     @Override
     public String getDeleteMsg(final Object dataObj)
     {
-        if (dataObj instanceof CollectionObjDef)
+        if (dataObj instanceof CollectionType)
         {
-            return getLocalizedMessage("COLLECTIONOBJDEF_DELETED", ((CollectionObjDef)dataObj).getName());
+            return getLocalizedMessage("COLLECTIONTYPE_DELETED", ((CollectionType)dataObj).getName());
         }
         // else
         return super.getDeleteMsg(dataObj);

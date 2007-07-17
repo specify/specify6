@@ -55,7 +55,7 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
 	protected String				    name;
 	protected String				    remarks;
     protected Integer                   fullNameDirection;
-	protected Set<CollectionObjDef>		collObjDefs;
+	protected Set<CollectionType>		collectionTypes;
 	protected Set<Geography>			treeEntries;
 	protected Set<GeographyTreeDefItem>	treeDefItems;
 
@@ -79,7 +79,7 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
 		name = null;
 		remarks = null;
         fullNameDirection = null;
-		collObjDefs = new HashSet<CollectionObjDef>();
+		collectionTypes = new HashSet<CollectionType>();
 		treeEntries = new HashSet<Geography>();
 		treeDefItems = new HashSet<GeographyTreeDefItem>();
 	}
@@ -153,26 +153,26 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
     }
 
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "geographyTreeDef")
-    public Set<CollectionObjDef> getCollObjDefs()
+    public Set<CollectionType> getCollectionTypes()
 	{
-		return this.collObjDefs;
+		return this.collectionTypes;
 	}
 
-	public void setCollObjDefs(Set<CollectionObjDef> collObjDefs)
+	public void setCollectionTypes(Set<CollectionType> collTypes)
 	{
-		this.collObjDefs = collObjDefs;
+		this.collectionTypes = collTypes;
 	}
     
-    public void addCollObjDef( CollectionObjDef cod )
+    public void addCollectionType( CollectionType ct )
     {
-        this.collObjDefs.add(cod);
-        cod.setGeographyTreeDef(this);
+        this.collectionTypes.add(ct);
+        ct.setGeographyTreeDef(this);
     }
     
-    public void removeCollObjDef( CollectionObjDef cod )
+    public void removeCollectionType( CollectionType ct )
     {
-        this.collObjDefs.remove(cod);
-        cod.setGeographyTreeDef(null);
+        this.collectionTypes.remove(ct);
+        ct.setGeographyTreeDef(null);
     }
 
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "definition")

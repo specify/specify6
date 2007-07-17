@@ -29,7 +29,7 @@ import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectingEventAttr;
 import edu.ku.brc.specify.datamodel.CollectingTrip;
-import edu.ku.brc.specify.datamodel.CollectionObjDef;
+import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
 import edu.ku.brc.specify.datamodel.CollectionObjectCitation;
@@ -124,7 +124,7 @@ public class DataBuilder
                                     final String abbreviation,
                                     final String email)
     {
-        // Create Collection Object Definition
+        // Create Collection Type
         Agent agent = new Agent();
         agent.initialize();
         agent.setAgentType((byte) 1);
@@ -153,7 +153,7 @@ public class DataBuilder
                                               
     public static AttributeDef createAttributeDef(final AttributeIFace.FieldType type,
                                                   final String name,
-                                                  final CollectionObjDef collectionObjDef,
+                                                  final CollectionType collectionType,
                                                   final PrepType prepType)
     {
         AttributeDef attrDef = new AttributeDef();
@@ -161,11 +161,11 @@ public class DataBuilder
         attrDef.setDataType(type.getType());
         attrDef.setFieldName(name);
         attrDef.setPrepType(prepType);
-        attrDef.setCollectionObjDef(collectionObjDef);
+        attrDef.setCollectionType(collectionType);
         return attrDef;
     }
 
-    public static CollectionObjDef createCollectionObjDef(final String           name,
+    public static CollectionType createCollectionType(final String           name,
                                                           final String           disciplineName,
                                                           final DataType         dataType,
                                                           final SpecifyUser      user,
@@ -174,26 +174,26 @@ public class DataBuilder
                                                           final GeologicTimePeriodTreeDef geologicTimePeriodTreeDef,
                                                           final LocationTreeDef  locationTreeDef)
     {
-        CollectionObjDef colObjDef = new CollectionObjDef();
-        colObjDef.initialize();
-        colObjDef.setName(name);
-        colObjDef.setDiscipline(disciplineName);
-        colObjDef.setDataType(dataType);
-        colObjDef.setSpecifyUser(user);
-        colObjDef.setTaxonTreeDef(taxonTreeDef);
-        colObjDef.setGeographyTreeDef(geographyTreeDef);//meg added to support not-null constraints
-        colObjDef.setGeologicTimePeriodTreeDef(geologicTimePeriodTreeDef);//meg added to support not-null constraints
-        colObjDef.setLocationTreeDef(locationTreeDef);//meg added to support not-null constraints
-        taxonTreeDef.setCollObjDef(colObjDef);
+        CollectionType collType = new CollectionType();
+        collType.initialize();
+        collType.setName(name);
+        collType.setDiscipline(disciplineName);
+        collType.setDataType(dataType);
+        collType.setSpecifyUser(user);
+        collType.setTaxonTreeDef(taxonTreeDef);
+        collType.setGeographyTreeDef(geographyTreeDef);//meg added to support not-null constraints
+        collType.setGeologicTimePeriodTreeDef(geologicTimePeriodTreeDef);//meg added to support not-null constraints
+        collType.setLocationTreeDef(locationTreeDef);//meg added to support not-null constraints
+        taxonTreeDef.setCollObjDef(collType);
 
-        persist(colObjDef);
-        return colObjDef;
+        persist(collType);
+        return collType;
     }
 
     public static Collection createCollection(final String prefix,
                                               final String name,
                                               final CatalogNumberingScheme catalogNumberingScheme,
-                                              final CollectionObjDef[] colObjDefs)
+                                              final CollectionType[] collTypes)
     {
         Collection collection = new Collection();
         collection.initialize();
@@ -204,9 +204,9 @@ public class DataBuilder
         collection.setCatalogNumberingScheme(catalogNumberingScheme);
         catalogNumberingScheme.getCollections().add(collection);
         
-        for (CollectionObjDef cod: colObjDefs)
+        for (CollectionType cod: collTypes)
         {
-            collection.setCollectionObjDef(cod);
+            collection.setCollectionType(cod);
         }
 
         persist(collection);
@@ -216,15 +216,15 @@ public class DataBuilder
     /**
      * @param prefix
      * @param name
-     * @param colObjDef
+     * @param collType
      * @return
      */
     public static Collection createCollection(final String prefix,
                                               final String name,
                                               final CatalogNumberingScheme numberingScheme,
-                                              final CollectionObjDef colObjDef)
+                                              final CollectionType collType)
     {
-        return createCollection(prefix, name, numberingScheme, new CollectionObjDef[] { colObjDef });
+        return createCollection(prefix, name, numberingScheme, new CollectionType[] { collType });
     }
 
     /**
@@ -1097,12 +1097,12 @@ public class DataBuilder
     public static AttributeDef createAttributeDef(final Short tableType,
                                                   final String fieldName,
                                                   final Short dataType,
-                                                  final CollectionObjDef collectionObjDef,
+                                                  final CollectionType collectionType,
                                                   final PrepType prepType)
     {
         AttributeDef attributedef = new AttributeDef();
         attributedef.initialize();
-        attributedef.setCollectionObjDef(collectionObjDef);
+        attributedef.setCollectionType(collectionType);
         attributedef.setPrepType(prepType);
         attributedef.setTableType(tableType);
         attributedef.setFieldName(fieldName);
@@ -1285,7 +1285,7 @@ public class DataBuilder
         return collectingeventattr;
     }
 
-    public static CollectionObjDef createCollectionObjDef(final String name,
+    public static CollectionType createCollectionType(final String name,
                                                           final DataType dataType,
                                                           final SpecifyUser user,
                                                           final GeographyTreeDef geographyTreeDef,
@@ -1293,17 +1293,17 @@ public class DataBuilder
                                                           final LocationTreeDef locationTreeDef,
                                                           final TaxonTreeDef taxonTreeDef)
     {
-        CollectionObjDef collectionobjdef = new CollectionObjDef();
-        collectionobjdef.initialize();
-        collectionobjdef.setDataType(dataType);
-        collectionobjdef.setSpecifyUser(user);
-        collectionobjdef.setGeographyTreeDef(geographyTreeDef);
-        collectionobjdef.setGeologicTimePeriodTreeDef(geologicTimePeriodTreeDef);
-        collectionobjdef.setLocationTreeDef(locationTreeDef);
-        collectionobjdef.setTaxonTreeDef(taxonTreeDef);
-        collectionobjdef.setName(name);
-        persist(collectionobjdef);
-        return collectionobjdef;
+        CollectionType collectiontype = new CollectionType();
+        collectiontype.initialize();
+        collectiontype.setDataType(dataType);
+        collectiontype.setSpecifyUser(user);
+        collectiontype.setGeographyTreeDef(geographyTreeDef);
+        collectiontype.setGeologicTimePeriodTreeDef(geologicTimePeriodTreeDef);
+        collectiontype.setLocationTreeDef(locationTreeDef);
+        collectiontype.setTaxonTreeDef(taxonTreeDef);
+        collectiontype.setName(name);
+        persist(collectiontype);
+        return collectiontype;
     }
 
     public static CollectionObject createCollectionObject(final String fieldNumber,
@@ -2053,13 +2053,13 @@ public class DataBuilder
     }
     
     public static UserPermission createUserPermission(SpecifyUser owner, 
-                                                      CollectionObjDef objDef, 
+                                                      CollectionType objDef, 
                                                       boolean adminPrivilege, 
                                                       boolean dataAccessPrivilege)
     {
         UserPermission permission = new UserPermission();
         permission.setAdminPrivilege(adminPrivilege);
-        permission.setCollectionObjDef(objDef);
+        permission.setCollectionType(objDef);
         permission.setDataAccessPrivilege(dataAccessPrivilege);
         permission.setSpecifyUser(owner);
         persist(permission);

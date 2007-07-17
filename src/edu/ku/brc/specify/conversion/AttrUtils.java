@@ -25,7 +25,7 @@ import org.hibernate.Session;
 
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.datamodel.AttributeDef;
-import edu.ku.brc.specify.datamodel.CollectionObjDef;
+import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.PreparationAttr;
@@ -82,14 +82,14 @@ public class AttrUtils
     }
     
     /**
-     * @param colObjDef xxxx
+     * @param collType xxxx
      * @param tableType xxxx
      * @param prepType xxxx
      * @param attrNames xxxx
      * @param dataTypes xxxx
      * @return xxxx
      */
-    public static List<AttributeDef> loadAttrDefs(final CollectionObjDef colObjDef,
+    public static List<AttributeDef> loadAttrDefs(final CollectionType collType,
                                               final GenericDBConversion.TableType tableType, 
                                               final PrepType prepType, 
                                               final String[] attrNames, 
@@ -107,18 +107,18 @@ public class AttrUtils
                     HibernateUtil.beginTransaction();
                     AttributeDef attrsDef = new AttributeDef();
                     attrsDef.setTableType(tableType.getType());
-                    attrsDef.setCollectionObjDef(colObjDef);
+                    attrsDef.setCollectionType(collType);
                     attrsDef.setPrepType(prepType);
                     attrsDef.setFieldName(attrNames[i]);
                     attrsDef.setDataType(dataTypes[i]);
                     
-                    colObjDef.getAttributeDefs().add(attrsDef);
+                    collType.getAttributeDefs().add(attrsDef);
                     
                     session.save(attrsDef);
 
                     list.add(attrsDef);
                 }
-                session.saveOrUpdate(colObjDef);
+                session.saveOrUpdate(collType);
                 HibernateUtil.commitTransaction();
 
                 //HibernateUtil.closeSession();

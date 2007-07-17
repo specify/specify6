@@ -55,7 +55,7 @@ public class GeologicTimePeriodTreeDef extends DataModelObjBase implements java.
     protected String                             name;
     protected String                             remarks;
     protected Integer                            fullNameDirection;
-    protected Set<CollectionObjDef>              collObjDefs;
+    protected Set<CollectionType>                collectionTypes;
     protected Set<GeologicTimePeriod>            treeEntries;
     protected Set<GeologicTimePeriodTreeDefItem> treeDefItems;
 
@@ -82,7 +82,7 @@ public class GeologicTimePeriodTreeDef extends DataModelObjBase implements java.
 		name = null;
 		remarks = null;
         fullNameDirection = null;
-		collObjDefs = new HashSet<CollectionObjDef>();
+		collectionTypes = new HashSet<CollectionType>();
 		treeEntries = new HashSet<GeologicTimePeriod>();
 		treeDefItems = new HashSet<GeologicTimePeriodTreeDefItem>();
 	}
@@ -172,26 +172,26 @@ public class GeologicTimePeriodTreeDef extends DataModelObjBase implements java.
 	 * 
 	 */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "geologicTimePeriodTreeDef")
-	public Set<CollectionObjDef> getCollObjDefs()
+	public Set<CollectionType> getCollectionTypes()
 	{
-		return this.collObjDefs;
+		return this.collectionTypes;
 	}
 
-	public void setCollObjDefs(Set<CollectionObjDef> collObjDefs)
+	public void setCollectionTypes(Set<CollectionType> collectionTypes)
 	{
-		this.collObjDefs = collObjDefs;
+		this.collectionTypes = collectionTypes;
 	}
     
-    public void addCollObjDef( CollectionObjDef cod )
+    public void addCollectionType( CollectionType ct )
     {
-        this.collObjDefs.add(cod);
-        cod.setGeologicTimePeriodTreeDef(this);
+        this.collectionTypes.add(ct);
+        ct.setGeologicTimePeriodTreeDef(this);
     }
     
-    public void removeCollObjDef( CollectionObjDef cod )
+    public void removeCollectionType( CollectionType ct )
     {
-        this.collObjDefs.remove(cod);
-        cod.setGeologicTimePeriodTreeDef(null);
+        this.collectionTypes.remove(ct);
+        ct.setGeologicTimePeriodTreeDef(null);
     }
 
 

@@ -63,12 +63,12 @@
         </view>
         
         <view 
-            name="CollectionObjDefSearch"
-            class="edu.ku.brc.specify.datamodel.CollectionObjDef"
+            name="CollectionTypeSearch"
+            class="edu.ku.brc.specify.datamodel.CollectionType"
             resourcelabels="false">
-            <desc><![CDATA[The CollectionObjDef Search Form]]></desc>
+            <desc><![CDATA[The CollectionType Search Form]]></desc>
             <altviews>
-                <altview name="CollectionObjDefSearch" viewdef="CollectionObjDefSearch" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="CollectionTypeSearch" viewdef="CollectionTypeSearch" label="Edit" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -278,12 +278,12 @@
         </viewdef>
         
         <viewdef type="form"
-            name="CollectionObjDefSearch"
-            class="edu.ku.brc.specify.datamodel.CollectionObjDef"
+            name="CollectionTypeSearch"
+            class="edu.ku.brc.specify.datamodel.CollectionType"
             gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
             settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
             
-            <desc><![CDATA[The CollectionObjDef Search Form]]></desc>
+            <desc><![CDATA[The CollectionType Search Form]]></desc>
             <enableRules/>
             
             <columnDef>p,3dlu,p</columnDef>

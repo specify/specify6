@@ -29,7 +29,7 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.CollectionObjDef;
+import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
@@ -95,7 +95,7 @@ public class AppResourceTest extends TestCase
         SpecifyUser user = (SpecifyUser)list.get(0); // assumes user is already there
 
         // Now get the List of Collection owned by this user
-        String queryStr = "select cs From CollectionObjDef as cod Inner Join cod.specifyUser as user Inner Join cod.collection as cs where user.specifyUserId = "+user.getSpecifyUserId();
+        String queryStr = "select cs From CollectionType as ct Inner Join ct.specifyUser as user Inner Join ct.collection as cs where user.specifyUserId = "+user.getSpecifyUserId();
         Query query = HibernateUtil.getCurrentSession().createQuery(queryStr);
         list = query.list();
         log.info("Found "+list.size()+" Collection for User");
@@ -117,13 +117,13 @@ public class AppResourceTest extends TestCase
 
         assertNotNull(contextMgr.getView("Ento Views", "CollectionObject"));
 
-        // Now find the CollectionObjDef for Bees (which should be owned by the user in question)
-        Criteria criteria2 = HibernateUtil.getCurrentSession().createCriteria(CollectionObjDef.class);
+        // Now find the CollectionType for Bees (which should be owned by the user in question)
+        Criteria criteria2 = HibernateUtil.getCurrentSession().createCriteria(CollectionType.class);
         criteria2.add(Expression.eq("name", "Bees"));
         List list2 = criteria2.list();
 
-        // Search by CollectionObjDef
-        assertNotNull(contextMgr.getView("CollectionObject", (CollectionObjDef)list2.get(0)));
+        // Search by CollectionType
+        assertNotNull(contextMgr.getView("CollectionObject", (CollectionType)list2.get(0)));
 
         // Now Test For the other user "Josh"
         // this should to backstops
@@ -141,7 +141,7 @@ public class AppResourceTest extends TestCase
         SpecifyUser.setCurrentUser(user);
 
         // Now get the List of Collection owned by this user
-        queryStr = "select cs From CollectionObjDef as cod Inner Join cod.specifyUser as user Inner Join cod.collection as cs where user.specifyUserId = "+user.getSpecifyUserId();
+        queryStr = "select cs From CollectionType as ct Inner Join ct.specifyUser as user Inner Join ct.collection as cs where user.specifyUserId = "+user.getSpecifyUserId();
         query = HibernateUtil.getCurrentSession().createQuery(queryStr);
         list = query.list();
         log.info("Found "+list.size()+" Collection for User");
@@ -163,14 +163,14 @@ public class AppResourceTest extends TestCase
 
         assertNull(contextMgr.getView("Ento Views", "CollectionObject")); // Should come back null
 
-        // Now find the CollectionObjDef for Bees (which should be owned by the user in question)
-        criteria2 = HibernateUtil.getCurrentSession().createCriteria(CollectionObjDef.class);
+        // Now find the CollectionType for Bees (which should be owned by the user in question)
+        criteria2 = HibernateUtil.getCurrentSession().createCriteria(CollectionType.class);
         criteria2.add(Expression.eq("name", "fish"));
         list2 = criteria2.list();
         assertTrue(list2.size() > 0);
         
-        // Search by CollectionObjDef
-        assertNotNull(contextMgr.getView("CollectionObject", (CollectionObjDef)list2.get(0)));
+        // Search by CollectionType
+        assertNotNull(contextMgr.getView("CollectionObject", (CollectionType)list2.get(0)));
         
         log.info("Looking up StartUpPanel for user");
         assertNotNull(contextMgr.getResource("StartUpPanel"));

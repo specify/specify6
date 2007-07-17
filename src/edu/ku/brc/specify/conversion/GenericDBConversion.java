@@ -60,7 +60,7 @@ import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.AttributeDef;
 import edu.ku.brc.specify.datamodel.CatalogNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.CollectionObjDef;
+import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
 import edu.ku.brc.specify.datamodel.DataType;
@@ -541,8 +541,8 @@ public class GenericDBConversion
             // then we might as well map CollectionObjectTypeID to CatalogSeriesDefinitionID
             //
             // The Combination of the CatalogSeriesDefinition and CollectionObjectType become the
-            // new CollectionObjDef
-            // As you might expect the CatalogSeriesDefinitionID is mapped to the new CollectionObjDef
+            // new CollectionType
+            // As you might expect the CatalogSeriesDefinitionID is mapped to the new CollectionType
             //************************************************************************************
             "CollectionObjectType", "CollectionObjectTypeID", "CatalogSeriesDefinition", "CatalogSeriesDefinitionID",
             "CollectionObject", "CollectionObjectTypeID", "CatalogSeriesDefinition", "CatalogSeriesDefinitionID",
@@ -1290,19 +1290,19 @@ public class GenericDBConversion
     {
         try
         {
-            // The Old Table catalogseriesdefinition is being converted to collectionobjdef
+            // The Old Table catalogseriesdefinition is being converted to collectiontype
             IdMapperIFace taxonomyTypeMapper  = idMapperMgr.get("TaxonomyType", "TaxonomyTypeID");
 
             // Create a Hashtable to track which IDs have been handled during the conversion process
             BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "datatype");
-            BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "collectionobjdef");
+            BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "collectiontype");
             BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "collection");
             //BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "collection_colobjdef");
 
             Hashtable<Long, Long> newColObjIDTotaxonomyTypeID     = new Hashtable<Long, Long>();
             Hashtable<Long, String>  taxonomyTypeIDToTaxonomyName = new Hashtable<Long, String>();
 
-            // First, create a CollectionObjDef for TaxonomyType record
+            // First, create a CollectionType for TaxonomyType record
             Statement stmt = oldDBConn.createStatement();
             log.info(taxonomyTypeMapper.getSql());
             ResultSet rs   = stmt.executeQuery(taxonomyTypeMapper.getSql());
@@ -1325,7 +1325,7 @@ public class GenericDBConversion
                     log.error("**** discipline couldn't be found in our Discipline lookup in SpecifyAppContextMgr["+disciplineName+"]");
                     continue;
                 }
-                log.info("Creating a new CollectionObjDef for taxonomyTypeName["+taxonomyTypeName+"] discipline["+disciplineName+"]");
+                log.info("Creating a new CollectionType for taxonomyTypeName["+taxonomyTypeName+"] discipline["+disciplineName+"]");
 
                 taxonomyTypeName = disciplineName;
                 
@@ -1340,11 +1340,11 @@ public class GenericDBConversion
                 taxonomyTypeIDToTaxonomyName.put(taxonomyTypeID, taxonomyTypeName);
 
                 /*
-                 * CollectionObjDef
+                 * CollectionType
                  * +-----------------------------+-------------+------+-----+---------+----------------+
                  * | Field                       | Type        | Null | Key | Default | Extra          |
                  * +-----------------------------+-------------+------+-----+---------+----------------+
-                 * | CollectionObjDefID          | bigint(20)  | NO   | PRI | NULL    | auto_increment | 
+                 * | CollectionTypeID          | bigint(20)  | NO   | PRI | NULL    | auto_increment | 
                  * | TimestampCreated            | datetime    | NO   |     |         |                | 
                  * | TimestampModified           | datetime    | NO   |     |         |                | 
                  * | LastEditedBy                | varchar(50) | YES  |     | NULL    |                | 
@@ -1359,11 +1359,11 @@ public class GenericDBConversion
                  * +-----------------------------+-------------+------+-----+---------+----------------+
                  */
 
-                // use the old CollectionObjectTypeName as the new CollectionObjDef name
+                // use the old CollectionObjectTypeName as the new CollectionType name
 
                 Statement updateStatement = newDBConn.createStatement();
                 StringBuilder strBuf2 = new StringBuilder();
-                strBuf2.append("INSERT INTO collectionobjdef (CollectionObjDefID, TimestampModified, Discipline, Name, TimestampCreated, LastEditedBy, DataTypeID, SpecifyUserID, GeographyTreeDefID, GeologicTimePeriodTreeDefID, LocationTreeDefID, TaxonTreeDefID) VALUES (");
+                strBuf2.append("INSERT INTO collectiontype (CollectionTypeID, TimestampModified, Discipline, Name, TimestampCreated, LastEditedBy, DataTypeID, SpecifyUserID, GeographyTreeDefID, GeologicTimePeriodTreeDefID, LocationTreeDefID, TaxonTreeDefID) VALUES (");
                 strBuf2.append(taxonomyTypeMapper.get(taxonomyTypeID)+","); 
                 strBuf2.append("'"+dateFormatter.format(new Date())+"',"); // TimestampModified
                 strBuf2.append("'"+discipline.getName()+"',");
@@ -1385,16 +1385,16 @@ public class GenericDBConversion
                 updateStatement = null;
                 recordCnt++;
 
-                Long colObjDefID = BasicSQLUtils.getHighestId(newDBConn, "CollectionObjDefID", "collectionobjdef");
+                Long collTypeID = BasicSQLUtils.getHighestId(newDBConn, "CollectionTypeID", "collectiontype");
                 
-                newColObjIDTotaxonomyTypeID.put(colObjDefID, taxonomyTypeID);
+                newColObjIDTotaxonomyTypeID.put(collTypeID, taxonomyTypeID);
 
-                log.info("Created new collectionobjdef["+taxonomyTypeName+"] is dataType ["+dataTypeId+"]");
+                log.info("Created new collectiontype["+taxonomyTypeName+"] is dataType ["+dataTypeId+"]");
             }
             
             rs.close();
             stmt.close();
-            log.info("CollectionObjDef Records: "+ recordCnt);
+            log.info("CollectionType Records: "+ recordCnt);
 
             if (taxonomyTypeMapper.size() > 0)
             {
@@ -1453,7 +1453,7 @@ public class GenericDBConversion
     
                      Statement updateStatement = newDBConn.createStatement();
                      strBuf.setLength(0);
-                     strBuf.append("INSERT INTO collection (CollectionObjDefID, CollectionName, CollectionPrefix, Remarks, CatalogNumberingSchemeID, LastEditedBy, TimestampCreated, TimestampModified) VALUES (");
+                     strBuf.append("INSERT INTO collection (CollectionTypeID, CollectionName, CollectionPrefix, Remarks, CatalogNumberingSchemeID, LastEditedBy, TimestampCreated, TimestampModified) VALUES (");
                      strBuf.append(newColObjdefID+",");
                      strBuf.append(getStrValue(newSeriesName)+",");
                      strBuf.append(getStrValue(prefix)+",");
@@ -2188,12 +2188,12 @@ public class GenericDBConversion
      * It also will use the old name if there is not mapping for it. The old name is converted from lower/upper case to
      * be space separated where each part of the name starts with a capital letter.
      *
-     * @param colObjDef the Collection Object Definition
+     * @param collType the Collection Type
      * @param colToNameMap a mape for old names to new names
      * @param typeMap a map for changing the type of the data (meaning an old value may be a boolean stored in a float)
      * @return true for success
      */
-    public boolean convertBiologicalAttrs(CollectionObjDef colObjDef, @SuppressWarnings("unused")
+    public boolean convertBiologicalAttrs(CollectionType collType, @SuppressWarnings("unused")
     final Map<String, String> colToNameMap, final Map<String, Short> typeMap)
     {
         AttributeIFace.FieldType[] attrTypes = {AttributeIFace.FieldType.IntegerType, AttributeIFace.FieldType.FloatType,
@@ -2267,7 +2267,7 @@ public class GenericDBConversion
                         }
 
                         attrDef.setDataType(dataType);
-                        attrDef.setCollectionObjDef(colObjDef);
+                        attrDef.setCollectionType(collType);
                         attrDef.setTableType(GenericDBConversion.TableType.CollectionObject.getType());
 
                         attrDefs.put(md.getName(), attrDef);
@@ -3596,7 +3596,7 @@ public class GenericDBConversion
             {
                 DataType dataType = new DataType();
                 dataType.setName(name);
-                dataType.setCollectionObjDef(null);
+                dataType.setCollectionType(null);
                 session.save(dataType);
 
                 if (returnName != null && name.equals(returnName))
@@ -3624,7 +3624,7 @@ public class GenericDBConversion
      * @param  collection collection
      * @return set of objects
      */
-    public Set<CollectionObjDef> createCollectionObjDef(final String          name,
+    public Set<CollectionType> createCollectionType(final String          name,
                                                         final DataType        dataType,
                                                         final SpecifyUser     user,
                                                         final TaxonTreeDef taxaTreeDef,
@@ -3641,21 +3641,21 @@ public class GenericDBConversion
             Session session = HibernateUtil.getCurrentSession();
             HibernateUtil.beginTransaction();
 
-            CollectionObjDef colObjDef = new CollectionObjDef();
-            colObjDef.initialize();
-            colObjDef.setName(name);
-            colObjDef.setDataType(dataType);
-            colObjDef.setSpecifyUser(user);
+            CollectionType collType = new CollectionType();
+            collType.initialize();
+            collType.setName(name);
+            collType.setDataType(dataType);
+            collType.setSpecifyUser(user);
 
-            colObjDef.setTaxonTreeDef(taxaTreeDef);
+            collType.setTaxonTreeDef(taxaTreeDef);
 
-            colObjDef.setCollections(collectionSet);
+            collType.setCollections(collectionSet);
 
-            session.save(colObjDef);
+            session.save(collType);
 
-            HashSet<CollectionObjDef> set = new HashSet<CollectionObjDef>();
-            set.add(colObjDef);
-            user.setCollectionObjDefs(set);
+            HashSet<CollectionType> set = new HashSet<CollectionType>();
+            set.add(collType);
+            user.setCollectionTypes(set);
             session.saveOrUpdate(user);
 
             HibernateUtil.commitTransaction();

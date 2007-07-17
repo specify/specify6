@@ -209,8 +209,8 @@
     </format>
     
     <format
-        name="CollectionObjDef"
-        class="edu.ku.brc.specify.datamodel.CollectionObjDef"
+        name="CollectionType"
+        class="edu.ku.brc.specify.datamodel.CollectionType"
         default="true"
         >
         <switch single="true">

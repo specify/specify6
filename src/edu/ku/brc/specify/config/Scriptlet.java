@@ -516,7 +516,7 @@ public class Scriptlet extends JRDefaultScriptlet
             	  
             	  try{
             		  
-            		  if(!data.isEmpty())
+            		  if(data.length() > 0)
                       {
             			 styleInfo = (String)e.nextElement();
                     	  //if there is specific style info
@@ -548,7 +548,7 @@ public class Scriptlet extends JRDefaultScriptlet
             	  
             	  try{
             		  
-            		  if(!data.isEmpty())
+            		  if(data.length() > 0)
                       {
             			 styleInfo = (String)e.nextElement();
                     	  //if there is specific style info

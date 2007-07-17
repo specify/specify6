@@ -129,15 +129,15 @@ public class AppContextTests extends TestCase
         
         log.info("Selected Collection: ["+cs.getSeriesName()+"]");
         
-        CollectionObjDef cod = AppContextMgr.getInstance().setupCurrentColObjDef(cs, false); // false means don't ask if you already have one
-        assertNotNull(cod);
+        CollectionType ct = AppContextMgr.getInstance().setupCurrentColObjDef(cs, false); // false means don't ask if you already have one
+        assertNotNull(ct);
         
-        log.info("Selected CollectionObjDef: ["+cod.getName()+"]");
+        log.info("Selected CollectionType: ["+ct.getName()+"]");
         
-        cod = AppContextMgr.getInstance().setupCurrentColObjDef(cs, true); // false means don't ask if you already have one
-        assertNotNull(cod);
+        ct = AppContextMgr.getInstance().setupCurrentColObjDef(cs, true); // false means don't ask if you already have one
+        assertNotNull(ct);
         
-        log.info("Selected CollectionObjDef: ["+cod.getName()+"]");
+        log.info("Selected CollectionType: ["+ct.getName()+"]");
         */
     }
 }

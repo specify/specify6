@@ -55,15 +55,15 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name="collectionobjdef")
-public class CollectionObjDef extends DataModelObjBase implements java.io.Serializable 
+@Table(name="collectiontype")
+public class CollectionType extends DataModelObjBase implements java.io.Serializable 
 {
 
-    protected static CollectionObjDef currentCollectionObjDef = null;
+    protected static CollectionType currentCollectionType = null;
     
     // Fields
 
-    protected Long                      collectionObjDefId;
+    protected Long                      collectionTypeId;
     protected String                    name;
     protected String                    discipline;
     protected DataType                  dataType;
@@ -82,23 +82,23 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
     // Constructors
 
     /** default constructor */
-    public CollectionObjDef() {
+    public CollectionType() {
         //
     }
 
     /** constructor with id */
-    public CollectionObjDef(Long collectionObjDefId) {
-        this.collectionObjDefId = collectionObjDefId;
+    public CollectionType(Long collectionTypeId) {
+        this.collectionTypeId = collectionTypeId;
     }
 
-    public static CollectionObjDef getCurrentCollectionObjDef()
+    public static CollectionType getCurrentCollectionType()
     {
-        return currentCollectionObjDef;
+        return currentCollectionType;
     }
 
-    public static void setCurrentCollectionObjDef(CollectionObjDef currentCollectionObjDef)
+    public static void setCurrentCollectionType(CollectionType currentCollectionType)
     {
-        CollectionObjDef.currentCollectionObjDef = currentCollectionObjDef;
+        CollectionType.currentCollectionType = currentCollectionType;
     }
 
     // Initializer
@@ -106,7 +106,7 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
     public void initialize()
     {
         super.init();
-        collectionObjDefId = null;
+        collectionTypeId = null;
         name = null;
         discipline = null;
         dataType = null;
@@ -130,9 +130,9 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
      */
     @Id
     @GeneratedValue
-    @Column(name="CollectionObjDefID", unique=false, nullable=false, insertable=true, updatable=true)
-    public Long getCollectionObjDefId() {
-        return this.collectionObjDefId;
+    @Column(name="CollectionTypeID", unique=false, nullable=false, insertable=true, updatable=true)
+    public Long getCollectionTypeId() {
+        return this.collectionTypeId;
     }
 
     /**
@@ -143,7 +143,7 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
     @Override
     public Long getId()
     {
-        return this.collectionObjDefId;
+        return this.collectionTypeId;
     }
 
     /* (non-Javadoc)
@@ -153,11 +153,11 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
     @Override
     public Class<?> getDataClass()
     {
-        return CollectionObjDef.class;
+        return CollectionType.class;
     }
 
-    public void setCollectionObjDefId(Long collectionObjDefId) {
-        this.collectionObjDefId = collectionObjDefId;
+    public void setCollectionTypeId(Long collectionTypeId) {
+        this.collectionTypeId = collectionTypeId;
     }
 
     /**
@@ -203,7 +203,7 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
     /**
      *
      */
-    @OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="collectionObjDef")
+    @OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="collectionType")
     @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<Collection> getCollections() {
         return this.collections;
@@ -230,7 +230,7 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
     /**
      *
      */
-    @OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="collectionObjDef")
+    @OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="collectionType")
     @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<AttributeDef> getAttributeDefs() {
         return this.attributeDefs;
@@ -299,7 +299,7 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
     /**
      *
      */
-    @ManyToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="collectionObjDefs")
+    @ManyToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="collectionTypes")
     @Cascade( {CascadeType.SAVE_UPDATE} )
     public Set<Locality> getLocalities() {
         return this.localities;
@@ -309,7 +309,7 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
         this.localities = localities;
     } 
 
-    @OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="collectionObjDef")
+    @OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="collectionType")
     public Set<AppResourceDefault> getAppResourceDefaults()
     {
         return appResourceDefaults;
@@ -319,7 +319,7 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
     {
         this.appResourceDefaults = appResourceDefaults;
     }
-    @OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="collectionObjDef")
+    @OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="collectionType")
     @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<UserPermission> getUserPermissions() 
     {
@@ -356,22 +356,22 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
         if (ref instanceof Collection)
         {
             this.collections.add((Collection)ref);
-            ((Collection)ref).setCollectionObjDef(this);
+            ((Collection)ref).setCollectionType(this);
             
         } else if (ref instanceof AttributeDef)
         {
             this.attributeDefs.add((AttributeDef)ref);
-            ((AttributeDef)ref).setCollectionObjDef(this);
+            ((AttributeDef)ref).setCollectionType(this);
 
         } else if (ref instanceof Locality)
         {
             this.localities.add((Locality)ref);
-            ((Locality)ref).getCollectionObjDefs().add(this);
+            ((Locality)ref).getCollectionTypes().add(this);
             
         } else if (ref instanceof UserPermission)
         {
             userPermissions.add((UserPermission)ref);
-            ((UserPermission)ref).setCollectionObjDef(this);
+            ((UserPermission)ref).setCollectionType(this);
 
         } else
         {
@@ -392,22 +392,22 @@ public class CollectionObjDef extends DataModelObjBase implements java.io.Serial
         if (ref instanceof Collection)
         {
             collections.remove(ref);
-            ((Collection)ref).setCollectionObjDef(null);
+            ((Collection)ref).setCollectionType(null);
                 
         } else if (ref instanceof AttributeDef)
         {
             attributeDefs.remove(ref);
-            ((AttributeDef)ref).setCollectionObjDef(null);
+            ((AttributeDef)ref).setCollectionType(null);
             
         } else if (ref instanceof Locality)
         {
             localities.remove(ref);
-            ((Locality)ref).setCollectionObjDefs(null);
+            ((Locality)ref).setCollectionTypes(null);
             
         } else if (ref instanceof UserPermission)
         {
             this.userPermissions.remove(ref);
-            ((UserPermission)ref).setCollectionObjDef(null);
+            ((UserPermission)ref).setCollectionType(null);
             
         } else
         {

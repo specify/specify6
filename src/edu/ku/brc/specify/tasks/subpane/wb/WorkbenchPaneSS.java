@@ -1670,7 +1670,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
         
 //        // get an icon URL that is specific to the current context
-//        String discipline = CollectionObjDef.getCurrentCollectionObjDef().getDiscipline();
+//        String discipline = CollectionType.getCurrentCollectionType().getDiscipline();
 //        String iconUrl = null;
 //        discipline = discipline.toLowerCase();
 //        if (discipline.startsWith("fish"))

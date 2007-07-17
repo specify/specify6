@@ -53,9 +53,9 @@
         <table name="edu.ku.brc.specify.datamodel.CollectingTrip" id="87" workbench="true" query="true">
             <display objtitle="Collecting Trip"/>
         </table>
-        <table name="edu.ku.brc.specify.datamodel.CollectionObjDef" id="26">
-            <display objtitle="Collection Object Def" view="CollectionObjDef" dataobjformatter="CollectionObjDef" uiformatter="" searchdlg="CollectionObjDefSearch" newobjdlg="CollectionObjDef"/>
-            <businessrule>edu.ku.brc.specify.datamodel.busrules.CollectionObjDefBusRules</businessrule>                    
+        <table name="edu.ku.brc.specify.datamodel.CollectionType" id="26">
+            <display objtitle="Collection Object Def" view="CollectionType" dataobjformatter="CollectionType" uiformatter="" searchdlg="CollectionTypeSearch" newobjdlg="CollectionType"/>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.CollectionTypeBusRules</businessrule>                    
         </table>
         <table name="edu.ku.brc.specify.datamodel.CollectionObject" id="1" workbench="true" query="true">
             <display objtitle="Collection Object" view="CollectionObject" dataobjformatter="CollectionObject" searchdlg="" newobjdlg=""/>

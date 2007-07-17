@@ -980,7 +980,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         SpecifyAppPrefs.initialPrefs();
         
         //Collection.setCurrentCollection(null);
-        //CollectionObjDef.setCurrentCollectionObjDef(null);
+        //CollectionType.setCurrentCollectionType(null);
         
         // "false" means that it should use any cached values it can find to automatically initialize itself
         //AppContextMgr.CONTEXT_STATUS status = AppContextMgr.getInstance().setContext(databaseNameArg, userNameArg, startOver);

@@ -54,7 +54,7 @@ public class DataType extends DataModelObjBase implements java.io.Serializable {
 
      protected Long dataTypeId;
      protected String name;
-     protected Set<CollectionObjDef> collectionObjDef;
+     protected Set<CollectionType> collectionType;
 
 
     // Constructors
@@ -79,7 +79,7 @@ public class DataType extends DataModelObjBase implements java.io.Serializable {
         super.init();
         dataTypeId = null;
         name = null;
-        collectionObjDef = new HashSet<CollectionObjDef>();
+        collectionType = new HashSet<CollectionType>();
     }
     // End Initializer
 
@@ -136,12 +136,12 @@ public class DataType extends DataModelObjBase implements java.io.Serializable {
      *
      */
     @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "dataType")
-    public Set<CollectionObjDef> getCollectionObjDef() {
-        return this.collectionObjDef;
+    public Set<CollectionType> getCollectionType() {
+        return this.collectionType;
     }
 
-    public void setCollectionObjDef(Set<CollectionObjDef> collectionObjDef) {
-        this.collectionObjDef = collectionObjDef;
+    public void setCollectionType(Set<CollectionType> collectionType) {
+        this.collectionType = collectionType;
     }
 
   /*
@@ -163,20 +163,20 @@ public class DataType extends DataModelObjBase implements java.io.Serializable {
 
     // Add Methods
 
-    public void addCollectionObjDef(final CollectionObjDef collectionObjDefArg)
+    public void addCollectionType(final CollectionType collectionTypeArg)
     {
-        this.collectionObjDef.add(collectionObjDefArg);
-        collectionObjDefArg.setDataType(this);
+        this.collectionType.add(collectionTypeArg);
+        collectionTypeArg.setDataType(this);
     }
 
     // Done Add Methods
 
     // Delete Methods
 
-    public void removeCollectionObjDef(final CollectionObjDef collectionObjDefArg)
+    public void removeCollectionType(final CollectionType collectionTypeArg)
     {
-        this.collectionObjDef.remove(collectionObjDefArg);
-        collectionObjDefArg.setDataType(null);
+        this.collectionType.remove(collectionTypeArg);
+        collectionTypeArg.setDataType(null);
     }
 
     // Delete Add Methods

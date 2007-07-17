@@ -310,7 +310,7 @@ public class FormEditor implements DatabaseLoginListener
      * @param disciplineName fish, birds, bees etc
      * @return true on success
      */
-    public CollectionObject[] createSingleDiscipline(final String colObjDefName, final String disciplineName)
+    public CollectionObject[] createSingleDiscipline(final String collTypeName, final String disciplineName)
     {
         CollectionObject[] colObjs = null;
         
@@ -325,22 +325,22 @@ public class FormEditor implements DatabaseLoginListener
         GeologicTimePeriodTreeDef geologicTimePeriodTreeDef = createGeologicTimePeriodTreeDef("GeologicTimePeriodTreeDef");//meg added to allow for not-null constraints
         LocationTreeDef locationTreeDef = createLocationTreeDef("LocationDef");
         
-        CollectionObjDef collectionObjDef = createCollectionObjDef(colObjDefName, disciplineName, dType, user, taxonTreeDef, geographyTreeDef, geologicTimePeriodTreeDef,locationTreeDef);
+        CollectionType collectionType = createCollectionType(collTypeName, disciplineName, dType, user, taxonTreeDef, geographyTreeDef, geologicTimePeriodTreeDef,locationTreeDef);
        
-        //CollectionObjDef collectionObjDef = createCollectionObjDef(colObjDefName, disciplineName, dType, user, taxonTreeDef);
+        //CollectionType collectionType = createCollectionType(collTypeName, disciplineName, dType, user, taxonTreeDef);
 
-        Geography[] geographies = createGeographies(collectionObjDef, "GeoTree");
+        Geography[] geographies = createGeographies(collectionType, "GeoTree");
 
         Locality[] localities = new Locality[2];
         localities[0] = createLocality("This is the place", geographies[0]);
         localities[1] = createLocality("My Private Forest", geographies[1]);
 
-        Location[] locations = createLocations(collectionObjDef, "GLocationTree");
+        Location[] locations = createLocations(collectionType, "GLocationTree");
         Taxon[]    taxonomy  = createTaxonomy(taxonTreeDef);
 
         Agent[] agents = createAgentsInMemory();
 
-        Collection collection = createCollection("KUFSH", "Fish", collectionObjDef);
+        Collection collection = createCollection("KUFSH", "Fish", collectionType);
 
 
         // Create Collecting Event
@@ -370,7 +370,7 @@ public class FormEditor implements DatabaseLoginListener
                                                   null,
                                                   (Agent)values[i+2],
                                                   collection,
-                                                  collectionObjDef,
+                                                  collectionType,
                                                   (Integer)values[+3],
                                                   colEv);
         }
@@ -453,7 +453,7 @@ public class FormEditor implements DatabaseLoginListener
                 {
                     DataType dType = new DataType();
                     dType.setName(name);
-                    dType.setCollectionObjDef(null);
+                    dType.setCollectionType(null);
                     session.save(dType);
 
                     if (returnName != null && name.equals(returnName))

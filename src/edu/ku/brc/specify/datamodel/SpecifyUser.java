@@ -65,7 +65,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     protected String                  email;
     protected String                  userType;
     protected Short                   privLevel;
-    protected Set<CollectionObjDef>   collectionObjDefs;//
+    protected Set<CollectionType>   collectionTypes;//
     protected Set<RecordSet>          recordSets;//
     private Set<Workbench>            workbenches;
     private Set<WorkbenchTemplate>    workbenchTemplates;
@@ -119,7 +119,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
         name = null;
         email = null;
         privLevel = null;
-        collectionObjDefs = new HashSet<CollectionObjDef>();
+        collectionTypes = new HashSet<CollectionType>();
         recordSets = new HashSet<RecordSet>();
         workbenches = new HashSet<Workbench>();
         workbenchTemplates = new HashSet<WorkbenchTemplate>();
@@ -254,18 +254,18 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
      * 
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "specifyUser")
-    public Set<CollectionObjDef> getCollectionObjDefs()
+    public Set<CollectionType> getCollectionTypes()
     {
-        return this.collectionObjDefs;
+        return this.collectionTypes;
     }
 
     /**
-     * @param collectionObjDef - 
+     * @param collectionType - 
      * void
      */
-    public void setCollectionObjDefs(Set<CollectionObjDef> collectionObjDef)
+    public void setCollectionTypes(Set<CollectionType> collectionType)
     {
-        this.collectionObjDefs = collectionObjDef;
+        this.collectionTypes = collectionType;
     }
 
     /**
@@ -439,13 +439,13 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     }
 
     /**
-     * @param collectionObjDefArg - 
+     * @param collectionTypeArg - 
      * void
      */
-    public void addCollectionObjDefs(final CollectionObjDef collectionObjDefArg)
+    public void addCollectionTypes(final CollectionType collectionTypeArg)
     {
-        this.collectionObjDefs.add(collectionObjDefArg);
-        collectionObjDefArg.setSpecifyUser(this);
+        this.collectionTypes.add(collectionTypeArg);
+        collectionTypeArg.setSpecifyUser(this);
     }
 
     /**
@@ -508,13 +508,13 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     }
 
     /**
-     * @param collectionObjDefArg - 
+     * @param collectionTypeArg - 
      * void
      */
-    public void removeCollectionObjDefs(final CollectionObjDef collectionObjDefArg)
+    public void removeCollectionTypes(final CollectionType collectionTypeArg)
     {
-        this.collectionObjDefs.remove(collectionObjDefArg);
-        collectionObjDefArg.setSpecifyUser(null);
+        this.collectionTypes.remove(collectionTypeArg);
+        collectionTypeArg.setSpecifyUser(null);
     }
 
     /**

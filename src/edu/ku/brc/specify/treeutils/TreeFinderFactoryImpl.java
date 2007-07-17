@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Vector;
 
 import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.CollectionObjDef;
+import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.LocationTreeDef;
@@ -77,10 +77,10 @@ public class TreeFinderFactoryImpl extends TreeFinderFactory
         Collection cs = Collection.getCurrentCollection();
         if (cs != null)
         {
-            CollectionObjDef cod = cs.getCollectionObjDef();
-            if (cod != null)
+            CollectionType ct = cs.getCollectionType();
+            if (ct != null)
             {
-                TaxonTreeDef def = cod.getTaxonTreeDef();
+                TaxonTreeDef def = ct.getTaxonTreeDef();
                 if (def != null)
                 {
                     defs.add(def);
@@ -104,10 +104,10 @@ public class TreeFinderFactoryImpl extends TreeFinderFactory
         Collection cs = Collection.getCurrentCollection();
         if (cs != null)
         {
-            CollectionObjDef cod = cs.getCollectionObjDef();
-            if (cod != null)
+            CollectionType ct = cs.getCollectionType();
+            if (ct != null)
             {
-                GeographyTreeDef def = cod.getGeographyTreeDef();
+                GeographyTreeDef def = ct.getGeographyTreeDef();
                 if (def!=null)
                 {
                     defs.add(def);
@@ -131,10 +131,10 @@ public class TreeFinderFactoryImpl extends TreeFinderFactory
         Collection cs = Collection.getCurrentCollection();
         if (cs != null)
         {
-            CollectionObjDef cod = cs.getCollectionObjDef();
-            if (cod != null)
+            CollectionType ct = cs.getCollectionType();
+            if (ct != null)
             {
-                GeologicTimePeriodTreeDef def = cod.getGeologicTimePeriodTreeDef();
+                GeologicTimePeriodTreeDef def = ct.getGeologicTimePeriodTreeDef();
                 if (def!=null)
                 {
                     defs.add(def);
@@ -158,10 +158,10 @@ public class TreeFinderFactoryImpl extends TreeFinderFactory
         Collection cs = Collection.getCurrentCollection();
         if (cs != null)
         {
-            CollectionObjDef cod = cs.getCollectionObjDef();
-            if (cod != null)
+            CollectionType ct = cs.getCollectionType();
+            if (ct != null)
             {
-                LocationTreeDef def = cod.getLocationTreeDef();
+                LocationTreeDef def = ct.getLocationTreeDef();
                 if (def!=null)
                 {
                     defs.add(def);

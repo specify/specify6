@@ -53,7 +53,7 @@ import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.CollectionObjDef;
+import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
@@ -187,7 +187,7 @@ public class DataEntryTask extends BaseTask
                          final FormDataObjIFace data,
                          final boolean          isNewForm)
     {
-        View view = viewSetName == null ? SpecifyAppContextMgr.getInstance().getView(viewName, CollectionObjDef.getCurrentCollectionObjDef()) : 
+        View view = viewSetName == null ? SpecifyAppContextMgr.getInstance().getView(viewName, CollectionType.getCurrentCollectionType()) : 
                                           AppContextMgr.getInstance().getView(viewSetName, viewName);
         FormDataObjIFace  dataObj = data;
         if (dataObj == null)
@@ -306,7 +306,7 @@ public class DataEntryTask extends BaseTask
                 SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
     
                 
-                View view = appContextMgr.getView(defaultFormName, CollectionObjDef.getCurrentCollectionObjDef());
+                View view = appContextMgr.getView(defaultFormName, CollectionType.getCurrentCollectionType());
                 
                 formPane = new FormPane(name, task, view, null, null, MultiView.VIEW_SWITCHER | MultiView.RESULTSET_CONTROLLER);
                 formPane.setIcon(getIconForView(view));

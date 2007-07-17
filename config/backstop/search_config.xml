@@ -831,7 +831,7 @@ accession.DateAccessioned, accession.DateReceived FROM accession WHERE (%s)]]>
             </detailView>
         </table>
         
-        <table id="105" tableid="26" name="CollectionObjDefSearch" title="Collection Obj Def" priority="1" color="30, 144, 255">
+        <table id="105" tableid="26" name="CollectionTypeSearch" title="Collection Obj Def" priority="1" color="30, 144, 255">
             <outofdate/>
             <index>
                 <sql/>
@@ -839,10 +839,10 @@ accession.DateAccessioned, accession.DateReceived FROM accession WHERE (%s)]]>
             </index>
             <detailView icon="">
                 <sql>
-                    <![CDATA[SELECT CollectionObjDefID, Name, Discipline FROM collectionobjdef WHERE (%s)]]>
+                    <![CDATA[SELECT CollectionTypeID, Name, Discipline FROM collectiontype WHERE (%s)]]>
                 </sql>
                 <captions>
-                    <caption col="CollectionObjDefID" text="CollectionObjDefID"  visible="false"/>
+                    <caption col="CollectionTypeID" text="CollectionTypeID"  visible="false"/>
                     <caption col="Name" text="Name"/>
                     <caption col="Discipline" text="Discipline"/>
                 </captions>

@@ -49,7 +49,7 @@ import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.specify.datamodel.CollectionObjDef;
+import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.PickList;
@@ -123,10 +123,10 @@ public class SystemSetupTask extends BaseTask
                     startEditor(DataType.class, SYSTEMSETUPTASK, "DataType");
                 }
             })); // I18N
-            sysNavBox.add(NavBox.createBtnWithTT("Collection Obj Def", SYSTEMSETUPTASK, "", IconManager.IconSize.Std16, new ActionListener() {
+            sysNavBox.add(NavBox.createBtnWithTT("Collection Type", SYSTEMSETUPTASK, "", IconManager.IconSize.Std16, new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
-                    startEditor(CollectionObjDef.class, SYSTEMSETUPTASK, "CollectionObjDef");
+                    startEditor(CollectionType.class, SYSTEMSETUPTASK, "CollectionType");
                 }
             })); // I18N
             sysNavBox.add(NavBox.createBtnWithTT("Prep Type", "PrepType", "", IconManager.IconSize.Std16, new ActionListener() {
@@ -256,12 +256,12 @@ public class SystemSetupTask extends BaseTask
     /**
      * Creates the edit form for Prep Types. 
      */
-    protected void editCollectionObjDefs()
+    protected void editCollectionTypes()
     {
-        if (!checkForPaneWithData(CollectionObjDef.class))
+        if (!checkForPaneWithData(CollectionType.class))
         {
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            List prepTypes = session.getDataList(CollectionObjDef.class);
+            List prepTypes = session.getDataList(CollectionType.class);
             session.close();
             
             View view = AppContextMgr.getInstance().getView("SystemSetup", "PrepType");
@@ -474,7 +474,7 @@ public class SystemSetupTask extends BaseTask
     @Override
     public SubPaneIFace getStarterPane()
     {
-       // View view = appContextMgr.getView("SystemSetup", CollectionObjDef.getCurrentCollectionObjDef());
+       // View view = appContextMgr.getView("SystemSetup", CollectionType.getCurrentCollectionType());
         //createFormPanel(view.getViewSetName(), view.getName(), "edit", infoRequest, MultiView.IS_NEW_OBJECT);
 
         //recentFormPane = new FormPane(null, name, this, "");

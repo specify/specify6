@@ -41,7 +41,7 @@ import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AppResource;
 import edu.ku.brc.specify.datamodel.AppResourceDefault;
 import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.CollectionObjDef;
+import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
@@ -67,7 +67,7 @@ import edu.ku.brc.ui.forms.persist.ViewSet;
  * <li>The Database Name (database connection)
  * <li>The Specify User Object
  * <li>The Collection
- * <li>The CollectionObjDef
+ * <li>The CollectionType
  * <li>The Discipline Name
  * </ol>
  * <p>The SpecifyAppResourceDefaultMgr will place data in a <i>username</i>/<i>databaseName</i> directory in the "application data" directory of the user.
@@ -150,7 +150,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     public int getNumOfCollectionsForUser()
     {
-        String sqlStr = "select count(cs) From CollectionObjDef as cod Inner Join cod.specifyUser as user Inner Join cod.collections as cs where user.specifyUserId = "+user.getSpecifyUserId();
+        String sqlStr = "select count(cs) From CollectionType as ct Inner Join ct.specifyUser as user Inner Join ct.collections as cs where user.specifyUserId = "+user.getSpecifyUserId();
         
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         Object                   result     = session.getData(sqlStr);
@@ -194,7 +194,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
             if (askToSelect)
             {
-                String queryStr = "select cs From CollectionObjDef as cod Inner Join cod.specifyUser as user Inner Join cod.collections as cs where user.specifyUserId = "+user.getSpecifyUserId();
+                String queryStr = "select cs From CollectionType as ct Inner Join ct.specifyUser as user Inner Join ct.collections as cs where user.specifyUserId = "+user.getSpecifyUserId();
                 Hashtable<String, Collection> collectionHash = new Hashtable<String, Collection>();
                 for (Object obj : sessionArg.getDataList(queryStr))
                 {
@@ -275,13 +275,13 @@ public class SpecifyAppContextMgr extends AppContextMgr
      * @param appResDefList the list to search
      * @param userArg the Specify user
      * @param catSeries the Collection
-     * @param colObjDef the CollectionObjDef
+     * @param collType the CollectionType
      * @return the AppResourceDefault object or null
      */
     protected AppResourceDefault find(final List             appResDefList,
                                       final SpecifyUser      userArg,
                                       final Collection    catSeries,
-                                      final CollectionObjDef colObjDef)
+                                      final CollectionType collType)
     {
         log.debug("finding AppResourceDefault");
         for (Object obj : appResDefList)
@@ -290,11 +290,11 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
             SpecifyUser      spUser = ard.getSpecifyUser();
             Collection    cs        = ard.getCollection();
-            CollectionObjDef cod    = ard.getCollectionObjDef();
+            CollectionType ct    = ard.getCollectionType();
 
             if (spUser != null && spUser.getSpecifyUserId() == userArg.getSpecifyUserId() &&
                 cs != null && cs.getCollectionId() == catSeries.getCollectionId() &&
-                cod != null && cod.getCollectionObjDefId() == colObjDef.getCollectionObjDefId())
+                ct != null && ct.getCollectionTypeId() == collType.getCollectionTypeId())
             {
                 return ard;
             }
@@ -360,12 +360,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
     {
         SpecifyUser      spUser = appResDef.getSpecifyUser();
         Collection    cs   = appResDef.getCollection();
-        CollectionObjDef cod  = appResDef.getCollectionObjDef();
+        CollectionType ct  = appResDef.getCollectionType();
 
         StringBuilder strBuf = new StringBuilder();
         strBuf.append("CS["+(cs != null ? cs.getCollectionName() : "null") + "]");
         strBuf.append(" SU["+(spUser != null ? spUser.getName() : "null") + "]");
-        strBuf.append(" COD["+(cod != null ? cod.getName() : "null") + "]");
+        strBuf.append(" COD["+(ct != null ? ct.getName() : "null") + "]");
         strBuf.append(" DSP["+appResDef.getDisciplineType() + "]");
         strBuf.append(" UTYP["+appResDef.getUserType() + "]");
         log.debug("AppResDefAsString - "  + strBuf.toString());
@@ -386,7 +386,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         // This is where we will read it in from the Database
         // but for now we don't need to do that.
         //
-        // We need to search for User, Collection, CollectionObjDef and UserType
+        // We need to search for User, Collection, CollectionType and UserType
         // Then
 
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
@@ -430,17 +430,17 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
         List appResDefList = session.getDataList( "From AppResourceDefault where specifyUserId = "+user.getSpecifyUserId());
 
-        CollectionObjDef cod = collection.getCollectionObjDef();
-        CollectionObjDef.setCurrentCollectionObjDef(cod);
+        CollectionType ct = collection.getCollectionType();
+        CollectionType.setCurrentCollectionType(ct);
     
             
         log.debug("Adding AppResourceDefs from Collection and ColObjDefs");
 
-        log.debug("  ColObjDef["+cod.getName()+"]");
+        log.debug("  ColObjDef["+ct.getName()+"]");
         
-        dispHash.put(cod.getDiscipline(), cod.getDiscipline());
+        dispHash.put(ct.getDiscipline(), ct.getDiscipline());
         
-        AppResourceDefault appResourceDef = find(appResDefList, user, collection, cod);
+        AppResourceDefault appResourceDef = find(appResDefList, user, collection, ct);
         if (appResourceDef != null)
         {
             log.debug("Adding1 "+getAppResDefAsString(appResourceDef));
@@ -461,7 +461,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 appResDef.setUserType(userType);
                 appResDef.setSpecifyUser(user);//added to fix not-null constraints
                 appResDef.setCollection(Collection.getCurrentCollection());
-                appResDef.setCollectionObjDef(CollectionObjDef.getCurrentCollectionObjDef());
+                appResDef.setCollectionType(CollectionType.getCurrentCollectionType());
                 
                 log.debug("Adding2 "+getAppResDefAsString(appResDef));
                 appResourceList.add(appResDef);
@@ -484,7 +484,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 appResDef.setSpecifyUser(user);
                 
                 appResDef.setCollection(collection);
-                appResDef.setCollectionObjDef(cod);
+                appResDef.setCollectionType(ct);
 
                 log.debug("Adding3 "+getAppResDefAsString(appResDef));
                 appResourceList.add(appResDef);
@@ -550,21 +550,21 @@ public class SpecifyAppContextMgr extends AppContextMgr
     }
 
     /**
-     * Finds a View by name using a CollectionObjDef.
+     * Finds a View by name using a CollectionType.
      * @param viewName the name of the view
-     * @param colObjDef the CollectionObjDef
+     * @param collType the CollectionType
      * @return the view or null
      */
-    public View getView(final String viewName, final CollectionObjDef colObjDef)
+    public View getView(final String viewName, final CollectionType collType)
     {
-        log.debug("Looking Up View ["+viewName+"] colObjDef["+(colObjDef != null ? colObjDef.getName() : "null")+"]");
+        log.debug("Looking Up View ["+viewName+"] collType["+(collType != null ? collType.getName() : "null")+"]");
         
         boolean fndColObjDef = false;
         for (AppResourceDefault appResDef : appResourceList)
         {
-            log.debug("Looking["+(appResDef.getCollectionObjDef() != null ? appResDef.getCollectionObjDef().getName() : "null")+"]["+(colObjDef != null ? colObjDef.getName() : "null")+"]");
+            log.debug("Looking["+(appResDef.getCollectionType() != null ? appResDef.getCollectionType().getName() : "null")+"]["+(collType != null ? collType.getName() : "null")+"]");
             
-            if (appResDef.getCollectionObjDef() != null && appResDef.getCollectionObjDef() == colObjDef)
+            if (appResDef.getCollectionType() != null && appResDef.getCollectionType() == collType)
             {
                 fndColObjDef = true;
                 for (ViewSet vs : getViewSetList(appResDef))
@@ -582,7 +582,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         // which were created dynamically
         if (!fndColObjDef)
         {
-            String disciplineName = colObjDef != null ? colObjDef.getDiscipline() : null;
+            String disciplineName = collType != null ? collType.getDiscipline() : null;
             String userType       = SpecifyUser.getCurrentUser().getUserType();
             userType = StringUtils.replace(userType, " ", "").toLowerCase();
 
@@ -618,7 +618,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 return view;
             }
         }
-        throw new RuntimeException("Can't find View ["+viewName+"] colObjDef["+(colObjDef != null ? colObjDef.getName() : "null")+"] ["+fndColObjDef+"]");
+        throw new RuntimeException("Can't find View ["+viewName+"] collType["+(collType != null ? collType.getName() : "null")+"] ["+fndColObjDef+"]");
     }
 
     /* (non-Javadoc)
@@ -634,7 +634,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
         if (StringUtils.isEmpty(viewSetName))
         {
-            throw new RuntimeException("Sorry not empty or null ViewSetNames use the call with CollectionObjDef instead.");
+            throw new RuntimeException("Sorry not empty or null ViewSetNames use the call with CollectionType instead.");
         }
 
         for (AppResourceDefault appResDef : appResourceList)

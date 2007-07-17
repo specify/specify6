@@ -33,7 +33,7 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
 	protected String				name;
 	protected String				remarks;
     protected Integer               fullNameDirection;
-	protected CollectionObjDef		collObjDef;
+	protected CollectionType		collObjDef;
 	protected Set<Taxon>			treeEntries;
 	protected Set<TaxonTreeDefItem>	treeDefItems;
 
@@ -131,12 +131,12 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
 
     @OneToOne(mappedBy="taxonTreeDef", fetch=FetchType.EAGER)
     @Cascade( {CascadeType.MERGE, CascadeType.LOCK} )
-    public CollectionObjDef getCollObjDef()
+    public CollectionType getCollObjDef()
 	{
 		return this.collObjDef;
 	}
 
-	public void setCollObjDef(CollectionObjDef collObjDef)
+	public void setCollObjDef(CollectionType collObjDef)
 	{
 		this.collObjDef = collObjDef;
 	}

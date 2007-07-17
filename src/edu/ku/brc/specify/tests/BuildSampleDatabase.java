@@ -17,7 +17,7 @@ import static edu.ku.brc.specify.tests.DataBuilder.createCollection;
 import static edu.ku.brc.specify.tests.DataBuilder.createCollectingEvent;
 import static edu.ku.brc.specify.tests.DataBuilder.createCollectingEventAttr;
 import static edu.ku.brc.specify.tests.DataBuilder.createCollectingTrip;
-import static edu.ku.brc.specify.tests.DataBuilder.createCollectionObjDef;
+import static edu.ku.brc.specify.tests.DataBuilder.createCollectionType;
 import static edu.ku.brc.specify.tests.DataBuilder.createCollectionObject;
 import static edu.ku.brc.specify.tests.DataBuilder.createCollectionObjectAttr;
 import static edu.ku.brc.specify.tests.DataBuilder.createCollector;
@@ -118,7 +118,7 @@ import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectingEventAttr;
 import edu.ku.brc.specify.datamodel.CollectingTrip;
-import edu.ku.brc.specify.datamodel.CollectionObjDef;
+import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
 import edu.ku.brc.specify.datamodel.Collector;
@@ -213,11 +213,11 @@ public class BuildSampleDatabase
 
     /**
      * Creates a single discipline collection.
-     * @param colObjDefName the name of the Collection Obj Def to use
+     * @param collTypeName the name of the Collection Type to use
      * @param disciplineName the discipline name
      * @return the entire list of DB object to be persisted
      */
-    public List<Object> createEmptyDiscipline(final String colObjDefName, 
+    public List<Object> createEmptyDiscipline(final String collTypeName, 
                                               final String disciplineName,
                                               final String username, 
                                               final String userType, 
@@ -232,22 +232,22 @@ public class BuildSampleDatabase
         SpecifyUser      user             = createSpecifyUser(username, email, (short) 0, userGroup, userType);
         DataType         dataType         = createDataType(disciplineName);
         TaxonTreeDef     taxonTreeDef     = createTaxonTreeDef("Sample Taxon Tree Def");
-        CollectionObjDef collectionObjDef = createCollectionObjDef(colObjDefName, disciplineName, dataType, user, taxonTreeDef, null, null, null);
+        CollectionType collectionType = createCollectionType(collTypeName, disciplineName, dataType, user, taxonTreeDef, null, null, null);
 
         SpecifyUser.setCurrentUser(user);
         user.setAgent(userAgent);
 
-        dataObjects.add(collectionObjDef);
+        dataObjects.add(collectionType);
         dataObjects.add(userGroup);
         dataObjects.add(user);
         dataObjects.add(dataType);
         dataObjects.add(taxonTreeDef);
         dataObjects.add(userAgent);
         
-        List<Object> taxa = createSimpleTaxon(collectionObjDef.getTaxonTreeDef());
-        List<Object> geos = createSimpleGeography(collectionObjDef, "Geography");
-        List<Object> locs = createSimpleLocation(collectionObjDef, "Location");
-        List<Object> gtps = createSimpleGeologicTimePeriod(collectionObjDef, "Geologic Time Period");
+        List<Object> taxa = createSimpleTaxon(collectionType.getTaxonTreeDef());
+        List<Object> geos = createSimpleGeography(collectionType, "Geography");
+        List<Object> locs = createSimpleLocation(collectionType, "Location");
+        List<Object> gtps = createSimpleGeologicTimePeriod(collectionType, "Geologic Time Period");
 
         dataObjects.addAll(taxa);
         dataObjects.addAll(geos);
@@ -257,7 +257,7 @@ public class BuildSampleDatabase
         CatalogNumberingScheme cns = createCatalogNumberingScheme("CatalogNumber", "", true);
         dataObjects.add(cns);
 
-        Collection collection = createCollection("Fish", "Fish", cns, collectionObjDef);
+        Collection collection = createCollection("Fish", "Fish", cns, collectionType);
         dataObjects.add(collection);
 
         return dataObjects;
@@ -265,11 +265,11 @@ public class BuildSampleDatabase
     
     /**
      * Creates a single discipline collection.
-     * @param colObjDefName the name of the Collection Obj Def to use
+     * @param collTypeName the name of the Collection Type to use
      * @param disciplineName the discipline name
      * @return the entire list of DB object to be persisted
      */
-    public List<Object> createSingleDiscipline(final String colObjDefName, final String disciplineName)
+    public List<Object> createSingleDiscipline(final String collTypeName, final String disciplineName)
     {
         System.out.println("Creating single discipline database: " + disciplineName);
         
@@ -309,13 +309,13 @@ public class BuildSampleDatabase
         SpecifyUser      user             = createSpecifyUser(username, email, (short) 0, userGroup, userType);
         DataType         dataType         = createDataType(disciplineName);
         TaxonTreeDef     taxonTreeDef     = createTaxonTreeDef("Sample Taxon Tree Def");
-        CollectionObjDef collectionObjDef = createCollectionObjDef(colObjDefName, disciplineName, dataType, user, taxonTreeDef, null, null, null);
+        CollectionType collectionType = createCollectionType(collTypeName, disciplineName, dataType, user, taxonTreeDef, null, null, null);
         
         SpecifyUser.setCurrentUser(user);
         user.setAgent(userAgent);
 
-        //dataType.addCollectionObjDef(collectionObjDef);
-        dataObjects.add(collectionObjDef);
+        //dataType.addCollectionType(collectionType);
+        dataObjects.add(collectionType);
         dataObjects.add(userGroup);
         dataObjects.add(user);
         dataObjects.add(dataType);
@@ -335,10 +335,10 @@ public class BuildSampleDatabase
         ////////////////////////////////
         // build the trees
         ////////////////////////////////
-        List<Object> taxa = createSimpleTaxon(collectionObjDef.getTaxonTreeDef());
-        List<Object> geos = createSimpleGeography(collectionObjDef, "Geography");
-        List<Object> locs = createSimpleLocation(collectionObjDef, "Location");
-        List<Object> gtps = createSimpleGeologicTimePeriod(collectionObjDef, "Geologic Time Period");
+        List<Object> taxa = createSimpleTaxon(collectionType.getTaxonTreeDef());
+        List<Object> geos = createSimpleGeography(collectionType, "Geography");
+        List<Object> locs = createSimpleLocation(collectionType, "Location");
+        List<Object> gtps = createSimpleGeologicTimePeriod(collectionType, "Geologic Time Period");
 
         dataObjects.addAll(taxa);
         dataObjects.addAll(geos);
@@ -362,7 +362,7 @@ public class BuildSampleDatabase
         dataObjects.add(createPickList("Department",          tableFieldType, "accession",         "text1" ,       null,          true, -1));
         dataObjects.add(createPickList("AgentTitle",          tableFieldType, "agent",             "title" ,       null,          true, -1));
         dataObjects.add(createPickList("PrepType",            tableType,      "preptype",           null, "PrepType",             true, -1));
-        dataObjects.add(createPickList("CollectionObjDef",    tableType,      "collectionobjdef",   null, "CollectionObjDef",     true, -1));
+        dataObjects.add(createPickList("CollectionType",    tableType,      "collectiontype",   null, "CollectionType",     true, -1));
         dataObjects.add(createPickList("GeologicTimePeriodTreeDef", tableType, "geologictimeperiodtreedef", null, "GeologicTimePeriodTreeDef", true, -1));
         dataObjects.add(createPickList("CatalogNumberingScheme", tableType, "catalognumberingscheme", null, "CatalogNumberingScheme", true, -1));
         
@@ -519,7 +519,7 @@ public class BuildSampleDatabase
         ce1.setEndDateVerbatim("19 Mar 1993, 1:03 PM");   
         ce1.setMethod(collMethods[1]);
         
-        AttributeDef cevAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "ParkName", collectionObjDef, null);//meg added cod
+        AttributeDef cevAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "ParkName", collectionType, null);//meg added cod
         CollectingEventAttr cevAttr = createCollectingEventAttr(ce1, cevAttrDef, "Sleepy Hollow", null);
 
         Collector collectorMeg = createCollector(agents.get(2), 1);
@@ -569,7 +569,7 @@ public class BuildSampleDatabase
         // Create Collection
         ////////////////////////////////
         log.info("Creating a catalog series");
-        Collection collection = createCollection("KUFSH", "Fish", cns, collectionObjDef);
+        Collection collection = createCollection("KUFSH", "Fish", cns, collectionType);
         dataObjects.add(collection);
         
         ////////////////////////////////
@@ -591,7 +591,7 @@ public class BuildSampleDatabase
 
         List<CollectionObject> collObjs = new Vector<CollectionObject>();
         Collection       col      = collection;
-        CollectionObjDef cod     = collectionObjDef;
+        CollectionType cod     = collectionType;
         Calendar         catDate = Calendar.getInstance();
         catDate.set(2006, 01, 29);
         
@@ -1142,16 +1142,16 @@ public class BuildSampleDatabase
 
 
 
-    public List<Object> createSimpleGeography(final CollectionObjDef colObjDef, final String treeDefName)
+    public List<Object> createSimpleGeography(final CollectionType collType, final String treeDefName)
     {
         log.info("createSimpleGeography " + treeDefName);
 
         List<Object> newObjs = new Vector<Object>();
 
-        // Create a geography tree definition (and tie it to the CollectionObjDef)
+        // Create a geography tree definition (and tie it to the CollectionType)
         GeographyTreeDef geoTreeDef = createGeographyTreeDef(treeDefName);
-        geoTreeDef.getCollObjDefs().add(colObjDef);
-        colObjDef.setGeographyTreeDef(geoTreeDef);
+        geoTreeDef.getCollectionTypes().add(collType);
+        collType.setGeographyTreeDef(geoTreeDef);
         // 0
         newObjs.add(geoTreeDef);
         
@@ -1218,7 +1218,7 @@ public class BuildSampleDatabase
     }
 
 
-    public List<Object> createSimpleGeologicTimePeriod(final CollectionObjDef colObjDef,
+    public List<Object> createSimpleGeologicTimePeriod(final CollectionType collType,
                                                               final String treeDefName)
     {
         log.info("createSimpleGeologicTimePeriod " + treeDefName);
@@ -1227,8 +1227,8 @@ public class BuildSampleDatabase
 
         // Create a geography tree definition
         GeologicTimePeriodTreeDef treeDef = createGeologicTimePeriodTreeDef(treeDefName);
-        treeDef.getCollObjDefs().add(colObjDef);
-        colObjDef.setGeologicTimePeriodTreeDef(treeDef);
+        treeDef.getCollectionTypes().add(collType);
+        collType.setGeologicTimePeriodTreeDef(treeDef);
         newObjs.add(treeDef);
 
         GeologicTimePeriodTreeDefItem defItemLevel0 = createGeologicTimePeriodTreeDefItem(
@@ -1272,7 +1272,7 @@ public class BuildSampleDatabase
     }
 
 
-    public List<Object> createSimpleLocation(final CollectionObjDef colObjDef, final String treeDefName)
+    public List<Object> createSimpleLocation(final CollectionType collType, final String treeDefName)
     {
         log.info("createSimpleLocation " + treeDefName);
 
@@ -1280,8 +1280,8 @@ public class BuildSampleDatabase
 
         // Create a geography tree definition
         LocationTreeDef locTreeDef = createLocationTreeDef(treeDefName);
-        locTreeDef.getCollObjDefs().add(colObjDef);
-        colObjDef.setLocationTreeDef(locTreeDef);
+        locTreeDef.getCollectionTypes().add(collType);
+        collType.setLocationTreeDef(locTreeDef);
 
         LocationTreeDefItem building = createLocationTreeDefItem(null, locTreeDef, "building", 0);
         building.setIsEnforced(true);
@@ -1982,7 +1982,7 @@ public class BuildSampleDatabase
                     });
                     
                     startTx();
-                    //persist(dataObjects.get(0)); // just persist the CollectionObjDef object
+                    //persist(dataObjects.get(0)); // just persist the CollectionType object
                     persist(dataObjects);
                     commitTx();
                     

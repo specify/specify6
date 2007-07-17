@@ -8,7 +8,7 @@
     <dialog type="search" viewset="Search" view="PermitSearch" name="PermitSearch" title="PermitSearchTitle" class="edu.ku.brc.specify.datamodel.Permit" idfield="permitId"/>
     <dialog type="search" viewset="Search" view="PrepTypeSearch" name="PrepTypeSearch" title="PrepTypeSearch" class="edu.ku.brc.specify.datamodel.PrepType" idfield="prepTypeId"/>
     <dialog type="search" viewset="Search" view="Taxon" name="TaxonSearch" title="TaxonSearchTitle" class="edu.ku.brc.specify.datamodel.Taxon" idfield="taxonId"/>
-    <dialog type="search" viewset="Search" view="CollectionObjDefSearch" name="CollectionObjDefSearch" title="CollectionObjDefSearchTitle" class="edu.ku.brc.specify.datamodel.CollectionObjDef" idfield="collectionObjDefSearchId"/>
+    <dialog type="search" viewset="Search" view="CollectionTypeSearch" name="CollectionTypeSearch" title="CollectionTypeSearchTitle" class="edu.ku.brc.specify.datamodel.CollectionType" idfield="collectionTypeSearchId"/>
     
     <dialog type="display" viewset="Global" view="Accession" name="AccessionDisplay" title="AccessionTitle" class="edu.ku.brc.specify.datamodel.Accession"/>
     <dialog type="display" viewset="Global" view="AccessionAgent" name="AccessionAgentDisplay" title="AccessionAgentTitle" class="edu.ku.brc.specify.datamodel.AccessionAgent"/>

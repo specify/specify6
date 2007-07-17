@@ -2,7 +2,7 @@
 <panel>
   <row>
       <box title="Taxa Type Counts" desccol="1" valcol="2">
-          <sql><![CDATA[select Name, ObjectCount from (select CollectionObjDefID AS ObjectType, Count(CollectionObjectID) AS ObjectCount from collectionobject Group By CollectionObjDefID) AS T2, collectionobjdef where T2.ObjectType = collectionobjdef. CollectionObjDefID order by ObjectCount desc]]></sql>
+          <sql><![CDATA[select Name, ObjectCount from (select CollectionTypeID AS ObjectType, Count(CollectionObjectID) AS ObjectCount from collectionobject Group By CollectionTypeID) AS T2, collectiontype where T2.ObjectType = collectiontype. CollectionTypeID order by ObjectCount desc]]></sql>
       </box>
       <box title="CITES Permits Expiring" desccol="1" valcol="2">
           <sql><![CDATA[select permit.PermitNumber, permit.PermitID, permit.IssuedDate,permit.StartDate, permit.EndDate,permit.RenewalDate,permit.Type From permit where ( lower(Type) like '%CITES%') and year(CURDATE()) = year(EndDate)]]></sql>

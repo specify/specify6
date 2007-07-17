@@ -15,7 +15,7 @@ package edu.ku.brc.specify.tests;
 
 
 import static edu.ku.brc.specify.tests.DataBuilder.createAgent;
-import static edu.ku.brc.specify.tests.DataBuilder.createCollectionObjDef;
+import static edu.ku.brc.specify.tests.DataBuilder.createCollectionType;
 import static edu.ku.brc.specify.tests.DataBuilder.createDataType;
 import static edu.ku.brc.specify.tests.DataBuilder.createSpecifyUser;
 import static edu.ku.brc.specify.tests.DataBuilder.createTaxonTreeDef;
@@ -35,7 +35,7 @@ import org.hibernate.Session;
 
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.CollectionObjDef;
+import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
@@ -302,13 +302,13 @@ public class SpecifyUserTest extends TestCase
 
             HibernateUtil.commitTransaction();
 
-            log.info("createCollectionObjDef");
-            CollectionObjDef collectionObjDef =  createCollectionObjDef("fish", "fish", dataType, user, taxonTreeDef, null, null, null);
+            log.info("createCollectionType");
+            CollectionType collectionType =  createCollectionType("fish", "fish", dataType, user, taxonTreeDef, null, null, null);
 
-            //createCollectionObjDef(dataType, testUser, "fish", "fish"); // creates TaxonTreeDef
+            //createCollectionType(dataType, testUser, "fish", "fish"); // creates TaxonTreeDef
 
             
-            UserPermission permission = createUserPermission(testUser, collectionObjDef, true, true);
+            UserPermission permission = createUserPermission(testUser, collectionType, true, true);
             assertNotNull("UserPermission is null", permission);
             assertTrue("UserPermission failed to be deleted from the database.", deleteUserPermissionFromDB(permission.getId()));
             assertTrue("SpecifyUser failed to be deleted from the database.", deleteSpecifyUserDB(testUser.getId()));
@@ -357,9 +357,9 @@ public class SpecifyUserTest extends TestCase
             log.info("createSpecifyUser");
             SpecifyUser      user             = createSpecifyUser("admin", "admin@ku.edu", (short)0, userGroup, "CollectionManager");
 
-            CollectionObjDef collectionObjDef =  createCollectionObjDef("fish", "fish", dataType, user, taxonTreeDef, null, null, null);
+            CollectionType collectionType =  createCollectionType("fish", "fish", dataType, user, taxonTreeDef, null, null, null);
             
-            UserPermission permission = createUserPermission(testUser, collectionObjDef, true, true);
+            UserPermission permission = createUserPermission(testUser, collectionType, true, true);
             assertNotNull("UserPermission is null", permission);
             HibernateUtil.commitTransaction();
             

@@ -46,7 +46,7 @@ import edu.ku.brc.specify.conversion.GenericDBConversion;
 import edu.ku.brc.specify.conversion.IdMapperMgr;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.CollectionObjDef;
+import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
@@ -355,8 +355,8 @@ public class SpecifyDBConverter
 
                 frame.setDesc("Converting CollectionObjectDefs.");
                 log.info("Converting CollectionObjectDefs.");
-                boolean convertCollectionObjDef = true;
-                if (convertCollectionObjDef || doAll)
+                boolean convertCollectionType = true;
+                if (convertCollectionType || doAll)
                 {
                     DataBuilder.getSession().beginTransaction();
                     
@@ -583,7 +583,7 @@ public class SpecifyDBConverter
                     BasicSQLUtils.deleteAllRecordsFromTable("datatype");
                     BasicSQLUtils.deleteAllRecordsFromTable("specifyuser");
                     BasicSQLUtils.deleteAllRecordsFromTable("usergroup");
-                    BasicSQLUtils.deleteAllRecordsFromTable("collectionobjdef");
+                    BasicSQLUtils.deleteAllRecordsFromTable("collectiontype");
 
                     DataType          dataType  = createDataType("Animal");
                     UserGroup         userGroup = createUserGroup("Fish");
@@ -647,13 +647,13 @@ public class SpecifyDBConverter
                         return;
                     }
 
-                        Set<CollectionObjDef>  colObjDefSet = conversion.createCollectionObjDef("Fish", dataType, user, null, null);
+                        Set<CollectionType>  collTypeSet = conversion.createCollectionType("Fish", dataType, user, null, null);
 
 
-                        Object obj = colObjDefSet.iterator().next();
-                        CollectionObjDef colObjDef = (CollectionObjDef)obj;
+                        Object obj = collTypeSet.iterator().next();
+                        CollectionType collType = (CollectionType)obj;
 
-                        conversion.convertBiologicalAttrs(colObjDef, null, null);
+                        conversion.convertBiologicalAttrs(collType, null, null);
                 }
                 //conversion.showStats();
             }

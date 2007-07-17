@@ -168,13 +168,13 @@
             </altviews>
         </view>
         
-        <view name="CollectionObjDef"
-            class="edu.ku.brc.specify.datamodel.CollectionObjDef"
+        <view name="CollectionType"
+            class="edu.ku.brc.specify.datamodel.CollectionType"
             resourcelabels="false">
-            <desc><![CDATA[The CollectionObjDef Object form.]]></desc>
+            <desc><![CDATA[The CollectionType Object form.]]></desc>
             <altviews>
-                <altview name="CollectionObjDef Edit View" viewdef="CollectionObjDef" label="View" mode="view" validated="false"/>
-                <altview name="CollectionObjDef Edit" viewdef="CollectionObjDef" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="CollectionType Edit View" viewdef="CollectionType" label="View" mode="view" validated="false"/>
+                <altview name="CollectionType Edit" viewdef="CollectionType" label="Edit" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -846,18 +846,18 @@
         
         <viewdef
             type="form"
-            name="CollectionObjDef"
-            class="edu.ku.brc.specify.datamodel.CollectionObjDef"
+            name="CollectionType"
+            class="edu.ku.brc.specify.datamodel.CollectionType"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             
-            <desc><![CDATA[CollectionObjDef Data Entry Form]]></desc>
+            <desc><![CDATA[CollectionType Data Entry Form]]></desc>
             <columnDef>p,3dlu,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>            
             
             <rows>
                 <row>
-                    <cell type="separator" label="Collection Object Definition" colspan="4"/>
+                    <cell type="separator" label="Collection Type" colspan="4"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="1" label="Name"/>
@@ -907,7 +907,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="3" label="Collection Object Def"/>
-                    <cell type="field" id="3" name="collectionObjDef" uitype="combobox" picklist="CollectionObjDef" isrequired="true"/>
+                    <cell type="field" id="3" name="collectionType" uitype="combobox" picklist="CollectionType" isrequired="true"/>
                 </row>
                 
                 <row>

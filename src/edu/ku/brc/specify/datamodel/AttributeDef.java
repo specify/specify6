@@ -59,7 +59,7 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
      protected Short tableType;
      protected String fieldName;
      protected Short dataType;
-     protected CollectionObjDef collectionObjDef;
+     protected CollectionType collectionType;
      protected PrepType prepType;
      protected Set<CollectingEventAttr> collectingEventAttrs;
      protected Set<PreparationAttr> preparationAttrs;
@@ -90,7 +90,7 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
         tableType = null;
         fieldName = null;
         dataType = null;
-        collectionObjDef = null;
+        collectionType = null;
         prepType = null;
         collectingEventAttrs = new HashSet<CollectingEventAttr>();
         preparationAttrs = new HashSet<PreparationAttr>();
@@ -175,13 +175,13 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
      *
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "CollectionObjDefID", unique = false, nullable = false, insertable = true, updatable = true)
-    public CollectionObjDef getCollectionObjDef() {
-        return this.collectionObjDef;
+    @JoinColumn(name = "CollectionTypeID", unique = false, nullable = false, insertable = true, updatable = true)
+    public CollectionType getCollectionType() {
+        return this.collectionType;
     }
 
-    public void setCollectionObjDef(CollectionObjDef collectionObjDef) {
-        this.collectionObjDef = collectionObjDef;
+    public void setCollectionType(CollectionType collectionType) {
+        this.collectionType = collectionType;
     }
 
     /**

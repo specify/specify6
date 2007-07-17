@@ -33,7 +33,7 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
 	protected String				name;
 	protected String				remarks;
     protected Integer               fullNameDirection;
-	protected Set<CollectionObjDef>		collObjDefs;
+	protected Set<CollectionType>   collectionTypes;
 	protected Set<Location>			treeEntries;
 	protected Set<LocationTreeDefItem>	treeDefItems;
 
@@ -57,7 +57,7 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
 		name = null;
 		remarks = null;
         fullNameDirection = null;
-		collObjDefs = new HashSet<CollectionObjDef>();
+		collectionTypes = new HashSet<CollectionType>();
 		treeEntries = new HashSet<Location>();
 		treeDefItems = new HashSet<LocationTreeDefItem>();
 	}
@@ -134,26 +134,26 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
     }
 
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "locationTreeDef")
-    public Set<CollectionObjDef> getCollObjDefs()
+    public Set<CollectionType> getCollectionTypes()
 	{
-		return this.collObjDefs;
+		return this.collectionTypes;
 	}
 
-	public void setCollObjDefs(Set<CollectionObjDef> collObjDefs)
+	public void setCollectionTypes(Set<CollectionType> collObjDefs)
 	{
-		this.collObjDefs = collObjDefs;
+		this.collectionTypes = collObjDefs;
 	}
 
-    public void addCollObjDef( CollectionObjDef cod )
+    public void addCollObjDef( CollectionType ct )
     {
-        this.collObjDefs.add(cod);
-        cod.setLocationTreeDef(this);
+        this.collectionTypes.add(ct);
+        ct.setLocationTreeDef(this);
     }
     
-    public void removeCollObjDef( CollectionObjDef cod )
+    public void removeCollObjDef( CollectionType ct )
     {
-        this.collObjDefs.remove(cod);
-        cod.setLocationTreeDef(null);
+        this.collectionTypes.remove(ct);
+        ct.setLocationTreeDef(null);
     }
 
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "definition")

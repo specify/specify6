@@ -59,7 +59,7 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
 
      protected Long             appResourceDefaultId;
      protected Collection       collection;
-     protected CollectionObjDef collectionObjDef;
+     protected CollectionType collectionType;
      protected SpecifyUser      specifyUser;
      protected Set<AppResource> persistedAppResources;
      protected Set<ViewSetObj>  persistedViewSets;
@@ -89,7 +89,7 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
         super.init();
         appResourceDefaultId  = null;
         collection            = null;
-        collectionObjDef      = null;
+        collectionType      = null;
         specifyUser           = null;
         
         persistedAppResources = new HashSet<AppResource>();
@@ -170,20 +170,20 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.AppResourceDefaultIFace#getCollectionObjDef()
+     * @see edu.ku.brc.specify.datamodel.AppResourceDefaultIFace#getCollectionType()
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    @JoinColumn(name = "CollectionObjDefID", unique = false, nullable = true, insertable = true, updatable = true)
-    public CollectionObjDef getCollectionObjDef() {
-        return this.collectionObjDef;
+    @JoinColumn(name = "CollectionTypeID", unique = false, nullable = true, insertable = true, updatable = true)
+    public CollectionType getCollectionType() {
+        return this.collectionType;
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.AppResourceDefaultIFace#setCollectionObjDef(edu.ku.brc.specify.datamodel.CollectionObjDef)
+     * @see edu.ku.brc.specify.datamodel.AppResourceDefaultIFace#setCollectionType(edu.ku.brc.specify.datamodel.CollectionType)
      */
-    public void setCollectionObjDef(CollectionObjDef collectionObjDef) {
-        this.collectionObjDef = collectionObjDef;
+    public void setCollectionType(CollectionType collectionType) {
+        this.collectionType = collectionType;
     }
 
     /* (non-Javadoc)
@@ -287,7 +287,7 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
         StringBuilder strBuf = new StringBuilder();
         strBuf.append(""+(collection != null ? collection.getCollectionName() : ""));
         strBuf.append(" "+(specifyUser != null ? specifyUser.getName() : ""));
-        strBuf.append(" "+(collectionObjDef != null ? collectionObjDef.getName() : ""));
+        strBuf.append(" "+(collectionType != null ? collectionType.getName() : ""));
         strBuf.append(" "+(disciplineType != null ? disciplineType : ""));
         strBuf.append(" "+(userType != null ? userType : ""));
         return strBuf.toString(); 

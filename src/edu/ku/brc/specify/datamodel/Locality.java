@@ -107,7 +107,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable, 
      protected String drainage;
      protected Integer visibility;
      protected String visibilitySetBy;
-     protected Set<CollectionObjDef> collectionObjDefs;
+     protected Set<CollectionType> collectionTypes;
      protected Geography geography;
      protected Set<LocalityCitation> localityCitations;
      protected Set<CollectingEvent> collectingEvents;
@@ -179,7 +179,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable, 
         waterBody = null;
         drainage = null;
         visibility = null;
-        collectionObjDefs = new HashSet<CollectionObjDef>();
+        collectionTypes = new HashSet<CollectionType>();
         geography = null;
         localityCitations = new HashSet<LocalityCitation>();
         collectingEvents = new HashSet<CollectingEvent>();
@@ -764,13 +764,13 @@ public class Locality extends DataModelObjBase implements java.io.Serializable, 
      * 
      */
     @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
-    @JoinTable(name = "colobjdef_locality", joinColumns = { @JoinColumn(name = "LocalityID", unique = false, nullable = false, insertable = true, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "CollectionObjDefID", unique = false, nullable = false, insertable = true, updatable = false) })
-    public Set<CollectionObjDef> getCollectionObjDefs() {
-        return this.collectionObjDefs;
+    @JoinTable(name = "colobjdef_locality", joinColumns = { @JoinColumn(name = "LocalityID", unique = false, nullable = false, insertable = true, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "CollectionTypeID", unique = false, nullable = false, insertable = true, updatable = false) })
+    public Set<CollectionType> getCollectionTypes() {
+        return this.collectionTypes;
     }
     
-    public void setCollectionObjDefs(Set<CollectionObjDef> collectionObjDefs) {
-        this.collectionObjDefs = collectionObjDefs;
+    public void setCollectionTypes(Set<CollectionType> collectionTypes) {
+        this.collectionTypes = collectionTypes;
     }
 
     /**
@@ -826,10 +826,10 @@ public class Locality extends DataModelObjBase implements java.io.Serializable, 
 
     // Add Methods
 
-    public void addCollectionObjDefs(final CollectionObjDef collectionObjDef)
+    public void addCollectionTypes(final CollectionType collectionType)
     {
-        this.collectionObjDefs.add(collectionObjDef);
-        collectionObjDef.getLocalities().add(this);
+        this.collectionTypes.add(collectionType);
+        collectionType.getLocalities().add(this);
     }
 
     public void addLocalityCitations(final LocalityCitation localityCitation)
@@ -849,10 +849,10 @@ public class Locality extends DataModelObjBase implements java.io.Serializable, 
 
     // Delete Methods
 
-    public void removeCollectionObjDefs(final CollectionObjDef collectionObjDef)
+    public void removeCollectionTypes(final CollectionType collectionType)
     {
-        this.collectionObjDefs.remove(collectionObjDef);
-        collectionObjDef.getLocalities().add(this);
+        this.collectionTypes.remove(collectionType);
+        collectionType.getLocalities().add(this);
     }
 
     public void removeLocalityCitations(final LocalityCitation localityCitation)
