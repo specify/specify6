@@ -1412,7 +1412,7 @@ public final class UIHelper
             ViewBasedDisplayIFace dialog = UIRegistry.getViewbasedFactory().createDisplay(UIHelper.getFrame(mainComp),
                                                                         defFormName,
                                                                         title,
-                                                                        getResourceString("OK"),
+                                                                        getResourceString(isNewObject && isEditMode ? "OK" : "Close"),
                                                                         isEditMode,
                                                                         opts,
                                                                         FRAME_TYPE.DIALOG);

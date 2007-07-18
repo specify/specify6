@@ -83,11 +83,12 @@ public class DataEntryTask extends BaseTask
 {
     private static final Logger log = Logger.getLogger(DataEntryTask.class);
 
-    public static final String     DATA_ENTRY       = "Data_Entry";
-    public static final String     VIEW_WAS_OPENED  = "ViewWasOpened";
-    public static final String     OPEN_NEW_VIEW    = "OpenNewView";
-    public static final String     EDIT_DATA        = "Edit";
-    public static final String     DATA             = "Data"; // Sent by FormHelper for when new DataObject are created
+    public static final String     DATA_ENTRY        = "Data_Entry";
+    public static final String     VIEW_WAS_OPENED   = "ViewWasOpened";
+    public static final String     VIEW_WAS_SHOWN    = "ViewWasShown";
+    public static final String     OPEN_NEW_VIEW     = "OpenNewView";
+    public static final String     EDIT_DATA         = "Edit";
+    public static final String     DATA              = "Data"; // Sent by FormHelper for when new DataObject are created
     
     public static final DataFlavor DATAENTRY_FLAVOR = new DataFlavor(DataEntryTask.class, "Data_Entry");
     

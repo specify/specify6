@@ -19,8 +19,6 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.Component;
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.Calendar;
 import java.util.Hashtable;
@@ -69,6 +67,7 @@ import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
+import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.dnd.Trash;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
@@ -439,60 +438,47 @@ public class InfoRequestTask extends BaseTask
                                                   0);
                     dlg.setData(values);
                     dlg.setModal(true);
-                    
-                    dlg.setCloseListener(new PropertyChangeListener()
-                    {
-                        public void propertyChange(PropertyChangeEvent evt)
-                        {
-                            String action = evt.getPropertyName();
-                            if (action.equals("OK"))
-                            {
-                                dlg.getMultiView().getDataFromUI();
-                                
-                                //System.out.println("["+values.get("bodytext")+"]");
-                                
-                                TableViewObj  tblViewObj = (TableViewObj)viewable;
-                                File          excelFile  = TableModel2Excel.convertToExcel(tempExcelFileName, 
-                                                                                           getResourceString("CollectionObject"), 
-                                                                                           tblViewObj.getTable().getModel());
-                                StringBuilder sb         = TableModel2Excel.convertToHTML(getResourceString("CollectionObject"), 
-                                                                                          tblViewObj.getTable().getModel());
-                                
-                                //EMailHelper.setDebugging(true);
-                                String text = values.get("bodytext").replace("\n", "<br>") + "<BR><BR>" + sb.toString();
-                                
-                                // XXX need to move the invokdeLater into the UIRegistry
-                                SwingUtilities.invokeLater(new Runnable() {
-                                    public void run()
-                                    {
-                                        UIRegistry.displayLocalizedStatusBarText("SENDING_EMAIL");
-                                    }
-                                });
-                                
-                                if (sendEMail)
-                                {
-                                    final boolean status = EMailHelper.sendMsg(emailPrefs.get("servername"), 
-                                                                            emailPrefs.get("username"), 
-                                                                            Encryption.decrypt(emailPrefs.get("password")), 
-                                                                            emailPrefs.get("email"), 
-                                                                            values.get("to"), 
-                                                                            values.get("subject"), text, EMailHelper.HTML_TEXT, excelFile);
-                                    SwingUtilities.invokeLater(new Runnable() {
-                                        public void run()
-                                        {
-                                            UIRegistry.displayLocalizedStatusBarText(status ? "EMAIL_SENT_ERROR" : "EMAIL_SENT_OK");
-                                        }
-                                    });
-                                }
-                            }
-                            else if (action.equals("Cancel"))
-                            {
-                                log.warn("User clicked Cancel");
-                            }
-                        }
-                    });
-    
                     dlg.setVisible(true);
+                    if (dlg.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
+                    {
+                        dlg.getMultiView().getDataFromUI();
+                        
+                        //System.out.println("["+values.get("bodytext")+"]");
+                        
+                        TableViewObj  tblViewObj = (TableViewObj)viewable;
+                        File          excelFile  = TableModel2Excel.convertToExcel(tempExcelFileName, 
+                                                                                   getResourceString("CollectionObject"), 
+                                                                                   tblViewObj.getTable().getModel());
+                        StringBuilder sb         = TableModel2Excel.convertToHTML(getResourceString("CollectionObject"), 
+                                                                                  tblViewObj.getTable().getModel());
+                        
+                        //EMailHelper.setDebugging(true);
+                        String text = values.get("bodytext").replace("\n", "<br>") + "<BR><BR>" + sb.toString();
+                        
+                        // XXX need to move the invokdeLater into the UIRegistry
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run()
+                            {
+                                UIRegistry.displayLocalizedStatusBarText("SENDING_EMAIL");
+                            }
+                        });
+                        
+                        if (sendEMail)
+                        {
+                            final boolean status = EMailHelper.sendMsg(emailPrefs.get("servername"), 
+                                                                    emailPrefs.get("username"), 
+                                                                    Encryption.decrypt(emailPrefs.get("password")), 
+                                                                    emailPrefs.get("email"), 
+                                                                    values.get("to"), 
+                                                                    values.get("subject"), text, EMailHelper.HTML_TEXT, excelFile);
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run()
+                                {
+                                    UIRegistry.displayLocalizedStatusBarText(status ? "EMAIL_SENT_ERROR" : "EMAIL_SENT_OK");
+                                }
+                            });
+                        }
+                    }
                 }
             }
         } else

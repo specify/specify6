@@ -20,8 +20,6 @@ import java.awt.Color;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Properties;
 
 import javax.swing.BorderFactory;
@@ -47,10 +45,11 @@ import edu.ku.brc.specify.extras.FishBaseInfoGetterListener;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIPluginable;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.ViewBasedDialogFactoryIFace;
+import edu.ku.brc.ui.db.ViewBasedDisplayActionAdapter;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.MultiView;
 
@@ -62,7 +61,7 @@ import edu.ku.brc.ui.forms.MultiView;
  * @author rods
  *
  */
-public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, PropertyChangeListener, FishBaseInfoGetterListener
+public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, FishBaseInfoGetterListener
 {
     protected JTextField          textField;
     protected Taxon               taxon;
@@ -98,10 +97,20 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
                                                                    false,
                                                                    MultiView.NO_OPTIONS,
                                                                    ViewBasedDialogFactoryIFace.FRAME_TYPE.FRAME); // false means View mode
-        frame.setCloseListener(this);
         frame.setData(null);
         frame.showDisplay(true);
-        frame.dispose();
+        frame.setCloseListener(new ViewBasedDisplayActionAdapter()
+        {
+            public void okPressed(@SuppressWarnings("unused") ViewBasedDisplayIFace vbd)
+            {
+                if (multiView != null)
+                {
+                    multiView.unregisterDisplayFrame(frame);
+                }
+                frame.dispose();
+                frame = null;
+            }
+        });
         
         multiView = frame.getMultiView();
 
@@ -134,7 +143,7 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
         textField.requestFocus();
     }
 
-    protected void setDataIntoframe(final Element dom)
+    protected void setDataIntoframe(@SuppressWarnings("unused") final Element dom)
     {
         SwingUtilities.invokeLater(new Runnable() {
             public void run()
@@ -279,18 +288,5 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
     public Object getValue()
     {
         return taxon;
-    }
-
-    //--------------------------------------------------------
-    // PropertyChangeListener
-    //--------------------------------------------------------
-
-    public void propertyChange(PropertyChangeEvent evt)
-    {
-        if (multiView != null)
-        {
-            multiView.unregisterDisplayFrame(frame);
-        }
-        frame = null;
     }
 }

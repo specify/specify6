@@ -17,7 +17,10 @@ package edu.ku.brc.ui.db;
 import java.awt.BorderLayout;
 import java.awt.Dialog;
 import java.awt.Frame;
-import java.beans.PropertyChangeListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -34,9 +37,10 @@ import edu.ku.brc.ui.forms.MultiView;
  *
  */
 @SuppressWarnings("serial")
-public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDisplayIFace
+public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDisplayIFace, ActionListener
 {
-    protected ViewBasedDisplayPanel viewBasedPanel = null;
+    protected ViewBasedDisplayPanel         viewBasedPanel = null;
+    protected ViewBasedDisplayActionAdapter vbdaa          = null;
     
     /**
      * Constructs a search dialog from form infor and from search info.
@@ -61,7 +65,7 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
                                   final boolean isEdit,
                                   final int     options)
     {
-        super(frame, title, true, isEdit ? OKCANCEL : OK_BTN, null);
+        super(frame, title, true, isEdit ? CustomDialog.OKCANCEL : CustomDialog.OK_BTN, null);
         
         viewBasedPanel = new ViewBasedDisplayPanel(this, 
                 viewSetName, 
@@ -101,7 +105,7 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
                                   final boolean isEdit,
                                   final int     options)
     {
-        super(dlg, title, true, isEdit ? OKCANCEL : OK_BTN, null);
+        super(dlg, title, true, isEdit ? CustomDialog.OKCANCEL : CustomDialog.OK_BTN, null);
         
         viewBasedPanel = new ViewBasedDisplayPanel(this, 
                 viewSetName, 
@@ -139,8 +143,55 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
         mainPanel.add(viewBasedPanel, BorderLayout.CENTER);
         
         pack();
+        
+        addAL(okBtn);
+        addAL(cancelBtn);
+        addAL(applyBtn);
+        addAL(helpBtn);
     }
 
+    /**
+     * Helper for adding action listeners
+     * @param btn the btn
+     */
+    protected void addAL(final JButton btn)
+    {
+        if (btn != null)
+        {
+            btn.addActionListener(this);
+        }
+    }
+
+    //------------------------------------------------------------
+    //-- ActionListener Interface
+    //------------------------------------------------------------
+
+    /* (non-Javadoc)
+     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+     */
+    public void actionPerformed(ActionEvent e)
+    {
+        if (vbdaa != null)
+        {
+            if (e.getSource() == okBtn)
+            {
+                vbdaa.okPressed(this);
+                
+            } else if (e.getSource() == cancelBtn)
+            {
+                vbdaa.cancelPressed(this);
+                
+            } else if (e.getSource() == applyBtn)
+            {
+                vbdaa.applyPressed(this);
+                
+            } else if (e.getSource() == helpBtn)
+            {
+                vbdaa.helpPressed(this);
+            }
+        }
+    }
+    
     //------------------------------------------------------------
     //-- ViewBasedDisplayIFace Interface
     //------------------------------------------------------------
@@ -162,11 +213,11 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.db.ViewBasedDisplayIFace#setCloseListener(java.beans.PropertyChangeListener)
+     * @see edu.ku.brc.ui.db.ViewBasedDisplayIFace#setCloseListener(edu.ku.brc.ui.db.ViewBasedDisplayActionAdapter)
      */
-    public void setCloseListener(final PropertyChangeListener propertyChangeListener)
+    public void setCloseListener(final ViewBasedDisplayActionAdapter vbdaa)
     {
-        viewBasedPanel.setCloseListener(propertyChangeListener);
+        this.vbdaa = vbdaa;
     }
 
     /* (non-Javadoc)
@@ -190,7 +241,7 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
      */
     public void shutdown()
     {
-        setVisible(true);
+        setVisible(false);
         viewBasedPanel.shutdown();
     }
 

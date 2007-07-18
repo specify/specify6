@@ -18,8 +18,6 @@ import java.awt.BorderLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -59,7 +57,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
     protected View           formView;
     protected List<String>   fieldNames;
 
-    protected PropertyChangeListener propertyChangeListener = null;
+    protected ViewBasedDisplayActionAdapter vbdaa = null;
 
     // Members needed for creating results
     protected String         className;
@@ -230,7 +228,6 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
     public void actionPerformed(ActionEvent e)
     {
         // Handle clicks on the OK and Cancel buttons.
-        parentWin.setVisible(false);
         boolean isOkButton = (e.getSource() == okBtn);
         if (isOkButton)
         {
@@ -241,11 +238,6 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
         {
             isCancelled = true;
         }
-        if (propertyChangeListener != null)
-        {
-            propertyChangeListener.propertyChange(new PropertyChangeEvent(this, isOkButton ? "OK" : "Cancel", null, null));
-        }
-        propertyChangeListener = null;
     }
 
     /**
@@ -255,15 +247,6 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
     public MultiView getMultiView()
     {
         return multiView;
-    }
-
-    /**
-     * Set a listener to know when the dialog is closed.
-     * @param propertyChangeListener the listener
-     */
-    public void setCloseListener(final PropertyChangeListener propertyChangeListener)
-    {
-        this.propertyChangeListener = propertyChangeListener;
     }
 
     /**
@@ -288,8 +271,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
             multiView.shutdown();
         }
         
-        formView               = null;
-        propertyChangeListener = null;
+        formView = null;
         
         if (fieldNames != null)
         {

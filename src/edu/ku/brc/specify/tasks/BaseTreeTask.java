@@ -30,7 +30,6 @@ import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
-import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
@@ -394,13 +393,16 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
         }
         else if (cmdAction.isType(DataEntryTask.DATA_ENTRY))
         {
-            if (cmdAction.isAction(DataEntryTask.VIEW_WAS_OPENED))
+            if (cmdAction.isAction(DataEntryTask.VIEW_WAS_SHOWN))
             {
-                FormPane formPane = (FormPane)cmdAction.getData();
-                FormViewObj formViewObj = formPane.getMultiView().getCurrentViewAsFormViewObj();
-                if (formViewObj != null)
+                System.out.println(cmdAction.getData());
+                if (cmdAction.getData() instanceof FormViewObj)
                 {
-                    adjustForm(formViewObj);
+                    FormViewObj formViewObj = (FormViewObj)cmdAction.getData();
+                    if (formViewObj != null)
+                    {
+                        adjustForm(formViewObj);
+                    }
                 }
                 
             } else if (cmdAction.isAction("Save"))

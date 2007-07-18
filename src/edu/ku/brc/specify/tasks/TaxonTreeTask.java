@@ -27,12 +27,12 @@ import edu.ku.brc.specify.ui.treetables.TreeNodePopupMenu;
 import edu.ku.brc.specify.ui.treetables.TreeTableViewer;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.persist.AltView.CreationMode;
 import edu.ku.brc.ui.validation.ValComboBox;
-import edu.ku.brc.ui.validation.ValComboBoxFromQuery;
 
 /**
  * Task that handles the UI for viewing taxonomy data.
@@ -132,8 +132,8 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
 
 	    final Taxon taxonInForm = (Taxon)form.getDataObj();
 
-	    final ValComboBoxFromQuery parentComboBox = (ValComboBoxFromQuery)form.getControlByName("parent");
-	    final ValComboBox          rankComboBox   = (ValComboBox)form.getControlByName("definitionItem");
+	    final GetSetValueIFace parentComboBox = (GetSetValueIFace)form.getControlByName("parent");
+	    final ValComboBox      rankComboBox   = (ValComboBox)form.getControlByName("definitionItem");
 
 	    rankComboBox.addFocusListener(new FocusListener()
 	    {

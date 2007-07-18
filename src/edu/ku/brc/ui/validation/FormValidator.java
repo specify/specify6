@@ -578,12 +578,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
 
         log.debug("checkForValidForm ["+name+"]");
         //log.debug(name+" checkForValidForm -> formValidationState - processFormRules ["+formValidationState+"]");
-        if (name.equals("LoanItems"))
-        {
-            int x = 0;
-            x++;
-        }
-        
+       
         if (processRulesAreOK)
         {
             formValidationState = UIValidatable.ErrorType.Valid;

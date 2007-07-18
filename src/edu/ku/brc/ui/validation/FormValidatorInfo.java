@@ -131,7 +131,10 @@ public class FormValidatorInfo extends JPanel implements ValidationListener
             
             for (String id : ids)
             {
-                labelsMap.put(id, validator.getLabelTextForId(id));
+                if (validator.getComp(id).isEnabled())
+                {
+                    labelsMap.put(id, validator.getLabelTextForId(id));
+                }
                 //System.out.println("["+id+"]["+validator.getLabelTextForId(id)+"]");
             }
                 
@@ -141,13 +144,17 @@ public class FormValidatorInfo extends JPanel implements ValidationListener
                 if (dcn.getUIV() != null)
                 {
                     //System.out.println("["+dcn.getId()+"]");
-                    ControlInfo ci = new ControlInfo(validator.getLabelTextForId(dcn.getId()), dcn.getUIV().getUIV());
-                    if (ci.getState() != UIValidatable.ErrorType.Valid)
+                    UIValidatable uval =  dcn.getUIV().getUIV();
+                    if (uval.getValidatableUIComp().isEnabled())
                     {
-                        rowInxMap[rowCnt++] = inx;
+                        ControlInfo ci = new ControlInfo(validator.getLabelTextForId(dcn.getId()), uval);
+                        if (ci.getState() != UIValidatable.ErrorType.Valid)
+                        {
+                            rowInxMap[rowCnt++] = inx;
+                        }
+                        rows.add(ci);
+                        inx++;
                     }
-                    rows.add(ci);
-                    inx++;
                 }
             }
 
@@ -181,7 +188,6 @@ public class FormValidatorInfo extends JPanel implements ValidationListener
 
         public int getRowCount()
         {
-            //return rows.size();
             return rowCnt;
         }
 

@@ -32,8 +32,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,8 +59,8 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.ViewBasedDialogFactoryIFace;
 import edu.ku.brc.ui.db.JComboBoxFromQuery;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
@@ -95,8 +93,7 @@ import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                                                             ListDataListener,
                                                             GetSetValueIFace,
-                                                            AppPrefsChangeListener,
-                                                            PropertyChangeListener
+                                                            AppPrefsChangeListener
 {
     protected static final Logger log                = Logger.getLogger(ValComboBoxFromQuery.class);
 
@@ -489,15 +486,46 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         {
             frame.setData(dataObj);
         }
-        frame.setCloseListener(this);
         
-        if (multiView != null)
-        {
-            multiView.registerDisplayFrame(frame);
-        }
+        //if (multiView != null)
+        //{
+        //    multiView.registerDisplayFrame(frame);
+        //}
         
         frame.showDisplay(true);
+        if (frame.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
+        {
+            if (frame.isEditMode())
+            {
+                if (currentMode == MODE.NewAndEmpty)
+                {
+                    if (multiView != null)
+                    {
+                        Object parentDataObj = multiView.getData();
+                        if (parentDataObj instanceof FormDataObjIFace)
+                        {
+                            ((FormDataObjIFace) parentDataObj).addReference(newDataObj, cellName);
+                        }
+                        else
+                        {
+                            FormHelper.addToParent(multiView != null ? multiView.getData() : null, newDataObj);
+                        }
+                    }
+                    setValue(newDataObj, null);
+                    newDataObj = null;
+                }
+                valueHasChanged();
+            }
 
+            currentMode = MODE.Unknown;
+
+            //if (multiView != null)
+            //{
+            //    multiView.unregisterDisplayFrame(frame);
+            //}
+        }
+        frame.dispose();
+        frame = null;
     }
 
     /**
@@ -852,45 +880,4 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         }
     }
 
-    //--------------------------------------------------------
-    // PropertyChangeListener
-    //--------------------------------------------------------
-
-    public void propertyChange(PropertyChangeEvent evt)
-    {
-        if (evt.getPropertyName().equals("Cancel"))
-        {
-            // Do nothing for now
-            
-        } else if (frame.isEditMode())
-        {
-            if (currentMode == MODE.NewAndEmpty)
-            {
-                if (multiView != null)
-                {
-                    Object parentDataObj = multiView.getData();
-                    if (parentDataObj instanceof FormDataObjIFace)
-                    {
-                        ((FormDataObjIFace) parentDataObj).addReference(newDataObj, cellName);
-                    }
-                    else
-                    {
-                        FormHelper.addToParent(multiView != null ? multiView.getData() : null, newDataObj);
-                    }
-                }
-                setValue(newDataObj, null);
-                newDataObj = null;
-            }
-            valueHasChanged();
-        }
-
-        currentMode = MODE.Unknown;
-
-        if (multiView != null)
-        {
-            multiView.unregisterDisplayFrame(frame);
-        }
-        frame.dispose();
-        frame = null;
-    }
 }

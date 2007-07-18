@@ -14,8 +14,6 @@
  */
 package edu.ku.brc.ui.db;
 
-import java.beans.PropertyChangeListener;
-
 import edu.ku.brc.ui.forms.MultiView;
 
 /**
@@ -29,44 +27,54 @@ import edu.ku.brc.ui.forms.MultiView;
  */
 public interface ViewBasedDisplayIFace
 {
+    // Note: These values match both CustomDialog and CustomFrame
+    public static final int OK_BTN             = 1;
+    public static final int CANCEL_BTN         = 2;
+    public static final int HELP_BTN           = 4;
+    public static final int APPLY_BTN          = 8;
+
     /**
      * Shows the Frame or Dialog
      * @param show true - show, false hide
      */
-    public void showDisplay(boolean show);
+    public abstract void showDisplay(boolean show);
 
     /**
      * Returns the MultiView
      * @return the multiview
      */
-    public MultiView getMultiView();
+    public abstract MultiView getMultiView();
 
     /**
      * Set a listener to know when the Frame is closed
      * @param propertyChangeListener the listener
      */
-    public void setCloseListener(final PropertyChangeListener propertyChangeListener);
+    public abstract void setCloseListener(ViewBasedDisplayActionAdapter vbdaa);
 
     /**
      * Sets data into the dialog
      * @param dataObj the data object
      */
-    public void setData(final Object dataObj);
+    public abstract void setData(final Object dataObj);
     
     /**
      * Returns whether the form is in edit mode or not
      * @return true in edit mode, false it is not
      */
-    public boolean isEditMode();
+    public abstract boolean isEditMode();
 
     /**
      * Tells the Display that it is being shutdown.
      */
-    public void shutdown();
+    public abstract void shutdown();
     
     /**
      * Disposes of native resources.
      */
-    public void dispose();
-
+    public abstract void dispose();
+    
+    /**
+     * @return the integer code for which btn of the CustomDialog was pressed
+     */
+    public abstract int getBtnPressed();
 }

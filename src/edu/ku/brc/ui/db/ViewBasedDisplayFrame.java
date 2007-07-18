@@ -15,12 +15,16 @@
 package edu.ku.brc.ui.db;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.beans.PropertyChangeListener;
+
+import javax.swing.JButton;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.CustomFrame;
 import edu.ku.brc.ui.forms.MultiView;
 
@@ -34,10 +38,11 @@ import edu.ku.brc.ui.forms.MultiView;
  *
  */
 @SuppressWarnings("serial")
-public class ViewBasedDisplayFrame extends CustomFrame implements ViewBasedDisplayIFace
+public class ViewBasedDisplayFrame extends CustomFrame implements ViewBasedDisplayIFace, ActionListener
 {
-    protected ViewBasedDisplayPanel viewBasedPanel;
-
+    protected ViewBasedDisplayPanel         viewBasedPanel  = null;
+    protected ViewBasedDisplayActionAdapter vbdaa           = null;
+    
     /**
      * Constructs a search dialog from form infor and from search info
      * @param viewSetName the viewset name
@@ -59,7 +64,7 @@ public class ViewBasedDisplayFrame extends CustomFrame implements ViewBasedDispl
                                  final boolean isEdit,
                                  final int     options)
     {
-        super(title, isEdit ? OKCANCEL : OK_BTN, null);
+        super(title, isEdit ? CustomDialog.OKCANCEL : CustomDialog.OK_BTN, null);
         
         viewBasedPanel = new ViewBasedDisplayPanel(this, 
                 viewSetName, 
@@ -112,9 +117,56 @@ public class ViewBasedDisplayFrame extends CustomFrame implements ViewBasedDispl
         
         viewBasedPanel.setOkCancelBtns(okBtn, cancelBtn);
         
+        addAL(okBtn);
+        addAL(cancelBtn);
+        addAL(applyBtn);
+        addAL(helpBtn);
+        
         pack();
     }
+    
+    /**
+     * Helper for adding action listeners
+     * @param btn the btn
+     */
+    protected void addAL(final JButton btn)
+    {
+        if (btn != null)
+        {
+            btn.addActionListener(this);
+        }
+    }
 
+    //------------------------------------------------------------
+    //-- ActionListener Interface
+    //------------------------------------------------------------
+
+    /* (non-Javadoc)
+     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+     */
+    public void actionPerformed(ActionEvent e)
+    {
+        if (vbdaa != null)
+        {
+            if (e.getSource() == okBtn)
+            {
+                vbdaa.okPressed(this);
+                
+            } else if (e.getSource() == cancelBtn)
+            {
+                vbdaa.cancelPressed(this);
+                
+            } else if (e.getSource() == applyBtn)
+            {
+                vbdaa.applyPressed(this);
+                
+            } else if (e.getSource() == helpBtn)
+            {
+                vbdaa.helpPressed(this);
+            }
+        }
+    }
+    
     //------------------------------------------------------------
     //-- ViewBasedDisplayIFace Interface
     //------------------------------------------------------------
@@ -136,11 +188,11 @@ public class ViewBasedDisplayFrame extends CustomFrame implements ViewBasedDispl
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.db.ViewBasedDisplayIFace#setCloseListener(java.beans.PropertyChangeListener)
+     * @see edu.ku.brc.ui.db.ViewBasedDisplayIFace#setCloseListener(edu.ku.brc.ui.db.ViewBasedDisplayActionAdapter)
      */
-    public void setCloseListener(final PropertyChangeListener propertyChangeListener)
+    public void setCloseListener(final ViewBasedDisplayActionAdapter vbdaa)
     {
-        viewBasedPanel.setCloseListener(propertyChangeListener);
+        this.vbdaa = vbdaa;
     }
 
     /* (non-Javadoc)
@@ -166,6 +218,6 @@ public class ViewBasedDisplayFrame extends CustomFrame implements ViewBasedDispl
     {
         setVisible(true);
         viewBasedPanel.shutdown();
+        vbdaa = null;
     }
-
 }

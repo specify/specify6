@@ -23,8 +23,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EventObject;
@@ -76,6 +74,8 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.ui.ColorWrapper;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
@@ -229,7 +229,7 @@ public class TableViewObj implements Viewable,
 
         boolean createViewSwitcher         = MultiView.isOptionOn(options, MultiView.VIEW_SWITCHER);
         boolean hideSaveBtn                = MultiView.isOptionOn(options, MultiView.HIDE_SAVE_BTN);
-        isEditting                         = MultiView.isOptionOn(options, MultiView.IS_EDITTING);
+        isEditting                         = MultiView.isOptionOn(options, MultiView.IS_EDITTING) && altView.getMode() == AltView.CreationMode.Edit;
         
         setValidator(formValidator);
 
@@ -349,7 +349,10 @@ public class TableViewObj implements Viewable,
    
                     }
                     updateUI(false);
-                    comps.add(switcherUI);
+                    if (switcherUI != null)
+                    {
+                        comps.add(switcherUI);
+                    }
                 }
             }
             
@@ -357,8 +360,10 @@ public class TableViewObj implements Viewable,
             {
                 if (mvParent != null && mvParent.isTopLevel() && !hideSaveBtn && saveBtn != null)
                 {
-                    //addSaveBtn();
-                    comps.add(saveBtn);
+                    if (saveBtn != null)
+                    {
+                        comps.add(saveBtn);
+                    }
                 }
                 JComponent valInfoBtn = FormViewObj.createValidationIndicator(this);
                 if (valInfoBtn != null)
@@ -557,6 +562,7 @@ public class TableViewObj implements Viewable,
      * @param isEdit whether we are editing or view
      * @param isNew hwther the object is new
      */
+    @SuppressWarnings("unchecked")
     protected void editRow(final int rowIndex, final boolean isNew)
     {
         FormDataObjIFace dObj = null;
@@ -573,51 +579,38 @@ public class TableViewObj implements Viewable,
             }
         }
         
-        final ViewBasedDisplayIFace dialog = UIHelper.createDataObjectDialog(altView, mainComp, dObj, MultiView.isOptionOn(options, MultiView.IS_EDITTING), false);
+        final ViewBasedDisplayIFace dialog = UIHelper.createDataObjectDialog(altView, mainComp, dObj, isEditting, false);
         if (dialog != null)
         {
-            dialog.setCloseListener(new PropertyChangeListener()
-            {
-                @SuppressWarnings("unchecked")
-                public void propertyChange(PropertyChangeEvent evt)
-                {
-                    String action = evt.getPropertyName();
-                    if (action.equals("OK"))
-                    {
-                        dialog.getMultiView().getDataFromUI();
-                        if (mvParent != null)
-                        {
-                            tellMultiViewOfChange();
-                            
-                            Object daObj = dialog.getMultiView().getData();
-                            parentDataObj.addReference((FormDataObjIFace)daObj, dataSetFieldName);
-                            if (isNew)
-                            {
-                                dataObjList.add(daObj);
-                                
-                                Collections.sort((List)dataObjList);                          
-                                if (origDataSet != null)
-                                {
-                                    origDataSet.add(daObj);
-                                }
-                            }
-                            model.fireDataChanged();
-                            table.invalidate();
-                            
-                            JComponent comp = mvParent.getTopLevel();
-                            comp.validate();
-                            comp.repaint();
-                        }
-    
-                    }
-                    else if (action.equals("Cancel"))
-                    {
-                        log.warn("User clicked Cancel");
-                    }
-                }
-            });
             dialog.setData(dObj);
             dialog.showDisplay(true);
+            if (isEditting && dialog.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
+            {
+                dialog.getMultiView().getDataFromUI();
+                if (mvParent != null)
+                {
+                    tellMultiViewOfChange();
+                    
+                    Object daObj = dialog.getMultiView().getData();
+                    parentDataObj.addReference((FormDataObjIFace)daObj, dataSetFieldName);
+                    if (isNew)
+                    {
+                        dataObjList.add(daObj);
+                        
+                        Collections.sort((List)dataObjList);                          
+                        if (origDataSet != null)
+                        {
+                            origDataSet.add(daObj);
+                        }
+                    }
+                    model.fireDataChanged();
+                    table.invalidate();
+                    
+                    JComponent comp = mvParent.getTopLevel();
+                    comp.validate();
+                    comp.repaint();
+                }
+            }
             dialog.dispose();
         }
     }
@@ -1016,6 +1009,11 @@ public class TableViewObj implements Viewable,
             formValidator.validateForm();
             
             FormViewObj.addRemoveWithRootMV(mvParent, formValidator, show);
+        }
+        
+        if (show)
+        {
+            CommandDispatcher.dispatch(new CommandAction("Data_Entry", "ViewWasShown", this));
         }
     }
 

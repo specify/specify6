@@ -14,8 +14,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.HashSet;
 import java.util.List;
@@ -39,6 +37,8 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.DBTableIdMgr.TableInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr.TableRelationship;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DefaultClassActionHandler;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.IconTray;
@@ -229,35 +229,23 @@ public class IconViewObj implements Viewable
                     return;
                 }
                 
-                final ViewBasedDisplayIFace dialog = UIHelper.createDataObjectDialog(altView, mainComp, selection, MultiView.isOptionOn(viewOptions, MultiView.IS_EDITTING), false);
-                dialog.setCloseListener(new PropertyChangeListener()
-                {
-                    public void propertyChange(PropertyChangeEvent evt)
-                    {
-                        String action = evt.getPropertyName();
-                        if (action.equals("OK"))
-                        {
-                            dialog.getMultiView().getDataFromUI();
-                            if (mvParent != null)
-                            {
-                                MultiView root = mvParent;
-                                while (root.getMultiViewParent() != null)
-                                {
-                                    root = root.getMultiViewParent();
-                                }
-                                validator.setHasChanged(true);
-                                root.dataChanged(null, null, null);
-                            }
-
-                        }
-                        else if (action.equals("Cancel"))
-                        {
-                            log.warn("User clicked Cancel");
-                        }
-                    }
-                });
+                ViewBasedDisplayIFace dialog = UIHelper.createDataObjectDialog(altView, mainComp, selection, MultiView.isOptionOn(viewOptions, MultiView.IS_EDITTING), false);
                 dialog.setData(selection);
                 dialog.showDisplay(true);
+                if (dialog.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
+                {
+                    dialog.getMultiView().getDataFromUI();
+                    if (mvParent != null)
+                    {
+                        MultiView root = mvParent;
+                        while (root.getMultiViewParent() != null)
+                        {
+                            root = root.getMultiViewParent();
+                        }
+                        validator.setHasChanged(true);
+                        root.dataChanged(null, null, null);
+                    }
+                }
                 dialog.dispose();
             }
         });
@@ -297,47 +285,30 @@ public class IconViewObj implements Viewable
                 final FormDataObjIFace newObject = FormHelper.createAndNewDataObj(dataClassName);
                 
                 // get an edit dialog for the object
-                final ViewBasedDisplayIFace dialog = UIHelper.createDataObjectDialog(altView, mainComp, newObject, true, true);
-                dialog.setCloseListener(new PropertyChangeListener()
-                {
-                    public void propertyChange(PropertyChangeEvent evt)
-                    {
-                        String action = evt.getPropertyName();
-                        if (action.equals("OK"))
-                        {
-                            dialog.getMultiView().getDataFromUI();
-                            log.warn("User clicked OK.  Adding " + newObject.getIdentityTitle() + " into " + dataSetFieldName + ".");
-                            parentDataObj.addReference(newObject, dataSetFieldName);
-                            iconTray.addItem(newObject);
-                            if (mvParent != null)
-                            {
-                                MultiView root = mvParent;
-                                while (root.getMultiViewParent() != null)
-                                {
-                                    root = root.getMultiViewParent();
-                                }
-                                validator.setHasChanged(true);
-                                root.dataChanged(null, null, null);
-                            }
-                        }
-                        else if (action.equals("Cancel"))
-                        {
-                            // nothing to do
-                        }
-                        
-                        if (mvParent != null)
-                        {
-                            mvParent.unregisterDisplayFrame(dialog);
-                        }
-                    }
-                });
+                ViewBasedDisplayIFace dialog = UIHelper.createDataObjectDialog(altView, mainComp, newObject, true, true);
                 if (mvParent != null)
                 {
                     mvParent.registerDisplayFrame(dialog);
                 }
                 dialog.setData(newObject);
-
                 dialog.showDisplay(true);
+                if (dialog.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
+                {
+                    dialog.getMultiView().getDataFromUI();
+                    log.warn("User clicked OK.  Adding " + newObject.getIdentityTitle() + " into " + dataSetFieldName + ".");
+                    parentDataObj.addReference(newObject, dataSetFieldName);
+                    iconTray.addItem(newObject);
+                    if (mvParent != null)
+                    {
+                        MultiView root = mvParent;
+                        while (root.getMultiViewParent() != null)
+                        {
+                            root = root.getMultiViewParent();
+                        }
+                        validator.setHasChanged(true);
+                        root.dataChanged(null, null, null);
+                    }
+                }
                 dialog.dispose();
             }
         });
@@ -636,6 +607,10 @@ public class IconViewObj implements Viewable
         if (switcherUI != null)
         {
             switcherUI.set(altView);
+        }
+        if (show)
+        {
+            CommandDispatcher.dispatch(new CommandAction("Data_Entry", "ViewWasShown", this));
         }
     }
 

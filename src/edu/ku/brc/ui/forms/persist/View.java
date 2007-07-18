@@ -176,7 +176,8 @@ public class View implements Comparable<View>
                 return av;
             }
         }
-        throw new RuntimeException("No default AltView in View["+name+"] with the right mode.");
+        return defAltView;
+        //throw new RuntimeException("No default AltView in View["+name+"] with the right mode.");
     }
 
     /**

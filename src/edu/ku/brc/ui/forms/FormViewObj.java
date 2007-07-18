@@ -616,6 +616,11 @@ public class FormViewObj implements Viewable,
         {
             mv.aboutToShow(show);
         }
+        
+        if (show)
+        {
+            CommandDispatcher.dispatch(new CommandAction("Data_Entry", "ViewWasShown", this));
+        }
     }
 
     /* (non-Javadoc)

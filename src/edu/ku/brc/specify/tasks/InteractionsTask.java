@@ -19,8 +19,6 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.Component;
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.Calendar;
 import java.util.Hashtable;
@@ -67,8 +65,8 @@ import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.InfoRequest;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
@@ -86,10 +84,11 @@ import edu.ku.brc.ui.DataFlavorTableExt;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
+import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.dnd.Trash;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.FormHelper;
@@ -833,64 +832,52 @@ public class InteractionsTask extends BaseTask
                                                   0);
                     dlg.setData(emailPrefs);
                     dlg.setModal(true);
-                    
-                    dlg.setCloseListener(new PropertyChangeListener()
-                    {
-                        public void propertyChange(PropertyChangeEvent evt)
-                        {
-                            String action = evt.getPropertyName();
-                            if (action.equals("OK"))
-                            {
-                                dlg.getMultiView().getDataFromUI();
-                                
-                                //System.out.println("["+emailPrefs.get("bodytext")+"]");
-                                
-                                TableViewObj  tblViewObj = (TableViewObj)viewable;
-                                File          excelFile  = TableModel2Excel.convertToExcel(tempExcelFileName, 
-                                                                                           getResourceString("CollectionObject"), 
-                                                                                           tblViewObj.getTable().getModel());
-                                StringBuilder sb         = TableModel2Excel.convertToHTML(getResourceString("CollectionObject"), 
-                                                                                          tblViewObj.getTable().getModel());
-                                
-                                //EMailHelper.setDebugging(true);
-                                String text = emailPrefs.get("bodytext").replace("\n", "<br>") + "<BR><BR>" + sb.toString();
-                                SwingUtilities.invokeLater(new Runnable() {
-                                    public void run()
-                                    {
-                                        UIRegistry.displayLocalizedStatusBarText("SENDING_EMAIL");
-                                    }
-                                });
-                                
-                                String password = Encryption.decrypt(emailPrefs.get("password"));
-                                if (StringUtils.isEmpty(password))
-                                {
-                                    password = EMailHelper.askForPassword(topFrame);
-                                }
-                                
-                                if (StringUtils.isNotEmpty(password))
-                                {
-                                    final boolean status = EMailHelper.sendMsg(emailPrefs.get("servername"), 
-                                                                               emailPrefs.get("username"), 
-                                                                               password, 
-                                                                               emailPrefs.get("email"), 
-                                                                               emailPrefs.get("to"), 
-                                                                               emailPrefs.get("subject"), text, EMailHelper.HTML_TEXT, excelFile);
-                                    SwingUtilities.invokeLater(new Runnable() {
-                                        public void run()
-                                        {
-                                            UIRegistry.displayLocalizedStatusBarText(status ? "EMAIL_SENT_ERROR" : "EMAIL_SENT_OK");
-                                        }
-                                    });
-                                }
-                            }
-                            else if (action.equals("Cancel"))
-                            {
-                                log.warn("User clicked Cancel");
-                            }
-                        }
-                    });
-    
                     dlg.setVisible(true);
+                    
+                    if (dlg.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
+                    {
+                        dlg.getMultiView().getDataFromUI();
+                        
+                        //System.out.println("["+emailPrefs.get("bodytext")+"]");
+                        
+                        TableViewObj  tblViewObj = (TableViewObj)viewable;
+                        File          excelFile  = TableModel2Excel.convertToExcel(tempExcelFileName, 
+                                                                                   getResourceString("CollectionObject"), 
+                                                                                   tblViewObj.getTable().getModel());
+                        StringBuilder sb         = TableModel2Excel.convertToHTML(getResourceString("CollectionObject"), 
+                                                                                  tblViewObj.getTable().getModel());
+                        
+                        //EMailHelper.setDebugging(true);
+                        String text = emailPrefs.get("bodytext").replace("\n", "<br>") + "<BR><BR>" + sb.toString();
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run()
+                            {
+                                UIRegistry.displayLocalizedStatusBarText("SENDING_EMAIL");
+                            }
+                        });
+                        
+                        String password = Encryption.decrypt(emailPrefs.get("password"));
+                        if (StringUtils.isEmpty(password))
+                        {
+                            password = EMailHelper.askForPassword(topFrame);
+                        }
+                        
+                        if (StringUtils.isNotEmpty(password))
+                        {
+                            final boolean status = EMailHelper.sendMsg(emailPrefs.get("servername"), 
+                                                                       emailPrefs.get("username"), 
+                                                                       password, 
+                                                                       emailPrefs.get("email"), 
+                                                                       emailPrefs.get("to"), 
+                                                                       emailPrefs.get("subject"), text, EMailHelper.HTML_TEXT, excelFile);
+                            SwingUtilities.invokeLater(new Runnable() {
+                                public void run()
+                                {
+                                    UIRegistry.displayLocalizedStatusBarText(status ? "EMAIL_SENT_ERROR" : "EMAIL_SENT_OK");
+                                }
+                            });
+                        }
+                    }
                 }
             }
         } else

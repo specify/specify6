@@ -26,8 +26,6 @@ import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -48,8 +46,8 @@ import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.ViewBasedDialogFactoryIFace;
 import edu.ku.brc.ui.forms.DataGetterForObj;
 import edu.ku.brc.ui.forms.MultiView;
@@ -67,7 +65,7 @@ import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
  *
  */
 @SuppressWarnings("serial")
-public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPrefsChangeListener, PropertyChangeListener
+public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPrefsChangeListener
 {
     protected static final Logger log                 = Logger.getLogger(TextFieldWithInfo.class);
 
@@ -159,13 +157,25 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
     protected void createInfoFrame()
     {
         frame = UIRegistry.getViewbasedFactory().createDisplay(UIHelper.getFrame(this),
-                                                                   displayInfoDialogName,
-                                                                   frameTitle,
-                                                                   getResourceString("Close"),
-                                                                   false,  // false means View mode
-                                                                   MultiView.NO_OPTIONS,
-                                                                   ViewBasedDialogFactoryIFace.FRAME_TYPE.FRAME);
-        frame.setCloseListener(this);
+                                                               displayInfoDialogName,
+                                                               frameTitle,
+                                                               getResourceString("Close"),
+                                                               false,  // false means View mode
+                                                               MultiView.NO_OPTIONS,
+                                                               ViewBasedDialogFactoryIFace.FRAME_TYPE.FRAME);
+        frame.setCloseListener(new ViewBasedDisplayActionAdapter()
+        {
+            @Override
+            public void okPressed(ViewBasedDisplayIFace vbd)
+            {
+                if (multiView != null)
+                {
+                    multiView.unregisterDisplayFrame(frame);
+                }
+                frame = null;
+            }
+            
+        });
         frame.setData(dataObj);
         frame.showDisplay(true);
         frame.dispose();
@@ -266,22 +276,6 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
             g.setColor(valtextcolor.getColor());
             g.drawRect(0, 0, dim.width-1, dim.height-1);
         }
-    }
-
-    //--------------------------------------------------------
-    // PropertyChangeListener
-    //--------------------------------------------------------
-
-    /* (non-Javadoc)
-     * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
-     */
-    public void propertyChange(PropertyChangeEvent evt)
-    {
-        if (multiView != null)
-        {
-            multiView.unregisterDisplayFrame(frame);
-        }
-        frame = null;
     }
 
     //--------------------------------------------------------
