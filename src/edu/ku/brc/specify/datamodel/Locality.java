@@ -87,6 +87,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable, 
      protected BigDecimal longitude2;
      protected String latLongMethod;
      protected Double latLongAccuracy;
+     protected String gml;
      protected String datum;
      protected Integer groupPermittedToView;
      protected String remarks;
@@ -510,6 +511,18 @@ public class Locality extends DataModelObjBase implements java.io.Serializable, 
     
     public void setLatLongAccuracy(Double latLongAccuracy) {
         this.latLongAccuracy = latLongAccuracy;
+    }
+
+    @Lob
+    @Column(name = "GML")
+    public String getGml()
+    {
+        return gml;
+    }
+
+    public void setGml(String gml)
+    {
+        this.gml = gml;
     }
 
     /**

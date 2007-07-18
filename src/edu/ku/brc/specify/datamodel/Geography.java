@@ -28,6 +28,7 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
@@ -76,6 +77,9 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	protected Integer				nodeNumber;
 	protected Integer				highestChildNodeNumber;
 	protected String				abbrev;
+    protected BigDecimal            centroidLat;
+    protected BigDecimal            centroidLon;
+    protected String                gml;
 	protected String				text1;
 	protected String				text2;
 	protected Integer				number1;
@@ -297,7 +301,41 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 		this.abbrev = abbrev;
 	}
 
-	/**
+    @Column(name = "CentroidLat")
+	public BigDecimal getCentroidLat()
+    {
+        return centroidLat;
+    }
+
+    public void setCentroidLat(BigDecimal centroidLat)
+    {
+        this.centroidLat = centroidLat;
+    }
+
+    @Column(name = "CentroidLon")
+    public BigDecimal getCentroidLon()
+    {
+        return centroidLon;
+    }
+
+    public void setCentroidLon(BigDecimal centroidLon)
+    {
+        this.centroidLon = centroidLon;
+    }
+
+    @Lob
+    @Column(name = "GML")
+    public String getGml()
+    {
+        return gml;
+    }
+
+    public void setGml(String gml)
+    {
+        this.gml = gml;
+    }
+
+    /**
 	 *
 	 */
     @Column(name = "Text1", unique = false, nullable = true, insertable = true, updatable = true, length = 32)

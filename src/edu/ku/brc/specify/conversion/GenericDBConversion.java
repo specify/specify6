@@ -4151,6 +4151,7 @@ public class GenericDBConversion
 
         String sql = "select locality.*, geography.* from locality,geography where locality.GeographyID = geography.GeographyID";
 
+        BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(new String[]{"GML"});
         if (copyTable(oldDBConn, newDBConn, sql, "locality", "locality", null, null))
         {
             log.info("Locality/Geography copied ok.");
