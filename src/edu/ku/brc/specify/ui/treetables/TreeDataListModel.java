@@ -486,6 +486,11 @@ public class TreeDataListModel<T extends Treeable<T,D,I>,
         dataService.deleteTreeNode(node);
     }
     
+    public void refresh(Object ... objects)
+    {
+        dataService.refresh(objects);
+    }
+    
     public void addNewChild(T parent, T child)
     {
         if (parent==null || child==null)

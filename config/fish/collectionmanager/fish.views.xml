@@ -277,6 +277,25 @@
             </altviews>
         </view>
         
+        <view name="Taxon"
+            class="edu.ku.brc.specify.datamodel.Taxon"
+            resourcelabels="false">
+            <desc><![CDATA[Taxon data entry form.]]></desc>
+            <altviews>
+                <altview name="Taxon View" viewdef="Taxon" label="View" mode="view"/>
+                <altview name="Taxon Edit" viewdef="Taxon" label="Edit" mode="edit" default="true"/>
+            </altviews>
+        </view>
+        
+        <view name="TaxonSubform"
+            class="edu.ku.brc.specify.datamodel.Taxon"
+            resourcelabels="false">
+            <desc><![CDATA[Taxon data entry form.]]></desc>
+            <altviews>
+                <altview name="Taxon Children View" viewdef="TaxonSubform" label="View" mode="view" default="true"/>
+            </altviews>
+        </view>
+        
     </views>
 
 <!--
@@ -802,8 +821,8 @@
         </viewdef>
         
         <viewdef
-            type="formtable"
             name="Determination Table"
+            type="formtable"
             class="edu.ku.brc.specify.datamodel.Determination"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
@@ -813,8 +832,8 @@
         </viewdef>
         
         <viewdef
-            type="form"
-            name="Determination"
+        	name="Determination"
+        	type="form"
             class="edu.ku.brc.specify.datamodel.Determination"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
@@ -1272,10 +1291,10 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="3" label="Issued By"/>
-                    <cell type="field" id="3" name="agentByIssuer" uitype="querycbx" initialize="name=Agent;title=Issuer Agent" isrequired="true"/>
+                    <cell type="field" id="3" name="issuedBy" uitype="querycbx" initialize="name=Agent;title=Issued By Agent" isrequired="true"/>
 
                     <cell type="label" labelfor="4" label="Issued To"/>
-                    <cell type="field" id="4" name="agentByIssuee" uitype="querycbx" initialize="name=Agent;title=Issuee Agent" isrequired="true"/>
+                    <cell type="field" id="4" name="issuedTo" uitype="querycbx" initialize="name=Agent;title=Issued To Agent" isrequired="true"/>
                 </row>
 
                 <row>
@@ -1603,7 +1622,126 @@
             </rows>
         </viewdef>
         
+        <viewdef
+            name="Taxon"
+            type="form"
+            class="edu.ku.brc.specify.datamodel.Taxon"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[New Taxon Node Form]]></desc>
+            <enableRules>
+                <rule id="acceptedTaxon"><![CDATA[!isAccepted.isSelected()]]></rule>
+                <rule id="hybridParent1"><![CDATA[isHybrid.isSelected()]]></rule>
+                <rule id="hybridParent2"><![CDATA[isHybrid.isSelected()]]></rule>
+                <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
+            </enableRules>
+            <columnDef>200px,3dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            
+            <rows>
+                <row>
+                	<cell type="label" label="Taxon" icon="Taxon" recordobj="true" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="name" label="Name"/>
+                    <cell type="field" id="name" uitype="text" cols="16" name="name"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="remarks" label="Remarks"/>
+                    <cell type="field" id="remarks" uitype="textarea" name="remarks"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="parent" label="Parent"/>
+                	<cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon" name="parent"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="definitionItem" label="Rank"/>
+                	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="taxonomicSerialNumber" label="Taxonomic Serial Number"/>
+                    <cell type="field" id="taxonomicSerialNumber" uitype="text" name="taxonomicSerialNumber"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="guid" label="GUID"/>
+                    <cell type="field" id="guid" uitype="text" name="guid"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="commonName" label="Common Name"/>
+                    <cell type="field" id="commonName" uitype="text" name="commonName"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="author" label="Author"/>
+                    <cell type="field" id="author" uitype="text" name="author"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="source" label="Source"/>
+                    <cell type="field" id="source" uitype="text" name="source"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="environmentalProtectionStatus" label="Environmental Protection Status"/>
+                    <cell type="field" id="environmentalProtectionStatus" uitype="text" name="environmentalProtectionStatus"/>
+                </row>
+                <row>
+                	<cell type="label" labelfor="isAccepted" label="Is Accepted?"/>
+                	<cell type="field" id="isAccepted" uitype="checkbox" name="isAccepted" default="true"/>
+                </row>
+                <row>
+                	<cell type="label" labelfor="acceptedTaxon" label="Accepted Taxon"/>
+                	<cell type="field" id="acceptedTaxon" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon" name="acceptedTaxon"/>
+                </row>
+                <row>
+                	<cell type="label" labelfor="isHybrid" label="Is Hybrid?"/>
+                	<cell type="field" id="isHybrid" uitype="checkbox" name="isHybrid" default="false"/>
+                </row>
+                <row>
+                	<cell type="label" labelfor="hybridParent1" label="Hybrid Parent 1"/>
+                	<cell type="field" id="hybridParent1" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon" name="hybridParent1"/>
+                </row>
+                <row>
+                	<cell type="label" labelfor="hybridParent2" label="Hybrid Parent 2"/>
+                	<cell type="field" id="hybridParent2" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon" name="hybridParent2"/>
+                </row>
+                <row>
+                    <cell type="separator" label="Children" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="TaxonSubform" id="children" name="children" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="separator" label="Synonyms" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="TaxonSubform" id="acceptedChildren" name="acceptedChildren" colspan="3"/>
+                </row>
+            </rows>
+        </viewdef>
 
+        <viewdef
+            name="TaxonSubform"
+            type="form"
+            class="edu.ku.brc.specify.datamodel.Taxon"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[New Taxon Node Form]]></desc>
+            <enableRules>
+            </enableRules>
+            <columnDef>200px,3dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="name" label="Name"/>
+                    <cell type="field" id="name" uitype="text" cols="16" name="name"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="commonName" label="Common Name"/>
+                    <cell type="field" id="commonName" uitype="text" name="commonName"/>
+                </row>
+            </rows>
+        </viewdef>
+        
     </viewdefs>
-    
 </viewset>

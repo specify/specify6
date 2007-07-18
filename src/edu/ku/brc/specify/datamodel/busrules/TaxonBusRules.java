@@ -87,12 +87,12 @@ public class TaxonBusRules extends BaseBusRules
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#beforeSave(java.lang.Object)
      */
     @Override
-    public void beforeSave(Object dataObj)
+    public void beforeSave(Object dataObj, DataProviderSessionIFace session)
     {
         log.debug("enter");
         if (dataObj instanceof Taxon)
         {
-            beforeSaveTaxon((Taxon)dataObj);
+            beforeSaveTaxon((Taxon)dataObj, session);
             log.debug("exit");
             return;
         }
@@ -114,11 +114,45 @@ public class TaxonBusRules extends BaseBusRules
      * 
      * @param taxon the {@link Taxon} being saved
      */
-    protected void beforeSaveTaxon(Taxon taxon)
+    protected void beforeSaveTaxon(Taxon taxon, DataProviderSessionIFace session)
     {
         // check to see if this node is brand new
         if (taxon.getId() == null)
         {
+            taxon.setDefinition(taxon.getParent().getDefinition());
+            
+            // since a lot of references all point back and forth to each other, we need to make sure they are all working in the same session
+            // basically, we need to merge all the references back to the Taxon table
+            
+//            Taxon parent  = (Taxon)session.merge(taxon.getParent());
+//            TaxonTreeDefItem defItem = (TaxonTreeDefItem)session.merge(taxon.getDefinitionItem());
+//            taxon.setParent(parent);
+//            taxon.setDefinitionItem(defItem);
+//            taxon.setDefinition(parent.getDefinition());
+//            
+//            if (taxon.getIsHybrid() != null && taxon.getIsHybrid().booleanValue() == false)
+//            {
+//               taxon.setHybridParent1(null);
+//               taxon.setHybridParent2(null);
+//            }
+//            else
+//            {
+//                Taxon hyb1 = (Taxon)session.merge(taxon.getHybridParent1());
+//                Taxon hyb2 = (Taxon)session.merge(taxon.getHybridParent2());
+//                taxon.setHybridParent1(hyb1);
+//                taxon.setHybridParent2(hyb2);
+//            }
+//            
+//            if (taxon.getIsAccepted() != null && taxon.getIsAccepted().booleanValue() == true)
+//            {
+//                taxon.setAcceptedTaxon(null);
+//            }
+//            else
+//            {
+//                Taxon acceptedParent = (Taxon)session.merge(taxon.getAcceptedTaxon());
+//                taxon.setAcceptedTaxon(acceptedParent);
+//            }
+            
             // this is a new object
             // just update it's fullname (and return)
             // since it can't have any children yet
@@ -127,7 +161,7 @@ public class TaxonBusRules extends BaseBusRules
             taxon.setFullName(fullname);
             return;
         }
-        // else
+        // else (ID was not null, so this is an item in the DB already)
         
         // we need a way to determine if the name changed
         // load a fresh copy from the DB and get the values needed for comparison
@@ -136,7 +170,6 @@ public class TaxonBusRules extends BaseBusRules
         Taxon origParent = fromDB.getParent();
         tmpSession.close();
 
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         session.attach(taxon);
         
         boolean nameChanged = true;

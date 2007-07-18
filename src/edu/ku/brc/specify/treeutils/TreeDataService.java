@@ -99,6 +99,8 @@ public interface TreeDataService <T extends Treeable<T,D,I>,
      */
     public void deleteTreeNode(T node);
 
+    public void refresh(Object ... objects);
+    
     /**
      * Adds the given child node to the DB as a child of the given parent node.  The parent
      * node must already exist in the DB.

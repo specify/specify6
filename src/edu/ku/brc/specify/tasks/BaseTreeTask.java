@@ -19,6 +19,8 @@ import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
+import org.apache.log4j.Logger;
+
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
@@ -28,6 +30,7 @@ import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
+import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
@@ -41,6 +44,7 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.forms.FormViewObj;
 
 /**
  * A base task that provides functionality in common to all tasks
@@ -54,6 +58,8 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
 							        I extends TreeDefItemIface<T,D,I>>
 							        extends BaseTask
 {
+    protected static final Logger log = Logger.getLogger(BaseTreeTask.class);
+            
     /** The toolbar items provided by this task. */
     protected List<ToolBarItemDesc> toolBarItems;
     
@@ -94,6 +100,8 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
 		super(name,title);
         toolBarItems = new Vector<ToolBarItemDesc>();
         menuItems = new Vector<MenuItemDesc>();
+        
+        CommandDispatcher.register(DataEntryTask.DATA_ENTRY, this);
 	}
 
 	/* (non-Javadoc)
@@ -384,6 +392,28 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
                 openTreeDefEditor(treeDef);
             }
         }
+        else if (cmdAction.isType(DataEntryTask.DATA_ENTRY))
+        {
+            if (cmdAction.isAction(DataEntryTask.VIEW_WAS_OPENED))
+            {
+                FormPane formPane = (FormPane)cmdAction.getData();
+                FormViewObj formViewObj = formPane.getMultiView().getCurrentViewAsFormViewObj();
+                if (formViewObj != null)
+                {
+                    adjustForm(formViewObj);
+                }
+                
+            } else if (cmdAction.isAction("Save"))
+            {
+                // should we do anything here?
+            }
+            
+        }
+    }
+    
+    protected void adjustForm(FormViewObj form)
+    {
+        log.debug("adjustForm( " + form.getName() + " )"); 
     }
     
     /**

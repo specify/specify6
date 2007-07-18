@@ -16,6 +16,8 @@ package edu.ku.brc.ui.forms;
 
 import java.util.List;
 
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+
 
 /**
  * This interface represents the actions that can be performed on a data object by a business rules object.<br>
@@ -32,7 +34,7 @@ public interface BusinessRulesIFace
     /**
      * The status of the processing of the business rules.
      */
-    public enum STATUS {None, OK, Warning, Error};
+    public enum STATUS {None, OK, Warning, Error}
     
     /**
      * Notification a form was just filled with data.
@@ -75,8 +77,9 @@ public interface BusinessRulesIFace
      * objects that have been editted.
      * 
      * @param dataObj the object being saved
+     * @param session the data provider session
      */
-    public void beforeSave(Object dataObj);
+    public void beforeSave(Object dataObj, DataProviderSessionIFace session);
     
     /**
      * Called AFTER committing a transaction in which the passed in data object will

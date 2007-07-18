@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Vector;
 
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
@@ -215,7 +216,7 @@ public abstract class BaseBusRules implements BusinessRulesIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#beforeSave(java.lang.Object)
      */
-    public void beforeSave(Object dataObj)
+    public void beforeSave(Object dataObj, DataProviderSessionIFace session)
     {
         // do nothing
     }

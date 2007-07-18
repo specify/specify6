@@ -959,8 +959,8 @@
                     <cell type="field" id="remarks" uitype="textarea"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="defItemComboBox" label="Rank"/>
-                    <cell type="field" id="defItemComboBox" uitype="combobox" name=""/>
+                    <cell type="label" labelfor="definitionItem" label="Rank"/>
+                    <cell type="field" id="definitionItem" uitype="combobox" name=""/>
                 </row>
                 <row>
                     <cell type="label" labelfor="ser_num" label="TaxonomicSerialNumber"/>
@@ -1013,8 +1013,8 @@
                     <cell type="field" id="2" name="remarks" uitype="textarea"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="defItemComboBox" label="Rank"/>
-                    <cell type="field" id="defItemComboBox" uitype="combobox" name=""/>
+                    <cell type="label" labelfor="definitionItem" label="Rank"/>
+                    <cell type="field" id="definitionItem" uitype="combobox" name=""/>
                 </row>
             </rows>
         </viewdef>
@@ -1040,8 +1040,8 @@
                     <cell type="field" id="2" name="remarks" uitype="textarea"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="defItemComboBox" label="Rank"/>
-                    <cell type="field" id="defItemComboBox" uitype="combobox" name=""/>
+                    <cell type="label" labelfor="definitionItem" label="Rank"/>
+                    <cell type="field" id="definitionItem" uitype="combobox" name=""/>
                 </row>
             </rows>
         </viewdef>
@@ -1067,8 +1067,8 @@
                     <cell type="field" id="2" name="remarks" uitype="textarea"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="defItemComboBox" label="Rank"/>
-                    <cell type="field" id="defItemComboBox" uitype="combobox" name=""/>
+                    <cell type="label" labelfor="definitionItem" label="Rank"/>
+                    <cell type="field" id="definitionItem" uitype="combobox" name=""/>
                 </row>
             </rows>
         </viewdef>

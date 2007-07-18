@@ -70,7 +70,7 @@ public class GeographyBusRules extends BaseBusRules
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#beforeSave(java.lang.Object)
      */
     @Override
-    public void beforeSave(Object dataObj)
+    public void beforeSave(Object dataObj, DataProviderSessionIFace session)
     {
         log.debug("enter");
         if (dataObj instanceof Geography)

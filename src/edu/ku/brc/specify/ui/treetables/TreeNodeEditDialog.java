@@ -27,7 +27,7 @@ public class TreeNodeEditDialog <T extends Treeable<T,D,I>,
 									I extends TreeDefItemIface<T,D,I>>
 									extends EditFormDialog<T>
 {
-    private static final String DEF_ITEM_CB_ID = "defItemComboBox";
+    private static final String DEF_ITEM_CB_ID = "definitionItem";
     
     public TreeNodeEditDialog(String viewSetName, String viewName, String title, EditDialogCallback<T> callback, boolean isNewObject) throws HeadlessException
 	{
@@ -44,51 +44,51 @@ public class TreeNodeEditDialog <T extends Treeable<T,D,I>,
     {
     	T node = dataObj;
         
-        // get the appropriate set of def items for the combobox model
-    	ValComboBox cb = (ValComboBox)form.getCompById(DEF_ITEM_CB_ID);
-    	DefaultComboBoxModel model = (DefaultComboBoxModel)cb.getModel();
-    	
-        // this is the highest rank the edited item can possibly be
-        I topItem = null;
-        I bottomItem = null;
-        if (node.getParent()!=null)
-        {
-            // grab all the def items from just below the parent's item all the way to the next enforced level
-            // or to the level of the highest ranked child
-            topItem = node.getParent().getDefinitionItem().getChild();
-        }
-        else
-        {
-            // this node has no parent, so it's current rank is the highest we can go
-            topItem = node.getDefinitionItem();
-        }
-        
-        // find the child with the highest rank and set that child's def item as the bottom of the range
-        if (!node.getChildren().isEmpty())
-        {
-            for (T child: node.getChildren())
-            {
-                if (bottomItem==null || child.getRankId()>bottomItem.getRankId())
-                {
-                    bottomItem = child.getDefinitionItem().getParent();
-                }
-            }
-        }
-        
-    	//I defaultItem = node.getDefinitionItem();
-        
-        I item = topItem;
-    	boolean done = false;
-    	while (!done)
-    	{
-            model.addElement(item);
-    		
-            if (item.getChild()==null || item.getIsEnforced()==Boolean.TRUE || item==bottomItem)
-            {
-                done = true;
-            }
-            item = item.getChild();
-    	}
+//        // get the appropriate set of def items for the combobox model
+//    	ValComboBox cb = (ValComboBox)form.getCompById(DEF_ITEM_CB_ID);
+//    	DefaultComboBoxModel model = (DefaultComboBoxModel)cb.getModel();
+//    	
+//        // this is the highest rank the edited item can possibly be
+//        I topItem = null;
+//        I bottomItem = null;
+//        if (node.getParent()!=null)
+//        {
+//            // grab all the def items from just below the parent's item all the way to the next enforced level
+//            // or to the level of the highest ranked child
+//            topItem = node.getParent().getDefinitionItem().getChild();
+//        }
+//        else
+//        {
+//            // this node has no parent, so it's current rank is the highest we can go
+//            topItem = node.getDefinitionItem();
+//        }
+//        
+//        // find the child with the highest rank and set that child's def item as the bottom of the range
+//        if (!node.getChildren().isEmpty())
+//        {
+//            for (T child: node.getChildren())
+//            {
+//                if (bottomItem==null || child.getRankId()>bottomItem.getRankId())
+//                {
+//                    bottomItem = child.getDefinitionItem().getParent();
+//                }
+//            }
+//        }
+//        
+//    	//I defaultItem = node.getDefinitionItem();
+//        
+//        I item = topItem;
+//    	boolean done = false;
+//    	while (!done)
+//    	{
+//            model.addElement(item);
+//    		
+//            if (item.getChild()==null || item.getIsEnforced()==Boolean.TRUE || item==bottomItem)
+//            {
+//                done = true;
+//            }
+//            item = item.getChild();
+//    	}
         
         super.setData(dataObj);
     }

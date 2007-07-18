@@ -16,6 +16,7 @@ package edu.ku.brc.specify.datamodel.busrules;
 
 import static edu.ku.brc.specify.tests.DataBuilder.createTaxonTreeDef;
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
@@ -102,9 +103,9 @@ public class CollectionTypeBusRules extends BaseBusRules
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#beforeSave(java.lang.Object)
      */
     @Override
-    public void beforeSave(Object dataObj)
+    public void beforeSave(Object dataObj, DataProviderSessionIFace session)
     {
-        super.beforeSave(dataObj);
+        super.beforeSave(dataObj,session);
         
         CollectionType ct = (CollectionType)dataObj;
         if (ct.getSpecifyUser() == null)

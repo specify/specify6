@@ -307,5 +307,9 @@ public class TreeHelper
         taxon.getAttachments().size();
         taxon.getDeterminations().size();
         taxon.getTaxonCitations().size();
+        taxon.getAcceptedChildren().size();
+        taxon.getChildren().size();
+        taxon.getHybridChildren1().size();
+        taxon.getHybridChildren2().size();
     }
 }

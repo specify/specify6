@@ -691,7 +691,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	/**
 	 * Displays data entry form for creating a new node that will be
 	 * a child of the selected node.  A new child is only permanently
-	 * created if the user chooses to procede with the data entry.
+	 * created if the user chooses to proceed with the data entry.
 	 */
 	@SuppressWarnings("unchecked")
 	public void addChildToSelectedNode(JList list)
@@ -715,9 +715,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			return;
 		}
 
+		// setup a bunch of links that are needed for the form to correctly display the new node
 		T newT = (T)TreeFactory.createNewTreeable(parent.getClass(),"");
 		newT.setDefinitionItem(parentDefItem.getChild());
 		newT.setDefinition(parent.getDefinition());
+		newT.setParent(parent);
 
 		// display a form for filling in child data
 		showNewTreeableForm(newT,parent);
@@ -746,7 +748,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	}
 	
 	/**
-	 * Peforms finalization of new node creation.  This method
+	 * Performs finalization of new node creation.  This method
 	 * serves as a callback to the data entry form for when
 	 * a user presses the 'OK' button on the form.  The new node
 	 * is only made persistent if the user then selects to commit
@@ -756,6 +758,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 */
 	public void newNodeEntryComplete(T node, T parent)
 	{
+	    listModel.refresh(parent);
+	    
         listModel.addNewChild(parent, node);
 		
 		listModel.showChildren(parent);

@@ -171,6 +171,7 @@
             resourcelabels="false">
             <desc><![CDATA[Taxon Node Form]]></desc>
             <altviews>
+                <altview name="Taxon View" viewdef="Taxon" label="View" mode="view" validated="false" default="true"/>
                 <altview name="Taxon Edit" viewdef="Taxon" label="Edit" mode="edit" validated="true"/>
             </altviews>
         </view>
@@ -850,8 +851,8 @@
                     <cell type="field" id="remarks" uitype="textarea"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="defItemComboBox" label="Rank"/>
-                	<cell type="field" id="defItemComboBox" uitype="combobox" name="definitionItem"/>
+                    <cell type="label" labelfor="definitionItem" label="Rank"/>
+                	<cell type="field" id="definitionItem" uitype="combobox" name="definitionItem"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="ser_num" label="Taxonomic Serial Number"/>

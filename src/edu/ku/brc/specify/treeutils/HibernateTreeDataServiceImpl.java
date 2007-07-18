@@ -633,6 +633,16 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         session.close();
     }
     
+    public synchronized void refresh(Object ... objects)
+    {
+        Session session = getNewSession(objects);
+        for (Object o: objects)
+        {
+            session.refresh(o);
+        }
+        session.close();
+    }
+    
     /**
      * Creates a new Hibernate session and associates the given objects with it.
      * 

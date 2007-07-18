@@ -177,7 +177,8 @@
         </table>
         <table name="edu.ku.brc.specify.datamodel.TaxonCitation" id="75"/>
         <table name="edu.ku.brc.specify.datamodel.TaxonTreeDef" id="76"/>
-        <table name="edu.ku.brc.specify.datamodel.TaxonTreeDefItem" id="77">
+        <table name="edu.ku.brc.specify.datamodel.TaxonTreeDefItem" id="77" query="true">
+            <display objtitle="TaxonTreeDefItem" view="TaxonTreeDefItem" dataobjformatter="" searchdlg="TaxonTreeDefItemSearch" newobjdlg="TaxonTreeDefItemDisplay"/>
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.TaxonBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.UserGroup" id="78"/>
