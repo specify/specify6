@@ -143,7 +143,13 @@ public class ValTextArea extends JTextArea implements UIValidatable,
             public void keyPressed(KeyEvent event) {
                 if (event.getKeyCode() == KeyEvent.VK_TAB )
                 {
-                    transferFocus();
+                    if (event.isShiftDown())
+                    {
+                        transferFocusBackward();
+                    } else
+                    {
+                        transferFocus();
+                    }
                 }
             }
         });
