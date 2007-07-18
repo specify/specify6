@@ -1057,12 +1057,12 @@ public final class UIHelper
                 
                 // This is used to fill who editted the object
                 FormHelper.setCurrentUserEditStr(dbUsername);
+                return true;
                 
             } catch (SQLException ex)
             {
                 // do nothing
             }
-            return true;
 
         }
         // else

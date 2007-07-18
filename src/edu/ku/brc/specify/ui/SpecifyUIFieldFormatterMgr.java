@@ -17,6 +17,8 @@
  */
 package edu.ku.brc.specify.ui;
 
+import org.apache.log4j.Logger;
+
 import edu.ku.brc.specify.datamodel.CatalogNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.dbsupport.CollectionAutoNumber;
@@ -33,7 +35,7 @@ import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
  */
 public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr
 {
-    //private static final Logger  log      = Logger.getLogger(SpecifyUIFieldFormatterMgr.class);
+    private static final Logger  log      = Logger.getLogger(SpecifyUIFieldFormatterMgr.class);
     
     protected UIFieldFormatterIFace catalogNumberAlphaNumeric;
     protected UIFieldFormatterIFace catalogNumberNumeric;
@@ -66,21 +68,26 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr#getFormatterInternal(java.lang.String)
      */
     @Override
-    protected UIFieldFormatterIFace getFormatterInternal(String name)
+    protected UIFieldFormatterIFace getFormatterInternal(final String name)
     {
         if (name.equals("CatalogNumber"))
         {
             CatalogNumberingScheme cns = Collection.getCurrentCollection().getCatalogNumberingScheme();
-            
-            if (cns.getIsNumericOnly())
+            if (cns != null)
             {
-                if (catalogNumberNumeric != null)
+                if (cns.getIsNumericOnly())
                 {
-                    return catalogNumberNumeric;
+                    if (catalogNumberNumeric != null)
+                    {
+                        return catalogNumberNumeric;
+                    }
+                } else if (catalogNumberAlphaNumeric != null)
+                {
+                    return catalogNumberAlphaNumeric;
                 }
-            } else if (catalogNumberAlphaNumeric != null)
+            } else
             {
-                return catalogNumberAlphaNumeric;
+                log.error("The CatalogNumberingScheme is null for the current Collection ["+Collection.getCurrentCollection().getCollectionName()+"] and should be!");
             }
         }
         return super.getFormatterInternal(name);

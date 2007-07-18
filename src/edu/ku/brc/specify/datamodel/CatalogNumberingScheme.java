@@ -74,7 +74,7 @@ public class CatalogNumberingScheme extends DataModelObjBase implements java.io.
         schemeName      = null;
         schemeClassName = null;
         collections     = new HashSet<Collection>();
-
+        isNumericOnly   = false;
     }
     
     // End Initializer
@@ -123,7 +123,7 @@ public class CatalogNumberingScheme extends DataModelObjBase implements java.io.
         this.schemeClassName = schemeClassName;
     }
 
-    @Column(name="IsNumericOnly", unique=false, nullable=true, updatable=true, insertable=true)
+    @Column(name="IsNumericOnly", unique=false, nullable=false, updatable=true, insertable=true)
     public Boolean getIsNumericOnly()
     {
         return isNumericOnly;

@@ -93,6 +93,7 @@ public class SystemSetupTask extends BaseTask
     {
         super(SYSTEMSETUPTASK, getResourceString(SYSTEMSETUPTASK));
         CommandDispatcher.register(SYSTEMSETUPTASK, this);
+        isShowDefault = true;
     }
 
     /**

@@ -438,37 +438,39 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      */
     public boolean closeAll()
     {
-        SubPaneIFace subPane = this.getCurrentSubPane();
-        if (subPane != null)
+        if (panes.values().size() > 0)
         {
-            Vector<SubPaneIFace> paneList = new Vector<SubPaneIFace>(panes.values()); // Not sure we need to create a new list
-            for (SubPaneIFace pane : paneList)
+            SubPaneIFace subPane = this.getCurrentSubPane();
+            if (subPane != null)
             {
-                //if (panes.size() == 1  && TaskMgr.getToolbarTaskCount() == 1)
-                //{
-                //    return false;
-                //}
-
-                if (!removePane(pane))
+                Vector<SubPaneIFace> paneList = new Vector<SubPaneIFace>(panes.values()); // Not sure we need to create a new list
+                for (SubPaneIFace pane : paneList)
                 {
-                    return false;
+                    //if (panes.size() == 1  && TaskMgr.getToolbarTaskCount() == 1)
+                    //{
+                    //    return false;
+                    //}
+    
+                    if (!removePane(pane))
+                    {
+                        return false;
+                    }
+                    
                 }
-                
+                panes.clear(); // insurance
             }
-            panes.clear(); // insurance
-        }
-        
-        this.removeAll(); // insurance
-        
-        if (TaskMgr.getToolbarTaskCount() == 1)
-        {
-            Taskable defaultTask = TaskMgr.getDefaultTaskable();
-            if (defaultTask != null)
+            
+            this.removeAll(); // insurance
+            
+            if (TaskMgr.getToolbarTaskCount() == 1)
             {
-                addPane(defaultTask.getStarterPane());
+                Taskable defaultTask = TaskMgr.getDefaultTaskable();
+                if (defaultTask != null)
+                {
+                    addPane(defaultTask.getStarterPane());
+                }
             }
         }
-        
         return true;
     }
 
@@ -488,7 +490,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             Taskable task = subPane.getTask();
             if (task != null)
             {
-                System.out.println(countPanesByTask(task)+" "+!task.isStarterPane()+" "+!task.isShowDefault());
+                System.out.println("wasLastSingleTaskPane: "+wasLastSingleTaskPane+"  Count: "+countPanesByTask(task)+"   isStarterPane "+task.isStarterPane()+"   isShowDefault "+task.isShowDefault());
                 if (!wasLastSingleTaskPane && !task.isStarterPane() && task.isShowDefault() && countPanesByTask(task) == 1)
                 {
                     int index = this.indexOfComponent(subPane.getUIComponent());

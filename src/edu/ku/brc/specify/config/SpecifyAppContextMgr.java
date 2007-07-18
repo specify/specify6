@@ -540,6 +540,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 {
                     log.error(vso.getName());
                     log.error(ex);
+                    ex.printStackTrace();
                     throw new RuntimeException(ex);
                 }
             }
