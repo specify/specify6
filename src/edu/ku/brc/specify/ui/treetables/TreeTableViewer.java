@@ -1238,23 +1238,12 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 
 		if( dropAction == DnDConstants.ACTION_COPY || dropAction == DnDConstants.ACTION_NONE )
 		{
-			// TODO: at this point we need to add a new treeable relationship
-			// between dragged and droppedOn
-			
-			// for Taxon: setup new TaxonomicRelationship
-			// for Geog:  setup new GeographyNameRelationship
-			// for ?
-            
-            // maybe this should be a pluggable interface?
-            // have something like 'public boolean NodeRelationshipManager.createRelationship(T node1, T node2)'
-            // that would allow for plugins to handle Taxon and Geography without implementing any for Location and GTP
-            // something like...
-            // if (pluginMgr != null)
-            //{
-            //  do stuff to create a relationship    
-            //}
-            
-			log.warn("User requested new relationship be created between " + draggedNode.getName() + " and " + droppedOnNode.getName());
+			log.info("User requested new link be created between " + draggedNode.getName() + " and " + droppedOnNode.getName());
+			String statusMsg = listModel.createNodeLink(draggedNode, droppedOnNode);
+			if (statusMsg != null)
+			{
+			    statusBar.setText(statusMsg);
+			}
 			return true;
 		}
 		else if( dropAction == DnDConstants.ACTION_MOVE )

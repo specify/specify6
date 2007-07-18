@@ -6,6 +6,8 @@
  */
 package edu.ku.brc.specify.treeutils;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -311,5 +313,24 @@ public class TreeHelper
         taxon.getChildren().size();
         taxon.getHybridChildren1().size();
         taxon.getHybridChildren2().size();
+    }
+    
+    public static <T extends Treeable<T,D,I>,
+                             D extends TreeDefIface<T,D,I>,
+                             I extends TreeDefItemIface<T,D,I>>
+                             String createNodeRelationship(T source, T destination)
+    {
+        if (source instanceof Taxon)
+        {
+            return createSynonym((Taxon)source,(Taxon)destination);
+        }
+        return null;
+    }
+    
+    protected static String createSynonym(Taxon oldName, Taxon newName)
+    {
+        oldName.setIsAccepted(false);
+        oldName.setAcceptedTaxon(newName);
+        return String.format(getResourceString("TaxonTreeRelationshipMsg"),oldName.getFullName(),newName.getFullName());
     }
 }

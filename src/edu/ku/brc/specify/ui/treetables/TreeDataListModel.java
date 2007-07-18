@@ -551,6 +551,11 @@ public class TreeDataListModel<T extends Treeable<T,D,I>,
         }
 		return true;
 	}
+	
+	public String createNodeLink(T source, T destination)
+	{
+	    return dataService.createNodeLink(source, destination);
+	}
 
 	public void nodeValuesChanged(T node)
 	{

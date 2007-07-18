@@ -625,6 +625,22 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         log.trace("exit");
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.treeutils.TreeDataService#createNodeLink(edu.ku.brc.specify.datamodel.Treeable, edu.ku.brc.specify.datamodel.Treeable)
+     */
+    @Override
+    public String createNodeLink(T source, T destination)
+    {
+        Session session = getNewSession(source,destination);
+        Transaction tx = session.beginTransaction();
+        String statusMsg = TreeHelper.createNodeRelationship(source,destination);
+        commitTransaction(session, tx);
+        return statusMsg;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.treeutils.TreeDataService#initializeRelatedObjects(edu.ku.brc.specify.datamodel.Treeable)
+     */
     public synchronized void initializeRelatedObjects(T node)
     {
         log.trace("enter");
@@ -633,6 +649,9 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         session.close();
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.treeutils.TreeDataService#refresh(java.lang.Object[])
+     */
     public synchronized void refresh(Object ... objects)
     {
         Session session = getNewSession(objects);

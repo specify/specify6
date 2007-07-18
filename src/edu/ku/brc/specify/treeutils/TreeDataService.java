@@ -121,6 +121,17 @@ public interface TreeDataService <T extends Treeable<T,D,I>,
     public void moveTreeNode(T node, T newParent, T rootNode);
     
     /**
+     * Creates a logical link between two nodes.  This link's meaning is dependent on the type, T.  Some
+     * implementations of T will ignore this call.  Others might setup any sort of association between the
+     * two nodes <code>source</code> and <code>destination</code>.
+     * 
+     * @param source any node
+     * @param destination any node
+     * @return a localized, human-readable status message, or null
+     */
+    public String createNodeLink(T source, T destination);
+    
+    /**
      * Adds a new {@link TreeDefItemIface} as a child of the given
      * {@link TreeDefItemIface}.
      * 
