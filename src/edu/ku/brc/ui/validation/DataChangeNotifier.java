@@ -305,10 +305,26 @@ public class DataChangeNotifier implements FocusListener,
         return uiv != null ? uiv.getType() :  UIValidator.Type.None;
     }
     
+    /**
+     * @return whether the component is enabled
+     */
+    public boolean isEnabled()
+    {
+        return comp != null && comp.isEnabled();
+    }
+    
     //---------------------------
     // FocusListener
     //---------------------------
-    
+
+    /**
+     * @param comp the comp to set
+     */
+    public void setComp(Component comp)
+    {
+        this.comp = comp;
+    }
+
     /* (non-Javadoc)
      * @see java.awt.event.FocusListener#focusGained(java.awt.event.FocusEvent)
      */
@@ -357,9 +373,6 @@ public class DataChangeNotifier implements FocusListener,
                 notifyDataChangeListeners();
             } 
         }
-        
-
-
     }
     
     //--------------------------------------------------------
