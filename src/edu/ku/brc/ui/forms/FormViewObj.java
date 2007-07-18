@@ -270,7 +270,7 @@ public class FormViewObj implements Viewable,
 
         boolean addController = mvParent != null && view.getAltViews().size() > 1;
 
-        boolean addExtraRow = addController || altView.getMode() == AltView.CreationMode.Search;
+        boolean addExtraRow = addController || createResultSetController || altView.getMode() == AltView.CreationMode.Search;
         
         // See if we need to add a Selector ComboBox
         isSelectorForm = StringUtils.isNotEmpty(view.getSelectorName());
@@ -404,14 +404,14 @@ public class FormViewObj implements Viewable,
 
         }
 
-        if (comps.size() > 0 || addController)
+        if (comps.size() > 0 || addController || createResultSetController)
         {
             controlPanel = new ControlBarPanel();
             controlPanel.addComponents(comps, false); // false -> right side
             mainBuilder.add(controlPanel, cc.xy(1, mainCompRowInx+2));
         }
 
-        if (createResultSetController && controlPanel != null)
+        if (createResultSetController)
         {
             addRSController();
         }
