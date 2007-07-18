@@ -56,18 +56,35 @@ public class TaxonBusRules extends BaseBusRules
         if (dataObj instanceof Taxon)
         {
             Taxon node = (Taxon)dataObj;
-            if (node.getDeterminations().isEmpty())
+            return okToDeleteTaxon(node);
+        }
+        
+        return false;
+    }
+    
+    public boolean okToDeleteTaxon(Taxon t)
+    {
+        Long id = t.getId();
+        
+        boolean noDeters = super.okToDelete("determination", "TaxonID",         id);
+        boolean noCites  = super.okToDelete("taxoncitation", "TaxonID",         id);
+        boolean noHyb1   = super.okToDelete("taxon",         "HybridParent1ID", id);
+        boolean noHyb2   = super.okToDelete("taxon",         "HybridParent2ID", id);
+        boolean noSyns   = super.okToDelete("taxon",         "AcceptedID",      id);
+
+        if (noDeters && noCites && noHyb1 && noHyb2 && noSyns)
+        {
+            // now check all the children
+            for (Taxon child: t.getChildren())
             {
-                // now check all the children
-                for (Taxon child: node.getChildren())
+                if (!okToDeleteTaxon(child))
                 {
-                    if (!okToDelete(child))
-                    {
-                        return false;
-                    }
+                    // this child node can't be deleted, so the parent node cannot be deleted
+                    return false;
                 }
-                return true;
             }
+            // if we get here, all the child nodes were able to be deleted
+            return true;
         }
         
         return false;
