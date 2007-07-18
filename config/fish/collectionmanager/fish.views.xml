@@ -292,7 +292,10 @@
             resourcelabels="false">
             <desc><![CDATA[Taxon data entry form.]]></desc>
             <altviews>
-                <altview name="Taxon Children View" viewdef="TaxonSubform" label="View" mode="view" default="true"/>
+                <altview name="Taxon Children View" viewdef="TaxonSubform" label="View" mode="view"/>
+                <!--
+                <altview name="Taxon Children Table View" viewdef="TaxonSubform Table" label="Grid" mode="view" default="true"/>
+				-->
             </altviews>
         </view>
         
@@ -1733,14 +1736,25 @@
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="name" label="Name"/>
-                    <cell type="field" id="name" uitype="text" cols="16" name="name"/> 
+                    <cell type="label" labelfor="fullName" label="Name"/>
+                    <cell type="field" id="fullName" uitype="text" cols="16" name="fullName"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="commonName" label="Common Name"/>
                     <cell type="field" id="commonName" uitype="text" name="commonName"/>
                 </row>
             </rows>
+        </viewdef>
+        
+        <viewdef
+            name="TaxonSubform Table"
+            type="formtable"
+            class="edu.ku.brc.specify.datamodel.Taxon"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Taxon children table view.]]></desc>
+            <definition>TaxonSubform</definition>
         </viewdef>
         
     </viewdefs>
