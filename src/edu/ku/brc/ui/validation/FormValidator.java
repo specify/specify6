@@ -641,27 +641,30 @@ public class FormValidator implements ValidationListener, DataChangeListener
             // because the user will need the visual feed back on the form for which fields are in error
             for (DataChangeNotifier dcn : dcNotifiers.values())
             {
-                dcn.manualCheckForDataChanged();
-                
-                UIValidator uiv = dcn.getUIV();
-                if (uiv != null && !uiv.validate())
+                if (dcn.isEnabled())
                 {
-                    switch (uiv.getUIV().getState())
+                    dcn.manualCheckForDataChanged();
+    
+                    UIValidator uiv = dcn.getUIV();
+                    if (uiv != null && !uiv.validate())
                     {
-                        case Valid :
-                             break;
-                     
-                        case Incomplete:
-                             if (formValidationState == UIValidatable.ErrorType.Valid)
-                             {
-                                 formValidationState = UIValidatable.ErrorType.Incomplete;
-                             }
-                             break;
-                     
-                        case Error :
-                             formValidationState = UIValidatable.ErrorType.Error;
-                             break;
-                     }
+                        switch (uiv.getUIV().getState())
+                        {
+                            case Valid :
+                                 break;
+                         
+                            case Incomplete:
+                                 if (formValidationState == UIValidatable.ErrorType.Valid)
+                                 {
+                                     formValidationState = UIValidatable.ErrorType.Incomplete;
+                                 }
+                                 break;
+                         
+                            case Error :
+                                 formValidationState = UIValidatable.ErrorType.Error;
+                                 break;
+                         }
+                    }
                 }
             }
     
