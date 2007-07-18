@@ -37,13 +37,12 @@ import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
  * This class is the implementation for the ViewBasedDialogFactoryIFace interface for the entire application.
  * <BR><BR>
  * This class reads in dialog/frame definitions from dialog_defs.xml, there are two types of dialog: "search" and "display".
- * Certain UI components use this factory to create dialogs (model or non-model) for searching or displaying child objects.
+ * Certain UI components use this factory to create dialogs (modal or non-modal) for searching or displaying child objects.
  * <BR><BR>
  * For example, the TextWithInfo or the ComboBoxFromQuery has buttons that enables the user to pop up a dialog for displaying the current object in the control,
  * or to pop up a search dialog for locating (more precisely the object they desire.
  *
  * @code_status Beta
- *
  * @author rods
  *
  */
@@ -276,6 +275,4 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
             return viewSetName;
         }
     }
-
-
 }
