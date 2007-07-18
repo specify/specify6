@@ -543,7 +543,10 @@ public class TableViewObj implements Viewable,
             {
                 root = root.getMultiViewParent();
             }
-            formValidator.setHasChanged(true);
+            if (formValidator != null)
+            {
+                formValidator.setHasChanged(true);
+            }
             root.dataChanged(null, null, null);
         }
     }
