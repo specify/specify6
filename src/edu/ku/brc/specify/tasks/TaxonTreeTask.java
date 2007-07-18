@@ -137,7 +137,6 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
 
 	    rankComboBox.addFocusListener(new FocusListener()
 	    {
-	        @Override
 	        public void focusGained(FocusEvent e)
 	        {
 	            // set the contents of this combobox based on the value chosen as the parent
@@ -190,7 +189,6 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
 	                model.setSelectedItem(model.getElementAt(0));
 	            }
 	        }
-	        @Override
 	        public void focusLost(FocusEvent e)
 	        {
 	            // ignore this event
