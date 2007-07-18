@@ -534,9 +534,9 @@ public class FormValidator implements ValidationListener, DataChangeListener
      * @param valStr the default value
      * @return the validator for the control
      */
-    protected UIValidator createValidator(JComponent       comp,
-                                         UIValidator.Type valType,
-                                         String           valStr)
+    protected UIValidator createValidator(final JComponent       comp,
+                                          final UIValidator.Type valType,
+                                          final String           valStr)
     {
         if (comp instanceof UIValidatable)
         {
@@ -589,31 +589,34 @@ public class FormValidator implements ValidationListener, DataChangeListener
             formValidationState = UIValidatable.ErrorType.Valid;
             for (UIValidator uiv : validators)
             {
-                if (uiv.isInError())
+                if (uiv.getComp().isEnabled())
                 {
-                   switch (uiv.getUIV().getState())
-                   {
-                       case Valid :
-                            break;
-                    
-                       case Incomplete:
-                            if (formValidationState == UIValidatable.ErrorType.Valid)
-                            {
-                                formValidationState = UIValidatable.ErrorType.Incomplete;
-                            }
-                            break;
-                    
-                       case Error :
-                            formValidationState = UIValidatable.ErrorType.Error;
-                            break;
-                    }
-                   
-                    // Assumes Error is th worst, so if it is "less than" an Error i.e. Incompete
-                    // then we don't want to override an error with a lesser state
-                    if (formValidationState == UIValidatable.ErrorType.Error)
+                    if (uiv.isInError())
                     {
-                        break;
+                       switch (uiv.getUIV().getState())
+                       {
+                           case Valid :
+                                break;
                         
+                           case Incomplete:
+                                if (formValidationState == UIValidatable.ErrorType.Valid)
+                                {
+                                    formValidationState = UIValidatable.ErrorType.Incomplete;
+                                }
+                                break;
+                        
+                           case Error :
+                                formValidationState = UIValidatable.ErrorType.Error;
+                                break;
+                        }
+                       
+                        // Assumes Error is th worst, so if it is "less than" an Error i.e. Incompete
+                        // then we don't want to override an error with a lesser state
+                        if (formValidationState == UIValidatable.ErrorType.Error)
+                        {
+                            break;
+                            
+                        }
                     }
                 }
             }
@@ -669,6 +672,8 @@ public class FormValidator implements ValidationListener, DataChangeListener
             }
     
             updateValidationBtnUIState();
+            
+            log.debug("validateForm ["+name+"] State: "+formValidationState);
             
             // when validating for OK we always leave it enabled
             //turnOnOKButton(true);
