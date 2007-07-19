@@ -154,7 +154,11 @@ public class HibernateUtil {
 
         String connection   = dbConn.getConnectionStr();
         
-        config.setProperty("hibernate.show_sql", "false");
+        // I commented this out so the property in hibernate.cfg.xml could work.
+        // A better way to show SQL output is to put the following line in
+        // the hibernate.cfg.xml file.
+        // <property name="hibernate.show_sql">true</property>
+        //config.setProperty("hibernate.show_sql", "false");
         
         config.setProperty("hibernate.connection.username", userName);
         config.setProperty("hibernate.connection.password", password);
