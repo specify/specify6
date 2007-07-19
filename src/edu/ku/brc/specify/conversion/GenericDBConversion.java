@@ -4145,13 +4145,13 @@ public class GenericDBConversion
     public void convertLocality()
     {
         // Ignore these field names from new table schema when mapping IDs
-        BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(new String[] {"NationalParkName", "GUID", "Visibility", "VisibilitySetBy"});
+        BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(new String[] {"GML", "NationalParkName", "GUID", "Visibility", "VisibilitySetBy"});
 
         BasicSQLUtils.deleteAllRecordsFromTable("locality");
 
         String sql = "select locality.*, geography.* from locality,geography where locality.GeographyID = geography.GeographyID";
 
-        BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(new String[]{"GML"});
+        //BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(new String[]{"GML"});
         if (copyTable(oldDBConn, newDBConn, sql, "locality", "locality", null, null))
         {
             log.info("Locality/Geography copied ok.");
