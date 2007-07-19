@@ -298,7 +298,7 @@ public class FormViewObj implements Viewable,
         
         if (mvParent != null && mvParent.isTopLevel())
         {
-            scrollPane = new JScrollPane(mainComp, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            scrollPane = new JScrollPane(mainComp, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             scrollPane.setBorder(null);
         }
         
