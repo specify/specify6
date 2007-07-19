@@ -1692,7 +1692,7 @@
                 </row>
                 <row>
                 	<cell type="label" labelfor="acceptedTaxon" label="Accepted Taxon"/>
-                	<cell type="field" id="acceptedTaxon" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon" name="acceptedTaxon"/>
+                	<cell type="field" id="acceptedTaxon" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="acceptedTaxon"/>
                 </row>
                 <row>
                 	<cell type="label" labelfor="isHybrid" label="Is Hybrid?"/>
@@ -1700,11 +1700,11 @@
                 </row>
                 <row>
                 	<cell type="label" labelfor="hybridParent1" label="Hybrid Parent 1"/>
-                	<cell type="field" id="hybridParent1" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon" name="hybridParent1"/>
+                	<cell type="field" id="hybridParent1" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="hybridParent1"/>
                 </row>
                 <row>
                 	<cell type="label" labelfor="hybridParent2" label="Hybrid Parent 2"/>
-                	<cell type="field" id="hybridParent2" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon" name="hybridParent2"/>
+                	<cell type="field" id="hybridParent2" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="hybridParent2"/>
                 </row>
                 <row>
                     <cell type="separator" label="Children" colspan="3"/>

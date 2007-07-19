@@ -125,7 +125,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      * So forms that may not have multiple views or do not wish to have Edit/View can pass in null. (See Class description)
      * @param mvParent parent of this MultiView the root MultiView is null
      * @param view the view to create for
-     * @param createWithMode how the form should be created (Noe, Edit or View mode)
+     * @param createWithMode how the form should be created (None, Edit or View mode)
      * @param defaultAltViewType suggestion as to whether to use a form or a grid
      * @param options the options needed for creating the form
      */

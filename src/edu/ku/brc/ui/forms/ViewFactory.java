@@ -398,6 +398,7 @@ public class ViewFactory
         return valList;
     }
 
+
     /**
      * Creates a ValComboBoxFromQuery.
      * @param validator a validator to hook the control up to (may be null)
@@ -411,7 +412,12 @@ public class ViewFactory
         String cbxName = cellField.getProperty("name");
         if (isNotEmpty(cbxName))
         {
-            ValComboBoxFromQuery cbx = TypeSearchForQueryFactory.createValComboBoxFromQuery(cbxName);
+            int btnOpts = 0;
+            btnOpts |= cellField.getPropertyAsBoolean("editbtn", true) ? ValComboBoxFromQuery.CREATE_EDIT_BTN : 0;
+            btnOpts |= cellField.getPropertyAsBoolean("newbtn", true) ? ValComboBoxFromQuery.CREATE_NEW_BTN : 0;
+            btnOpts |= cellField.getPropertyAsBoolean("searchbtn", true) ? ValComboBoxFromQuery.CREATE_SEARCH_BTN : 0;
+
+            ValComboBoxFromQuery cbx = TypeSearchForQueryFactory.createValComboBoxFromQuery(cbxName, btnOpts);
             cbx.setRequired(cellField.isRequired());
             if (validator != null)// && (cellField.isRequired() || isNotEmpty(cellField.getValidationRule())))
             {
@@ -1225,8 +1231,6 @@ public class ViewFactory
                         if (StringUtils.isEmpty(id))
                         {
                             System.out.println(cell.getName());
-                            int x = 0;
-                            x++;
                         }
                         validator.addUIComp(cell.getId(), compToReg == null ? compToAdd : compToReg);
                     }

@@ -170,11 +170,8 @@ public final class FormCellField extends FormCell
             {
                 return Integer.parseInt(str);
             }
-        } else
-        {
-            return defVal;
         }
-        return -1;
+        return defVal;
     }
 
     public boolean getPropertyAsBoolean(final String nameStr, final boolean defVal)
@@ -186,11 +183,8 @@ public final class FormCellField extends FormCell
             {
                 return str.equalsIgnoreCase("true");
             }
-        } else
-        {
-            return defVal;
         }
-        return false;
+        return defVal;
     }
 
     public int getCols()

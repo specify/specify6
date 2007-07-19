@@ -97,6 +97,11 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
 {
     protected static final Logger log                = Logger.getLogger(ValComboBoxFromQuery.class);
 
+    public static final int CREATE_EDIT_BTN   = 1;
+    public static final int CREATE_NEW_BTN    = 2;
+    public static final int CREATE_SEARCH_BTN = 4;
+    public static final int CREATE_ALL        = 7;
+    
     protected enum MODE {Unknown, Editting, NewAndEmpty, NewAndNotEmpty}
 
     protected static ColorWrapper valtextcolor       = null;
@@ -150,7 +155,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      * @param idName the POJO field name of the ID column
      * @param keyName the POJO field name of the key column
      * @param format the format specification (null is OK if displayNames is null)
-     * @param formatName the name of the pre-deined (user-defined) format
+     * @param formatName the name of the pre-defined (user-defined) format
      * @param searchDialogName the name to look up to display the search dialog (from the dialog factory)
      * @param displayInfoDialogName the name to look up to display the info dialog (from the dialog factory)
      * @param objTitle the title of a single object
@@ -166,7 +171,9 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                                 final String formatName,
                                 final String searchDialogName,
                                 final String displayInfoDialogName,
-                                final String objTitle )
+                                final String objTitle,
+                                final int    btns)
+    
     {
         if (StringUtils.isEmpty(displayColumn))
         {
@@ -192,7 +199,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         comboBox = new JComboBoxFromQuery(tableName, idColumn, keyColumn, displayColumn, format);
         comboBox.setAllowNewValues(true);
 
-        init(objTitle);
+        init(objTitle, btns);
     }
 
     /**
@@ -226,8 +233,14 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         {
             searchBtn.setEnabled(enabled);
         }
-        editBtn.setEnabled(enabled && dataObj != null);
-        createBtn.setEnabled(enabled);
+        if (editBtn != null)
+        {
+            editBtn.setEnabled(enabled && dataObj != null);
+        }
+        if (createBtn != null)
+        {
+            createBtn.setEnabled(enabled);
+        }
         
         // Cheap easy way of setting the Combobox's Text Field to the proper BG Color
         setRequired(isRequired);
@@ -255,7 +268,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      * Creates the UI for the ComboBox.
      * @param objTitle the title of one object needed for the Info Button
      */
-    public void init(final String objTitle)
+    public void init(final String objTitle,
+                     final int    btnMask)
     {
         fieldNames = split(StringUtils.deleteWhitespace(keyName), ",");
 
@@ -277,15 +291,22 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         builder.add(comboBox, cc.xy(1,1));
 
         int x = 3;
-        editBtn = createBtn("EditIcon", "EditRecordTT", objTitle);
-        builder.add(editBtn, cc.xy(x,1));
-        x += 2;
+        if ((btnMask & CREATE_EDIT_BTN) != 0)
+        {
+            editBtn = createBtn("EditIcon", "EditRecordTT", objTitle);
+            builder.add(editBtn, cc.xy(x,1));
+            x += 2;
+        }
 
-        createBtn = createBtn("CreateObj", "NewRecordTT", objTitle); 
-        builder.add(createBtn, cc.xy(x,1));
-        x += 2;
+        if ((btnMask & CREATE_NEW_BTN) != 0)
+        {
+            createBtn = createBtn("CreateObj", "NewRecordTT", objTitle); 
+            builder.add(createBtn, cc.xy(x,1));
+            x += 2;
+        }
 
-        if (hasSearchBtn)
+
+        if (hasSearchBtn && (btnMask & CREATE_SEARCH_BTN) != 0)
         {
             searchBtn = createBtn("Search", "SearchForRecordTT", objTitle); 
             builder.add(searchBtn, cc.xy(x,1));
@@ -339,7 +360,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                     }
                 });
 
-        if (hasSearchBtn)
+        if (searchBtn != null)
         {
             defaultSearchAction = new ActionListener()
             {
@@ -358,33 +379,39 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             searchBtn.addActionListener(defaultSearchAction);
         }
 
-        defaultEditAction = new ActionListener()
+        if (editBtn != null)
         {
-            public void actionPerformed(ActionEvent e)
+            defaultEditAction = new ActionListener()
             {
-                currentMode = MODE.Editting;
-                createEditFrame(false);
-            }
-        };
-        editBtn.addActionListener(defaultEditAction);
+                public void actionPerformed(ActionEvent e)
+                {
+                    currentMode = MODE.Editting;
+                    createEditFrame(false);
+                }
+            };
+            editBtn.addActionListener(defaultEditAction);
+        }
 
-        defaultNewAction = new ActionListener()
+        if (createBtn != null)
         {
-            public void actionPerformed(ActionEvent e)
+            defaultNewAction = new ActionListener()
             {
-                currentMode = dataObj != null ? MODE.NewAndNotEmpty : MODE.NewAndEmpty;
-                createEditFrame(true);
-            }
-        };
-        createBtn.addActionListener(defaultNewAction);
+                public void actionPerformed(ActionEvent e)
+                {
+                    currentMode = dataObj != null ? MODE.NewAndNotEmpty : MODE.NewAndEmpty;
+                    createEditFrame(true);
+                }
+            };
+            createBtn.addActionListener(defaultNewAction);
+        }
     }
     
     public void setEditAction(ActionListener al)
     {
-        if (editBtn!=null)
+        if (editBtn != null)
         {
             removeAllActionListeners(editBtn);
-            if (al!=null)
+            if (al != null)
             {
                 editBtn.addActionListener(al);
             }
@@ -393,29 +420,29 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     
     public void setSearchAction(ActionListener al)
     {
-        if (searchBtn!=null)
+        if (searchBtn != null)
         {
             removeAllActionListeners(searchBtn);
-            if (al!=null)
+            if (al != null)
             {
                 searchBtn.addActionListener(al);
             }
         }
     }
     
-    public void setNewAction(ActionListener al)
+    public void setNewAction(final ActionListener al)
     {
-        if (createBtn!=null)
+        if (createBtn != null)
         {
             removeAllActionListeners(createBtn);
-            if (al!=null)
+            if (al != null)
             {
                 createBtn.addActionListener(al);
             }
         }
     }
 
-    protected void removeAllActionListeners(JButton button)
+    protected void removeAllActionListeners(final JButton button)
     {
         for (ActionListener al: button.getActionListeners())
         {
@@ -425,7 +452,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     
     public void setEditEnabled(boolean enabled)
     {
-        editBtn.setEnabled(enabled);
+        if (editBtn != null)
+        { 
+            editBtn.setEnabled(enabled);
+        }
     }
     
     protected void valueHasChanged()
@@ -653,7 +683,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                 list.add(newVal.toString());
                 comboBox.setSelectedIndex(0);
                 valState = UIValidatable.ErrorType.Valid;
-                editBtn.setEnabled(true);
+                if (editBtn != null)
+                {
+                    editBtn.setEnabled(true);
+                }
                 
             } else
             {
@@ -665,7 +698,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         {
             comboBox.setSelectedIndex(-1);
             valState = UIValidatable.ErrorType.Incomplete;
-            editBtn.setEnabled(false);
+            if (editBtn != null)
+            {
+                editBtn.setEnabled(false);
+            }
         }
         repaint();
     }

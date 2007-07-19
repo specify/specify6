@@ -149,7 +149,7 @@ public class TypeSearchForQueryFactory
      * @param name the name of the ValComboBoxFromQuery to return
      * @return a ValComboBoxFromQuery by name
      */
-    public static ValComboBoxFromQuery createValComboBoxFromQuery(final String name)
+    public static ValComboBoxFromQuery createValComboBoxFromQuery(final String name, final int btnOpts)
     {
         TypeSearchInfo typeSearchInfo = instance.hash.get(name);
         if (typeSearchInfo != null)
@@ -168,7 +168,8 @@ public class TypeSearchForQueryFactory
                                                 typeSearchInfo.getFormatName(),
                                                 tblInfo.getSearchDialog(),
                                                 tblInfo.getNewObjDialog(),
-                                                tblInfo.getObjTitle());
+                                                tblInfo.getObjTitle(),
+                                                btnOpts);
 
     
             }

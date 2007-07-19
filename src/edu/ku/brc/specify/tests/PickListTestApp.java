@@ -250,7 +250,7 @@ public class PickListTestApp
           
           ValComboBoxFromQuery valCBX = new ValComboBoxFromQuery("agent", "AgentID", "LastName", "LastName", 
                                                                  "edu.ku.brc.specify.datamodel.Agent", "agentId", "lastName", 
-                                                                 "%s", null, null, "AgentDisplay", "Agent");
+                                                                 "%s", null, null, "AgentDisplay", "Agent", ValComboBoxFromQuery.CREATE_ALL);
           
           builder.add(new JLabel("Enter ValCBX:"), cc.xy(1,y));
           builder.add(valCBX, cc.xy(3,y));

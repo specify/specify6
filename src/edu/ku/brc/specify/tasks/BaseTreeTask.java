@@ -395,7 +395,6 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
         {
             if (cmdAction.isAction(DataEntryTask.VIEW_WAS_SHOWN))
             {
-                System.out.println(cmdAction.getData());
                 if (cmdAction.getData() instanceof FormViewObj)
                 {
                     FormViewObj formViewObj = (FormViewObj)cmdAction.getData();

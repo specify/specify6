@@ -1742,7 +1742,7 @@ public final class UIHelper
                 {
                     for (int i=0;i<args.length;i++)
                     {
-                        props.put(args[i], args[i+1]);
+                        props.put(args[i].trim(), args[i+1].trim());
                         i++;
                     }
                 }
