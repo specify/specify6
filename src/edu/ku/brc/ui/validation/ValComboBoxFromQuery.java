@@ -353,6 +353,22 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                         //    setValue(data, null);
                         //}
                         
+                        if (comboBox.getTextField() != null)
+                        {
+                            String str = comboBox.getTextField().getText().trim();
+                            if (StringUtils.isNotEmpty(str))
+                            {
+                                Object selObj = comboBox.getSelectedItem();
+                                if (selObj != null && !selObj.toString().equals(str))
+                                {
+                                    comboBox.getTextField().setText(selObj.toString());
+                                }                        
+                            } else
+                            {
+                                comboBox.setSelectedIndex(-1);
+                            }
+                        }
+                        
                         for (FocusListener l : focusListeners)
                         {
                             l.focusLost(e);
@@ -559,7 +575,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     }
 
     /**
-     * Sets the string that is preappended to the title.
+     * Sets the string that is pre-appended to the title.
      * @param frameTitle the string arg
      */
     public void setFrameTitle(final String frameTitle)
@@ -880,6 +896,11 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     public Object getValue()
     {
+        if (comboBox.getTextField() != null && StringUtils.isEmpty(comboBox.getTextField().getText().trim()))
+        {
+            return null;
+        }
+        
         Object value = null;
         Long  id     = comboBox.getSelectedId();
         if (id != null)

@@ -164,6 +164,21 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
             @Override
             public void focusLost(FocusEvent e)
             {
+                if (comboBox.getTextField() != null)
+                {
+                    String str = comboBox.getTextField().getText().trim();
+                    if (StringUtils.isNotEmpty(str))
+                    {
+                        Object selObj = comboBox.getSelectedItem();
+                        if (selObj != null && !selObj.toString().equals(str))
+                        {
+                            comboBox.getTextField().setText(selObj.toString());
+                        }                        
+                    } else
+                    {
+                        comboBox.setSelectedIndex(-1);
+                    }
+                }
                 //valState = isRequired && comboBox.getSelectedIndex() == -1;
                 isNew = false;
                 repaint();
@@ -531,6 +546,11 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
      */
     public Object getValue()
     {
+        if (comboBox.getTextField() != null && StringUtils.isEmpty(comboBox.getTextField().getText().trim()))
+        {
+            return null;
+        }
+        
         Object selectedObj = comboBox.getSelectedItem();
         if (selectedObj != null)
         {

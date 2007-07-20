@@ -166,7 +166,6 @@ public class FormViewObj implements Viewable,
     protected int                           options;
 
     protected JPanel                        mainComp        = null;
-    protected JScrollPane                   scrollPane      = null;
     protected ControlBarPanel               controlPanel    = null;
     protected ResultSetController           rsController    = null;
     protected Vector<Object>                list            = null;
@@ -283,24 +282,9 @@ public class FormViewObj implements Viewable,
 
         String rowDefs = (addSelectorCBX ? "t:p," : "") + (mvParent == null ? "t:p" : "t:p:g") + (addExtraRow ? ",2px,t:p" : "");
 
-        /*
-        JPanel mainPanel = new JPanel() {
-            public void paintComponent(Graphics g)
-            {
-                super.paintComponent(g);
-                KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-                focusManager.getFocusOwner()
-            }
-        }*/
         mainBuilder = new PanelBuilder(new FormLayout("f:p:g", rowDefs));
         mainComp    = mainBuilder.getPanel();
         mainComp.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
-        
-        if (mvParent != null && mvParent.isTopLevel())
-        {
-            scrollPane = new JScrollPane(mainComp, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-            scrollPane.setBorder(null);
-        }
         
         List<JComponent> comps = new ArrayList<JComponent>();
 
@@ -1577,7 +1561,7 @@ public class FormViewObj implements Viewable,
      */
     public Component getUIComponent()
     {
-        return scrollPane != null ? scrollPane : mainComp;
+        return mainComp;
     }
 
     /* (non-Javadoc)
