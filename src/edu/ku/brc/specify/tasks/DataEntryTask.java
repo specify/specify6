@@ -120,6 +120,7 @@ public class DataEntryTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.Taskable#initialize()
      */
+    @Override
     public void initialize()
     {
         if (!isInitialized)
@@ -162,7 +163,11 @@ public class DataEntryTask extends BaseTask
                 Class<?> clsObj = Class.forName(view.getClassName());
                 imgIcon = IconManager.getIcon(clsObj.getSimpleName(), IconManager.IconSize.Std16);
                 
-            } catch (Exception ex) {}
+            }
+            catch (Exception ex)
+            {
+                // do nothing
+            }
             
             if (imgIcon == null)
             {
@@ -218,20 +223,22 @@ public class DataEntryTask extends BaseTask
         
         SwingUtilities.invokeLater(new Runnable()
         {
+            @SuppressWarnings("synthetic-access")
             public void run()
             {
                 if (starterPane == null)
                 {
                     addSubPaneToMgr(formPane);
-                    
+
                 } else
                 {
                     SubPaneMgr.getInstance().removePane(starterPane);
                     SubPaneMgr.getInstance().addPane(formPane);
                     starterPane = null;
                 }
-                
-                CommandDispatcher.dispatch(new CommandAction(DATA_ENTRY, VIEW_WAS_OPENED, formPane));            }
+
+                CommandDispatcher.dispatch(new CommandAction(DATA_ENTRY, VIEW_WAS_OPENED, formPane));
+            }
         });
 
     }
@@ -430,6 +437,7 @@ public class DataEntryTask extends BaseTask
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.core.Taskable#getNavBoxes()
      */
+    @Override
     public java.util.List<NavBoxIFace> getNavBoxes()
     {
         initialize();
@@ -449,6 +457,7 @@ public class DataEntryTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.BaseTask#getStarterPane()
      */
+    @Override
     public SubPaneIFace getStarterPane()
     {
         return starterPane = new DroppableFormRecordSetAccepter(title, this, "This is the Data Entry Pane");
@@ -458,6 +467,7 @@ public class DataEntryTask extends BaseTask
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.Taskable#getToolBarItems()
      */
+    @Override
     public List<ToolBarItemDesc> getToolBarItems()
     {
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
@@ -476,6 +486,7 @@ public class DataEntryTask extends BaseTask
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.Taskable#getMenuItems()
      */
+    @Override
     public List<MenuItemDesc> getMenuItems()
     {
         Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
@@ -486,6 +497,7 @@ public class DataEntryTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.Taskable#getTaskClass()
      */
+    @Override
     public Class<? extends BaseTask> getTaskClass()
     {
         return this.getClass();
@@ -601,6 +613,7 @@ public class DataEntryTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#doCommand(edu.ku.brc.ui.CommandAction)
      */
+    @Override
     public void doCommand(CommandAction cmdAction)
     {
         if (cmdAction.isType(DATA_ENTRY))
@@ -636,6 +649,8 @@ public class DataEntryTask extends BaseTask
             this.icon = IconManager.getIcon(DATA_ENTRY, IconManager.IconSize.Std16);
         }
 
+        @SuppressWarnings("synthetic-access")
+        @Override
         public void doAction(GhostActionable src)
         {
             Object srcData = src.getData();
@@ -645,6 +660,7 @@ public class DataEntryTask extends BaseTask
             }
         }
         
+        @Override
         public void doCommand(CommandAction cmdAction)
         {
             // nothing going on for now (should probably be removed)
