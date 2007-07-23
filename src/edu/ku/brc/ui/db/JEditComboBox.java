@@ -20,6 +20,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Vector;
@@ -285,6 +286,66 @@ public class JEditComboBox extends JComboBox
         }        
     }
     
+    protected KeyAdapter createKeyAdapter()
+    {
+        return new KeyAdapter()
+        {
+            @Override
+            public void keyReleased(KeyEvent ev)
+            {
+                char key = ev.getKeyChar();
+                
+                if (ev.getKeyCode() == KeyEvent.VK_BACK_SPACE || ev.getKeyCode() == KeyEvent.VK_DELETE)
+                {
+                    int selectedIndex = getSelectedIndex();
+                    if (selectedIndex > -1 && dbAdapter != null && 
+                        textField != null && 
+                        textField.getText().length() == 0 &&
+                        !dbAdapter.isReadOnly())
+                    {
+                        // delete item
+                        PickListItem item = (PickListItem)getSelectedItem();
+                        dbAdapter.getList().remove(item);
+                    }
+                    
+                } else if (!(Character.isLetterOrDigit(key) || Character.isSpaceChar(key)))
+                {
+                    if (ev.getKeyCode() == KeyEvent.VK_ENTER) 
+                    {
+                        addNewItemFromTextField();
+                    }
+                } else
+                {
+                    if (textField != null)
+                    {
+                        int pos = textField.getCaretPosition();
+                        String currentText = textField.getText();
+                        setSelectedIndex(-1);
+                        textField.setText(currentText);
+                        textField.moveCaretPosition(pos);
+                        textField.setSelectionStart(pos);
+                        textField.setSelectionEnd(pos);
+                    } else
+                    {
+                        setSelectedIndex(-1);
+                    }
+                }
+            }
+        };
+    }
+    
+    protected FocusListener createFocusListener()
+    {
+        return new FocusAdapter() 
+        {
+            @Override
+            public void focusLost(FocusEvent e)
+            {
+                addNewItemFromTextField();
+            }
+        };
+    }
+    
     /* (non-Javadoc)
      * @see javax.swing.JComboBox#setEditor(javax.swing.ComboBoxEditor)
      */
@@ -296,61 +357,18 @@ public class JEditComboBox extends JComboBox
         if (anEditor.getEditorComponent() instanceof JTextField)
         {
             textField = (JTextField) anEditor.getEditorComponent();
-            //textField.setBackground(super.getBackground());
-            textField.addFocusListener(new FocusAdapter() 
-            {
-                @Override
-                public void focusLost(FocusEvent e)
-                {
-                    addNewItemFromTextField();
-                }
-            });
             
-            //System.out.println(textField.getKeyListeners());
-            textField.addKeyListener(new KeyAdapter()
+            FocusListener fl = createFocusListener();
+            if (fl != null)
             {
-                @Override
-                public void keyReleased(KeyEvent ev)
-                {
-                    char key = ev.getKeyChar();
-                    
-                    if (ev.getKeyCode() == KeyEvent.VK_BACK_SPACE || ev.getKeyCode() == KeyEvent.VK_DELETE)
-                    {
-                        int selectedIndex = getSelectedIndex();
-                        if (selectedIndex > -1 && dbAdapter != null && 
-                            textField != null && 
-                            textField.getText().length() == 0 &&
-                            !dbAdapter.isReadOnly())
-                        {
-                            // delete item
-                            PickListItem item = (PickListItem)getSelectedItem();
-                            dbAdapter.getList().remove(item);
-                        }
-                        
-                    } else if (!(Character.isLetterOrDigit(key) || Character.isSpaceChar(key)))
-                    {
-                        if (ev.getKeyCode() == KeyEvent.VK_ENTER) 
-                        {
-                            addNewItemFromTextField();
-                        }
-                    } else
-                    {
-                        if (textField != null)
-                        {
-                            int pos = textField.getCaretPosition();
-                            String currentText = textField.getText();
-                            setSelectedIndex(-1);
-                            textField.setText(currentText);
-                            textField.moveCaretPosition(pos);
-                            textField.setSelectionStart(pos);
-                            textField.setSelectionEnd(pos);
-                        } else
-                        {
-                            setSelectedIndex(-1);
-                        }
-                    }
-                }
-            });
+                textField.addFocusListener(fl);
+            }
+            
+            KeyAdapter ka = createKeyAdapter();
+            if (ka != null)
+            {
+                textField.addKeyListener(ka);
+            }
         }
     }
     

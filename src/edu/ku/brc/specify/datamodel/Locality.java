@@ -29,6 +29,7 @@
 package edu.ku.brc.specify.datamodel;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -108,6 +109,17 @@ public class Locality extends DataModelObjBase implements java.io.Serializable, 
      protected String drainage;
      protected Integer visibility;
      protected String visibilitySetBy;
+     
+     // Manis Fields
+     protected Float    namedPlaceExtent;
+     protected String   geoRefAccuracyUnits;
+     protected String   geoRefDetRef;
+     protected Calendar geoRefDetDate;
+     protected Agent    geoRefDetBy;
+     protected String   noGeoRefBecause;
+     protected String   geoRefRemarks;
+     protected String   geoRefVerificationStatus; 
+     
      protected Set<CollectionType> collectionTypes;
      protected Geography geography;
      protected Set<LocalityCitation> localityCitations;
@@ -180,6 +192,18 @@ public class Locality extends DataModelObjBase implements java.io.Serializable, 
         waterBody = null;
         drainage = null;
         visibility = null;
+        
+        // Manis Fields
+        namedPlaceExtent = null;
+        geoRefAccuracyUnits = null;
+        geoRefDetRef = null;
+        geoRefDetDate = null;
+        geoRefDetBy = null;
+        noGeoRefBecause = null;
+        geoRefRemarks = null;
+        geoRefVerificationStatus = null; 
+
+        
         collectionTypes = new HashSet<CollectionType>();
         geography = null;
         localityCitations = new HashSet<LocalityCitation>();
@@ -743,7 +767,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable, 
     }
     
     /**
-     *      * Indicates whether this record can be viewed - by owner, by instituion, or by all
+     *      * Indicates whether this record can be viewed - by owner, by institution, or by all
      */
     @Column(name = "Visibility", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
     public Integer getVisibility() {
@@ -754,6 +778,145 @@ public class Locality extends DataModelObjBase implements java.io.Serializable, 
         this.visibility = visibility;
     }
     
+    /**
+     * @return the namedPlaceExtent
+     */
+    @Column(name = "NamedPlaceExtent", unique = false, nullable = true, insertable = true, updatable = true)
+    public Float getNamedPlaceExtent()
+    {
+        return namedPlaceExtent;
+    }
+
+    /**
+     * @param namedPlaceExtent the namedPlaceExtent to set
+     */
+    public void setNamedPlaceExtent(Float namedPlaceExtent)
+    {
+        this.namedPlaceExtent = namedPlaceExtent;
+    }
+
+    /**
+     * @return the geoRefAccuracyUnits
+     */
+    @Column(name = "GeoRefAccuracyUnits", unique = false, nullable = true, insertable = true, updatable = true, length = 20)
+    public String getGeoRefAccuracyUnits()
+    {
+        return geoRefAccuracyUnits;
+    }
+
+    /**
+     * @param geoRefAccuracyUnits the geoRefAccuracyUnits to set
+     */
+    public void setGeoRefAccuracyUnits(String geoRefAccuracyUnits)
+    {
+        this.geoRefAccuracyUnits = geoRefAccuracyUnits;
+    }
+
+    /**
+     * @return the geoRefDetRef
+     */
+    @Column(name = "GeoRefDetRef", unique = false, nullable = true, insertable = true, updatable = true, length = 100)
+    public String getGeoRefDetRef()
+    {
+        return geoRefDetRef;
+    }
+
+    /**
+     * @param geoRefDetRef the geoRefDetRef to set
+     */
+    public void setGeoRefDetRef(String geoRefDetRef)
+    {
+        this.geoRefDetRef = geoRefDetRef;
+    }
+
+    /**
+     * @return the geoRefDetDate
+     */
+    @Column(name = "GeoRefDetDate", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getGeoRefDetDate()
+    {
+        return geoRefDetDate;
+    }
+
+    /**
+     * @param geoRefDetDate the geoRefDetDate to set
+     */
+    public void setGeoRefDetDate(Calendar geoRefDetDate)
+    {
+        this.geoRefDetDate = geoRefDetDate;
+    }
+
+    /**
+     * @return the geoRefDetBy
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    @JoinColumn(name = "GeoRefDetByID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Agent getGeoRefDetBy()
+    {
+        return geoRefDetBy;
+    }
+
+    /**
+     * @param geoRefDetBy the geoRefDetBy to set
+     */
+    public void setGeoRefDetBy(Agent geoRefDetBy)
+    {
+        this.geoRefDetBy = geoRefDetBy;
+    }
+
+    /**
+     * @return the noGeoRefBecause
+     */
+    @Column(name = "NoGeoRefBecause", unique = false, nullable = true, insertable = true, updatable = true, length = 100)
+    public String getNoGeoRefBecause()
+    {
+        return noGeoRefBecause;
+    }
+
+    /**
+     * @param noGeoRefBecause the noGeoRefBecause to set
+     */
+    public void setNoGeoRefBecause(String noGeoRefBecause)
+    {
+        this.noGeoRefBecause = noGeoRefBecause;
+    }
+
+    /**
+     * @return the geoRefRemarks
+     */
+    @Lob
+    @Column(name = "GeoRefRemarks", unique = false, nullable = true, insertable = true, updatable = true)
+    public String getGeoRefRemarks()
+    {
+        return geoRefRemarks;
+    }
+
+    /**
+     * @param geoRefRemarks the geoRefRemarks to set
+     */
+    public void setGeoRefRemarks(String geoRefRemarks)
+    {
+        this.geoRefRemarks = geoRefRemarks;
+    }
+
+    /**
+     * @return the geoRefVerificationStatus
+     */
+    @Column(name = "GeoRefVerificationStatus", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    public String getGeoRefVerificationStatus()
+    {
+        return geoRefVerificationStatus;
+    }
+
+    /**
+     * @param geoRefVerificationStatus the geoRefVerificationStatus to set
+     */
+    public void setGeoRefVerificationStatus(String geoRefVerificationStatus)
+    {
+        this.geoRefVerificationStatus = geoRefVerificationStatus;
+    }
+
     @Transient
     @Override
     public boolean isRestrictable()

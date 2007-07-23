@@ -869,6 +869,26 @@ accession.DateAccessioned, accession.DateReceived FROM accession WHERE (%s)]]>
             </detailView>
         </table>  
               
+        <table id="107" tableid="5" name="AgentNameSearch" title="Agent Name Search" priority="1" color="30, 144, 255">
+            <outofdate/>
+            <index>
+                <sql/>
+                <cols/>
+            </index>
+            <detailView icon="">
+                <sql>
+                    <![CDATA[SELECT AgentID, FirstName, LastName, Name FROM agent AS newTable WHERE (%s)]]>
+                </sql>
+                <captions>
+                    <caption col="AgentID" text="AgentID"  visible="false"/>
+                    <caption col="FirstName" text="First Name"/>
+                    <caption col="LastName" text="Last Name"/>
+                    <caption col="MiddleInitial" text="Middle Initial"/>
+                </captions>
+                <recordset tabletype="5" col="1"/>
+            </detailView>
+        </table>
+        
         
     </generic>
 </searches>

@@ -103,7 +103,7 @@ public class ResultSetTableModelDM extends ResultSetTableModel
     {
         if (captionInfo != null)
         {
-            return captionInfo[column].getColName();
+            return captionInfo[column].getColLabel();
         }
         
         if (metaData == null)

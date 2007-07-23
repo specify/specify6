@@ -168,13 +168,11 @@ public class DataFlavorTableExt extends DataFlavor
                         }
                     } else if (thatDF.tableIds == null)
                     {
-                        //System.out.println("thatDF.tableIds == null");
                         return true;
                     }
                 }
             } else
             {
-                //System.out.println("same");
                 return true; // same object
                 
             }
@@ -182,10 +180,17 @@ public class DataFlavorTableExt extends DataFlavor
             
         } else if (tableIds == null)
         {
-            //System.out.println("Here1");
             return getHumanPresentableName().equals(that.getHumanPresentableName());
+        } else
+        {
+            for (Integer id :tableIds)
+            {
+                if (hash.get(id) != null)
+                {
+                    return true;
+                }
+            }
         }
-        //System.out.println("default "+that.getClass().getSimpleName());
         return false;
     }
     

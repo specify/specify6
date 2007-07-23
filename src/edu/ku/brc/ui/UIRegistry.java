@@ -122,9 +122,6 @@ public class UIRegistry
     protected Hashtable<String, Hashtable<String, JComponent>> uiItems = new Hashtable<String, Hashtable<String, JComponent>>();
 
     protected Font           baseFont           = null;
-    
-    protected ResourceBundle resourceBundle     = null;
-    protected String         resourceName       = "resources";
 
     protected FileCache      longTermCache      = null;
     protected FileCache      shortTermCache     = null;
@@ -136,6 +133,12 @@ public class UIRegistry
     protected String         appName            = null;
     
     protected boolean        isRelease          = false;
+    
+    // Resource Management
+    protected ResourceBundle       resourceBundle = null;
+    protected Stack<ResBundleInfo> resBundleStack = new Stack<ResBundleInfo>();
+    protected String               resourceName   = "resources";
+
 
     protected ViewBasedDialogFactoryIFace viewbasedFactory = null;
     
@@ -205,13 +208,7 @@ public class UIRegistry
     {
         if (resourceBundle == null)
         {
-            try {
-                // Get the resource bundle for the default locale
-                resourceBundle = ResourceBundle.getBundle(resourceName);
-
-            } catch (MissingResourceException ex) {
-                log.error("Couldn't find Resource Bundle Name["+resourceName+"]", ex);
-            }
+            resourceBundle = getResourceBundle(resourceName);
         }
     }
 
@@ -222,6 +219,64 @@ public class UIRegistry
     public static UIRegistry getInstance()
     {
         return instance;
+    }
+    
+    /**
+     * Loads and returns a resource Bundle.
+     * @param name the name of the Bundle
+     * @return the resource bundle object
+     */
+    public static ResourceBundle getResourceBundle(final String name)
+    {
+        ResourceBundle resBundle = null;
+        try 
+        {
+            // Get the resource bundle for the default locale
+            resBundle = ResourceBundle.getBundle(name);
+
+        } catch (MissingResourceException ex) 
+        {
+            log.error("Couldn't find Resource Bundle Name["+name+"]", ex);
+        }
+        return resBundle;
+    }
+    
+    protected ResourceBundle pushInternal(final String name, final ResourceBundle rb)
+    {
+        resBundleStack.push(new ResBundleInfo(name, rb));
+        return rb;
+    }
+    
+    public static ResourceBundle push(final String name, final ResourceBundle rb)
+    {
+        instance.pushInternal(instance.resourceName, instance.resourceBundle);
+        instance.resourceBundle = rb;
+        instance.resourceName   = name;
+        return rb;
+    }
+
+    public static ResourceBundle loadAndPushResourceBundle(final String resName)
+    {
+        ResourceBundle rb = getResourceBundle(resName);
+        if (rb != null)
+        {
+            push(resName, rb);
+        }
+        return rb;
+    }
+
+    public static ResourceBundle popResourceBundle()
+    {
+        if (instance.resBundleStack.size() > 0)
+        {
+            ResBundleInfo rbi = instance.resBundleStack.pop();
+            instance.resourceBundle = rbi.getResBundle();
+            instance.resourceName   = rbi.getName();
+        } else
+        {
+            log.error("Tried to pop empty ResourceBundle Stack");
+        }
+        return instance.resourceBundle;
     }
 
     /**
@@ -586,7 +641,7 @@ public class UIRegistry
     }
 
     /**
-     * Returns a localized string from the resource bundle (masks the thrown expecption).
+     * Returns a localized string from the resource bundle (masks the thrown exception).
      * @param key the key to look up
      * @return  Returns a localized string from the resource bundle
      */
@@ -599,13 +654,13 @@ public class UIRegistry
             
         } catch (MissingResourceException ex) 
         {
-            log.error("Couldn't find key["+key+"] in resource bundle.");
+            log.error("Couldn't find key["+key+"] in resource bundle ["+resourceName+"]");
             return key;
         }
     }
 
     /**
-     * Returns a localized string from the resource bundle (masks the thrown expecption).
+     * Returns a localized string from the resource bundle (masks the thrown exception).
      * @param key the key to look up
      * @return  Returns a localized string from the resource bundle
      */
@@ -1618,6 +1673,36 @@ public class UIRegistry
     public void hookUpUndoableEditListener(final UndoableTextIFace undoableText)
     {
         undoableText.getTextComponent().getDocument().addUndoableEditListener(new UICUndoableEditListener(undoableText.getUndoManager()));
+    }
+    
+    //-----------------------------------------------------------------
+    //-- Inner Classes
+    //-----------------------------------------------------------------
+    class ResBundleInfo
+    {
+        protected String         name;
+        protected ResourceBundle resBundle;
+        public ResBundleInfo(String name, ResourceBundle resBundle)
+        {
+            super();
+            this.name = name;
+            this.resBundle = resBundle;
+        }
+        /**
+         * @return the name
+         */
+        public String getName()
+        {
+            return name;
+        }
+        /**
+         * @return the resBundle
+         */
+        public ResourceBundle getResBundle()
+        {
+            return resBundle;
+        }
+        
     }
 }
 

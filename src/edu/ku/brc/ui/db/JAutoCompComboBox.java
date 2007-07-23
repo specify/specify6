@@ -166,83 +166,63 @@ public class JAutoCompComboBox extends JEditComboBox
         }
         foundMatch = false;        
     }
-
-    /* (non-Javadoc)
-     * @see javax.swing.JComboBox#setEditor(javax.swing.ComboBoxEditor)
-     */
-    @Override
-    public void setEditor(ComboBoxEditor anEditor)
+    
+    protected KeyAdapter createKeyAdapter()
     {
-        super.setEditor(anEditor);
-        if (anEditor.getEditorComponent() instanceof JTextField)
+        return new KeyAdapter()
         {
-            textField = (JTextField) anEditor.getEditorComponent();
-            //textField.setBackground(super.getBackground());
-            textField.addFocusListener(new FocusAdapter() 
-            {
-                @Override
-                public void focusLost(FocusEvent e)
-                {
-                    addNewItemFromTextField();
-                }
-            });
+            protected int prevCaretPos = -1;
             
-            //System.out.println(textField.getKeyListeners());
-            textField.addKeyListener(new KeyAdapter()
+            @Override
+            public void keyPressed(KeyEvent ev)
             {
-                protected int prevCaretPos = -1;
-                
-                @Override
-                public void keyPressed(KeyEvent ev)
+                prevCaretPos = textField.getCaretPosition();
+            }
+            
+            @Override
+            public void keyReleased(KeyEvent ev)
+            {
+                char key = ev.getKeyChar();
+                if (ev.getKeyCode() == KeyEvent.VK_BACK_SPACE)
                 {
-                    prevCaretPos = textField.getCaretPosition();
-                }
-                
-                @Override
-                public void keyReleased(KeyEvent ev)
-                {
-                    char key = ev.getKeyChar();
-                    if (ev.getKeyCode() == KeyEvent.VK_BACK_SPACE)
+                    String textStr = textField.getText();
+                    int    len     = textStr.length();
+                    if (len == 0)
                     {
-                        String textStr = textField.getText();
-                        int    len     = textStr.length();
-                        if (len == 0)
-                        {
-                            foundMatch = false;
-                            setSelectedIndex(-1);
-                            return;
-                            
-                        }
-                        // else
-                        if (foundMatch)
-                        {
-                            textField.setText(textStr.substring(0, len-1));
-                            
-                        } else if (!enableAdditions && len > 0)
-                        {
-                            textField.setText(textStr.substring(0, len-1));
-                            lookForMatch();
-                            return;
-                        }
+                        foundMatch = false;
+                        setSelectedIndex(-1);
+                        return;
                         
-                    } else if ((!(Character.isLetterOrDigit(key) || Character.isSpaceChar(key))) && 
-                                 ev.getKeyCode() != KeyEvent.VK_DELETE)
+                    }
+                    // else
+                    if (foundMatch)
                     {
-                        if (ev.getKeyCode() == KeyEvent.VK_ENTER) 
-                        {
-                            addNewItemFromTextField();
-                            
-                        } else if (ev.getKeyCode() == KeyEvent.VK_END)
-                        {
-                            textField.setSelectionStart(prevCaretPos);
-                            textField.setSelectionEnd(textField.getText().length());
-                        }
+                        textField.setText(textStr.substring(0, len-1));
+                        
+                    } else if (!enableAdditions && len > 0)
+                    {
+                        textField.setText(textStr.substring(0, len-1));
+                        lookForMatch();
                         return;
                     }
-                    lookForMatch();
+                    
+                } else if ((!(Character.isLetterOrDigit(key) || Character.isSpaceChar(key))) && 
+                             ev.getKeyCode() != KeyEvent.VK_DELETE)
+                {
+                    if (ev.getKeyCode() == KeyEvent.VK_ENTER) 
+                    {
+                        addNewItemFromTextField();
+                        
+                    } else if (ev.getKeyCode() == KeyEvent.VK_END)
+                    {
+                        textField.setSelectionStart(prevCaretPos);
+                        textField.setSelectionEnd(textField.getText().length());
+                    }
+                    return;
                 }
-            });
-        }
+                lookForMatch();
+            }
+        };
     }
     
     /**

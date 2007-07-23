@@ -677,6 +677,20 @@ public class DataBuilder
         return pickList;
     }
     
+    public static PickList createPickList(final String name,
+                                          boolean readOnly, 
+                                          String[] values,
+                                          int maxSize)
+    {
+        PickList pickList = createPickList(name, 0, null, null, null, readOnly, maxSize);
+
+        for (String value: values)
+        {
+            createPickListItem(pickList,value);
+        }
+        return pickList;
+    }
+    
     public static PickListItem createPickListItem(PickList pickList, String value)
     {
         PickListItem item = new PickListItem();

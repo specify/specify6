@@ -50,7 +50,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
@@ -160,7 +159,7 @@ public class FormViewObj implements Viewable,
     protected FormValidator                 formValidator   = null;
     protected Object                        parentDataObj   = null;
     protected Object                        dataObj         = null;
-    protected Set                           origDataSet     = null;
+    protected Set<Object>                   origDataSet     = null;
     protected Object[]                      singleItemArray = new Object[1];
     protected DateWrapper                   scrDateFormat;
     protected int                           options;
@@ -466,7 +465,7 @@ public class FormViewObj implements Viewable,
         {
             try
             {
-                Class classObj = Class.forName(formViewDef.getClassName());
+                Class<?> classObj = Class.forName(formViewDef.getClassName());
                 carryFwdInfo = new CarryForwardInfo(classObj, this, formViewDef);
 
             } catch (ClassNotFoundException ex)
@@ -648,7 +647,7 @@ public class FormViewObj implements Viewable,
      * Return list of data objects if this is a recordset
      * @return the list of data objects
      */
-    public List getDataList()
+    public List<?> getDataList()
     {
         return list;
     }
@@ -2081,7 +2080,7 @@ public class FormViewObj implements Viewable,
                     {
                         if (((FormCellSubView)fieldInfo.getFormCell()).isSingleValueFromSet() && data instanceof Set)
                         {
-                            Set set = (Set)data;
+                            Set<?> set = (Set<?>)data;
                             if (set.size() > 0)
                             {
                                 data = set.iterator().next();
@@ -2439,17 +2438,17 @@ public class FormViewObj implements Viewable,
     }
 
     /**
-     * Sets the appropriate ndex in the list box
+     * Sets the appropriate index in the list box
      * @param list the list box
      * @param data the data value
      */
     protected void setListValue(final JList list, final Object data)
     {
 
-        Iterator iter = null;
+        Iterator<?> iter = null;
         if (data instanceof Set)
         {
-            iter = ((Set)data).iterator();
+            iter = ((Set<?>)data).iterator();
 
         } else if (data instanceof org.hibernate.collection.PersistentSet)
         {

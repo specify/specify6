@@ -19,6 +19,9 @@ import java.util.Vector;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+import edu.ku.brc.ui.DataFlavorTableExt;
+import edu.ku.brc.ui.RolloverCommand;
+
 /**
  * Implements a transparent glass pane for the app so images can be dragged across
  *
@@ -35,6 +38,7 @@ import javax.swing.Timer;
 public class GhostGlassPane extends JPanel
 {
     public enum ImagePaintMode {CENTERED, DRAG, ABSOLUTE}
+    private static final boolean DEBUG = false;
     
     private static GhostGlassPane instance = new GhostGlassPane();
 
@@ -305,42 +309,53 @@ public class GhostGlassPane extends JPanel
      */
     protected boolean isDropOK(final GhostActionable dragActionable, final GhostActionable dropActionable)
     {
-        //System.out.println("\n\n*********** ["+((RolloverCommand)dragActionable).getTitle()+"] ["+(dropActionable instanceof RolloverCommand ? (((RolloverCommand)dropActionable).getTitle()) : dropActionable.getClass().getSimpleName())+"] ********");
         List<DataFlavor> dragList = dragActionable.getDragDataFlavors();
-        //for (DataFlavor dragFlavor : dragList)
-        //{
-        //    System.out.println("["+dragFlavor.getHumanPresentableName()+"]");
-        //}
-        
-        //System.out.println("\n\ndropActionable "+dropActionable);
+        if (DEBUG)
+        {
+            System.out.println("\n\n*********** ["+((RolloverCommand)dragActionable).getTitle()+"] ["+(dropActionable instanceof RolloverCommand ? (((RolloverCommand)dropActionable).getTitle()) : dropActionable.getClass().getSimpleName())+"] ********");
+            for (DataFlavor dragFlavor : dragList)
+            {
+                System.out.println("["+dragFlavor.getHumanPresentableName()+"]");
+            }
+            System.out.println("\n\ndropActionable "+dropActionable);
+        }
         if (dragList != null)
         {
             for (DataFlavor dragFlavor : dragList)
             {
-                //System.out.println("------ dragFlavor "+dragFlavor.getHumanPresentableName()+" ----------");
+                if (DEBUG) System.out.println("------ dragFlavor "+dragFlavor.getHumanPresentableName()+" ----------");
                 for (DataFlavor dropFlavor : dropActionable.getDropDataFlavors())
                 {
-                    //System.out.print("Drag["+dragFlavor.getHumanPresentableName()+"] drop["+dropFlavor.getHumanPresentableName()+"] ");
-                    //System.out.println("Drag["+(dragFlavor instanceof DataFlavorTableExt)+"] drop["+(dropFlavor instanceof DataFlavorTableExt)+"]");
+                    if (DEBUG) 
+                    {
+                        System.out.print("Drag["+dragFlavor.getHumanPresentableName()+"] drop["+dropFlavor.getHumanPresentableName()+"] ");
+                        System.out.println("Drag iof DFTE ["+(dragFlavor instanceof DataFlavorTableExt)+"] drop iof DFTE ["+(dropFlavor instanceof DataFlavorTableExt)+"]");
+                    }
                     /*if (!(dragFlavor instanceof DataFlavorTableExt) && !(dropFlavor instanceof DataFlavorTableExt))
                     {
-                        //System.out.println(dragFlavor.equals(dropFlavor));
+                        System.out.println(dragFlavor.equals(dropFlavor));
                         if (dragFlavor.getHumanPresentableName().equals("InfoRequest") || dropFlavor.getHumanPresentableName().equals("InfoRequest"))
                         {
                             int x = 0;
                             x++;
                         }
                     }*/
+
                     if (dragFlavor.equals(dropFlavor))
                     {
-                        //System.out.print("Drag["+(dragFlavor instanceof DataFlavorTableExt)+"] drop["+(dropFlavor instanceof DataFlavorTableExt)+"] ");
-                        //System.out.println("Drag["+dragFlavor.getHumanPresentableName()+"] drop["+dropFlavor.getHumanPresentableName()+"]");
+                        if (DEBUG) 
+                        {
+                            System.out.print("Drag iof DFTE ["+(dragFlavor instanceof DataFlavorTableExt)+"] drop iof DFTE ["+(dropFlavor instanceof DataFlavorTableExt)+"] ");
+                            System.out.println("Drag["+dragFlavor.getHumanPresentableName()+"] drop["+dropFlavor.getHumanPresentableName()+"]");
+                            System.out.println("!!! Drop is OK");
+                        }
                         return true;
                     }
                 }
-                //System.out.println("------ ------------------------ ----------");
+                if (DEBUG) System.out.println("------ ------------------------ ----------");
             }
         }
+        if (DEBUG) System.out.println("!!! Drop NOT OK");
         return false;
     }
     

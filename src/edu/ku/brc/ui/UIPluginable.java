@@ -52,6 +52,9 @@ public interface UIPluginable
      */
     public void setChangeListener(ChangeListener listener);
     
+    /**
+     * @return the UI component for the plugin
+     */
     public JComponent getUIComponent();
 
 }

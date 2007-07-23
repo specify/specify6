@@ -57,6 +57,7 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.config.Discipline;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AttributeDef;
 import edu.ku.brc.specify.datamodel.CatalogNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
@@ -4151,7 +4152,22 @@ public class GenericDBConversion
 
         String sql = "select locality.*, geography.* from locality,geography where locality.GeographyID = geography.GeographyID";
 
-        //BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(new String[]{"GML"});
+        BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(new String[]{
+                "GML", 
+                "NamedPlaceExtent", 
+                "GeoRefAccuracyUnits", 
+                "GeoRefDetRef", 
+                "GeoRefDetDate", 
+                "GeoRefDetBy", 
+                "NoGeoRefBecause", 
+                "GeoRefRemarks", 
+                "GeoRefVerificationStatus",
+                "NationalParkName",
+                "Visibility",
+                "VisibilitySetBy",
+                "GeoRefDetByID",
+                });
+        
         if (copyTable(oldDBConn, newDBConn, sql, "locality", "locality", null, null))
         {
             log.info("Locality/Geography copied ok.");

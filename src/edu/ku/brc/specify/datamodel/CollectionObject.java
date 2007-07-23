@@ -54,6 +54,8 @@ import org.hibernate.annotations.Index;
 
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 
 /**
 
@@ -404,7 +406,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *
      */
-    @Column(name = "GUID", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "GUID", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
     public String getGuid() {
         return this.guid;
     }
@@ -821,14 +823,15 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     @Transient
     public String getIdentityTitle()
     {
-
-        //first conditional required for when collection object table is empty??
-        if (catalogNumber == null)
+        if (StringUtils.isNotEmpty(catalogNumber))
         {
-            return super.getIdentityTitle();
+            UIFieldFormatterIFace fmt = UIFieldFormatterMgr.getFormatter("CatalogNumber");
+            if (fmt != null)
+            {
+                return fmt.formatInBound(catalogNumber).toString();
+            }
         }
-        String title = StringUtils.isNotEmpty(catalogNumber) ? catalogNumber : fieldNumber;
-        return title != null ? title : super.getIdentityTitle();
+        return fieldNumber != null ? fieldNumber : super.getIdentityTitle();
     }
     
     /* (non-Javadoc)

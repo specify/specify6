@@ -245,10 +245,10 @@ public class InteractionsTask extends BaseTask
             infoRequestNavBox  = new NavBox(getResourceString("InfoRequest"));
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             
-            List infoRequests = session.getDataList(InfoRequest.class);
-            for (Iterator iter=infoRequests.iterator();iter.hasNext();)
+            List<InfoRequest> infoRequests = session.getDataList(InfoRequest.class);
+            for (Iterator<InfoRequest> iter=infoRequests.iterator();iter.hasNext();)
             {
-                InfoRequest infoRequest = (InfoRequest)iter.next();
+                InfoRequest infoRequest = iter.next();
                 
                 //roc = (NavBoxButton) addNavBoxItem(infoRequestNavBox, infoRequest.getIdentityTitle(), "InfoRequest", new CommandAction(INTERACTIONS, DELETE_CMD_ACT, infoRequest), infoRequest);
                 NavBoxItemIFace nbi = makeDnDNavBtn(infoRequestNavBox, infoRequest.getIdentityTitle(), "InfoRequest", new CommandAction(INTERACTIONS, DELETE_CMD_ACT, infoRequest), null, true, true);

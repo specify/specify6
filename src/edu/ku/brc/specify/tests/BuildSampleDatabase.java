@@ -7,19 +7,20 @@
  */
 package edu.ku.brc.specify.tests;
 
-import static edu.ku.brc.specify.tests.DataBuilder.*;
+import static edu.ku.brc.specify.tests.DataBuilder.createAccession;
 import static edu.ku.brc.specify.tests.DataBuilder.createAccessionAgent;
 import static edu.ku.brc.specify.tests.DataBuilder.createAddress;
 import static edu.ku.brc.specify.tests.DataBuilder.createAgent;
 import static edu.ku.brc.specify.tests.DataBuilder.createAttachment;
 import static edu.ku.brc.specify.tests.DataBuilder.createAttributeDef;
-import static edu.ku.brc.specify.tests.DataBuilder.createCollection;
+import static edu.ku.brc.specify.tests.DataBuilder.createCatalogNumberingScheme;
 import static edu.ku.brc.specify.tests.DataBuilder.createCollectingEvent;
 import static edu.ku.brc.specify.tests.DataBuilder.createCollectingEventAttr;
 import static edu.ku.brc.specify.tests.DataBuilder.createCollectingTrip;
-import static edu.ku.brc.specify.tests.DataBuilder.createCollectionType;
+import static edu.ku.brc.specify.tests.DataBuilder.createCollection;
 import static edu.ku.brc.specify.tests.DataBuilder.createCollectionObject;
 import static edu.ku.brc.specify.tests.DataBuilder.createCollectionObjectAttr;
+import static edu.ku.brc.specify.tests.DataBuilder.createCollectionType;
 import static edu.ku.brc.specify.tests.DataBuilder.createCollector;
 import static edu.ku.brc.specify.tests.DataBuilder.createDataType;
 import static edu.ku.brc.specify.tests.DataBuilder.createDetermination;
@@ -114,13 +115,13 @@ import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.AttributeDef;
 import edu.ku.brc.specify.datamodel.CatalogNumberingScheme;
-import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectingEventAttr;
 import edu.ku.brc.specify.datamodel.CollectingTrip;
-import edu.ku.brc.specify.datamodel.CollectionType;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
+import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Determination;
@@ -161,8 +162,8 @@ import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.ui.ProgressFrame;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
@@ -398,6 +399,9 @@ public class BuildSampleDatabase
         
         String[] prepMeth = {"C&S", "skeleton", "x-ray", "image", "EtOH"};
         dataObjects.add(createPickList("CollObjPrepMeth", true, prepMeth));
+        
+        String[] taxonLabelFormatter = {"%G %S", "%G %S (%A1 ex. %A2)"};
+        dataObjects.add(createPickList("TaxonLabelFormatter", false, taxonLabelFormatter, 500));
         
         frame.setProcess(++createStep);
         

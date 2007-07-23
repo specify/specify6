@@ -1692,7 +1692,7 @@
                 </row>
                 <row>
                 	<cell type="label" labelfor="acceptedTaxon" label="Accepted Taxon"/>
-                	<cell type="field" id="acceptedTaxon" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="acceptedTaxon"/>
+                	<cell type="field" id="acceptedTaxon" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon" name="acceptedTaxon"/>
                 </row>
                 <row>
                 	<cell type="label" labelfor="isHybrid" label="Is Hybrid?"/>
@@ -1700,11 +1700,11 @@
                 </row>
                 <row>
                 	<cell type="label" labelfor="hybridParent1" label="Hybrid Parent 1"/>
-                	<cell type="field" id="hybridParent1" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="hybridParent1"/>
+                	<cell type="field" id="hybridParent1" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon" name="hybridParent1"/>
                 </row>
                 <row>
                 	<cell type="label" labelfor="hybridParent2" label="Hybrid Parent 2"/>
-                	<cell type="field" id="hybridParent2" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="hybridParent2"/>
+                	<cell type="field" id="hybridParent2" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon" name="hybridParent2"/>
                 </row>
                 <row>
                     <cell type="separator" label="Children" colspan="3"/>
@@ -1757,5 +1757,23 @@
             <definition>TaxonSubform</definition>
         </viewdef>
         
+        <viewdef
+            name="TaxonLabelFormattingPlugin"
+            type="form"
+            class="edu.ku.brc.specify.datamodel.Taxon"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Taxon Label Formatting Plugin Form]]></desc>
+            <enableRules/>
+            <columnDef>200px,3dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="field" id="1" name="this" uitype="plugin" initialize="class=edu.ku.brc.specify.plugins.TaxonLabelFormatting;name=Taxon;title=Taxon" colspan="3"/>
+                </row>
+            </rows>
+        </viewdef>
     </viewdefs>
 </viewset>

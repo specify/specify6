@@ -51,6 +51,7 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.ui.forms.FormDataObjIFace;
+import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.util.AttachmentUtils;
 
 /**
@@ -75,6 +76,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     protected Long                       agentId;
     /** Organization (0), Person (1), Other (2) or Group (3) */
     protected Byte                          agentType;
+    
     protected String                        firstName;
     protected String                        lastName;
     protected String                        middleInitial;
@@ -85,6 +87,14 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     protected String                        remarks;
     protected Integer                       visibility;
     protected String                        visibilitySetBy;
+    
+    // Roles
+    protected String                        authorName;
+    protected String                        labelName;
+    protected String                        collectorName;
+    
+    protected String                        guid; 
+    
     protected Set<Author>                   authors;
     protected Set<LoanReturnPhysicalObject> loanReturnPhysicalObjects;
     protected Set<BorrowReturnMaterial>     borrowReturnMaterials;
@@ -101,6 +111,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     protected Set<ExchangeOut>              exchangeOutCatalogedBys;
     protected Set<Attachment>               attachments;
     protected Set<RepositoryAgreement>      repositoryAgreements;
+    protected Set<Locality>                 localities;
     
     protected Set<Division>                 divisions;
     protected Institution                   instTechContact;
@@ -155,6 +166,10 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
         name = null;
         remarks = null;
         visibility = null;
+        labelName = null;
+        authorName = null;
+        collectorName = null;
+        guid = null;
         authors = new HashSet<Author>();
         loanReturnPhysicalObjects = new HashSet<LoanReturnPhysicalObject>();
         borrowReturnMaterials = new HashSet<BorrowReturnMaterial>();
@@ -171,6 +186,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
         exchangeOutCatalogedBys = new HashSet<ExchangeOut>();
         attachments = new HashSet<Attachment>();
         repositoryAgreements = new HashSet<RepositoryAgreement>();
+        localities = new HashSet<Locality>();
         
         divisions = new HashSet<Division>();
         instTechContact = null;
@@ -541,16 +557,28 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     }
 
     /**
-     *
-     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "determiner")
-    public Set<Determination> getDeterminations() {
-        return this.determinations;
-    }
+    *
+    */
+   @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "determiner")
+   public Set<Determination> getDeterminations() {
+       return this.determinations;
+   }
 
-    public void setDeterminations(Set<Determination> determinations) {
-        this.determinations = determinations;
-    }
+   public void setDeterminations(Set<Determination> determinations) {
+       this.determinations = determinations;
+   }
+
+   /**
+   *
+   */
+  @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "geoRefDetBy")
+  public Set<Locality> getLocalities() {
+      return this.localities;
+  }
+
+  public void setLocalities(Set<Locality> localities) {
+      this.localities = localities;
+  }
 
     /**
      *
@@ -680,6 +708,68 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
         this.url = url;
     }
 
+
+    @Column(name = "GUID", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    public String getGuid()
+    {
+        return this.guid;
+    }
+
+    public void setGuid(String guid)
+    {
+        this.guid = guid;
+    }
+    
+    /**
+     * @return the authorName
+     */
+    @Column(name = "AuthorName", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    public String getAuthorName()
+    {
+        return authorName;
+    }
+
+    /**
+     * @param authorName the authorName to set
+     */
+    public void setAuthorName(String authorName)
+    {
+        this.authorName = authorName;
+    }
+
+    /**
+     * @return the labelName
+     */
+    @Column(name = "LabelName", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    public String getLabelName()
+    {
+        return labelName;
+    }
+
+    /**
+     * @param labelName the labelName to set
+     */
+    public void setLabelName(String labelName)
+    {
+        this.labelName = labelName;
+    }
+
+    /**
+     * @return the collectorName
+     */
+    @Column(name = "CollectorName", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    public String getCollectorName()
+    {
+        return collectorName;
+    }
+
+    /**
+     * @param collectorName the collectorName to set
+     */
+    public void setCollectorName(String collectorName)
+    {
+        this.collectorName = collectorName;
+    }
 
     /**
      *
@@ -956,6 +1046,16 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
             return;
         }
         super.removeReference(ref, refType);
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return DataObjFieldFormatMgr.format(this, getClass());
+        //return super.toString();
     }
 
 }
