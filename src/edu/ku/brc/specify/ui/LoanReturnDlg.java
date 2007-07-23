@@ -43,14 +43,16 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -65,8 +67,8 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
@@ -85,10 +87,10 @@ import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.FormCell;
 import edu.ku.brc.ui.forms.persist.FormCellField;
 import edu.ku.brc.ui.forms.persist.View;
-import edu.ku.brc.ui.validation.FormValidator;
-import edu.ku.brc.ui.validation.UIValidator;
-import edu.ku.brc.ui.validation.ValComboBoxFromQuery;
-import edu.ku.brc.ui.validation.ValidationListener;
+import edu.ku.brc.ui.forms.validation.FormValidator;
+import edu.ku.brc.ui.forms.validation.UIValidator;
+import edu.ku.brc.ui.forms.validation.ValComboBoxFromQuery;
+import edu.ku.brc.ui.forms.validation.ValidationListener;
 
 /**
  * Creates a dialog representing all the Preparation objects being returned for a loan.
@@ -201,12 +203,12 @@ public class LoanReturnDlg extends JDialog
         p.add(summaryLabel, BorderLayout.CENTER);
         
         JPanel agentPanel = new JPanel(new BorderLayout());
-        agentPanel.add(new JLabel("Agent:", JLabel.RIGHT), BorderLayout.WEST); // I18N
+        agentPanel.add(new JLabel("Agent:", SwingConstants.RIGHT), BorderLayout.WEST); // I18N
         agentPanel.add(agentCBX = createAgentCombobox(), BorderLayout.CENTER);
         p.add(agentPanel, BorderLayout.EAST); // I18N
         
         contentPanel.add(p, BorderLayout.NORTH);
-        contentPanel.add(new JScrollPane(mainPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
+        contentPanel.add(new JScrollPane(mainPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER));
         
         p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createEmptyBorder(5, 0, 2, 0));
@@ -218,7 +220,7 @@ public class LoanReturnDlg extends JDialog
         doEnableOKBtn();
 
         //setIconImage(IconManager.getIcon("Preparation", IconManager.IconSize.Std16).getImage());
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         
         doEnableOKBtn();
         
@@ -685,10 +687,9 @@ public class LoanReturnDlg extends JDialog
                 Object valObj = spinner.getValue();
                return valObj == null ? 0 : ((Integer)valObj).intValue() - quantityReturned;
                 
-            } else
-            {
-                return 0;
             }
+            // else
+            return 0;
         }
         
         /**
@@ -758,8 +759,8 @@ public class LoanReturnDlg extends JDialog
         
         public LinkLabelBtn(final ActionListener al, final String label, final ImageIcon imgIcon)
         {
-            super(label, imgIcon, JLabel.LEFT);
-            setHorizontalTextPosition(JLabel.LEFT);
+            super(label, imgIcon, SwingConstants.LEFT);
+            setHorizontalTextPosition(SwingConstants.LEFT);
             this.al = al;
             
             //setBorderPainted(false);

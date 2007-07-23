@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 
-import edu.ku.brc.ui.validation.ValTextField;
+import edu.ku.brc.ui.forms.validation.ValTextField;
 import edu.ku.brc.util.LatLonConverter;
 
 /**

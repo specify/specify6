@@ -40,11 +40,11 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.View;
-import edu.ku.brc.ui.validation.DataChangeListener;
-import edu.ku.brc.ui.validation.DataChangeNotifier;
-import edu.ku.brc.ui.validation.FormValidator;
-import edu.ku.brc.ui.validation.UIValidator;
-import edu.ku.brc.ui.validation.ValidationListener;
+import edu.ku.brc.ui.forms.validation.DataChangeListener;
+import edu.ku.brc.ui.forms.validation.DataChangeNotifier;
+import edu.ku.brc.ui.forms.validation.FormValidator;
+import edu.ku.brc.ui.forms.validation.UIValidator;
+import edu.ku.brc.ui.forms.validation.ValidationListener;
 
 /**
  * A MulitView is a "view" that contains multiple Viewable object that can display the current data object in any of the given views.
@@ -1096,7 +1096,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     //-----------------------------------------------------
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.DataChangeListener#dataChanged(java.lang.String, java.awt.Component, edu.ku.brc.ui.validation.DataChangeNotifier)
+     * @see edu.ku.brc.ui.forms.validation.DataChangeListener#dataChanged(java.lang.String, java.awt.Component, edu.ku.brc.ui.forms.validation.DataChangeNotifier)
      */
     public void dataChanged(final String name, final Component comp, DataChangeNotifier dcn)
     {

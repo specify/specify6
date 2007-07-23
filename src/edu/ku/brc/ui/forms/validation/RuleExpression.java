@@ -12,7 +12,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.ui.validation;
+package edu.ku.brc.ui.forms.validation;
 
 import org.apache.commons.jexl.Expression;
 import org.apache.commons.jexl.ExpressionFactory;
@@ -72,7 +72,7 @@ public class RuleExpression implements FormValidationRuleIFace
     //-----------------------------------------------------------
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.FormValidationRuleIFace#evaluate(org.apache.commons.jexl.JexlContext)
+     * @see edu.ku.brc.ui.forms.validation.FormValidationRuleIFace#evaluate(org.apache.commons.jexl.JexlContext)
      */
     public boolean evaluate(final JexlContext context)
     {
@@ -94,7 +94,7 @@ public class RuleExpression implements FormValidationRuleIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.FormValidationRuleIFace#getScope()
+     * @see edu.ku.brc.ui.forms.validation.FormValidationRuleIFace#getScope()
      */
     public Scope getScope()
     {
@@ -102,7 +102,7 @@ public class RuleExpression implements FormValidationRuleIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.FormValidationRuleIFace#getId()
+     * @see edu.ku.brc.ui.forms.validation.FormValidationRuleIFace#getId()
      */
     public String getId()
     {

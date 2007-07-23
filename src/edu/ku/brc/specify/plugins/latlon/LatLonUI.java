@@ -43,7 +43,7 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIPluginable;
-import edu.ku.brc.ui.validation.UIValidatable;
+import edu.ku.brc.ui.forms.validation.UIValidatable;
 
 
 
@@ -460,7 +460,7 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
     //--------------------------------------------------------
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#cleanUp()
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#cleanUp()
      */
     public void cleanUp()
     {
@@ -471,7 +471,7 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#getState()
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#getState()
      */
     public ErrorType getState()
     {
@@ -479,7 +479,7 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#getValidatableUIComp()
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#getValidatableUIComp()
      */
     public Component getValidatableUIComp()
     {
@@ -487,7 +487,7 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#isChanged()
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#isChanged()
      */
     public boolean isChanged()
     {
@@ -495,7 +495,7 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#isInError()
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#isInError()
      */
     public boolean isInError()
     {
@@ -503,7 +503,7 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#isRequired()
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#isRequired()
      */
     public boolean isRequired()
     {
@@ -511,7 +511,7 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#reset()
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#reset()
      */
     public void reset()
     {
@@ -522,7 +522,7 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#setAsNew(boolean)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#setAsNew(boolean)
      */
     public void setAsNew(final boolean isNew)
     {
@@ -530,7 +530,7 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#setChanged(boolean)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#setChanged(boolean)
      */
     public void setChanged(boolean isChanged)
     {
@@ -543,7 +543,7 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#setRequired(boolean)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#setRequired(boolean)
      */
     public void setRequired(boolean isRequired)
     {
@@ -551,7 +551,7 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#setState(edu.ku.brc.ui.validation.UIValidatable.ErrorType)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#setState(edu.ku.brc.ui.forms.validation.UIValidatable.ErrorType)
      */
     public void setState(ErrorType state)
     {
@@ -559,7 +559,7 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#validateState()
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#validateState()
      */
     public ErrorType validateState()
     {

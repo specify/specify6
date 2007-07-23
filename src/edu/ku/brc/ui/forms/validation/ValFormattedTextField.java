@@ -13,7 +13,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.ku.brc.ui.validation;
+package edu.ku.brc.ui.forms.validation;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -349,7 +349,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#getState()
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#getState()
      */
     public ErrorType getState()
     {
@@ -357,7 +357,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#setState(edu.ku.brc.ui.validation.UIValidatable.ErrorType)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#setState(edu.ku.brc.ui.forms.validation.UIValidatable.ErrorType)
      */
     public void setState(ErrorType state)
     {
@@ -385,7 +385,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#isChanged()
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#isChanged()
      */
     public boolean isChanged()
     {
@@ -393,7 +393,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#setChanged(boolean)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#setChanged(boolean)
      */
     public void setChanged(boolean isChanged)
     {
@@ -401,7 +401,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#setAsNew(boolean)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#setAsNew(boolean)
      */
     public void setAsNew(boolean isNew)
     {
@@ -409,7 +409,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#reset()
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#reset()
      */
     public void reset()
     {
@@ -419,7 +419,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#getValidatableUIComp()
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#getValidatableUIComp()
      */
     public Component getValidatableUIComp()
     {
@@ -455,7 +455,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
 
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#cleanUp()
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#cleanUp()
      */
     public void cleanUp()
     {

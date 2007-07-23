@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 
 import javax.swing.event.ChangeListener;
 
-import edu.ku.brc.ui.validation.UIValidatable.ErrorType;
+import edu.ku.brc.ui.forms.validation.UIValidatable.ErrorType;
 
 
 /**

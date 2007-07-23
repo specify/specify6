@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.ui.forms;
 
-import static edu.ku.brc.ui.validation.UIValidator.parseValidationType;
+import static edu.ku.brc.ui.forms.validation.UIValidator.parseValidationType;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.apache.commons.lang.StringUtils.split;
 
@@ -78,21 +78,21 @@ import edu.ku.brc.ui.forms.persist.FormRow;
 import edu.ku.brc.ui.forms.persist.FormViewDef;
 import edu.ku.brc.ui.forms.persist.View;
 import edu.ku.brc.ui.forms.persist.ViewDef;
-import edu.ku.brc.ui.validation.DataChangeNotifier;
-import edu.ku.brc.ui.validation.FormValidator;
-import edu.ku.brc.ui.validation.TypeSearchForQueryFactory;
-import edu.ku.brc.ui.validation.UIValidatable;
-import edu.ku.brc.ui.validation.UIValidator;
-import edu.ku.brc.ui.validation.ValCheckBox;
-import edu.ku.brc.ui.validation.ValComboBox;
-import edu.ku.brc.ui.validation.ValComboBoxFromQuery;
-import edu.ku.brc.ui.validation.ValFormattedTextField;
-import edu.ku.brc.ui.validation.ValListBox;
-import edu.ku.brc.ui.validation.ValPasswordField;
-import edu.ku.brc.ui.validation.ValSpinner;
-import edu.ku.brc.ui.validation.ValTextArea;
-import edu.ku.brc.ui.validation.ValTextField;
-import edu.ku.brc.ui.validation.ValidatedJPanel;
+import edu.ku.brc.ui.forms.validation.DataChangeNotifier;
+import edu.ku.brc.ui.forms.validation.FormValidator;
+import edu.ku.brc.ui.forms.validation.TypeSearchForQueryFactory;
+import edu.ku.brc.ui.forms.validation.UIValidatable;
+import edu.ku.brc.ui.forms.validation.UIValidator;
+import edu.ku.brc.ui.forms.validation.ValCheckBox;
+import edu.ku.brc.ui.forms.validation.ValComboBox;
+import edu.ku.brc.ui.forms.validation.ValComboBoxFromQuery;
+import edu.ku.brc.ui.forms.validation.ValFormattedTextField;
+import edu.ku.brc.ui.forms.validation.ValListBox;
+import edu.ku.brc.ui.forms.validation.ValPasswordField;
+import edu.ku.brc.ui.forms.validation.ValSpinner;
+import edu.ku.brc.ui.forms.validation.ValTextArea;
+import edu.ku.brc.ui.forms.validation.ValTextField;
+import edu.ku.brc.ui.forms.validation.ValidatedJPanel;
 
 /**
  * Creates FormViewObj object that implment the Viewable interface.

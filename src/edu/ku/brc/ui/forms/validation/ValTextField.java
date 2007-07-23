@@ -13,7 +13,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.ku.brc.ui.validation;
+package edu.ku.brc.ui.forms.validation;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -23,17 +23,13 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.Vector;
 
-import javax.swing.DefaultListModel;
-import javax.swing.JList;
-import javax.swing.ListModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.JTextComponent;
+import javax.swing.undo.UndoManager;
 
-import org.hibernate.collection.PersistentSet;
+import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
@@ -41,17 +37,24 @@ import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
+import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.db.JAutoCompTextField;
+import edu.ku.brc.ui.db.PickListDBAdapterIFace;
 
 /**
- * A JList that implements UIValidatable for participating in validation
- 
+ * A JTextControl that implements UIValidatable for participating in validation
+ *
  * @code_status Beta
- **
+ *
  * @author rods
  *
  */
 @SuppressWarnings("serial")
-public class ValListBox extends JList implements UIValidatable, ListSelectionListener, GetSetValueIFace, AppPrefsChangeListener
+public class ValTextField extends JAutoCompTextField implements UIValidatable,
+                                                                GetSetValueIFace,
+                                                                DocumentListener,
+                                                                AppPrefsChangeListener,
+                                                                UIRegistry.UndoableTextIFace
 {
     protected UIValidatable.ErrorType valState  = UIValidatable.ErrorType.Valid;
     protected boolean isRequired = false;
@@ -62,38 +65,70 @@ public class ValListBox extends JList implements UIValidatable, ListSelectionLis
     protected static ColorWrapper valtextcolor       = null;
     protected static ColorWrapper requiredfieldcolor = null;
 
-    public ValListBox(ListModel arg0)
-    {
-        super(arg0);
-        init();
-    }
+    protected ValPlainTextDocument document;
+    protected String               defaultValue      = null;
+    
+    protected UndoManager          undoManager       = null;
 
-    public ValListBox(Object[] arg0)
-    {
-        super(arg0);
-        init();
-    }
-
-    public ValListBox(Vector<?> arg0)
-    {
-        super(arg0);
-        init();
-    }
-
-    public ValListBox()
+    /**
+     * Constructor
+     */
+    public ValTextField()
     {
         super();
         init();
     }
 
+    /**
+     * Constructor
+     * @param arg0 initial value
+     */
+    public ValTextField(String arg0)
+    {
+        super(arg0);
+        init();
+    }
 
     /**
-     * Initizes colors and listeners
+     * Constructor
+     * @param arg0 initial number of columns
      */
+    public ValTextField(int arg0)
+    {
+        super(arg0);
+        init();
+    }
+
+    /**
+     * Constructor
+     * @param arg0 initial number of columns
+     */
+    public ValTextField(int arg0, PickListDBAdapterIFace pickListDBAdapter)
+    {
+        super(arg0, pickListDBAdapter);
+        init();
+    }
+
+    /**
+     * Constructor
+     * @param arg0 initial value
+     * @param arg1 initial number of columns
+     */
+    public ValTextField(String arg0, int arg1)
+    {
+        super(arg0, arg1);
+        init();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.JAutoCompTextField#init()
+     */
+    @Override
     public void init()
     {
+        super.init();
 
-        addListSelectionListener(this);
+        setDocument(document = new ValPlainTextDocument());
 
         bgColor = getBackground();
         if (valtextcolor == null || requiredfieldcolor == null)
@@ -102,7 +137,7 @@ public class ValListBox extends JList implements UIValidatable, ListSelectionLis
             requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
         }
         AppPreferences.getRemote().addChangeListener("ui.formatting.requiredfieldcolor", this);
-        
+
         addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e)
@@ -111,6 +146,15 @@ public class ValListBox extends JList implements UIValidatable, ListSelectionLis
                 repaint();
             }
         });
+    }
+
+    /**
+     * Helper method for validation sripting to see if the text field is empty
+     * @return whether the text field is empty or not
+     */
+    public boolean isNotEmpty()
+    {
+        return getText().length() > 0;
     }
 
     /* (non-Javadoc)
@@ -124,10 +168,41 @@ public class ValListBox extends JList implements UIValidatable, ListSelectionLis
         if (!isNew && valState == UIValidatable.ErrorType.Error && isEnabled())
         {
             Graphics2D g2d = (Graphics2D)g;
-            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); 
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             Dimension dim = getSize();
             g.setColor(valtextcolor.getColor());
             g.drawRect(1, 1, dim.width-2, dim.height-2);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see java.awt.Component#setEnabled(boolean)
+     */
+    @Override
+    public void setEnabled(boolean enabled)
+    {
+        super.setEnabled(enabled);
+
+        setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
+    }
+
+
+    /* (non-Javadoc)
+     * @see javax.swing.text.JTextComponent#setText(java.lang.String)
+     */
+    @Override
+    public void setText(String text)
+    {
+        if (document != null)
+        {
+            document.setIgnoreNotify(true);
+        }
+        
+        super.setText(text);
+        
+        if (document != null)
+        {
+            document.setIgnoreNotify(false);
         }
     }
 
@@ -144,7 +219,7 @@ public class ValListBox extends JList implements UIValidatable, ListSelectionLis
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#getState()
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#getState()
      */
     public ErrorType getState()
     {
@@ -152,7 +227,7 @@ public class ValListBox extends JList implements UIValidatable, ListSelectionLis
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#setState(edu.ku.brc.ui.validation.UIValidatable.ErrorType)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#setState(edu.ku.brc.ui.forms.validation.UIValidatable.ErrorType)
      */
     public void setState(ErrorType state)
     {
@@ -177,7 +252,7 @@ public class ValListBox extends JList implements UIValidatable, ListSelectionLis
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#isChanged()
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#isChanged()
      */
     public boolean isChanged()
     {
@@ -185,66 +260,82 @@ public class ValListBox extends JList implements UIValidatable, ListSelectionLis
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#setChanged(boolean)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#setChanged(boolean)
      */
     public void setChanged(boolean isChanged)
     {
         this.isChanged = isChanged;
     }
-    
+
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#setAsNew(boolean)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#setAsNew(boolean)
      */
     public void setAsNew(boolean isNew)
     {
         this.isNew = isRequired ? isNew : false;
     }
-    
+
     /* (non-Javadoc)
      * @see java.awt.Component#validate()
      */
     public UIValidatable.ErrorType validateState()
     {
-        valState = isRequired && getSelectedIndex() == -1 ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
+        valState = isRequired && getText().length() == 0 ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
         return valState;
     }
-    
+
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#reset()
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#reset()
      */
     public void reset()
     {
-        setSelectedIndex(-1);
+        setText( StringUtils.isNotEmpty(defaultValue) ? defaultValue : "");
         valState = isRequired ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
         repaint();
     }
-    
+
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#getValidatableUIComp()
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#getValidatableUIComp()
      */
     public Component getValidatableUIComp()
     {
         return this;
     }
-    
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#cleanUp()
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#cleanUp()
      */
     public void cleanUp()
     {
+        document           = null;
         AppPreferences.getRemote().removeChangeListener("ui.formatting.requiredfieldcolor", this);
     }
     
     //--------------------------------------------------------
-    // ListSelectionListener
+    // UIRegistry.UndoableTextIFace
     //--------------------------------------------------------
-    public void valueChanged(ListSelectionEvent e)
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.UIRegistry.UndoableTextIFace#getUndoManager()
+     */
+    public UndoManager getUndoManager()
     {
-        isChanged = true;
+        if (undoManager == null)
+        {
+            undoManager = new UndoManager();
+            UIRegistry.getInstance().hookUpUndoableEditListener(this);
+        }
+        return undoManager;
     }
-
-
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.UIRegistry.UndoableTextIFace#getTextComponent()
+     */
+    public JTextComponent getTextComponent()
+    {
+        return this;
+    }
+    
     //--------------------------------------------------------
     // GetSetValueIFace
     //--------------------------------------------------------
@@ -254,84 +345,60 @@ public class ValListBox extends JList implements UIValidatable, ListSelectionLis
      */
     public void setValue(Object value, String defaultValue)
     {
+        this.defaultValue = defaultValue;
 
-        if (value == null)
+        String data;
+
+        if (value != null)
         {
-            setSelectedIndex(-1);
-            if (getModel() instanceof DefaultListModel)
-            {
-            	DefaultListModel defModel = (DefaultListModel)getModel();
-            	defModel.clear();
-            }
-            return;
+            data = value.toString();
+
+        } else
+        {
+            isChanged = StringUtils.isNotEmpty(defaultValue);
+            data      = isChanged ? defaultValue : "";
         }
+        setText(data);
         
-        Iterator<?> iter = null;
-        if (value instanceof Set)
+        if (undoManager != null)
         {
-            iter = ((Set)value).iterator();
-            
-        } else if (value instanceof PersistentSet)
-        {
-            iter = ((PersistentSet)value).iterator();
+            undoManager.discardAllEdits();
         }
-        
-        
-        if (iter != null)
-        {        
-            DefaultListModel defModel = new DefaultListModel(); 
-            while (iter.hasNext())
-            {
-                defModel.addElement(iter.next());
-            }
-            setModel(defModel);
-            setSelectedIndex(-1);
-        } else 
-        {
-            boolean fnd = false;
-            ListModel  model = getModel();
-            for (int i=0;i<model.getSize();i++)
-            {
-                Object item = model.getElementAt(i);
-                if (item instanceof String)
-                {
-                    if (((String)item).equals(value))
-                    {
-                        setSelectedIndex(i);
-                        fnd = true;
-                        break;
-                    } 
-                } else if (item.equals(value))
-                {
-                    setSelectedIndex(i);
-                    fnd = true;
-                    break;
-                }
-            }
-            
-            if (!fnd)
-            {
-                setSelectedIndex(-1);
-                valState = UIValidatable.ErrorType.Error;
-                
-            } else
-            {
-                valState = UIValidatable.ErrorType.Valid;
-            }
-        }
+
+        validateState();
 
         repaint();
     }
 
-    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.GetSetValueIFace#getValue()
      */
     public Object getValue()
     {
-        return getSelectedValue();
+        return getText();
     }
-    
+
+
+    //--------------------------------------------------------
+    // DocumentListener
+    //--------------------------------------------------------
+
+
+    public void changedUpdate(DocumentEvent e)
+    {
+        isChanged = true;
+    }
+
+    public void insertUpdate(DocumentEvent e)
+    {
+        isChanged = true;
+    }
+
+    public void removeUpdate(DocumentEvent e)
+    {
+        isChanged = true;
+    }
+
     //-------------------------------------------------
     // AppPrefsChangeListener
     //-------------------------------------------------

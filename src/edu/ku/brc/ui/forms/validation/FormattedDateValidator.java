@@ -15,7 +15,7 @@
 /**
  * 
  */
-package edu.ku.brc.ui.validation;
+package edu.ku.brc.ui.forms.validation;
 
 import java.util.Date;
 import java.util.List;
@@ -68,7 +68,7 @@ public class FormattedDateValidator implements FormattedTextValidatorIFace
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.FormattedTextValidatorIFace#getReason()
+     * @see edu.ku.brc.ui.forms.validation.FormattedTextValidatorIFace#getReason()
      */
     public String getReason()
     {
@@ -76,7 +76,7 @@ public class FormattedDateValidator implements FormattedTextValidatorIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.FormattedTextValidatorIFace#isValid(edu.ku.brc.ui.forms.formatters.UIFieldFormatter, java.lang.String)
+     * @see edu.ku.brc.ui.forms.validation.FormattedTextValidatorIFace#isValid(edu.ku.brc.ui.forms.formatters.UIFieldFormatter, java.lang.String)
      */
     public boolean isValid()
     {
@@ -84,7 +84,7 @@ public class FormattedDateValidator implements FormattedTextValidatorIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.FormattedTextValidatorIFace#isValid(edu.ku.brc.ui.forms.formatters.UIFieldFormatter, java.lang.String)
+     * @see edu.ku.brc.ui.forms.validation.FormattedTextValidatorIFace#isValid(edu.ku.brc.ui.forms.formatters.UIFieldFormatter, java.lang.String)
      */
     public boolean validate(final UIFieldFormatterIFace formatter, final String value)
     {

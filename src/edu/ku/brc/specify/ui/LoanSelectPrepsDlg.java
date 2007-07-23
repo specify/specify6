@@ -37,14 +37,16 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -58,8 +60,8 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
-import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
@@ -186,7 +188,7 @@ public class LoanSelectPrepsDlg extends JDialog
         p.add(summaryLabel, BorderLayout.CENTER);
         
         contentPanel.add(p, BorderLayout.NORTH);
-        contentPanel.add(new JScrollPane(mainPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
+        contentPanel.add(new JScrollPane(mainPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER));
         
         p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createEmptyBorder(5, 0, 2, 0));
@@ -198,7 +200,7 @@ public class LoanSelectPrepsDlg extends JDialog
         doEnableOKBtn();
 
         //setIconImage(IconManager.getIcon("Preparation", IconManager.IconSize.Std16).getImage());
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         
         doEnableOKBtn();
         
@@ -592,10 +594,9 @@ public class LoanSelectPrepsDlg extends JDialog
                 Object valObj = spinner.getValue();
                 return valObj == null ? 0 : ((Integer)valObj).intValue();
                 
-            } else
-            {
-                return 0;
             }
+            // else
+            return 0;
         }
         
         public void actionPerformed(ActionEvent e)
@@ -646,8 +647,8 @@ public class LoanSelectPrepsDlg extends JDialog
         
         public LinkLabelBtn(final ActionListener al, final String label, final ImageIcon imgIcon)
         {
-            super(label, imgIcon, JLabel.LEFT);
-            setHorizontalTextPosition(JLabel.LEFT);
+            super(label, imgIcon, SwingConstants.LEFT);
+            setHorizontalTextPosition(SwingConstants.LEFT);
             this.al = al;
             
             //setBorderPainted(false);

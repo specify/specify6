@@ -66,7 +66,7 @@ import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.JAutoCompComboBox;
 import edu.ku.brc.ui.db.JAutoCompTextField;
-import edu.ku.brc.ui.validation.ValComboBoxFromQuery;
+import edu.ku.brc.ui.forms.validation.ValComboBoxFromQuery;
 /*
  * @code_status Unknown (auto-generated)
  **

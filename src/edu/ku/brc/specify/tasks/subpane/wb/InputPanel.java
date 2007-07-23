@@ -44,7 +44,7 @@ import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
 import edu.ku.brc.ui.dnd.ShadowFactory;
-import edu.ku.brc.ui.validation.ValCheckBox;
+import edu.ku.brc.ui.forms.validation.ValCheckBox;
 
 /**
  * Simple panel that doies it's own layout of a JLabel (Caption) and a JComponent. It is draggable on a panel (canvas).

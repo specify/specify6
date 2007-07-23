@@ -31,7 +31,7 @@ import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.ViewFactory;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.View;
-import edu.ku.brc.ui.validation.FormValidator;
+import edu.ku.brc.ui.forms.validation.FormValidator;
 
 /**
  * @author rods

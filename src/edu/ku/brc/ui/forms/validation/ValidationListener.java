@@ -12,28 +12,23 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+package edu.ku.brc.ui.forms.validation;
+
 /**
+ * A class to listen to whether a validator was validated.
+ *
+ * @code_status Beta
  * 
- */
-package edu.ku.brc.ui.validation;
-
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
-
-/**
  * @author rods
  *
- * @code_status Alpha
- *
- * Created Date: Feb 15, 2007
- *
  */
-public interface FormattedTextValidatorIFace
+public interface ValidationListener
 {
-
-    public boolean validate(UIFieldFormatterIFace fomatter, String value);
-    
-    public boolean isValid();
-    
-    public String getReason();
+    /**
+     * Notifies the consumer that a validator was validated.
+     * @param validator the validator
+     */
+    public void wasValidated(UIValidator validator);
     
 }

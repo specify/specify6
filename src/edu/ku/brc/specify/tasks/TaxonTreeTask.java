@@ -32,7 +32,7 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.persist.AltView.CreationMode;
-import edu.ku.brc.ui.validation.ValComboBox;
+import edu.ku.brc.ui.forms.validation.ValComboBox;
 
 /**
  * Task that handles the UI for viewing taxonomy data.

@@ -97,8 +97,8 @@ import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.TableViewObj;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.View;
-import edu.ku.brc.ui.validation.UIValidatable;
-import edu.ku.brc.ui.validation.ValFormattedTextField;
+import edu.ku.brc.ui.forms.validation.UIValidatable;
+import edu.ku.brc.ui.forms.validation.ValFormattedTextField;
 
 
 /**

@@ -59,7 +59,7 @@ import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.PickListDBAdapterFactory;
 import edu.ku.brc.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.ui.forms.FormViewObj;
-import edu.ku.brc.ui.validation.ValComboBox;
+import edu.ku.brc.ui.forms.validation.ValComboBox;
 
 /**
  * @author rods
@@ -73,7 +73,7 @@ public class TaxonLabelFormatting extends UIPluginBase
 {
     private static final Logger           log      = Logger.getLogger(TaxonLabelFormatting.class);
     
-    public enum FormatType {Plain, Italic};
+    public enum FormatType {Plain, Italic}
 
     protected Taxon             taxon = null;
     
@@ -223,7 +223,7 @@ public class TaxonLabelFormatting extends UIPluginBase
             middlePanel.add(unmapBtn, cc.xy(1, 4));
             
             PanelBuilder rwPanel = new PanelBuilder(new FormLayout("p, 2px, f:p:g", "p"));
-            JLabel refWorkLabel = new JLabel("None");
+            refWorkLabel = new JLabel(getResourceString("None"));
             rwPanel.add(new JLabel(getResourceString("ReferenceWork")+":"), cc.xy(1, 1));
             rwPanel.add(refWorkLabel, cc.xy(3, 1));
             

@@ -29,11 +29,11 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.ui.forms.ViewFactory;
-import edu.ku.brc.ui.validation.DataChangeListener;
-import edu.ku.brc.ui.validation.DataChangeNotifier;
-import edu.ku.brc.ui.validation.UIValidatable;
-import edu.ku.brc.ui.validation.ValTextField;
-import edu.ku.brc.ui.validation.UIValidatable.ErrorType;
+import edu.ku.brc.ui.forms.validation.DataChangeListener;
+import edu.ku.brc.ui.forms.validation.DataChangeNotifier;
+import edu.ku.brc.ui.forms.validation.UIValidatable;
+import edu.ku.brc.ui.forms.validation.ValTextField;
+import edu.ku.brc.ui.forms.validation.UIValidatable.ErrorType;
 import edu.ku.brc.util.LatLonConverter;
 
 /**
@@ -409,7 +409,7 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
     //--------------------------------------------------------
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.DataChangeListener#dataChanged(java.lang.String, java.awt.Component, edu.ku.brc.ui.validation.DataChangeNotifier)
+     * @see edu.ku.brc.ui.forms.validation.DataChangeListener#dataChanged(java.lang.String, java.awt.Component, edu.ku.brc.ui.forms.validation.DataChangeNotifier)
      */
     public void dataChanged(String name, Component comp, DataChangeNotifier dcn)
     {

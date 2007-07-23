@@ -22,8 +22,8 @@ import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.ViewFactory;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.View;
-import edu.ku.brc.ui.validation.FormValidator;
-import edu.ku.brc.ui.validation.ValComboBox;
+import edu.ku.brc.ui.forms.validation.FormValidator;
+import edu.ku.brc.ui.forms.validation.ValComboBox;
 
 /**
  * This panel will handle all the various options for formatting of data.

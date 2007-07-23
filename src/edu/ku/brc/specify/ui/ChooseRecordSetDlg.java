@@ -35,6 +35,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListModel;
+import javax.swing.SwingConstants;
 
 import org.apache.log4j.Logger;
 
@@ -91,7 +92,7 @@ public class ChooseRecordSetDlg extends JDialog implements ActionListener
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
 
-        panel.add(new JLabel(getResourceString("ChooseRecordSet"), JLabel.CENTER), BorderLayout.NORTH);
+        panel.add(new JLabel(getResourceString("ChooseRecordSet"), SwingConstants.CENTER), BorderLayout.NORTH);
 
         try
         {

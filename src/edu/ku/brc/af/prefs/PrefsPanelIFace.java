@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.af.prefs;
 
-import edu.ku.brc.ui.validation.FormValidator;
+import edu.ku.brc.ui.forms.validation.FormValidator;
 
 /**
  * Simple interface for Pref Panels

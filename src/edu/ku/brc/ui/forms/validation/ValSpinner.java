@@ -7,7 +7,7 @@
 /**
  * 
  */
-package edu.ku.brc.ui.validation;
+package edu.ku.brc.ui.forms.validation;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -119,7 +119,7 @@ public class ValSpinner extends JSpinner implements UIValidatable, GetSetValueIF
     //--------------------------------------------------
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#isInError()
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#isInError()
      */
     public boolean isInError()
     {
@@ -127,7 +127,7 @@ public class ValSpinner extends JSpinner implements UIValidatable, GetSetValueIF
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#getState()
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#getState()
      */
     public ErrorType getState()
     {
@@ -135,7 +135,7 @@ public class ValSpinner extends JSpinner implements UIValidatable, GetSetValueIF
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#setState(edu.ku.brc.ui.validation.UIValidatable.ErrorType)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#setState(edu.ku.brc.ui.forms.validation.UIValidatable.ErrorType)
      */
     public void setState(ErrorType state)
     {
@@ -143,7 +143,7 @@ public class ValSpinner extends JSpinner implements UIValidatable, GetSetValueIF
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#isRequired()
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#isRequired()
      */
     public boolean isRequired()
     {
@@ -151,7 +151,7 @@ public class ValSpinner extends JSpinner implements UIValidatable, GetSetValueIF
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#setRequired(boolean)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#setRequired(boolean)
      */
     public void setRequired(boolean isRequired)
     {
@@ -159,7 +159,7 @@ public class ValSpinner extends JSpinner implements UIValidatable, GetSetValueIF
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#isChanged()
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#isChanged()
      */
     public boolean isChanged()
     {
@@ -167,7 +167,7 @@ public class ValSpinner extends JSpinner implements UIValidatable, GetSetValueIF
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#setChanged(boolean)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#setChanged(boolean)
      */
     public void setChanged(boolean isChanged)
     {
@@ -175,7 +175,7 @@ public class ValSpinner extends JSpinner implements UIValidatable, GetSetValueIF
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#setAsNew(boolean)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#setAsNew(boolean)
      */
     public void setAsNew(boolean isNew)
     {
@@ -191,7 +191,7 @@ public class ValSpinner extends JSpinner implements UIValidatable, GetSetValueIF
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#reset()
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#reset()
      */
     public void reset()
     {
@@ -199,7 +199,7 @@ public class ValSpinner extends JSpinner implements UIValidatable, GetSetValueIF
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#getValidatableUIComp()
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#getValidatableUIComp()
      */
     public Component getValidatableUIComp()
     {
@@ -207,7 +207,7 @@ public class ValSpinner extends JSpinner implements UIValidatable, GetSetValueIF
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#cleanUp()
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#cleanUp()
      */
     public void cleanUp()
     {

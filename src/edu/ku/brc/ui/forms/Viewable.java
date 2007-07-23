@@ -26,7 +26,7 @@ import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.View;
 import edu.ku.brc.ui.forms.persist.ViewDef;
-import edu.ku.brc.ui.validation.FormValidator;
+import edu.ku.brc.ui.forms.validation.FormValidator;
 
 /**
  * A Viewable is typically a Form or a Table (not a JTable) of a data object or obects. Some of the methods are specifically for forms

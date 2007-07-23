@@ -38,9 +38,9 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.validation.FormValidator;
-import edu.ku.brc.ui.validation.UIValidator;
-import edu.ku.brc.ui.validation.ValidationListener;
+import edu.ku.brc.ui.forms.validation.FormValidator;
+import edu.ku.brc.ui.forms.validation.UIValidator;
+import edu.ku.brc.ui.forms.validation.ValidationListener;
 
 /*
  * Creates a ResultSetController with First, Last, Previous, Next, New and Delete buttons.

@@ -33,7 +33,7 @@ import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.View;
-import edu.ku.brc.ui.validation.FormValidator;
+import edu.ku.brc.ui.forms.validation.FormValidator;
 
 /**
  * This is the content panel portion of "display" dialogs/frames that are created by the implemenation of the ViewBasedDialogFactoryIFace

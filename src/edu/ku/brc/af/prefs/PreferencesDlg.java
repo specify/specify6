@@ -53,8 +53,8 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.validation.DataChangeListener;
-import edu.ku.brc.ui.validation.DataChangeNotifier;
+import edu.ku.brc.ui.forms.validation.DataChangeListener;
+import edu.ku.brc.ui.forms.validation.DataChangeNotifier;
 
 
 /**
@@ -431,7 +431,7 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
     //-----------------------------------------------------
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.DataChangeListener#dataChanged(java.lang.String, java.awt.Component, edu.ku.brc.ui.validation.DataChangeNotifier)
+     * @see edu.ku.brc.ui.forms.validation.DataChangeListener#dataChanged(java.lang.String, java.awt.Component, edu.ku.brc.ui.forms.validation.DataChangeNotifier)
      */
     public void dataChanged(String name, Component comp, DataChangeNotifier dcn)
     {

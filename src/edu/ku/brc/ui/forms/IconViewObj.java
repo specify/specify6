@@ -49,7 +49,7 @@ import edu.ku.brc.ui.forms.persist.FormViewDef;
 import edu.ku.brc.ui.forms.persist.View;
 import edu.ku.brc.ui.forms.persist.ViewDef;
 import edu.ku.brc.ui.forms.persist.AltView.CreationMode;
-import edu.ku.brc.ui.validation.FormValidator;
+import edu.ku.brc.ui.forms.validation.FormValidator;
 
 /**
  * A Viewable that will display a set of FormDataObjIFace objects in a file

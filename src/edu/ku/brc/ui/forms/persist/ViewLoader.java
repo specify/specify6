@@ -40,7 +40,7 @@ import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
-import edu.ku.brc.ui.validation.TypeSearchForQueryFactory;
+import edu.ku.brc.ui.forms.validation.TypeSearchForQueryFactory;
 
 /**
  * Factory that creates Views from ViewSet files. This class uses the singleton ViewSetMgr to verify the View Set Name is unique.

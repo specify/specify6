@@ -13,7 +13,7 @@ import javax.swing.DefaultComboBoxModel;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
-import edu.ku.brc.ui.validation.ValComboBox;
+import edu.ku.brc.ui.forms.validation.ValComboBox;
 
 /**
  * This is a dialog to be used when editing a tree node.

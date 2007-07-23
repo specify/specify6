@@ -12,7 +12,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.ui.validation;
+package edu.ku.brc.ui.forms.validation;
 
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
@@ -965,7 +965,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
     //-----------------------------------------------------
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.DataChangeListener#dataChanged(java.lang.String, java.awt.Component, edu.ku.brc.ui.validation.DataChangeNotifier)
+     * @see edu.ku.brc.ui.forms.validation.DataChangeListener#dataChanged(java.lang.String, java.awt.Component, edu.ku.brc.ui.forms.validation.DataChangeNotifier)
      */
     public void dataChanged(final String dcName, final Component comp, DataChangeNotifier dcn)
     {

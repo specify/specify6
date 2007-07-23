@@ -13,8 +13,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.ku.brc.ui.validation;
-
+package edu.ku.brc.ui.forms.validation;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -23,11 +22,8 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
-import javax.swing.JTextArea;
-import javax.swing.KeyStroke;
+import javax.swing.JPasswordField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
@@ -38,11 +34,12 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
+import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 
 /**
- * A JTextArea that implements UIValidatable for participating in validation
+ * A JTextControl that implements UIValidatable for participating in validation
  *
  * @code_status Beta
  *
@@ -50,72 +47,54 @@ import edu.ku.brc.ui.GetSetValueIFace;
  *
  */
 @SuppressWarnings("serial")
-public class ValTextArea extends JTextArea implements UIValidatable,
-                                                      GetSetValueIFace,
-                                                      DocumentListener,
-                                                      AppPrefsChangeListener
+public class ValPasswordField extends JPasswordField implements UIValidatable,
+                                                                GetSetValueIFace,
+                                                                DocumentListener,
+                                                                AppPrefsChangeListener
 {
-    protected UIValidatable.ErrorType valState  = UIValidatable.ErrorType.Valid;
-    protected boolean isRequired = false;
-    protected boolean isChanged  = false;
-    protected boolean isNew      = false;
-    protected Color   bgColor    = null;
-
     protected static ColorWrapper valtextcolor       = null;
     protected static ColorWrapper requiredfieldcolor = null;
 
-    protected String              defaultValue = null;
+    protected UIValidatable.ErrorType valState  = UIValidatable.ErrorType.Valid;
+    protected boolean isRequired  = false;
+    protected boolean isChanged   = false;
+    protected boolean isEncrypted = false;
+    protected boolean isNew       = false;
+    protected Color   bgColor     = null;
 
+    protected String  defaultValue = null;
 
-    /**
-     * Constructor
-     */
-    public ValTextArea()
+    public ValPasswordField()
     {
         super();
         init();
     }
 
-    /**
-     * Constructor
-     * @param arg0 initial value
-     */
-    public ValTextArea(String arg0)
+    public ValPasswordField(String arg0)
     {
         super(arg0);
         init();
     }
 
-    public ValTextArea(int arg0, int arg1)
+    public ValPasswordField(int arg0)
     {
-        super(arg0, arg1);
+        super(arg0);
         init();
     }
 
-    public ValTextArea(String arg0, int arg1, int arg2)
+    public ValPasswordField(String arg0, int arg1)
+    {
+        super(arg0, arg1);
+    }
+
+    public ValPasswordField(Document arg0, String arg1, int arg2)
     {
         super(arg0, arg1, arg2);
         init();
     }
 
-    public ValTextArea(Document arg0)
-    {
-        super(arg0);
-        init();
-    }
-
-    public ValTextArea(Document arg0, String arg1, int arg2, int arg3)
-    {
-        super(arg0, arg1, arg2, arg3);
-        init();
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.db.JAutoCompTextField#init()
-     */
     public void init()
     {
-
         bgColor = getBackground();
         if (valtextcolor == null || requiredfieldcolor == null)
         {
@@ -123,9 +102,6 @@ public class ValTextArea extends JTextArea implements UIValidatable,
             requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
         }
         AppPreferences.getRemote().addChangeListener("ui.formatting.requiredfieldcolor", this);
-
-        getDocument().addDocumentListener(this);
-
 
         addFocusListener(new FocusAdapter() {
             @Override
@@ -135,34 +111,15 @@ public class ValTextArea extends JTextArea implements UIValidatable,
                 repaint();
             }
         });
-        
-        // Enable being able to TAB out of TextArea
-        getInputMap().put(KeyStroke.getKeyStroke("TAB"), "none");
-        addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent event) {
-                if (event.getKeyCode() == KeyEvent.VK_TAB )
-                {
-                    if (event.isShiftDown())
-                    {
-                        transferFocusBackward();
-                    } else
-                    {
-                        transferFocus();
-                    }
-                }
-            }
-        });
-
     }
 
     /**
-     * Helper method for validation sripting to see if the text field is empty
-     * @return whether the text field is empty or not
+     * Returns whether the text is not empty
+     * @return return whether the text is not empty
      */
     public boolean isNotEmpty()
     {
-        return getText().length() > 0;
+        return getPassword().length > 0;
     }
 
     /* (non-Javadoc)
@@ -194,6 +151,96 @@ public class ValTextArea extends JTextArea implements UIValidatable,
         setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
     }
 
+    /* (non-Javadoc)
+     * @see javax.swing.text.JTextComponent#setText(java.lang.String)
+     */
+    @Override
+    public void setText(String text)
+    {
+        super.setText(isEncrypted ? Encryption.decrypt(text) : text);
+    }
+
+    /**
+     * Return the text without encryption (whether encrytption is turned on or not)
+     * @return the text without encryption (whether encrytption is turned on or not)
+     */
+    public String getPasswordText()
+    {
+        return new String(super.getPassword());
+    }
+
+
+    /* (non-Javadoc)
+     * @see javax.swing.text.JTextComponent#getText()
+     */
+    @Override
+    public char[] getPassword()
+    {
+        String text = new String(super.getPassword());
+        return (text.length() == 0) ? ("").toCharArray() : isEncrypted ? Encryption.encrypt(text).toCharArray() : text.toCharArray();
+    }
+
+    public boolean isEncrypted()
+    {
+        return isEncrypted;
+    }
+
+    public void setEncrypted(boolean isEncrypted)
+    {
+        this.isEncrypted = isEncrypted;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#cleanUp()
+     */
+    public void cleanUp()
+    {
+        AppPreferences.getRemote().removeChangeListener("ui.formatting.requiredfieldcolor", this);
+    }
+
+    //--------------------------------------------------------
+    // GetSetValueIFace
+    //--------------------------------------------------------
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.GetSetValueIFace#setValue(java.lang.Object, java.lang.String)
+     */
+    public void setValue(Object value, String defaultValue)
+    {
+        this.defaultValue = defaultValue;
+
+        String data;
+
+        if (value != null)
+        {
+            if (value instanceof String)
+            {
+                data = (String)value;
+
+            } else
+            {
+                data = value.toString();
+            }
+        } else
+        {
+            data = StringUtils.isNotEmpty(defaultValue) ? defaultValue : "";
+        }
+
+        setText(data);
+
+        validateState();
+
+        repaint();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.ui.GetSetValueIFace#getValue()
+     */
+    public Object getValue()
+    {
+        return new String(getPassword());
+    }
+
     //--------------------------------------------------
     //-- UIValidatable Interface
     //--------------------------------------------------
@@ -207,7 +254,7 @@ public class ValTextArea extends JTextArea implements UIValidatable,
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#getState()
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#getState()
      */
     public ErrorType getState()
     {
@@ -215,12 +262,13 @@ public class ValTextArea extends JTextArea implements UIValidatable,
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#setState(edu.ku.brc.ui.validation.UIValidatable.ErrorType)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#setState(edu.ku.brc.ui.forms.validation.UIValidatable.ErrorType)
      */
     public void setState(ErrorType state)
     {
         this.valState = state;
     }
+
     /* (non-Javadoc)
      * @see edu.kui.brc.ui.validation.UIValidatable#isRequired()
      */
@@ -239,7 +287,7 @@ public class ValTextArea extends JTextArea implements UIValidatable,
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#isChanged()
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#isChanged()
      */
     public boolean isChanged()
     {
@@ -247,7 +295,7 @@ public class ValTextArea extends JTextArea implements UIValidatable,
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#setChanged(boolean)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#setChanged(boolean)
      */
     public void setChanged(boolean isChanged)
     {
@@ -256,7 +304,7 @@ public class ValTextArea extends JTextArea implements UIValidatable,
 
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#setAsNew(boolean)
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#setAsNew(boolean)
      */
     public void setAsNew(boolean isNew)
     {
@@ -268,40 +316,31 @@ public class ValTextArea extends JTextArea implements UIValidatable,
      */
     public UIValidatable.ErrorType validateState()
     {
-        valState = isRequired && getText().length() == 0 ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
+        valState = isRequired && getPassword().length == 0 ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
         return valState;
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#reset()
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#reset()
      */
     public void reset()
     {
-        setText( StringUtils.isNotEmpty(defaultValue) ? defaultValue : "");
+        setText("");
         valState = isRequired ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
         repaint();
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#getValidatableUIComp()
+     * @see edu.ku.brc.ui.forms.validation.UIValidatable#getValidatableUIComp()
      */
     public Component getValidatableUIComp()
     {
         return this;
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.validation.UIValidatable#cleanUp()
-     */
-    public void cleanUp()
-    {
-        AppPreferences.getRemote().removeChangeListener("ui.formatting.requiredfieldcolor", this);
-    }
-
     //--------------------------------------------------------
     // DocumentListener
     //--------------------------------------------------------
-
 
     public void changedUpdate(DocumentEvent e)
     {
@@ -316,28 +355,6 @@ public class ValTextArea extends JTextArea implements UIValidatable,
     public void removeUpdate(DocumentEvent e)
     {
         isChanged = true;
-    }
-
-    //--------------------------------------------------------
-    // GetSetValueIFace
-    //--------------------------------------------------------
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.ui.GetSetValueIFace#setValue(java.lang.Object, java.lang.String)
-     */
-    public void setValue(Object value, String defaultValue)
-    {
-        this.defaultValue = defaultValue;
-        setText(value != null ? value.toString() : StringUtils.isNotEmpty(defaultValue) ? defaultValue : "");
-    }
-
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.ui.GetSetValueIFace#getValue()
-     */
-    public Object getValue()
-    {
-        return getText();
     }
 
     //-------------------------------------------------

@@ -73,9 +73,9 @@ import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
 import edu.ku.brc.ui.forms.ResultSetControllerListener;
-import edu.ku.brc.ui.validation.ValCheckBox;
-import edu.ku.brc.ui.validation.ValTextArea;
-import edu.ku.brc.ui.validation.ValTextField;
+import edu.ku.brc.ui.forms.validation.ValCheckBox;
+import edu.ku.brc.ui.forms.validation.ValTextArea;
+import edu.ku.brc.ui.forms.validation.ValTextField;
 
 /**
  * This Panel holds the form elements for Template definition of a Workbench. NOTE: This assumes that the IUNputPanel is a container and the label

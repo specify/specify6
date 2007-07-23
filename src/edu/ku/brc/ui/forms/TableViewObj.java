@@ -92,10 +92,10 @@ import edu.ku.brc.ui.forms.persist.FormViewDef;
 import edu.ku.brc.ui.forms.persist.TableViewDef;
 import edu.ku.brc.ui.forms.persist.View;
 import edu.ku.brc.ui.forms.persist.ViewDef;
-import edu.ku.brc.ui.validation.FormValidator;
-import edu.ku.brc.ui.validation.UIValidatable;
-import edu.ku.brc.ui.validation.UIValidator;
-import edu.ku.brc.ui.validation.ValidationListener;
+import edu.ku.brc.ui.forms.validation.FormValidator;
+import edu.ku.brc.ui.forms.validation.UIValidatable;
+import edu.ku.brc.ui.forms.validation.UIValidator;
+import edu.ku.brc.ui.forms.validation.ValidationListener;
 
 /*
  * The Whole idea of the class is that it converts or translates a form/sybform definition into a series of columns.

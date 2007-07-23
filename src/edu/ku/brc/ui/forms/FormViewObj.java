@@ -95,14 +95,14 @@ import edu.ku.brc.ui.forms.persist.FormCellSubView;
 import edu.ku.brc.ui.forms.persist.FormViewDef;
 import edu.ku.brc.ui.forms.persist.View;
 import edu.ku.brc.ui.forms.persist.ViewDef;
-import edu.ku.brc.ui.validation.DataChangeNotifier;
-import edu.ku.brc.ui.validation.FormValidator;
-import edu.ku.brc.ui.validation.FormValidatorInfo;
-import edu.ku.brc.ui.validation.UIValidatable;
-import edu.ku.brc.ui.validation.UIValidator;
-import edu.ku.brc.ui.validation.ValComboBoxFromQuery;
-import edu.ku.brc.ui.validation.ValFormattedTextField;
-import edu.ku.brc.ui.validation.ValidationListener;
+import edu.ku.brc.ui.forms.validation.DataChangeNotifier;
+import edu.ku.brc.ui.forms.validation.FormValidator;
+import edu.ku.brc.ui.forms.validation.FormValidatorInfo;
+import edu.ku.brc.ui.forms.validation.UIValidatable;
+import edu.ku.brc.ui.forms.validation.UIValidator;
+import edu.ku.brc.ui.forms.validation.ValComboBoxFromQuery;
+import edu.ku.brc.ui.forms.validation.ValFormattedTextField;
+import edu.ku.brc.ui.forms.validation.ValidationListener;
 
 /**
  * This implements a Form and is "owed" by a MultiView.<br>
