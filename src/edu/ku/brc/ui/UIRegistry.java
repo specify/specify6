@@ -241,12 +241,24 @@ public class UIRegistry
         return resBundle;
     }
     
+    /**
+     * Pushes the Resource Info onto the stack (internal because of the 'new')
+     * @param name the name of the resource
+     * @param rb the resource bundle
+     * @return the same res bundle
+     */
     protected ResourceBundle pushInternal(final String name, final ResourceBundle rb)
     {
         resBundleStack.push(new ResBundleInfo(name, rb));
         return rb;
     }
     
+    /**
+     * Pushes the Resource Info onto the stack.
+     * @param name the name of the resource
+     * @param rb the resource bundle
+     * @return the same res bundle
+     */
     public static ResourceBundle push(final String name, final ResourceBundle rb)
     {
         instance.pushInternal(instance.resourceName, instance.resourceBundle);
@@ -255,6 +267,11 @@ public class UIRegistry
         return rb;
     }
 
+    /**
+     * Loads a Resource Bundle by name and pushes it onto the Res bundle stack.
+     * @param resName the name of the res bundle to load.
+     * @return the loaded resource bundle or null if not found
+     */
     public static ResourceBundle loadAndPushResourceBundle(final String resName)
     {
         ResourceBundle rb = getResourceBundle(resName);
@@ -265,6 +282,10 @@ public class UIRegistry
         return rb;
     }
 
+    /**
+     * Pops a Resource Bundle off the stack.
+     * @return the res bundle
+     */
     public static ResourceBundle popResourceBundle()
     {
         if (instance.resBundleStack.size() > 0)
@@ -288,7 +309,75 @@ public class UIRegistry
         return instance.getResourceBundle();
     }
 
+    /**
+     * Returns the main ResourceBundle.
+     * @return Returns the main ResourceBundle
+     */
+    public ResourceBundle getResourceBundle()
+    {
+        return resourceBundle;
+    }
 
+    /**
+     * Returns the reourceName.
+     * @return Returns the reourceName.
+     */
+    public String getResourceName()
+    {
+        return resourceName;
+    }
+
+    /**
+     * Sets the resource name.
+     * @param resourceName The reourceName to set.
+     */
+    public void setResourceName(final String resourceName)
+    {
+        this.resourceName = resourceName;
+    }
+
+    /**
+     * Returns a localized string from the resource bundle (masks the thrown exception).
+     * @param key the key to look up
+     * @return  Returns a localized string from the resource bundle
+     */
+    protected String getResourceStringInternal(final String key)
+    {
+        try 
+        {
+            //log.error("["+key+"]["+resourceBundle.getString(key)+"]");
+            return resourceBundle.getString(key);
+            
+        } catch (MissingResourceException ex) 
+        {
+            log.error("Couldn't find key["+key+"] in resource bundle ["+resourceName+"]");
+            
+            for (int i=resBundleStack.size()-1;i>-1;i--)
+            {
+                ResBundleInfo ri = resBundleStack.elementAt(i);
+                try
+                {
+                    return ri.getResBundle().getString(key);
+                    
+                } catch (MissingResourceException mre) 
+                {
+                    log.error("Couldn't find key["+key+"] in resource bundle ["+ri.getName()+"]");
+                }
+            }
+            return key;
+        }
+    }
+
+    /**
+     * Returns a localized string from the resource bundle (masks the thrown exception).
+     * @param key the key to look up
+     * @return  Returns a localized string from the resource bundle
+     */
+    public static String getResourceString(final String key)
+    {
+        return instance.getResourceStringInternal(key);
+    } 
+    
     /**
      * @return the getPermanentFocusOwner
      */
@@ -612,63 +701,6 @@ public class UIRegistry
         }
         return null;
     }
-
-    /**
-     * Returns the main ResourceBundle.
-     * @return Returns the main ResourceBundle
-     */
-    public ResourceBundle getResourceBundle()
-    {
-        return resourceBundle;
-    }
-
-    /**
-     * Returns the reourceName.
-     * @return Returns the reourceName.
-     */
-    public String getResourceName()
-    {
-        return resourceName;
-    }
-
-    /**
-     * Sets the resource name.
-     * @param resourceName The reourceName to set.
-     */
-    public void setResourceName(final String resourceName)
-    {
-        this.resourceName = resourceName;
-    }
-
-    /**
-     * Returns a localized string from the resource bundle (masks the thrown exception).
-     * @param key the key to look up
-     * @return  Returns a localized string from the resource bundle
-     */
-    protected String getResourceStringInternal(final String key)
-    {
-        try 
-        {
-            //log.error("["+key+"]["+resourceBundle.getString(key)+"]");
-            return resourceBundle.getString(key);
-            
-        } catch (MissingResourceException ex) 
-        {
-            log.error("Couldn't find key["+key+"] in resource bundle ["+resourceName+"]");
-            return key;
-        }
-    }
-
-    /**
-     * Returns a localized string from the resource bundle (masks the thrown exception).
-     * @param key the key to look up
-     * @return  Returns a localized string from the resource bundle
-     */
-    public static String getResourceString(final String key)
-    {
-        return instance.getResourceStringInternal(key);
-    } 
-    
     /**
      * Formats an Internationalized string with a variable argument list.
      * @param key the I18N key

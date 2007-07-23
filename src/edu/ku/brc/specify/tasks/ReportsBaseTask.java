@@ -626,7 +626,7 @@ public class ReportsBaseTask extends BaseTask
         });
     }
         
-    private void dumpProps(final Properties props, final int level)
+    /*private void dumpProps(final Properties props, final int level)
     {
         StringBuilder sb = new StringBuilder();
         for (int i=0;i<level;i++) sb.append(" ");
@@ -647,18 +647,18 @@ public class ReportsBaseTask extends BaseTask
                 
             }
         }
-    }
+    }*/
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#doCommand(edu.ku.brc.ui.CommandAction)
      */
     public void doCommand(final CommandAction cmdAction)
     {
-        if (true)
+        /*if (true)
         {
             log.debug("Direct Properties:");
             dumpProps(cmdAction.getProperties(), 0);
-        }
+        }*/
         
         log.debug("*************** "+this);
         if (cmdAction.isType(REPORTS))
