@@ -47,7 +47,6 @@ import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.tasks.subpane.LabelsPane;
 import edu.ku.brc.specify.tools.IReportSpecify.MainFrameSpecify;
 import edu.ku.brc.ui.ChooseFromListDlg;
@@ -76,13 +75,14 @@ public class ReportsBaseTask extends BaseTask
     private static final Logger log = Logger.getLogger(ReportsBaseTask.class);
             
     // Static Data Members
+    public static final String     REPORTS      = "REPORTS";
     public static final String     REPORTS_MIME = "jrxml/report";
     public static final String     LABELS_MIME  = "jrxml/label";
 
     //public static final String DOLABELS_ACTION     = "DoLabels";
-    public static final String NEWRECORDSET_ACTION = "LBL.NewRecordSet";
-    public static final String PRINT_REPORT        = "LBL.PrintReport";
-    public static final String OPEN_EDITOR         = "LBL.OpenEditor";
+    public static final String NEWRECORDSET_ACTION = "RPT.NewRecordSet";
+    public static final String PRINT_REPORT        = "RPT.PrintReport";
+    public static final String OPEN_EDITOR         = "RPT.OpenEditor";
 
     // Data Members
     protected DataFlavor              defaultFlavor    = null;
@@ -90,6 +90,8 @@ public class ReportsBaseTask extends BaseTask
     protected Vector<NavBoxIFace>     extendedNavBoxes = new Vector<NavBoxIFace>();
     protected Vector<NavBoxItemIFace> reportsList      = new Vector<NavBoxItemIFace>();
     protected NavBox                  actionNavBox     = null;
+    
+    protected String                  reportHintKey    = "REPORT_TT";
 
     // temp data
     protected NavBoxItemIFace         oneNbi           = null;
@@ -105,6 +107,7 @@ public class ReportsBaseTask extends BaseTask
         super();
         
         iReportMainFrame = null;
+        isShowDefault = true;
     }
 
 
@@ -114,7 +117,7 @@ public class ReportsBaseTask extends BaseTask
     @Override
     public void preInitialize()
     {
-        CommandDispatcher.register(name, this);
+        CommandDispatcher.register(REPORTS, this);
         CommandDispatcher.register(RecordSetTask.RECORD_SET, this);
         CommandDispatcher.register(APP_CMD_TYPE, this);
         
@@ -155,9 +158,10 @@ public class ReportsBaseTask extends BaseTask
                         String tableIdStr = tcd.getParams().get("tableid");
                         if (tableIdStr != null)
                         {
-                            CommandAction cmdAction = new CommandAction(name, PRINT_REPORT, Workbench.getClassTableId());
+                            CommandAction cmdAction = new CommandAction(REPORTS, PRINT_REPORT, tableIdStr);
                             cmdAction.addStringProperties(tcd.getParams());
                             cmdAction.getProperties().put("icon", IconManager.getIcon(tcd.getIconName()));
+                            cmdAction.getProperties().put("task name", getName());
                             
                             NavBoxItemIFace nbi = makeDnDNavBtn(navBox, 
                                                                 tcd.getName(), 
@@ -171,7 +175,7 @@ public class ReportsBaseTask extends BaseTask
                             RolloverCommand roc = (RolloverCommand)nbi;
                             roc.addDropDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
                             roc.addDragDataFlavor(defaultFlavor);
-                            roc.setToolTip(getResourceString("WB_PRINTREPORT_TT"));
+                            roc.setToolTip(getResourceString(reportHintKey));
 
                         } else
                         {
@@ -365,7 +369,7 @@ public class ReportsBaseTask extends BaseTask
             {
                 fileName = askForLabelName();
                 
-            } else
+            } else if (oneNbi != null)
             {
                 Object nbData = oneNbi.getData();
                 if (nbData instanceof CommandAction)
@@ -610,7 +614,7 @@ public class ReportsBaseTask extends BaseTask
         {
             MainFrame.reportClassLoader.rescanLibDirectory();
             Thread.currentThread().setContextClassLoader( MainFrame.reportClassLoader );
-            Map args = MainFrameSpecify.getArgs();
+            Map<?,?> args = MainFrameSpecify.getArgs();
             iReportMainFrame = new MainFrameSpecify(args);
         }
         SwingUtilities.invokeLater( new Runnable()
@@ -622,13 +626,42 @@ public class ReportsBaseTask extends BaseTask
         });
     }
         
+    private void dumpProps(final Properties props, final int level)
+    {
+        StringBuilder sb = new StringBuilder();
+        for (int i=0;i<level;i++) sb.append(" ");
+        
+        log.debug("--------------------");
+        if (props != null)
+        {
+            for (Object key : props.keySet())
+            {
+                Object val = props.get(key);
+                if (val instanceof Properties)
+                {
+                    dumpProps((Properties)val, level+2);
+                } else
+                {
+                    log.debug(sb.toString()+"["+key+"]\t["+val+"]");
+                }
+                
+            }
+        }
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#doCommand(edu.ku.brc.ui.CommandAction)
      */
     public void doCommand(final CommandAction cmdAction)
     {
-        if (cmdAction.isType(name))
+        if (true)
+        {
+            log.debug("Direct Properties:");
+            dumpProps(cmdAction.getProperties(), 0);
+        }
+        
+        log.debug("*************** "+this);
+        if (cmdAction.isType(REPORTS))
         {
             processReportCommands(cmdAction);
             

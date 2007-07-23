@@ -391,7 +391,7 @@ public class InteractionsTask extends BaseTask
             if (fileName != null)
             {
                 // XXX For Demo purposes only we need to be able to look up report and labels
-                final CommandAction cmd = new CommandAction(LabelsTask.LABELS, LabelsTask.PRINT_LABEL, rs);
+                final CommandAction cmd = new CommandAction(ReportsBaseTask.REPORTS, ReportsBaseTask.PRINT_REPORT, rs);
                 cmd.setProperty("file", "LoanInvoice.jrxml");
                 cmd.setProperty("title", "Loan Invoice");
                 cmd.setProperty(NavBoxAction.ORGINATING_TASK, this);

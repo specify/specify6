@@ -1906,7 +1906,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 WorkbenchJRDataSource dataSrc = new WorkbenchJRDataSource(workbench, workbench.getWorkbenchRowsAsList());
                 session.close();
 
-                final CommandAction cmd = new CommandAction(LabelsTask.LABELS, LabelsTask.PRINT_LABEL, dataSrc);
+                final CommandAction cmd = new CommandAction(ReportsBaseTask.REPORTS, ReportsBaseTask.PRINT_REPORT, dataSrc);
                 cmd.setProperty("title", "Labels");
                 cmd.setProperty("file", "basic_label.jrxml");
                 // params hard-coded for harvard demo:
@@ -1939,7 +1939,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             rs.setDbTableId(Workbench.getClassTableId());
             rs.addItem(workbench.getWorkbenchId());
             
-            final CommandAction cmd = new CommandAction(LabelsTask.LABELS, LabelsTask.PRINT_LABEL, rs);
+            final CommandAction cmd = new CommandAction(ReportsBaseTask.REPORTS, ReportsBaseTask.PRINT_REPORT, rs);
             cmd.setProperty("title",  selectMappingItem.getCaption());
             cmd.setProperty("file",   "wb_items.jrxml");
             cmd.setProperty("params", "colnum="+selectMappingItem.getWorkbenchTemplateMappingItemId()+";"+"title="+selectMappingItem.getCaption());

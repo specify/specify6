@@ -15,52 +15,22 @@
 package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
-import it.businesslogic.ireport.gui.MainFrame;
 
-import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 import java.util.Vector;
 
-import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-
-import net.sf.jasperreports.engine.JRDataSource;
-
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.core.ContextMgr;
-import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxAction;
-import edu.ku.brc.af.core.NavBoxIFace;
-import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
-import edu.ku.brc.af.core.SubPaneMgr;
-import edu.ku.brc.af.core.TaskCommandDef;
-import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
-import edu.ku.brc.dbsupport.RecordSetIFace;
-import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.tasks.subpane.LabelsPane;
-import edu.ku.brc.specify.tools.IReportSpecify.MainFrameSpecify;
-import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
-import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
-import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.dnd.GhostActionable;
-import edu.ku.brc.ui.dnd.GhostActionableDropManager;
-import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
 
 /**
  * A task to manage Labels and response to Label Commands.
@@ -71,46 +41,20 @@ import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
  *
  */
 @SuppressWarnings("serial")
-public class LabelsTask extends BaseTask
+public class LabelsTask extends ReportsBaseTask
 {
-    private static final Logger log = Logger.getLogger(LabelsTask.class);
-            
-    // Static Data Members
-    public static final DataFlavor LABEL_FLAVOR  = new DataFlavor(LabelsTask.class, "Label");
-    public static final DataFlavor REPORT_FLAVOR = new DataFlavor(LabelsTask.class, "Report");
-    
-    public static final String     LABELS       = "Labels";
-    public static final String     REPORTS_MIME = "jrxml/report";
-    public static final String     LABELS_MIME  = "jrxml/label";
-
-    //public static final String DOLABELS_ACTION     = "DoLabels";
-    public static final String NEWRECORDSET_ACTION = "LBL.NewRecordSet";
-    public static final String PRINT_LABEL         = "LBL.PrintLabel";
-    public static final String OPEN_EDITOR         = "LBL.OpenEditor";
-
-    // Data Members
-    protected Vector<NavBoxIFace>     extendedNavBoxes = new Vector<NavBoxIFace>();
-    protected Vector<NavBoxItemIFace> labelsList       = new Vector<NavBoxItemIFace>();
-
-    // temp data
-    protected NavBoxItemIFace         oneNbi           = null;
-
-    //iReport MainFrame
-    private static MainFrameSpecify iReportMainFrame   = null;
-    
     /**
      * Constructor.
      */
     public LabelsTask()
     {
-        super(LABELS, getResourceString(LABELS));
- 
-        iReportMainFrame = null;
-        
-        CommandDispatcher.register(LABELS, this);
-        CommandDispatcher.register(RecordSetTask.RECORD_SET, this);
-        CommandDispatcher.register(APP_CMD_TYPE, this);
-        
+        name          = "Labels";
+        title         = getResourceString(name);
+        defaultFlavor = new DataFlavor(ReportsBaseTask.class, name);
+        mimeType      = LABELS_MIME;
+        reportHintKey = "LABEL_TT";
+
+        setIcon(this.name);
     }
 
 
@@ -120,132 +64,39 @@ public class LabelsTask extends BaseTask
     @Override
     public void preInitialize()
     {
-        RecordSetTask.addDroppableDataFlavor(LABEL_FLAVOR);
-        RecordSetTask.addDroppableDataFlavor(REPORT_FLAVOR);
-    }
-
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.core.Taskable#initialize()
-     */
-    public void initialize()
-    {
-        if (!isInitialized)
-        {
-            super.initialize(); // sets isInitialized to false
-            
-            extendedNavBoxes.clear();
-            labelsList.clear();
-
-            if (isVisible)
-            {
-                NavBox navBox = new NavBox(name);
-                
-                addAppResourcesToCommandsByMimeType(LABELS_MIME, 
-                                                    null,  // reporttype is unimportant for labels
-                                                    null); // no particular table at the moment
-                
-                // Then add
-                if (commands != null)
-                {
-                    for (TaskCommandDef tcd : commands)
-                    {
-                        // XXX won't be needed when we start validating the XML
-                        String tableIdStr = tcd.getParams().get("tableid");
-                        if (tableIdStr != null)
-                        {
-                            CommandAction cmdAction = new CommandAction(LABELS, PRINT_LABEL, Workbench.getClassTableId());
-                            cmdAction.addStringProperties(tcd.getParams());
-                            cmdAction.getProperties().put("icon", IconManager.getIcon(tcd.getIconName()));
-                            
-                            NavBoxItemIFace nbi = makeDnDNavBtn(navBox, 
-                                                                tcd.getName(), 
-                                                                tcd.getIconName(), 
-                                                                cmdAction, 
-                                                                null, 
-                                                                true,  // true means make it draggable
-                                                                true); // true means add sorted
-                            labelsList.add(nbi);
-                            
-                            RolloverCommand roc = (RolloverCommand)nbi;
-                            roc.addDropDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
-                            roc.addDragDataFlavor(LABEL_FLAVOR);
-                            roc.setToolTip(getResourceString("WB_PRINTREPORT_TT"));
-
-                        } else
-                        {
-                            log.error("Interaction Command is missing the table id");
-                        }
-                    }
-
-                }
-                
-                navBox.add(NavBox.createBtn(getResourceString("LabelEditor"),  "EditIcon", IconManager.IconSize.Std16, new NavBoxAction(LABELS, OPEN_EDITOR))); // I18N
-                
-                navBoxes.addElement(navBox);
-            }
-        }
-    }
-
-    /**
-     * Performs a command (to create a label).
-     * @param labelName the name of lable (the file name)
-     * @param labelTitle the localized title to be displayed as the tab title
-     * @param recordSet the recordSet to be turned into labels
-     * @param params parameters for the report
-     * @param originatingTask the Taskable requesting the the labels be made
-     * @param paneIcon the icon of the pane(if it is null then it uses the Task's icon)
-     */
-    public void doLabels(final String              labelName, 
-                         final String              labelTitle, 
-                         final Object              data, 
-                         final Properties          params,
-                         final Taskable            originatingTask,
-                         final ImageIcon           paneIcon)
-    {
-        int startPaneIndex = starterPane != null ? SubPaneMgr.getInstance().indexOfComponent((LabelsPane)starterPane) : -1;
+        super.preInitialize();
         
-        LabelsPane labelsPane;
-        if (startPaneIndex == -1)
-        {
-            labelsPane = new LabelsPane(labelTitle, originatingTask != null ? originatingTask : this, params);
-            labelsPane.setIcon(paneIcon);
-            addSubPaneToMgr(labelsPane);
-            
-        } else
-        {
-            labelsPane  = (LabelsPane)starterPane;
-            SubPaneMgr.getInstance().renamePane(labelsPane, labelTitle);
-        }
-        labelsPane.createReport(labelName, data, params);
-        starterPane = null;
+        actionNavBox.add(NavBox.createBtnWithTT(getResourceString("Create_New_Label"), name, getResourceString("CREATE_LABEL_TT"), IconManager.IconSize.Std16, null));
+        actionNavBox.add(NavBox.createBtnWithTT(getResourceString("LabelEditor"),  "EditIcon", getResourceString("EDIT_LABEL_TT"), IconManager.IconSize.Std16, new NavBoxAction(name, OPEN_EDITOR))); // I18N
+
     }
 
     /**
-     * @return Return true if there is a small number of labels or whether the user wishes to continue.
+     * Adds a WorkbenchTemplate to the Left Pane NavBox
+     * @param workbench the workbench to be added
      */
-    protected boolean checkForALotOfLabels(final RecordSetIFace recordSet)
+    /*protected void addLabelToNavBox(final Workbench workbench)
     {
-        //
-        if (recordSet.getItems().size() > 200) // XXX Pref
-        {
-            Object[] options = {getResourceString("Create_New_Label"), getResourceString("Cancel")};
-            int n = JOptionPane.showOptionDialog(UIRegistry.get(UIRegistry.FRAME),
-                                                String.format(getResourceString("LotsOfLabels"), new Object[] {(recordSet.getItems().size())}),
-                                                getResourceString("LotsOfLabelsTitle"),
-                                                JOptionPane.YES_NO_OPTION,
-                                                JOptionPane.QUESTION_MESSAGE,
-                                                null,     //don't use a custom Icon
-                                                options,  //the titles of buttons
-                                                options[0]); //default button title
-            if (n == 1)
-            {
-                return false;
-            }
-        }
-        return true;
-    }
+        CommandAction cmd = new CommandAction(LABELS, PRINT_LABEL, Workbench.getClassTableId());
+        RecordSet     rs  = new RecordSet(workbench.getName(), Workbench.getClassTableId());
+        rs.addItem(workbench.getWorkbenchId());
+        cmd.setProperty("workbench", rs);
+        final RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(actionNavBox, workbench.getName(), "DataSet16", cmd, 
+                                                                   new CommandAction(LABELS, DELETE_CMD_ACT, rs), 
+                                                                   true, true);// true means make it draggable
+        roc.setToolTip(getResourceString("WB_PRINTLABEL_TT")); 
+        
+        // Drag Flavors
+        roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
+        roc.addDragDataFlavor(REPORT_FLAVOR);
+        roc.addDropDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
 
+        // Drop Flavors
+        //roc.addDropDataFlavor(new DataFlavor(Workbench.class, EXPORT_DATA_FILE));
+        //roc.addDropDataFlavor(new DataFlavor(CollectionObject.class, "Report"));
+        roc.addDropDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
+       
+    }*/
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.BaseTask#getStarterPane()
@@ -259,150 +110,10 @@ public class LabelsTask extends BaseTask
         return starterPane;
     }
 
-    /**
-     * Displays UI that asks the user to select a predefined label.
-     * @return the name of the label file or null if cancelled
-     */
-    protected String askForLabelName()
-    {
-        initialize();
-
-        // XXX Need to pass in or check table type for different types of lables.
-
-        NavBoxItemIFace nbi = null;
-        if (labelsList.size() == 1)
-        {
-            nbi = labelsList.get(0);
-
-        } else
-        {
-            ChooseFromListDlg<NavBoxItemIFace> dlg = new ChooseFromListDlg<NavBoxItemIFace>((Frame)UIRegistry.getTopWindow(),
-                                                                                            getResourceString("ChooseLabel"),
-                                                                                            labelsList, 
-                                                                                            IconManager.getIcon(name, IconManager.IconSize.Std24));
-            dlg.setMultiSelect(false);
-            dlg.setModal(true);
-            dlg.setVisible(true);
-            if (!dlg.isCancelled())
-            {
-                nbi  = dlg.getSelectedObject();
-            }
-        }
-        
-        if (nbi != null && nbi.getData() != null)
-        {
-            Object data = nbi.getData();
-            if (data instanceof CommandAction)
-            {
-                return ((CommandAction)data).getPropertyAsString("file");
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Single place to convert the data to a Map.
-     * @param data the data in a nbi
-     * @return a Map<String, String>
-     */
-    @SuppressWarnings("unchecked")
-    protected Map<String, String> convertDataToMap(final Object data)
-    {
-        if (data instanceof Map)
-        {
-            return (Map<String, String>)data; // ok to Cast
-        }
-        throw new RuntimeException("Why isn't the data a Map<String, String>!");
-    }
-
-    /**
-     * Counts up how many labels match the same table id as the RecordSet and sets
-     * oneNbi to the non-null match which means if there is only one then it points to it.
-     * @param tableId the RecordSet's Table Id
-     * @param needsRecordSet indicates we should ONLY include those that require a RecordSet 
-     * @return the count of matches
-     */
-    protected int countLabelsWithSimilarTableIds(final int tableId, final boolean needsRecordSet)
-    {
-        oneNbi = null;
-        int count = 0;
-        for (NavBoxItemIFace nbi : labelsList)
-        {
-            Object data = nbi.getData();
-            if (data instanceof CommandAction)
-            {
-                CommandAction cmdAction = (CommandAction)data;
-                String              tableIDStr = cmdAction.getPropertyAsString("tableid");
-                boolean             needsRS    = getNeedsRecordSet(cmdAction.getPropertyAsString("reqrs"));
-                if (StringUtils.isNumeric(tableIDStr) && (!needsRecordSet ||  needsRS))
-                {
-                    if (Integer.parseInt(tableIDStr) == tableId)
-                    {
-                        oneNbi = nbi;
-                        count++;
-                    }
-                } else
-                {
-                    log.error("Attr [tableid] value["+tableIDStr+"] is not numeric for["+nbi.getTitle()+"]!");
-                }
-            }
-        }
-        return count;
-    }
-
-    /**
-     * Checks to make sure we are the current SubPane and then creates the labels from the selected RecordSet.
-     * @param data the data that "should" be a RecordSet
-     */
-    protected void createLabelFromSelectedRecordSet(final Object data)
-    {
-        if (data instanceof RecordSet && ContextMgr.getCurrentContext() == this)
-        {
-            RecordSetIFace rs = (RecordSetIFace)data;
-
-            String fileName = null;
-            if (countLabelsWithSimilarTableIds(rs.getDbTableId(), true) > 1) // only Count the ones that require data
-            {
-                fileName = askForLabelName();
-                
-            } else
-            {
-                Object nbData = oneNbi.getData();
-                if (nbData instanceof CommandAction)
-                {
-                    fileName = ((CommandAction)nbData).getPropertyAsString("file");
-                }
-            }
-
-            if (fileName != null)
-            {
-                doLabels(fileName, "Labels", data, null, this, null);
-            }
-        }
-    }
-
     //-------------------------------------------------------
     // Taskable
     //-------------------------------------------------------
-
-    /*
-     *  (non-Javadoc)
-     * @see edu.ku.brc.specify.core.Taskable#getNavBoxes()
-     */
-    public java.util.List<NavBoxIFace> getNavBoxes()
-    {
-        initialize();
-
-        extendedNavBoxes.clear();
-        extendedNavBoxes.addAll(navBoxes);
-
-        RecordSetTask rsTask = (RecordSetTask)ContextMgr.getTaskByClass(RecordSetTask.class);
-
-        extendedNavBoxes.addAll(rsTask.getNavBoxes());
-
-        return extendedNavBoxes;
-    }
-
+    
     /*
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.Taskable#getToolBarItems()
@@ -410,24 +121,13 @@ public class LabelsTask extends BaseTask
     public List<ToolBarItemDesc> getToolBarItems()
     {
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
-        String label = getResourceString(name);
-        String iconName = name;
-        String hint = getResourceString("labels_hint");
-        ToolBarDropDownBtn btn = createToolbarButton(label, iconName, hint);
+        String             label     = getResourceString(name);
+        String             iconName  = name;
+        String             hint      = getResourceString("labels_hint");
+        ToolBarDropDownBtn btn       = createToolbarButton(label, iconName, hint);
 
         list.add(new ToolBarItemDesc(btn));
         return list;
-    }
-
-    /*
-     *  (non-Javadoc)
-     * @see edu.ku.brc.specify.plugins.Taskable#getMenuItems()
-     */
-    public List<MenuItemDesc> getMenuItems()
-    {
-        Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
-        return list;
-
     }
 
     /* (non-Javadoc)
@@ -442,218 +142,16 @@ public class LabelsTask extends BaseTask
     //-------------------------------------------------------
     // CommandListener Interface
     //-------------------------------------------------------
-
-    /**
-     * Processes all Commands of type RECORD_SET.
-     * @param cmdAction the command to be processed
-     */
-    protected void processRecordSetCommands(final CommandAction cmdAction)
-    {
-        if (cmdAction.isAction("Clicked"))
-        {
-            Object srcObj = cmdAction.getSrcObj();
-            Object dstObj = cmdAction.getDstObj();
-            Object data   = cmdAction.getData();
-            
-            log.debug("********* In Labels doCommand src["+srcObj+"] dst["+dstObj+"] data["+data+"] context["+ContextMgr.getCurrentContext()+"]");
-             
-            if (ContextMgr.getCurrentContext() == this)
-            {
-                createLabelFromSelectedRecordSet(srcObj);
-            }
-        }
-    }
     
-    /**
-     * Prints a Label / Reports from a command
-     * @param cmdAction the command
-     */
-    protected void printLabel(final CommandAction cmdAction)
-    {
-        // Get the original set of params
-        Properties params = cmdAction.getProperties();
-        if (params == null)
-        {
-            params = new Properties();
-        }
-        
-        // No add the additional params
-        String paramList = cmdAction.getPropertyAsString("params");
-        if (StringUtils.isNotEmpty(paramList))
-        {
-            params = UIHelper.parseProperties(paramList);
-        }
-        
-        if (cmdAction.getData() instanceof RecordSet)
-        {
-            RecordSetIFace recordSet = (RecordSetIFace)cmdAction.getData();
-            
-            // XXX For the Demo and until I revist a generalized way of associating a default set of reports and labels
-            // to To things. One way to get here with a null title is to click on the Labels btn from the search results
-            if (recordSet.getDbTableId() == 1 && cmdAction.getPropertyAsString("title") == null)
-            {
-                cmdAction.setProperty("file", "fish_label.jrxml");
-                cmdAction.setProperty("title", "Fish Labels");
-                
-            } else if (recordSet.getDbTableId() == 52 && cmdAction.getPropertyAsString("title") == null)
-            {
-                // XXX For the Demo and until I revist a generalized way of associating a default set of reports and labels
-                // to To things. One way to get here with a null title is to click on the Labels btn from the search results
-                cmdAction.setProperty("file",  "LoanInvoice.jrxml");
-                cmdAction.setProperty("title", "Loan Invoice");
-            }
-
-
-            if (checkForALotOfLabels(recordSet))
-            {
-                String labelFileName = cmdAction.getPropertyAsString("file");
-                
-                if (StringUtils.isEmpty(labelFileName))
-                {
-                    labelFileName = askForLabelName();
-                }
-                
-                if (StringUtils.isNotEmpty(labelFileName))
-                {
-                    Taskable originatingTask = (Taskable)cmdAction.getProperty(NavBoxAction.ORGINATING_TASK);
-                    doLabels(labelFileName, cmdAction.getPropertyAsString("title"), recordSet, params, originatingTask, (ImageIcon)cmdAction.getProperty("icon"));
-                }
-            }
-            
-        } else if (cmdAction.getData() instanceof JRDataSource)
-        {
-            String labelFileName = cmdAction.getPropertyAsString("file");
-            
-            if (StringUtils.isEmpty(labelFileName))
-            {
-                labelFileName = askForLabelName();
-            }
-            
-            if (StringUtils.isNotEmpty(labelFileName))
-            {
-                Taskable originatingTask = (Taskable)cmdAction.getProperty(NavBoxAction.ORGINATING_TASK);
-                doLabels(labelFileName, cmdAction.getPropertyAsString("title"), cmdAction.getData(), params, originatingTask, (ImageIcon)cmdAction.getProperty("icon"));
-            }
-            
-            
-        } else
-        {
-            String tableIDStr = cmdAction.getPropertyAsString("tableid");
-            if (StringUtils.isNotEmpty(tableIDStr) && StringUtils.isNumeric(tableIDStr))
-            {
-                RecordSetIFace recordSet = askForRecordSet(Integer.parseInt(tableIDStr));
-                if (recordSet != null)
-                {
-                    doLabels(cmdAction.getPropertyAsString("file"), cmdAction.getPropertyAsString("title"), recordSet, params, this, (ImageIcon)cmdAction.getProperty("icon"));
-                }
-            }
-        }
-    }
-    
-    /**
-     * Open the IReport editor.
-     * @param cmdAction the command to be processed
-     */
-    private void openIReportEditor() 
-    {
-        if (iReportMainFrame == null)
-        {
-            MainFrame.reportClassLoader.rescanLibDirectory();
-            Thread.currentThread().setContextClassLoader( MainFrame.reportClassLoader );
-            Map args = MainFrameSpecify.getArgs();
-            iReportMainFrame = new MainFrameSpecify(args);
-        }
-        SwingUtilities.invokeLater( new Runnable()
-        {
-             public void run()
-             {
-                 iReportMainFrame.setVisible(true);
-             }
-        });
-    }
-    
-    /**
-     * Processes all Commands of type LABELS.
-     * @param cmdAction the command to be processed
-     */
-    protected void processLabelCommands(final CommandAction cmdAction)
-    {
-        
-        //---------------------------------------------------------------------------
-        // This Code here needs to be refactored and moved to the NavBoxAction
-        // so it can happen in a single generic place (Each task has this code)
-        //---------------------------------------------------------------------------
-        /*if (cmdAction.getData() instanceof RecordSetIFace)
-        {
-            if (((RecordSetIFace)cmdAction.getData()).getDbTableId() != cmdAction.getTableId())
-            {
-                JOptionPane.showMessageDialog(null, getResourceString("ERROR_RECORDSET_TABLEID"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        }*/
-           
-        if (cmdAction.isAction(NEWRECORDSET_ACTION))
-        {
-            if (cmdAction.getData() instanceof GhostActionable)
-            {
-                GhostActionable        ga  = (GhostActionable)cmdAction.getData();
-                GhostMouseInputAdapter gpa = ga.getMouseInputAdapter();
-
-                for (NavBoxItemIFace nbi : labelsList)
-                {
-                    if (nbi instanceof GhostActionable)
-                    {
-                        gpa.addGhostDropListener(new GhostActionableDropManager(UIRegistry.getGlassPane(), nbi.getUIComponent(), ga));
-                    }
-                 }
-            }
-        } else if (cmdAction.isAction(PRINT_LABEL))
-        {
-            printLabel(cmdAction);
-            
-        } else if (cmdAction.isAction(OPEN_EDITOR))
-        {
-            if (cmdAction.getData() == null) //no dropping yet.
-            {
-                openIReportEditor();
-            }
-        }
-    }
-        
-
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#doCommand(edu.ku.brc.ui.CommandAction)
      */
     public void doCommand(final CommandAction cmdAction)
     {
-        if (cmdAction.isType(LABELS))
+        String taskName = cmdAction.getPropertyAsString("task name");
+        if (StringUtils.isNotEmpty(taskName) && taskName.equals(getName()))
         {
-            processLabelCommands(cmdAction);
-            
-        } else if (cmdAction.isType(RecordSetTask.RECORD_SET))
-        {
-            processRecordSetCommands(cmdAction);
-            
-        } else if (cmdAction.isType(APP_CMD_TYPE) && cmdAction.isAction(APP_RESTART_ACT))
-        {
-            isInitialized = false;
-            this.initialize();
-            ContextMgr.removeServicesByTask(this);
+            super.doCommand(cmdAction);
         }
     }
-    /**
-     * Returns the boolean value of "reqrs" from the metaData and true if it doesn't exist.
-     * @param needsRSStr the string value of the map
-     * @return true or false
-     */
-    protected boolean getNeedsRecordSet(final String needsRSStr)
-    {
-        boolean needsRS = true;
-        if (StringUtils.isNotEmpty(needsRSStr) && StringUtils.isAlpha(needsRSStr))
-        {
-            needsRS = Boolean.parseBoolean(needsRSStr);
-        } 
-        return needsRS;
-    }
-
 }
