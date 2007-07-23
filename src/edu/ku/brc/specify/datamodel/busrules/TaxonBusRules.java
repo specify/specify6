@@ -65,28 +65,39 @@ public class TaxonBusRules extends BaseBusRules
     public boolean okToDeleteTaxon(Taxon t)
     {
         Long id = t.getId();
-        
-        boolean noDeters = super.okToDelete("determination", "TaxonID",         id);
-        boolean noCites  = super.okToDelete("taxoncitation", "TaxonID",         id);
-        boolean noHyb1   = super.okToDelete("taxon",         "HybridParent1ID", id);
-        boolean noHyb2   = super.okToDelete("taxon",         "HybridParent2ID", id);
-        boolean noSyns   = super.okToDelete("taxon",         "AcceptedID",      id);
-
-        if (noDeters && noCites && noHyb1 && noHyb2 && noSyns)
+        if (id == null)
         {
-            // now check all the children
-            for (Taxon child: t.getChildren())
-            {
-                if (!okToDeleteTaxon(child))
-                {
-                    // this child node can't be deleted, so the parent node cannot be deleted
-                    return false;
-                }
-            }
-            // if we get here, all the child nodes were able to be deleted
             return true;
         }
         
+//        boolean noDeters = super.okToDelete("determination", "TaxonID",         id);
+//        boolean noCites  = super.okToDelete("taxoncitation", "TaxonID",         id);
+//        boolean noHyb1   = super.okToDelete("taxon",         "HybridParent1ID", id);
+//        boolean noHyb2   = super.okToDelete("taxon",         "HybridParent2ID", id);
+//        boolean noSyns   = super.okToDelete("taxon",         "AcceptedID",      id);
+//        boolean noChild  = super.okToDelete("taxon",         "ParentID",        id);
+
+//        // TODO: convert this check over to using something a little faster, if possible
+//        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+//        Taxon tmpT = session.load(Taxon.class, id);
+//        boolean noDeters = (tmpT.getDeterminations().size() == 0);
+//        boolean noCites  = (tmpT.getTaxonCitations().size() == 0);
+//        boolean noHyb1   = (tmpT.getHybridChildren1().size() == 0);
+//        boolean noHyb2   = (tmpT.getHybridChildren2().size() == 0);
+//        boolean noSyns   = (tmpT.getAcceptedChildren().size() == 0);
+//        boolean okToDeleteChildren = true;
+//        for (Taxon child: tmpT.getChildren())
+//        {
+//            if ( !okToDelete(child) )
+//            {
+//                okToDeleteChildren = false;
+//                break;
+//            }
+//        }
+//        session.close();
+//        
+//        return noDeters && noCites && noHyb1 && noHyb2 && noSyns && okToDeleteChildren;
+
         return false;
     }
 
@@ -138,48 +149,16 @@ public class TaxonBusRules extends BaseBusRules
         {
             taxon.setDefinition(taxon.getParent().getDefinition());
             
-            // since a lot of references all point back and forth to each other, we need to make sure they are all working in the same session
-            // basically, we need to merge all the references back to the Taxon table
-            
-//            Taxon parent  = (Taxon)session.merge(taxon.getParent());
-//            TaxonTreeDefItem defItem = (TaxonTreeDefItem)session.merge(taxon.getDefinitionItem());
-//            taxon.setParent(parent);
-//            taxon.setDefinitionItem(defItem);
-//            taxon.setDefinition(parent.getDefinition());
-//            
-//            if (taxon.getIsHybrid() != null && taxon.getIsHybrid().booleanValue() == false)
-//            {
-//               taxon.setHybridParent1(null);
-//               taxon.setHybridParent2(null);
-//            }
-//            else
-//            {
-//                Taxon hyb1 = (Taxon)session.merge(taxon.getHybridParent1());
-//                Taxon hyb2 = (Taxon)session.merge(taxon.getHybridParent2());
-//                taxon.setHybridParent1(hyb1);
-//                taxon.setHybridParent2(hyb2);
-//            }
-//            
-//            if (taxon.getIsAccepted() != null && taxon.getIsAccepted().booleanValue() == true)
-//            {
-//                taxon.setAcceptedTaxon(null);
-//            }
-//            else
-//            {
-//                Taxon acceptedParent = (Taxon)session.merge(taxon.getAcceptedTaxon());
-//                taxon.setAcceptedTaxon(acceptedParent);
-//            }
-            
             // this is a new object
-            // just update it's fullname (and return)
-            // since it can't have any children yet
+            // just update it's fullname
+            // it can't have any children yet
             
             String fullname = TreeHelper.generateFullname(taxon);
             taxon.setFullName(fullname);
             return;
         }
         // else (ID was not null, so this is an item in the DB already)
-        
+     
         // we need a way to determine if the name changed
         // load a fresh copy from the DB and get the values needed for comparison
         DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
@@ -187,98 +166,92 @@ public class TaxonBusRules extends BaseBusRules
         Taxon origParent = fromDB.getParent();
         tmpSession.close();
 
-        session.attach(taxon);
-        
-        boolean nameChanged = true;
-        
-        nameChanged = !(fromDB.getName().equals(taxon.getName()));
-        
-        
-        // if the name changed...
-        // update the node's fullname
-        // AND all descendants IF the node's level is in the fullname
+        boolean nameChanged = !(fromDB.getName().equals(taxon.getName()));
+        boolean parentChanged = !(origParent.getId().equals(taxon.getParent().getId()));
+
         if (nameChanged)
         {
-            boolean isInFullname = false;
-            if ((taxon.getDefinitionItem().getIsInFullName() != null) && 
-                (taxon.getDefinitionItem().getIsInFullName().booleanValue() == true))
-            {
-                isInFullname = true;
-            }
-            
-            if (!isInFullname)
-            {
-                // just change the node's fullname field
-                String fullname = TreeHelper.generateFullname(taxon);
-                taxon.setFullName(fullname);
-            }
-            else
-            {
-                // must fix fullname for all descendants as well
-                TreeHelper.fixFullnameForNodeAndDescendants(taxon);
-            }
-            
-            session.close();
-            
-            // it is assumed that you cannot perform a name change AND move a node in one transaction
-            // so we're done here
-            return;
+            log.warn("Taxon record name changed.  Update the fullname for this node and any effected descendants.");
         }
-        
-        // we need a way to determine if the parent changed
-        // did the node change parents?
-        boolean parentChanged = true;
-        parentChanged = !(origParent.getId().equals(taxon.getParent().getId()));
-        
         if (parentChanged)
         {
-            // if no levels above or equal to the new parent or old parent are included in the fullname
-            // do nothing
-            // otherwise, update fullname for node and all descendants
-            
-            boolean higherLevelsIncluded = false;
-            Taxon l = taxon.getParent();
-            while (l != null)
-            {
-                if ((l.getDefinitionItem().getIsInFullName() != null) && 
-                    (l.getDefinitionItem().getIsInFullName().booleanValue() == true))
-                {
-                    higherLevelsIncluded = true;
-                    break;
-                }
-                l = l.getParent();
-            }
-            
-            // if no higher level is included in the new place in the tree, check the old place
-            // in the tree
-            if (higherLevelsIncluded == false)
-            {
-                l = origParent;
-                while (l != null)
-                {
-                    if ((l.getDefinitionItem().getIsInFullName() != null) && 
-                        (l.getDefinitionItem().getIsInFullName().booleanValue() == true))
-                    {
-                        higherLevelsIncluded = true;
-                        break;
-                    }
-                    
-                    l = l.getParent();
-                }
-            }
-            
-            if (higherLevelsIncluded)
-            {
-                TreeHelper.fixFullnameForNodeAndDescendants(taxon);
-            }
-            else
-            {
-                String generated = TreeHelper.generateFullname(taxon);
-                taxon.setFullName(generated);
-            }
+            log.warn("Taxon record parent changed.  Update the fullname for this node and any effected descendants.");
         }
         
-        session.close();
+//        //session.attach(taxon);
+//        
+//        // if the name changed...
+//        // update the node's fullname
+//        // AND all descendants IF the node's level is in the fullname
+//        if (nameChanged)
+//        {
+//            boolean isInFullname = false;
+//            if ((taxon.getDefinitionItem().getIsInFullName() != null) && 
+//                (taxon.getDefinitionItem().getIsInFullName().booleanValue() == true))
+//            {
+//                isInFullname = true;
+//            }
+//            
+//            if (!isInFullname)
+//            {
+//                // just change the node's fullname field
+//                String fullname = TreeHelper.generateFullname(taxon);
+//                taxon.setFullName(fullname);
+//            }
+//            else
+//            {
+//                // must fix fullname for all descendants as well
+//                TreeHelper.fixFullnameForNodeAndDescendants(taxon);
+//            }
+//        }
+//        
+//        if (parentChanged)
+//        {
+//            // if no levels above or equal to the new parent or old parent are included in the fullname
+//            // do nothing
+//            // otherwise, update fullname for node and all descendants
+//            
+//            boolean higherLevelsIncluded = false;
+//            Taxon l = taxon.getParent();
+//            while (l != null)
+//            {
+//                if ((l.getDefinitionItem().getIsInFullName() != null) && 
+//                    (l.getDefinitionItem().getIsInFullName().booleanValue() == true))
+//                {
+//                    higherLevelsIncluded = true;
+//                    break;
+//                }
+//                l = l.getParent();
+//            }
+//            
+//            // if no higher level is included in the new place in the tree, check the old place
+//            // in the tree
+//            if (higherLevelsIncluded == false)
+//            {
+//                l = origParent;
+//                while (l != null)
+//                {
+//                    if ((l.getDefinitionItem().getIsInFullName() != null) && 
+//                        (l.getDefinitionItem().getIsInFullName().booleanValue() == true))
+//                    {
+//                        higherLevelsIncluded = true;
+//                        break;
+//                    }
+//                    
+//                    l = l.getParent();
+//                }
+//            }
+//            
+//            if (higherLevelsIncluded)
+//            {
+//                TreeHelper.fixFullnameForNodeAndDescendants(taxon);
+//            }
+//            else
+//            {
+//                String generated = TreeHelper.generateFullname(taxon);
+//                taxon.setFullName(generated);
+//            }
+//        }
     }
     
     /**

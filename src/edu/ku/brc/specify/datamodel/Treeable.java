@@ -191,6 +191,8 @@ public interface Treeable<N extends Treeable<N,D,I>,
 	public List<N> getAllAncestors();
 	public void fixFullNameForAllDescendants();
 	
+	public int getTableId();
+	
 	public boolean isDescendantOf(N node);
 	
 	public Comparator<? super N> getComparator();

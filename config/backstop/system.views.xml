@@ -27,7 +27,10 @@
             resourcelabels="false">
             <desc><![CDATA[Taxon data entry form.]]></desc>
             <altviews>
-                <altview name="Taxon Children View" viewdef="TaxonSubform" label="View" mode="view" default="true"/>
+                <altview name="Taxon Children View" viewdef="TaxonSubform" label="View" mode="view"/>
+                <!--
+                <altview name="Taxon Children Table View" viewdef="TaxonSubform Table" label="Grid" mode="view" default="true"/>
+				-->
             </altviews>
         </view>
         
@@ -893,7 +896,7 @@
             </rows>
         </viewdef>
         
-                <viewdef
+        <viewdef
             name="Taxon"
             type="form"
             class="edu.ku.brc.specify.datamodel.Taxon"
@@ -905,6 +908,7 @@
                 <rule id="acceptedTaxon"><![CDATA[!isAccepted.isSelected()]]></rule>
                 <rule id="hybridParent1"><![CDATA[isHybrid.isSelected()]]></rule>
                 <rule id="hybridParent2"><![CDATA[isHybrid.isSelected()]]></rule>
+                <rule id="parent"><![CDATA[definitionItem.getRankID() != 0]]></rule>
                 <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
             </enableRules>
             <columnDef>200px,3dlu,p:g</columnDef>
@@ -921,6 +925,14 @@
                 <row>
                     <cell type="label" labelfor="remarks" label="Remarks"/>
                     <cell type="field" id="remarks" uitype="textarea" name="remarks"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="parent" label="Parent"/>
+                	<cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon" name="parent"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="definitionItem" label="Rank"/>
+                	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="taxonomicSerialNumber" label="Taxonomic Serial Number"/>
@@ -946,6 +958,38 @@
                     <cell type="label" labelfor="environmentalProtectionStatus" label="Environmental Protection Status"/>
                     <cell type="field" id="environmentalProtectionStatus" uitype="text" name="environmentalProtectionStatus"/>
                 </row>
+                <row>
+                	<cell type="label" labelfor="isAccepted" label="Is Accepted?"/>
+                	<cell type="field" id="isAccepted" uitype="checkbox" name="isAccepted" default="true"/>
+                </row>
+                <row>
+                	<cell type="label" labelfor="acceptedTaxon" label="Accepted Taxon"/>
+                	<cell type="field" id="acceptedTaxon" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="acceptedTaxon"/>
+                </row>
+                <row>
+                	<cell type="label" labelfor="isHybrid" label="Is Hybrid?"/>
+                	<cell type="field" id="isHybrid" uitype="checkbox" name="isHybrid" default="false"/>
+                </row>
+                <row>
+                	<cell type="label" labelfor="hybridParent1" label="Hybrid Parent 1"/>
+                	<cell type="field" id="hybridParent1" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="hybridParent1"/>
+                </row>
+                <row>
+                	<cell type="label" labelfor="hybridParent2" label="Hybrid Parent 2"/>
+                	<cell type="field" id="hybridParent2" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="hybridParent2"/>
+                </row>
+                <row>
+                    <cell type="separator" label="Children" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="TaxonSubform" id="children" name="children" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="separator" label="Synonyms" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="TaxonSubform" id="acceptedChildren" name="acceptedChildren" colspan="3"/>
+                </row>
             </rows>
         </viewdef>
 
@@ -964,8 +1008,8 @@
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="name" label="Name"/>
-                    <cell type="field" id="name" uitype="text" cols="16" name="name"/> 
+                    <cell type="label" labelfor="fullName" label="Name"/>
+                    <cell type="field" id="fullName" uitype="text" cols="16" name="fullName"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="commonName" label="Common Name"/>
@@ -974,6 +1018,16 @@
             </rows>
         </viewdef>
         
+        <viewdef
+            name="TaxonSubform Table"
+            type="formtable"
+            class="edu.ku.brc.specify.datamodel.Taxon"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Taxon children table view.]]></desc>
+            <definition>TaxonSubform</definition>
+        </viewdef>
 
     </viewdefs>
         

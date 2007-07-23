@@ -6,11 +6,14 @@
  */
 package edu.ku.brc.specify.ui.treetables;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.Point;
 import java.awt.dnd.DnDConstants;
 import java.awt.event.ActionEvent;
@@ -47,16 +50,25 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.DBTableIdMgr.TableInfo;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.tasks.BaseTreeTask;
 import edu.ku.brc.specify.tasks.DualViewSearchable;
 import edu.ku.brc.specify.treeutils.TreeFactory;
-import edu.ku.brc.specify.ui.treetables.EditFormDialog.EditDialogCallback;
 import edu.ku.brc.ui.DragDropCallback;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
+import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
+import edu.ku.brc.ui.forms.FormViewObj;
+import edu.ku.brc.ui.forms.MultiView;
+import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -722,67 +734,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		newT.setParent(parent);
 
 		// display a form for filling in child data
-		showNewTreeableForm(newT,parent);
-	}
-
-	/**
-	 * Display the data entry form for creating a new node.
-	 *
-	 * @param newNode the new node for which the user must enter data
-	 */
-	protected void showNewTreeableForm(final T newNode, final T parent)
-	{
-		EditDialogCallback<T> callback = new EditDialogCallback<T>()
-		{
-			public void editCompleted(T dataObj)
-			{
-				newNodeEntryComplete(dataObj,parent);
-			}
-			public void editCancelled(T dataObj)
-			{
-				newNodeEntryCancelled(dataObj);
-			}
-		};
-
-		showEditDialog(newNode, "New Node Form", callback, true);
-	}
-	
-	/**
-	 * Performs finalization of new node creation.  This method
-	 * serves as a callback to the data entry form for when
-	 * a user presses the 'OK' button on the form.  The new node
-	 * is only made persistent if the user then selects to commit
-	 * the tree structure to the DB.
-	 *
-	 * @param node the new node
-	 */
-	public void newNodeEntryComplete(T node, T parent)
-	{
-	    listModel.refresh(parent);
-	    
-        listModel.addNewChild(parent, node);
-		
-		listModel.showChildren(parent);
-	}
-
-	/**
-	 * Cancels new node creation process.  This method serves
-	 * as a callback to the data entry form for when the user
-	 * presses the 'Cancel' button on the form.
-	 *
-	 * @param node the new node that was in the process of being created
-	 */
-	public void newNodeEntryCancelled(T node)
-	{
-		if( node == null )
-		{
-			return;
-		}
-
-		node.setParent(null);
-		
-		node.setDefinition(null);
-        node.setDefinitionItem(null);
+		showEditDialog(newT, "New Node Form", true);
 	}
 
 	/**
@@ -846,44 +798,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			return;
 		}
 		
-		final T selectedNode = (T)selection;
-		
-		EditDialogCallback<T> callback = new EditDialogCallback<T>()
-		{
-			public void editCompleted(T dataObj)
-			{
-				editSelectedNodeOK(dataObj);
-			}
-			public void editCancelled(T dataObj)
-			{
-				// do nothing
-			}
-		};
-
-		showEditDialog(selectedNode, "Edit Node Values", callback, false);
+		showEditDialog((T)selection, "Edit Node Values", false);
 	}
 
-	/**
-	 * Performs finalization of node data editing process.  This
-	 * method also signals the tree display widget to update its
-	 * view.
-	 *
-	 * @param node the node being edited
-	 */
-	protected void editSelectedNodeOK(T node)
-	{
-        // TODO: implement this to work in a session-less environment
-//		boolean nameChanged = !node.getName().equals(nameBeforeEditDialogShown);
-//		Boolean levelIsInFullName = node.getDefinitionItem().getIsInFullName();
-//		
-//        if( nameChanged && levelIsInFullName != null && levelIsInFullName.booleanValue() )
-//        {
-//        	node.fixFullNameForAllDescendants();
-//        }
-
-		listModel.nodeValuesChanged(node);
-	}
-	
 	/**
 	 * Sets the visibleRoot property of the tree to the currently selected node.  This provides
 	 * the ability to "zoom in" to a lower level of the tree.
@@ -1139,16 +1056,99 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 *
 	 * @param node the node being edited
 	 * @param title the title of the dialog window
-	 * @param callback the 'complete' and 'cancel' callbacks for the 'OK' and 'Cancel' buttons
 	 */
-	protected void showEditDialog(T node,String title, EditDialogCallback<T> callback, boolean isNewObject)
+	@SuppressWarnings("unchecked")
+    protected void showEditDialog(T node, String title, boolean isNewObject)
 	{
-		nameBeforeEditDialogShown = node.getName();
-		Pair<String,String> formsNames = TreeFactory.getAppropriateFormsetAndViewNames(node);
-		TreeNodeEditDialog<T,D,I> editDialog = new TreeNodeEditDialog<T,D,I>(formsNames.first,formsNames.second,title,callback,isNewObject);
-		editDialog.setModal(true);
-		editDialog.setData(node);
-		editDialog.setVisible(true);
+	    // TODO: double check these choices
+	    
+	    
+	    // gather all the info needed to create a form in a dialog
+	    Pair<String,String> formsNames = TreeFactory.getAppropriateFormsetAndViewNames(node);
+		Frame parentFrame = (Frame)UIRegistry.get(UIRegistry.FRAME);
+		String viewSetName = formsNames.first;
+		String viewName = formsNames.second;
+		String displayName = "NODE_EDIT_DISPLAY_NAME";
+        boolean isEdit = true;
+		String closeBtnText = (isEdit) ? getResourceString("Save") : getResourceString("Close");
+		String className = node.getClass().getName();
+		TableInfo nodeTableInfo = DBTableIdMgr.getInstance().getInfoById(node.getTableId());
+		String idFieldName = nodeTableInfo.getIdFieldName();
+		int options = MultiView.HIDE_SAVE_BTN;
+		if (isNewObject)
+		{
+		    options |= MultiView.IS_NEW_OBJECT;
+		}
+		
+		// create the form dialog
+		ViewBasedDisplayDialog dialog = new ViewBasedDisplayDialog(parentFrame,viewSetName,viewName,displayName,title,closeBtnText,className,idFieldName,isEdit,options);
+		dialog.setModal(true);
+		dialog.setData(node);
+		
+		// build the dialog UI so I can adjust some of the controls
+		dialog.preCreateUI();
+		BaseTreeTask<T,D,I> parentTask = (BaseTreeTask<T,D,I>)getTask();
+		for (Viewable viewable: dialog.getMultiView().getViewables())
+		{
+		    if (viewable instanceof FormViewObj)
+		    {
+		        parentTask.adjustForm((FormViewObj)viewable);
+		    }
+		}
+		
+		String nodeNameBefore = node.getName();
+		Long parentIdBefore   = (node.getParent() != null) ? node.getParent().getTreeId() : null;
+		
+		// show the dialog
+		dialog.setVisible(true);
+		
+		// see what important stuff was modified
+		String nodeNameAfter = node.getName();
+		Long parentIdAfter   = (node.getParent() != null) ? node.getParent().getTreeId() : null;
+		boolean nameChanged = nodeNameBefore.equals(nodeNameAfter);
+		boolean parentChanged = (parentIdBefore == null && parentIdAfter != null) ||
+		                        (parentIdBefore != null && parentIdAfter == null) ||
+		                        (parentIdBefore != null && parentIdBefore.longValue() != parentIdAfter.longValue());
+		
+		log.debug("nameChange:    " + nameChanged);
+		log.debug("parentChanged: " + parentChanged);
+		
+		// the dialog has been dismissed by the user
+		if (dialog.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
+		{
+		    // save the node and update the tree viewer appropriately
+		    DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+		    try
+            {
+		        session.beginTransaction();
+                session.saveOrUpdate(node);
+                session.commit();
+                log.info("Successfully saved changes to " + node.getFullName());
+            }
+            catch (Exception e)
+            {
+                log.error("Error while saving node changes.  Rolling back transaction.", e);
+                session.rollback();
+            }
+            finally
+            {
+                session.close();
+            }
+		    
+            // now refresh the tree viewer
+		    T parent = node.getParent();
+		    if (parent != null)
+		    {
+		        listModel.refresh(parent,node);
+		        listModel.showChildren(parent);
+		    }
+		    listModel.nodeValuesChanged(node);
+		}
+		else
+		{
+		    // the user didn't save any edits (if there were any)
+		    System.out.println("Cancel was pressed");
+		}
 	}
 	
 	/**
@@ -1405,7 +1405,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		{
 			// toggle the state of child node visibility
 			boolean visible = listModel.allChildrenAreVisible(t);
+			this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			listModel.setChildrenVisible(t, !visible);
+			this.setCursor(Cursor.getDefaultCursor());
 		}
         // otherwise, ignore the click
 		else

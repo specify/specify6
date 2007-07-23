@@ -163,6 +163,7 @@ public class TreeFactory
 	 */
 	public static Pair<String,String> getAppropriateFormsetAndViewNames( Object node )
 	{
+	    System.err.println("getAppropriateFormsetAndViewNames(Object): Replace this with a call to the table ID manager to get the appropriate form");
 		if( node instanceof Geography )
 		{
 			return new Pair<String,String>("SystemSetup","Geography");

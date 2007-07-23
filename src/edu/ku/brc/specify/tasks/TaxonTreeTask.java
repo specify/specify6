@@ -8,6 +8,7 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -127,77 +128,96 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
 
 	    if (form.getAltView().getMode() != CreationMode.Edit)
 	    {
+	        // when we're not in edit mode, we don't need to setup any listeners since the user can't change anything
 	        return;
 	    }
 
 	    final Taxon taxonInForm = (Taxon)form.getDataObj();
 
-	    final GetSetValueIFace parentComboBox = (GetSetValueIFace)form.getControlByName("parent");
-	    final ValComboBox      rankComboBox   = (ValComboBox)form.getControlByName("definitionItem");
+	    final Component parentComboBox = form.getControlByName("parent");
+	    final ValComboBox rankComboBox = (ValComboBox)form.getControlByName("definitionItem");
 
-	    rankComboBox.addFocusListener(new FocusListener()
+	    parentComboBox.addFocusListener(new FocusListener()
 	    {
-	        public void focusGained(FocusEvent e)
-	        {
-	            // set the contents of this combobox based on the value chosen as the parent
-
-	            DefaultComboBoxModel model = (DefaultComboBoxModel)rankComboBox.getModel();
-	            model.removeAllElements();
-
-	            // this is the highest rank the edited item can possibly be
-	            TaxonTreeDefItem topItem = null;
-	            // this is the lowest rank the edited item can possibly be
-	            TaxonTreeDefItem bottomItem = null;
-
-	            Taxon parent = (Taxon)parentComboBox.getValue();
-	            if (parent == null)
-	            {
-	                return;
-	            }
-
-	            // grab all the def items from just below the parent's item all the way to the next enforced level
-	            // or to the level of the highest ranked child
-	            topItem = parent.getDefinitionItem().getChild();
-
-	            // find the child with the highest rank and set that child's def item as the bottom of the range
-	            if (!taxonInForm.getChildren().isEmpty())
-	            {
-	                for (Taxon child: taxonInForm.getChildren())
-	                {
-	                    if (bottomItem==null || child.getRankId()>bottomItem.getRankId())
-	                    {
-	                        bottomItem = child.getDefinitionItem().getParent();
-	                    }
-	                }
-	            }
-
-	            TaxonTreeDefItem item = topItem;
-	            boolean done = false;
-	            while (!done)
-	            {
-	                model.addElement(item);
-
-	                if (item.getChild()==null || item.getIsEnforced()==Boolean.TRUE || item==bottomItem)
-	                {
-	                    done = true;
-	                }
-	                item = item.getChild();
-	            }
-
-	            if (model.getSize() == 1)
-	            {
-	                model.setSelectedItem(model.getElementAt(0));
-	            }
-	        }
-	        public void focusLost(FocusEvent e)
-	        {
-	            // ignore this event
-	        }
-	    });
+            public void focusGained(FocusEvent e)
+            {
+                // ignore this event
+            }
+            public void focusLost(FocusEvent e)
+            {
+                // set the contents of this combobox based on the value chosen as the parent
+                adjustRankComboBoxModel((GetSetValueIFace)parentComboBox, rankComboBox, taxonInForm);
+            }
+        });
+	    
+        if (taxonInForm.getDefinitionItem() != null)
+        {
+            adjustRankComboBoxModel((GetSetValueIFace)parentComboBox, rankComboBox, taxonInForm);
+        }
 
 	    // TODO: setup listener to clear the hybrid parents comboboxes when the user turns off the isHybrid checkbox
+        
 	    // TODO: setup listener to clear the accepted taxon combobox when the user turns on the isAccepted checkbox
     }
+	
+	protected void adjustRankComboBoxModel(GetSetValueIFace parentField, ValComboBox rankComboBox, Taxon taxonInForm)
+	{
+        DefaultComboBoxModel model = (DefaultComboBoxModel)rankComboBox.getModel();
+        model.removeAllElements();
+
+        // this is the highest rank the edited item can possibly be
+        TaxonTreeDefItem topItem = null;
+        // this is the lowest rank the edited item can possibly be
+        TaxonTreeDefItem bottomItem = null;
+
+        Taxon parent = (Taxon)parentField.getValue();
+        if (parent == null)
+        {
+            return;
+        }
+
+        // grab all the def items from just below the parent's item all the way to the next enforced level
+        // or to the level of the highest ranked child
+        topItem = parent.getDefinitionItem().getChild();
+
+        // find the child with the highest rank and set that child's def item as the bottom of the range
+        if (!taxonInForm.getChildren().isEmpty())
+        {
+            for (Taxon child: taxonInForm.getChildren())
+            {
+                if (bottomItem==null || child.getRankId()>bottomItem.getRankId())
+                {
+                    bottomItem = child.getDefinitionItem().getParent();
+                }
+            }
+        }
+
+        TaxonTreeDefItem item = topItem;
+        boolean done = false;
+        while (!done)
+        {
+            model.addElement(item);
+
+            if (item.getChild()==null || item.getIsEnforced()==Boolean.TRUE || item==bottomItem)
+            {
+                done = true;
+            }
+            item = item.getChild();
+        }
+        
+        if (taxonInForm.getDefinitionItem() != null)
+        {
+            TaxonTreeDefItem defItem = taxonInForm.getDefinitionItem();
+            if (model.getIndexOf(defItem) != -1)
+            {
+                model.setSelectedItem(defItem);
+            }
+        }
+        else if (model.getSize() == 1)
+        {
+            model.setSelectedItem(model.getElementAt(0));
+        }
+	}
 
     protected void adjustTaxonTreeDefForm(FormViewObj form)
     {
@@ -210,7 +230,7 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
     }
 
     @Override
-    protected void adjustForm(FormViewObj form)
+    public void adjustForm(FormViewObj form)
     {
         if (form.getDataObj() instanceof Taxon)
         {

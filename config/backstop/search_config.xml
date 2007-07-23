@@ -104,15 +104,16 @@
                 <cols>
                     <col pos="1" id="true">TaxonID</col>
                     <col pos="2">Name</col>
-                    <col pos="3">CommonName</col>
+                    <col pos="3">FullName</col>
+                    <col pos="4">CommonName</col>
                 </cols>
             </index>
             <detailView icon="Taxon">
                 <sql>
-                    <![CDATA[SELECT Name,CommonName,TaxonID FROM taxon WHERE TaxonID IN (%s)]]>
+                    <![CDATA[SELECT FullName,CommonName,TaxonID FROM taxon WHERE TaxonID IN (%s)]]>
                 </sql>
                 <captions>
-                    <caption col="Name" text="Taxon Name"/>
+                    <caption col="FullName" text="Taxon Name"/>
                     <caption col="CommonName" text="Common Name"/>
                     <caption col="TaxonID" text="Taxon ID" visible="false"/>
                 </captions>
@@ -868,7 +869,27 @@ accession.DateAccessioned, accession.DateReceived FROM accession WHERE (%s)]]>
                 <recordset tabletype="97" col="1"/>
             </detailView>
         </table>  
-              
+       
+        <!--        
+        <table id="107" tableid="4" name="TaxonSearch" title="Taxon Search" priority="1" color="30, 144, 255">
+            <outofdate/>
+            <index>
+                <sql/>
+                <cols/>
+            </index>
+            <detailView icon="">
+                <sql>
+                    <![CDATA[SELECT TaxonID, FullName, CommonName FROM taxon WHERE (%s)]]>
+                </sql>
+                <captions>
+                    <caption col="TaxonID" text="TaxonID"  visible="false"/>
+                    <caption col="FullName" text="Name"/>
+                    <caption col="CommonName" text="Common Name"/>
+                </captions>
+                <recordset tabletype="4" col="1"/>
+            </detailView>
+        </table>  
+        -->
         <table id="107" tableid="5" name="AgentNameSearch" title="Agent Name Search" priority="1" color="30, 144, 255">
             <outofdate/>
             <index>

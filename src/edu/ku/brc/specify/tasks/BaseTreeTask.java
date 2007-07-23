@@ -30,6 +30,7 @@ import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
+import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
@@ -393,6 +394,7 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
         }
         else if (cmdAction.isType(DataEntryTask.DATA_ENTRY))
         {
+            // catch when the form switches modes
             if (cmdAction.isAction(DataEntryTask.VIEW_WAS_SHOWN))
             {
                 if (cmdAction.getData() instanceof FormViewObj)
@@ -403,8 +405,21 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
                         adjustForm(formViewObj);
                     }
                 }
-                
-            } else if (cmdAction.isAction("Save"))
+            }
+            // catch when the form is initially opened (but after the object is set into it)
+            else if (cmdAction.isAction(DataEntryTask.VIEW_WAS_OPENED))
+            {
+                if (cmdAction.getData() instanceof FormPane)
+                {
+                    FormPane fp = (FormPane)cmdAction.getData();
+                    FormViewObj formViewObj = (FormViewObj)fp.getViewable();
+                    if (formViewObj != null)
+                    {
+                        adjustForm(formViewObj);
+                    }
+                }
+            }
+            else if (cmdAction.isAction("Save"))
             {
                 // should we do anything here?
             }
@@ -412,7 +427,7 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
         }
     }
     
-    protected void adjustForm(FormViewObj form)
+    public void adjustForm(FormViewObj form)
     {
         log.debug("adjustForm( " + form.getName() + " )"); 
     }

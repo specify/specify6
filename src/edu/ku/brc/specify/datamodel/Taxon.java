@@ -489,7 +489,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
         return true;
     }
     
-    @Column(name="IsHybrid", unique=false, nullable=true, insertable=true, updatable=true)
+    @Column(name="IsHybrid")
     public Boolean getIsHybrid()
     {
         return isHybrid;
@@ -503,7 +503,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
     /**
      * 
      */
-    @Column(name = "VisibilitySetBy", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "VisibilitySetBy", length = 50)
     public String getVisibilitySetBy() {
         return this.visibilitySetBy;
     }
@@ -513,7 +513,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
     }
     
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "acceptedTaxon")
-    //@Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
 	public Set<Taxon> getAcceptedChildren()
 	{
 		return this.acceptedChildren;
@@ -525,8 +524,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	}
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    //@Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    @JoinColumn(name = "AcceptedID", unique = false, nullable = true, insertable = true, updatable = true)
+    @JoinColumn(name = "AcceptedID")
 	public Taxon getAcceptedTaxon()
 	{
 		return this.acceptedTaxon;
@@ -543,8 +541,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
      * @returnthe the primary parent of the taxon, or null if the object doesn't represent a hybrid taxon
      */
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    //@Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    @JoinColumn(name = "HybridParent1ID", unique = false, nullable = true, insertable = true, updatable = true)
+    @JoinColumn(name = "HybridParent1ID")
     public Taxon getHybridParent1()
     {
         return hybridParent1;
@@ -561,8 +558,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
      * @return the the secondary parent of the taxon, or null if the object doesn't represent a hybrid taxon
      */
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    //@Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    @JoinColumn(name = "HybridParent2ID", unique = false, nullable = true, insertable = true, updatable = true)
+    @JoinColumn(name = "HybridParent2ID")
     public Taxon getHybridParent2()
     {
         return hybridParent2;
@@ -579,7 +575,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
      * @return the set of Taxon objects where this object is the hybridParent1 value.
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "hybridParent1")
-    //@Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     public Set<Taxon> getHybridChildren1()
     {
         return hybridChildren1;
@@ -596,7 +591,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
      * @return the set of Taxon objects where this object is the hybridParent2 value.
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "hybridParent2")
-    //@Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     public Set<Taxon> getHybridChildren2()
     {
         return hybridChildren2;
@@ -619,7 +613,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	}
 
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "taxon")
-    //@Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
 	public Set<TaxonCitation> getTaxonCitations()
 	{
 		return this.taxonCitations;
@@ -631,8 +624,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	}
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    //@Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    @JoinColumn(name = "TaxonTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
+    @JoinColumn(name = "TaxonTreeDefID", nullable = false)
 	public TaxonTreeDef getDefinition()
 	{
 		return this.definition;
@@ -644,8 +636,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	}
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    //@Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    @JoinColumn(name = "TaxonTreeDefItemID", unique = false, nullable = false, insertable = true, updatable = true)
+    @JoinColumn(name = "TaxonTreeDefItemID", nullable = false)
 	public TaxonTreeDefItem getDefinitionItem()
 	{
 		return this.definitionItem;
@@ -661,8 +652,8 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	}
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    //@Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    @JoinColumn(name = "ParentID", unique = false, nullable = true, insertable = true, updatable = true)
+    @Cascade( {CascadeType.LOCK} )
+    @JoinColumn(name = "ParentID")
 	public Taxon getParent()
 	{
 		return this.parent;
@@ -674,7 +665,8 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	}
 
 
-    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "parent")
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "parent")
+    @Cascade( {CascadeType.DELETE} )
 	public Set<Taxon> getChildren()
 	{
 		return this.children;
