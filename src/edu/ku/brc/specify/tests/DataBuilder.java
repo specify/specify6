@@ -2034,7 +2034,6 @@ public class DataBuilder
         specifyuser.initialize();
         specifyuser.setEmail(email);
         specifyuser.setPrivLevel(privLevel);
-        //specifyuser.setU
         //specifyuser.setUserGroup(userGroup);
         specifyuser.setName(name);
         specifyuser.setUserType(userType);

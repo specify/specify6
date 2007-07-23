@@ -29,14 +29,45 @@ import org.hibernate.annotations.CascadeType;
 @Table(name="taxontreedef")
 public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializable, TreeDefIface<Taxon, TaxonTreeDef, TaxonTreeDefItem>
 {
-	protected Long				    taxonTreeDefId;
-	protected String				name;
-	protected String				remarks;
-    protected Integer               fullNameDirection;
-	protected CollectionType		collObjDef;
-	protected Set<Taxon>			treeEntries;
-	protected Set<TaxonTreeDefItem>	treeDefItems;
+	public static final int TAXONOMY_ROOT = 0;
+    public static final int KINGDOM       = 10;
+    public static final int SUBKINGDOM    = 20;
+    public static final int DIVISION      = 30;
+    public static final int PHYLUM        = 30;
+    public static final int SUBDIVISION   = 40;
+    public static final int SUBPHYLUM     = 40;
+    public static final int SUPERCLASS    = 50;
+    public static final int CLASS         = 60;
+    public static final int SUBLCASS      = 70;
+    public static final int INFRACLASS    = 80;
+    public static final int SUPERORDER    = 90;
+    public static final int ORDER         = 100;
+    public static final int SUBORDER      = 110;
+    public static final int INFRAORDER    = 120;
+    public static final int SUPERFAMILY   = 130;
+    public static final int FAMILY        = 140;
+    public static final int SUBFAMILY     = 150;
+    public static final int TRIBE         = 160;
+    public static final int SUBTRIBE      = 170;
+    public static final int GENUS         = 180;
+    public static final int SUBGENUS      = 190;
+    public static final int SECTION       = 200;
+    public static final int SUBSECTION    = 210;
+    public static final int SPECIES       = 220;
+    public static final int SUBSPECIES    = 230;
+    public static final int VARIETY       = 240;
+    public static final int SUBVARIETY    = 250;
+    public static final int FORMA         = 260;
+    public static final int SUBFORMA      = 270;
 
+    protected Long                  taxonTreeDefId;
+    protected String                name;
+    protected String                remarks;
+    protected Integer               fullNameDirection;
+    protected CollectionType        collObjDef;
+    protected Set<Taxon>            treeEntries;
+    protected Set<TaxonTreeDefItem> treeDefItems;
+    
 	/** default constructor */
 	public TaxonTreeDef()
 	{
