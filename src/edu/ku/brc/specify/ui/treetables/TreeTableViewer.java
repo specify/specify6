@@ -1405,9 +1405,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		{
 			// toggle the state of child node visibility
 			boolean visible = listModel.allChildrenAreVisible(t);
-			this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+			setBusy(true, "Loading children");
 			listModel.setChildrenVisible(t, !visible);
-			this.setCursor(Cursor.getDefaultCursor());
+			setBusy(false,null);
 		}
         // otherwise, ignore the click
 		else

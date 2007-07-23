@@ -1056,4 +1056,25 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
         return 4;
     }
 
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj instanceof Taxon)
+        {
+            Taxon item = (Taxon)obj;
+            if (item.taxonId != null)
+            {
+                if (item.taxonId.equals(this.taxonId))
+                {
+                    return true;
+                }
+                // else
+                return false;
+            }
+            // else
+            return super.equals(obj);
+        }
+        return false;
+    }
+
 }

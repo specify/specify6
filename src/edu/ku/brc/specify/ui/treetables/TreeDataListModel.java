@@ -174,7 +174,7 @@ public class TreeDataListModel<T extends Treeable<T,D,I>,
 		}
 	}
 	
-	protected void setNodeVisible( T t, boolean visible )
+	protected synchronized void setNodeVisible( T t, boolean visible )
 	{
 		if(visible)
 		{

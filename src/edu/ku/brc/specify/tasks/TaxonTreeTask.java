@@ -13,9 +13,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.Set;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JCheckBox;
 import javax.swing.JMenuItem;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
@@ -154,10 +157,42 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
         {
             adjustRankComboBoxModel((GetSetValueIFace)parentComboBox, rankComboBox, taxonInForm);
         }
-
-	    // TODO: setup listener to clear the hybrid parents comboboxes when the user turns off the isHybrid checkbox
         
-	    // TODO: setup listener to clear the accepted taxon combobox when the user turns on the isAccepted checkbox
+        // TODO: the form system MUST require the acceptedTaxon widget to be present if the isAccepted checkbox is present
+        final JCheckBox acceptedCheckBox = (JCheckBox)form.getControlByName("isAccepted");
+        final GetSetValueIFace acceptedParentWidget = (GetSetValueIFace)form.getControlByName("acceptedTaxon");
+        if (acceptedCheckBox != null)
+        {
+            acceptedCheckBox.addItemListener(new ItemListener()
+            {
+                public void itemStateChanged(ItemEvent e)
+                {
+                    if (acceptedCheckBox.isSelected())
+                    {
+                        acceptedParentWidget.setValue(null, null);
+                    }
+                }
+            });
+        }
+        
+        // TODO: the form system MUST require the hybridParent1 and hybridParent2 widgets to be present if the isHybrid checkbox is present
+        final JCheckBox hybridCheckBox = (JCheckBox)form.getControlByName("isHybrid");
+        final GetSetValueIFace hybrid1Widget = (GetSetValueIFace)form.getControlByName("hybridParent1");
+        final GetSetValueIFace hybrid2Widget = (GetSetValueIFace)form.getControlByName("hybridParent2");
+        if (hybridCheckBox != null)
+        {
+            hybridCheckBox.addItemListener(new ItemListener()
+            {
+                public void itemStateChanged(ItemEvent e)
+                {
+                    if (!hybridCheckBox.isSelected())
+                    {
+                        hybrid1Widget.setValue(null, null);
+                        hybrid2Widget.setValue(null, null);
+                    }
+                }
+            });
+        }
     }
 	
 	protected void adjustRankComboBoxModel(GetSetValueIFace parentField, ValComboBox rankComboBox, Taxon taxonInForm)

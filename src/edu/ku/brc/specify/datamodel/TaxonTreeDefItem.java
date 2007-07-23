@@ -41,6 +41,7 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
     protected String                textBefore;
     protected String                textAfter;
     protected String                fullNameSeparator;
+    protected String                formatToken;
 	protected TaxonTreeDef			treeDef;
 	protected TaxonTreeDefItem		parent;
 	protected Set<Taxon>			treeEntries;
@@ -200,6 +201,17 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
         this.fullNameSeparator = fullNameSeparator;
     }
 
+    @Column(name = "FormatToken", length = 32)
+    public String getFormatToken()
+    {
+        return formatToken;
+    }
+
+    public void setFormatToken(String formatToken)
+    {
+        this.formatToken = formatToken;
+    }
+
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "TaxonTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
@@ -338,6 +350,27 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
     public String toString()
     {
         return name;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj instanceof TaxonTreeDefItem)
+        {
+            TaxonTreeDefItem item = (TaxonTreeDefItem)obj;
+            if (item.taxonTreeDefItemId != null)
+            {
+                if (item.taxonTreeDefItemId.equals(this.taxonTreeDefItemId))
+                {
+                    return true;
+                }
+                // else
+                return false;
+            }
+            // else
+            return super.equals(obj);
+        }
+        return false;
     }
 
 }
