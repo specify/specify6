@@ -1077,13 +1077,13 @@ public class FormViewObj implements Viewable,
                     businessRules.beforeSave(dataObjArg,session);
                 }
                 
-                if (dataObjArg != null && ((FormDataObjIFace)dataObjArg).getId() != null)
-                {
+                //if (dataObjArg != null && ((FormDataObjIFace)dataObjArg).getId() != null)
+                //{
                     dObj = session.merge(dataObjArg);
-                } else
-                {
-                    dObj = dataObjArg;
-                }
+                //} else
+                //{
+                //    dObj = dataObjArg;
+                //}
                 log.debug("CurrentDO "+(dataObjArg != null ? dataObjArg.getClass().getSimpleName()+" "+dataObjArg.hashCode() : "N/A")+"  Merged: "+dObj.getClass().getSimpleName()+" "+dObj.hashCode());
 
                 session.saveOrUpdate(dObj);

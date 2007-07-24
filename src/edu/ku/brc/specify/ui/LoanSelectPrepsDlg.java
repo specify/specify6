@@ -339,7 +339,7 @@ public class LoanSelectPrepsDlg extends JDialog
                     break;
                 }
             }
-            String descr = String.format("%6.0f - %s", new Object[]{colObj.getCatalogNumber(), taxonName});
+            String descr = String.format("%s - %s", colObj.getIdentityTitle(), taxonName);
             descr = StringUtils.stripToEmpty(descr);
             
             pbuilder.add(checkBox = new JCheckBox(descr), cc.xy(1,1));

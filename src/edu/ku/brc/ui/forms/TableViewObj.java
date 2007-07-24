@@ -1766,7 +1766,7 @@ public class TableViewObj implements Viewable,
                 
                 if (dataVal instanceof Set)
                 {
-                    Set<?> objSet = (Set)dataVal;
+                    Set<?> objSet = (Set<?>)dataVal;
                     return DataObjFieldFormatMgr.aggregate(objSet, objSet.iterator().next().getClass());
                     
                 } 
