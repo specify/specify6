@@ -1092,7 +1092,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		{
 		    if (viewable instanceof FormViewObj)
 		    {
-		        parentTask.adjustForm((FormViewObj)viewable);
+                FormViewObj form = (FormViewObj)viewable;
+		        parentTask.adjustForm(form);
+		        Component parentComp = form.getControlByName("parent");
+		        parentComp.setEnabled(false);
 		    }
 		}
 		
