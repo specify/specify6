@@ -908,7 +908,7 @@
                 <rule id="acceptedTaxon"><![CDATA[!isAccepted.isSelected()]]></rule>
                 <rule id="hybridParent1"><![CDATA[isHybrid.isSelected()]]></rule>
                 <rule id="hybridParent2"><![CDATA[isHybrid.isSelected()]]></rule>
-                <rule id="parent"><![CDATA[definitionItem.getRankID() != 0]]></rule>
+                <!-- <rule id="parent"><![CDATA[definitionItem.getRankID() != 0]]></rule> -->
                 <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
             </enableRules>
             <columnDef>200px,3dlu,p:g</columnDef>
@@ -928,7 +928,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="parent" label="Parent"/>
-                	<cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon" name="parent"/>
+                	<cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="parent"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="definitionItem" label="Rank"/>
