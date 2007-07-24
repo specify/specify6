@@ -140,18 +140,21 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
 	    final Component parentComboBox = form.getControlByName("parent");
 	    final ValComboBox rankComboBox = (ValComboBox)form.getControlByName("definitionItem");
 
-	    parentComboBox.addFocusListener(new FocusListener()
+	    if (parentComboBox != null)
 	    {
-            public void focusGained(FocusEvent e)
-            {
-                // ignore this event
-            }
-            public void focusLost(FocusEvent e)
-            {
-                // set the contents of this combobox based on the value chosen as the parent
-                adjustRankComboBoxModel((GetSetValueIFace)parentComboBox, rankComboBox, taxonInForm);
-            }
-        });
+	        parentComboBox.addFocusListener(new FocusListener()
+	        {
+	            public void focusGained(FocusEvent e)
+	            {
+	                // ignore this event
+	            }
+	            public void focusLost(FocusEvent e)
+	            {
+	                // set the contents of this combobox based on the value chosen as the parent
+	                adjustRankComboBoxModel((GetSetValueIFace)parentComboBox, rankComboBox, taxonInForm);
+	            }
+	        });
+	    }
 	    
         if (taxonInForm.getDefinitionItem() != null)
         {
