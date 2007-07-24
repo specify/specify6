@@ -91,7 +91,7 @@
             </altviews>
         </view>
         
-        <view name="Taxon"
+        <view name="TaxonSearch"
             class="edu.ku.brc.specify.datamodel.Taxon"
             resourcelabels="false">
             <desc><![CDATA[Taxon data entry form.]]></desc>

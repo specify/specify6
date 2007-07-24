@@ -870,7 +870,6 @@ accession.DateAccessioned, accession.DateReceived FROM accession WHERE (%s)]]>
             </detailView>
         </table>  
        
-        <!--        
         <table id="107" tableid="4" name="TaxonSearch" title="Taxon Search" priority="1" color="30, 144, 255">
             <outofdate/>
             <index>
@@ -889,7 +888,6 @@ accession.DateAccessioned, accession.DateReceived FROM accession WHERE (%s)]]>
                 <recordset tabletype="4" col="1"/>
             </detailView>
         </table>  
-        -->
         <table id="107" tableid="5" name="AgentNameSearch" title="Agent Name Search" priority="1" color="30, 144, 255">
             <outofdate/>
             <index>
