@@ -272,6 +272,15 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
     {
         if (form.getDataObj() instanceof Taxon)
         {
+//          // shutdown all open views
+//          Vector<SubPaneIFace> openViews = new Vector<SubPaneIFace>();
+//          openViews.addAll(viewToButtonMap.keySet());
+//          
+//          for (SubPaneIFace subPane: openViews)
+//          {
+//              subPane.shutdown();
+//          }
+
             adjustTaxonForm(form);
         }
         else if (form.getDataObj() instanceof TaxonTreeDef)
