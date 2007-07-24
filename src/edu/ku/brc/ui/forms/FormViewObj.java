@@ -1062,11 +1062,26 @@ public class FormViewObj implements Viewable,
                         session.beginTransaction();
                         for (Object obj : deletedItems)
                         {
+                            // notify the business rules object that a deletion is going to happen
+                            if (businessRules != null)
+                            {
+                                businessRules.beforeDelete(obj, session);
+                            }
                             session.delete(obj);
                         }
-                        deletedItems.clear();
                         session.commit();
                         session.flush();
+
+                        // notify the business rules object that a deletion has occured
+                        if (businessRules != null)
+                        {
+                            for (Object obj: deletedItems)
+                            {
+                                businessRules.afterDelete(obj);
+                            }
+                        }
+                        
+                        deletedItems.clear();
                     }
                 }
     
@@ -1328,9 +1343,17 @@ public class FormViewObj implements Viewable,
                 if (((FormDataObjIFace)dataObj).getId() != null)
                 {
                     session.beginTransaction();
+                    if (businessRules != null)
+                    {
+                        businessRules.beforeDelete(dataObj, session);
+                    }
                     session.delete(dataObj);
                     session.commit();
                     session.flush();
+                    if (businessRules != null)
+                    {
+                        businessRules.afterDelete(dataObj);
+                    }
                 }
                 
             } catch (edu.ku.brc.dbsupport.StaleObjectException e)

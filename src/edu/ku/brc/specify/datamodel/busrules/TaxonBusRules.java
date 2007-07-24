@@ -77,28 +77,28 @@ public class TaxonBusRules extends BaseBusRules
 //        boolean noSyns   = super.okToDelete("taxon",         "AcceptedID",      id);
 //        boolean noChild  = super.okToDelete("taxon",         "ParentID",        id);
 
-//        // TODO: convert this check over to using something a little faster, if possible
-//        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-//        Taxon tmpT = session.load(Taxon.class, id);
-//        boolean noDeters = (tmpT.getDeterminations().size() == 0);
-//        boolean noCites  = (tmpT.getTaxonCitations().size() == 0);
-//        boolean noHyb1   = (tmpT.getHybridChildren1().size() == 0);
-//        boolean noHyb2   = (tmpT.getHybridChildren2().size() == 0);
-//        boolean noSyns   = (tmpT.getAcceptedChildren().size() == 0);
-//        boolean okToDeleteChildren = true;
-//        for (Taxon child: tmpT.getChildren())
-//        {
-//            if ( !okToDelete(child) )
-//            {
-//                okToDeleteChildren = false;
-//                break;
-//            }
-//        }
-//        session.close();
-//        
-//        return noDeters && noCites && noHyb1 && noHyb2 && noSyns && okToDeleteChildren;
+        // TODO: convert this check over to using something a little faster, if possible
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        Taxon tmpT = session.load(Taxon.class, id);
+        boolean noDeters = (tmpT.getDeterminations().size() == 0);
+        boolean noCites  = (tmpT.getTaxonCitations().size() == 0);
+        boolean noHyb1   = (tmpT.getHybridChildren1().size() == 0);
+        boolean noHyb2   = (tmpT.getHybridChildren2().size() == 0);
+        boolean noSyns   = (tmpT.getAcceptedChildren().size() == 0);
+        boolean okToDeleteChildren = true;
+        for (Taxon child: tmpT.getChildren())
+        {
+            if ( !okToDelete(child) )
+            {
+                okToDeleteChildren = false;
+                break;
+            }
+        }
+        session.close();
+        
+        return noDeters && noCites && noHyb1 && noHyb2 && noSyns && okToDeleteChildren;
 
-        return false;
+//        return false;
     }
 
     /* (non-Javadoc)
@@ -158,6 +158,19 @@ public class TaxonBusRules extends BaseBusRules
             return;
         }
         // else (ID was not null, so this is an item in the DB already)
+        
+        // if this node is "accepted" then make sure it doesn't point to an accepted parent
+        if (taxon.getIsAccepted() == null || taxon.getIsAccepted().booleanValue() == true)
+        {
+            taxon.setAcceptedTaxon(null);
+        }
+        
+        // if this node isn't a hybrid then make sure it doesn't point at hybrid "parents"
+        if (taxon.getIsHybrid() == null || taxon.getIsHybrid().booleanValue() == false)
+        {
+            taxon.setHybridParent1(null);
+            taxon.setHybridParent2(null);
+        }
      
         // we need a way to determine if the name changed
         // load a fresh copy from the DB and get the values needed for comparison
@@ -344,6 +357,30 @@ public class TaxonBusRules extends BaseBusRules
         session.close();
     }
     
+    @Override
+    public void afterDelete(Object dataObj)
+    {
+        if (dataObj instanceof Taxon)
+        {
+            afterDeleteTaxon((Taxon)dataObj);
+        }
+    }
+    
+    public void afterDeleteTaxon(Taxon t)
+    {
+        System.out.println("Taxon " + t + " deleted.");
+        System.out.println("\t" + t.getNodeNumber() + " : " + t.getHighestChildNodeNumber());
+    }
+
+    @Override
+    public void beforeDelete(Object dataObj, DataProviderSessionIFace session)
+    {
+        // do nothing
+        
+        // when this is called from the tree viewer, the session will be null since the tree viewer uses a session
+        // that does not implement DataProviderSessionIFace
+    }
+
     /**
      * Converts a null string into an empty string.  If the provided String is not
      * null, it is returned unchanged.

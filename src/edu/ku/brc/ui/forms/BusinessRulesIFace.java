@@ -90,6 +90,23 @@ public interface BusinessRulesIFace
      */
     public void afterSave(Object dataObj);
     
+    /**
+     * Called before committing a transaction in which the passed in data object will
+     * be deleted from the DB.
+     * 
+     * @param dataObj the object being deleted
+     * @param session the data provider session
+     */
+    public void beforeDelete(Object dataObj, DataProviderSessionIFace session);
+    
+    /**
+     * Called after committing a transaction in which the passed in data object will
+     * be deleted from the DB.
+     * 
+     * @param dataObj the object that was deleted
+     */
+    public void afterDelete(Object dataObj);
+    
     public void setObjectIdentity(final Object dataObj, final DraggableRecordIdentifier draggableIcon);
     
 }

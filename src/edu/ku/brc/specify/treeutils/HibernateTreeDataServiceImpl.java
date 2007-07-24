@@ -6,21 +6,17 @@
  */
 package edu.ku.brc.specify.treeutils;
 
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
-import org.hibernate.EmptyInterceptor;
 import org.hibernate.Hibernate;
-import org.hibernate.Interceptor;
 import org.hibernate.LockMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.hibernate.type.Type;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.HibernateUtil;
@@ -49,7 +45,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
     protected static final Logger log = Logger.getLogger(HibernateTreeDataServiceImpl.class);
 
     /** An {@link Interceptor} that logs all objects loaded by Hibernate. */
-    static HibernateLoadLogger loadLogger = new HibernateLoadLogger();
+    //static HibernateLoadLogger loadLogger = new HibernateLoadLogger();
     
 	/**
 	 * Constructor.
@@ -372,8 +368,15 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         if (parent!=null)
         {
             parent.removeChild(node);
+            node.setParent(null);
         }
         // let Hibernate delete the subtree
+        BusinessRulesIFace busRulesObj = DBTableIdMgr.getInstance().getBusinessRule(node);
+        if (busRulesObj != null)
+        {
+            // TODO: Have to rework this to provide a non-null DataProviderSessionIFace thingy
+            busRulesObj.beforeDelete(node, null);
+        }
         session.delete(node);
         
 //        // update the nodeNumber and highestChildNodeNumber fields for all effected nodes
@@ -405,7 +408,13 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 //            fixHighChildQuery.executeUpdate();
 //        }
 //        
-//        commitTransaction(session, tx);
+        commitTransaction(session, tx);
+        
+        if (busRulesObj != null)
+        {
+            busRulesObj.afterDelete(node);
+        }
+        
         log.trace("exit");
     }
     
@@ -671,7 +680,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
     {
         log.trace("enter");
 
-        Session session = HibernateUtil.getSessionFactory().openSession(loadLogger);
+        Session session = HibernateUtil.getSessionFactory().openSession();
         for (Object o: objects)
         {
             if (o!=null)
@@ -740,22 +749,22 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         return o.toString();
     }
 
-    /**
-     * This class is an extension of {@link EmptyInterceptor} that logs all
-     * objects loaded by Hibernate.  This class is only intended for use in
-     * debugging.
-     * 
-     * @author jstewart
-     * @code_status Complete.
-     */
-    public static class HibernateLoadLogger extends EmptyInterceptor
-    {
-        @Override
-        public boolean onLoad(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types)
-        {
-            String className = entity.getClass().getSimpleName();
-            log.debug("loaded " + className + " (" + id + ") at 0x" + entity.hashCode());
-            return false;
-        }
-    }
+//    /**
+//     * This class is an extension of {@link EmptyInterceptor} that logs all
+//     * objects loaded by Hibernate.  This class is only intended for use in
+//     * debugging.
+//     * 
+//     * @author jstewart
+//     * @code_status Complete.
+//     */
+//    public static class HibernateLoadLogger extends EmptyInterceptor
+//    {
+//        @Override
+//        public boolean onLoad(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types)
+//        {
+//            String className = entity.getClass().getSimpleName();
+//            log.debug("loaded " + className + " (" + id + ") at 0x" + entity.hashCode());
+//            return false;
+//        }
+//    }
 }

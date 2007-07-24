@@ -220,6 +220,22 @@ public abstract class BaseBusRules implements BusinessRulesIFace
     {
         // do nothing
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#afterDelete(java.lang.Object)
+     */
+    public void afterDelete(Object dataObj)
+    {
+        // do nothing
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#beforeDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    public void beforeDelete(Object dataObj, DataProviderSessionIFace session)
+    {
+        // do nothing
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#processBusinessRules(java.lang.Object)
