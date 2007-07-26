@@ -16,17 +16,24 @@ package edu.ku.brc.ui.db;
 
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 
 /**
  * An auto-complete text field which is supported through PickList/PickListItem.
- * The searches in the list can be case-sensitive or insensitive
+ * The searches in the list can be case-sensitive or insensitive. Does search when user presses F3
+ * and pops up a menu for selecting existing values.
  *
  * @code_status Complete
  * 
@@ -46,6 +53,11 @@ public class JAutoCompTextField extends JTextField
     protected boolean            ignoreFocus     = false;
     
     protected PickListDBAdapterIFace dbAdapter       = null;
+    
+    protected int                prevCaretPos    = -1;
+    
+    protected JPopupMenu         popupMenu       = null;
+
 
     /**
      * Constructor without Adaptor.
@@ -59,7 +71,7 @@ public class JAutoCompTextField extends JTextField
      * Constructor.
      * @param arg0 initial value
      */    
-    public JAutoCompTextField(String arg0)
+    public JAutoCompTextField(final String arg0)
     {
         super(arg0);       
         init();
@@ -69,7 +81,7 @@ public class JAutoCompTextField extends JTextField
      * Constructor.
      * @param arg0 initial number of columns
      */
-    public JAutoCompTextField(int arg0)
+    public JAutoCompTextField(final int arg0)
     {
         super(arg0);     
         init();
@@ -79,7 +91,7 @@ public class JAutoCompTextField extends JTextField
      * Constructor.
      * @param arg0 initial number of columns
      */
-    public JAutoCompTextField(int arg0, PickListDBAdapterIFace pickListDBAdapter)
+    public JAutoCompTextField(final int arg0, final PickListDBAdapterIFace pickListDBAdapter)
     {
         super(arg0);
         dbAdapter = pickListDBAdapter;
@@ -91,7 +103,7 @@ public class JAutoCompTextField extends JTextField
      * @param arg0 initial value
      * @param arg1 initial number of columns
      */
-    public JAutoCompTextField(String arg0, int arg1)
+    public JAutoCompTextField(final String arg0,final int arg1)
     {
         super(arg0, arg1);   
         init();
@@ -101,11 +113,142 @@ public class JAutoCompTextField extends JTextField
      * Constructor with Adapter.
      * @param dbAdapter the adaptor for enabling autocomplete
      */
-    public JAutoCompTextField(PickListDBAdapterIFace dbAdapter)
+    public JAutoCompTextField(final PickListDBAdapterIFace dbAdapter)
     {
         super();
         this.dbAdapter = dbAdapter;
         init();
+    }
+    
+    protected void lookup(final String str)
+    {
+        foundMatch = true;
+        int inx = 0;
+        for (PickListItemIFace pli : dbAdapter.getList())
+        {
+            String title = pli.getTitle();
+            int ind;
+            if (caseInsensitve) 
+            {
+                ind = title.toLowerCase().indexOf(str.toLowerCase());
+            } else
+            {
+                ind = title.indexOf(str);
+            }
+            if (ind == 0)
+            {
+                setSelectedIndex(inx);
+                return;
+            }
+            inx++;
+        }
+        foundMatch = false;
+        hasChanged = true;
+    }
+    
+    protected void keyReleasedInternal(KeyEvent ev)
+    {
+        System.out.println(ev);
+        if (dbAdapter != null)
+        {
+            if (ev.getKeyCode() == KeyEvent.VK_F3)
+            {
+                lookup(getText());
+                
+                if (!foundMatch)
+                {
+                    setText("");
+                }
+                ActionListener al = new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        JMenuItem mi = (JMenuItem)ae.getSource();
+                        int inx = 0;
+                        for (PickListItemIFace pli : dbAdapter.getList())
+                        {
+                            String title = pli.getTitle();
+                            if (mi.getText().equals(title))
+                            {
+                                setSelectedIndex(inx);
+                                break;
+                            }
+                            inx++;
+                        }
+                        popupMenu = null;
+                    }
+                };
+                
+                popupMenu = new JPopupMenu();
+                for (PickListItemIFace pli : dbAdapter.getList())
+                {
+                    String title = pli.getTitle();
+                    JMenuItem mi = new JMenuItem(title);
+                    popupMenu.add(mi);
+                    mi.addActionListener(al);
+                }
+                Point     location = getLocation();
+                Dimension size     = getSize();
+                popupMenu.show(this, location.x, location.y+size.height);
+
+            }
+            
+        } else
+        {
+            char key = ev.getKeyChar();
+            if (ev.getKeyCode() == KeyEvent.VK_BACK_SPACE)
+            {
+                String s = getText();
+                if (foundMatch)
+                {
+                    //System.out.println("len ["+s.length()+"]");
+                    //System.out.println(s+"["+s.substring(0, s.length()-1)+"]");
+    
+                    setText(s.length() == 0 ? "" : s.substring(0, s.length()-1));
+                    
+                } else
+                {
+                    hasChanged = true;
+                }
+                return;
+                
+            } else if ((!(Character.isLetterOrDigit(key) || Character.isSpaceChar(key))) && 
+                         ev.getKeyCode() != KeyEvent.VK_DELETE)
+            {
+                if (ev.getKeyCode() == KeyEvent.VK_ENTER) 
+                {
+                    addNewItemFromTextField();
+                }
+                //System.out.println("Key Code "+ev.getKeyCode()+"  Pos: "+getCaretPosition()+"  Del: "+KeyEvent.VK_DELETE);
+                
+                if (ev.getKeyCode() == KeyEvent.VK_END)// || ev.getKeyCode() == KeyEvent.VK_SHIFT)
+                {
+                    setSelectionStart(prevCaretPos);
+                    setSelectionEnd(getText().length());
+                }
+                return;
+            } else if(ev.getKeyCode() == KeyEvent.VK_DELETE)
+            {
+                foundMatch = false;
+                hasChanged = true;
+                return;
+            }
+            //System.out.println("["+ev.getKeyCode()+"]["+KeyEvent.VK_DELETE+"]");
+            
+            caretPos = getCaretPosition();
+            String text = "";
+            try
+            {
+                text = getText(0, caretPos);
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+            
+            lookup(text);
+
+        }
     }
 
     
@@ -127,8 +270,6 @@ public class JAutoCompTextField extends JTextField
             
             addKeyListener(new KeyAdapter()
             {
-                protected int prevCaretPos = -1;
-                
                 @Override
                 public void keyPressed(KeyEvent ev)
                 {
@@ -138,81 +279,7 @@ public class JAutoCompTextField extends JTextField
                 @Override
                 public void keyReleased(KeyEvent ev)
                 {
-                    char key = ev.getKeyChar();
-                    if (ev.getKeyCode() == KeyEvent.VK_BACK_SPACE)
-                    {
-                        String s = getText();
-                        if (foundMatch)
-                        {
-                            //System.out.println("len ["+s.length()+"]");
-                            //System.out.println(s+"["+s.substring(0, s.length()-1)+"]");
-
-                            setText(s.length() == 0 ? "" : s.substring(0, s.length()-1));
-                            
-                        } else
-                        {
-                            hasChanged = true;
-                        }
-                        return;
-                        
-                    } else if ((!(Character.isLetterOrDigit(key) || Character.isSpaceChar(key))) && 
-                                 ev.getKeyCode() != KeyEvent.VK_DELETE)
-                    {
-                        if (ev.getKeyCode() == KeyEvent.VK_ENTER) 
-                        {
-                            addNewItemFromTextField();
-                        }
-                        //System.out.println("Key Code "+ev.getKeyCode()+"  Pos: "+getCaretPosition()+"  Del: "+KeyEvent.VK_DELETE);
-                        
-                        if (ev.getKeyCode() == KeyEvent.VK_END)// || ev.getKeyCode() == KeyEvent.VK_SHIFT)
-                        {
-                            setSelectionStart(prevCaretPos);
-                            setSelectionEnd(getText().length());
-                        }
-                        return;
-                    } else if(ev.getKeyCode() == KeyEvent.VK_DELETE)
-                    {
-                        foundMatch = false;
-                        hasChanged = true;
-                        return;
-                    }
-                    //System.out.println("["+ev.getKeyCode()+"]["+KeyEvent.VK_DELETE+"]");
-                    
-                    caretPos = getCaretPosition();
-                    String text = "";
-                    try
-                    {
-                        text = getText(0, caretPos);
-                        
-                    } catch (Exception ex)
-                    {
-                        ex.printStackTrace();
-                    }
-                    
-                    String lowerCaseText = text.toLowerCase();
-                    
-                    foundMatch = true;
-                    int inx = 0;
-                    for (PickListItemIFace pli : dbAdapter.getList())
-                    {
-                        String title = pli.getTitle();
-                        int ind;
-                        if (caseInsensitve) 
-                        {
-                            ind = title.toLowerCase().indexOf(lowerCaseText);
-                        } else
-                        {
-                            ind = title.indexOf(text);
-                        }
-                        if (ind == 0)
-                        {
-                            setSelectedIndex(inx);
-                            return;
-                        }
-                        inx++;
-                    }
-                    foundMatch = false;
-                    hasChanged = true;
+                    keyReleasedInternal(ev);
                 }
             });
         }
