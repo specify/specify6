@@ -30,6 +30,7 @@ import javax.swing.ComboBoxEditor;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.plaf.basic.BasicComboBoxEditor;
 import javax.swing.text.BadLocationException;
 
@@ -74,6 +75,10 @@ public class JComboBoxFromQuery extends JComboBox
     protected int                  numColumns      = -1;
     protected Connection           dbConnection    = null;
     protected Object[]             values;
+    
+    protected int prevCaretPos = -1;
+
+
 
     /**
      * Constructor
@@ -248,17 +253,17 @@ public class JComboBoxFromQuery extends JComboBox
         int n = getItemCount();
         for (int i = 0; i < n; i++)
         {
-            int ind;
+            int index;
             if (caseInsensitve)
             {
                 String item = ((String)getItemAt(i)).toLowerCase();
-                ind = item.indexOf(textLowerCase);
+                index = item.indexOf(textLowerCase);
             } else
             {
-                ind = ((String)getItemAt(i)).indexOf(text);
+                index = ((String)getItemAt(i)).indexOf(text);
             }
 
-            if (ind == 0)
+            if (index == 0)
             {
                 setSelectedIndex(i);
                 return;
@@ -370,6 +375,176 @@ public class JComboBoxFromQuery extends JComboBox
             ex.printStackTrace();
         }
     }
+    
+    /**
+     * Processes the KeyEvent.
+     * @param ev event
+     */
+    protected void cbxKeyReleased(KeyEvent ev)
+    {
+        if (true)
+        {
+            if (ev.getKeyCode() == KeyEvent.VK_F3)
+            {
+                String str = tf.getText();
+                
+                fillBox(str);
+                lookForMatch();
+                
+                SwingUtilities.invokeLater(new Runnable()
+                {
+                    public void run()
+                    {
+                        showPopup();
+                    }
+                });
+            }
+        } else
+        {
+            String textStr = tf.getText();
+            //System.out.println("Len: "+textStr.length()+" "+searchStopLength+"  Old: "+oldLength);
+
+            if (Math.abs(textStr.length() - oldLength) > 1)
+            {
+                searchStopLength = Integer.MAX_VALUE;
+                //System.out.println("searchStopLength reset");
+            }
+
+            char key = ev.getKeyChar();
+            if (ev.getKeyCode() == KeyEvent.VK_BACK_SPACE)
+            {
+                if (textStr.length() < searchStopLength)
+                {
+                    fillBox(textStr);
+                }
+                int len = textStr.length();
+                if (len == 0)
+                {
+                    foundMatch = false;
+                    setSelectedIndex(-1);
+                    oldLength = tf.getText().length();
+                    return;
+
+                }
+                // else
+                if (foundMatch)
+                {
+                    tf.setText(textStr.substring(0, len-1));
+
+                } else if (len > 0)
+                {
+                    tf.setText(textStr.substring(0, len-1));
+                    lookForMatch();
+                    oldLength = tf.getText().length();
+                    return;
+                }
+
+            } else if ((!(Character.isLetterOrDigit(key) || Character.isSpaceChar(key))) &&
+                         ev.getKeyCode() != KeyEvent.VK_DELETE)
+            {
+                if (ev.getKeyCode() == KeyEvent.VK_ENTER)
+                {
+                    tf.setSelectionStart(0);
+                    tf.setSelectionEnd(0);
+                    tf.moveCaretPosition(0);
+
+
+                } else if (ev.getKeyCode() == KeyEvent.VK_END)
+                {
+                    tf.setSelectionStart(prevCaretPos);
+                    tf.setSelectionEnd(tf.getText().length());
+                }
+                oldLength = tf.getText().length();
+                return;
+
+            } else if (ev.getKeyCode() != KeyEvent.VK_DELETE)
+            {
+                if (textStr.length() < searchStopLength)
+                {
+                    fillBox(textStr);
+                }
+
+            } else if (textStr.length() < searchStopLength)
+            {
+                fillBox(textStr);
+            }
+
+            if (!allowNewValues || textStr.length() <= searchStopLength)
+            {
+                lookForMatch();
+                oldLength = tf.getText().length();
+            }
+        }
+    }
+    
+    /**
+     * Processes Focus Gained
+     * @param e key event
+     */
+    protected void tfFocusGained(@SuppressWarnings("unused") FocusEvent e)
+    {
+        searchStopLength = Integer.MAX_VALUE;
+
+        if (dbConnection != null) // shouldn't happen
+        {
+            try
+            {
+                dbConnection.close();
+            } catch (SQLException ex)
+            {
+                // do nothing
+            }
+        }
+        dbConnection = DBConnection.getInstance().createConnection(); 
+    }
+    
+    /**
+     * Processes Focus Lost
+     * @param e key event
+     */
+    protected void tfFocusLost(@SuppressWarnings("unused") FocusEvent e)
+    {
+        tf.setSelectionStart(0);
+        tf.setSelectionEnd(0);
+        tf.moveCaretPosition(0);
+        try
+        {
+            dbConnection.close();
+        } catch (SQLException ex)
+        {
+            // do nothing
+        }
+        dbConnection = null;
+        if (tf.getText().length() == 0)
+        {
+            setSelectedIndex(-1);
+        }
+        if (getSelectedIndex() == -1)
+        {
+            tf.setText("");
+        }
+    }
+    
+    /**
+     * @return the focus adapter
+     */
+    protected FocusAdapter getTextFocusAdapter()
+    {
+        return new FocusAdapter()
+        {
+            @Override
+            public void focusGained(FocusEvent e)
+            {
+                tfFocusGained(e);
+            }
+
+            @Override
+            public void focusLost(FocusEvent e)
+            {
+                tfFocusLost(e);
+            }
+        };
+    }
 
     /* (non-Javadoc)
      * @see javax.swing.JComboBox#setEditor(javax.swing.ComboBoxEditor)
@@ -382,52 +557,12 @@ public class JComboBoxFromQuery extends JComboBox
         if (anEditor.getEditorComponent() instanceof JTextField)
         {
             tf = (JTextField) anEditor.getEditorComponent();
-            tf.addFocusListener(new FocusAdapter()
-            {
-                @Override
-                public void focusGained(FocusEvent e)
-                {
-                    searchStopLength = Integer.MAX_VALUE;
-
-                    if (dbConnection != null) // shouldn't happen
-                    {
-                        try
-                        {
-                            dbConnection.close();
-                        } catch (SQLException ex)
-                        {
-                            // do nothing
-                        }
-                    }
-                    dbConnection = DBConnection.getInstance().createConnection();
-                }
-
-                @Override
-                public void focusLost(FocusEvent e)
-                {
-                    tf.setSelectionStart(0);
-                    tf.setSelectionEnd(0);
-                    tf.moveCaretPosition(0);
-                    try
-                    {
-                        dbConnection.close();
-                    } catch (SQLException ex)
-                    {
-                        // do nothing
-                    }
-                    dbConnection = null;
-                    if (tf.getText().length() == 0)
-                    {
-                        setSelectedIndex(-1);
-                    }
-                }
-            });
+            
+            tf.addFocusListener(getTextFocusAdapter());
 
             //System.out.println(tf.getKeyListeners());
             tf.addKeyListener(new KeyAdapter()
             {
-                protected int prevCaretPos = -1;
-
                 @Override
                 public void keyPressed(KeyEvent ev)
                 {
@@ -437,79 +572,7 @@ public class JComboBoxFromQuery extends JComboBox
                 @Override
                 public void keyReleased(KeyEvent ev)
                 {
-                    String textStr = tf.getText();
-                    //System.out.println("Len: "+textStr.length()+" "+searchStopLength+"  Old: "+oldLength);
-
-                    if (Math.abs(textStr.length() - oldLength) > 1)
-                    {
-                        searchStopLength = Integer.MAX_VALUE;
-                        //System.out.println("searchStopLength reset");
-                    }
-
-                    char key = ev.getKeyChar();
-                    if (ev.getKeyCode() == KeyEvent.VK_BACK_SPACE)
-                    {
-                        if (textStr.length() < searchStopLength)
-                        {
-                            fillBox(textStr);
-                        }
-                        int len = textStr.length();
-                        if (len == 0)
-                        {
-                            foundMatch = false;
-                            setSelectedIndex(-1);
-                            oldLength = tf.getText().length();
-                            return;
-
-                        }
-                        // else
-                        if (foundMatch)
-                        {
-                            tf.setText(textStr.substring(0, len-1));
-
-                        } else if (len > 0)
-                        {
-                            tf.setText(textStr.substring(0, len-1));
-                            lookForMatch();
-                            oldLength = tf.getText().length();
-                            return;
-                        }
-
-                    } else if ((!(Character.isLetterOrDigit(key) || Character.isSpaceChar(key))) &&
-                                 ev.getKeyCode() != KeyEvent.VK_DELETE)
-                    {
-                        if (ev.getKeyCode() == KeyEvent.VK_ENTER)
-                        {
-                            tf.setSelectionStart(0);
-                            tf.setSelectionEnd(0);
-                            tf.moveCaretPosition(0);
-
-
-                        } else if (ev.getKeyCode() == KeyEvent.VK_END)
-                        {
-                            tf.setSelectionStart(prevCaretPos);
-                            tf.setSelectionEnd(tf.getText().length());
-                        }
-                        oldLength = tf.getText().length();
-                        return;
-
-                    } else if (ev.getKeyCode() != KeyEvent.VK_DELETE)
-                    {
-                        if (textStr.length() < searchStopLength)
-                        {
-                            fillBox(textStr);
-                        }
-
-                    } else if (textStr.length() < searchStopLength)
-                    {
-                        fillBox(textStr);
-                    }
-
-                    if (!allowNewValues || textStr.length() <= searchStopLength)
-                    {
-                        lookForMatch();
-                        oldLength = tf.getText().length();
-                    }
+                    cbxKeyReleased(ev);
                 }
             });
         }

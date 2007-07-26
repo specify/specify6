@@ -849,8 +849,8 @@
     			    <cell type="label" labelfor="5" label="Date"/>
     			    <cell type="field" id="5" name="determinedDate" isrequired="true" uitype="formattedtext" uifieldformatter="Date" default="today"/>
     			    
-    			    <cell type="label" labelfor="7" label="In Question"/>
-    			    <cell type="field" id="7" name="yesNo1" uitype="checkbox"/>
+    			    <!-- <cell type="label" labelfor="7" label="In Question"/> -->
+    			    <cell type="field" id="7" name="yesNo1" uitype="checkbox" label="In Question"/>
     			</row>
 
     			<row>

@@ -195,6 +195,11 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
         if (isViewOnly || !formatter.isUserInputNeeded())
         {
             viewtextField = new JTextField();
+            
+            JFormattedDoc document = new JFormattedDoc(viewtextField, formatter, formatter.getFields().get(0));
+            viewtextField.setDocument(document);
+            document.addDocumentListener(this);
+            
             ViewFactory.changeTextFieldUIForDisplay(viewtextField, false);
             PanelBuilder    builder = new PanelBuilder(new FormLayout("1px,P,1px", "1px,P,1px"), this);
             builder.add(viewtextField, cc.xy(2, 2));

@@ -122,9 +122,9 @@ public class PropertiesPickListAdapter implements PickListDBAdapterIFace
      * @param name the name of the picklist to get
      * @return the picklist
      */
-    protected PickList getPickList(final String name)
+    protected PickList getPickList(@SuppressWarnings("unused") final String nameArg)
     {
-        throw new RuntimeException("Con't call this!");
+        throw new RuntimeException("Don't call this!");
         
     }
     

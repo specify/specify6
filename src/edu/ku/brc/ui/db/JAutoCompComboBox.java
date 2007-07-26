@@ -14,15 +14,13 @@
  */
 package edu.ku.brc.ui.db;
 
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Vector;
 
-import javax.swing.ComboBoxEditor;
 import javax.swing.ComboBoxModel;
-import javax.swing.JTextField;
+import javax.swing.JComboBox;
+import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
 
 import edu.ku.brc.specify.datamodel.PickListItem;
@@ -51,7 +49,7 @@ public class JAutoCompComboBox extends JEditComboBox
      * Constructor
      * @param arg0 with a model
      */
-    public JAutoCompComboBox(ComboBoxModel arg0)
+    public JAutoCompComboBox(final ComboBoxModel arg0)
     {
         super(arg0);
     }
@@ -60,7 +58,7 @@ public class JAutoCompComboBox extends JEditComboBox
      * Constructor
      * @param arg0 object array of items
      */
-    public JAutoCompComboBox(Object[] arg0)
+    public JAutoCompComboBox(final Object[] arg0)
     {
         super(arg0);
     }
@@ -69,7 +67,7 @@ public class JAutoCompComboBox extends JEditComboBox
      * Constructor
      * @param arg0 vector of items
      */
-    public JAutoCompComboBox(Vector<?> arg0)
+    public JAutoCompComboBox(final Vector<?> arg0)
     {
         super(arg0);
     }
@@ -167,8 +165,14 @@ public class JAutoCompComboBox extends JEditComboBox
         foundMatch = false;        
     }
     
+    protected boolean hasDBAdapter()
+    {
+        return this.dbAdapter != null;
+    }
+    
     protected KeyAdapter createKeyAdapter()
     {
+        final JComboBox cbx = this;
         return new KeyAdapter()
         {
             protected int prevCaretPos = -1;
@@ -182,45 +186,61 @@ public class JAutoCompComboBox extends JEditComboBox
             @Override
             public void keyReleased(KeyEvent ev)
             {
-                char key = ev.getKeyChar();
-                if (ev.getKeyCode() == KeyEvent.VK_BACK_SPACE)
+                if (hasDBAdapter())
                 {
-                    String textStr = textField.getText();
-                    int    len     = textStr.length();
-                    if (len == 0)
+                    if (ev.getKeyCode() == KeyEvent.VK_F3)
                     {
-                        foundMatch = false;
-                        setSelectedIndex(-1);
-                        return;
-                        
-                    }
-                    // else
-                    if (foundMatch)
-                    {
-                        textField.setText(textStr.substring(0, len-1));
-                        
-                    } else if (!enableAdditions && len > 0)
-                    {
-                        textField.setText(textStr.substring(0, len-1));
                         lookForMatch();
+                        SwingUtilities.invokeLater(new Runnable()
+                        {
+                            public void run()
+                            {
+                                cbx.showPopup();
+                            }
+                        });
+                    }
+                } else
+                {
+                    char key = ev.getKeyChar();
+                    if (ev.getKeyCode() == KeyEvent.VK_BACK_SPACE)
+                    {
+                        String textStr = textField.getText();
+                        int    len     = textStr.length();
+                        if (len == 0)
+                        {
+                            foundMatch = false;
+                            setSelectedIndex(-1);
+                            return;
+                            
+                        }
+                        // else
+                        if (foundMatch)
+                        {
+                            textField.setText(textStr.substring(0, len-1));
+                            
+                        } else if (!enableAdditions && len > 0)
+                        {
+                            textField.setText(textStr.substring(0, len-1));
+                            lookForMatch();
+                            return;
+                        }
+                        
+                    } else if ((!(Character.isLetterOrDigit(key) || Character.isSpaceChar(key))) && 
+                                 ev.getKeyCode() != KeyEvent.VK_DELETE)
+                    {
+                        if (ev.getKeyCode() == KeyEvent.VK_ENTER) 
+                        {
+                            addNewItemFromTextField();
+                            
+                        } else if (ev.getKeyCode() == KeyEvent.VK_END)
+                        {
+                            textField.setSelectionStart(prevCaretPos);
+                            textField.setSelectionEnd(textField.getText().length());
+                        }
                         return;
                     }
-                    
-                } else if ((!(Character.isLetterOrDigit(key) || Character.isSpaceChar(key))) && 
-                             ev.getKeyCode() != KeyEvent.VK_DELETE)
-                {
-                    if (ev.getKeyCode() == KeyEvent.VK_ENTER) 
-                    {
-                        addNewItemFromTextField();
-                        
-                    } else if (ev.getKeyCode() == KeyEvent.VK_END)
-                    {
-                        textField.setSelectionStart(prevCaretPos);
-                        textField.setSelectionEnd(textField.getText().length());
-                    }
-                    return;
+                    lookForMatch();
                 }
-                lookForMatch();
             }
         };
     }

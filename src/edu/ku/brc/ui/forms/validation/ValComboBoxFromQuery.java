@@ -29,7 +29,6 @@ import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.ArrayList;
@@ -113,9 +112,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     protected boolean            isRequired = false;
     protected boolean            isChanged  = false;
     protected boolean            isNew      = false;
+    protected boolean            hasBeenVisited = false;
     protected Color              bgColor    = null;
 
-    protected JComboBoxFromQuery comboBox;
+    protected VCBCombobBox       comboBox;
     protected JButton            searchBtn  = null;
     protected JButton            createBtn  = null;
     protected JButton            editBtn    = null;
@@ -196,7 +196,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         this.searchDialogName = searchDialogName;
         this.displayInfoDialogName = displayInfoDialogName;
 
-        comboBox = new JComboBoxFromQuery(tableName, idColumn, keyColumn, displayColumn, format);
+        comboBox = new VCBCombobBox(tableName, idColumn, keyColumn, displayColumn, format);
         comboBox.setAllowNewValues(true);
 
         init(objTitle, btns);
@@ -325,65 +325,13 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         }
         AppPreferences.getRemote().addChangeListener("ui.formatting.requiredfieldcolor", this);
 
-
-        comboBox.getTextField().addFocusListener(new FocusAdapter()
-                {
-                    @Override
-                    public void focusGained(FocusEvent e)
-                    {
-                        for (FocusListener l : focusListeners)
-                        {
-                            l.focusGained(e);
-                        }
-                    }
-
-                    @Override
-                    public void focusLost(FocusEvent e)
-                    {
-                        isNew = false;
-                        validateState();
-                        repaint();
-                        
-                        /*
-                         * CODE FOR SETTING THE CURRENT OBJECT INTO the COMBOXBOX
-                         */
-                        //Object data = comboBox.getSelectedItem();
-                        //if (data != null && data != dataObj)
-                        //{
-                        //    setValue(data, null);
-                        //}
-                        
-                        if (comboBox.getTextField() != null)
-                        {
-                            String str = comboBox.getTextField().getText().trim();
-                            if (StringUtils.isNotEmpty(str))
-                            {
-                                Object selObj = comboBox.getSelectedItem();
-                                if (selObj != null && !selObj.toString().equals(str))
-                                {
-                                    comboBox.getTextField().setText(selObj.toString());
-                                }                        
-                            } else
-                            {
-                                comboBox.setSelectedIndex(-1);
-                            }
-                        }
-                        
-                        for (FocusListener l : focusListeners)
-                        {
-                            l.focusLost(e);
-                        }
-                    }
-                });
-
         if (searchBtn != null)
         {
             defaultSearchAction = new ActionListener()
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    ViewBasedSearchDialogIFace dlg = UIRegistry.getViewbasedFactory()
-                            .createSearchDialog(UIHelper.getFrame(searchBtn), searchDialogName);
+                    ViewBasedSearchDialogIFace dlg = UIRegistry.getViewbasedFactory().createSearchDialog(UIHelper.getFrame(searchBtn), searchDialogName);
                     dlg.getDialog().setVisible(true);
                     if (!dlg.isCancelled())
                     {
@@ -628,7 +576,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     {
         super.paint(g);
 
-        if (!isNew && valState == UIValidatable.ErrorType.Error && comboBox.isEnabled())
+        if ((!isNew || hasBeenVisited) && isInError() && comboBox.isEnabled())
         {
             Graphics2D g2d = (Graphics2D)g;
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -848,6 +796,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     public void contentsChanged(ListDataEvent e)
     {
+        System.out.println("contentsChanged");
         isChanged = true;
         validateState();
         repaint();
@@ -858,6 +807,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     public void intervalAdded(ListDataEvent e)
     {
+        System.out.println("intervalAdded");
         // do nothing
     }
 
@@ -866,6 +816,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     public void intervalRemoved(ListDataEvent e)
     {
+        System.out.println("intervalRemoved");
         // do nothing
     }
 
@@ -935,6 +886,82 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         {
             comboBox.setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
         }
+    }
+    
+    class VCBCombobBox extends JComboBoxFromQuery
+    {
+        public VCBCombobBox(final String tableName,
+                            final String idColumn,
+                            final String keyColumn,
+                            final String displayColumns,
+                            final String format)
+        {
+            super(tableName, idColumn, keyColumn, displayColumns, format);
+        }
+        
+        /**
+         * Processes Focus Gained
+         * @param e key event
+         */
+        @Override
+        protected void tfFocusGained(@SuppressWarnings("unused") FocusEvent e)
+        {
+            super.tfFocusGained(e);
+            
+            hasBeenVisited = true;
+            
+            for (FocusListener l : focusListeners)
+            {
+                l.focusGained(e);
+            }
+        }
+        
+        /**
+         * Processes Focus Lost
+         * @param e key event
+         */
+        @Override
+        protected void tfFocusLost(@SuppressWarnings("unused") FocusEvent e)
+        {
+            super.tfFocusLost(e);
+            
+            isNew = false; // hasBeenVisited may remove the need for this being set to false - rods
+            
+            validateState();
+            repaint();
+            
+            /*
+             * CODE FOR SETTING THE CURRENT OBJECT INTO the COMBOXBOX
+             */
+            //Object data = comboBox.getSelectedItem();
+            //if (data != null && data != dataObj)
+            //{
+            //    setValue(data, null);
+            //}
+            
+            if (comboBox.getTextField() != null)
+            {
+                String str = comboBox.getTextField().getText().trim();
+                if (StringUtils.isNotEmpty(str))
+                {
+                    Object selObj = comboBox.getSelectedItem();
+                    if (selObj != null && !selObj.toString().equals(str))
+                    {
+                        comboBox.getTextField().setText(selObj.toString());
+                    }                        
+                } else
+                {
+                    comboBox.setSelectedIndex(-1);
+                }
+            }
+            
+            for (FocusListener l : focusListeners)
+            {
+                l.focusLost(e);
+            }
+
+        }
+
     }
 
 }

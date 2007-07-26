@@ -93,7 +93,7 @@ public class AutoNumberGeneric implements AutoNumberIFace
         {
             if (year != null)
             {
-                sb.append(" substring("+fieldName+","+year.first+","+year.second+") desc");
+                sb.append(" substring("+fieldName+","+(year.first+1)+","+year.second+") desc");
                 
             }
             
@@ -103,9 +103,10 @@ public class AutoNumberGeneric implements AutoNumberIFace
                 {
                     sb.append(", ");
                 }
-                sb.append(" substring("+fieldName+","+pos.first+","+pos.second+") desc");
+                sb.append(" substring("+fieldName+","+(pos.first+1)+","+pos.second+") desc");
             }
 
+            System.out.println(sb.toString());
             List list = session.createQuery(sb.toString()).setMaxResults(1).list();
             if (list.size() == 1)
             {
