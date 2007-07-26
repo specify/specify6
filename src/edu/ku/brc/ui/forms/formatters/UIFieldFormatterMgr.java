@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Properties;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
@@ -229,6 +230,8 @@ public class UIFieldFormatterMgr
             Element root  = getDOM();
             if (root != null)
             {
+                Properties props = new Properties();
+                
                 List<?> formats = root.selectNodes("/formats/format");
                 for (Object fObj : formats)
                 {
@@ -240,15 +243,20 @@ public class UIFieldFormatterMgr
                     boolean isDefault     = XMLHelper.getAttr(formatElement, "default", true);
                     
                     AutoNumberIFace autoNumberObj = null;
-                    Element autoNumber = (Element)formatElement.selectSingleNode("autonumber");
-                    if (autoNumber != null)
+                    Element autoNumberElement = (Element)formatElement.selectSingleNode("autonumber");
+                    if (autoNumberElement != null)
                     {
-                        String autoNumberClassName = autoNumber.getTextTrim();
-                        if (StringUtils.isNotEmpty(autoNumberClassName))
+                        String autoNumberClassName = autoNumberElement.getTextTrim();
+                        String fieldName           = XMLHelper.getAttr(autoNumberElement, "field", null);
+                        if (StringUtils.isNotEmpty(autoNumberClassName) && StringUtils.isNotEmpty(fieldName))
                         {
                             try 
                             {
                                 autoNumberObj = Class.forName(autoNumberClassName).asSubclass(AutoNumberIFace.class).newInstance();
+                                props.clear();
+                                props.put("class", dataClassName);
+                                props.put("field", fieldName);
+                                autoNumberObj.setProperties(props);
                                 
                             } catch (Exception ex)
                             {
@@ -257,9 +265,8 @@ public class UIFieldFormatterMgr
                             }
                         } else
                         {
-                            throw new RuntimeException("The value cannot be empty for an external formatter! ["+name+"]");
+                            throw new RuntimeException("The class cannot be empty for an external formatter! ["+name+"] or missing field name ["+fieldName+"]");
                         }
-                        
                     }
                     
                     Element external = (Element)formatElement.selectSingleNode("external");
@@ -302,6 +309,7 @@ public class UIFieldFormatterMgr
                             String    value   = fldElement.attributeValue("value");
                             String    typeStr = fldElement.attributeValue("type");
                             boolean   increm  = XMLHelper.getAttr(fldElement, "inc", false);
+                            boolean   byYear  = false;
                             
                             UIFieldFormatterField.FieldType type = null;
                             try
@@ -316,8 +324,10 @@ public class UIFieldFormatterMgr
                             if (type == UIFieldFormatterField.FieldType.year)
                             {
                                 size = 4;
+                                byYear = XMLHelper.getAttr(fldElement, "byyear", false);
                             }
-                            fields.add(new UIFieldFormatterField(type, size, value, increm));
+                            
+                            fields.add(new UIFieldFormatterField(type, size, value, increm, byYear));
                             if (increm)
                             {
                                 isInc = true;

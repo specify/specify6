@@ -66,6 +66,8 @@ import edu.ku.brc.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.ui.db.TextFieldFromPickListTable;
 import edu.ku.brc.ui.db.TextFieldWithInfo;
 import edu.ku.brc.ui.db.TreeFinderFactory;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.FormCell;
 import edu.ku.brc.ui.forms.persist.FormCellCommand;
@@ -86,6 +88,7 @@ import edu.ku.brc.ui.forms.validation.UIValidator;
 import edu.ku.brc.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.ui.forms.validation.ValComboBox;
 import edu.ku.brc.ui.forms.validation.ValComboBoxFromQuery;
+import edu.ku.brc.ui.forms.validation.ValFormattedTextFieldSingle;
 import edu.ku.brc.ui.forms.validation.ValFormattedTextField;
 import edu.ku.brc.ui.forms.validation.ValListBox;
 import edu.ku.brc.ui.forms.validation.ValPasswordField;
@@ -287,12 +290,11 @@ public class ViewFactory
      * @param cellField the definition of the cell for this control
      * @return ValFormattedTextField
      */
-    protected JTextField createFormattedTextField(final FormValidator validator,
+    protected JComponent createFormattedTextField(final FormValidator validator,
                                                   final FormCellField cellField,
                                                   final boolean       isViewOnly)
     {
         log.debug(cellField.getName()+"  "+cellField.getUIFieldFormatter());
-        ValFormattedTextField textField;// = new ValFormattedTextField(cellField.getUIFieldFormatter());
 
         // Because it is formatted we ALWAYS validate it when there is a validator
         if (validator != null)
@@ -300,31 +302,45 @@ public class ViewFactory
             // deliberately ignore "cellField.isChangeListenerOnly()"
             // pass in false instead
 
-            textField = new ValFormattedTextField(cellField.getUIFieldFormatter(), isViewOnly);
+            UIFieldFormatterIFace formatter = UIFieldFormatterMgr.getFormatter(cellField.getUIFieldFormatter());
+            if (formatter == null)
+            {
+                throw new RuntimeException("Missing formatter by name ["+cellField.getUIFieldFormatter()+"]");
+            }
+            
+            if (formatter.isDate())
+            {
+                ValFormattedTextFieldSingle textField = new ValFormattedTextFieldSingle(cellField.getUIFieldFormatter(), isViewOnly);
+                textField.setRequired(cellField.isRequired());
+                
+                validator.hookupTextField(textField,
+                                          cellField.getId(),
+                                          cellField.isRequired(),
+                                          UIValidator.Type.Changed,  cellField.getValidationRule(), false);
+                
+                if (isViewOnly)
+                {
+                    changeTextFieldUIForDisplay(textField, cellField.getPropertyAsBoolean("transparent", false));
+                } else
+                {
+                    textField.setEditable(!cellField.isReadOnly());
+                }
+                return textField;
+                
+            }
+            
+            ValFormattedTextField textField = new ValFormattedTextField(formatter, isViewOnly);
             textField.setRequired(cellField.isRequired());
             
-            validator.hookupTextField(textField,
-                                      cellField.getId(),
-                                      cellField.isRequired(),
-                                      UIValidator.Type.Changed,  cellField.getValidationRule(), false);
-                                      //UIValidator.Type.Changed,  cellField.getName()+".isInError() == false", false);
+            DataChangeNotifier dcn = validator.hookupComponent(textField,
+                                                               cellField.getId(),
+                                                               UIValidator.Type.Changed,  cellField.getValidationRule(), false);
 
-
-        } else
-        {
-            textField = new ValFormattedTextField(cellField.getUIFieldFormatter(), isViewOnly);
-        }
-        
-        if (isViewOnly)
-        {
-            changeTextFieldUIForDisplay(textField, cellField.getPropertyAsBoolean("transparent", false));
-        } else
-        {
-            textField.setEditable(!cellField.isReadOnly());
-        }
-        
-
-        return textField;
+            textField.setChangeListener(dcn);
+            return textField;
+ 
+        } 
+        return new ValFormattedTextField(cellField.getUIFieldFormatter(), isViewOnly);
     }
 
     /**

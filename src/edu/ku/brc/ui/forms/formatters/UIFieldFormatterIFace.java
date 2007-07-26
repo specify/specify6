@@ -31,6 +31,13 @@ public interface UIFieldFormatterIFace
      * @return the list of fields for the format.
      */
     public abstract List<UIFieldFormatterField> getFields();
+    
+    /**
+     * Returns the format field for year. There should only ever be one, but if there is more than one
+     * then it returns the last one or the one with isByYear set to true.
+     * @return the year field.
+     */
+    public abstract UIFieldFormatterField getYear();
 
     /**
      * The unique name of the format as referenced by the form system.
@@ -80,10 +87,16 @@ public interface UIFieldFormatterIFace
     public abstract int getLength();
 
     /**
-     * @return the pair of values where the first number is the index into the Fields list and the secodn
+     * @return the pair of values where the first number is the index into the Fields list and the second
      * is the index of where the field's format ends.
      */
     public abstract Pair<Integer, Integer> getIncPosition();
+
+    /**
+     * @return the pair of values where the first number is the index into the Fields list and the second
+     * is the index of where the field's format ends.
+     */
+    public abstract Pair<Integer, Integer> getYearPosition();
 
     /**
      * @return the string pattern that is used in the UI to tell the user how the value should be entered, the length should 

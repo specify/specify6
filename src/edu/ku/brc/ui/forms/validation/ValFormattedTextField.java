@@ -18,6 +18,7 @@ package edu.ku.brc.ui.forms.validation;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -26,51 +27,60 @@ import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.image.BufferedImage;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.JTextComponent;
-import javax.swing.undo.UndoManager;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.ViewFactory;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterField;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 
 /**
- * A JTextField (wrapped inside a JPanel) that provides for "formatted" input. The format "mask" is define in XML
+ * A Multiple JTextFields (wrapped inside a JPanel) that provides for "formatted" input. The format "mask" is define in XML
  * via the UIFieldFormatterMgr class. This is idea for text fields that have a standard size and a specific format (i.e. Dates)
  * The mask enables the "fields" and separators to be specifically defined.
-
+ * 
+ * NOTE: This impl has multiple Text Field, one for each part of the format.
+ * 
  * @code_status Beta
- **
+ *
  * @author rods
  *
  */
 @SuppressWarnings("serial")
-public class ValFormattedTextField extends JTextField implements UIValidatable,
-                                                                 GetSetValueIFace,
-                                                                 DocumentListener, 
-                                                                 UIRegistry.UndoableTextIFace
+public class ValFormattedTextField extends JPanel implements UIValidatable,
+                                                             GetSetValueIFace,
+                                                             DocumentListener
 {
     private static final Logger log  = Logger.getLogger(ValFormattedTextField.class);
 
     protected static ColorWrapper     valtextcolor       = null;
-    protected static ColorWrapper     requiredfieldcolor = null;  
+    protected static ColorWrapper     requiredfieldcolor = null;
+    protected static ColorWrapper     viewFieldColor     = null;
 
     protected UIValidatable.ErrorType     valState       = UIValidatable.ErrorType.Valid;
     protected boolean                     isRequired     = false;
@@ -78,26 +88,28 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     protected boolean                     isNew          = false;
     protected boolean                     isViewOnly     = false;
     protected Color                       bgColor        = null;
+    
+    protected JTextField                  viewtextField  = null;
 
     protected int                         requiredLength = 0;
-    protected Object[]                    formatObj      = null;
     protected boolean                     shouldIgnoreNotifyDoc = true;
-    protected boolean                     doSetText      = false; 
+    protected boolean                     needsUpdating  = false;
+    
+    protected String                      currCachedValue = null;
 
-    protected JFormattedDoc               document;
+    //protected JFormattedDoc               document;
     protected String                      defaultValue   = null;
 
     protected UIFieldFormatterIFace       formatter;
     protected List<UIFieldFormatterField> fields         = null;
     
     protected Object                      origValue      = null;
-    protected UndoManager                 undoManager    = null;
+    protected ChangeListener              changeListener = null;
 
     //---
-    protected String bgStr     = null;
-    protected Point  pnt       = null;
     protected Color  textColor = new Color(0,0,0,64);
-    protected Insets inner;
+    
+    protected JComponent[] comps = null;
 
     /**
      * Constructor
@@ -106,6 +118,20 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     protected ValFormattedTextField()
     {
         // do nothing
+    }
+
+    /**
+     * Constructor.
+     * @param formatter the formatters
+     */
+    public ValFormattedTextField(final UIFieldFormatterIFace formatter, final boolean isViewOnly)
+    {
+        super();
+        
+        this.isViewOnly = isViewOnly;
+        
+        init(formatter);
+
     }
 
     /**
@@ -118,44 +144,149 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
 
         this.isViewOnly = isViewOnly;
         
-        init();
+        init(UIFieldFormatterMgr.getFormatter(formatterName));
+    }
+    
+    /**
+     * 
+     */
+    protected void init(final UIFieldFormatterIFace formatterArg)
+    {
+        setFormatterInternal(formatterArg);
         
-        inner = getInsets();
+        createUI();
         
-        setFormatterInternal(UIFieldFormatterMgr.getFormatter(formatterName));
-        
-        addFocusListener(new FocusAdapter()
-                {
-                    @Override
-                    public void focusGained(FocusEvent e)
-                    {
-                        ((JTextField)e.getSource()).selectAll();
-                        repaint();
-                    }
-
-                    @Override
-                    public void focusLost(FocusEvent e)
-                    {
-                        isNew = false;
-                        validateState();
-                        repaint();
-
-                    }
-                });
-
-        if (!isViewOnly)
+        if (valtextcolor == null || requiredfieldcolor == null ||viewFieldColor == null)
         {
-            if (!formatter.isUserInputNeeded())
+            valtextcolor       = AppPrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
+            requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
+            viewFieldColor     = AppPrefsCache.getColorWrapper("ui", "formatting", "viewfieldcolor");
+        }
+        
+        //if (isViewOnly || !formatter.isUserInputNeeded())
+        //{
+        //    setBackground(viewFieldColor.getColor());
+        //}
+        
+        if (!isViewOnly && comps != null)
+        {
+            int inx = 0;
+            for (UIFieldFormatterField field : fields)
             {
-                ViewFactory.changeTextFieldUIForDisplay(this, false);
-                
-            } else
-            {
-                super.setEnabled(true);
+                if (field.isIncrementer())
+                {
+                    if (comps[inx] instanceof JTextField)
+                    {
+                        ViewFactory.changeTextFieldUIForDisplay(((JTextField)comps[inx]), false);
+                    }
+                }
+                inx++;
             }
         }
     }
     
+    /**
+     * Creates the various UI Components for the formatter.
+     */
+    protected void createUI()
+    {
+        CellConstraints cc = new CellConstraints();
+        
+        if (isViewOnly || !formatter.isUserInputNeeded())
+        {
+            viewtextField = new JTextField();
+            ViewFactory.changeTextFieldUIForDisplay(viewtextField, false);
+            PanelBuilder    builder = new PanelBuilder(new FormLayout("1px,P,1px", "1px,P,1px"), this);
+            builder.add(viewtextField, cc.xy(2, 2));
+            
+        } else
+        {
+            Font font = new Font("Courier", Font.PLAIN, 12);
+            
+            BufferedImage bi = new BufferedImage(1,1, BufferedImage.TYPE_INT_RGB);
+            Graphics2D g = bi.createGraphics();
+            g.setFont(font);
+            FontMetrics fm = g.getFontMetrics(font);
+            g.dispose();
+            
+            JTextField txt = new JTextField();
+            Insets ins = txt.getBorder().getBorderInsets(txt);
+            int baseWidth = ins.left + ins.right;
+            
+            bgColor = txt.getBackground();
+    
+            
+            StringBuilder sb = new StringBuilder("1px");
+            int i = 0;
+            for (UIFieldFormatterField f : fields)
+            {
+                sb.append(",");
+                if (f.getType() == UIFieldFormatterField.FieldType.separator)
+                {
+                    sb.append('p');
+                } else
+                {
+                    sb.append(((fm.getMaxAdvance() * f.getSize()) + baseWidth) + "px");
+                }
+                i++;
+            }
+            sb.append(",1px");
+            
+            PanelBuilder    builder = new PanelBuilder(new FormLayout(sb.toString(), "1px,P,1px"), this);
+            
+            comps = new JComponent[fields.size()];
+            int inx = 0;
+            for (UIFieldFormatterField f : fields)
+            {
+                JComponent comp = null;
+                if (f.getType() == UIFieldFormatterField.FieldType.separator)
+                {
+                    comp = new JLabel(f.getValue());
+                    
+                } else
+                {
+                    JTextField tf = new BGTextField(f.getSize(), f.getValue());
+                    JFormattedDoc document = new JFormattedDoc(tf, formatter, f);
+                    tf.setDocument(document);
+                    document.addDocumentListener(this);
+                    
+                    tf.addFocusListener(new FocusAdapter()
+                    {
+                        @Override
+                        public void focusGained(FocusEvent e)
+                        {
+                            ((JTextField)e.getSource()).selectAll();
+                            repaint();
+                        }
+    
+                        @Override
+                        public void focusLost(FocusEvent e)
+                        {
+                            isNew = false;
+                            validateState();
+                            repaint();
+    
+                        }
+                    });
+                    comp = tf;
+                    comp.setFont(font);
+                    
+                }
+                builder.add(comp, cc.xy(inx+2, 2));
+                comps[inx] = comp;
+                inx++;
+            }
+        }
+    }
+    
+    /**
+     * @param changeListener the changeListener to set
+     */
+    public void setChangeListener(ChangeListener changeListener)
+    {
+        this.changeListener = changeListener;
+    }
+
     /**
      * Sets the formatter.
      * @param formatterName the formatter to use
@@ -164,23 +295,29 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     {
         if (formatter != formatterArg && formatterArg != null)
         {
-            int oldReqLen = requiredLength;
-            
             formatter = formatterArg;
             
             fields = formatter.getFields();
     
             requiredLength = formatter.getLength();
-            bgStr = formatter.toPattern();
+        }
+    }
     
-            if (requiredLength > oldReqLen) // don't let the field shrink
+    /**
+     * Sets the BG color of all the text fields.
+     * @param color
+     */
+    protected void setBGColor(final Color color)
+    {
+        if (comps != null)
+        {
+            for (JComponent comp : comps)
             {
-                this.setColumns(requiredLength);
+                if (comp instanceof JTextField)
+                {
+                    ((JTextField)comp).setBackground(color);
+                } 
             }
-    
-            document = new JFormattedDoc(this, formatter, requiredLength);
-            setDocument(document);
-            document.addDocumentListener(this);
         }
     }
     
@@ -197,21 +334,6 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
         setValue(currentValue, "");
     }
 
-
-    /**
-     * Inits the control
-     */
-    public void init()
-    {
-        bgColor = getBackground();
-        if (valtextcolor == null || requiredfieldcolor == null)
-        {
-            valtextcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
-            requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
-        }
-    }
-
-
     /**
      * Helper method for validation sripting to see if the text field is empty
      * @return whether the text field is empty or not
@@ -220,36 +342,35 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     {
         return getText().length() > 0;
     }
-
-    /* (non-Javadoc)
-     * @see java.awt.Component#paint(java.awt.Graphics)
+    
+    /**
+     * @return
      */
-    @Override
-    public void paint(Graphics g)
+    public String getText()
     {
-        super.paint(g);
-
-        String text = getText();
-
-        if (text != null && text.length() < bgStr.length())
+        if (viewtextField != null)
         {
-            FontMetrics fm   = g.getFontMetrics();
-            int          w   = fm.stringWidth(text);
-            pnt = new Point(inner.left+w, inner.top + fm.getAscent());
-
-            g.setColor(textColor);
-            g.drawString(bgStr.substring(text.length(), bgStr.length()), pnt.x, pnt.y);
+            return viewtextField.getText();
         }
-
-
-        if (!isNew && valState == UIValidatable.ErrorType.Error && isEnabled())
+        
+        if (currCachedValue == null)
         {
-            Graphics2D g2d = (Graphics2D)g;
-            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            Dimension dim = getSize();
-            g.setColor(valtextcolor.getColor());
-            g.drawRect(1, 1, dim.width-2, dim.height-2);
+            StringBuilder sb = new StringBuilder();
+            int inx = 0;
+            for (JComponent c : comps)
+            {
+                if (c instanceof JLabel)
+                {
+                    sb.append(((JLabel)c).getText());
+                } else
+                {
+                    sb.append(((JTextField)c).getText());
+                }
+                inx++;
+            }
+            currCachedValue = sb.toString();
         }
+        return currCachedValue;
     }
 
     /* (non-Javadoc)
@@ -270,22 +391,65 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
                 super.setEnabled(enabled);
             }
     
-            setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
+            setBGColor(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
         }
     }
 
     /* (non-Javadoc)
      * @see javax.swing.text.JTextComponent#setText(java.lang.String)
      */
-    @Override
-    public void setText(final String text)
+    public void setText(final String text, final boolean notify)
     {
-        document.setIgnoreNotify(shouldIgnoreNotifyDoc);
-        bgStr = StringUtils.isNotEmpty(text) ? "" : formatter.toPattern();
-        doSetText = true;
-        super.setText(text);
-        doSetText = false;
-        document.setIgnoreNotify(false);
+        if (viewtextField != null)
+        {
+            viewtextField.setText(text);
+            return;
+        }
+        
+        shouldIgnoreNotifyDoc = !notify;
+        
+        int len = formatter.getLength();
+        int inx = 0;
+        int pos = 0;
+        for (UIFieldFormatterField field : fields)
+        {
+            String val = text.substring(pos, Math.min(pos+field.getSize(), len));
+            
+            if (comps[inx] instanceof JLabel)
+            {
+                if (!val.equals(field.getValue()))
+                {
+                    valState = UIValidatable.ErrorType.Error;
+                }
+            } else
+            {
+                ((JTextField)comps[inx]).setText(val);
+            }
+            pos += field.getSize();
+            inx++;
+        }
+        
+        shouldIgnoreNotifyDoc = notify;
+        
+        repaint();
+    }
+    
+    /* (non-Javadoc)
+     * @see java.awt.Component#paint(java.awt.Graphics)
+     */
+    @Override
+    public void paint(Graphics g)
+    {
+        super.paint(g);
+        
+        if (!isNew && valState == UIValidatable.ErrorType.Error && isEnabled())
+        {
+            Graphics2D g2d = (Graphics2D)g;
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            Dimension dim = getSize();
+            g.setColor(valtextcolor.getColor());
+            g.drawRect(1, 1, dim.width-2, dim.height-2);
+        }
     }
 
     /**
@@ -301,9 +465,9 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
      * Sets the text and notifies the validator of the change. This is used manually callit directly.
      * @param text the new text (must already be formatted).
      */
-    public void setTextWithNotify(String text)
+    public void setText(final String text)
     {
-        super.setText(text);
+        setText(text, true);
     }
     
     /**
@@ -311,20 +475,21 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
      */
     public void updateAutoNumbers()
     {
-        String nextNum = formatter.getNextNumber(getText());
-        if (StringUtils.isNotEmpty(nextNum))
+        if (needsUpdating)
         {
-            try
+            String nextNum = formatter.getNextNumber(getText());
+            if (StringUtils.isNotEmpty(nextNum))
             {
-                shouldIgnoreNotifyDoc = false;
-                setValue(nextNum, nextNum);
-                bgStr = "";
-                
-            } catch (Exception ex)
-            {
-                ex.printStackTrace();
+                try
+                {
+                    setValue(nextNum, nextNum);
+                    
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
             }
-            shouldIgnoreNotifyDoc = true;
+            needsUpdating = false;
         }
     }
 
@@ -345,6 +510,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
      */
     public boolean isInError()
     {
+        System.out.println(valState);
         return valState != UIValidatable.ErrorType.Valid;
     }
 
@@ -377,10 +543,15 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
      */
     public void setRequired(boolean isRequired)
     {
-        if (!isViewOnly)
+        this.isRequired = isRequired;
+        Color color = isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor;
+        
+        if (viewtextField != null)
         {
-            setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
-            this.isRequired = isRequired;
+            viewtextField.setBackground(color);
+        } else
+        {
+            setBGColor(color);
         }
     }
 
@@ -434,6 +605,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
         if (isViewOnly)
         {
             valState = UIValidatable.ErrorType.Valid;
+            
         } else if (formatter != null && formatter.isUserInputNeeded())
         {
             String data = getText();
@@ -449,7 +621,7 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
         {
             valState = UIValidatable.ErrorType.Valid;
         }
-            //System.out.println("#### validateState "+ getText()+"  "+data.length() +"  "+ requiredLength+"  "+valState);
+        //System.out.println("#### validateState "+ getText()+"  "+data.length() +"  "+ requiredLength+"  "+valState);
         return valState;
     }
 
@@ -459,34 +631,8 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
      */
     public void cleanUp()
     {
-        document  = null;
         formatter = null;
         fields    = null;
-    }
-
-    //--------------------------------------------------------
-    // UIRegistry.UndoableTextIFace
-    //--------------------------------------------------------
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIRegistry.UndoableTextIFace#getUndoManager()
-     */
-    public UndoManager getUndoManager()
-    {
-        if (undoManager == null)
-        {
-            undoManager = new UndoManager();
-            UIRegistry.getInstance().hookUpUndoableEditListener(this);
-        }
-        return undoManager;
-    }
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIRegistry.UndoableTextIFace#getTextComponent()
-     */
-    public JTextComponent getTextComponent()
-    {
-        return this;
     }
 
     //--------------------------------------------------------
@@ -499,7 +645,6 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     public void setValue(Object value, String defaultValue)
     {
         this.defaultValue = defaultValue;
-
 
         String data;
 
@@ -532,18 +677,19 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
             origValue = value;
         }
         
+        String fmtVal;
         if (formatter != null && formatter.isInBoundFormatter())
         {
-            setText((String)formatter.formatInBound(data));
+            needsUpdating = StringUtils.isEmpty(data) && formatter.getAutoNumber() != null && formatter.isIncrementer();
+            
+            fmtVal = (String)formatter.formatInBound(data);
+
         } else
         {
-            setText(data);
+            fmtVal = data;
         }
         
-        if (undoManager != null)
-        {
-            undoManager.discardAllEdits();
-        }
+        setText(fmtVal);
 
         validateState();
 
@@ -591,33 +737,87 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
     // DocumentListener
     //--------------------------------------------------------
 
-
-    public void changedUpdate(DocumentEvent e)
+    protected void changeOccurred()
     {
         isChanged = true;
+        if (changeListener != null && !shouldIgnoreNotifyDoc)
+        {
+            changeListener.stateChanged(new ChangeEvent(this));
+        }
+        currCachedValue = null;
+    }
+    
+    public void changedUpdate(DocumentEvent e)
+    {
+        changeOccurred();
     }
 
     public void insertUpdate(DocumentEvent e)
     {
-        isChanged = true;
+        changeOccurred();
     }
 
     public void removeUpdate(DocumentEvent e)
     {
-        isChanged = true;
+        changeOccurred();
+    }
+    
+    //--------------------------------------------------------
+    // Individual Text Field
+    //--------------------------------------------------------
+    class BGTextField extends JTextField
+    {
+        protected String bgStr = "";
+        protected Point  pnt   = null;
+        protected Insets inner;
+
+        public BGTextField(final int size, final String bgStr)
+        {
+            super(size);
+            this.bgStr = bgStr;
+            this.inner = getInsets();
+        }
+        
+        /* (non-Javadoc)
+         * @see javax.swing.text.JTextComponent#setText(java.lang.String)
+         */
+        public void setText(final String text)
+        {
+            JFormattedDoc document = (JFormattedDoc)getDocument();
+            document.setIgnoreNotify(shouldIgnoreNotifyDoc);
+            super.setText(text);
+            document.setIgnoreNotify(false);
+        }
+        
+        /* (non-Javadoc)
+         * @see java.awt.Component#paint(java.awt.Graphics)
+         */
+        @Override
+        public void paint(Graphics g)
+        {
+            super.paint(g);
+
+            String text = getText();
+
+            if (text != null && text.length() < bgStr.length())
+            {
+                FontMetrics fm   = g.getFontMetrics();
+                int          w   = fm.stringWidth(text);
+                pnt = new Point(inner.left+w, inner.top + fm.getAscent());
+
+                g.setColor(textColor);
+                g.drawString(bgStr.substring(text.length(), bgStr.length()), pnt.x, pnt.y);
+            }
+        }
     }
 
-
-    //-------------------------------------------------
-    // AppPrefsChangeListener
-    //-------------------------------------------------
-
+    
     public class JFormattedDoc extends ValPlainTextDocument
     {
-        protected int                     limit;
-        protected ValFormattedTextField   textField;
-        protected UIFieldFormatterIFace   docFormatter;
-        protected UIFieldFormatterField[] docFields;
+        protected int                       limit;
+        protected JTextField                textField;
+        protected UIFieldFormatterIFace     docFormatter;
+        protected UIFieldFormatterField     docField;
 
         /**
          * CReate a special formatted document
@@ -625,21 +825,16 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
          * @param formatter the formatter
          * @param limit the lengthof the format
          */
-        public JFormattedDoc(ValFormattedTextField textField, UIFieldFormatterIFace formatter, int limit)
+        public JFormattedDoc(final JTextField            textField, 
+                             final UIFieldFormatterIFace formatter,
+                             final UIFieldFormatterField docField)
         {
             super();
+            
             this.textField    = textField;
             this.docFormatter = formatter;
-            this.limit        = limit;
-            this.docFields    = new UIFieldFormatterField[limit];
-            int inx = 0;
-            for (UIFieldFormatterField f : docFormatter.getFields())
-            {
-                for (int i=0;i<f.getSize();i++)
-                {
-                    docFields[inx++] = f;
-                }
-            }
+            this.docField     = docField;
+            this.limit        = docField.getSize();
         }
 
         /**
@@ -673,71 +868,11 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
          */
         protected boolean okToInsertText(final String str)
         {
-            int len = Math.min(str.length(), limit);
-            for (int i=0;i<len;i++)
+            if (str.length() == limit && str.charAt(0) == '#')
             {
-                char c = str.charAt(i);
-                if (docFields[i].getType() == UIFieldFormatterField.FieldType.separator)
-                {
-                    if (c != docFields[i].getValue().charAt(0))
-                    {
-                        return false;
-                    }
-                }
-                String s = "";
-                c += c;
-                if (!isCharOK(docFields[i], s))
-                {
-                    return false;
-                }
+                return true;
             }
-            return true;
-        }
-
-        /* (non-Javadoc)
-         * @see javax.swing.text.Document#remove(int, int)
-         */
-        @Override
-        public void remove(int offset, int len)
-        {
-            // We can't let them try to delete separator's or incrementers
-            if (!doSetText && len < limit && (docFields[offset].isIncrementer() || docFields[offset].getType() == UIFieldFormatterField.FieldType.separator))
-            {
-                int pos = getCaretPosition();
-                setCaretPosition(pos-docFields[offset].getSize());
-                return;
-            }
-            
-            try
-            {
-                // Work our way to end to see if there is anything 
-                /*boolean restTypable = true;
-                int     inx         = offset;
-                while (inx >= 0 && restTypable)
-                {
-                    if (!docFields[inx].isIncrementer() && docFields[inx].getType() != UIFieldFormatterField.FieldType.separator)
-                    {
-                        restTypable = false;
-                    }
-                    inx++;
-                }*/
-                
-                //if (!restTypable)
-                //{
-                    int l = this.getLength()-offset;
-                    super.remove(offset, l);
-                    
-                //} else
-                //{
-                //    super.remove(offset, len);
-                //}
-                
-                validateState();
-
-            } catch (BadLocationException ex)
-            {
-                throw new RuntimeException(ex);
-            }
+            return str.length() <= limit && isCharOK(docField, str);
         }
 
         /* (non-Javadoc)
@@ -751,127 +886,87 @@ public class ValFormattedTextField extends JTextField implements UIValidatable,
             {
                 return;
             }
-
-            if (str.length() > 1)
-            {
-                if (!doSetText)
-                {
-                    int len = Math.min(str.length(), limit);
-                    if (len < limit && docFields[len-1].isIncrementer())
-                    {
-                        return;
-                    }
-                }
                 
-                if (okToInsertText(str))
-                {
-                    // This way truncates incoming values
-                    //int newLen = Math.min(str.length(), limit);
-                    //valState = offset + newLen < requiredLength;
-                    //super.insertString(offset, str.substring(0, newLen), attr);
-
-                    //valState = offset + str.length() < requiredLength ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
-                    super.insertString(offset, str, attr);
-
-                } else
-                {
-                    //valState = UIValidatable.ErrorType.Error;
-                    //getToolkit().beep();
-                }
-                validateState();
-                //System.out.println("******* "+(valState));
-                return;
-            }
-
-            int len = getLength() + str.length();
-            if (len <= limit)
+            if (okToInsertText(str))
             {
-                UIFieldFormatterField field =  docFields[offset];
-                if (!isCharOK(field, str))
-                {
-                    //getToolkit().beep();
-                    //valState = UIValidatable.ErrorType.Error;
-                    //System.out.println("******* "+(valState));
-                    validateState();
-                    return;
-                }
-
-                if (field.getType() == UIFieldFormatterField.FieldType.separator)
-                {
-                    if (str.charAt(0) != field.getValue().charAt(0))
-                    {
-                        if (!isCharOK(docFields[offset + 1], str))
-                        {
-                            //valState = UIValidatable.ErrorType.Error;
-                            //getToolkit().beep();
-                            validateState();
-                            return;
-                        }
-                        str = field.getValue() + str;
-                    }
-                } else
-                {
-                    //int offsetinx = offset;
-                    if (docFields[offset].isIncrementer())
-                    {
-                        /*str   = docFields[offset].getValue();
-                        field = docFields[offset + docFields[offset].getValue().length()];
-                        if (!isCharOK(field, str))
-                        {
-                            //getToolkit().beep();
-                            //valState = UIValidatable.ErrorType.Error;
-                            //System.out.println("******* "+(valState));
-                            validateState();
-                            return;
-                        }*/                      
-                    }
-                }
-                //valState = offset + str.length() < requiredLength ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
-
                 super.insertString(offset, str, attr);
-                
-                String text = textField.getText();
-                if (text != null && text.length() < limit)
+            }
+            
+            if (getLength() == limit)
+            {
+                int inx = 0;
+                for (UIFieldFormatterField f : fields)
                 {
-                    int inx =  text.length();
-                    field   = docFields[inx];
-                    if (field != null && (field.getType() == UIFieldFormatterField.FieldType.separator || field.isIncrementer()))
+                    int len = fields.size();
+                    if (f == docField && inx < len-1)
                     {
-                        StringBuilder sb = new StringBuilder(text.substring(offset + str.length()));
-                        while (field != null && (field.getType() == UIFieldFormatterField.FieldType.separator || field.isIncrementer()))
+                        for (int i=inx+1;i<len;i++)
                         {
-                            if (field.getType() == UIFieldFormatterField.FieldType.separator)
+                            UIFieldFormatterField nxtField = fields.get(i);
+                            if (!nxtField.isByYear() && !nxtField.isIncrementer() && nxtField.getType() != UIFieldFormatterField.FieldType.separator)
                             {
-                                sb.append(field.getValue());
-                                inx++;
-                                
-                            } else
-                            {
-                                for (int i=0;i<field.getSize();i++)
-                                {
-                                    sb.append("#");
-                                }
-                                inx += field.getSize();
-                            }
-                            
-                            if (inx < limit)
-                            {
-                                field = docFields[inx];
-                            } else
-                            {
-                                field = null;
+                                comps[i].requestFocus();
+                                break;
                             }
                         }
-                        insertString(offset + str.length(), sb.toString(), attr);
                     }
+                    inx++;
                 }
-                
-            } else
-            {
-                //valState = UIValidatable.ErrorType.Error;
             }
 
             validateState();
         }
     }
+
+    /**
+    *
+    */
+    /*
+   public static void main(String[] args)
+   {
+       SwingUtilities.invokeLater(new Runnable() {
+           @SuppressWarnings("synthetic-access")
+         public void run()
+           {
+               try
+               {
+                   UIHelper.OSTYPE osType = UIHelper.getOSType();
+                   if (osType == UIHelper.OSTYPE.Windows )
+                   {
+                       //UIManager.setLookAndFeel(new WindowsLookAndFeel());
+                       UIManager.setLookAndFeel(new PlasticLookAndFeel());
+                       PlasticLookAndFeel.setPlasticTheme(new ExperienceBlue());
+                       
+                   } else if (osType == UIHelper.OSTYPE.Linux )
+                   {
+                       //UIManager.setLookAndFeel(new GTKLookAndFeel());
+                       UIManager.setLookAndFeel(new PlasticLookAndFeel());
+                      
+                   }
+                   
+                   Vector<UIFieldFormatterField> fields = new Vector<UIFieldFormatterField>();
+                   fields.add(new UIFieldFormatterField(UIFieldFormatterField.FieldType.year,   4, "YYYY", false, true));
+                   fields.add(new UIFieldFormatterField(UIFieldFormatterField.FieldType.separator, 1, "-", false));
+                   fields.add(new UIFieldFormatterField(UIFieldFormatterField.FieldType.alpha,   2, "XX", false));
+                   fields.add(new UIFieldFormatterField(UIFieldFormatterField.FieldType.separator, 1, "-", false));
+                   fields.add(new UIFieldFormatterField(UIFieldFormatterField.FieldType.numeric,   4, "NNNN", true));
+                   
+                   UIFieldFormatter uif = new UIFieldFormatter("Accession", false, null, Accession.class, true, true, fields);
+
+                   ValFormattedTextField formattedTextField = new ValFormattedTextField(uif, false);
+                   
+                   CustomDialog dlg = new CustomDialog(null, "Test", true, formattedTextField);
+                   formattedTextField.setText("2005-IT-001");
+                   dlg.setVisible(true);
+                   
+                   System.out.println(formattedTextField.getText());
+                   dlg.dispose();
+               }
+               catch (Exception e)
+               {
+                   log.error("Can't change L&F: ", e);
+               }
+           }
+       });
+   }*/
 }

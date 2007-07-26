@@ -14,7 +14,10 @@
  */
 package edu.ku.brc.ui.forms.formatters;
 
+import java.util.Calendar;
 import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.dbsupport.AutoNumberIFace;
 import edu.ku.brc.ui.DateWrapper;
@@ -97,6 +100,34 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
     {
         return fields;
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getYear()
+     */
+    public UIFieldFormatterField getYear()
+    {
+        UIFieldFormatterField year = null;
+        for (UIFieldFormatterField field : fields)
+        {
+            if (field.getType() == UIFieldFormatterField.FieldType.year)
+            {
+                if (year != null)
+                {
+                    if (field.isByYear())
+                    {
+                        return field;
+                    }
+                } else if (field.isByYear())
+                {
+                    return field;
+                } else
+                {
+                    year = field;
+                }
+            }
+        }
+        return year;
+    }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#setName(java.lang.String)
@@ -169,7 +200,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
     {
         return partialDateType;
     }
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getLength()
      */
@@ -200,6 +231,23 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
         return null;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getYearPosition()
+     */
+    public Pair<Integer, Integer> getYearPosition()
+    {
+        int len = 0;
+        for (UIFieldFormatterField field : fields)
+        {
+            if (field.getType() == UIFieldFormatterField.FieldType.year)
+            {
+                return new Pair<Integer, Integer>(len, len+field.getSize());
+            }
+            len += field.getSize();
+        }
+        return null;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#toPattern()
      */
@@ -278,7 +326,27 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
      */
     public Object formatInBound(Object data)
     {
-        throw new RuntimeException("Can't call this when isInBoundFormatter returns false.");
+        boolean isStr = data instanceof String;
+        
+        if (autoNumber != null && isStr && StringUtils.isEmpty((String)data))
+        {
+           String pattern = toPattern();
+           UIFieldFormatterField yearField = getYear();
+           if (yearField != null)
+           {
+               Pair<Integer, Integer> pos = getYearPosition();
+               if (pos != null)
+               {
+                   StringBuilder sb = new StringBuilder(pattern);
+                   Calendar cal = Calendar.getInstance();
+                   sb.replace(pos.first, pos.second, Integer.toString(cal.get(Calendar.YEAR)));
+                   return sb.toString();
+               }
+           }
+           return pattern;
+        }
+        return data;
+        //throw new RuntimeException("Can't call this when isInBoundFormatter returns false.");
     }
 
     /* (non-Javadoc)
@@ -286,7 +354,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
      */
     public boolean isInBoundFormatter()
     {
-        return false;
+        return autoNumber != null;
     }
 
     /* (non-Javadoc)

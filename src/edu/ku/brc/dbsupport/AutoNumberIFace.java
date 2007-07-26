@@ -9,6 +9,8 @@
  */
 package edu.ku.brc.dbsupport;
 
+import java.util.Properties;
+
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 
 /**
@@ -22,6 +24,18 @@ import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 public interface AutoNumberIFace
 {
 
+    /**
+     * Used for initialization.
+     * @param properties the initialization properties
+     */
+    public void setProperties(final Properties properties);
+    
+    /**
+     * Get the next number.
+     * @param formatter the formatter to use
+     * @param value the current value
+     * @return the fully expressed number.
+     */
     public abstract String getNextNumber(final UIFieldFormatterIFace formatter, String value);
     
 }

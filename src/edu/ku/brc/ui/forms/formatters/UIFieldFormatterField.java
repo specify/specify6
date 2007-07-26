@@ -14,7 +14,6 @@
  */
 package edu.ku.brc.ui.forms.formatters;
 
-import java.util.Calendar;
 
 /**
  * @author rods
@@ -32,8 +31,13 @@ public class UIFieldFormatterField
     protected int       size;
     protected String    value;
     protected boolean   incrementer;
+    protected boolean   byYear;
     
-    public UIFieldFormatterField(final FieldType type, final int size, String value, final boolean incrementer)
+    public UIFieldFormatterField(final FieldType type, 
+                                 final int       size, 
+                                 final String    value, 
+                                 final boolean   incrementer, 
+                                 final boolean   byYear)
     {
         super();
         
@@ -41,6 +45,7 @@ public class UIFieldFormatterField
         this.size        = size;
         this.value       = value;
         this.incrementer = incrementer;
+        this.byYear      = byYear;
         
         if (incrementer)
         {
@@ -51,6 +56,14 @@ public class UIFieldFormatterField
             }
             this.value = sb.toString();
         }
+    }
+    
+    public UIFieldFormatterField(final FieldType type, 
+                                 final int       size, 
+                                 final String    value, 
+                                 final boolean   incrementer)
+    {
+        this(type, size, value, incrementer, false);
     }
 
     public int getSize()
@@ -65,10 +78,10 @@ public class UIFieldFormatterField
 
     public String getValue()
     {
-        if (type == FieldType.year)
-        {
-            return String.format("%4d", Calendar.getInstance().get(Calendar.YEAR));
-        }
+        //if (type == FieldType.year)
+        //{
+        //    return String.format("%4d", Calendar.getInstance().get(Calendar.YEAR));
+        //}
         return value;
     }
 
@@ -77,6 +90,14 @@ public class UIFieldFormatterField
         return incrementer;
     }
     
+    /**
+     * @return the byYear
+     */
+    public boolean isByYear()
+    {
+        return byYear;
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */

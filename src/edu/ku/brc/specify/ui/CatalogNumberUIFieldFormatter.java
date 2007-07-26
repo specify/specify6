@@ -54,7 +54,7 @@ public class CatalogNumberUIFieldFormatter implements UIFieldFormatterIFace
         
         if (isNumericCatalogNumber)
         {
-            field      = new UIFieldFormatterField(UIFieldFormatterField.FieldType.numeric, numericLength, pattern, true); 
+            field      = new UIFieldFormatterField(UIFieldFormatterField.FieldType.numeric, numericLength, pattern, true, false); 
             fields     = new Vector<UIFieldFormatterField>();
             fields.add(field);
             incPos     = new Pair<Integer, Integer>(0, 9);
@@ -110,11 +110,28 @@ public class CatalogNumberUIFieldFormatter implements UIFieldFormatterIFace
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getYear()
+     */
+    public UIFieldFormatterField getYear()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getIncPosition()
      */
     public Pair<Integer, Integer> getIncPosition()
     {
         return incPos;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getYearPosition()
+     */
+    public Pair<Integer, Integer> getYearPosition()
+    {
+        return null;
     }
 
     /* (non-Javadoc)
