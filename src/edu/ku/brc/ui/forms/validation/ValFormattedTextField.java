@@ -198,7 +198,8 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
             ViewFactory.changeTextFieldUIForDisplay(viewtextField, false);
             PanelBuilder    builder = new PanelBuilder(new FormLayout("1px,P,1px", "1px,P,1px"), this);
             builder.add(viewtextField, cc.xy(2, 2));
-            
+            bgColor = viewtextField.getBackground();
+
         } else
         {
             Font font = new Font("Courier", Font.PLAIN, 12);
@@ -309,7 +310,11 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
      */
     protected void setBGColor(final Color color)
     {
-        if (comps != null)
+        if (viewtextField != null)
+        {
+            viewtextField.setBackground(color);
+            
+        } else if (comps != null)
         {
             for (JComponent comp : comps)
             {
@@ -544,15 +549,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
     public void setRequired(boolean isRequired)
     {
         this.isRequired = isRequired;
-        Color color = isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor;
-        
-        if (viewtextField != null)
-        {
-            viewtextField.setBackground(color);
-        } else
-        {
-            setBGColor(color);
-        }
+        setBGColor(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
     }
 
     /* (non-Javadoc)
