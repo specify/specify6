@@ -73,7 +73,6 @@ public class JComboBoxFromQuery extends JComboBox
     protected String               format;
     protected String               keyColumn;
     protected int                  numColumns      = -1;
-    protected Connection           dbConnection    = null;
     protected Object[]             values;
     
     protected int prevCaretPos = -1;
@@ -319,57 +318,85 @@ public class JComboBoxFromQuery extends JComboBox
             }
             log.debug(queryString);
 
-            Statement  dbStatement = dbConnection.createStatement();
-            ResultSet rs           = dbStatement.executeQuery(queryString);
-            if (rs.first())
+            Connection connection   = DBConnection.getInstance().createConnection();
+            Statement  dbStatement  = null;
+            ResultSet  rs           = null;
+            
+            try
             {
-                if (numColumns == -1)
+                if (connection != null)
                 {
-                    numColumns = rs.getMetaData().getColumnCount()-1;
-                    values = new Object[numColumns];
-                }
-
-                do
-                {
-                    if (numColumns == 1)
+                    dbStatement  = connection.createStatement();
+                    if (dbStatement != null)
                     {
-                        idList.addElement(rs.getLong(2));
-                        list.addElement(rs.getString(1));
-
-                    } else
-                    {
-                        try
-                        {
-                            idList.addElement(rs.getLong(numColumns+1));
-                            for (int i=0;i<numColumns;i++)
-                            {
-                                Object val = rs.getObject(i+1);
-                                values[i] = val != null ? val : "";
-                            }
-                            Formatter formatter = new Formatter();
-                            formatter.format(format, values);
-                            list.addElement(formatter.toString());
-
-                        } catch (java.util.IllegalFormatConversionException ex)
-                        {
-                            list.addElement(values[0] != null ? values[0].toString() : "(No Value)");
-                        }
+                        rs = dbStatement.executeQuery(queryString);
                     }
-
-                } while(rs.next());
-            } else
+                }
+                
+                if (rs != null && rs.first())
+                {
+                    if (numColumns == -1)
+                    {
+                        numColumns = rs.getMetaData().getColumnCount()-1;
+                        values = new Object[numColumns];
+                    }
+    
+                    do
+                    {
+                        if (numColumns == 1)
+                        {
+                            idList.addElement(rs.getLong(2));
+                            list.addElement(rs.getString(1));
+    
+                        } else
+                        {
+                            try
+                            {
+                                idList.addElement(rs.getLong(numColumns+1));
+                                for (int i=0;i<numColumns;i++)
+                                {
+                                    Object val = rs.getObject(i+1);
+                                    values[i] = val != null ? val : "";
+                                }
+                                Formatter formatter = new Formatter();
+                                formatter.format(format, values);
+                                list.addElement(formatter.toString());
+    
+                            } catch (java.util.IllegalFormatConversionException ex)
+                            {
+                                list.addElement(values[0] != null ? values[0].toString() : "(No Value)");
+                            }
+                        }
+    
+                    } while(rs.next());
+                } else
+                {
+                    searchStopLength = Integer.MAX_VALUE;
+                }
+    
+                if (list.size() > 0 && list.size() < 11)
+                {
+                    this.searchStopLength = entryStr.length();
+                }
+            } catch (SQLException ex)
             {
-                searchStopLength = Integer.MAX_VALUE;
-            }
-
-            if (list.size() > 0 && list.size() < 11)
+                ex.printStackTrace();
+                
+            } finally
             {
-                this.searchStopLength = entryStr.length();
+                if (rs != null)
+                {
+                    rs.close();
+                }
+                if (dbStatement != null)
+                {
+                    dbStatement.close();
+                }
+                if (connection != null)
+                {
+                    connection.close();
+                }
             }
-            rs.close();
-            dbStatement.close();
-            dbStatement = null;
-
         } catch (SQLException ex)
         {
             ex.printStackTrace();
@@ -484,18 +511,6 @@ public class JComboBoxFromQuery extends JComboBox
     protected void tfFocusGained(@SuppressWarnings("unused") FocusEvent e)
     {
         searchStopLength = Integer.MAX_VALUE;
-
-        if (dbConnection != null) // shouldn't happen
-        {
-            try
-            {
-                dbConnection.close();
-            } catch (SQLException ex)
-            {
-                // do nothing
-            }
-        }
-        dbConnection = DBConnection.getInstance().createConnection(); 
     }
     
     /**
@@ -507,14 +522,7 @@ public class JComboBoxFromQuery extends JComboBox
         tf.setSelectionStart(0);
         tf.setSelectionEnd(0);
         tf.moveCaretPosition(0);
-        try
-        {
-            dbConnection.close();
-        } catch (SQLException ex)
-        {
-            // do nothing
-        }
-        dbConnection = null;
+        
         if (tf.getText().length() == 0)
         {
             setSelectedIndex(-1);
@@ -588,19 +596,6 @@ public class JComboBoxFromQuery extends JComboBox
         model.removeAllElements();
         idList.clear();
         list.clear();
-
-        // Just Making sure
-        if (dbConnection != null)
-        {
-            try
-            {
-                dbConnection.close();
-                dbConnection = null;
-            } catch (SQLException ex)
-            {
-                log.error(ex);
-            }
-        }
     }
     
     /* (non-Javadoc)

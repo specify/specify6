@@ -520,7 +520,6 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
      */
     public boolean isInError()
     {
-        System.out.println(valState);
         return valState != UIValidatable.ErrorType.Valid;
     }
 

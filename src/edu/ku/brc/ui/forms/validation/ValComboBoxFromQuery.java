@@ -796,7 +796,6 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     public void contentsChanged(ListDataEvent e)
     {
-        System.out.println("contentsChanged");
         isChanged = true;
         validateState();
         repaint();
@@ -807,7 +806,6 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     public void intervalAdded(ListDataEvent e)
     {
-        System.out.println("intervalAdded");
         // do nothing
     }
 
@@ -816,7 +814,6 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     public void intervalRemoved(ListDataEvent e)
     {
-        System.out.println("intervalRemoved");
         // do nothing
     }
 
