@@ -513,6 +513,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
     }
     
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "acceptedTaxon")
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
 	public Set<Taxon> getAcceptedChildren()
 	{
 		return this.acceptedChildren;
@@ -525,6 +526,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "AcceptedID")
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
 	public Taxon getAcceptedTaxon()
 	{
 		return this.acceptedTaxon;
@@ -542,6 +544,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
      */
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "HybridParent1ID")
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public Taxon getHybridParent1()
     {
         return hybridParent1;
@@ -559,6 +562,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
      */
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "HybridParent2ID")
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public Taxon getHybridParent2()
     {
         return hybridParent2;
@@ -575,6 +579,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
      * @return the set of Taxon objects where this object is the hybridParent1 value.
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "hybridParent1")
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public Set<Taxon> getHybridChildren1()
     {
         return hybridChildren1;
@@ -591,6 +596,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
      * @return the set of Taxon objects where this object is the hybridParent2 value.
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "hybridParent2")
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public Set<Taxon> getHybridChildren2()
     {
         return hybridChildren2;
@@ -602,6 +608,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
     }
 
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "taxon")
+    @Cascade( {CascadeType.MERGE, CascadeType.LOCK} )
 	public Set<Determination> getDeterminations()
 	{
 		return determinations;
@@ -613,6 +620,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	}
 
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "taxon")
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
 	public Set<TaxonCitation> getTaxonCitations()
 	{
 		return this.taxonCitations;
@@ -625,6 +633,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "TaxonTreeDefID", nullable = false)
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
 	public TaxonTreeDef getDefinition()
 	{
 		return this.definition;
@@ -637,6 +646,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "TaxonTreeDefItemID", nullable = false)
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
 	public TaxonTreeDefItem getDefinitionItem()
 	{
 		return this.definitionItem;
@@ -652,8 +662,8 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	}
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( {CascadeType.LOCK} )
     @JoinColumn(name = "ParentID")
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
 	public Taxon getParent()
 	{
 		return this.parent;
@@ -666,7 +676,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 
 
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "parent")
-    @Cascade( {CascadeType.DELETE} )
+    @Cascade( {CascadeType.DELETE, CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
 	public Set<Taxon> getChildren()
 	{
 		return this.children;
@@ -689,7 +699,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	}
 
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "taxon")
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public Set<Attachment> getAttachments()
     {
         return attachments;

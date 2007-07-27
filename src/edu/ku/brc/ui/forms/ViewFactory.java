@@ -49,8 +49,6 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.helpers.BrowserLauncher;
-import edu.ku.brc.specify.datamodel.TreeDefIface;
-import edu.ku.brc.specify.ui.treetables.TreeNodeChooser;
 import edu.ku.brc.ui.BrowseBtnPanel;
 import edu.ku.brc.ui.ColorChooser;
 import edu.ku.brc.ui.ColorWrapper;
@@ -65,7 +63,6 @@ import edu.ku.brc.ui.db.PickListDBAdapterFactory;
 import edu.ku.brc.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.ui.db.TextFieldFromPickListTable;
 import edu.ku.brc.ui.db.TextFieldWithInfo;
-import edu.ku.brc.ui.db.TreeFinderFactory;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.ui.forms.persist.AltView;
@@ -453,39 +450,6 @@ public class ViewFactory
         throw new RuntimeException("CBX Name for ValComboBoxFromQuery ["+cbxName+"] is empty!");
     }
 
-    protected ValComboBoxFromQuery createTreeQueryComboBox(final FormValidator validator,
-                                                       final FormCellField cellField,
-                                                       String treeType)
-    {
-        final ValComboBoxFromQuery cbx = createQueryComboBox(validator, cellField);
-        
-        // find the right tree def
-        TreeDefIface<?,?,?> treeDef = TreeFinderFactory.getInstance().findTreeDefinition(treeType);
-        
-        final TreeNodeChooser tnc = new TreeNodeChooser(treeDef);
-        cbx.setNewAction(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent ae)
-            {
-                System.out.println("Let's make a new node");
-            }
-        });
-        
-        cbx.setSearchAction(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent ae)
-            {
-                Object foundObj = tnc.showChooser();
-                if (foundObj != null)
-                {
-                    cbx.setValue(foundObj, null);
-                    cbx.setChanged(true);
-                }
-            }
-        });
-        
-        return cbx;
-    }
     /**
      * Creates a ValComboBox.
      * @param validator a validator to hook the control up to (may be null)
@@ -989,21 +953,6 @@ public class ViewFactory
                             
                             compToAdd = cbx;
                             addToValidator = validator == null; // might already added to validator
-                            break;
-                        }
-                        
-                        case treequerycbx:
-                        {
-                            String treeType = cellField.getProperty("type");
-                            ValComboBoxFromQuery cbx = createTreeQueryComboBox(validator, cellField, treeType);
-                            cbx.setMultiView(parent);
-                            cbx.setFrameTitle(cellField.getProperty("title"));
-                            
-                            compToAdd = cbx;
-                            addToValidator = validator == null; // might already added to validator
-
-                            cbx.setEditEnabled(false);
-                            
                             break;
                         }
                         

@@ -23,7 +23,13 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
@@ -41,14 +47,17 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
+import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.Timer;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -59,13 +68,17 @@ import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.tasks.BaseTreeTask;
 import edu.ku.brc.specify.tasks.DualViewSearchable;
+import edu.ku.brc.specify.treeutils.TreeDataService;
+import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.treeutils.TreeFactory;
+import edu.ku.brc.specify.treeutils.TreeHelper;
 import edu.ku.brc.ui.DragDropCallback;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
+import edu.ku.brc.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.Viewable;
@@ -93,17 +106,17 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	/** Status message display widget. */
 	protected JStatusBar statusBar;
 	
-	/** Model holding all <code>Treeable</code> nodes. */
-	protected TreeDataListModel<T,D,I> listModel;
+	/** Model holding all <code>TreeNode</code> nodes. */
+	protected TreeViewerListModel listModel;
 	/** The tree display widget. */
 	protected TreeDataGhostDropJList[] lists;
 	/** The scroll panes that contains the lists. */
 	protected JScrollPane[] scrollers;
 	/** Cell renderer for displaying individual nodes in the tree. */
-	protected TreeDataListCellRenderer<T,D,I> listCellRenderer;
+	protected TreeViewerNodeRenderer listCellRenderer;
 	/** A header for the tree, displaying the names of the visible levels. */
 	@SuppressWarnings("unchecked")
-    protected TreeDataListHeader[] listHeaders;
+    protected TreeViewerListHeader[] listHeaders;
 	
 	protected JPanel[] treeListPanels;
     
@@ -130,22 +143,30 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     protected String busyReason;
     
     protected List<AbstractButton> allButtons;
-    private JButton subtree0;
-    private JButton wholeTree0;
-    private JButton toParent0;
-    private JButton syncViews0;
-    private JButton toggle0;
-    private JButton newChild0;
-    private JButton editNode0;
-    private JButton deleteNode0;
-    private JButton subtree1;
-    private JButton wholeTree1;
-    private JButton toParent1;
-    private JButton syncViews1;
-    private JButton toggle1;
-    private JButton newChild1;
-    private JButton editNode1;
-    private JButton deleteNode1;
+    protected JButton subtree0;
+    protected JButton wholeTree0;
+    protected JButton toParent0;
+    protected JButton syncViews0;
+    protected JButton toggle0;
+    protected JButton newChild0;
+    protected JButton editNode0;
+    protected JButton deleteNode0;
+    protected JButton subtree1;
+    protected JButton wholeTree1;
+    protected JButton toParent1;
+    protected JButton syncViews1;
+    protected JButton toggle1;
+    protected JButton newChild1;
+    protected JButton editNode1;
+    protected JButton deleteNode1;
+    
+    protected TreeDataService<T,D,I> dataService;
+    
+    protected BusinessRulesIFace businessRules;
+    
+    protected Set<Long> idsToReexpand = new HashSet<Long>();
+    
+    protected boolean restoreTreeState = false;
     
 	/**
 	 * Build a TreeTableViewer to view/edit the data found.
@@ -166,6 +187,13 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		
 		getLayout().removeLayoutComponent(progressBarPanel);
 		
+        this.dataService = TreeDataServiceFactory.createService();
+        
+        businessRules = DBTableIdMgr.getInstance().getBusinessRule(treeDef.getNodeClass());
+        
+        restoreTreeState = AppPreferences.getLocalPrefs().getBoolean("RestoreTreeExpansionState", false);
+        restoreTreeState = true;
+        
 		setBusy(false,null);
 	}
 	
@@ -219,7 +247,13 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
      */
     protected void initTreeLists()
     {
-        listModel = new TreeDataListModel<T,D,I>(treeDef);
+        T rootRecord = dataService.getRootNode(treeDef);
+        TreeNode rootNode = createNode(rootRecord);
+        listModel = new TreeViewerListModel(rootNode);
+        idsToReexpand.add(rootNode.getId());
+
+        showChildren(rootRecord);
+
         showTree();
     }
     
@@ -237,27 +271,34 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			@Override
 			public void mouseReleased(MouseEvent e){mouseButtonReleased(e);}
 		};
+        
 		//listModel = new TreeDataListModel<T,D,I>(treeDef);
 		Color[] bgs = new Color[2];
 		bgs[0] = new Color(202,238,255);
 		bgs[1] = new Color(151,221,255);
-		listCellRenderer = new TreeDataListCellRenderer<T,D,I>(listModel,bgs);
+		listCellRenderer = new TreeViewerNodeRenderer(listModel,bgs);
 		ListSelectionListener listSelListener = new ListSelectionListener()
 		{
 			@SuppressWarnings("unchecked")
             public void valueChanged(ListSelectionEvent e)
 			{
+                if (e.getValueIsAdjusting())
+                {
+                    // ignore these events
+                    return;
+                }
+                
                 TreeDataGhostDropJList sourceList = (TreeDataGhostDropJList)e.getSource();
-                T node = (T)sourceList.getSelectedValue();
+                TreeNode node = (TreeNode)sourceList.getSelectedValue();
 
-				newTreeableSelected(sourceList,node);
+				newNodeSelected(sourceList,node);
 			}
 		};
 
 		// setup both views
 		lists = new TreeDataGhostDropJList[2];
 		scrollers = new JScrollPane[2];
-		listHeaders = new TreeDataListHeader[2];
+		listHeaders = new TreeViewerListHeader[2];
 		treeListPanels = new JPanel[2];
         
 		lists[0] = new TreeDataGhostDropJList(listModel,this);
@@ -272,8 +313,14 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		lists[1].setCellRenderer(listCellRenderer);
 		lists[1].addListSelectionListener(listSelListener);
 		
-		listHeaders[0] = new TreeDataListHeader<T,D,I>(lists[0],listModel,listCellRenderer);
-		listHeaders[1] = new TreeDataListHeader<T,D,I>(lists[0],listModel,listCellRenderer);
+        Map<Integer,String> rankNamesMap = new HashMap<Integer, String>();
+        for (I defItem: treeDef.getTreeDefItems())
+        {
+            rankNamesMap.put(defItem.getRankId(), defItem.getName());
+        }
+        
+		listHeaders[0] = new TreeViewerListHeader(lists[0],listModel,listCellRenderer,rankNamesMap);
+		listHeaders[1] = new TreeViewerListHeader(lists[0],listModel,listCellRenderer,rankNamesMap);
 
 		scrollers[0] = new JScrollPane(lists[0]);
 		scrollers[0].setBackground(Color.WHITE);
@@ -306,7 +353,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         {
             public void actionPerformed(ActionEvent ae)
             {
-                showSubtreeOfSelection(lists[0]);
+                System.out.println("reimplement show subtree");
+                //showSubtreeOfSelection(lists[0]);
             }
         });
         
@@ -317,7 +365,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         {
             public void actionPerformed(ActionEvent ae)
             {
-                showWholeTree(lists[0]);
+                System.out.println("reimplement show whole tree");
+                //showWholeTree(lists[0]);
             }
         });
 
@@ -445,7 +494,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         {
             public void actionPerformed(ActionEvent ae)
             {
-                showSubtreeOfSelection(lists[1]);
+                System.out.println("reimplement show subtree");
+                //showSubtreeOfSelection(lists[1]);
             }
         });
         
@@ -456,7 +506,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         {
             public void actionPerformed(ActionEvent ae)
             {
-                showWholeTree(lists[1]);
+                System.out.println("reimplement show whole tree");
+                //showWholeTree(lists[1]);
             }
         });
 
@@ -590,8 +641,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         lists[1].getActionMap().put("Find", findAction);
         
         // force the selection-sensative buttons to initialize properly
-        newTreeableSelected(lists[0],null);
-        newTreeableSelected(lists[1],null);
+        newNodeSelected(lists[0],null);
+        newNodeSelected(lists[1],null);
         
         UIRegistry.forceTopFrameRepaint();
 	}
@@ -613,23 +664,24 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		{
 			ab.setEnabled(!busy);
 		}
-        
-        // now fix the add/delete buttons to be disabled if addition/deletion isn't possible
-		if (lists != null)
-        {
-            if (lists[0] != null)
-            {
-                T node = (T)lists[0].getSelectedValue();
-                newChild0.setEnabled(listModel.canAddChildToNode(node));
-                deleteNode0.setEnabled(listModel.canDeleteNode(node));
-            }
-            if (lists[1] != null)
-            {
-                T node = (T)lists[1].getSelectedValue();
-                newChild1.setEnabled(listModel.canAddChildToNode(node));
-                deleteNode1.setEnabled(listModel.canDeleteNode(node));
-            }
-        }
+
+        // Why is this here?  This is a weird place for this
+//        // now fix the add/delete buttons to be disabled if addition/deletion isn't possible
+//		if (lists != null)
+//        {
+//            if (lists[0] != null)
+//            {
+//                TreeNode node = (TreeNode)lists[0].getSelectedValue();
+//                newChild0.setEnabled(listModel.canAddChildToNode(node));
+//                deleteNode0.setEnabled(listModel.canDeleteNode(node));
+//            }
+//            if (lists[1] != null)
+//            {
+//                TreeNode node = (TreeNode)lists[1].getSelectedValue();
+//                newChild1.setEnabled(listModel.canAddChildToNode(node));
+//                deleteNode1.setEnabled(listModel.canDeleteNode(node));
+//            }
+//        }
 
 		this.busy = busy;
 		busyReason = statusText;
@@ -706,7 +758,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 * created if the user chooses to proceed with the data entry.
 	 */
 	@SuppressWarnings("unchecked")
-	public void addChildToSelectedNode(JList list)
+    public void addChildToSelectedNode(JList list)
 	{
         if (checkBusy())
         {
@@ -719,8 +771,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			return;
 		}
 		
-		T parent = (T)selection;
-		I parentDefItem = parent.getDefinitionItem();
+        TreeNode parent = (TreeNode)selection;
+        T parentRecord = getRecordForNode(parent);
+		I parentDefItem = parentRecord.getDefinitionItem();
 		if( parentDefItem.getChild() == null )
 		{
 			log.info("Cannot add child node below this rank");
@@ -728,10 +781,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		}
 
 		// setup a bunch of links that are needed for the form to correctly display the new node
-		T newT = (T)TreeFactory.createNewTreeable(parent.getClass(),"");
+		T newT = (T)TreeFactory.createNewTreeable(parentRecord.getClass(),"");
 		newT.setDefinitionItem(parentDefItem.getChild());
-		newT.setDefinition(parent.getDefinition());
-		newT.setParent(parent);
+		newT.setDefinition(parentRecord.getDefinition());
+		newT.setParent(parentRecord);
 
 		// display a form for filling in child data
 		showEditDialog(newT, "New Node Form", true);
@@ -742,43 +795,51 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 * only if it is determined possible without violating any business
 	 * rules.
 	 */
-	@SuppressWarnings("unchecked")
     public void deleteSelectedNode(JList list)
 	{
+        // make sure we're not busy doing something else important
 		if(checkBusy())
 		{
 			return;
 		}
 
+        // get the selected TreeNode
 		Object selection = list.getSelectedValue();
 		if( selection == null )
 		{
 			return;
 		}
-		
-        // unchecked cast, unavoidable
-        T node = (T)selection;
-        int numNodesToDelete = listModel.getDescendantCount(node)+1;
+        TreeNode node = (TreeNode)selection;
+        
+        // get the DB record that corresponds to the TreeNode
+        T nodeRecord = getRecordForNode(node);
+        int numNodesToDelete = dataService.getDescendantCount(nodeRecord)+1;
         int userChoice = JOptionPane.OK_OPTION;
+        
+        // if this node has children, ask the user if it is okay to delete multiple nodes
         if (numNodesToDelete > 1)
         {
             userChoice = JOptionPane.showConfirmDialog(this, "This operation will delete "
                     + numNodesToDelete + " nodes", "Continue?", JOptionPane.OK_CANCEL_OPTION,
                     JOptionPane.WARNING_MESSAGE);
         }
+        
         if (userChoice == JOptionPane.OK_OPTION)
         {
-            T parent = node.getParent();
-            listModel.hideChildren(parent);
-            listModel.deleteNode(node);
-            listModel.showChildren(parent);
+            TreeNode parent = listModel.getNodeById(node.getParentId());
+            // hide the children of the parent node (which will hide the node we're going to delete)
+            hideChildren(parent);
+            // delete the record from the DB
+            dataService.deleteTreeNode(nodeRecord);
+            // re-show the children of the parent node
+            showChildren(parent);
             setStatusBarText(numNodesToDelete + " node(s) deleted");
         }
 	}
     
     public void initializeNodeAssociations(T node)
     {
-        listModel.initializeNodeAssociations(node);
+        dataService.initializeRelatedObjects(node);
     }
 	
 	/**
@@ -798,54 +859,55 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			return;
 		}
 		
-		showEditDialog((T)selection, "Edit Node Values", false);
+        T nodeRecord = getRecordForNode((TreeNode)selection);
+		showEditDialog(nodeRecord, "Edit Node Values", false);
 	}
 
-	/**
-	 * Sets the visibleRoot property of the tree to the currently selected node.  This provides
-	 * the ability to "zoom in" to a lower level of the tree.
-	 */
-	@SuppressWarnings("unchecked")
-	public void showSubtreeOfSelection(JList list)
-	{
-		if(checkBusy())
-		{
-			return;
-		}
-
-		Object selection = list.getSelectedValue();
-		if( selection == null )
-		{
-			return;
-		}
-		
-		T node = (T)selection;
-
-		listModel.setVisibleRoot(node);
-		
-		list.setSelectedValue(node,true);
-	}
-	
-	/**
-	 * Sets the visibleRoot property to the actual root of the tree.  This results in the 
-	 * entire tree being made available to the user.
-	 */
-	public void showWholeTree(JList list)
-	{
-		if(checkBusy())
-		{
-			return;
-		}
-
-		Object selection = list.getSelectedValue();		
-
-		listModel.setVisibleRoot(listModel.getRoot());
-		
-		if( selection != null )
-		{
-			list.setSelectedValue(selection,true);
-		}
-	}
+//	/**
+//	 * Sets the visibleRoot property of the tree to the currently selected node.  This provides
+//	 * the ability to "zoom in" to a lower level of the tree.
+//	 */
+//	@SuppressWarnings("unchecked")
+//	public void showSubtreeOfSelection(JList list)
+//	{
+//		if(checkBusy())
+//		{
+//			return;
+//		}
+//
+//		Object selection = list.getSelectedValue();
+//		if( selection == null )
+//		{
+//			return;
+//		}
+//		
+//		T node = (T)selection;
+//
+//		listModel.setVisibleRoot(node);
+//		
+//		list.setSelectedValue(node,true);
+//	}
+//	
+//	/**
+//	 * Sets the visibleRoot property to the actual root of the tree.  This results in the 
+//	 * entire tree being made available to the user.
+//	 */
+//	public void showWholeTree(JList list)
+//	{
+//		if(checkBusy())
+//		{
+//			return;
+//		}
+//
+//		Object selection = list.getSelectedValue();		
+//
+//		listModel.setVisibleRoot(listModel.getRoot());
+//		
+//		if( selection != null )
+//		{
+//			list.setSelectedValue(selection,true);
+//		}
+//	}
 
 	@SuppressWarnings("unchecked")
 	public void selectParentOfSelection(JList list)
@@ -860,9 +922,13 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		{
 			return;
 		}
-		T node = (T)selection;
-		T parent = node.getParent();
-		list.setSelectedValue(parent,true);
+        TreeNode node = (TreeNode)selection;
+        long parentId = node.getParentId();
+        if (parentId != node.getId())
+        {
+            TreeNode parentNode = listModel.getNodeById(parentId);
+            list.setSelectedValue(parentNode,true);
+        }
 	}
 			
 	/* (non-Javadoc)
@@ -876,7 +942,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		}
 
 		findName = nodeName;
-		findResults = listModel.findByName(findName);
+		findResults = dataService.findByName(treeDef, nodeName);
 		if(findResults.isEmpty())
 		{
 			//TODO: notify the user that no results were found
@@ -985,7 +1051,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	
 	public void findNext(int where,boolean wrap,T current)
 	{
-		List<T> matches = listModel.findByName(current.getName());
+		List<T> matches = dataService.findByName(treeDef, current.getName());
 		if(matches.size()==1)
 		{
 			setStatusBarText("No more matches");
@@ -1038,15 +1104,28 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	protected boolean showPathToNode(T node)
 	{
 		List<T> pathToNode = node.getAllAncestors();
-		T visRoot = listModel.getVisibleRoot();
-		if(!pathToNode.contains(visRoot))
+		TreeNode visRoot = listModel.getVisibleRoot();
+        
+        boolean pathContainsVisRoot = false;
+        T visRootRecord = null;
+        for (T pathItem: pathToNode)
+        {
+            if ((long)(pathItem.getTreeId()) == visRoot.getId())
+            {
+                pathContainsVisRoot = true;
+                visRootRecord = pathItem;
+                break;
+            }
+        }
+		if(!pathContainsVisRoot)
 		{
 			return false;
 		}
 		
-		for( int i = pathToNode.indexOf(visRoot); i < pathToNode.size(); ++i )
+		for( int i = pathToNode.indexOf(visRootRecord); i < pathToNode.size(); ++i )
 		{
-			listModel.setChildrenVisible(pathToNode.get(i),true);
+            T pathRecord = pathToNode.get(i);
+            showChildren(pathRecord);
 		}
 		return true;
 	}
@@ -1057,12 +1136,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 * @param node the node being edited
 	 * @param title the title of the dialog window
 	 */
-	@SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
     protected void showEditDialog(T node, String title, boolean isNewObject)
 	{
 	    // TODO: double check these choices
-	    
-	    
 	    // gather all the info needed to create a form in a dialog
 	    Pair<String,String> formsNames = TreeFactory.getAppropriateFormsetAndViewNames(node);
 		Frame parentFrame = (Frame)UIRegistry.get(UIRegistry.FRAME);
@@ -1099,6 +1176,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		    }
 		}
 		
+        // note some node values so we can see if they change
 		String nodeNameBefore = node.getName();
 		Long parentIdBefore   = (node.getParent() != null) ? node.getParent().getTreeId() : null;
 		
@@ -1106,12 +1184,12 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		dialog.setVisible(true);
 		
 		// see what important stuff was modified
-		String nodeNameAfter = node.getName();
-		Long parentIdAfter   = (node.getParent() != null) ? node.getParent().getTreeId() : null;
-		boolean nameChanged = nodeNameBefore.equals(nodeNameAfter);
+		String nodeNameAfter  = node.getName();
+		Long parentIdAfter    = (node.getParent() != null) ? node.getParent().getTreeId() : null;
+		boolean nameChanged   = !nodeNameBefore.equals(nodeNameAfter);
 		boolean parentChanged = (parentIdBefore == null && parentIdAfter != null) ||
 		                        (parentIdBefore != null && parentIdAfter == null) ||
-		                        (parentIdBefore != null && parentIdBefore.longValue() != parentIdAfter.longValue());
+		                        (parentIdBefore != null && parentIdAfter != null && parentIdBefore.longValue() != parentIdAfter.longValue());
 		
 		log.debug("nameChange:    " + nameChanged);
 		log.debug("parentChanged: " + parentChanged);
@@ -1121,15 +1199,30 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		{
 		    // save the node and update the tree viewer appropriately
 		    DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            T mergedNode = null;
+            boolean success = true;
+            
+            if (businessRules != null)
+            {
+                businessRules.beforeSave(node,session);
+            }
+            
 		    try
             {
+                mergedNode = (T)session.merge(node);
 		        session.beginTransaction();
-                session.saveOrUpdate(node);
+                session.saveOrUpdate(mergedNode);
                 session.commit();
-                log.info("Successfully saved changes to " + node.getFullName());
+                log.info("Successfully saved changes to " + mergedNode.getFullName());
+                if (businessRules != null)
+                {
+                    businessRules.afterSave(node);
+                }
+                
             }
             catch (Exception e)
             {
+                success = false;
                 log.error("Error while saving node changes.  Rolling back transaction.", e);
                 session.rollback();
             }
@@ -1137,20 +1230,34 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             {
                 session.close();
             }
+            // at this point, the new node is in the DB
 		    
             // now refresh the tree viewer
-		    T parent = node.getParent();
-		    if (parent != null)
-		    {
-		        listModel.refresh(parent,node);
-		        listModel.showChildren(parent);
-		    }
-		    listModel.nodeValuesChanged(node);
+            
+            if (isNewObject && success)
+            {
+                // show the children of the 
+                T parent = node.getParent();
+                if (parent != null)
+                {
+                    TreeNode parentNode = listModel.getNodeById(parent.getTreeId());
+                    parentNode.setHasChildren(true);
+                    hideChildren(parentNode);
+                    showChildren(parent);
+                }
+            }
+            else
+            {
+                // this was an existing node being edited
+                TreeNode editedNode = listModel.getNodeById(node.getTreeId());
+                editedNode.setName(node.getName());
+                editedNode.setRank(node.getRankId());
+                listModel.nodeValuesChanged(editedNode);
+            }
 		}
 		else
 		{
 		    // the user didn't save any edits (if there were any)
-		    System.out.println("Cancel was pressed");
 		}
 	}
 	
@@ -1170,14 +1277,20 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 * Updates the status bar text to display the full name of the currently
 	 * selected nodes and updates the enabled/disabled status of the buttons.
 	 *
-	 * @param t the newly selected Treeable
+	 * @param t the newly selected TreeNode
 	 */
 	@SuppressWarnings("unchecked")
-	protected void newTreeableSelected(JList sourceList, T selectedNode)
+	protected void newNodeSelected(JList sourceList, TreeNode selectedNode)
 	{
-        // these calls should work even if t is null
-        boolean canDelete   = listModel.canDeleteNode(selectedNode);
-        boolean canAddChild = listModel.canAddChildToNode(selectedNode);
+        T nodeRecord = null;
+        if (selectedNode != null)
+        {
+            nodeRecord = getRecordForNode(selectedNode);
+        }
+        
+        // these calls should work even if nodeRecord is null
+        boolean canDelete   = (businessRules != null) ? businessRules.okToDelete(nodeRecord) : false;
+        boolean canAddChild = (selectedNode != null) ? (selectedNode.getRank() > getLowestPossibleNodeRank()) : false;
         
         popupMenu.setDeleteEnabled(canDelete);
         popupMenu.setNewEnabled(canAddChild);
@@ -1206,9 +1319,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         
         // clear the status bar if nothing is selected or show the fullname if a node is selected
         String fullname = null;
-		if( selectedNode != null )
+		if( selectedNode != null  && nodeRecord != null)
 		{
-            fullname = selectedNode.getFullName();
+            fullname = nodeRecord.getFullName();
 		}
 		
 		setStatusBarText(fullname);
@@ -1216,7 +1329,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 
 	/**
 	 * Reparents <code>dragged</code> to <code>droppedOn</code> by calling
-	 * {@link TreeDataListModel#reparent(Treeable, Treeable)}.
+	 * {@link TreeDataListModel#reparent(T, T)}.
 	 *
 	 * @see edu.ku.brc.ui.DragDropCallback#dropOccurred(java.lang.Object, java.lang.Object)
 	 * @param dragged the dragged tree node
@@ -1230,19 +1343,21 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			return false;
 		}
 
-		if( !(dragged instanceof Treeable && droppedOn instanceof Treeable) )
+		if( !(dragged instanceof TreeNode && droppedOn instanceof TreeNode) )
 		{
 			log.warn("Ignoring drag and drop of unhandled types of objects");
 			return false;
 		}
 
-		T draggedNode = (T)dragged;
-		T droppedOnNode = (T)droppedOn;
+        TreeNode draggedNode = (TreeNode)dragged;
+        TreeNode droppedOnNode = (TreeNode)droppedOn;
+        T draggedRecord = getRecordForNode(draggedNode);
+        T droppedRecord = getRecordForNode(droppedOnNode);
 
 		if( dropAction == DnDConstants.ACTION_COPY || dropAction == DnDConstants.ACTION_NONE )
 		{
 			log.info("User requested new link be created between " + draggedNode.getName() + " and " + droppedOnNode.getName());
-			String statusMsg = listModel.createNodeLink(draggedNode, droppedOnNode);
+			String statusMsg = dataService.createNodeLink(draggedRecord, droppedRecord);
 			if (statusMsg != null)
 			{
 			    statusBar.setText(statusMsg);
@@ -1251,16 +1366,39 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		}
 		else if( dropAction == DnDConstants.ACTION_MOVE )
 		{
-			T child = draggedNode;
-			T newParent = droppedOnNode;
-			
-			if( !treeDef.canChildBeReparentedToNode(child,newParent) )
+			T child = draggedRecord;
+			T newParent = droppedRecord;
+            TreeNode oldParentNode = listModel.getNodeById(draggedNode.getParentId());
+            TreeNode newParentNode = droppedOnNode;
+            
+			if( !TreeHelper.canChildBeReparentedToNode(child,newParent) )
 			{
 				log.info("Cannot reparent " + child.getName() + " to " + newParent.getName());
 				return false;
 			}
 			
-			boolean changed = listModel.reparent(child,newParent);
+            hideChildren(oldParentNode);
+            hideChildren(droppedOnNode);
+            // Removing the children of these nodes may have resulted in a node being removed from the model.
+            // This happens when one of these nodes is a descendant of the other.  The lower ranked node will
+            // no longer be in the model at all.
+			
+            // do the DB work to reparent the nodes
+            boolean changed = dataService.moveTreeNode(child, newParent);
+            
+            // reshow the nodes' children, if the nodes are still in the tree (see comment above in this method)
+            oldParentNode = listModel.getNodeById(oldParentNode.getId());
+            newParentNode = listModel.getNodeById(newParentNode.getId());
+            
+            if (oldParentNode != null)
+            {
+                showChildren(oldParentNode);
+            }
+            if (newParentNode != null)
+            {
+                showChildren(newParentNode);
+            }
+            
 			return changed;
 		}
 		return false;
@@ -1281,22 +1419,26 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		// XXX
 		if(dropAction == DnDConstants.ACTION_COPY  || dropAction == DnDConstants.ACTION_NONE)
 		{
-			if(listModel.indexOf(dragged) != -1 && listModel.indexOf(droppedOn) != -1 )
+            // this is a request to make a node relationship (e.g. synonym on a Taxon record)
+			if(dragged instanceof TreeNode && droppedOn instanceof TreeNode)
 			{
 				return true;
 			}
 		}
 		else if(dropAction == DnDConstants.ACTION_MOVE)
 		{
-			if( !(dragged instanceof Treeable && droppedOn instanceof Treeable) )
+            // this is a request to reparent a node
+			if( !(dragged instanceof TreeNode && droppedOn instanceof TreeNode) )
 			{
 				return false;
 			}
 			
-			T child = (T)dragged;
-			T newParent = (T)droppedOn;
-			
-			if( !treeDef.canChildBeReparentedToNode(child,newParent) )
+            TreeNode draggedNode = (TreeNode)dragged;
+            TreeNode droppedOnNode = (TreeNode)droppedOn;
+            T draggedRecord = getRecordForNode(draggedNode);
+            T droppedOnRecord = getRecordForNode(droppedOnNode);
+
+			if( !TreeHelper.canChildBeReparentedToNode(draggedRecord,droppedOnRecord) )
 			{
 				return false;
 			}
@@ -1344,8 +1486,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		{
 			return false;
 		}
-		T t = (T)listModel.getElementAt(index);
-		Integer rank = t.getRankId();
+		TreeNode t = listModel.getElementAt(index);
+		Integer rank = t.getRank();
 		Pair<Integer,Integer> textBounds = listCellRenderer.getTextBoundsForRank(rank);
 		
 		if( textBounds.first < p.x && p.x < textBounds.second )
@@ -1365,8 +1507,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		{
 			return false;
 		}
-		T t = (T)listModel.getElementAt(index);
-		Integer rank = t.getRankId();
+        ListModel model = list.getModel();
+        TreeNode t = (TreeNode)model.getElementAt(index);
+		Integer rank = t.getRank();
 		Pair<Integer,Integer> anchorBounds = listCellRenderer.getAnchorBoundsForRank(rank);
 		
 		if( anchorBounds.first < p.x && p.x < anchorBounds.second )
@@ -1401,16 +1544,20 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		{
 			return;
 		}
-		T t = (T)listModel.getElementAt(index);
+        ListModel model = list.getModel();
+		TreeNode treeNode = (TreeNode)model.getElementAt(index);
 
         // if the user clicked an expansion handle, expand the child nodes
 		if( clickIsOnExpansionIcon(e) || (e.getClickCount()==2 && clickIsOnText(e)) )
 		{
-			// toggle the state of child node visibility
-			boolean visible = listModel.allChildrenAreVisible(t);
-			setBusy(true, "Loading children");
-			listModel.setChildrenVisible(t, !visible);
-			setBusy(false,null);
+            if (listModel.showingChildrenOf(treeNode))
+            {
+                hideChildren(treeNode);
+            }
+            else
+            {
+                showChildren(treeNode);
+            }
 		}
         // otherwise, ignore the click
 		else
@@ -1418,7 +1565,21 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			e.consume();
 		}
 	}
-	
+    
+    protected int getLowestPossibleNodeRank()
+    {
+        int lowestRank = Integer.MAX_VALUE;
+        for (I defItem: treeDef.getTreeDefItems())
+        {
+            Integer rank = defItem.getRankId();
+            if (rank != null && rank < lowestRank)
+            {
+                lowestRank = rank;
+            }
+        }
+        return lowestRank;
+    }
+    
 	public void mouseButtonReleased(MouseEvent e)
 	{
 		if(checkBusy())
@@ -1494,4 +1655,125 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	{
 		return popupMenu;
 	}
+    
+    /**
+     * Creates a TreeNode object representing the given Treeable database record.  This method
+     * assumes that the data record has a non-null ID and rank.  It further assumes that, if the
+     * parent record is non-null, the parent has non-null ID and rank.
+     * 
+     * @param dataRecord the database record
+     * @return a TreeNode object representing the given Treeable database record
+     */
+    private TreeNode createNode(T dataRecord)
+    {
+        String nodeName = dataRecord.getName();
+        long id = dataRecord.getTreeId();
+        int rank = dataRecord.getRankId();
+
+        long parentId;
+        int parentRank;
+        
+        T parentRecord = dataRecord.getParent();
+        if (parentRecord == null)
+        {
+            parentId = id;
+            parentRank = -1;
+        }
+        else
+        {
+            parentId = parentRecord.getTreeId();
+            parentRank = parentRecord.getRankId();
+        }
+        
+        // TODO: this is probably a quicker, better way to do this
+        //int descCount = dataService.getDescendantCount(parentRecord);
+        //TreeNode node = new TreeNode(nodeName,id,parentId,rank,parentRank, (descCount != 0));
+
+        // but for now...
+        int childCount = dataService.getChildNodes(dataRecord).size();
+        TreeNode node = new TreeNode(nodeName,id,parentId,rank,parentRank, (childCount != 0));
+        return node;
+    }
+    
+    private List<TreeNode> createSortedChildNodeList(Set<T> children, Comparator<? super T> sorter)
+    {
+        Vector<T> kids = new Vector<T>(children);
+        Collections.sort(kids,sorter);
+        Vector<TreeNode> kidNodes = new Vector<TreeNode>();
+        for (T child: kids)
+        {
+            TreeNode kidNode = createNode(child);
+            kidNodes.add(kidNode);
+        }
+        return kidNodes;
+    }
+    
+    protected void showChildren(T dbRecord)
+    {
+        // get the child records
+        Set<T> children = dataService.getChildNodes(dbRecord);
+        // create a list of TreeNode objects, sorted appropriately
+        Comparator<? super T> sorter = dbRecord.getComparator();
+        TreeNode parentNode = listModel.getNodeById(dbRecord.getTreeId());
+        // add the nodes to the model
+        List<TreeNode> childNodes = createSortedChildNodeList(children, sorter);
+        if (childNodes.size() == 0)
+        {
+            parentNode.setHasChildren(false);
+            listModel.nodeValuesChanged(parentNode);
+            return;
+        }
+        listModel.showChildNodes(childNodes, parentNode);
+
+        idsToReexpand.add(parentNode.getId());
+
+        if (restoreTreeState)
+        {
+            // recursively expand the tree back to it's previous state
+            for (TreeNode childNode: childNodes)
+            {
+                if (idsToReexpand.contains(childNode.getId()))
+                {
+                    idsToReexpand.remove(childNode.getId());
+                    
+                    // maybe start a Swing Timer for this work
+                    showChildrenInTimer(childNode);
+                }
+            }
+        }
+    }
+    
+    protected void showChildrenInTimer(final TreeNode childNode)
+    {
+        ActionListener al = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                showChildren(childNode);
+            }
+        };
+        Timer swingTimer = new Timer(333,al);
+        swingTimer.setRepeats(false);
+        swingTimer.start();
+    }
+
+    protected void showChildren(TreeNode parent)
+    {
+        // get the DB record that corresponds to this TreeNode
+        T dbRecord = getRecordForNode(parent);
+
+        showChildren(dbRecord);
+    }
+
+    protected void hideChildren(TreeNode parent)
+    {
+        idsToReexpand.remove(parent.getId());
+        listModel.removeChildNodes(parent);
+    }
+    
+    private T getRecordForNode(TreeNode node)
+    {
+        T record = dataService.getNodeById(treeDef.getNodeClass(), node.getId());
+        return record;
+    }
 }

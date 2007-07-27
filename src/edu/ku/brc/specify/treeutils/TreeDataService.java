@@ -43,6 +43,8 @@ public interface TreeDataService <T extends Treeable<T,D,I>,
 	 */
 	public T getRootNode(D treeDef);
 	
+    public T getNodeById(Class<?> clazz, long id);
+    
     /**
      * Returns all of the trees of the given class.
      * 
@@ -118,7 +120,8 @@ public interface TreeDataService <T extends Treeable<T,D,I>,
      * @param node the node to be moved
      * @param newParent the new parent node
      */
-    public void moveTreeNode(T node, T newParent, T rootNode);
+    //public void moveTreeNode(T node, T newParent, T rootNode);
+    public boolean moveTreeNode(T node, T newParent);
     
     /**
      * Creates a logical link between two nodes.  This link's meaning is dependent on the type, T.  Some

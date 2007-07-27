@@ -331,6 +331,78 @@ public class TreeHelper
     {
         oldName.setIsAccepted(false);
         oldName.setAcceptedTaxon(newName);
+        
+        // update all of the even older names to point at the latest name
+        for (Taxon evenOlderName: oldName.getAcceptedChildren())
+        {
+            evenOlderName.setIsAccepted(false);
+            evenOlderName.setAcceptedTaxon(newName);
+        }
+        
         return String.format(getResourceString("TaxonTreeRelationshipMsg"),oldName.getFullName(),newName.getFullName());
+    }
+    
+    /**
+     * Determines if the child node can be reparented to newParent while not
+     * violating any of the business rules.  Currently, the only rule on
+     * reparenting is that the new parent must be of rank equal to or less than
+     * the next higher enforced rank in the child's tree definition.
+     * 
+     * @param child the node to be reparented
+     * @param newParent the prospective new parent node
+     * 
+     * @return <code>true</code> if the action will not violate any reparenting rules, false otherwise
+     */
+    public static <T extends Treeable<T,D,I>,
+                   D extends TreeDefIface<T,D,I>,
+                   I extends TreeDefItemIface<T,D,I>>
+                       boolean canChildBeReparentedToNode(T child, T newParent)
+    {
+        if( newParent.getRankId().intValue() >= child.getRankId().intValue() )
+        {
+            // a node cannot have a parent that is a peer or of lower rank (larger rank id)
+            return false;
+        }
+        
+        Integer nextEnforcedRank = getRankOfNextHighestEnforcedLevel(child);
+        if( nextEnforcedRank == null )
+        {
+            // no higher ranks are being enforced
+            // the node can be reparented all the way up to the root
+            return true;
+        }
+        
+        if( nextEnforcedRank.intValue() <= newParent.getRankId().intValue() )
+        {
+            // the next enforced rank is equal to or above the new parent rank
+            return true;
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Returns the next highest rank in the tree that is enforced by the
+     * tree definition.
+     * 
+     * @param node the node to find the next highest enforced rank for
+     * @return the next highest rank
+     */
+    public static <T extends Treeable<T,D,I>,
+                   D extends TreeDefIface<T,D,I>,
+                   I extends TreeDefItemIface<T,D,I>>
+                       Integer getRankOfNextHighestEnforcedLevel( T node )
+    {
+        I defItem = node.getDefinitionItem();
+        while( defItem.getParent() != null )
+        {
+            defItem = defItem.getParent();
+            if( defItem.getIsEnforced() != null && defItem.getIsEnforced().booleanValue() == true )
+            {
+                return defItem.getRankId();
+            }
+        }
+        
+        return null;
     }
 }

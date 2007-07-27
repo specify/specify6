@@ -328,4 +328,22 @@ public class GraphicsUtils
 
         return ret;
     }
+    
+    public static String clipString(FontMetrics fm, String text, int availableWidth)
+    {
+        // first see if the string needs clipping at all
+        if (fm.stringWidth(text) < availableWidth)
+        {
+            return text;
+        }
+        
+        String dots = "...";
+        
+        StringBuilder sb = new StringBuilder(text + dots);
+        while (fm.stringWidth(sb.toString()) > availableWidth)
+        {
+            sb.deleteCharAt(sb.length()-4);
+        }
+        return sb.toString();
+    }
 }

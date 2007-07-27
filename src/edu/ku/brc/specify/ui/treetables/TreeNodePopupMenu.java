@@ -53,7 +53,7 @@ public class TreeNodePopupMenu extends JPopupMenu
 		{
 			public void actionPerformed(ActionEvent ae)
 			{
-				ttv.showSubtreeOfSelection(list);
+				//ttv.showSubtreeOfSelection(list);
 			}
 		});
 

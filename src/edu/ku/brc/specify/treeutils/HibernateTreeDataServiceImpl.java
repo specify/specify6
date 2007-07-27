@@ -94,10 +94,8 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
      */
     public synchronized Set<T> getChildNodes(T parent)
     {
-        log.trace("enter");
         if (Hibernate.isInitialized(parent.getChildren()))
         {
-            log.trace("exit");
             return parent.getChildren();
         }
         
@@ -105,13 +103,12 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         Set<T> children = parent.getChildren();
         // to force Set loading
         int childCount = children.size();
-        log.debug(childCount + " child(ren) of " + parent.getName() + " loaded");
+        log.debug("getChildNodes( " + parent + " ): " + childCount + " child(ren) of " + parent.getName() + " loaded");
         for (T child: children)
         {
             log.debug("\t" + nodeDebugInfo(child));
         }
         session.close();
-        log.trace("exit");
         return children;
     }
     
@@ -147,6 +144,16 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 		return root;
 	}
 
+    @SuppressWarnings("unchecked")
+    public synchronized T getNodeById(Class<?> clazz, long id)
+    {
+        log.debug("getNodeById( " + clazz.getSimpleName() + ", " + id + " )");
+        Session session = getNewSession();
+        T record = (T)session.load(clazz, id);
+        session.close();
+        return record;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.treeutils.TreeDataService#addNewTreeDefItem(edu.ku.brc.specify.datamodel.TreeDefItemIface, edu.ku.brc.specify.datamodel.TreeDefItemIface)
      */
@@ -478,8 +485,52 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 //        session.saveOrUpdate(parent);
 //        session.save(child);
 //        
-//        commitTransaction(session, tx);
+        commitTransaction(session, tx);
         log.trace("exit");
+    }
+    
+    @SuppressWarnings("unchecked")
+    public synchronized boolean moveTreeNode(T node, T newParent)
+    {
+        log.trace("enter");
+        log.debug("Moving ["+nodeDebugInfo(node)+"] to ["+nodeDebugInfo(newParent)+"]");
+        
+        if (node==null || newParent==null)
+        {
+            throw new NullPointerException("'node' and 'newParent' must both be non-null");
+        }
+        
+        if( node.getParent() == newParent )
+        {
+            return false;
+        }
+        
+        T oldParent = node.getParent();
+        if (oldParent==null)
+        {
+            throw new NullPointerException("'node' must already have a parent");
+        }
+
+        Session session = getNewSession(node);
+        T mergedNewParent = (T)mergeIntoSession(session,newParent);
+        Transaction tx = session.beginTransaction();
+        
+        log.debug("refreshing " + nodeDebugInfo(node));
+        session.refresh(node);
+        log.debug("refreshing " + nodeDebugInfo(mergedNewParent));
+        session.refresh(mergedNewParent);
+        
+        // fix up the parent/child pointers for the effected nodes
+        // oldParent cannot be null at this point
+        oldParent.removeChild(node);
+        mergedNewParent.addChild(node);
+        node.setParent(mergedNewParent);
+        
+        session.saveOrUpdate(node);
+        // oldParent cannot be null at this point
+        session.saveOrUpdate(oldParent);
+        
+        return commitTransaction(session, tx);
     }
     
     /* (non-Javadoc)
@@ -630,18 +681,20 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 //        }
 //        
 //        log.debug("committing JDBC transaction to update node numbers");
-//        commitTransaction(session, tx);
+        commitTransaction(session, tx);
         log.trace("exit");
     }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.treeutils.TreeDataService#createNodeLink(edu.ku.brc.specify.datamodel.Treeable, edu.ku.brc.specify.datamodel.Treeable)
      */
+    @SuppressWarnings("unchecked")
     public String createNodeLink(T source, T destination)
     {
-        Session session = getNewSession(source,destination);
+        Session session = getNewSession(source);
+        T mergedDest = (T)mergeIntoSession(session, destination);
         Transaction tx = session.beginTransaction();
-        String statusMsg = TreeHelper.createNodeRelationship(source,destination);
+        String statusMsg = TreeHelper.createNodeRelationship(source,mergedDest);
         commitTransaction(session, tx);
         return statusMsg;
     }
@@ -676,7 +729,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
      * @param objects the objects to associate with the new session
      * @return the newly created session
      */
-    private Session getNewSession(Object... objects )
+    private Session getNewSession(Object... objects)
     {
         log.trace("enter");
 
@@ -695,6 +748,14 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         }
         log.trace("exit");
         return session;
+    }
+    
+    private Object mergeIntoSession(Session session, Object object)
+    {
+        log.trace("enter");
+        Object newObject = session.merge(object);
+        log.trace("exit");
+        return newObject;
     }
     
     /**

@@ -12,6 +12,8 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -33,22 +35,20 @@ import edu.ku.brc.util.Pair;
  * @author jstewart
  */
 @SuppressWarnings("serial")
-public class TreeDataListHeader<T extends Treeable<T,D,I>,
-								D extends TreeDefIface<T,D,I>,
-								I extends TreeDefItemIface<T,D,I>>
-								extends JPanel
-								implements ListDataListener
+public class TreeViewerListHeader extends JPanel implements ListDataListener
 {
 	/** The associated JList. */
 	protected JList list;
 	/** The underlying data model for the list. */
-	protected TreeDataListModel<T,D,I> model;
-	
-	protected TreeDataListCellRenderer<T,D,I> cellRenderer;
+	protected TreeViewerListModel model;
+	/** The cell renderer for the list. */
+	protected TreeViewerNodeRenderer cellRenderer;
 	/** The label's text color. */
 	protected Color textColor;
 	
 	protected Color bgs[];
+    
+    protected HashMap<Integer, String> rankToNameMap = new HashMap<Integer, String>();
 	
 	/**
 	 * Creates a header appropriate for labelling the columns of the given
@@ -57,13 +57,13 @@ public class TreeDataListHeader<T extends Treeable<T,D,I>,
 	 * @param list the list
 	 * @param tdlm the list's underlying data model
 	 */
-	public TreeDataListHeader( JList list, TreeDataListModel<T,D,I> tdlm, TreeDataListCellRenderer<T,D,I> listCellRenderer )
+	public TreeViewerListHeader(JList list, TreeViewerListModel tvlm, TreeViewerNodeRenderer listCellRenderer, Map<Integer, String> rankToNameMap)
 	{
 		this.list = list;
-		this.model = tdlm;
+		this.model = tvlm;
 		this.cellRenderer = listCellRenderer;
 		
-		bgs = listCellRenderer.getBackgroundsColors();
+		bgs = listCellRenderer.getBackgroundColors();
 		
 		model.addListDataListener(this);
 		
@@ -73,6 +73,8 @@ public class TreeDataListHeader<T extends Treeable<T,D,I>,
 		}
 		this.setTextColor(list.getForeground());
 		this.setBackground(list.getBackground());
+        
+        this.rankToNameMap.putAll(rankToNameMap);
 	}
 
 	@Override
@@ -89,7 +91,7 @@ public class TreeDataListHeader<T extends Treeable<T,D,I>,
         int i = 0;
         for( Integer rank: model.getVisibleRanks() )
 		{
-			I defItem = model.getTreeDef().getDefItemByRank(rank);
+            String rankName = rankToNameMap.get(rank);
 
 			// draw column background color
 			Pair<Integer,Integer> colBounds = cellRenderer.getColumnBoundsForRank(rank);
@@ -100,7 +102,7 @@ public class TreeDataListHeader<T extends Treeable<T,D,I>,
 			// draw text
 			Pair<Integer,Integer> textBounds = cellRenderer.getTextBoundsForRank(rank); 
 			g.setColor(textColor);
-			g.drawString(defItem.getName(),textBounds.first,getHeight()/2);
+			g.drawString(rankName,textBounds.first,getHeight()/2);
 		}
         
         g2.setColor(this.getBackground());

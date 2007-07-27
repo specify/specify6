@@ -403,7 +403,7 @@
                     -->
                     
                     <cell type="label" labelfor="1" label="Taxon"/>
-                    <cell type="field" id="1" name="taxon" uitype="treequerycbx" initialize="name=Taxon;type=taxon;title=Taxon" colspan="5"/>
+                    <cell type="field" id="1" name="taxon" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" colspan="5"/>
                     
                     <cell type="label" labelfor="2" label="Status"/>
                     <cell type="field" id="2" name="status" uitype="combobox" picklist="DeterminationStatus" isrequired="true"/>

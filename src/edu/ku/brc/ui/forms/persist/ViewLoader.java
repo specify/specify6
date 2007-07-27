@@ -543,7 +543,6 @@ public class ViewLoader
                                     dspUITypeStr = getAttr(cellElement, "dspuitype", "dsptextarea");
                                     break;
                                 
-                                case  treequerycbx:
                                 case  querycbx:
                                 {
                                     dspUITypeStr = getAttr(cellElement, "dspuitype", "textfieldinfo");

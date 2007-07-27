@@ -213,7 +213,7 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
     }
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     @JoinColumn(name = "TaxonTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
     public TaxonTreeDef getTreeDef()
 	{
@@ -226,7 +226,7 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 	}
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     @JoinColumn(name = "ParentItemID", unique = false, nullable = true, insertable = true, updatable = true)
 	public TaxonTreeDefItem getParent()
 	{
@@ -239,7 +239,7 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 	}
 
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "definitionItem")
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK, CascadeType.MERGE })
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
 	public Set<Taxon> getTreeEntries()
 	{
 		return this.treeEntries;
@@ -251,6 +251,7 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 	}
 
     @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.EAGER, mappedBy = "parent")
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
 	public Set<TaxonTreeDefItem> getChildren()
 	{
 		return this.children;
