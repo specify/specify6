@@ -299,11 +299,11 @@ public class DataObjFieldFormatMgr
             dff = switcherFormatter.getFormatterForValue(value);
             if (dff == null)
             {
-                log.error("Couldn't find a switchable data formatter for ["+switcherFormatter.getName()+"] field["+switcherFormatter.getFieldName()+"] value["+value+"]");
+                throw new RuntimeException("Couldn't find a switchable data formatter for ["+switcherFormatter.getName()+"] field["+switcherFormatter.getFieldName()+"] value["+value+"]");
             }
         } else
         {
-            log.error("Values Array was null for Class["+dataObj.getClass().getSimpleName()+"] couldn't find field["+switcherFormatter.getFieldName()+"] (you probably passed in the wrong type of object)");
+            throw new RuntimeException("Values Array was null for Class["+dataObj.getClass().getSimpleName()+"] couldn't find field["+switcherFormatter.getFieldName()+"] (you probably passed in the wrong type of object)");
         }
         return dff;
     }

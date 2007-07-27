@@ -1054,8 +1054,12 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     @Override
     public String toString()
     {
+        // The agentType is used in the formatter  so we need to skip the formatting if it isn't available
+        if (agentType == null)
+        {
+            return super.toString();
+        }
         return DataObjFieldFormatMgr.format(this, getClass());
-        //return super.toString();
     }
 
 }
