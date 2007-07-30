@@ -21,9 +21,6 @@ import javax.swing.JPanel;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
-import edu.ku.brc.specify.datamodel.TreeDefIface;
-import edu.ku.brc.specify.datamodel.TreeDefItemIface;
-import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.util.Pair;
 
 /**
