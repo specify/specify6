@@ -85,18 +85,25 @@ public class TaxonBusRules extends BaseBusRules
         boolean noHyb1   = (tmpT.getHybridChildren1().size() == 0);
         boolean noHyb2   = (tmpT.getHybridChildren2().size() == 0);
         boolean noSyns   = (tmpT.getAcceptedChildren().size() == 0);
-        boolean okToDeleteChildren = true;
-        for (Taxon child: tmpT.getChildren())
+        
+        boolean okSoFar = noDeters && noCites && noHyb1 && noHyb2 && noSyns;
+        
+        if (okSoFar)
         {
-            if ( !okToDelete(child) )
+            // now check the children
+            for (Taxon child: tmpT.getChildren())
             {
-                okToDeleteChildren = false;
-                break;
+                if ( !okToDelete(child) )
+                {
+                    okSoFar = false;
+                    break;
+                }
             }
         }
+        
         session.close();
         
-        return noDeters && noCites && noHyb1 && noHyb2 && noSyns && okToDeleteChildren;
+        return okSoFar;
 
 //        return false;
     }
