@@ -227,6 +227,13 @@ public class TreeViewerListModel extends AbstractListModel
         int startingSize = nodes.size();
         int parentIndex = nodes.indexOf(parent);
         
+        if (parentIndex == -1)
+        {
+            // this node isn't currently visible
+            // ignore this call
+            return;
+        }
+        
         recursivelyRemoveChildNodesInternal(parent);
 
         int sizeChange = startingSize - nodes.size();

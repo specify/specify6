@@ -1399,6 +1399,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             }
             if (newParentNode != null)
             {
+                newParentNode.setHasChildren(true);
                 showChildren(newParentNode);
             }
             
