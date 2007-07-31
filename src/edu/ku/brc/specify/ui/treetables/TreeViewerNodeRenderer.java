@@ -13,8 +13,10 @@ import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
-import java.util.SortedMap;
+import java.util.Set;
 import java.util.TreeMap;
 
 import javax.swing.Icon;
@@ -47,8 +49,8 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
     protected TreeViewerListModel model;
     protected JList list;
     
-    protected boolean lengthsValid;
-    protected SortedMap<Integer,Pair<Integer,Integer>> rankBoundsMap;
+    protected TreeMap<Integer, Integer> columnWidths;
+    protected boolean widthsValid;
 
     protected Color bgs[];
     
@@ -58,6 +60,8 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
     protected TreeNodeUI nodeUI;
     
     protected boolean firstTime = true;
+    
+    protected int defaultColumnWidth;
     
     /**
      * 
@@ -76,11 +80,10 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         leadTextOffset = 24;
         tailTextOffset = 8;
         
-        rankBoundsMap = new TreeMap<Integer, Pair<Integer,Integer>>();
+        columnWidths = new TreeMap<Integer, Integer>();
+        widthsValid = false;
         
         model.addListDataListener(this);
-        
-        lengthsValid = false;
         
         nodeUI = new TreeNodeUI();
     }
@@ -92,7 +95,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
 
     public Component getListCellRendererComponent(JList l, Object value, int index, boolean isSelected, boolean cellHasFocus)
     {
-        log.debug("getListCellRendererComponent( " + value + " )");
+        //log.debug("getListCellRendererComponent( " + value + " )");
         this.list = l;
         
         if ( !(value instanceof TreeNode))
@@ -103,7 +106,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         if (firstTime)
         {
             firstTime = false;
-            recomputeLengthPerLevel(l.getGraphics());
+            computeMissingColumnWidths(l.getGraphics());
         }
         
         TreeNode node = (TreeNode)value;
@@ -122,7 +125,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         }
         
         Pair<Integer,Integer> textBounds = new Pair<Integer,Integer>();
-        Pair<Integer,Integer> bounds = rankBoundsMap.get(rank);
+        Pair<Integer,Integer> bounds = getColumnBoundsForRank(rank);
         if( bounds == null )
         {
             return null;
@@ -142,7 +145,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         }
         
         Pair<Integer,Integer> anchorBounds = new Pair<Integer,Integer>();
-        Pair<Integer,Integer> bounds = rankBoundsMap.get(rank);
+        Pair<Integer,Integer> bounds = getColumnBoundsForRank(rank);
         if( bounds == null )
         {
             return null;
@@ -161,70 +164,124 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
             return null;
         }
         
-        Pair<Integer,Integer> colBounds = new Pair<Integer,Integer>();
-        Pair<Integer,Integer> bounds = rankBoundsMap.get(rank);
-        if( bounds == null )
+        List<Integer> visibleRanks = model.getVisibleRanks();
+        if (!visibleRanks.contains(rank))
         {
             return null;
         }
         
-        colBounds.first = bounds.first;
-        colBounds.second = bounds.second;
+        Pair<Integer,Integer> colBounds = new Pair<Integer,Integer>();
         
+        int widthsOfLowerColumns = 0;
+        for (Integer r: visibleRanks)
+        {
+            if (r < rank)
+            {
+                widthsOfLowerColumns += columnWidths.get(r);
+            }
+            else
+            {
+                break;
+            }
+        }
+        
+        colBounds.first = widthsOfLowerColumns;
+        colBounds.second = widthsOfLowerColumns + columnWidths.get(rank);
         return colBounds;
+    }        
+    
+    protected void computeMissingColumnWidths( Graphics g )
+    {
+        log.debug("Computing missing column widths");
+        defaultColumnWidth =  g.getFontMetrics().stringWidth("WWWWWWWWWWWWW");
+        for (Integer rank: model.getVisibleRanks())
+        {
+            if (!columnWidths.containsKey(rank))
+            {
+                columnWidths.put(rank,defaultColumnWidth);
+            }
+        }
+        widthsValid = true;
     }
     
-    protected void recomputeLengthPerLevel( Graphics g )
+    protected void removeUnusedColumnWidths()
     {
-        rankBoundsMap.clear();
+        Set<Integer> ranksWithWidths = new HashSet<Integer>();
+        ranksWithWidths.addAll(columnWidths.keySet());
         
-        int prevRankEnd = 0;
         List<Integer> visibleRanks = model.getVisibleRanks();
-        for( Integer rank: visibleRanks )
+        for (Integer rankWithWidth: ranksWithWidths)
         {
-            Pair<Integer,Integer> bounds = new Pair<Integer, Integer>();
-            bounds.setFirst(prevRankEnd);
-
-            Integer longestStringLength = g.getFontMetrics().stringWidth("WWWWWWWWWW");
-            if( longestStringLength != null )
+            if (!visibleRanks.contains(rankWithWidth))
             {
-                bounds.setSecond(prevRankEnd + longestStringLength + leadTextOffset + tailTextOffset);
+                columnWidths.remove(rankWithWidth);
             }
-            rankBoundsMap.put(rank,bounds);
-            prevRankEnd = bounds.second;
         }
-        
-        lengthsValid = true;
     }
     
-    protected int getWidestRankWidth()
+    public int getColumnWidth(int rank)
     {
-        int longest = 0;
-        for(Pair<Integer,Integer> width: rankBoundsMap.values())
+        return columnWidths.get(rank);
+    }
+    
+    public void changeColumnWidth(int rank, int change)
+    {
+        int width = columnWidths.get(rank);
+        columnWidths.put(rank, width+change);
+    }
+    
+    protected int[] getRanksSurroundingPoint(int x)
+    {
+        int[] ranks = new int[] {-1,-1};
+        boolean leftSet = false;
+        boolean rightSet = false;
+        for (int rank: model.getVisibleRanks())
         {
-            if(width.second > longest)
+            Pair<Integer,Integer> rankBounds = getColumnBoundsForRank(rank);
+            if (Math.abs(rankBounds.first -x) < 4)
             {
-                longest = width.second;
+                ranks[1] = rank;
+                rightSet = true;
+            }
+            else if (Math.abs(rankBounds.second -x) < 4)
+            {
+                ranks[0] = rank;
+                leftSet = true;
             }
         }
-        return longest;
+        
+        if (leftSet || rightSet)
+        {
+            return ranks;
+        }
+        return null;
+    }
+    
+    public int getSumOfColumnWidths()
+    {
+        int width = 0;
+        for (Integer w: columnWidths.values())
+        {
+            width += w;
+        }
+        return width;
     }
 
     public void intervalAdded(ListDataEvent e)
     {
-        lengthsValid = false;
+        widthsValid = false;
     }
 
     public void intervalRemoved(ListDataEvent e)
     {
-        lengthsValid = false;
+        removeUnusedColumnWidths();
     }
 
     public void contentsChanged(ListDataEvent e)
     {
-        lengthsValid = false;
+        widthsValid = false;
     }
-
+    
     public class TreeNodeUI extends JPanel
     {
         protected TreeNode treeNode;
@@ -270,29 +327,14 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         @Override
         public Dimension getPreferredSize()
         {
+            log.debug("TreeViewerNodeRenderer.getPreferredSize() called.  " + treeNode);
             // ensure that the lengths are valid
-            if( !lengthsValid )
+            if( !widthsValid )
             {
-                recomputeLengthPerLevel(list.getGraphics());
+                computeMissingColumnWidths(list.getGraphics());
             }
-
-            int rank = treeNode.getRank();
-            Pair<Integer,Integer> rankBounds = rankBoundsMap.get(rank);
-            if(rankBounds == null)
-            {
-                log.warn("getPreferredSize(): rankBounds is unexpectedly null.  Trying to recover by recomputing bounds.");
-                recomputeLengthPerLevel(list.getGraphics());
-                rankBounds = rankBoundsMap.get(rank);
-                if(rankBounds==null)
-                {
-                    log.error("getPreferredSize(): recovery attempt failed");
-                    return new Dimension(getWidestRankWidth(),list.getFirstVisibleIndex());
-                }
-                
-                log.info("getPreferredSize(): recovery attempt succeeded");
-            }
-            int width = rankBounds.second;
-            Dimension prefSize = new Dimension(width,list.getFixedCellHeight());
+            
+            Dimension prefSize = new Dimension(getSumOfColumnWidths(),list.getFixedCellHeight());
             log.debug("getPreferredSize() = " + prefSize);
             return prefSize;
         }
@@ -306,9 +348,9 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
             }
 
             // ensure that the lengths are valid
-            if( !lengthsValid )
+            if( !widthsValid )
             {
-                recomputeLengthPerLevel(list.getGraphics());
+                computeMissingColumnWidths(list.getGraphics());
             }
             
             GraphicsUtils.turnOnAntialiasedDrawing(g);
@@ -335,11 +377,11 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
             int cellHeight = list.getFixedCellHeight();
 
             int i = 0;
-            for( Integer rank: rankBoundsMap.keySet() )
+            for( Integer rank: model.getVisibleRanks() )
             {
-                Pair<Integer,Integer> startEnd = rankBoundsMap.get(rank);
+                Pair<Integer,Integer> startEnd = getColumnBoundsForRank(rank);
                 g.setColor(bgs[i%2]);
-                g.fillRect(startEnd.first,0,startEnd.second,cellHeight);
+                g.fillRect(startEnd.first,0,startEnd.second-startEnd.first,cellHeight);
                 ++i;
             }
             
@@ -449,7 +491,6 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
             }
             
             String clippedName = GraphicsUtils.clipString(fm, name, stringEndX-stringStartX);
-//            String clippedName = SwingUtilities2.clipStringIfNecessary(list, fm, name, stringEndX-stringStartX);
             g.drawString(clippedName, stringStartX, stringY);
         }
     }

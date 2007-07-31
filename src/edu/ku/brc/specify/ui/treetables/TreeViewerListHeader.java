@@ -8,10 +8,13 @@ package edu.ku.brc.specify.ui.treetables;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,6 +24,9 @@ import javax.swing.JPanel;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
+import org.apache.log4j.Logger;
+
+import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -34,7 +40,10 @@ import edu.ku.brc.util.Pair;
 @SuppressWarnings("serial")
 public class TreeViewerListHeader extends JPanel implements ListDataListener
 {
-	/** The associated JList. */
+    /** Logger for all messages emitted. */
+    private static final Logger log = Logger.getLogger(TreeViewerListHeader.class);
+
+    /** The associated JList. */
 	protected JList list;
 	/** The underlying data model for the list. */
 	protected TreeViewerListModel model;
@@ -46,6 +55,11 @@ public class TreeViewerListHeader extends JPanel implements ListDataListener
 	protected Color bgs[];
     
     protected HashMap<Integer, String> rankToNameMap = new HashMap<Integer, String>();
+    
+    protected boolean resizingColumns = false;
+    protected Integer expandingRank;
+    protected int mostRecentX = -1;
+    protected int minColWidth = 50;
 	
 	/**
 	 * Creates a header appropriate for labelling the columns of the given
@@ -72,7 +86,123 @@ public class TreeViewerListHeader extends JPanel implements ListDataListener
 		this.setBackground(list.getBackground());
         
         this.rankToNameMap.putAll(rankToNameMap);
+        
+        MouseAdapter mouseAdapter = new MouseAdapter()
+        {
+            @Override
+            public void mousePressed(MouseEvent e)
+            {
+                pressed(e);
+            }
+
+            @Override
+            public void mouseDragged(MouseEvent e)
+            {
+                dragged(e);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e)
+            {
+                released(e);
+            }
+
+            @Override
+            public void mouseMoved(MouseEvent e)
+            {
+                hover(e);
+            }
+        };
+        
+        this.addMouseListener(mouseAdapter);
+        this.addMouseMotionListener(mouseAdapter);
 	}
+    
+    protected void pressed(MouseEvent e)
+    {
+        // if press is on a boundary between ranks
+        // set resizingColumns to true
+        
+        int[] ranksBeingChanged = cellRenderer.getRanksSurroundingPoint(e.getX());
+        
+        // this action expands the column to the left of the click, so we have to at least have that column
+        if (ranksBeingChanged == null || ranksBeingChanged[0] == -1)
+        {
+            return;
+        }
+        
+        // else
+        
+        expandingRank = ranksBeingChanged[0];
+        mostRecentX = e.getX();
+        log.debug("Setting 'mostRecentX' to " + mostRecentX);
+        resizingColumns = true;
+        
+        log.debug("Starting a column resize action for rank " + expandingRank);
+    }
+    
+    protected void hover(MouseEvent e)
+    {
+        int[] ranksBeingChanged = cellRenderer.getRanksSurroundingPoint(e.getX());
+        if (ranksBeingChanged == null || ranksBeingChanged[0] == -1)
+        {
+            this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            return;
+        }
+        // else
+        this.setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR));
+    }
+    
+    protected void dragged(MouseEvent e)
+    {
+        if (resizingColumns)
+        {
+            int x = e.getX();
+            int change = x - mostRecentX;
+            
+            log.debug("Resizing tree viewer columns");
+            
+            // change the column that should expand/contrat
+            int currentColWidth = cellRenderer.getColumnWidth(expandingRank);
+            if (currentColWidth + change < minColWidth)
+            {
+                change = currentColWidth - minColWidth;
+            }
+            
+            log.debug("Changing width of column for rank " + expandingRank + " by " + change + " pixels");
+            
+            // ignore changes that have no effect
+            if (change == 0)
+            {
+                log.debug("Ignoring change of 0 pixels");
+                return;
+            }
+            
+            cellRenderer.changeColumnWidth(expandingRank, change);
+
+            list.invalidate();
+            list.repaint();
+            this.repaint();
+            
+            this.setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR));
+            mostRecentX = x;
+            log.debug("Changing 'mostRecentX' to " + mostRecentX);
+        }
+        else
+        {
+            System.out.println("ignoring drag event");
+        }
+    }
+    
+    protected void released(@SuppressWarnings("unused") MouseEvent e)
+    {
+        if (resizingColumns)
+        {
+            log.debug("Ending a column resize action");
+            this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            resizingColumns = false;
+        }
+    }
 
 	@Override
 	protected void paintComponent(Graphics g)
@@ -93,13 +223,14 @@ public class TreeViewerListHeader extends JPanel implements ListDataListener
 			// draw column background color
 			Pair<Integer,Integer> colBounds = cellRenderer.getColumnBoundsForRank(rank);
 			g.setColor(bgs[i%2]);
-			g.fillRect(colBounds.first,0,colBounds.second,this.getHeight());
+            g.fillRect(colBounds.first,0,colBounds.second-colBounds.first,this.getHeight());
 			++i;
 
 			// draw text
 			Pair<Integer,Integer> textBounds = cellRenderer.getTextBoundsForRank(rank); 
 			g.setColor(textColor);
-			g.drawString(rankName,textBounds.first,getHeight()/2);
+            String clippedName = GraphicsUtils.clipString(g.getFontMetrics(), rankName, textBounds.second-textBounds.first);
+			g.drawString(clippedName,textBounds.first,getHeight()/2);
 		}
         
         g2.setColor(this.getBackground());

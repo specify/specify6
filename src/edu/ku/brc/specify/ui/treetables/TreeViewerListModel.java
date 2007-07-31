@@ -197,6 +197,11 @@ public class TreeViewerListModel extends AbstractListModel
         fireIntervalAdded(this, parentIndex+1, parentIndex+childNodes.size());
     }
     
+    /**
+     * Returns a sorted list of ranks currently represented in the model data.
+     * 
+     * @return a sorted list of ranks currently represented in the model data.
+     */
     public synchronized List<Integer> getVisibleRanks()
     {
         ArrayList<Integer> visibleRanks = new ArrayList<Integer>();
