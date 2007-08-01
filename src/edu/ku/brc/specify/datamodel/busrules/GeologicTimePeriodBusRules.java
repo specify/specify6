@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
+import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem;
 import edu.ku.brc.specify.treeutils.TreeHelper;
 
@@ -26,7 +27,7 @@ import edu.ku.brc.specify.treeutils.TreeHelper;
  * @author jstewart
  * @code_status Beta
  */
-public class GeologicTimePeriodBusRules extends BaseBusRules
+public class GeologicTimePeriodBusRules extends BaseTreeBusRules<GeologicTimePeriod, GeologicTimePeriodTreeDef, GeologicTimePeriodTreeDefItem>
 {
     private static final Logger log = Logger.getLogger("edu.ku.brc.specify.datamodel.busrules");
     

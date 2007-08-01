@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Geography;
+import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
 import edu.ku.brc.specify.treeutils.TreeHelper;
 
@@ -25,7 +26,7 @@ import edu.ku.brc.specify.treeutils.TreeHelper;
  * @author jstewart
  * @code_status Beta
  */
-public class GeographyBusRules extends BaseBusRules
+public class GeographyBusRules extends BaseTreeBusRules<Geography, GeographyTreeDef, GeographyTreeDefItem>
 {
     private static final Logger log = Logger.getLogger("edu.ku.brc.specify.datamodel.busrules");
     

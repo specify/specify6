@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Location;
+import edu.ku.brc.specify.datamodel.LocationTreeDef;
 import edu.ku.brc.specify.datamodel.LocationTreeDefItem;
 import edu.ku.brc.specify.treeutils.TreeHelper;
 
@@ -26,7 +27,7 @@ import edu.ku.brc.specify.treeutils.TreeHelper;
  * @author jstewart
  * @code_status Beta
  */
-public class LocationBusRules extends BaseBusRules
+public class LocationBusRules extends BaseTreeBusRules<Location, LocationTreeDef, LocationTreeDefItem>
 {
     /**
      * A logger that emits any and all messages from this class.

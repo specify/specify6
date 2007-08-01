@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Taxon;
+import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.treeutils.TreeHelper;
 
@@ -26,9 +27,9 @@ import edu.ku.brc.specify.treeutils.TreeHelper;
  * @author jstewart
  * @code_status Beta
  */
-public class TaxonBusRules extends BaseBusRules
+public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTreeDefItem>
 {
-    private static final Logger log = Logger.getLogger("edu.ku.brc.specify.datamodel.busrules");
+    private static final Logger log = Logger.getLogger(TaxonBusRules.class);
     
     /**
      * Constructor.
@@ -178,100 +179,9 @@ public class TaxonBusRules extends BaseBusRules
             taxon.setHybridParent1(null);
             taxon.setHybridParent2(null);
         }
-     
-        // we need a way to determine if the name changed
-        // load a fresh copy from the DB and get the values needed for comparison
-        DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
-        Taxon fromDB = tmpSession.load(Taxon.class, taxon.getId());
-        Taxon origParent = fromDB.getParent();
-        tmpSession.close();
 
-        boolean nameChanged = !(fromDB.getName().equals(taxon.getName()));
-        boolean parentChanged = !(origParent.getId().equals(taxon.getParent().getId()));
-
-        if (nameChanged)
-        {
-            log.warn("Taxon record name changed.  Update the fullname for this node and any effected descendants.");
-        }
-        if (parentChanged)
-        {
-            log.warn("Taxon record parent changed.  Update the fullname for this node and any effected descendants.");
-        }
-        
-//        //session.attach(taxon);
-//        
-//        // if the name changed...
-//        // update the node's fullname
-//        // AND all descendants IF the node's level is in the fullname
-//        if (nameChanged)
-//        {
-//            boolean isInFullname = false;
-//            if ((taxon.getDefinitionItem().getIsInFullName() != null) && 
-//                (taxon.getDefinitionItem().getIsInFullName().booleanValue() == true))
-//            {
-//                isInFullname = true;
-//            }
-//            
-//            if (!isInFullname)
-//            {
-//                // just change the node's fullname field
-//                String fullname = TreeHelper.generateFullname(taxon);
-//                taxon.setFullName(fullname);
-//            }
-//            else
-//            {
-//                // must fix fullname for all descendants as well
-//                TreeHelper.fixFullnameForNodeAndDescendants(taxon);
-//            }
-//        }
-//        
-//        if (parentChanged)
-//        {
-//            // if no levels above or equal to the new parent or old parent are included in the fullname
-//            // do nothing
-//            // otherwise, update fullname for node and all descendants
-//            
-//            boolean higherLevelsIncluded = false;
-//            Taxon l = taxon.getParent();
-//            while (l != null)
-//            {
-//                if ((l.getDefinitionItem().getIsInFullName() != null) && 
-//                    (l.getDefinitionItem().getIsInFullName().booleanValue() == true))
-//                {
-//                    higherLevelsIncluded = true;
-//                    break;
-//                }
-//                l = l.getParent();
-//            }
-//            
-//            // if no higher level is included in the new place in the tree, check the old place
-//            // in the tree
-//            if (higherLevelsIncluded == false)
-//            {
-//                l = origParent;
-//                while (l != null)
-//                {
-//                    if ((l.getDefinitionItem().getIsInFullName() != null) && 
-//                        (l.getDefinitionItem().getIsInFullName().booleanValue() == true))
-//                    {
-//                        higherLevelsIncluded = true;
-//                        break;
-//                    }
-//                    
-//                    l = l.getParent();
-//                }
-//            }
-//            
-//            if (higherLevelsIncluded)
-//            {
-//                TreeHelper.fixFullnameForNodeAndDescendants(taxon);
-//            }
-//            else
-//            {
-//                String generated = TreeHelper.generateFullname(taxon);
-//                taxon.setFullName(generated);
-//            }
-//        }
+        // this might not do anything (if no names need to be changed)
+        super.updateFullNamesIfNecessary(taxon, session);
     }
     
     /**
