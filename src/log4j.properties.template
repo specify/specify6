@@ -44,16 +44,25 @@ log4j.appender.SpecifyLogRoll.MaxBackupIndex=3
 ############################################
 
 log4j.rootLogger=WARN, StdOutAppender, SpecifyLogRoll
-#log4j.logger.edu.ku=DEBUG
 log4j.logger.org.hibernate=WARN, HibernateLogFileAppender
 
-#log4j.rootLogger=ERROR, StdOutAppender, SpecifyLogFileAppender
-#log4j.logger.edu.ku=INFO
-#log4j.logger.org.hibernate=WARN, HibernateLogFileAppender
+#log4j.logger.edu.ku.brc.af=DEBUG
+#log4j.logger.edu.ku.brc.dbsupport=DEBUG
+#log4j.logger.edu.ku.brc.services=DEBUG
+#log4j.logger.edu.ku.brc.specify=DEBUG
+#log4j.logger.edu.ku.brc.specify.conversion=DEBUG
+#log4j.logger.edu.ku.brc.specify.datamodel=DEBUG
+#log4j.logger.edu.ku.brc.specify.dbsupport=DEBUG
+#log4j.logger.edu.ku.brc.specify.plugins=DEBUG
+#log4j.logger.edu.ku.brc.specify.prefs=DEBUG
+#log4j.logger.edu.ku.brc.specify.security=DEBUG
+#log4j.logger.edu.ku.brc.specify.tasks=DEBUG
+#log4j.logger.edu.ku.brc.specify.tasks.subpane=DEBUG
+#log4j.logger.edu.ku.brc.specify.ui=DEBUG
+#log4j.logger.edu.ku.brc.ui=DEBUG
+#log4j.logger.edu.ku.brc.ui.forms=DEBUG
+#log4j.logger.edu.ku.brc.util=DEBUG
 
 # Other options to consider
 #
 # log4j.logger.org.apache=[some level]
-# log4j.logger.edu.ku.brc.af=[some level]
-# log4j.logger.edu.ku.brc.specify=[some level]
-# log4j.logger.edu.ku.brc.specify.conversion=[some level]
