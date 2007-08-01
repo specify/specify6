@@ -12,6 +12,7 @@ import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.forms.FormViewObj;
 
 /**
  * Task that handles the UI for viewing geography data.
@@ -39,4 +40,29 @@ public class GeographyTreeTask extends BaseTreeTask<Geography,GeographyTreeDef,G
         
         initialize();
 	}
+    
+//    protected void adjustTreeDefForm(FormViewObj form)
+//    {
+//    }
+//    
+//    protected void adjustTreeDefItemForm(FormViewObj form)
+//    {
+//    }
+    
+    @Override
+    public void adjustForm(FormViewObj form)
+    {
+        if (form.getDataObj() instanceof Geography)
+        {
+            adjustNodeForm(form);
+        }
+//        else if (form.getDataObj() instanceof GeographyTreeDef)
+//        {
+//            adjustTreeDefForm(form);
+//        }
+//        else if (form.getDataObj() instanceof GeographyTreeDefItem)
+//        {
+//            adjustTreeDefItemForm(form);
+//        }
+    }
 }

@@ -8,13 +8,17 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.Component;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -42,9 +46,12 @@ import edu.ku.brc.specify.ui.treetables.TreeTableViewer;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.FormViewObj;
+import edu.ku.brc.ui.forms.persist.AltView.CreationMode;
+import edu.ku.brc.ui.forms.validation.ValComboBox;
 
 /**
  * A base task that provides functionality in common to all tasks
@@ -430,6 +437,123 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
     public void adjustForm(FormViewObj form)
     {
         log.debug("adjustForm( " + form.getName() + " )"); 
+        
+        // this method should look a lot like ...
+        
+        /*
+        if (form.getDataObj() instanceof T)
+        {
+            adjustNodeForm(form);
+        }
+        else if (form.getDataObj() instanceof D)
+        {
+            adjustTreeDefForm(form);
+        }
+        else if (form.getDataObj() instanceof I)
+        {
+            adjustTreeDefItemForm(form);
+        }
+        */
+        
+        // however, instanceof won't work with generics, so we have to implement this method in the subclasses
+    }
+    
+    @SuppressWarnings("unchecked")
+    protected void adjustNodeForm(final FormViewObj form)
+    {
+        log.debug("adjustNodeForm(FormViewObj form)");
+
+        if (form.getAltView().getMode() != CreationMode.Edit)
+        {
+            // when we're not in edit mode, we don't need to setup any listeners since the user can't change anything
+            return;
+        }
+
+        final T nodeInForm = (T)form.getDataObj();
+
+        final Component parentComboBox = form.getControlByName("parent");
+        final ValComboBox rankComboBox = (ValComboBox)form.getControlByName("definitionItem");
+
+        if (parentComboBox != null)
+        {
+            parentComboBox.addFocusListener(new FocusListener()
+            {
+                public void focusGained(FocusEvent e)
+                {
+                    // ignore this event
+                }
+                public void focusLost(FocusEvent e)
+                {
+                    // set the contents of this combobox based on the value chosen as the parent
+                    adjustRankComboBoxModel((GetSetValueIFace)parentComboBox, rankComboBox, nodeInForm);
+                }
+            });
+        }
+        
+        if (nodeInForm.getDefinitionItem() != null)
+        {
+            adjustRankComboBoxModel((GetSetValueIFace)parentComboBox, rankComboBox, nodeInForm);
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    protected void adjustRankComboBoxModel(GetSetValueIFace parentField, ValComboBox rankComboBox, T nodeInForm)
+    {
+        DefaultComboBoxModel model = (DefaultComboBoxModel)rankComboBox.getModel();
+        model.removeAllElements();
+
+        // this is the highest rank the edited item can possibly be
+        I topItem = null;
+        // this is the lowest rank the edited item can possibly be
+        I bottomItem = null;
+
+        T parent = (T)parentField.getValue();
+        if (parent == null)
+        {
+            return;
+        }
+
+        // grab all the def items from just below the parent's item all the way to the next enforced level
+        // or to the level of the highest ranked child
+        topItem = parent.getDefinitionItem().getChild();
+
+        // find the child with the highest rank and set that child's def item as the bottom of the range
+        if (!nodeInForm.getChildren().isEmpty())
+        {
+            for (T child: nodeInForm.getChildren())
+            {
+                if (bottomItem==null || child.getRankId()>bottomItem.getRankId())
+                {
+                    bottomItem = child.getDefinitionItem().getParent();
+                }
+            }
+        }
+
+        I item = topItem;
+        boolean done = false;
+        while (!done)
+        {
+            model.addElement(item);
+
+            if (item.getChild()==null || item.getIsEnforced()==Boolean.TRUE || item==bottomItem)
+            {
+                done = true;
+            }
+            item = item.getChild();
+        }
+        
+        if (nodeInForm.getDefinitionItem() != null)
+        {
+            I defItem = nodeInForm.getDefinitionItem();
+            if (model.getIndexOf(defItem) != -1)
+            {
+                model.setSelectedItem(defItem);
+            }
+        }
+        else if (model.getSize() == 1)
+        {
+            model.setSelectedItem(model.getElementAt(0));
+        }
     }
     
     /**

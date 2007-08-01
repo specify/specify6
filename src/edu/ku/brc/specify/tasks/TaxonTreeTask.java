@@ -8,16 +8,12 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Set;
 
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JMenuItem;
 
@@ -35,8 +31,6 @@ import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.FormViewObj;
-import edu.ku.brc.ui.forms.persist.AltView.CreationMode;
-import edu.ku.brc.ui.forms.validation.ValComboBox;
 
 /**
  * Task that handles the UI for viewing taxonomy data.
@@ -125,41 +119,12 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
 		return ttv;
 	}
 	
-	protected void adjustTaxonForm(final FormViewObj form)
+	@Override
+    protected void adjustNodeForm(final FormViewObj form)
 	{
-	    log.debug("adjustTaxonForm(FormViewObj form)");
-
-	    if (form.getAltView().getMode() != CreationMode.Edit)
-	    {
-	        // when we're not in edit mode, we don't need to setup any listeners since the user can't change anything
-	        return;
-	    }
-
-	    final Taxon taxonInForm = (Taxon)form.getDataObj();
-
-	    final Component parentComboBox = form.getControlByName("parent");
-	    final ValComboBox rankComboBox = (ValComboBox)form.getControlByName("definitionItem");
-
-	    if (parentComboBox != null)
-	    {
-	        parentComboBox.addFocusListener(new FocusListener()
-	        {
-	            public void focusGained(FocusEvent e)
-	            {
-	                // ignore this event
-	            }
-	            public void focusLost(FocusEvent e)
-	            {
-	                // set the contents of this combobox based on the value chosen as the parent
-	                adjustRankComboBoxModel((GetSetValueIFace)parentComboBox, rankComboBox, taxonInForm);
-	            }
-	        });
-	    }
-	    
-        if (taxonInForm.getDefinitionItem() != null)
-        {
-            adjustRankComboBoxModel((GetSetValueIFace)parentComboBox, rankComboBox, taxonInForm);
-        }
+	    super.adjustNodeForm(form);
+        
+        // Taxon specific stuff...
         
         // TODO: the form system MUST require the acceptedTaxon widget to be present if the isAccepted checkbox is present
         final JCheckBox acceptedCheckBox = (JCheckBox)form.getControlByName("isAccepted");
@@ -198,74 +163,15 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
         }
     }
 	
-	protected void adjustRankComboBoxModel(GetSetValueIFace parentField, ValComboBox rankComboBox, Taxon taxonInForm)
-	{
-        DefaultComboBoxModel model = (DefaultComboBoxModel)rankComboBox.getModel();
-        model.removeAllElements();
-
-        // this is the highest rank the edited item can possibly be
-        TaxonTreeDefItem topItem = null;
-        // this is the lowest rank the edited item can possibly be
-        TaxonTreeDefItem bottomItem = null;
-
-        Taxon parent = (Taxon)parentField.getValue();
-        if (parent == null)
-        {
-            return;
-        }
-
-        // grab all the def items from just below the parent's item all the way to the next enforced level
-        // or to the level of the highest ranked child
-        topItem = parent.getDefinitionItem().getChild();
-
-        // find the child with the highest rank and set that child's def item as the bottom of the range
-        if (!taxonInForm.getChildren().isEmpty())
-        {
-            for (Taxon child: taxonInForm.getChildren())
-            {
-                if (bottomItem==null || child.getRankId()>bottomItem.getRankId())
-                {
-                    bottomItem = child.getDefinitionItem().getParent();
-                }
-            }
-        }
-
-        TaxonTreeDefItem item = topItem;
-        boolean done = false;
-        while (!done)
-        {
-            model.addElement(item);
-
-            if (item.getChild()==null || item.getIsEnforced()==Boolean.TRUE || item==bottomItem)
-            {
-                done = true;
-            }
-            item = item.getChild();
-        }
-        
-        if (taxonInForm.getDefinitionItem() != null)
-        {
-            TaxonTreeDefItem defItem = taxonInForm.getDefinitionItem();
-            if (model.getIndexOf(defItem) != -1)
-            {
-                model.setSelectedItem(defItem);
-            }
-        }
-        else if (model.getSize() == 1)
-        {
-            model.setSelectedItem(model.getElementAt(0));
-        }
-	}
-
-    protected void adjustTaxonTreeDefForm(FormViewObj form)
-    {
-        log.debug("adjustTaxonTreeDefForm(FormViewObj form) " + form);
-    }
-
-    protected void adjustTaxonTreeDefItemForm(FormViewObj form)
-    {
-        log.debug("adjustTaxonTreeDefItemForm(FormViewObj form) " + form);
-    }
+//    protected void adjustTreeDefForm(FormViewObj form)
+//    {
+//        log.debug("adjustTaxonTreeDefForm(FormViewObj form) " + form);
+//    }
+//
+//    protected void adjustTreeDefItemForm(FormViewObj form)
+//    {
+//        log.debug("adjustTaxonTreeDefItemForm(FormViewObj form) " + form);
+//    }
 
     @Override
     public void adjustForm(FormViewObj form)
@@ -281,15 +187,15 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
 //              subPane.shutdown();
 //          }
 
-            adjustTaxonForm(form);
+            adjustNodeForm(form);
         }
-        else if (form.getDataObj() instanceof TaxonTreeDef)
-        {
-            adjustTaxonTreeDefForm(form);
-        }
-        else if (form.getDataObj() instanceof TaxonTreeDefItem)
-        {
-            adjustTaxonTreeDefItemForm(form);
-        }
+//        else if (form.getDataObj() instanceof TaxonTreeDef)
+//        {
+//            adjustTreeDefForm(form);
+//        }
+//        else if (form.getDataObj() instanceof TaxonTreeDefItem)
+//        {
+//            adjustTreeDefItemForm(form);
+//        }
     }
 }
