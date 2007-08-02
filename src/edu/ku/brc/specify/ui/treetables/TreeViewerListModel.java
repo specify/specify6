@@ -121,9 +121,6 @@ public class TreeViewerListModel extends AbstractListModel
                 fireIntervalAdded(this, startSize + (startingVisRootIndex - newVisRootIndex), visibleSize - 1);
             }
         }
-        
-        // TODO: fire the appropriate interval added/removed stuff
-        System.out.println("Fire some model change events");
     }
     
     public synchronized boolean parentHasChildrenAfterNode(TreeNode parent, TreeNode node)

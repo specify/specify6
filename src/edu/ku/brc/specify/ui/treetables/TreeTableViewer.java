@@ -864,7 +864,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 * the ability to "zoom in" to a lower level of the tree.
 	 */
 	@SuppressWarnings("unchecked")
-	public void showSubtreeOfSelection(JList list)
+	public synchronized void showSubtreeOfSelection(JList list)
 	{
 		if(checkBusy())
 		{
@@ -883,7 +883,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         list.setSelectedValue(selectedNode,true);
 	}
 	
-    public void zoomOutOneLevel(JList list)
+    public synchronized void zoomOutOneLevel(JList list)
     {
         if (checkBusy())
         {
@@ -906,7 +906,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 * Sets the visibleRoot property to the actual root of the tree.  This results in the 
 	 * entire tree being made available to the user.
 	 */
-	public void showWholeTree(JList list)
+	public synchronized void showWholeTree(JList list)
 	{
 		if(checkBusy())
 		{
