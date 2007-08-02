@@ -5,10 +5,11 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.treeutils.TreeHelper;
 
-public abstract class BaseTreeBusRules<N extends Treeable<N,D,I>,
-                                       D extends TreeDefIface<N,D,I>,
-                                       I extends TreeDefItemIface<N,D,I>>
+public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
+                                       D extends TreeDefIface<T,D,I>,
+                                       I extends TreeDefItemIface<T,D,I>>
                                        extends BaseBusRules
 {
     public BaseTreeBusRules(Class<?>... dataClasses)
@@ -26,7 +27,7 @@ public abstract class BaseTreeBusRules<N extends Treeable<N,D,I>,
      * @param parentChanged
      * @param rankChanged
      */
-    protected void updateFullNamesIfNecessary(N node, DataProviderSessionIFace session)
+    protected void updateFullNamesIfNecessary(T node, DataProviderSessionIFace session)
     {
         if (fullNameNeedsUpdating(node, session))
         {
@@ -111,13 +112,20 @@ public abstract class BaseTreeBusRules<N extends Treeable<N,D,I>,
      * @return
      */
     @SuppressWarnings("unchecked")
-    protected boolean fullNameNeedsUpdating(N node, @SuppressWarnings("unused") DataProviderSessionIFace session)
+    protected boolean fullNameNeedsUpdating(T node, @SuppressWarnings("unused") DataProviderSessionIFace session)
     {
+        if (node.getTreeId() == null)
+        {
+            // this is a new node
+            // it shouldn't need updating since we set the fullname at creation time
+            return false;
+        }
+
         // we need a way to determine if the name changed
         // load a fresh copy from the DB and get the values needed for comparison
         DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
-        N fromDB = (N)tmpSession.load(node.getClass(), node.getTreeId());
-        N origParent = fromDB.getParent();
+        T fromDB = (T)tmpSession.load(node.getClass(), node.getTreeId());
+        T origParent = fromDB.getParent();
         tmpSession.close();
 
         boolean nameChanged = !(fromDB.getName().equals(node.getName()));
@@ -125,5 +133,31 @@ public abstract class BaseTreeBusRules<N extends Treeable<N,D,I>,
         boolean rankChanged = !(origParent.getRankId().equals(node.getRankId()));
 
         return nameChanged || parentChanged || rankChanged;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#beforeSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public void beforeSave(Object dataObj, DataProviderSessionIFace session)
+    {
+        if (dataObj instanceof Treeable)
+        {
+            // NOTE: the instanceof check can't check against 'T' since T isn't a class
+            //       this has a SMALL amount of risk to it
+            T node = (T)dataObj;
+            
+            // check to see if this node is brand new
+            if (node.getTreeId() == null)
+            {
+                node.setDefinition(node.getParent().getDefinition());
+                
+                // this is a new object
+                // set it's fullname
+                String fullname = TreeHelper.generateFullname(node);
+                node.setFullName(fullname);
+            }
+        }
     }
 }

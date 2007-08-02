@@ -63,50 +63,43 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
         return false;
     }
     
-    public boolean okToDeleteTaxon(Taxon t)
+    public boolean okToDeleteTaxon(Taxon taxon)
     {
-        Long id = t.getId();
+        Long id = taxon.getId();
         if (id == null)
         {
             return true;
         }
         
-//        boolean noDeters = super.okToDelete("determination", "TaxonID",         id);
-//        boolean noCites  = super.okToDelete("taxoncitation", "TaxonID",         id);
-//        boolean noHyb1   = super.okToDelete("taxon",         "HybridParent1ID", id);
-//        boolean noHyb2   = super.okToDelete("taxon",         "HybridParent2ID", id);
-//        boolean noSyns   = super.okToDelete("taxon",         "AcceptedID",      id);
-//        boolean noChild  = super.okToDelete("taxon",         "ParentID",        id);
+        boolean noDeters = super.okToDelete("determination", "TaxonID",         id);
+        boolean noCites  = super.okToDelete("taxoncitation", "TaxonID",         id);
+        boolean noHyb1   = super.okToDelete("taxon",         "HybridParent1ID", id);
+        boolean noHyb2   = super.okToDelete("taxon",         "HybridParent2ID", id);
+        boolean noSyns   = super.okToDelete("taxon",         "AcceptedID",      id);
 
-        // TODO: convert this check over to using something a little faster, if possible
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        Taxon tmpT = session.load(Taxon.class, id);
-        boolean noDeters = (tmpT.getDeterminations().size() == 0);
-        boolean noCites  = (tmpT.getTaxonCitations().size() == 0);
-        boolean noHyb1   = (tmpT.getHybridChildren1().size() == 0);
-        boolean noHyb2   = (tmpT.getHybridChildren2().size() == 0);
-        boolean noSyns   = (tmpT.getAcceptedChildren().size() == 0);
-        
         boolean okSoFar = noDeters && noCites && noHyb1 && noHyb2 && noSyns;
         
         if (okSoFar)
         {
             // now check the children
+
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            Taxon tmpT = session.load(Taxon.class, id);
+
             for (Taxon child: tmpT.getChildren())
             {
-                if ( !okToDelete(child) )
+                if (!okToDeleteTaxon(child))
                 {
+                    // this child can't be deleted
+                    // stop right here
                     okSoFar = false;
                     break;
                 }
             }
+            session.close();
         }
         
-        session.close();
-        
         return okSoFar;
-
-//        return false;
     }
 
     /* (non-Javadoc)
@@ -120,15 +113,22 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#beforeSave(java.lang.Object)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseTreeBusRules#beforeSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
     @Override
     public void beforeSave(Object dataObj, DataProviderSessionIFace session)
     {
         log.debug("enter");
+        super.beforeSave(dataObj, session);
+        
         if (dataObj instanceof Taxon)
         {
-            beforeSaveTaxon((Taxon)dataObj, session);
+            Taxon taxon = (Taxon)dataObj;
+            beforeSaveTaxon(taxon, session);
+
+            // this might not do anything (if no names need to be changed)
+            super.updateFullNamesIfNecessary(taxon, session);
+            
             log.debug("exit");
             return;
         }
@@ -150,23 +150,8 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
      * 
      * @param taxon the {@link Taxon} being saved
      */
-    protected void beforeSaveTaxon(Taxon taxon, DataProviderSessionIFace session)
+    protected void beforeSaveTaxon(Taxon taxon, @SuppressWarnings("unused") DataProviderSessionIFace session)
     {
-        // check to see if this node is brand new
-        if (taxon.getId() == null)
-        {
-            taxon.setDefinition(taxon.getParent().getDefinition());
-            
-            // this is a new object
-            // just update it's fullname
-            // it can't have any children yet
-            
-            String fullname = TreeHelper.generateFullname(taxon);
-            taxon.setFullName(fullname);
-            return;
-        }
-        // else (ID was not null, so this is an item in the DB already)
-        
         // if this node is "accepted" then make sure it doesn't point to an accepted parent
         if (taxon.getIsAccepted() == null || taxon.getIsAccepted().booleanValue() == true)
         {
@@ -179,9 +164,6 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
             taxon.setHybridParent1(null);
             taxon.setHybridParent2(null);
         }
-
-        // this might not do anything (if no names need to be changed)
-        super.updateFullNamesIfNecessary(taxon, session);
     }
     
     /**

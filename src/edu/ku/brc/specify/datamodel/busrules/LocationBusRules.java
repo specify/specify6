@@ -73,9 +73,16 @@ public class LocationBusRules extends BaseTreeBusRules<Location, LocationTreeDef
     public void beforeSave(Object dataObj, DataProviderSessionIFace session)
     {
         log.debug("enter");
+        super.beforeSave(dataObj, session);
+        
         if (dataObj instanceof Location)
         {
-            beforeSaveLocation((Location)dataObj);
+            Location loc = (Location)dataObj;
+            beforeSaveLocation(loc);
+            
+            // this might not do anything (if no names need to be changed)
+            super.updateFullNamesIfNecessary(loc, session);
+
             log.debug("exit");
             return;
         }
@@ -99,119 +106,7 @@ public class LocationBusRules extends BaseTreeBusRules<Location, LocationTreeDef
      */
     protected void beforeSaveLocation(Location loc)
     {
-        // check to see if this node is brand new
-        if (loc.getId() == null)
-        {
-            // this is a new object
-            // just update it's fullname (and return)
-            // since it can't have any children yet
-            
-            String fullname = TreeHelper.generateFullname(loc);
-            loc.setFullName(fullname);
-            return;
-        }
-        // else
-        
-        // we need a way to determine if the name changed
-        // load a fresh copy from the DB and get the values needed for comparison
-        DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
-        Location fromDB = tmpSession.load(Location.class, loc.getId());
-        Location origParent = fromDB.getParent();
-        tmpSession.close();
-
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        session.attach(loc);
-        
-        boolean nameChanged = true;
-        
-        nameChanged = !(fromDB.getName().equals(loc.getName()));
-        
-        
-        // if the name changed...
-        // update the node's fullname
-        // AND all descendants IF the node's level is in the fullname
-        if (nameChanged)
-        {
-            boolean isInFullname = false;
-            if ((loc.getDefinitionItem().getIsInFullName() != null) && 
-                (loc.getDefinitionItem().getIsInFullName().booleanValue() == true))
-            {
-                isInFullname = true;
-            }
-            
-            if (!isInFullname)
-            {
-                // just change the node's fullname field
-                String fullname = TreeHelper.generateFullname(loc);
-                loc.setFullName(fullname);
-            }
-            else
-            {
-                // must fix fullname for all descendants as well
-                TreeHelper.fixFullnameForNodeAndDescendants(loc);
-            }
-            
-            session.close();
-            
-            // it is assumed that you cannot perform a name change AND move a node in one transaction
-            // so we're done here
-            return;
-        }
-        
-        // we need a way to determine if the parent changed
-        // did the node change parents?
-        boolean parentChanged = true;
-        parentChanged = !(origParent.getId().equals(loc.getParent().getId()));
-        
-        if (parentChanged)
-        {
-            // if no levels above or equal to the new parent or old parent are included in the fullname
-            // do nothing
-            // otherwise, update fullname for node and all descendants
-            
-            boolean higherLevelsIncluded = false;
-            Location l = loc.getParent();
-            while (l != null)
-            {
-                if ((l.getDefinitionItem().getIsInFullName() != null) && 
-                    (l.getDefinitionItem().getIsInFullName().booleanValue() == true))
-                {
-                    higherLevelsIncluded = true;
-                    break;
-                }
-                l = l.getParent();
-            }
-            
-            // if no higher level is included in the new place in the tree, check the old place
-            // in the tree
-            if (higherLevelsIncluded == false)
-            {
-                l = origParent;
-                while (l != null)
-                {
-                    if ((l.getDefinitionItem().getIsInFullName() != null) && 
-                        (l.getDefinitionItem().getIsInFullName().booleanValue() == true))
-                    {
-                        higherLevelsIncluded = true;
-                        break;
-                    }
-                    
-                    l = l.getParent();
-                }
-            }
-            
-            if (higherLevelsIncluded)
-            {
-                TreeHelper.fixFullnameForNodeAndDescendants(loc);
-            }
-            else
-            {
-                String generated = TreeHelper.generateFullname(loc);
-                loc.setFullName(generated);
-            }
-        }
-        
-        session.close();
+        // nothing specific to Location
     }
     
     /**
