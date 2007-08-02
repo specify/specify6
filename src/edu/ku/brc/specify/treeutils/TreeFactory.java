@@ -6,6 +6,8 @@
  */
 package edu.ku.brc.specify.treeutils;
 
+import org.apache.log4j.Logger;
+
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
@@ -31,6 +33,8 @@ import edu.ku.brc.util.Pair;
  */
 public class TreeFactory
 {
+    public static final Logger log = Logger.getLogger(TreeFactory.class);
+    
 	/**
 	 * Creates a new Treeable instance of the given <code>implementingClass</code> having the given parent, name,
 	 * and rank.
@@ -153,6 +157,36 @@ public class TreeFactory
 		}
 		return t;
 	}
+    
+    /**
+     * @param <T>
+     * @param parent
+     * @return
+     */
+    public static <T extends Treeable<T,?,?>> String getChildQueryString(T parent)
+    {
+        if (parent instanceof Taxon)
+        {
+            return "SELECT t.taxonId, t.name, t.nodeNumber, t.highestChildNodeNumber, t.rankId FROM Taxon t WHERE t.parent=:PARENT ORDER BY t.rankId, t.name";
+        }
+        
+        if (parent instanceof Geography)
+        {
+            return "SELECT geo.geographyId, geo.name, geo.nodeNumber, geo.highestChildNodeNumber, geo.rankId FROM Geography geo WHERE geo.parent=:PARENT ORDER BY geo.rankId, geo.name";
+        }
+        
+        if (parent instanceof GeologicTimePeriod)
+        {
+            return "SELECT gtp.geologicTimePeriodId, gtp.name, gtp.nodeNumber, gtp.highestChildNodeNumber, gtp.rankId FROM GeologicTimePeriod gtp WHERE gtp.parent=:PARENT ORDER BY gtp.startPeriod, gtp.endPeriod, gtp.name";
+        }
+        
+        if (parent instanceof Location)
+        {
+            return "SELECT l.locationId, l.name, l.nodeNumber, l.highestChildNodeNumber, l.rankId FROM Location l WHERE l.parent=:PARENT ORDER BY l.rankId, l.name";
+        }
+        
+        return null;
+    }
 
 	/**
 	 * Find and return the names of the formset and view for editing tree nodes of the same class
@@ -163,7 +197,7 @@ public class TreeFactory
 	 */
 	public static Pair<String,String> getAppropriateFormsetAndViewNames( Object node )
 	{
-	    System.err.println("getAppropriateFormsetAndViewNames(Object): Replace this with a call to the table ID manager to get the appropriate form");
+	    log.info("getAppropriateFormsetAndViewNames(Object): Replace this with a call to the table ID manager to get the appropriate form");
 		if( node instanceof Geography )
 		{
 			return new Pair<String,String>("SystemSetup","Geography");
