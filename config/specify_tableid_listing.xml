@@ -99,7 +99,7 @@
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.GeographyBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.GeologicTimePeriod" id="46" workbench="false"  query="true">
-            <display objtitle="Geologic Time Period"/>
+            <display objtitle="GeologicTimePeriod" view="GeologicTimePeriod" dataobjformatter="GeologicTimePeriod" searchdlg="GeologicTimePeriodSearch" newobjdlg="GeologicTimePeriodDisplay"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.GeologicTimePeriodBusRules</businessrule>          
         </table>
         <table name="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef" id="47"/>
@@ -131,6 +131,7 @@
         </table>
         <table name="edu.ku.brc.specify.datamodel.LocalityCitation" id="57" query="true"/>
         <table name="edu.ku.brc.specify.datamodel.Location" id="58" query="true">
+            <display objtitle="Location" view="Location" dataobjformatter="Location" searchdlg="LocationSearch" newobjdlg="LocationDisplay"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.LocationBusRules</businessrule>            
         </table>
         <table name="edu.ku.brc.specify.datamodel.LocationTreeDef" id="59"/>

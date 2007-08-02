@@ -42,16 +42,6 @@
         </view>
         
         <view 
-            name="GeographySearch"
-            class="edu.ku.brc.specify.datamodel.Geography"
-            resourcelabels="false">
-            <desc><![CDATA[The Geography Search Form]]></desc>
-            <altviews>
-                <altview name="GeographySearch" viewdef="GeographySearch" label="Edit" mode="edit" validated="true" default="true"/>
-            </altviews>
-        </view>
-        
-        <view 
             name="LocalitySearch"
             class="edu.ku.brc.specify.datamodel.Locality"
             resourcelabels="false">
@@ -99,6 +89,37 @@
                 <altview name="TaxonSearch" viewdef="TaxonSearch" label="Edit" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
+
+        <view 
+            name="GeographySearch"
+            class="edu.ku.brc.specify.datamodel.Geography"
+            resourcelabels="false">
+            <desc><![CDATA[The Geography Search Form]]></desc>
+            <altviews>
+                <altview name="GeographySearch" viewdef="GeographySearch" label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+        
+        <view 
+            name="LocationSearch"
+            class="edu.ku.brc.specify.datamodel.Location"
+            resourcelabels="false">
+            <desc><![CDATA[The Location Search Form]]></desc>
+            <altviews>
+                <altview name="LocationSearch" viewdef="LocationSearch" label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+        
+        <view 
+            name="GeologicTimePeriodSearch"
+            class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
+            resourcelabels="false">
+            <desc><![CDATA[The GeologicTimePeriod Search Form]]></desc>
+            <altviews>
+                <altview name="GeologicTimePeriodSearch" viewdef="GeologicTimePeriodSearch" label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+        
         
     </views>
     
@@ -260,26 +281,6 @@
         </viewdef>   
              
         <viewdef type="form"
-            name="GeographySearch"
-            class="edu.ku.brc.specify.datamodel.Geography"
-            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
-            
-            <desc><![CDATA[The Geography Search Form]]></desc>
-            <enableRules/>
-            
-            <columnDef>p,3dlu,p</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p</rowDef>
-            
-            <rows>
-                <row>
-                    <cell type="label" labelfor="1" label="Name"/>
-                    <cell type="field" id="1" name="geography.Name" isrequired="true" uitype="text"/>
-                </row>
-            </rows>
-        </viewdef>
-        
-        <viewdef type="form"
             name="LocalitySearch"
             class="edu.ku.brc.specify.datamodel.Locality"
             gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
@@ -373,7 +374,7 @@
             gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
             settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
             
-            <desc><![CDATA[The CatalogNumberingScheme Search Form]]></desc>
+            <desc><![CDATA[The Taxon Search Form]]></desc>
             <enableRules/>
             
             <columnDef>p,3dlu,p</columnDef>
@@ -387,6 +388,66 @@
                 <row>
                     <cell type="label" labelfor="commonName" label="Common Name"/>
                     <cell type="field" id="commonName" name="commonName" isrequired="false" uitype="text"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef type="form"
+            name="GeographySearch"
+            class="edu.ku.brc.specify.datamodel.Geography"
+            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[The Geography Search Form]]></desc>
+            <enableRules/>
+            
+            <columnDef>p,3dlu,p</columnDef>
+            <rowDef>p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="name" label="Name"/>
+                    <cell type="field" id="name" name="name" isrequired="true" uitype="text"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef type="form"
+            name="LocationSearch"
+            class="edu.ku.brc.specify.datamodel.Location"
+            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[The Location Search Form]]></desc>
+            <enableRules/>
+            
+            <columnDef>p,3dlu,p</columnDef>
+            <rowDef>p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="name" label="Name"/>
+                    <cell type="field" id="name" name="name" isrequired="true" uitype="text"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef type="form"
+            name="GeologicTimePeriodSearch"
+            class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
+            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[The GeologicTimePeriod Search Form]]></desc>
+            <enableRules/>
+            
+            <columnDef>p,3dlu,p</columnDef>
+            <rowDef>p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="name" label="Name"/>
+                    <cell type="field" id="name" name="name" isrequired="true" uitype="text"/>
                 </row>
             </rows>
         </viewdef>

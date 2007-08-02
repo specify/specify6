@@ -37,30 +37,69 @@
         <view name="Geography"
             class="edu.ku.brc.specify.datamodel.Geography"
             resourcelabels="false">
-            <desc><![CDATA[Geography Node Form]]></desc>
+            <desc><![CDATA[Geography data entry form.]]></desc>
             <altviews>
-                <altview name="Geography Edit" viewdef="Geography" label="Edit" mode="edit" validated="true"/>
+                <altview name="Geography View" viewdef="Geography" label="View" mode="view"/>
+                <altview name="Geography Edit" viewdef="Geography" label="Edit" mode="edit" default="true"/>
             </altviews>
         </view>
         
-        <view name="GeologicTimePeriod"
-            class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
+        <view name="GeographySubform"
+            class="edu.ku.brc.specify.datamodel.Geography"
             resourcelabels="false">
-            <desc><![CDATA[GeologicTimePeriod Node Form]]></desc>
+            <desc><![CDATA[Geography data entry form.]]></desc>
             <altviews>
-                <altview name="GeologicTimePeriod Edit" viewdef="GeologicTimePeriod" label="Edit" mode="edit" validated="true"/>
+                <altview name="Geography Children View" viewdef="GeographySubform" label="View" mode="view"/>
+                <!--
+                <altview name="Geography Children Table View" viewdef="GeographySubform Table" label="Grid" mode="view" default="true"/>
+				-->
             </altviews>
         </view>
         
         <view name="Location"
             class="edu.ku.brc.specify.datamodel.Location"
             resourcelabels="false">
-            <desc><![CDATA[Location Node Form]]></desc>
+            <desc><![CDATA[Location data entry form.]]></desc>
             <altviews>
-                <altview name="Location Edit" viewdef="Location" label="Edit" mode="edit" validated="true"/>
+                <altview name="Location View" viewdef="Location" label="View" mode="view"/>
+                <altview name="Location Edit" viewdef="Location" label="Edit" mode="edit" default="true"/>
             </altviews>
         </view>
-
+        
+        <view name="LocationSubform"
+            class="edu.ku.brc.specify.datamodel.Location"
+            resourcelabels="false">
+            <desc><![CDATA[Location data entry form.]]></desc>
+            <altviews>
+                <altview name="Location Children View" viewdef="LocationSubform" label="View" mode="view"/>
+                <!--
+                <altview name="Location Children Table View" viewdef="LocationSubform Table" label="Grid" mode="view" default="true"/>
+				-->
+            </altviews>
+        </view>
+        
+        <view name="GeologicTimePeriod"
+            class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
+            resourcelabels="false">
+            <desc><![CDATA[GeologicTimePeriod data entry form.]]></desc>
+            <altviews>
+                <altview name="GeologicTimePeriod View" viewdef="GeologicTimePeriod" label="View" mode="view"/>
+                <altview name="GeologicTimePeriod Edit" viewdef="GeologicTimePeriod" label="Edit" mode="edit" default="true"/>
+            </altviews>
+        </view>
+        
+        <view name="GeologicTimePeriodSubform"
+            class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
+            resourcelabels="false">
+            <desc><![CDATA[GeologicTimePeriod data entry form.]]></desc>
+            <altviews>
+                <altview name="GeologicTimePeriod Children View" viewdef="GeologicTimePeriodSubform" label="View" mode="view"/>
+                <!--
+                <altview name="GeologicTimePeriod Children Table View" viewdef="GeologicTimePeriodSubform Table" label="Grid" mode="view" default="true"/>
+				-->
+            </altviews>
+        </view>
+        
         <view name="LocationTreeDefItem"
             class="edu.ku.brc.specify.datamodel.LocationTreeDefItem"
             resourcelabels="false">
@@ -295,87 +334,6 @@
                             </row>
                         </rows>
                     </cell>
-                </row>
-            </rows>
-        </viewdef>
-        
-        <viewdef
-            type="form"
-            name="Geography"
-            class="edu.ku.brc.specify.datamodel.Geography"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
-            
-            <desc><![CDATA[New Geography Node Form]]></desc>
-            <columnDef>p,3dlu,p,6dlu,p</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p</rowDef>
-            
-            <rows>
-                <row>
-                    <cell type="label" labelfor="1" label="Name"/>
-                    <cell type="field" id="1" name="name" uitype="text" cols="16"/> 
-                </row>
-                <row>
-                    <cell type="label" labelfor="2" label="Remarks"/>
-                    <cell type="field" id="2" name="remarks" uitype="textarea"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="definitionItem" label="Rank"/>
-                    <cell type="field" id="definitionItem" uitype="combobox" name="definitionItem"/>
-                </row>
-            </rows>
-        </viewdef>
-        
-        <viewdef
-            type="form"
-            name="GeologicTimePeriod"
-            class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
-            
-            <desc><![CDATA[New Geologic Time Period Node Form]]></desc>
-            <columnDef>p,3dlu,p,6dlu,p</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p</rowDef>
-            
-            <rows>
-                <row>
-                    <cell type="label" labelfor="1" label="Name"/>
-                    <cell type="field" id="1" name="name" uitype="text" cols="16"/> 
-                </row>
-                <row>
-                    <cell type="label" labelfor="2" label="Remarks"/>
-                    <cell type="field" id="2" name="remarks" uitype="textarea"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="definitionItem" label="Rank"/>
-                    <cell type="field" id="definitionItem" uitype="combobox" name="definitionItem"/>
-                </row>
-            </rows>
-        </viewdef>
-        
-        <viewdef
-            type="form"
-            name="Location"
-            class="edu.ku.brc.specify.datamodel.Location"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
-            
-            <desc><![CDATA[New Location Node Form]]></desc>
-            <columnDef>p,3dlu,p,6dlu,p</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p</rowDef>
-            
-            <rows>
-                <row>
-                    <cell type="label" labelfor="1" label="Name"/>
-                    <cell type="field" id="1" name="name" uitype="text" cols="16"/> 
-                </row>
-                <row>
-                    <cell type="label" labelfor="2" label="Remarks"/>
-                    <cell type="field" id="2" name="remarks" uitype="textarea"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="definitionItem" label="Rank"/>
-                    <cell type="field" id="definitionItem" uitype="combobox" name="definitionItem"/>
                 </row>
             </rows>
         </viewdef>
@@ -908,7 +866,6 @@
                 <rule id="acceptedTaxon"><![CDATA[!isAccepted.isSelected()]]></rule>
                 <rule id="hybridParent1"><![CDATA[isHybrid.isSelected()]]></rule>
                 <rule id="hybridParent2"><![CDATA[isHybrid.isSelected()]]></rule>
-                <!-- <rule id="parent"><![CDATA[definitionItem.getRankID() != 0]]></rule> -->
                 <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
             </enableRules>
             <columnDef>200px,3dlu,p:g</columnDef>
@@ -994,6 +951,147 @@
         </viewdef>
 
         <viewdef
+            name="Geography"
+            type="form"
+            class="edu.ku.brc.specify.datamodel.Geography"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[New Geography Node Form]]></desc>
+            <enableRules>
+                <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
+            </enableRules>
+            <columnDef>200px,3dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+
+            <rows>
+                <row>
+                	<cell type="label" label="Geography" icon="Geography" recordobj="true" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="name" label="Name"/>
+                    <cell type="field" id="name" uitype="text" cols="16" name="name"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="remarks" label="Remarks"/>
+                    <cell type="field" id="remarks" uitype="textarea" name="remarks"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="parent" label="Parent"/>
+                	<cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=Geography;title=Geography;editbtn=false;newbtn=false" name="parent"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="definitionItem" label="Rank"/>
+                	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem"/>
+                </row>
+                <row>
+                    <cell type="separator" label="Children" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="GeographySubform" id="children" name="children" colspan="3"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            name="Location"
+            type="form"
+            class="edu.ku.brc.specify.datamodel.Location"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[New Location Node Form]]></desc>
+            <enableRules>
+                <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
+            </enableRules>
+            <columnDef>200px,3dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+
+            <rows>
+                <row>
+                	<cell type="label" label="Location" icon="Location" recordobj="true" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="name" label="Name"/>
+                    <cell type="field" id="name" uitype="text" cols="16" name="name"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="remarks" label="Remarks"/>
+                    <cell type="field" id="remarks" uitype="textarea" name="remarks"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="parent" label="Parent"/>
+                	<cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=Location;title=Location;editbtn=false;newbtn=false" name="parent"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="definitionItem" label="Rank"/>
+                	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem"/>
+                </row>
+                <row>
+                    <cell type="separator" label="Children" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="LocationSubform" id="children" name="children" colspan="3"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            name="GeologicTimePeriod"
+            type="form"
+            class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[New GeologicTimePeriod Node Form]]></desc>
+            <enableRules>
+                <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
+            </enableRules>
+            <columnDef>200px,3dlu,p:g,3dlu,200px,3dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+
+            <rows>
+                <row>
+                	<cell type="label" label="GeologicTimePeriod" icon="GeologicTimePeriod" recordobj="true" colspan="7"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="name" label="Name"/>
+                    <cell type="field" id="name" uitype="text" cols="16" name="name" colspan="5"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="remarks" label="Remarks"/>
+                    <cell type="field" id="remarks" uitype="textarea" name="remarks" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="parent" label="Parent"/>
+                	<cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=GeologicTimePeriod;title=GeologicTimePeriod;editbtn=false;newbtn=false" name="parent" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="definitionItem" label="Rank"/>
+                	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="startPeriod" label="Start Period"/>
+                	<cell type="field" id="startPeriod" uitype="text" name="startPeriod"/>
+                    <cell type="label" labelfor="startUncertainty" label="Start Uncertainty"/>
+                	<cell type="field" id="startUncertainty" uitype="text" name="startUncertainty"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="endPeriod" label="End Period"/>
+                	<cell type="field" id="endPeriod" uitype="text" name="endPeriod"/>
+                    <cell type="label" labelfor="endUncertainty" label="End Uncertainty"/>
+                	<cell type="field" id="endUncertainty" uitype="text" name="endUncertainty"/>
+                </row>
+                <row>
+                    <cell type="separator" label="Children" colspan="7"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="GeographySubform" id="children" name="children" colspan="7"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
             name="TaxonSubform"
             type="form"
             class="edu.ku.brc.specify.datamodel.Taxon"
@@ -1019,6 +1117,69 @@
         </viewdef>
         
         <viewdef
+            name="GeographySubform"
+            type="form"
+            class="edu.ku.brc.specify.datamodel.Geography"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[New Geography Node Form]]></desc>
+            <enableRules>
+            </enableRules>
+            <columnDef>200px,3dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="fullName" label="Name"/>
+                    <cell type="field" id="fullName" uitype="text" cols="16" name="fullName"/> 
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            name="LocationSubform"
+            type="form"
+            class="edu.ku.brc.specify.datamodel.Location"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[New Location Node Form]]></desc>
+            <enableRules>
+            </enableRules>
+            <columnDef>200px,3dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="fullName" label="Name"/>
+                    <cell type="field" id="fullName" uitype="text" cols="16" name="fullName"/> 
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            name="GeologicTimePeriodSubform"
+            type="form"
+            class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[New Taxon Node Form]]></desc>
+            <enableRules>
+            </enableRules>
+            <columnDef>200px,3dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="fullName" label="Name"/>
+                    <cell type="field" id="fullName" uitype="text" cols="16" name="fullName"/> 
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
             name="TaxonSubform Table"
             type="formtable"
             class="edu.ku.brc.specify.datamodel.Taxon"
@@ -1027,6 +1188,39 @@
             
             <desc><![CDATA[Taxon children table view.]]></desc>
             <definition>TaxonSubform</definition>
+        </viewdef>
+
+        <viewdef
+            name="GeographySubform Table"
+            type="formtable"
+            class="edu.ku.brc.specify.datamodel.Geography"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Geography children table view.]]></desc>
+            <definition>GeographySubform</definition>
+        </viewdef>
+
+        <viewdef
+            name="LocationSubform Table"
+            type="formtable"
+            class="edu.ku.brc.specify.datamodel.Location"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Location children table view.]]></desc>
+            <definition>LocationSubform</definition>
+        </viewdef>
+
+        <viewdef
+            name="GeologicTimePeriodSubform Table"
+            type="formtable"
+            class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[GeologicTimePeriod children table view.]]></desc>
+            <definition>GeologicTimePeriodSubform</definition>
         </viewdef>
 
     </viewdefs>
