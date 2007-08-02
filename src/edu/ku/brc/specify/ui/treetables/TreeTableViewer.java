@@ -977,10 +977,12 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			return;
 		}
 		
+        TreeNode firstMatchNode = listModel.getNodeById(firstMatch.getTreeId());
+        
 		if((where & DualViewSearchable.TOPVIEW) != 0)
 		{
-			lists[0].setSelectedValue(firstMatch,true);
-            lists[0].setSelectedValue(firstMatch,true);
+			lists[0].setSelectedValue(firstMatchNode,true);
+            lists[0].setSelectedValue(firstMatchNode,true);
 		}
 		if((where & DualViewSearchable.BOTTOMVIEW) != 0)
 		{
@@ -988,29 +990,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             {
                 toggleViewMode();
             }
-            lists[1].setSelectedValue(firstMatch,true);
-            lists[1].setSelectedValue(firstMatch,true);
-		}
-	}
-	
-	public void find(String nodeName,JList where,boolean wrap)
-	{
-		if(checkBusy())
-		{
-			return;
-		}
-
-		if(where == lists[0])
-		{
-			find(nodeName,DualViewSearchable.TOPVIEW,wrap);
-		}
-		else if(where == lists[1])
-		{
-			find(nodeName,DualViewSearchable.BOTTOMVIEW,wrap);
-		}
-		else
-		{
-			// throw new IllegalArgumentException?
+            lists[1].setSelectedValue(firstMatchNode,true);
+            lists[1].setSelectedValue(firstMatchNode,true);
 		}
 	}
 	
@@ -1052,10 +1033,12 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 				return;
 			}
 
+            TreeNode nextMatchNode = listModel.getNodeById(nextNode.getTreeId());
+            
 			if((where & DualViewSearchable.TOPVIEW) != 0)
 			{
-                lists[0].setSelectedValue(nextNode,true);
-                lists[0].setSelectedValue(nextNode,true);
+                lists[0].setSelectedValue(nextMatchNode,true);
+                lists[0].setSelectedValue(nextMatchNode,true);
 			}
 			if((where & DualViewSearchable.BOTTOMVIEW) != 0)
 			{
@@ -1063,13 +1046,13 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 {
                     toggleViewMode();
                 }
-                lists[1].setSelectedValue(nextNode,true);
-                lists[1].setSelectedValue(nextNode,true);
+                lists[1].setSelectedValue(nextMatchNode,true);
+                lists[1].setSelectedValue(nextMatchNode,true);
 			}
 		}
 	}
 	
-	public void findNext(int where,boolean wrap,T current)
+	public void findNext(int where, boolean wrap, T current)
 	{
 		List<T> matches = dataService.findByName(treeDef, current.getName());
 		if(matches.size()==1)
@@ -1078,18 +1061,38 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			return;
 		}
 		
-		int curIndex = matches.indexOf(current);
+        int curIndex = -1;
+        for (int i = 0; i < matches.size(); ++i)
+        {
+            T match = matches.get(i);
+            if (match.getTreeId().equals(current.getTreeId()))
+            {
+                curIndex = i;
+            }
+        }
+        
 		if(!wrap && curIndex == matches.size()-1)
 		{
 			setStatusBarText("No more matches");
 			return;
 		}
-		
-		T nextNode = matches.get((curIndex + 1)%matches.size());
+        
+        T nextNode = matches.get((curIndex + 1)%matches.size());
+
+        if( !showPathToNode(nextNode) )
+        {
+            //TODO: notify the user that no results are below current visible root
+            log.info("No more results below current visible root");
+            setStatusBarText("No more results below current visible root");
+            return;
+        }
+        
+        TreeNode nextMatchNode = listModel.getNodeById(nextNode.getTreeId());
+        
 		if((where & DualViewSearchable.TOPVIEW) != 0)
 		{
-            lists[0].setSelectedValue(nextNode,true);
-            lists[0].setSelectedValue(nextNode,true);
+            lists[0].setSelectedValue(nextMatchNode,true);
+            lists[0].setSelectedValue(nextMatchNode,true);
 		}
 		if((where & DualViewSearchable.BOTTOMVIEW) != 0)
 		{
@@ -1097,25 +1100,27 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             {
                 toggleViewMode();
             }
-            lists[1].setSelectedValue(nextNode,true);
-            lists[1].setSelectedValue(nextNode,true);
+            lists[1].setSelectedValue(nextMatchNode,true);
+            lists[1].setSelectedValue(nextMatchNode,true);
 		}
 	}
 	
-	public void findNext(JList where,boolean wrap,T currentNode)
+	public void findNext(JList where, boolean wrap, TreeNode currentNode)
 	{
 		if(checkBusy())
 		{
 			return;
 		}
 		
+        T currentRecord = getRecordForNode(currentNode);
+        
 		if(where == lists[0])
 		{
-			findNext(DualViewSearchable.TOPVIEW,wrap,currentNode);
+			findNext(DualViewSearchable.TOPVIEW,wrap,currentRecord);
 		}
 		else if(where == lists[1])
 		{
-			findNext(DualViewSearchable.BOTTOMVIEW,wrap,currentNode);
+			findNext(DualViewSearchable.BOTTOMVIEW,wrap,currentRecord);
 		}
 		else
 		{

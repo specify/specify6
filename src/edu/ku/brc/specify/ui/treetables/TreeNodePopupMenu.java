@@ -61,13 +61,13 @@ public class TreeNodePopupMenu extends JPopupMenu
 		{
 			public void actionPerformed(ActionEvent ae)
 			{
-				Object selection = list.getSelectedValue();
+				TreeNode selection = (TreeNode)list.getSelectedValue();
 				if( selection == null )
 				{
 					return;
 				}
-				Treeable<?, ?, ?> node = (Treeable<?, ?, ?>)selection;
-				ttv.findNext(list,true,node);
+                
+				ttv.findNext(list,true,selection);
 			}
 		});
 
