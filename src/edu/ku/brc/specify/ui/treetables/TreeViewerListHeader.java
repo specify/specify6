@@ -15,6 +15,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -89,25 +90,25 @@ public class TreeViewerListHeader extends JPanel implements ListDataListener
         
         MouseAdapter mouseAdapter = new MouseAdapter()
         {
-            @Override
+            //@Override
             public void mousePressed(MouseEvent e)
             {
                 pressed(e);
             }
 
-            @Override
+            //@Override
             public void mouseDragged(MouseEvent e)
             {
                 dragged(e);
             }
 
-            @Override
+            //@Override
             public void mouseReleased(MouseEvent e)
             {
                 released(e);
             }
 
-            @Override
+            //@Override
             public void mouseMoved(MouseEvent e)
             {
                 hover(e);
@@ -115,7 +116,7 @@ public class TreeViewerListHeader extends JPanel implements ListDataListener
         };
         
         this.addMouseListener(mouseAdapter);
-        this.addMouseMotionListener(mouseAdapter);
+        this.addMouseMotionListener((MouseMotionListener)mouseAdapter);
 	}
     
     protected void pressed(MouseEvent e)
