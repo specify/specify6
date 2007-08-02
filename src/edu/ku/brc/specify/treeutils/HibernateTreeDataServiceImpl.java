@@ -24,6 +24,7 @@ import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.ui.treetables.TreeNode;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
 
 /**
@@ -45,7 +46,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
     protected static final Logger log = Logger.getLogger(HibernateTreeDataServiceImpl.class);
 
     /** An {@link Interceptor} that logs all objects loaded by Hibernate. */
-    //static HibernateLoadLogger loadLogger = new HibernateLoadLogger();
+    //public static HibernateLoadLogger loadLogger = new HibernateLoadLogger();
     
 	/**
 	 * Constructor.
@@ -111,6 +112,57 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         session.close();
         return children;
     }
+    
+    @SuppressWarnings("unchecked")
+    public List<TreeNode> getChildTreeNodes(T parent)
+    {
+        Session session = getNewSession(parent);
+        String childQueryString = TreeFactory.getChildQueryString(parent);
+        Query getNodeInfoList = session.createQuery(childQueryString);
+        getNodeInfoList.setParameter("PARENT", parent);
+        List<Object[]> nodeInfoList = getNodeInfoList.list();
+        session.close();
+        
+        Vector<TreeNode> treeNodes = new Vector<TreeNode>();
+        for (Object[] nodeInfo: nodeInfoList)
+        {
+            treeNodes.add(createNode(nodeInfo,parent));
+        }
+        return treeNodes;
+    }
+    
+    private TreeNode createNode(Object[] nodeInfo, T parent)
+    {
+        long id = (Long)nodeInfo[0];
+        String nodeName = (String)nodeInfo[1];
+        Integer highChild = (Integer)nodeInfo[3];
+        Integer nodeNum   = (Integer)nodeInfo[2];
+        int descCount = 0;
+        if (highChild != null && nodeNum != null)
+        {
+            descCount = highChild - nodeNum;
+        }
+        int rank = (Integer)nodeInfo[4];
+
+        long parentId;
+        int parentRank;
+        
+        T parentRecord = parent;
+        if (parentRecord == null)
+        {
+            parentId = id;
+            parentRank = -1;
+        }
+        else
+        {
+            parentId = parentRecord.getTreeId();
+            parentRank = parentRecord.getRankId();
+        }
+        
+        TreeNode node = new TreeNode(nodeName,id,parentId,rank,parentRank, (descCount != 0));
+        return node;
+    }
+
     
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.treeutils.TreeDataService#getRootNode(edu.ku.brc.specify.datamodel.TreeDefIface)
@@ -325,10 +377,16 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
      * @see edu.ku.brc.specify.treeutils.TreeDataService#getDescendantCount(edu.ku.brc.specify.datamodel.Treeable)
      */
     public synchronized int getDescendantCount(T node)
-    { 
+    {
+        if (node == null)
+        {
+            return 0;
+        }
+        
         log.trace("enter");
         Session session = getNewSession(node);
-        log.debug("refreshing " + nodeDebugInfo(node));
+        //log.debug("refreshing " + nodeDebugInfo(node));
+        
         session.refresh(node);
         Integer nodeNum = node.getNodeNumber();
         Integer highChild = node.getHighestChildNodeNumber();
@@ -740,7 +798,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
             {
                 // make sure not to attempt locking an unsaved object
                 DataModelObjBase dmob = (DataModelObjBase)o;
-                if (dmob.getId()!=null)
+                if (dmob.getId() != null)
                 {
                     session.lock(o, LockMode.NONE);
                 }

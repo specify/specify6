@@ -12,6 +12,7 @@ import java.util.Set;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.ui.treetables.TreeNode;
 
 /**
  * This interface defines a session facade for all clients needing access to tree-structured data.
@@ -69,6 +70,8 @@ public interface TreeDataService <T extends Treeable<T,D,I>,
      * @return the {@link Set} of child nodes
      */
     public Set<T> getChildNodes(T parent);
+    
+    public List<TreeNode> getChildTreeNodes(T parent);
     
     /**
      * Returns the number of descendants of the given node.
