@@ -23,8 +23,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -1645,12 +1643,12 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		super.shutdown();
 	}
 	
-	@SuppressWarnings("unchecked")
 	public T getSelectedNode(JList list)
 	{
 		if(lists[0] == list || lists[1] == list )
 		{
-			return (T)list.getSelectedValue();			
+			TreeNode node = (TreeNode)list.getSelectedValue();
+            return getRecordForNode(node);
 		}
 		throw new IllegalArgumentException("Provided JList must be one of the TTV display lists");
 	}
@@ -1689,38 +1687,20 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             parentRank = parentRecord.getRankId();
         }
         
-        // TODO: this is probably a quicker, better way to do this
-        //int descCount = dataService.getDescendantCount(parentRecord);
-        //TreeNode node = new TreeNode(nodeName,id,parentId,rank,parentRank, (descCount != 0));
-
-        // but for now...
-        int childCount = dataService.getChildNodes(dataRecord).size();
-        TreeNode node = new TreeNode(nodeName,id,parentId,rank,parentRank, (childCount != 0));
+        int descCount = dataService.getDescendantCount(dataRecord);
+        TreeNode node = new TreeNode(nodeName,id,parentId,rank,parentRank, (descCount != 0));
         return node;
     }
     
-    private List<TreeNode> createSortedChildNodeList(Set<T> children, Comparator<? super T> sorter)
+    protected synchronized void showChildren(T dbRecord)
     {
-        Vector<T> kids = new Vector<T>(children);
-        Collections.sort(kids,sorter);
-        Vector<TreeNode> kidNodes = new Vector<TreeNode>();
-        for (T child: kids)
-        {
-            TreeNode kidNode = createNode(child);
-            kidNodes.add(kidNode);
-        }
-        return kidNodes;
-    }
-    
-    protected void showChildren(T dbRecord)
-    {
-        // get the child records
-        Set<T> children = dataService.getChildNodes(dbRecord);
-        // create a list of TreeNode objects, sorted appropriately
-        Comparator<? super T> sorter = dbRecord.getComparator();
+        // get the child nodes
+        List<TreeNode> childNodes = dataService.getChildTreeNodes(dbRecord);
+        
+        // get the node representing the parent DB record
         TreeNode parentNode = listModel.getNodeById(dbRecord.getTreeId());
+
         // add the nodes to the model
-        List<TreeNode> childNodes = createSortedChildNodeList(children, sorter);
         if (childNodes.size() == 0)
         {
             parentNode.setHasChildren(false);
@@ -1756,12 +1736,12 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 showChildren(childNode);
             }
         };
-        Timer swingTimer = new Timer(333,al);
+        Timer swingTimer = new Timer(250,al);
         swingTimer.setRepeats(false);
         swingTimer.start();
     }
 
-    protected void showChildren(TreeNode parent)
+    protected synchronized void showChildren(TreeNode parent)
     {
         // get the DB record that corresponds to this TreeNode
         T dbRecord = getRecordForNode(parent);
@@ -1769,7 +1749,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         showChildren(dbRecord);
     }
 
-    protected void hideChildren(TreeNode parent)
+    protected synchronized void hideChildren(TreeNode parent)
     {
         idsToReexpand.remove(parent.getId());
         listModel.removeChildNodes(parent);
