@@ -2731,7 +2731,7 @@ public class GenericDBConversion
                 //log.info("\n"+str.toString());
                 if (hasFrame)
                 {
-                    if (count % 100 == 0)
+                    if (count % 1000 == 0)
                     {
                         setProcess(count);
                     }
@@ -2773,9 +2773,7 @@ public class GenericDBConversion
             
             if (hasFrame)
             {
-
                 setProcess(count);
-                
             } else
             {
                 if (count % 2000 == 0)
@@ -2966,7 +2964,7 @@ public class GenericDBConversion
                 
                 if (hasFrame)
                 {
-                    if (count % 500 == 0) 
+                    if (count % 100 == 0) 
                     {
                         setProcess(count);
                     }
@@ -3285,7 +3283,7 @@ public class GenericDBConversion
                     //log.info("\n"+str.toString());
                     if (hasFrame)
                     {
-                        if (count % 500 == 0) 
+                        if (count % 100 == 0) 
                         {
                             setProcess(count);
                         }
@@ -3517,7 +3515,7 @@ public class GenericDBConversion
                 
                 if (hasFrame)
                 {
-                    if (count % 500 == 0) 
+                    if (count % 100 == 0) 
                     {
                         setProcess(count);
                     }
@@ -4186,6 +4184,10 @@ public class GenericDBConversion
     	// empty out any pre-existing records
     	BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "geography");
 
+        // create an ID mapper for the geography table (mainly for use in converting localities)
+        IdTableMapper geoIdMapper = IdMapperMgr.getInstance().addTableMapper("geography", "GeographyID");
+        Hashtable<Integer, Geography> oldIdToGeoMap = new Hashtable<Integer, Geography>();
+
     	// get a Hibernate session for saving the new records
     	Session session = HibernateUtil.getCurrentSession();
     	HibernateUtil.beginTransaction();
@@ -4214,9 +4216,8 @@ public class GenericDBConversion
     	planetEarth.setCommonName("Earth");
     	planetEarth.setRankId(0);
     	planetEarth.setDefinition(treeDef);
-    	for( Object o: treeDef.getTreeDefItems() )
+    	for (GeographyTreeDefItem defItem: treeDef.getTreeDefItems())
     	{
-    		GeographyTreeDefItem defItem = (GeographyTreeDefItem)o;
     		if ( defItem.getRankId() == 0 )
     		{
     			planetEarth.setDefinitionItem(defItem);
@@ -4225,16 +4226,12 @@ public class GenericDBConversion
     	}
     	GeographyTreeDefItem defItem = treeDef.getDefItemByRank(0);
     	planetEarth.setDefinitionItem(defItem);
-    	session.save(planetEarth);
-    	
-    	// create an ID mapper for the geography table (mainly for use in converting localities)
-    	IdTableMapper geoIdMapper = IdMapperMgr.getInstance().addTableMapper("geography", "GeographyID");
     	
     	int counter = 0;
     	// for each old record, convert the record
     	do
     	{
-            if (counter % 500 == 0)
+            if (counter % 100 == 0)
             {
                 if (hasFrame)
                 {
@@ -4254,13 +4251,15 @@ public class GenericDBConversion
         	String county = oldGeoRecords.getString(5);
 
         	// create a new Geography object from the old data
-        	Geography newGeo = convertOldGeoRecord(cont, country, state, county, planetEarth, session);
-
-        	counter++;
-        	
-        	// add this new ID to the ID mapper
-        	geoIdMapper.put(oldId, newGeo.getGeographyId());
+        	List<Geography> newGeos = convertOldGeoRecord(cont, country, state, county, planetEarth);
+            if (newGeos.size() > 0)
+            {
+                Geography lowestLevel = newGeos.get(newGeos.size()-1);
+                
+                oldIdToGeoMap.put(oldId, lowestLevel);
+            }
             
+        	counter++;
     	} while (oldGeoRecords.next());
         
         if (hasFrame)
@@ -4275,10 +4274,18 @@ public class GenericDBConversion
         planetEarth.setNodeNumber(1);
         fixNodeNumbersFromRoot(planetEarth);
         planetEarth.fixFullNameForAllDescendants();
+        session.save(planetEarth);
         
     	HibernateUtil.commitTransaction();
 		log.info("Converted " + counter + " geography records");
 
+        // add all of the ID mappings
+        for (Integer oldId: oldIdToGeoMap.keySet())
+        {
+            Geography geo = oldIdToGeoMap.get(oldId);
+            geoIdMapper.put(oldId, geo.getId());
+        }
+        
 		// set up Geography foreign key mapping for locality
 		idMapperMgr.mapForeignKey("Locality", "GeographyID", "Geography", "GeographyID");
     }
@@ -4292,15 +4299,15 @@ public class GenericDBConversion
      * @param state state name
      * @param county county name
      * @param geoRoot the Geography tree root node (planet)
-     * @return the lowest level Geography item represented by the passed in data
+     * @return a list of Geography items created, the lowest level being the last item in the list
      */
-    protected Geography convertOldGeoRecord(String cont,
+    protected List<Geography> convertOldGeoRecord(String cont,
 											String country,
 											String state,
 											String county,
-											Geography geoRoot,
-											Session session)
+											Geography geoRoot)
     {
+        List<Geography> newRecords = new Vector<Geography>();
     	String levelNames[] = {cont,country,state,county};
     	int levelsToBuild = 0;
     	for( int i = 4; i > 0; --i )
@@ -4315,11 +4322,12 @@ public class GenericDBConversion
     	Geography prevLevelGeo = geoRoot;
     	for( int i = 0; i < levelsToBuild; ++i )
     	{
-    		Geography newLevelGeo = buildGeoLevel( levelNames[i], prevLevelGeo, session );
+    		Geography newLevelGeo = buildGeoLevel(levelNames[i], prevLevelGeo);
+            newRecords.add(newLevelGeo);
     		prevLevelGeo = newLevelGeo;
     	}
     	
-    	return prevLevelGeo;
+    	return newRecords;
     }
     
     /**
@@ -4328,7 +4336,7 @@ public class GenericDBConversion
      * @param sessionArg
      * @return
      */
-    protected Geography buildGeoLevel( String nameArg, Geography parentArg, Session sessionArg )
+    protected Geography buildGeoLevel(String nameArg, Geography parentArg)
     {
         String name = nameArg;
     	if ( name == null )
@@ -4360,7 +4368,6 @@ public class GenericDBConversion
     	GeographyTreeDefItem defItem = parentArg.getDefinition().getDefItemByRank(newGeoRank);
     	newGeo.setDefinitionItem(defItem);
     	newGeo.setRankId(newGeoRank);
-        sessionArg.save(newGeo);
     	
     	return newGeo;
     }
@@ -4553,10 +4560,11 @@ public class GenericDBConversion
     	
     	log.info("Converting old geologic time period records");
     	int count = 0;
-    	
-    	IdTableMapper gtpIdMapper = IdMapperMgr.getInstance().addTableMapper("geologictimeperiod", "GeologicTimePeriodID");
-        IdMapperMgr.getInstance().mapForeignKey("Stratigraphy", "GeologicTimePeriodID", "GeologicTimePeriod", "GeologicTimePeriodID");
-    	
+
+        // create an ID mapper for the geologictimeperiod table
+        IdTableMapper gtpIdMapper = IdMapperMgr.getInstance().addTableMapper("geologictimeperiod", "GeologicTimePeriodID");
+        Hashtable<Integer, GeologicTimePeriod> oldIdToGTPMap = new Hashtable<Integer, GeologicTimePeriod>();
+
     	String sql = "SELECT g.GeologicTimePeriodID,g.RankCode,g.Name,g.Standard,g.Remarks,g.TimestampModified,g.TimestampCreated,p1.Age as Upper,p1.AgeUncertainty as UpperUncertainty,p2.Age as Lower,p2.AgeUncertainty as LowerUncertainty FROM geologictimeperiod g, geologictimeboundary p1, geologictimeboundary p2 WHERE g.UpperBoundaryID=p1.GeologicTimeBoundaryID AND g.LowerBoundaryID=p2.GeologicTimeBoundaryID ORDER BY Lower DESC, RankCode";
     	Statement statement = oldDBConn.createStatement();
     	ResultSet rs = statement.executeQuery(sql);
@@ -4579,7 +4587,6 @@ public class GenericDBConversion
     	allTime.setEndUncertainty(0f);
     	allTime.setTimestampCreated(now);
     	allTime.setTimestampModified(now);
-    	session.save(allTime);
     	++count;
     	newItems.add(allTime);
     	
@@ -4629,14 +4636,11 @@ public class GenericDBConversion
     		gtp.setTimestampCreated(creT);
     		gtp.setTimestampModified(modT);
 
-    		
-    		session.save(gtp);
-
     		newItems.add(gtp);
-    		
-    		gtpIdMapper.put(id, gtp.getGeologicTimePeriodId());
-    		
-    		if ( ++count % 1000 == 0 )
+
+            oldIdToGTPMap.put(id, gtp);
+            
+    		if ( ++count % 500 == 0 )
     		{
     	    	log.info(count + " geologic time period records converted");
     		}
@@ -4660,10 +4664,21 @@ public class GenericDBConversion
     	allTime.setNodeNumber(1);
     	fixNodeNumbersFromRoot(allTime);
     	allTime.fixFullNameForAllDescendants();
+        session.save(allTime);
         
     	HibernateUtil.commitTransaction();
     	HibernateUtil.closeSession();
-    	
+        
+        // add all of the ID mappings
+        for (Integer oldId: oldIdToGTPMap.keySet())
+        {
+            GeologicTimePeriod gtp = oldIdToGTPMap.get(oldId);
+            gtpIdMapper.put(oldId, gtp.getId());
+        }
+
+        // set up geologictimeperiod foreign key mapping for stratigraphy
+        IdMapperMgr.getInstance().mapForeignKey("Stratigraphy", "GeologicTimePeriodID", "GeologicTimePeriod", "GeologicTimePeriodID");
+
     	log.info(count + " geologic time period records converted");
     }
     
