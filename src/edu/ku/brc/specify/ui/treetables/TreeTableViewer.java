@@ -351,8 +351,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         {
             public void actionPerformed(ActionEvent ae)
             {
-                System.out.println("reimplement show subtree");
-                //showSubtreeOfSelection(lists[0]);
+                showSubtreeOfSelection(lists[0]);
             }
         });
         
@@ -363,8 +362,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         {
             public void actionPerformed(ActionEvent ae)
             {
-                System.out.println("reimplement show whole tree");
                 //showWholeTree(lists[0]);
+                zoomOutOneLevel(lists[0]);
             }
         });
 
@@ -492,8 +491,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         {
             public void actionPerformed(ActionEvent ae)
             {
-                System.out.println("reimplement show subtree");
-                //showSubtreeOfSelection(lists[1]);
+                showSubtreeOfSelection(lists[1]);
             }
         });
         
@@ -504,8 +502,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         {
             public void actionPerformed(ActionEvent ae)
             {
-                System.out.println("reimplement show whole tree");
                 //showWholeTree(lists[1]);
+                zoomOutOneLevel(lists[1]);
             }
         });
 
@@ -861,51 +859,70 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		showEditDialog(nodeRecord, "Edit Node Values", false);
 	}
 
-//	/**
-//	 * Sets the visibleRoot property of the tree to the currently selected node.  This provides
-//	 * the ability to "zoom in" to a lower level of the tree.
-//	 */
-//	@SuppressWarnings("unchecked")
-//	public void showSubtreeOfSelection(JList list)
-//	{
-//		if(checkBusy())
-//		{
-//			return;
-//		}
-//
-//		Object selection = list.getSelectedValue();
-//		if( selection == null )
-//		{
-//			return;
-//		}
-//		
-//		T node = (T)selection;
-//
-//		listModel.setVisibleRoot(node);
-//		
-//		list.setSelectedValue(node,true);
-//	}
-//	
-//	/**
-//	 * Sets the visibleRoot property to the actual root of the tree.  This results in the 
-//	 * entire tree being made available to the user.
-//	 */
-//	public void showWholeTree(JList list)
-//	{
-//		if(checkBusy())
-//		{
-//			return;
-//		}
-//
-//		Object selection = list.getSelectedValue();		
-//
-//		listModel.setVisibleRoot(listModel.getRoot());
-//		
-//		if( selection != null )
-//		{
-//			list.setSelectedValue(selection,true);
-//		}
-//	}
+	/**
+	 * Sets the visibleRoot property of the tree to the currently selected node.  This provides
+	 * the ability to "zoom in" to a lower level of the tree.
+	 */
+	@SuppressWarnings("unchecked")
+	public void showSubtreeOfSelection(JList list)
+	{
+		if(checkBusy())
+		{
+			return;
+		}
+
+        TreeNode selectedNode = (TreeNode)list.getSelectedValue();
+		if( selectedNode == null )
+		{
+			return;
+		}
+
+		listModel.setVisibleRoot(selectedNode);
+		
+        list.setSelectedValue(selectedNode,true);
+        list.setSelectedValue(selectedNode,true);
+	}
+	
+    public void zoomOutOneLevel(JList list)
+    {
+        if (checkBusy())
+        {
+            return;
+        }
+        
+        TreeNode selectedNode = (TreeNode)list.getSelectedValue();
+        
+        TreeNode visibleRoot = listModel.getVisibleRoot();
+        
+        TreeNode parentNode = listModel.getNodeById(visibleRoot.getParentId());
+        
+        listModel.setVisibleRoot(parentNode);
+        
+        list.setSelectedValue(selectedNode, true);
+        list.setSelectedValue(selectedNode, true);
+    }
+    
+	/**
+	 * Sets the visibleRoot property to the actual root of the tree.  This results in the 
+	 * entire tree being made available to the user.
+	 */
+	public void showWholeTree(JList list)
+	{
+		if(checkBusy())
+		{
+			return;
+		}
+
+		Object selection = list.getSelectedValue();		
+
+		listModel.setVisibleRoot(listModel.getRoot());
+		
+		if( selection != null )
+		{
+            list.setSelectedValue(selection,true);
+            list.setSelectedValue(selection,true);
+		}
+	}
 
 	@SuppressWarnings("unchecked")
 	public void selectParentOfSelection(JList list)
@@ -925,6 +942,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         if (parentId != node.getId())
         {
             TreeNode parentNode = listModel.getNodeById(parentId);
+            list.setSelectedValue(parentNode,true);
             list.setSelectedValue(parentNode,true);
         }
 	}
@@ -962,6 +980,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		if((where & DualViewSearchable.TOPVIEW) != 0)
 		{
 			lists[0].setSelectedValue(firstMatch,true);
+            lists[0].setSelectedValue(firstMatch,true);
 		}
 		if((where & DualViewSearchable.BOTTOMVIEW) != 0)
 		{
@@ -969,6 +988,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             {
                 toggleViewMode();
             }
+            lists[1].setSelectedValue(firstMatch,true);
             lists[1].setSelectedValue(firstMatch,true);
 		}
 	}
@@ -1034,7 +1054,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 
 			if((where & DualViewSearchable.TOPVIEW) != 0)
 			{
-				lists[0].setSelectedValue(nextNode,true);
+                lists[0].setSelectedValue(nextNode,true);
+                lists[0].setSelectedValue(nextNode,true);
 			}
 			if((where & DualViewSearchable.BOTTOMVIEW) != 0)
 			{
@@ -1042,7 +1063,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 {
                     toggleViewMode();
                 }
-				lists[1].setSelectedValue(nextNode,true);
+                lists[1].setSelectedValue(nextNode,true);
+                lists[1].setSelectedValue(nextNode,true);
 			}
 		}
 	}
@@ -1066,7 +1088,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		T nextNode = matches.get((curIndex + 1)%matches.size());
 		if((where & DualViewSearchable.TOPVIEW) != 0)
 		{
-			lists[0].setSelectedValue(nextNode,true);
+            lists[0].setSelectedValue(nextNode,true);
+            lists[0].setSelectedValue(nextNode,true);
 		}
 		if((where & DualViewSearchable.BOTTOMVIEW) != 0)
 		{
@@ -1074,7 +1097,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             {
                 toggleViewMode();
             }
-			lists[1].setSelectedValue(nextNode,true);
+            lists[1].setSelectedValue(nextNode,true);
+            lists[1].setSelectedValue(nextNode,true);
 		}
 	}
 	
@@ -1468,7 +1492,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			{
 				return;
 			}
-			list.setSelectedIndex(index);
+            list.setSelectedIndex(index);
+            list.setSelectedIndex(index);
 			popupMenu.setList(list);
 			popupMenu.show(list,e.getX(),e.getY());
 		}

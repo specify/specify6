@@ -66,6 +66,11 @@ public class TreeViewerListModel extends AbstractListModel
         return visibleRoot;
     }
     
+    public synchronized TreeNode getRoot()
+    {
+        return nodes.get(0);
+    }
+    
     public synchronized void setVisibleRoot(TreeNode node)
     {
         if (!nodes.contains(node))
@@ -73,21 +78,49 @@ public class TreeViewerListModel extends AbstractListModel
             throw new IllegalArgumentException("Passed in node must already be in the TreeViewerListModel");
         }
         
-        // TODO: make this process mirror TreeDataListModel.setVisibleRoot()
-//        setNodeVisible(visibleRoot,false);
-//        visibleRoot = node;
-//        makeNodeVisible(visibleRoot);
-//        showChildren(visibleRoot);
+        if (node == visibleRoot)
+        {
+            // nothing needs to be done
+            return;
+        }
+        
+        int startSize = getSize();
+        int startingVisRootIndex = nodes.indexOf(visibleRoot);
+        int newVisRootIndex      = nodes.indexOf(node);
+        int startingLastVisIndex = findLastVisibleIndex();
+        TreeNode startingVisRoot = visibleRoot;
 
-        removeChildNodes(visibleRoot);
-        
-        
-        //int prevVisRootIndex = nodes.indexOf(visibleRoot);
-        //int prevVisSize      = visibleSize;
+        // change the visible root
         visibleRoot = node;
-        int lastVisIndex = findLastVisibleIndex();
-        int visRootIndex = nodes.indexOf(visibleRoot);
-        visibleSize = lastVisIndex - visRootIndex + 1;
+        // and calculate the new size
+        int newLastVisIndex = findLastVisibleIndex();
+        visibleSize = newLastVisIndex - newVisRootIndex + 1;
+
+        // if this is a "zoom in" operation...
+        if (isDescendantOfNode(node, startingVisRoot))
+        {
+            // notify listeners of the two intervals removed (the one before the new vis root and the one after the new last vis node)
+
+            // the interval at the beginning
+            fireIntervalRemoved(this, 0, newVisRootIndex - startingVisRootIndex - 1);
+            // the interval at the end
+            if (newLastVisIndex != startingLastVisIndex)
+            {
+                fireIntervalRemoved(this, visibleSize, startSize - (newVisRootIndex - startingVisRootIndex) - 1);
+            }
+        }
+        else // this was a "zoom out" operation
+        {
+            // notify listeners of the two intervals added (the one before the new vis root and the one after the new last vis node)
+
+            // the interval at the beginning
+            fireIntervalAdded(this, 0, startingVisRootIndex - newVisRootIndex -1);
+            // the interval at the end
+            if (newLastVisIndex != startingLastVisIndex)
+            {
+                fireIntervalAdded(this, startSize + (startingVisRootIndex - newVisRootIndex), visibleSize - 1);
+            }
+        }
         
         // TODO: fire the appropriate interval added/removed stuff
         System.out.println("Fire some model change events");
