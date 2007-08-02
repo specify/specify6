@@ -773,6 +773,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		if( parentDefItem.getChild() == null )
 		{
 			log.info("Cannot add child node below this rank");
+            statusBar.setErrorMessage("Children cannot be added below this node");
 			return;
 		}
 
@@ -782,6 +783,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		newT.setDefinition(parentRecord.getDefinition());
 		newT.setParent(parentRecord);
 
+        statusBar.setText(null);
 		// display a form for filling in child data
 		showEditDialog(newT, "New Node Form", true);
 	}
@@ -1320,7 +1322,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         
         // these calls should work even if nodeRecord is null
         boolean canDelete   = (businessRules != null) ? businessRules.okToDelete(nodeRecord) : false;
-        boolean canAddChild = (selectedNode != null) ? (selectedNode.getRank() > getLowestPossibleNodeRank()) : false;
+        boolean canAddChild = (selectedNode != null) ? (selectedNode.getRank() > getHighestPossibleNodeRank()) : false;
         
         popupMenu.setDeleteEnabled(canDelete);
         popupMenu.setNewEnabled(canAddChild);
@@ -1598,18 +1600,24 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		}
 	}
     
-    protected int getLowestPossibleNodeRank()
+    /**
+     * Returns the rank of the leaf level of the tree.  Remember, it's deeper in the tree, but has a
+     * larger rank value.
+     * 
+     * @return
+     */
+    protected int getHighestPossibleNodeRank()
     {
-        int lowestRank = Integer.MAX_VALUE;
+        int highestRank = Integer.MIN_VALUE;
         for (I defItem: treeDef.getTreeDefItems())
         {
             Integer rank = defItem.getRankId();
-            if (rank != null && rank < lowestRank)
+            if (rank != null && rank > highestRank)
             {
-                lowestRank = rank;
+                highestRank = rank;
             }
         }
-        return lowestRank;
+        return highestRank;
     }
     
 	public void mouseButtonReleased(MouseEvent e)
