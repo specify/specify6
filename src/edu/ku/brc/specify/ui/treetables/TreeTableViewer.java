@@ -1322,7 +1322,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         
         // these calls should work even if nodeRecord is null
         boolean canDelete   = (businessRules != null) ? businessRules.okToDelete(nodeRecord) : false;
-        boolean canAddChild = (selectedNode != null) ? (selectedNode.getRank() > getHighestPossibleNodeRank()) : false;
+        boolean canAddChild = (selectedNode != null) ? (selectedNode.getRank() < getHighestPossibleNodeRank()) : false;
         
         popupMenu.setDeleteEnabled(canDelete);
         popupMenu.setNewEnabled(canAddChild);
@@ -1760,6 +1760,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                     
                     // maybe start a Swing Timer for this work
                     showChildrenInTimer(childNode);
+                    //showChildren(childNode);
                 }
             }
         }
@@ -1774,7 +1775,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 showChildren(childNode);
             }
         };
-        Timer swingTimer = new Timer(250,al);
+        Timer swingTimer = new Timer(200,al);
         swingTimer.setRepeats(false);
         swingTimer.start();
     }
