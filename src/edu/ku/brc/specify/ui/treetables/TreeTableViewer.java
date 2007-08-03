@@ -1233,6 +1233,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		    DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             T mergedNode = null;
             boolean success = true;
+            boolean afterSaveSuccess = false;
             
             if (businessRules != null)
             {
@@ -1246,10 +1247,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 session.saveOrUpdate(mergedNode);
                 session.commit();
                 log.info("Successfully saved changes to " + mergedNode.getFullName());
-                if (businessRules != null)
-                {
-                    businessRules.afterSave(node);
-                }
                 
             }
             catch (Exception e)
@@ -1263,28 +1260,44 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 session.close();
             }
             // at this point, the new node is in the DB
-		    
-            // now refresh the tree viewer
-            
-            if (isNewObject && success)
+
+            if (businessRules != null)
             {
-                // show the children of the 
-                T parent = node.getParent();
-                if (parent != null)
+                afterSaveSuccess = businessRules.afterSave(mergedNode);
+            }
+
+            // now refresh the tree viewer
+            if (success)
+            {
+                if (isNewObject)
                 {
-                    TreeNode parentNode = listModel.getNodeById(parent.getTreeId());
-                    parentNode.setHasChildren(true);
-                    hideChildren(parentNode);
-                    showChildren(parent);
+                    // show the children of the 
+                    T parent = node.getParent();
+                    if (parent != null)
+                    {
+                        TreeNode parentNode = listModel.getNodeById(parent.getTreeId());
+                        parentNode.setHasChildren(true);
+                        hideChildren(parentNode);
+                        showChildren(parent);
+                    }
+                }
+                else
+                {
+                    // this was an existing node being edited
+                    TreeNode editedNode = listModel.getNodeById(node.getTreeId());
+                    editedNode.setName(node.getName());
+                    editedNode.setRank(node.getRankId());
+                    listModel.nodeValuesChanged(editedNode);
+                }
+                
+                if (!afterSaveSuccess)
+                {
+                    statusBar.setErrorMessage("The tree metadata was not successfully updated.  Please rebuild the tree metadata.");
                 }
             }
             else
             {
-                // this was an existing node being edited
-                TreeNode editedNode = listModel.getNodeById(node.getTreeId());
-                editedNode.setName(node.getName());
-                editedNode.setRank(node.getRankId());
-                listModel.nodeValuesChanged(editedNode);
+                statusBar.setErrorMessage("The transaction didn't complete successfully.  Changes have been undone.");
             }
 		}
 		else

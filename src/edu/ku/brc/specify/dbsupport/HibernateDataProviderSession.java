@@ -57,7 +57,25 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
      */
     public HibernateDataProviderSession()
     {
-        session = HibernateUtil.getNewSession();
+        this.session = HibernateUtil.getNewSession();
+        if (SHOW_COUNTS)
+        {
+            createsCounts++;
+            log.debug(" Creates: "+createsCounts+"  Closes: "+closesCounts+" Dif: "+(createsCounts-closesCounts));
+        }
+    }
+    
+    public HibernateDataProviderSession(Session session)
+    {
+        if (session != null)
+        {
+            // this constructor doesn't track opens and closes since they are done outside of this class, in this case
+            this.session = session;
+            return;
+        }
+        
+        // dupilicate of HibernateDataProviderSession() code
+        this.session = HibernateUtil.getNewSession();
         if (SHOW_COUNTS)
         {
             createsCounts++;

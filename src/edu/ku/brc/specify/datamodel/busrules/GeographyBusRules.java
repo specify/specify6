@@ -58,16 +58,6 @@ public class GeographyBusRules extends BaseTreeBusRules<Geography, GeographyTree
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#afterSave(java.lang.Object)
-     */
-    @Override
-    public void afterSave(Object dataObj)
-    {
-        log.debug("enter");
-        log.debug("exit");
-    }
-
-    /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#beforeSave(java.lang.Object)
      */
     @Override

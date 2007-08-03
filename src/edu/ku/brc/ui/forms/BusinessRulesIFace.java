@@ -88,7 +88,7 @@ public interface BusinessRulesIFace
      * 
      * @param dataObj the object that was saved
      */
-    public void afterSave(Object dataObj);
+    public boolean afterSave(Object dataObj);
     
     /**
      * Called before committing a transaction in which the passed in data object will

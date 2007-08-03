@@ -1,10 +1,14 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
+import org.apache.log4j.Logger;
+
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.treeutils.TreeDataService;
+import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.treeutils.TreeHelper;
 
 public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
@@ -12,6 +16,10 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
                                        I extends TreeDefItemIface<T,D,I>>
                                        extends BaseBusRules
 {
+    private static final Logger log = Logger.getLogger(BaseTreeBusRules.class);
+
+    protected T nodeBeforeSave;
+    
     public BaseTreeBusRules(Class<?>... dataClasses)
     {
         super(dataClasses);
@@ -158,6 +166,37 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
                 String fullname = TreeHelper.generateFullname(node);
                 node.setFullName(fullname);
             }
+            nodeBeforeSave = node;
         }
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#afterSave(java.lang.Object)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public boolean afterSave(Object dataObj)
+    {
+        boolean success = true;
+        
+        // compare the dataObj values to the nodeBeforeSave values to determine if a node was moved or added
+        if (dataObj instanceof Treeable)
+        {
+            // NOTE: the instanceof check can't check against 'T' since T isn't a class
+            //       this has a SMALL amount of risk to it
+            T node = (T)dataObj;
+            
+            // if the node doesn't have any assigned node number, it must be new
+            boolean added = (node.getNodeNumber() == null);
+
+            if (added)
+            {
+                log.info("Saved tree node was added.  Updating node numbers appropriately.");
+                TreeDataService dataServ = TreeDataServiceFactory.createService();
+                success = dataServ.updateNodeNumbersAfterNodeAddition(node);
+            }
+        }
+        
+        return success;
     }
 }

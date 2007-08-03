@@ -265,7 +265,7 @@ public class TreeFactory
         
 		return null;
 	}
-	
+    
 	/**
      * Creates a standard {@link Location} tree.
      * 

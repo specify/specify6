@@ -208,9 +208,9 @@ public abstract class BaseBusRules implements BusinessRulesIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#afterSave(java.lang.Object)
      */
-    public void afterSave(Object dataObj)
+    public boolean afterSave(Object dataObj)
     {
-        // do nothing
+        return true;
     }
 
     /* (non-Javadoc)

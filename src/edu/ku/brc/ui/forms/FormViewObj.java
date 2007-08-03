@@ -1177,7 +1177,7 @@ public class FormViewObj implements Viewable,
         {
             if (businessRules != null)
             {
-                businessRules.afterSave(dataObj);
+                businessRules.afterSave(dObj);
             }
 
             formValidator.setHasChanged(false);

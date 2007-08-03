@@ -10,8 +10,6 @@ import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 
 import java.util.Set;
 
-import org.apache.log4j.Logger;
-
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Taxon;
@@ -29,7 +27,7 @@ import edu.ku.brc.specify.treeutils.TreeHelper;
  */
 public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTreeDefItem>
 {
-    private static final Logger log = Logger.getLogger(TaxonBusRules.class);
+    //private static final Logger log = Logger.getLogger(TaxonBusRules.class);
     
     /**
      * Constructor.
@@ -106,10 +104,9 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#afterSave(java.lang.Object)
      */
     @Override
-    public void afterSave(Object dataObj)
+    public boolean afterSave(Object dataObj)
     {
-        log.debug("enter");
-        log.debug("exit");
+        return super.afterSave(dataObj);
     }
 
     /* (non-Javadoc)
@@ -118,7 +115,6 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
     @Override
     public void beforeSave(Object dataObj, DataProviderSessionIFace session)
     {
-        log.debug("enter");
         super.beforeSave(dataObj, session);
         
         if (dataObj instanceof Taxon)
@@ -129,17 +125,14 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
             // this might not do anything (if no names need to be changed)
             super.updateFullNamesIfNecessary(taxon, session);
             
-            log.debug("exit");
             return;
         }
         
         if (dataObj instanceof TaxonTreeDefItem)
         {
             beforeSaveTaxonTreeDefItem((TaxonTreeDefItem)dataObj);
-            log.debug("exit");
             return;
         }
-        log.debug("exit");
     }
     
     /**
