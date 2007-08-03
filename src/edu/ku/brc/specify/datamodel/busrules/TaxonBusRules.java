@@ -249,30 +249,6 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
         session.close();
     }
     
-    @Override
-    public void afterDelete(Object dataObj)
-    {
-        if (dataObj instanceof Taxon)
-        {
-            afterDeleteTaxon((Taxon)dataObj);
-        }
-    }
-    
-    public void afterDeleteTaxon(Taxon t)
-    {
-        System.out.println("Taxon " + t + " deleted.");
-        System.out.println("\t" + t.getNodeNumber() + " : " + t.getHighestChildNodeNumber());
-    }
-
-    @Override
-    public void beforeDelete(Object dataObj, DataProviderSessionIFace session)
-    {
-        // do nothing
-        
-        // when this is called from the tree viewer, the session will be null since the tree viewer uses a session
-        // that does not implement DataProviderSessionIFace
-    }
-
     /**
      * Converts a null string into an empty string.  If the provided String is not
      * null, it is returned unchanged.

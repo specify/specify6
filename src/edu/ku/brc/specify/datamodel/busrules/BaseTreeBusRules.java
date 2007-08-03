@@ -199,4 +199,22 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         
         return success;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#afterDelete(java.lang.Object)
+     */
+    @Override
+    public void afterDelete(Object dataObj)
+    {
+        if (dataObj instanceof Treeable)
+        {
+            // NOTE: the instanceof check can't check against 'T' since T isn't a class
+            //       this has a SMALL amount of risk to it
+            T node = (T)dataObj;
+
+            log.info("A tree node was deleted.  Updating node numbers appropriately.");
+            TreeDataService dataServ = TreeDataServiceFactory.createService();
+            boolean success = dataServ.updateNodeNumbersAfterNodeDeletion(node);
+        }
+    }
 }

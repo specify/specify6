@@ -426,10 +426,6 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 
         Transaction tx = session.beginTransaction();
         
-        // save the original nodeNumber and highestChildNodeNumber values
-        Integer delNodeNN = node.getNodeNumber();
-        Integer delNodeHC = node.getHighestChildNodeNumber();
-        
         // detach from the parent node
         if (parent!=null)
         {
@@ -445,35 +441,6 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         }
         session.delete(node);
         
-//        // update the nodeNumber and highestChildNodeNumber fields for all effected nodes
-//        boolean doNodeNumberUpdate = true;
-//        if (delNodeNN==null || delNodeHC==null)
-//        {
-//            doNodeNumberUpdate = false;
-//        }
-//        
-//        if (doNodeNumberUpdate)
-//        {
-//            int nodesDeleted = delNodeHC-delNodeNN+1;
-//            
-//            String className = node.getClass().getName();
-//            TreeDefIface<T,D,I> def = node.getDefinition();
-//            
-//            String updateNodeNumbersQueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber-:nodesDeleted WHERE nodeNumber>=:delNodeNN AND definition=:def";
-//            Query fixNodeNumQuery = session.createQuery(updateNodeNumbersQueryStr);
-//            fixNodeNumQuery.setParameter("nodesDeleted", nodesDeleted);
-//            fixNodeNumQuery.setParameter("delNodeNN", delNodeNN);
-//            fixNodeNumQuery.setParameter("def", def);
-//            fixNodeNumQuery.executeUpdate();
-//            
-//            String updateHighChildQueryStr = "UPDATE " + className + " SET highestChildNodeNumber=highestChildNodeNumber-:nodesDeleted WHERE highestChildNodeNumber>=:delNodeHC AND definition=:def";
-//            Query fixHighChildQuery = session.createQuery(updateHighChildQueryStr);
-//            fixHighChildQuery.setParameter("nodesDeleted", nodesDeleted);
-//            fixHighChildQuery.setParameter("delNodeHC", delNodeHC);
-//            fixHighChildQuery.setParameter("def", def);
-//            fixHighChildQuery.executeUpdate();
-//        }
-//        
         commitTransaction(session, tx);
         
         if (busRulesObj != null)
@@ -547,6 +514,52 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         setChildHCQuery.executeUpdate();
 
         boolean success = commitTransaction(session, tx);
+
+        return success;
+    }
+    
+    @SuppressWarnings("null")
+    public boolean updateNodeNumbersAfterNodeDeletion(T deletedNode)
+    {
+        boolean success = true;
+        
+        Session session = getNewSession();
+        Transaction tx = session.beginTransaction();
+        
+        // save the original nodeNumber and highestChildNodeNumber values
+        Integer delNodeNN = deletedNode.getNodeNumber();
+        Integer delNodeHC = deletedNode.getHighestChildNodeNumber();
+
+        // update the nodeNumber and highestChildNodeNumber fields for all effected nodes
+        boolean doNodeNumberUpdate = true;
+        if (delNodeNN==null || delNodeHC==null)
+        {
+            doNodeNumberUpdate = false;
+        }
+
+        if (doNodeNumberUpdate)
+        {
+            int nodesDeleted = delNodeHC-delNodeNN+1;
+
+            String className = deletedNode.getClass().getName();
+            TreeDefIface<T,D,I> def = deletedNode.getDefinition();
+
+            String updateNodeNumbersQueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber-:nodesDeleted WHERE nodeNumber>=:delNodeNN AND definition=:def";
+            Query fixNodeNumQuery = session.createQuery(updateNodeNumbersQueryStr);
+            fixNodeNumQuery.setParameter("nodesDeleted", nodesDeleted);
+            fixNodeNumQuery.setParameter("delNodeNN", delNodeNN);
+            fixNodeNumQuery.setParameter("def", def);
+            fixNodeNumQuery.executeUpdate();
+
+            String updateHighChildQueryStr = "UPDATE " + className + " SET highestChildNodeNumber=highestChildNodeNumber-:nodesDeleted WHERE highestChildNodeNumber>=:delNodeHC AND definition=:def";
+            Query fixHighChildQuery = session.createQuery(updateHighChildQueryStr);
+            fixHighChildQuery.setParameter("nodesDeleted", nodesDeleted);
+            fixHighChildQuery.setParameter("delNodeHC", delNodeHC);
+            fixHighChildQuery.setParameter("def", def);
+            fixHighChildQuery.executeUpdate();
+            
+            success = commitTransaction(session, tx);
+        }
 
         return success;
     }
