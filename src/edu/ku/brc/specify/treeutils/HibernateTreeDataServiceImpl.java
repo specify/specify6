@@ -564,71 +564,6 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         return success;
     }
     
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.treeutils.TreeDataService#addNewChild(edu.ku.brc.specify.datamodel.Treeable, edu.ku.brc.specify.datamodel.Treeable)
-     */
-    @SuppressWarnings("null")
-    public synchronized void addNewChild(T parent, T child)
-    {
-        log.trace("enter");
-        Session session = getNewSession(parent,child);
-        Transaction tx = session.beginTransaction();
-        
-        session.refresh(parent);
-        
-        parent.addChild(child);
-        child.setParent(parent);
-        
-        child.fixFullNameForAllDescendants();
-        
-//        // update the nodeNumber and highestChildNodeNumber fields for all effected nodes
-//        boolean doNodeNumberUpdate = true;
-//        
-//        Integer parentNN = parent.getNodeNumber();
-//        if (parentNN==null)
-//        {
-//            doNodeNumberUpdate = false;
-//        }
-//        
-//        if (doNodeNumberUpdate)
-//        {
-//            String className = parent.getClass().getName();
-//            TreeDefIface<T,D,I> def = parent.getDefinition();
-//            
-//            String updateNodeNumbersQueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber+1 WHERE nodeNumber>:parentNN AND definition=:def";
-//            Query fixNodeNumQuery = session.createQuery(updateNodeNumbersQueryStr);
-//            fixNodeNumQuery.setParameter("parentNN", parentNN);
-//            fixNodeNumQuery.setParameter("def", def);
-//            fixNodeNumQuery.executeUpdate();
-//            
-//            String updateHighChildQueryStr = "UPDATE " + className + " SET highestChildNodeNumber=highestChildNodeNumber+1 WHERE highestChildNodeNumber>=:parentNN AND definition=:def";
-//            Query fixHighChildQuery = session.createQuery(updateHighChildQueryStr);
-//            fixHighChildQuery.setParameter("parentNN", parentNN);
-//            fixHighChildQuery.setParameter("def", def);
-//            fixHighChildQuery.executeUpdate();
-//
-//            // now set the initial values of the nodeNumber and highestChildNodeNumber fields for the new node
-//            int newChildNN = parentNN+1;
-//            String setChildNNQueryStr = "UPDATE " + className + " SET nodeNumber=:newChildNN WHERE nodeNumber IS NULL AND parentID=:parentID";
-//            Query setChildNNQuery = session.createQuery(setChildNNQueryStr);
-//            setChildNNQuery.setParameter("newChildNN", newChildNN);
-//            setChildNNQuery.setParameter("parentID", parent.getTreeId());
-//            setChildNNQuery.executeUpdate();
-//            
-//            String setChildHCQueryStr = "UPDATE " + className + " SET highestChildNodeNumber=:newChildNN WHERE highestChildNodeNumber IS NULL AND parentID=:parentID";
-//            Query setChildHCQuery = session.createQuery(setChildHCQueryStr);
-//            setChildHCQuery.setParameter("newChildNN", newChildNN);
-//            setChildHCQuery.setParameter("parentID", parent.getTreeId());
-//            setChildHCQuery.executeUpdate();
-//        }
-//
-//        session.saveOrUpdate(parent);
-//        session.save(child);
-//        
-        commitTransaction(session, tx);
-        log.trace("exit");
-    }
-    
     @SuppressWarnings("unchecked")
     public synchronized boolean moveTreeNode(T node, T newParent)
     {
@@ -671,162 +606,134 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         
         busRules.beforeSave(node, sessionWrapper);
         session.saveOrUpdate(node);
+        
+        // fix all the node numbers for effected nodes
+        // X will represent moving subtree's root node
+        // Y will represent new parent of moving subtree
+        
+        // get the root node
+        T rootNode = mergedNewParent;
+        while (rootNode.getParent() != null)
+        {
+            rootNode = rootNode.getParent();
+        }
+        
+        int rootHC = rootNode.getHighestChildNodeNumber();
+        int xNN = node.getNodeNumber();
+        int xHC = node.getHighestChildNodeNumber();
+        int yNN = newParent.getNodeNumber();
+        D def = node.getDefinition();
+        String className = node.getClass().getName();
+        int numMoving = xHC-xNN+1;
+        
+        // the HQL update statements that need to happen now are dependant on the 'direction' of the move
+        boolean downwardMove = true;
+        if (xNN>yNN)
+        {
+            downwardMove = false;
+        }
+        
+        if (downwardMove)
+        {
+            // change node numbers for the moving nodes to high values in order to temporarily 'move them out of the tree'
+            String step1QueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber+:rootHC, highestChildNodeNumber=highestChildNodeNumber+:rootHC WHERE nodeNumber>=:xNN AND nodeNumber<=:xHC AND definition=:def";
+            Query step1Query = session.createQuery(step1QueryStr);
+            step1Query.setParameter("def", def);
+            step1Query.setParameter("xNN", xNN);
+            step1Query.setParameter("xHC", xHC);
+            step1Query.setParameter("rootHC", rootHC);
+            step1Query.executeUpdate();
+
+            String step2QueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber-:numMoving WHERE nodeNumber>:xHC AND nodeNumber<=:yNN AND definition=:def";
+            Query step2Query = session.createQuery(step2QueryStr);
+            step2Query.setParameter("def", def);
+            step2Query.setParameter("xHC", xHC);
+            step2Query.setParameter("yNN", yNN);
+            step2Query.setParameter("numMoving", numMoving);
+            step2Query.executeUpdate();
+
+            String step3QueryStr = "UPDATE " + className + " SET highestChildNodeNumber=highestChildNodeNumber-:numMoving WHERE highestChildNodeNumber>=:xHC AND highestChildNodeNumber<:yNN AND definition=:def";
+            Query step3Query = session.createQuery(step3QueryStr);
+            step3Query.setParameter("def", def);
+            step3Query.setParameter("xHC", xHC);
+            step3Query.setParameter("yNN", yNN);
+            step3Query.setParameter("numMoving", numMoving);
+            step3Query.executeUpdate();
+
+            String step4QueryStr = "UPDATE " + className + " SET highestChildNodeNumber=highestChildNodeNumber-nodeNumber WHERE nodeNumber>:rootHC AND definition=:def";
+            Query step4Query = session.createQuery(step4QueryStr);
+            step4Query.setParameter("def", def);
+            step4Query.setParameter("rootHC", rootHC);
+            step4Query.executeUpdate();
+
+            String step5QueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber + :yNN - :xHC - :rootHC WHERE nodeNumber>:rootHC AND definition=:def";
+            Query step5Query = session.createQuery(step5QueryStr);
+            step5Query.setParameter("def", def);
+            step5Query.setParameter("xHC", xHC);
+            step5Query.setParameter("yNN", yNN);
+            step5Query.setParameter("rootHC", rootHC);
+            step5Query.executeUpdate();
+
+            String step6QueryStr = "UPDATE " + className + " SET highestChildNodeNumber=nodeNumber+highestChildNodeNumber WHERE nodeNumber >:yNN-:numMoving AND nodeNumber<=:yNN AND definition=:def";
+            Query step6Query = session.createQuery(step6QueryStr);
+            step6Query.setParameter("def", def);
+            step6Query.setParameter("yNN", yNN);
+            step6Query.setParameter("numMoving", numMoving);
+            step6Query.executeUpdate();
+        }
+        else
+        {
+            // change node numbers for the moving nodes to high values in order to temporarily 'move them out of the tree'
+            String step1QueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber+:rootHC, highestChildNodeNumber=highestChildNodeNumber+:rootHC WHERE nodeNumber>=:xNN AND nodeNumber<=:xHC AND definition=:def";
+            Query step1Query = session.createQuery(step1QueryStr);
+            step1Query.setParameter("def", def);
+            step1Query.setParameter("xNN", xNN);
+            step1Query.setParameter("xHC", xHC);
+            step1Query.setParameter("rootHC", rootHC);
+            step1Query.executeUpdate();
+            
+            String step2QueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber+:numMoving WHERE nodeNumber>:yNN AND nodeNumber<:xNN AND definition=:def";
+            Query step2Query = session.createQuery(step2QueryStr);
+            step2Query.setParameter("def", def);
+            step2Query.setParameter("xNN", xNN);
+            step2Query.setParameter("yNN", yNN);
+            step2Query.setParameter("numMoving", numMoving);
+            step2Query.executeUpdate();
+
+            String step3QueryStr = "UPDATE " + className + " SET highestChildNodeNumber=highestChildNodeNumber+:numMoving WHERE highestChildNodeNumber>=:yNN AND highestChildNodeNumber<:xHC AND definition=:def";
+            Query step3Query = session.createQuery(step3QueryStr);
+            step3Query.setParameter("def", def);
+            step3Query.setParameter("yNN", yNN);
+            step3Query.setParameter("xHC", xHC);
+            step3Query.setParameter("numMoving", numMoving);
+            step3Query.executeUpdate();
+
+            String step4QueryStr = "UPDATE " + className + " SET highestChildNodeNumber=highestChildNodeNumber-nodeNumber WHERE nodeNumber>:rootHC AND definition=:def";
+            Query step4Query = session.createQuery(step4QueryStr);
+            step4Query.setParameter("def", def);
+            step4Query.setParameter("rootHC", rootHC);
+            step4Query.executeUpdate();
+
+            String step5QueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber+1+:yNN-:xNN-:rootHC WHERE nodeNumber>:rootHC AND definition=:def";
+            Query step5Query = session.createQuery(step5QueryStr);
+            step5Query.setParameter("def", def);
+            step5Query.setParameter("xNN", xNN);
+            step5Query.setParameter("yNN", yNN);
+            step5Query.setParameter("rootHC", rootHC);
+            step5Query.executeUpdate();
+
+            String step6QueryStr = "UPDATE " + className + " SET highestChildNodeNumber=highestChildNodeNumber+nodeNumber WHERE nodeNumber>:yNN AND nodeNumber<=:yNN+:numMoving AND definition=:def";
+            Query step6Query = session.createQuery(step6QueryStr);
+            step6Query.setParameter("def", def);
+            step6Query.setParameter("yNN", yNN);
+            step6Query.setParameter("numMoving", numMoving);
+            step6Query.executeUpdate();
+        }
+
         boolean success = commitTransaction(session, tx);
         success &= busRules.afterSave(node);
         
         return success;
-    }
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.treeutils.TreeDataService#moveTreeNode(edu.ku.brc.specify.datamodel.Treeable, edu.ku.brc.specify.datamodel.Treeable, edu.ku.brc.specify.datamodel.Treeable)
-     */
-    public synchronized void moveTreeNode(T node, T newParent, T rootNode)
-    {
-        log.trace("enter");
-        log.debug("Moving ["+nodeDebugInfo(node)+"] to ["+nodeDebugInfo(newParent)+"]");
-        Session session = getNewSession(node,newParent,rootNode);
-        Transaction tx = session.beginTransaction();
-        
-        log.debug("refreshing " + nodeDebugInfo(node));
-        session.refresh(node);
-        log.debug("refreshing " + nodeDebugInfo(newParent));
-        session.refresh(newParent);
-        log.debug("refreshing " + nodeDebugInfo(rootNode));
-        session.refresh(rootNode);
-        
-        // fix up the parent/child pointers for the effected nodes
-        T oldParent = node.getParent();
-        if (oldParent!=null)
-        {
-            oldParent.removeChild(node);
-        }
-        newParent.addChild(node);
-        node.setParent(newParent);
-        
-        session.saveOrUpdate(node);
-        if (oldParent!=null)
-        {
-            session.saveOrUpdate(oldParent);
-        }
-        
-//        // fix all the node numbers for effected nodes
-//        // X will represent moving subtree's root node
-//        // Y will represent new parent of moving subtree
-//        int rootHC = rootNode.getHighestChildNodeNumber();
-//        int xNN = node.getNodeNumber();
-//        int xHC = node.getHighestChildNodeNumber();
-//        int yNN = newParent.getNodeNumber();
-//        D def = node.getDefinition();
-//        String className = node.getClass().getName();
-//        int numMoving = xHC-xNN+1;
-//        
-//        // the HQL update statements that need to happen now are dependant on the 'direction' of the move
-//        boolean downwardMove = true;
-//        if (xNN>yNN)
-//        {
-//            downwardMove = false;
-//        }
-//        
-//        if (downwardMove)
-//        {
-//            // change node numbers for the moving nodes to high values in order to temporarily 'move them out of the tree'
-//            String step1QueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber+:rootHC, highestChildNodeNumber=highestChildNodeNumber+:rootHC WHERE nodeNumber>=:xNN AND nodeNumber<=:xHC AND definition=:def";
-//            Query step1Query = session.createQuery(step1QueryStr);
-//            step1Query.setParameter("def", def);
-//            step1Query.setParameter("xNN", xNN);
-//            step1Query.setParameter("xHC", xHC);
-//            step1Query.setParameter("rootHC", rootHC);
-//            step1Query.executeUpdate();
-//
-//            String step2QueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber-:numMoving WHERE nodeNumber>:xHC AND nodeNumber<=:yNN AND definition=:def";
-//            Query step2Query = session.createQuery(step2QueryStr);
-//            step2Query.setParameter("def", def);
-//            step2Query.setParameter("xHC", xHC);
-//            step2Query.setParameter("yNN", yNN);
-//            step2Query.setParameter("numMoving", numMoving);
-//            step2Query.executeUpdate();
-//
-//            String step3QueryStr = "UPDATE " + className + " SET highestChildNodeNumber=highestChildNodeNumber-:numMoving WHERE highestChildNodeNumber>=:xHC AND highestChildNodeNumber<:yNN AND definition=:def";
-//            Query step3Query = session.createQuery(step3QueryStr);
-//            step3Query.setParameter("def", def);
-//            step3Query.setParameter("xHC", xHC);
-//            step3Query.setParameter("yNN", yNN);
-//            step3Query.setParameter("numMoving", numMoving);
-//            step3Query.executeUpdate();
-//
-//            String step4QueryStr = "UPDATE " + className + " SET highestChildNodeNumber=highestChildNodeNumber-nodeNumber WHERE nodeNumber>:rootHC AND definition=:def";
-//            Query step4Query = session.createQuery(step4QueryStr);
-//            step4Query.setParameter("def", def);
-//            step4Query.setParameter("rootHC", rootHC);
-//            step4Query.executeUpdate();
-//
-//            String step5QueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber + :yNN - :xHC - :rootHC WHERE nodeNumber>:rootHC AND definition=:def";
-//            Query step5Query = session.createQuery(step5QueryStr);
-//            step5Query.setParameter("def", def);
-//            step5Query.setParameter("xHC", xHC);
-//            step5Query.setParameter("yNN", yNN);
-//            step5Query.setParameter("rootHC", rootHC);
-//            step5Query.executeUpdate();
-//
-//            String step6QueryStr = "UPDATE " + className + " SET highestChildNodeNumber=nodeNumber+highestChildNodeNumber WHERE nodeNumber >:yNN-:numMoving AND nodeNumber<=:yNN AND definition=:def";
-//            Query step6Query = session.createQuery(step6QueryStr);
-//            step6Query.setParameter("def", def);
-//            step6Query.setParameter("yNN", yNN);
-//            step6Query.setParameter("numMoving", numMoving);
-//            step6Query.executeUpdate();
-//        }
-//        else
-//        {
-//            // change node numbers for the moving nodes to high values in order to temporarily 'move them out of the tree'
-//            String step1QueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber+:rootHC, highestChildNodeNumber=highestChildNodeNumber+:rootHC WHERE nodeNumber>=:xNN AND nodeNumber<=:xHC AND definition=:def";
-//            Query step1Query = session.createQuery(step1QueryStr);
-//            step1Query.setParameter("def", def);
-//            step1Query.setParameter("xNN", xNN);
-//            step1Query.setParameter("xHC", xHC);
-//            step1Query.setParameter("rootHC", rootHC);
-//            step1Query.executeUpdate();
-//            
-//            String step2QueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber+:numMoving WHERE nodeNumber>:yNN AND nodeNumber<:xNN AND definition=:def";
-//            Query step2Query = session.createQuery(step2QueryStr);
-//            step2Query.setParameter("def", def);
-//            step2Query.setParameter("xNN", xNN);
-//            step2Query.setParameter("yNN", yNN);
-//            step2Query.setParameter("numMoving", numMoving);
-//            step2Query.executeUpdate();
-//
-//            String step3QueryStr = "UPDATE " + className + " SET highestChildNodeNumber=highestChildNodeNumber+:numMoving WHERE highestChildNodeNumber>=:yNN AND highestChildNodeNumber<:xHC AND definition=:def";
-//            Query step3Query = session.createQuery(step3QueryStr);
-//            step3Query.setParameter("def", def);
-//            step3Query.setParameter("yNN", yNN);
-//            step3Query.setParameter("xHC", xHC);
-//            step3Query.setParameter("numMoving", numMoving);
-//            step3Query.executeUpdate();
-//
-//            String step4QueryStr = "UPDATE " + className + " SET highestChildNodeNumber=highestChildNodeNumber-nodeNumber WHERE nodeNumber>:rootHC AND definition=:def";
-//            Query step4Query = session.createQuery(step4QueryStr);
-//            step4Query.setParameter("def", def);
-//            step4Query.setParameter("rootHC", rootHC);
-//            step4Query.executeUpdate();
-//
-//            String step5QueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber+1+:yNN-:xNN-:rootHC WHERE nodeNumber>:rootHC AND definition=:def";
-//            Query step5Query = session.createQuery(step5QueryStr);
-//            step5Query.setParameter("def", def);
-//            step5Query.setParameter("xNN", xNN);
-//            step5Query.setParameter("yNN", yNN);
-//            step5Query.setParameter("rootHC", rootHC);
-//            step5Query.executeUpdate();
-//
-//            String step6QueryStr = "UPDATE " + className + " SET highestChildNodeNumber=highestChildNodeNumber+nodeNumber WHERE nodeNumber>:yNN AND nodeNumber<=:yNN+:numMoving AND definition=:def";
-//            Query step6Query = session.createQuery(step6QueryStr);
-//            step6Query.setParameter("def", def);
-//            step6Query.setParameter("yNN", yNN);
-//            step6Query.setParameter("numMoving", numMoving);
-//            step6Query.executeUpdate();
-//        }
-//        
-//        log.debug("committing JDBC transaction to update node numbers");
-        commitTransaction(session, tx);
-        log.trace("exit");
     }
     
     /* (non-Javadoc)

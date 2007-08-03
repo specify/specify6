@@ -18,8 +18,6 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 {
     private static final Logger log = Logger.getLogger(BaseTreeBusRules.class);
 
-    protected T nodeBeforeSave;
-    
     public BaseTreeBusRules(Class<?>... dataClasses)
     {
         super(dataClasses);
@@ -166,7 +164,6 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
                 String fullname = TreeHelper.generateFullname(node);
                 node.setFullName(fullname);
             }
-            nodeBeforeSave = node;
         }
     }
     
@@ -203,6 +200,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#afterDelete(java.lang.Object)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void afterDelete(Object dataObj)
     {
@@ -213,7 +211,8 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
             T node = (T)dataObj;
 
             log.info("A tree node was deleted.  Updating node numbers appropriately.");
-            TreeDataService dataServ = TreeDataServiceFactory.createService();
+            TreeDataService<T,D,I> dataServ = TreeDataServiceFactory.createService();
+            @SuppressWarnings("unused")
             boolean success = dataServ.updateNodeNumbersAfterNodeDeletion(node);
         }
     }
