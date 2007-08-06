@@ -586,26 +586,28 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
             throw new NullPointerException("'node' must already have a parent");
         }
 
-        Session session = getNewSession(node);
-        T mergedNewParent = (T)mergeIntoSession(session,newParent);
+        Session session = getNewSession();
+        T mergedNode      = (T)mergeIntoSession(session, node);
+        T mergedNewParent = (T)mergeIntoSession(session, newParent);
+        T mergedOldParent = (T)mergeIntoSession(session, oldParent);
         Transaction tx = session.beginTransaction();
         
-        log.debug("refreshing " + nodeDebugInfo(node));
-        session.refresh(node);
+        log.debug("refreshing " + nodeDebugInfo(mergedNode));
+        session.refresh(mergedNode);
         log.debug("refreshing " + nodeDebugInfo(mergedNewParent));
         session.refresh(mergedNewParent);
         
         // fix up the parent/child pointers for the effected nodes
         // oldParent cannot be null at this point
-        oldParent.removeChild(node);
-        mergedNewParent.addChild(node);
-        node.setParent(mergedNewParent);
+        mergedOldParent.removeChild(mergedNode);
+        mergedNewParent.addChild(mergedNode);
+        mergedNode.setParent(mergedNewParent);
         
-        BusinessRulesIFace busRules = DBTableIdMgr.getInstance().getBusinessRule(node);
+        BusinessRulesIFace busRules = DBTableIdMgr.getInstance().getBusinessRule(mergedNode);
         HibernateDataProviderSession sessionWrapper = new HibernateDataProviderSession(session);
         
-        busRules.beforeSave(node, sessionWrapper);
-        session.saveOrUpdate(node);
+        busRules.beforeSave(mergedNode, sessionWrapper);
+        session.saveOrUpdate(mergedNode);
         
         // fix all the node numbers for effected nodes
         // X will represent moving subtree's root node
@@ -619,11 +621,11 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         }
         
         int rootHC = rootNode.getHighestChildNodeNumber();
-        int xNN = node.getNodeNumber();
-        int xHC = node.getHighestChildNodeNumber();
-        int yNN = newParent.getNodeNumber();
-        D def = node.getDefinition();
-        String className = node.getClass().getName();
+        int xNN = mergedNode.getNodeNumber();
+        int xHC = mergedNode.getHighestChildNodeNumber();
+        int yNN = mergedNewParent.getNodeNumber();
+        D def = mergedNode.getDefinition();
+        String className = mergedNode.getClass().getName();
         int numMoving = xHC-xNN+1;
         
         // the HQL update statements that need to happen now are dependant on the 'direction' of the move

@@ -33,99 +33,18 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
      * @param parentChanged
      * @param rankChanged
      */
-    protected void updateFullNamesIfNecessary(T node, DataProviderSessionIFace session)
-    {
-        if (fullNameNeedsUpdating(node, session))
-        {
-            // do the updates
-        }
-
-//        // if the name changed...
-//        // update the node's fullname
-//        // AND all descendants IF the node's level is in the fullname
-//        if (nameChanged)
-//        {
-//            boolean isInFullname = false;
-//            if ((node.getDefinitionItem().getIsInFullName() != null) && 
-//                    (node.getDefinitionItem().getIsInFullName().booleanValue() == true))
-//            {
-//                isInFullname = true;
-//            }
-//
-//            if (!isInFullname)
-//            {
-//                // just change the node's fullname field
-//                String fullname = TreeHelper.generateFullname(node);
-//                node.setFullName(fullname);
-//            }
-//            else
-//            {
-//                // must fix fullname for all descendants as well
-//                TreeHelper.fixFullnameForNodeAndDescendants(node);
-//            }
-//        }
-//
-//        // if no levels above or equal to the new parent or old parent are included in the fullname
-//        // do nothing
-//        // otherwise, update fullname for node and all descendants
-//
-//        boolean higherLevelsIncluded = false;
-//        N l = node.getParent();
-//        while (l != null)
-//        {
-//            if ((l.getDefinitionItem().getIsInFullName() != null) && 
-//                    (l.getDefinitionItem().getIsInFullName().booleanValue() == true))
-//            {
-//                higherLevelsIncluded = true;
-//                break;
-//            }
-//            l = l.getParent();
-//        }
-//
-//        // if no higher level is included in the new place in the tree, check the old place
-//        // in the tree
-//        if (higherLevelsIncluded == false)
-//        {
-//            l = origParent;
-//            while (l != null)
-//            {
-//                if ((l.getDefinitionItem().getIsInFullName() != null) && 
-//                        (l.getDefinitionItem().getIsInFullName().booleanValue() == true))
-//                {
-//                    higherLevelsIncluded = true;
-//                    break;
-//                }
-//
-//                l = l.getParent();
-//            }
-//        }
-//
-//        if (higherLevelsIncluded)
-//        {
-//            TreeHelper.fixFullnameForNodeAndDescendants(node);
-//        }
-//        else
-//        {
-//            String generated = TreeHelper.generateFullname(node);
-//            node.setFullName(generated);
-//        }
-    }
-
-    /**
-     * @param node
-     * @param session
-     * @param origNode
-     * @return
-     */
     @SuppressWarnings("unchecked")
-    protected boolean fullNameNeedsUpdating(T node, @SuppressWarnings("unused") DataProviderSessionIFace session)
+    protected void updateFullNamesIfNecessary(T node, @SuppressWarnings("unused") DataProviderSessionIFace session)
     {
         if (node.getTreeId() == null)
         {
             // this is a new node
             // it shouldn't need updating since we set the fullname at creation time
-            return false;
+            return;
         }
+        
+        boolean updateNodeFullName = false;
+        boolean updateDescFullNames = false;
 
         // we need a way to determine if the name changed
         // load a fresh copy from the DB and get the values needed for comparison
@@ -134,11 +53,82 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         T origParent = fromDB.getParent();
         tmpSession.close();
 
+        boolean parentChanged = false;
+        T currentParent = node.getParent();
+        if ((currentParent == null && origParent != null) || (currentParent != null && origParent == null))
+        {
+            // I can't imagine how this would ever happen, but just in case
+            parentChanged = true;
+        }
+        if (currentParent != null && origParent != null && !currentParent.getTreeId().equals(origParent.getTreeId()))
+        {
+            // the parent ID changed
+            parentChanged = true;
+        }
+        
+        boolean higherLevelsIncluded = false;
+        if (parentChanged)
+        {
+            higherLevelsIncluded = higherLevelsIncludedInFullname(node);
+            higherLevelsIncluded |= higherLevelsIncludedInFullname(fromDB);
+        }
+        
+        if (parentChanged && higherLevelsIncluded)
+        {
+            updateNodeFullName = true;
+            updateDescFullNames = true;
+        }
+        
         boolean nameChanged = !(fromDB.getName().equals(node.getName()));
-        boolean parentChanged = !(origParent.getTreeId().equals(node.getParent().getTreeId()));
-        boolean rankChanged = !(origParent.getRankId().equals(node.getRankId()));
+        boolean rankChanged = !(fromDB.getRankId().equals(node.getRankId()));
+        if (rankChanged || nameChanged)
+        {
+            updateNodeFullName = true;
+            if (booleanValue(fromDB.getDefinitionItem().getIsInFullName(), false) == true)
+            {
+                updateDescFullNames = true;
+            }
+            if (booleanValue(node.getDefinitionItem().getIsInFullName(), false) == true)
+            {
+                updateDescFullNames = true;
+            }
+        }
 
-        return nameChanged || parentChanged || rankChanged;
+        if (updateNodeFullName)
+        {
+            if (updateDescFullNames)
+            {
+                // this could take a long time
+                TreeHelper.fixFullnameForNodeAndDescendants(node);
+            }
+            else
+            {
+                // this should be really fast
+                String fullname = TreeHelper.generateFullname(node);
+                node.setFullName(fullname);
+            }
+        }
+    }
+
+    protected boolean higherLevelsIncludedInFullname(T node)
+    {
+        boolean higherLevelsIncluded = false;
+        // this doesn't necessarily mean the fullname has to be changed
+        // if no higher levels are included in the fullname, then nothing needs updating
+        // so, let's see if higher levels factor into the fullname
+        T l = node.getParent();
+        while (l != null)
+        {
+            if ((l.getDefinitionItem().getIsInFullName() != null) && 
+                    (l.getDefinitionItem().getIsInFullName().booleanValue() == true))
+            {
+                higherLevelsIncluded = true;
+                break;
+            }
+            l = l.getParent();
+        }
+        
+        return higherLevelsIncluded;
     }
     
     /* (non-Javadoc)
@@ -215,5 +205,14 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
             @SuppressWarnings("unused")
             boolean success = dataServ.updateNodeNumbersAfterNodeDeletion(node);
         }
+    }
+    
+    protected boolean booleanValue(Boolean bool, boolean defaultIfNull)
+    {
+        if (bool != null)
+        {
+            return bool.booleanValue();
+        }
+        return defaultIfNull;
     }
 }

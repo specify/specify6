@@ -1234,15 +1234,15 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             T mergedNode = null;
             boolean success = true;
             boolean afterSaveSuccess = false;
+            mergedNode = (T)session.merge(node);
             
             if (businessRules != null)
             {
-                businessRules.beforeSave(node,session);
+                businessRules.beforeSave(mergedNode,session);
             }
             
 		    try
             {
-                mergedNode = (T)session.merge(node);
 		        session.beginTransaction();
                 session.saveOrUpdate(mergedNode);
                 session.commit();
@@ -1272,7 +1272,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 if (isNewObject)
                 {
                     // show the children of the 
-                    T parent = node.getParent();
+                    T parent = mergedNode.getParent();
                     if (parent != null)
                     {
                         TreeNode parentNode = listModel.getNodeById(parent.getTreeId());
@@ -1284,9 +1284,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 else
                 {
                     // this was an existing node being edited
-                    TreeNode editedNode = listModel.getNodeById(node.getTreeId());
-                    editedNode.setName(node.getName());
-                    editedNode.setRank(node.getRankId());
+                    TreeNode editedNode = listModel.getNodeById(mergedNode.getTreeId());
+                    editedNode.setName(mergedNode.getName());
+                    editedNode.setRank(mergedNode.getRankId());
                     listModel.nodeValuesChanged(editedNode);
                 }
                 
