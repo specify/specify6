@@ -50,6 +50,7 @@ import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.FormViewObj;
+import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.persist.AltView.CreationMode;
 import edu.ku.brc.ui.forms.validation.ValComboBox;
 
@@ -476,6 +477,16 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
 
         if (parentComboBox != null)
         {
+            boolean isNew = MultiView.isOptionOn(form.getMVParent().getOptions(), MultiView.IS_NEW_OBJECT);
+            
+            if (!isNew)
+            {
+                // Don't let them CHANGE the parent in the forms system.
+                // They can create new children, but not move children.
+                // That is done in the tree viewer.
+                parentComboBox.setEnabled(false);
+            }
+            
             parentComboBox.addFocusListener(new FocusListener()
             {
                 public void focusGained(FocusEvent e)

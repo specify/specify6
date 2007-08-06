@@ -163,39 +163,30 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
         }
     }
 	
-//    protected void adjustTreeDefForm(FormViewObj form)
-//    {
-//        log.debug("adjustTaxonTreeDefForm(FormViewObj form) " + form);
-//    }
-//
-//    protected void adjustTreeDefItemForm(FormViewObj form)
-//    {
-//        log.debug("adjustTaxonTreeDefItemForm(FormViewObj form) " + form);
-//    }
+    protected void adjustTreeDefForm(FormViewObj form)
+    {
+        log.debug("adjustTaxonTreeDefForm(FormViewObj form) " + form);
+    }
+
+    protected void adjustTreeDefItemForm(FormViewObj form)
+    {
+        log.debug("adjustTaxonTreeDefItemForm(FormViewObj form) " + form);
+    }
 
     @Override
     public void adjustForm(FormViewObj form)
     {
         if (form.getDataObj() instanceof Taxon)
         {
-//          // shutdown all open views
-//          Vector<SubPaneIFace> openViews = new Vector<SubPaneIFace>();
-//          openViews.addAll(viewToButtonMap.keySet());
-//          
-//          for (SubPaneIFace subPane: openViews)
-//          {
-//              subPane.shutdown();
-//          }
-
             adjustNodeForm(form);
         }
-//        else if (form.getDataObj() instanceof TaxonTreeDef)
-//        {
-//            adjustTreeDefForm(form);
-//        }
-//        else if (form.getDataObj() instanceof TaxonTreeDefItem)
-//        {
-//            adjustTreeDefItemForm(form);
-//        }
+        else if (form.getDataObj() instanceof TaxonTreeDef)
+        {
+            adjustTreeDefForm(form);
+        }
+        else if (form.getDataObj() instanceof TaxonTreeDefItem)
+        {
+            adjustTreeDefItemForm(form);
+        }
     }
 }
