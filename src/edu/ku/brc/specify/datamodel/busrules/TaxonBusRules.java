@@ -169,84 +169,90 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
      */
     protected void beforeSaveTaxonTreeDefItem(TaxonTreeDefItem defItem)
     {
-        // we need a way to determine if the 'isInFullname' value changed
-        // load a fresh copy from the DB and get the values needed for comparison
-        DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
-        TaxonTreeDefItem fromDB = tmpSession.load(TaxonTreeDefItem.class, defItem.getId());
-        tmpSession.close();
-
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        session.attach(defItem);
-
-        boolean changeThisLevel = false;
-        boolean changeAllDescendants = false;
+        // This is a LONG process for some trees.  I wouldn't recommend doing it.  Can
+        // we set these options before shipping the DB, then not let them change it ever again?
+        // Or perhaps they can't change it if there are records at this level.
         
-        boolean fromDBIsInFullname = makeNotNull(fromDB.getIsInFullName());
-        boolean currentIsInFullname = makeNotNull(defItem.getIsInFullName());
-        if (fromDBIsInFullname != currentIsInFullname)
-        {
-            changeAllDescendants = true;
-        }
+        return;
         
-        // look for changes in the 'textBefore', 'textAfter' or 'fullNameSeparator' fields
-        String fromDbBeforeText = makeNotNull(fromDB.getTextBefore());
-        String fromDbAfterText = makeNotNull(fromDB.getTextAfter());
-        String fromDbSeparator = makeNotNull(fromDB.getFullNameSeparator());
-        
-        String before = makeNotNull(defItem.getTextBefore());
-        String after = makeNotNull(defItem.getTextAfter());
-        String separator = makeNotNull(defItem.getFullNameSeparator());
-        
-        boolean textFieldChanged = false;
-        boolean beforeChanged = !before.equals(fromDbBeforeText);
-        boolean afterChanged = !after.equals(fromDbAfterText);
-        boolean sepChanged = !separator.equals(fromDbSeparator);
-        if (beforeChanged || afterChanged || sepChanged)
-        {
-            textFieldChanged = true;
-        }
-        
-        if (textFieldChanged)
-        {
-            if (currentIsInFullname)
-            {
-                changeAllDescendants = true;
-            }
-            changeThisLevel = true;
-        }
-        
-        if (changeThisLevel && !changeAllDescendants)
-        {
-            Set<Taxon> levelNodes = defItem.getTreeEntries();
-            for (Taxon node: levelNodes)
-            {
-                String generated = TreeHelper.generateFullname(node);
-                node.setFullName(generated);
-            }
-        }
-        else if (changeThisLevel && changeAllDescendants)
-        {
-            Set<Taxon> levelNodes = defItem.getTreeEntries();
-            for (Taxon node: levelNodes)
-            {
-                TreeHelper.fixFullnameForNodeAndDescendants(node);
-            }
-        }
-        else if (!changeThisLevel && changeAllDescendants)
-        {
-            Set<Taxon> levelNodes = defItem.getTreeEntries();
-            for (Taxon node: levelNodes)
-            {
-                // grab all child nodes and go from there
-                for (Taxon child: node.getChildren())
-                {
-                    TreeHelper.fixFullnameForNodeAndDescendants(child);
-                }
-            }
-        }
-        // else don't change anything
-        
-        session.close();
+//        // we need a way to determine if the 'isInFullname' value changed
+//        // load a fresh copy from the DB and get the values needed for comparison
+//        DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
+//        TaxonTreeDefItem fromDB = tmpSession.load(TaxonTreeDefItem.class, defItem.getId());
+//        tmpSession.close();
+//
+//        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+//        session.attach(defItem);
+//
+//        boolean changeThisLevel = false;
+//        boolean changeAllDescendants = false;
+//        
+//        boolean fromDBIsInFullname = makeNotNull(fromDB.getIsInFullName());
+//        boolean currentIsInFullname = makeNotNull(defItem.getIsInFullName());
+//        if (fromDBIsInFullname != currentIsInFullname)
+//        {
+//            changeAllDescendants = true;
+//        }
+//        
+//        // look for changes in the 'textBefore', 'textAfter' or 'fullNameSeparator' fields
+//        String fromDbBeforeText = makeNotNull(fromDB.getTextBefore());
+//        String fromDbAfterText = makeNotNull(fromDB.getTextAfter());
+//        String fromDbSeparator = makeNotNull(fromDB.getFullNameSeparator());
+//        
+//        String before = makeNotNull(defItem.getTextBefore());
+//        String after = makeNotNull(defItem.getTextAfter());
+//        String separator = makeNotNull(defItem.getFullNameSeparator());
+//        
+//        boolean textFieldChanged = false;
+//        boolean beforeChanged = !before.equals(fromDbBeforeText);
+//        boolean afterChanged = !after.equals(fromDbAfterText);
+//        boolean sepChanged = !separator.equals(fromDbSeparator);
+//        if (beforeChanged || afterChanged || sepChanged)
+//        {
+//            textFieldChanged = true;
+//        }
+//        
+//        if (textFieldChanged)
+//        {
+//            if (currentIsInFullname)
+//            {
+//                changeAllDescendants = true;
+//            }
+//            changeThisLevel = true;
+//        }
+//        
+//        if (changeThisLevel && !changeAllDescendants)
+//        {
+//            Set<Taxon> levelNodes = defItem.getTreeEntries();
+//            for (Taxon node: levelNodes)
+//            {
+//                String generated = TreeHelper.generateFullname(node);
+//                node.setFullName(generated);
+//            }
+//        }
+//        else if (changeThisLevel && changeAllDescendants)
+//        {
+//            Set<Taxon> levelNodes = defItem.getTreeEntries();
+//            for (Taxon node: levelNodes)
+//            {
+//                TreeHelper.fixFullnameForNodeAndDescendants(node);
+//            }
+//        }
+//        else if (!changeThisLevel && changeAllDescendants)
+//        {
+//            Set<Taxon> levelNodes = defItem.getTreeEntries();
+//            for (Taxon node: levelNodes)
+//            {
+//                // grab all child nodes and go from there
+//                for (Taxon child: node.getChildren())
+//                {
+//                    TreeHelper.fixFullnameForNodeAndDescendants(child);
+//                }
+//            }
+//        }
+//        // else don't change anything
+//        
+//        session.close();
     }
     
     /**
