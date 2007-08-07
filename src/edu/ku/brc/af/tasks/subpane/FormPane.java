@@ -45,7 +45,7 @@ public class FormPane extends DroppableTaskPane
 
     /**
      * Creates a form pane for a task.
-     * @param session the DB session to use
+     * 
      * @param name the name of the pane
      * @param task the owning task
      * @param desc string displayed in the center of the pane
