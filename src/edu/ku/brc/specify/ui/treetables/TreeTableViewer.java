@@ -61,6 +61,7 @@ import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DBTableIdMgr.TableInfo;
+import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
@@ -1165,8 +1166,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 * @param node the node being edited
 	 * @param title the title of the dialog window
 	 */
-    @SuppressWarnings("unchecked")
-    protected void showEditDialog(T node, String title, boolean isNewObject)
+    protected void showEditDialog(final T node, final String title, final boolean isNewObject)
 	{
 	    // TODO: double check these choices
 	    // gather all the info needed to create a form in a dialog
@@ -1229,83 +1229,106 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		// the dialog has been dismissed by the user
 		if (dialog.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
 		{
-		    // save the node and update the tree viewer appropriately
-		    DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            T mergedNode = null;
-            boolean success = true;
-            boolean afterSaveSuccess = false;
-            mergedNode = (T)session.merge(node);
+            UIRegistry.writeGlassPaneMsg(getResourceString("TTV_Saving"), 24);
             
-            if (businessRules != null)
+            SwingWorker bgThread = new SwingWorker()
             {
-                businessRules.beforeSave(mergedNode,session);
-            }
-            
-		    try
-            {
-		        session.beginTransaction();
-                session.saveOrUpdate(mergedNode);
-                session.commit();
-                log.info("Successfully saved changes to " + mergedNode.getFullName());
+                boolean success;
+                boolean afterSaveSuccess;
+                T mergedNode;
                 
-            }
-            catch (Exception e)
-            {
-                success = false;
-                log.error("Error while saving node changes.  Rolling back transaction.", e);
-                session.rollback();
-            }
-            finally
-            {
-                session.close();
-            }
-            // at this point, the new node is in the DB
-
-            if (businessRules != null)
-            {
-                afterSaveSuccess = businessRules.afterSave(mergedNode);
-            }
-
-            // now refresh the tree viewer
-            if (success)
-            {
-                if (isNewObject)
+                @SuppressWarnings({ "unchecked", "synthetic-access" })
+                @Override
+                public Object construct()
                 {
-                    // show the children of the 
-                    T parent = mergedNode.getParent();
-                    if (parent != null)
+                    // save the node and update the tree viewer appropriately
+                    DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                    mergedNode = (T)session.merge(node);
+                    success = true;
+                    afterSaveSuccess = false;
+                    
+                    if (businessRules != null)
                     {
-                        TreeNode parentNode = listModel.getNodeById(parent.getTreeId());
-                        parentNode.setHasChildren(true);
-                        hideChildren(parentNode);
-                        showChildren(parent);
+                        businessRules.beforeSave(mergedNode,session);
                     }
+                    
+                    try
+                    {
+                        session.beginTransaction();
+                        session.saveOrUpdate(mergedNode);
+                        session.commit();
+                        log.info("Successfully saved changes to " + mergedNode.getFullName());
+                        
+                    }
+                    catch (Exception e)
+                    {
+                        success = false;
+                        log.error("Error while saving node changes.  Rolling back transaction.", e);
+                        session.rollback();
+                    }
+                    finally
+                    {
+                        session.close();
+                    }
+                    // at this point, the new node is in the DB
+
+                    if (businessRules != null)
+                    {
+                        afterSaveSuccess = businessRules.afterSave(mergedNode);
+                    }
+                    
+                    return success;
                 }
-                else
+
+                @Override
+                public void finished()
                 {
-                    // this was an existing node being edited
-                    TreeNode editedNode = listModel.getNodeById(mergedNode.getTreeId());
-                    editedNode.setName(mergedNode.getName());
-                    editedNode.setRank(mergedNode.getRankId());
-                    listModel.nodeValuesChanged(editedNode);
+                    // now refresh the tree viewer
+                    if (success)
+                    {
+                        if (isNewObject)
+                        {
+                            // show the children of the 
+                            T parent = mergedNode.getParent();
+                            if (parent != null)
+                            {
+                                TreeNode parentNode = listModel.getNodeById(parent.getTreeId());
+                                parentNode.setHasChildren(true);
+                                hideChildren(parentNode);
+                                showChildren(parent);
+                            }
+                        }
+                        else
+                        {
+                            // this was an existing node being edited
+                            TreeNode editedNode = listModel.getNodeById(mergedNode.getTreeId());
+                            editedNode.setName(mergedNode.getName());
+                            editedNode.setRank(mergedNode.getRankId());
+                            listModel.nodeValuesChanged(editedNode);
+                        }
+
+                        if (!afterSaveSuccess)
+                        {
+                            statusBar.setErrorMessage("The tree metadata was not successfully updated.  Please rebuild the tree metadata.");
+                        }
+                    }
+                    else
+                    {
+                        statusBar.setErrorMessage("The transaction didn't complete successfully.  Changes have been undone.");
+                    }
+                    
+                    UIRegistry.clearGlassPaneMsg();
                 }
-                
-                if (!afterSaveSuccess)
-                {
-                    statusBar.setErrorMessage("The tree metadata was not successfully updated.  Please rebuild the tree metadata.");
-                }
-            }
-            else
-            {
-                statusBar.setErrorMessage("The transaction didn't complete successfully.  Changes have been undone.");
-            }
+            };
+            
+            bgThread.start();
 		}
 		else
 		{
 		    // the user didn't save any edits (if there were any)
 		}
 	}
-	
+    
 	/**
 	 * Returns the top-level UI component of the tree viewer.
 	 *
