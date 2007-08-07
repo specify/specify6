@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.specify.datamodel.busrules;
 
-import static edu.ku.brc.specify.tests.DataBuilder.createTaxonTreeDef;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createTaxonTreeDef;
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.CollectionType;

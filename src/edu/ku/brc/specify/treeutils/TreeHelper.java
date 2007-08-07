@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
+import edu.ku.brc.specify.datamodel.LithoStrat;
 import edu.ku.brc.specify.datamodel.Location;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
@@ -178,6 +179,12 @@ public class TreeHelper
             return;
         }
         
+        if (treeNode instanceof LithoStrat)
+        {
+            fixFullnameForNodeAndDescendants((LithoStrat)treeNode);
+            return;
+        }
+        
         if (treeNode instanceof Taxon)
         {
             fixFullnameForNodeAndDescendants((Taxon)treeNode);
@@ -210,6 +217,21 @@ public class TreeHelper
         gtp.setFullName(generated);
         
         for (GeologicTimePeriod child: gtp.getChildren())
+        {
+            fixFullnameForNodeAndDescendants(child);
+        }
+    }
+    
+    /**
+     * @see #fixFullnameForNodeAndDescendants(Treeable)
+     * @param a {@link GeologicTimePeriod} node
+     */
+    public static void fixFullnameForNodeAndDescendants(LithoStrat litho)
+    {
+        String generated = generateFullname(litho);
+        litho.setFullName(generated);
+        
+        for (LithoStrat child: litho.getChildren())
         {
             fixFullnameForNodeAndDescendants(child);
         }

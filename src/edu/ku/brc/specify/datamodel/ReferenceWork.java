@@ -76,6 +76,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
      protected Boolean isPublished;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
+     protected String  guid;
      protected Set<LocalityCitation> localityCitations;
      protected Set<CollectionObjectCitation> collectionObjectCitations;
      protected Set<TaxonCitation> taxonCitations;
@@ -123,6 +124,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
         isPublished = null;
         yesNo1 = null;
         yesNo2 = null;
+        guid   = null;
         localityCitations = new HashSet<LocalityCitation>();
         collectionObjectCitations = new HashSet<CollectionObjectCitation>();
         taxonCitations = new HashSet<TaxonCitation>();
@@ -300,6 +302,18 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     
     public void setRemarks(String remarks) {
         this.remarks = remarks;
+    }
+
+    /**
+     *
+     */
+    @Column(name = "GUID", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    public String getGuid() {
+        return this.guid;
+    }
+
+    public void setGuid(String guid) {
+        this.guid = guid;
     }
 
     /**

@@ -52,6 +52,7 @@ import org.hibernate.annotations.CascadeType;
 
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
+import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 
 /**
 
@@ -588,5 +589,12 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
             return;
         }
         super.removeReference(refObj, refType);
+    }
+    
+    @Override
+    @Transient
+    public String getIdentityTitle()
+    {
+        return DataObjFieldFormatMgr.format(this, getClass());
     }
 }

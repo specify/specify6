@@ -40,7 +40,7 @@ import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
  */
 public class PickListTableAdapter extends PickListDBAdapter
 {
-    // Static Data Memebers
+    // Static Data Members
     protected static final Logger logger = Logger.getLogger(PickListTableAdapter.class);
 
     /**
@@ -61,7 +61,7 @@ public class PickListTableAdapter extends PickListDBAdapter
         PickListDBAdapterIFace.Type type = PickListDBAdapterIFace.Type.valueOf(pickList.getType());
         switch (type)
         {
-            case Item : throw new RuntimeException("This adapter is not intended for PickList's of type '0'");
+            //case Item : throw new RuntimeException("This adapter is not intended for PickList's of type '0'");
             
             case Table : 
                 fillFromFullTable();
@@ -96,7 +96,7 @@ public class PickListTableAdapter extends PickListDBAdapter
             {
                 try
                 {
-                    List dataList = session.getDataList(sqlStr);
+                    List<?> dataList = session.getDataList(sqlStr);
                     if (dataList != null && dataList.size() > 0)
                     {
                         for (Object dataObj : dataList)
@@ -131,7 +131,6 @@ public class PickListTableAdapter extends PickListDBAdapter
      */
     protected void fillFromTableField()
     {
-        
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         
         //DBTableIdMgr.getInstance().getQueryForTable(tableId, recordId)
@@ -140,7 +139,7 @@ public class PickListTableAdapter extends PickListDBAdapter
         {
             try
             {
-                List dataList = session.getDataList(Class.forName(tableInfo.getClassName()), pickList.getFieldName(), true);
+                List<?> dataList = session.getDataList(Class.forName(tableInfo.getClassName()), pickList.getFieldName(), true);
                 if (dataList != null && dataList.size() > 0)
                 {
                     Object[] array = new Object[1];
@@ -171,7 +170,6 @@ public class PickListTableAdapter extends PickListDBAdapter
         }
     }
 
-    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.PickListDBAdapterIFace#addItem(java.lang.String, java.lang.String)
      */

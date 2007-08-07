@@ -23,17 +23,27 @@ package edu.ku.brc.specify.datamodel;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.lang.reflect.Method;
 import java.util.Date;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
+import edu.ku.brc.ui.forms.DataObjectGettable;
+import edu.ku.brc.ui.forms.DataObjectGettableFactory;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
+import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 
 @MappedSuperclass
 public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
 {
+    private static final Logger log = Logger.getLogger(DataModelObjBase.class);
+    
     protected PropertyChangeSupport changes;
     
     protected Date   timestampCreated;
@@ -70,10 +80,12 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
     @Transient
     public String getIdentityTitle()
     {
-        Long id = getId();
-        
-        return getClass().getSimpleName() + ": " + id;
-        //
+        String str = DataObjFieldFormatMgr.format(this, getDataClass());
+        if (StringUtils.isEmpty(str))
+        {
+            return getClass().getSimpleName() + ": " + getId();
+        }
+        return str;
     }
     
     /* (non-Javadoc)
@@ -141,7 +153,46 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
      */
     public void addReference(FormDataObjIFace ref, String refType)
     {
-        throw new RuntimeException(this.getClass() + " MUST override addReference()");
+        DataObjectGettable getter     = DataObjectGettableFactory.get(getClass().getName(), "edu.ku.brc.ui.forms.DataGetterForObj");
+        Object             dataMember = getter.getFieldValue(this, refType);
+        if (dataMember instanceof Set)
+        {
+            try
+            {
+                Method method = dataMember.getClass().getMethod("add", Object.class);
+                if (method != null)
+                {
+                    method.invoke(dataMember, ref);
+                } else
+                {
+                    log.error("Missing method add(Object) for this type of set ["+dataMember.getClass()+"]");
+                }
+    
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+            try
+            {
+                String methodName = "set" + getClass().getSimpleName();
+                Method method = ref.getDataClass().getMethod(methodName, getClass());
+                if (method != null)
+                {
+                    method.invoke(ref, this);    
+                } else
+                {
+                    log.error("Missing method "+methodName+" for this type of set ["+dataMember.getClass()+"]");
+                }
+    
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+    
+            }
+        } else
+        {
+            log.error("Tring to add a reference to a non-set field["+refType+"] ");
+        }
     }
     
     
@@ -150,7 +201,31 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
      */
     public void removeReference(FormDataObjIFace ref, String refType)
     {
-        throw new RuntimeException(this.getClass() + " MUST override removeReference()");
+        DataObjectGettable getter     = DataObjectGettableFactory.get(getClass().getName(), "edu.ku.brc.ui.forms.DataGetterForObj");
+        Object             dataMember = getter.getFieldValue(this, refType);
+        if (dataMember instanceof Set)
+        {
+            try
+            {
+                Method method = dataMember.getClass().getMethod("remove", Object.class);
+                if (method != null)
+                {
+                    method.invoke(dataMember, ref);
+                } else
+                {
+                    log.error("Missing method remove(Object) for this type of set ["+dataMember.getClass()+"]");
+                }
+    
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+
+        } else
+        {
+            log.error("Tring to add a reference to a non-set field["+refType+"] ");
+        }
+
     }
 
     /* (non-Javadoc)

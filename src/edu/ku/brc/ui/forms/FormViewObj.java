@@ -50,6 +50,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
@@ -180,7 +181,6 @@ public class FormViewObj implements Viewable,
     protected boolean                       isSelectorForm;
     protected boolean                       isShowing       = false;
 
-    protected PanelBuilder                  mainBuilder;
     protected BusinessRulesIFace            businessRules   = null; 
 
     protected DraggableRecordIdentifier     draggableRecIdentifier   = null;
@@ -281,9 +281,7 @@ public class FormViewObj implements Viewable,
 
         String rowDefs = (addSelectorCBX ? "t:p," : "") + (mvParent == null ? "t:p" : "t:p:g") + (addExtraRow ? ",2px,t:p" : "");
 
-        mainBuilder = new PanelBuilder(new FormLayout("f:p:g", rowDefs));
-        mainComp    = mainBuilder.getPanel();
-        mainComp.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+        PanelBuilder mainBuilder = new PanelBuilder(new FormLayout("f:p:g", rowDefs));
         
         List<JComponent> comps = new ArrayList<JComponent>();
 
@@ -291,7 +289,7 @@ public class FormViewObj implements Viewable,
         // when creating a new object
         if (addSelectorCBX)
         {
-            mainCompRowInx++;
+            //mainCompRowInx++;
             
             Vector<String> cbxList = new Vector<String>();
             cbxList.add(altView.getName());
@@ -391,7 +389,15 @@ public class FormViewObj implements Viewable,
         {
             controlPanel = new ControlBarPanel();
             controlPanel.addComponents(comps, false); // false -> right side
-            mainBuilder.add(controlPanel, cc.xy(1, mainCompRowInx+2));
+            
+            mainComp = new JPanel(new BorderLayout());
+            mainComp.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+
+            JScrollPane scrollPane = new JScrollPane(mainBuilder.getPanel(), ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            scrollPane.setBorder(null);
+            
+            mainComp.add(scrollPane, BorderLayout.CENTER);
+            mainComp.add(controlPanel, BorderLayout.SOUTH);
         }
 
         if (createResultSetController)
@@ -656,17 +662,20 @@ public class FormViewObj implements Viewable,
      * Sets the component into the object
      * @param formComp the UI component that represents this viewable
      */
-    public void setFormComp(JComponent formComp)
+    public void setFormComp(final JComponent formComp)
     {
         // Remove existing component
         if (this.formComp != null)
         {
             mainComp.remove(this.formComp);
         }
-        this.formComp = formComp;
         
         // add new component
-        mainBuilder.add(formComp, cc.xy(1, mainCompRowInx));
+        JScrollPane scrollPane = new JScrollPane(formComp, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setBorder(null);
+        
+        this.mainComp.add(scrollPane, BorderLayout.CENTER);
+        this.formComp = scrollPane;
 
         // This is needed to make the form layout correctly
         //XXX I hate that I have to do this
@@ -1279,7 +1288,7 @@ public class FormViewObj implements Viewable,
     
             if (newInx > -1 && (list == null || list.size() > 0))
             {
-                rsController.setIndex(newInx);
+                rsController.setIndex(newInx, mvParent == null); // only send notification about index change top form
                 dataObj = list.get(newInx);
                 
                 setDataObj(dataObj, true); // true means the dataObj is already in the current "list" of data items we are working with
@@ -1304,6 +1313,7 @@ public class FormViewObj implements Viewable,
             String delMsg = (businessRules != null) ? businessRules.getDeleteMsg(dataObj) : "";
             UIRegistry.getStatusBar().setText(delMsg);
             formValidator.setHasChanged(true);
+            formValidator.validateForm();
             
             adjustRSControllerAfterRemove();
 
@@ -1921,7 +1931,7 @@ public class FormViewObj implements Viewable,
                 labelFI.getComp().setEnabled(false);
             }
 
-            // Diable all the form controls and set their values to NULL
+            // Disable all the form controls and set their values to NULL
             for (FieldInfo fieldInfo : controlsById.values())
             {
                 fieldInfo.getComp().setEnabled(false);
@@ -1933,6 +1943,10 @@ public class FormViewObj implements Viewable,
                 } else if (fieldInfo.isOfType(FormCell.CellType.subview))
                 {
                     fieldInfo.getSubView().setData(null);
+                    
+                } else if (fieldInfo.isOfType(FormCell.CellType.statictext))
+                {
+                    setDataIntoUIComp(fieldInfo.getComp(), null, null);
                 }
             }
             // Disable the ResultSet Controller

@@ -411,7 +411,7 @@ public class JComboBoxFromQuery extends JComboBox
     {
         if (true)
         {
-            if (ev.getKeyCode() == KeyEvent.VK_F3)
+            if (ev.getKeyCode() == JAutoCompComboBox.SEARCH_KEY)
             {
                 String str = tf.getText();
                 

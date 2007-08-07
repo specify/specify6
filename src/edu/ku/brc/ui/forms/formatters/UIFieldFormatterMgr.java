@@ -124,10 +124,10 @@ public class UIFieldFormatterMgr
     /**
      * Returns a formatter by data class. Returns the "default" formatter and if no default
      * is set it returns the first one it finds.
-     * @param clazz the class of the data tghat the formatter is used for.
+     * @param clazz the class of the data that the formatter is used for.
      * @return return a formatter if it is there, returns null if it isn't
      */
-    public UIFieldFormatterIFace getFormatterInternal(final Class clazz)
+    public UIFieldFormatterIFace getFormatterInternal(final Class<?> clazz)
     {
         UIFieldFormatterIFace formatter = null;
         for (Enumeration<UIFieldFormatterIFace> e=hash.elements();e.hasMoreElements();)
@@ -152,10 +152,10 @@ public class UIFieldFormatterMgr
     /**
      * Returns a formatter by data class. Returns the "default" formatter and if no default
      * is set it returns the first one it finds.
-     * @param clazz the class of the data tghat the formatter is used for.
+     * @param clazz the class of the data that the formatter is used for.
      * @return return a formatter if it is there, returns null if it isn't
      */
-    public static UIFieldFormatterIFace getFormatter(final Class clazz)
+    public static UIFieldFormatterIFace getFormatter(final Class<?> clazz)
     {
         return getInstance().getFormatterInternal(clazz);
     }
@@ -181,10 +181,10 @@ public class UIFieldFormatterMgr
 
     /**
      * Returns a list of formatters that match the class, the default (if there is one) is at the beginning of the list.
-     * @param clazz the class of the data tghat the formatter is used for.
+     * @param clazz the class of the data that the formatter is used for.
      * @return return a list of formatters that match the class
      */
-    public static List<UIFieldFormatterIFace> getFormatterList(final Class clazz)
+    public static List<UIFieldFormatterIFace> getFormatterList(final Class<?> clazz)
     {
         Vector<UIFieldFormatterIFace> list         = new Vector<UIFieldFormatterIFace>();
         UIFieldFormatterIFace         defFormatter = null;
@@ -335,7 +335,7 @@ public class UIFieldFormatterMgr
                         }
                         
                         UIFieldFormatter.PartialDateEnum partialDateType = UIFieldFormatter.PartialDateEnum.Full;
-                        Class dataClass = null;
+                        Class<?> dataClass = null;
                         if (StringUtils.isNotEmpty(dataClassName))
                         {
                             try

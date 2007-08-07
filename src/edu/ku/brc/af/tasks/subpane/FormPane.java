@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.swing.ImageIcon;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.Taskable;
@@ -270,9 +268,8 @@ public class FormPane extends DroppableTaskPane
                 this.removeAll();
 
                 multiView.invalidate();
-                JScrollPane scrollPane = new JScrollPane(multiView, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-                add(scrollPane, BorderLayout.CENTER);
-
+                add(multiView, BorderLayout.CENTER);
+                
                 if (data != null)
                 {
                     multiView.setData(data);

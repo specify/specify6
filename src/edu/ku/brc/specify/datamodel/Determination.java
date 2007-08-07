@@ -49,6 +49,8 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
+import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
+
 /**
 
  */
@@ -463,9 +465,11 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
     @Transient
     public String getIdentityTitle()
     {
-        String taxonName = (taxon != null) ? taxon.getIdentityTitle() : "";
-        String determinerName = (determiner != null) ? determiner.getIdentityTitle() : "";
-        return "Determination: " + determinerName + " (" + taxonName + ")";
+        //String taxonName = (taxon != null) ? taxon.getIdentityTitle() : "";
+        //String determinerName = (determiner != null) ? determiner.getIdentityTitle() : "";
+        //return "Determination: " + determinerName + " (" + taxonName + ")";
+        
+        return DataObjFieldFormatMgr.format(this, getClass());
     }
 
 }

@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last Used Id is 99 or 502
+    Last Used Id is 102 or 502
     
     PLEASE Keep this file in alphabetical order! 
 
@@ -117,6 +117,9 @@
         <table name="edu.ku.brc.specify.datamodel.Journal" id="51" query="true">
             <display view="Journal"/>
         </table>
+        <table name="edu.ku.brc.specify.datamodel.LithoStrat" id="100" workbench="true" query="true"/>
+        <table name="edu.ku.brc.specify.datamodel.LithoStratTreeDef" id="101"/>
+        <table name="edu.ku.brc.specify.datamodel.LithoStratTreeDefItem" id="102"/>
         <table name="edu.ku.brc.specify.datamodel.Loan" id="52" query="true">
         	<display view="Loan"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.LoanBusRules</businessrule>          

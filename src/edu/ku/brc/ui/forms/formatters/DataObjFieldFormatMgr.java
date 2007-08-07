@@ -17,6 +17,7 @@ package edu.ku.brc.ui.forms.formatters;
 
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 
+import java.security.AccessController;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Formatter;
@@ -38,7 +39,7 @@ import edu.ku.brc.ui.forms.DataObjectGettableFactory;
 
 /**
  * This class manages all the Data Object Formatters. A DataObjectFormatter is used to create a string representation 
- * of a data object. Much of the time this is a single field, but saometimes it is a concatentation of several fields.
+ * of a data object. Much of the time this is a single field, but sometimes it is a concatenation of several fields.
  * 
  * @author rods
  *
@@ -49,18 +50,20 @@ import edu.ku.brc.ui.forms.DataObjectGettableFactory;
  */
 public class DataObjFieldFormatMgr
 {
+    public static final String factoryName = "edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr";
+    
     protected static final Logger log = Logger.getLogger(DataObjFieldFormatMgr.class);
     
-    protected static DataObjFieldFormatMgr  instance = new DataObjFieldFormatMgr();
+    protected static DataObjFieldFormatMgr  instance = null;
 
 
-    protected Hashtable<String, DataObjSwitchFormatter> formatHash      = new Hashtable<String, DataObjSwitchFormatter>();
-    protected Hashtable<Class, DataObjSwitchFormatter>  formatClassHash = new Hashtable<Class, DataObjSwitchFormatter>();
-    protected Hashtable<String, DataObjAggregator>      aggHash         = new Hashtable<String, DataObjAggregator>();
-    protected Hashtable<Class, DataObjAggregator>       aggClassHash    = new Hashtable<Class, DataObjAggregator>();
-    protected Object[]                                  args            = new Object[2]; // start with two slots
+    protected Hashtable<String, DataObjSwitchFormatter>   formatHash      = new Hashtable<String, DataObjSwitchFormatter>();
+    protected Hashtable<Class<?>, DataObjSwitchFormatter> formatClassHash = new Hashtable<Class<?>, DataObjSwitchFormatter>();
+    protected Hashtable<String, DataObjAggregator>        aggHash         = new Hashtable<String, DataObjAggregator>();
+    protected Hashtable<Class<?>, DataObjAggregator>      aggClassHash    = new Hashtable<Class<?>, DataObjAggregator>();
+    protected Object[]                                    args            = new Object[2]; // start with two slots
     
-    protected Hashtable<String, Class<?>>               typeHash        = new Hashtable<String, Class<?>>();
+    protected Hashtable<String, Class<?>>                 typeHash        = new Hashtable<String, Class<?>>();
     
     /**
      * Protected Constructor
@@ -74,11 +77,18 @@ public class DataObjFieldFormatMgr
                                  "boolean", Boolean.class};
         for (int i=0;i<initTypeData.length;i++)
         {
-            typeHash.put((String)initTypeData[i], (Class)initTypeData[i+1]);
+            typeHash.put((String)initTypeData[i], (Class<?>)initTypeData[i+1]);
             i++;
         }
         load();
-
+    }
+    
+    /**
+     * @return the DOM to process
+     */
+    protected Element getDOM() throws Exception
+    {
+        return AppContextMgr.getInstance().getResourceAsDOM("DataObjFormatters");
     }
 
     /**
@@ -89,7 +99,8 @@ public class DataObjFieldFormatMgr
     {
         try
         {
-            Element root  = AppContextMgr.getInstance().getResourceAsDOM("DataObjFormatters");
+            Element root  = getDOM();
+            
             if (root != null)
             {
                 List<?> formatters = root.selectNodes("/formatters/format");
@@ -102,7 +113,7 @@ public class DataObjFieldFormatMgr
                     String format     = formatElement.attributeValue("format");
                     boolean isDefault = XMLHelper.getAttr(formatElement, "default", true);
                     
-                    Class dataClass = null;
+                    Class<?> dataClass = null;
                     if (StringUtils.isNotEmpty(className))
                     {
                         try
@@ -225,7 +236,7 @@ public class DataObjFieldFormatMgr
                     
                     Integer count = StringUtils.isNotEmpty(countStr) && StringUtils.isNumeric(countStr) ? Integer.parseInt(countStr) : null;
                     
-                    Class dataClass = null;
+                    Class<?> dataClass = null;
                     if (StringUtils.isNotEmpty(dataClassName))
                     {
                         try
@@ -470,7 +481,7 @@ public class DataObjFieldFormatMgr
                     {
                         aggStr.append(agg.getSeparator());
                     }
-                    aggStr.append(formatInternal(instance.getDataFormatter(obj, agg.getFormatName()), obj));
+                    aggStr.append(formatInternal(getInstance().getDataFormatter(obj, agg.getFormatName()), obj));
                     
                     if (agg.getCount() != null && count < agg.getCount())
                     {
@@ -496,13 +507,13 @@ public class DataObjFieldFormatMgr
      */
     public static String format(final Object dataObj, final String formatName)
     {
-        DataObjSwitchFormatter sf = instance.formatHash.get(formatName);
+        DataObjSwitchFormatter sf = getInstance().formatHash.get(formatName);
         if (sf != null)
         {
-            DataObjDataFieldFormatIFace dff = instance.getDataFormatter(dataObj, sf);
+            DataObjDataFieldFormatIFace dff = getInstance().getDataFormatter(dataObj, sf);
             if (dff != null)
             {
-                return instance.formatInternal(dff, dataObj);
+                return getInstance().formatInternal(dff, dataObj);
                 
             }
             // else
@@ -520,15 +531,15 @@ public class DataObjFieldFormatMgr
      * @param dataClass the class for the data to be formatted
      * @return the string result of the format
      */
-    public static String format(final Object dataObj, final Class dataClass)
+    public static String format(final Object dataObj, final Class<?> dataClass)
     {
-        DataObjSwitchFormatter sf = instance.formatClassHash.get(dataClass);
+        DataObjSwitchFormatter sf = getInstance().formatClassHash.get(dataClass);
         if (sf != null)
         {
-            DataObjDataFieldFormatIFace dff = instance.getDataFormatter(dataObj, sf);
+            DataObjDataFieldFormatIFace dff = getInstance().getDataFormatter(dataObj, sf);
             if (dff != null)
             {
-                return instance.formatInternal(dff, dataObj);
+                return getInstance().formatInternal(dff, dataObj);
             }
             // else
             log.error("Couldn't find DataObjDataFieldFormat for ["+sf.getName()+"] value["+dataObj+"]");
@@ -560,10 +571,10 @@ public class DataObjFieldFormatMgr
     {
         if (items != null && items.size() > 0)
         {
-            DataObjAggregator agg = instance.aggHash.get(aggName);
+            DataObjAggregator agg = getInstance().aggHash.get(aggName);
             if (agg != null)
             {
-                return instance.aggregateInternal(items, agg);
+                return getInstance().aggregateInternal(items, agg);
                 
             }
             // else
@@ -579,7 +590,7 @@ public class DataObjFieldFormatMgr
      * @param aggName the name of the aggregator to use
      * @return a string representing a collection of all the objects 
      */
-    public static String aggregate(final Collection<?> items, final Class dataClass)
+    public static String aggregate(final Collection<?> items, final Class<?> dataClass)
     {
         DataObjAggregator defAgg = null;
         if (dataClass == Determination.class)
@@ -587,7 +598,7 @@ public class DataObjFieldFormatMgr
             int x = 0;
             x++;
         }
-        for (Enumeration<DataObjAggregator> e=instance.aggHash.elements();e.hasMoreElements();)
+        for (Enumeration<DataObjAggregator> e=getInstance().aggHash.elements();e.hasMoreElements();)
         {
             DataObjAggregator agg = e.nextElement();
             if (dataClass == agg.getDataClass())
@@ -606,11 +617,51 @@ public class DataObjFieldFormatMgr
         
         if (defAgg != null)
         {
-            return instance.aggregateInternal(items, defAgg);
+            return getInstance().aggregateInternal(items, defAgg);
             
         }
         // else
         log.error("Could find aggregator of class ["+dataClass.getCanonicalName()+"]");
         return "";
+    }
+    
+    /**
+     * Returns the instance to the singleton
+     * @return  the instance to the singleton
+     */
+    public static DataObjFieldFormatMgr getInstance()
+    {
+        if (instance != null)
+        {
+            return instance;
+        }
+        
+        if (StringUtils.isEmpty(factoryName))
+        {
+            return instance = new DataObjFieldFormatMgr();
+        }
+        
+        // else
+        String factoryNameStr = AccessController.doPrivileged(new java.security.PrivilegedAction<String>() {
+                public String run() {
+                    return System.getProperty(factoryName);
+                    }
+                });
+            
+        if (StringUtils.isNotEmpty(factoryNameStr)) 
+        {
+            try 
+            {
+                return instance = (DataObjFieldFormatMgr)Class.forName(factoryNameStr).newInstance();
+                 
+            } catch (Exception e) 
+            {
+                InternalError error = new InternalError("Can't instantiate DataObjFieldFormatMgr factory " + factoryNameStr);
+                error.initCause(e);
+                throw error;
+            }
+        }
+        // should not happen
+        throw new RuntimeException("Can't instantiate DataObjFieldFormatMgr factory [" + factoryNameStr+"]");
     }
 }

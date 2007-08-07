@@ -41,7 +41,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
     
     protected String               name;
     protected String               title;
-    protected Class                dataClass;
+    protected Class<?>             dataClass;
     protected boolean              isDate;
     protected PartialDateEnum      partialDateType;
     protected boolean              isDefault;
@@ -63,7 +63,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
     public UIFieldFormatter(final String          name, 
                             final boolean         isDate, 
                             final PartialDateEnum partialDateType,
-                            final Class           dataClass,
+                            final Class<?>        dataClass,
                             final boolean         isDefault,
                             final boolean         isIncrementer,
                             final List<UIFieldFormatterField> fields)
@@ -156,7 +156,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getDataClass()
      */
-    public Class getDataClass()
+    public Class<?> getDataClass()
     {
         return dataClass;
     }

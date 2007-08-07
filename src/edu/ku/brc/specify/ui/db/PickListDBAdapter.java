@@ -18,6 +18,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Vector;
 
+import javax.swing.MutableComboBoxModel;
+import javax.swing.event.ListDataListener;
+
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -36,19 +39,22 @@ import edu.ku.brc.ui.db.PickListItemIFace;
  * @author rods
  *
  */
-public class PickListDBAdapter implements PickListDBAdapterIFace
+public class PickListDBAdapter implements PickListDBAdapterIFace, MutableComboBoxModel
 {
-    // Static Data Memebers
+    // Static Data Members
     protected static final Logger log                = Logger.getLogger(PickListDBAdapter.class);
     protected static PickListItemIFace searchablePLI = new PickListItem(); // used for binary searches
     
-    // Data Memebers        
+    // Data Members        
     protected Vector<PickListItemIFace> items    = new Vector<PickListItemIFace>(); // Make this Vector because the combobox can use it directly
     protected PickListIFace             pickList = null;
+    
+    protected int                       selectedIndex = -1;
+    protected Vector<ListDataListener>  listeners = new Vector<ListDataListener>();
      
     
     /**
-     * Protected Default constructor derving subclasses.
+     * Protected Default constructor deriving subclasses.
      */
     protected PickListDBAdapter()
     {
@@ -250,5 +256,118 @@ public class PickListDBAdapter implements PickListDBAdapterIFace
         }
         throw new RuntimeException("Unknown picklist type["+pickList.getType()+"]");
     }
+    
+    //------------------------------------------------------------------------
+    //-- Default
+    //------------------------------------------------------------------------
+    /* (non-Javadoc)
+     * @see javax.swing.ComboBoxModel#getSelectedItem()
+     */
+    public Object getSelectedItem()
+    {
+        return selectedIndex == -1 ? null : items.get(selectedIndex);
+    }
+
+    /* (non-Javadoc)
+     * @see javax.swing.ComboBoxModel#setSelectedItem(java.lang.Object)
+     */
+    public void setSelectedItem(Object arg0)
+    {
+        int index = items.indexOf(arg0);
+        if (index > -1)
+        {
+            selectedIndex = index;
+        }
+        
+    }
+
+    /* (non-Javadoc)
+     * @see javax.swing.ListModel#addListDataListener(javax.swing.event.ListDataListener)
+     */
+    public void addListDataListener(ListDataListener arg0)
+    {
+        listeners.add(arg0);
+    }
+
+    /* (non-Javadoc)
+     * @see javax.swing.ListModel#getElementAt(int)
+     */
+    public Object getElementAt(int arg0)
+    {
+        return selectedIndex > -1 && selectedIndex < items.size() ? items.get(selectedIndex) : null;
+    }
+
+    /* (non-Javadoc)
+     * @see javax.swing.ListModel#getSize()
+     */
+    public int getSize()
+    {
+        return items.size();
+    }
+
+    /* (non-Javadoc)
+     * @see javax.swing.ListModel#removeListDataListener(javax.swing.event.ListDataListener)
+     */
+    public void removeListDataListener(ListDataListener arg0)
+    {
+        listeners.remove(arg0);
+    }
+
+    /* (non-Javadoc)
+     * @see javax.swing.MutableComboBoxModel#addElement(java.lang.Object)
+     */
+    public void addElement(Object obj)
+    {
+        if (obj instanceof PickListItemIFace)
+        {
+            items.add((PickListItemIFace)obj);
+            
+        } else if (obj instanceof String)
+        {
+            addItem((String)obj, (String)obj);
+        } else
+        {
+            // error
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see javax.swing.MutableComboBoxModel#insertElementAt(java.lang.Object, int)
+     */
+    public void insertElementAt(Object obj, int index)
+    {
+        if (obj instanceof PickListItemIFace)
+        {
+            items.add((PickListItemIFace)obj);
+            
+        } else if (obj instanceof String)
+        {
+            //insert((String)obj, (String)obj);
+            
+        } else
+        {
+            // error
+        }
+        
+    }
+
+    /* (non-Javadoc)
+     * @see javax.swing.MutableComboBoxModel#removeElement(java.lang.Object)
+     */
+    public void removeElement(Object obj)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    /* (non-Javadoc)
+     * @see javax.swing.MutableComboBoxModel#removeElementAt(int)
+     */
+    public void removeElementAt(int index)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
     
 }

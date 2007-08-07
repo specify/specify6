@@ -51,6 +51,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
 import edu.ku.brc.dbsupport.AttributeIFace;
+import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 
 /**
 
@@ -427,6 +428,7 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
     @Transient
     public String getIdentityTitle()
     {
+        /*
         PrepType pt = this.getPrepType();
         if (pt != null && StringUtils.isNotEmpty(pt.getName()))
         {
@@ -435,6 +437,8 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
         } 
         // else
         return "Prepration " + getPreparationId();
+        */
+        return DataObjFieldFormatMgr.format(this, getClass());
     }
     
 

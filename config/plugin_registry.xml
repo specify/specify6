@@ -18,6 +18,7 @@
 		<plugin class="edu.ku.brc.specify.tasks.LocationTreeTask" addui="true"/>
 		<plugin class="edu.ku.brc.specify.tasks.GeographyTreeTask" addui="true"/>
 		<plugin class="edu.ku.brc.specify.tasks.GtpTreeTask" addui="true"/>
+		<plugin class="edu.ku.brc.specify.tasks.LithoStratTreeTask" addui="true"/>
 		
 		<plugin class="edu.ku.brc.specify.tasks.LabelsTask" addui="true"/>
 		

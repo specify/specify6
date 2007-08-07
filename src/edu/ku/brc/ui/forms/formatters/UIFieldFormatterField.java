@@ -84,6 +84,14 @@ public class UIFieldFormatterField
         //}
         return value;
     }
+    
+    /**
+     * @return whether the field is typed into or not.
+     */
+    public boolean isEntryField()
+    {
+        return !isIncrementer() && type != UIFieldFormatterField.FieldType.separator;
+    }
 
     public boolean isIncrementer()
     {

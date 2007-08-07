@@ -97,6 +97,9 @@
 		<mapping class="edu.ku.brc.specify.datamodel.InfoRequest"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Institution"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Journal"/>
+		<mapping class="edu.ku.brc.specify.datamodel.LithoStrat"/>
+		<mapping class="edu.ku.brc.specify.datamodel.LithoStratTreeDef"/>
+		<mapping class="edu.ku.brc.specify.datamodel.LithoStratTreeDefItem"/>
 		<mapping class="edu.ku.brc.specify.datamodel.LoanAgent"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Loan"/>
 		<mapping class="edu.ku.brc.specify.datamodel.LoanPhysicalObject"/>

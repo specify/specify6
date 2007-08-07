@@ -234,7 +234,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
 
         String text = getText();
 
-        if (text != null && text.length() < bgStr.length())
+        if (!isViewOnly && isEnabled() && text != null && text.length() < bgStr.length() )
         {
             FontMetrics fm   = g.getFontMetrics();
             int          w   = fm.stringWidth(text);
@@ -261,8 +261,8 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     @Override
     public void setEnabled(boolean enabled)
     {
-        if (!isViewOnly)
-        {
+        //if (!isViewOnly)
+        //{
             boolean isNeeded = formatter.isUserInputNeeded();
             if (enabled && isNeeded)
             {
@@ -274,7 +274,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             }
     
             setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
-        }
+        //}
     }
 
     /* (non-Javadoc)

@@ -27,7 +27,7 @@ import org.apache.commons.lang.StringUtils;
  */
 public class FormCell implements Comparable<FormCell>, Cloneable
 {
-    public enum CellType {separator, field, label, subview, command, panel, statusbar, iconview}
+    public enum CellType {separator, field, label, statictext, subview, command, panel, statusbar, iconview}
 
     // Required fields
     protected CellType type;
@@ -35,7 +35,7 @@ public class FormCell implements Comparable<FormCell>, Cloneable
     protected String   name;
     protected boolean  ignoreSetGet       = false;
     protected boolean  changeListenerOnly = false;
-    protected boolean  isMultiField       = false; // Meaning does it have a comma separating mulitple field
+    protected boolean  isMultiField       = false; // Meaning does it have a comma separating multiple field
 
     protected String[] fieldNames     = null;
 

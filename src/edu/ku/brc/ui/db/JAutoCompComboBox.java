@@ -14,12 +14,15 @@
  */
 package edu.ku.brc.ui.db;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Vector;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.JComboBox;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
 
@@ -37,12 +40,15 @@ import edu.ku.brc.specify.datamodel.PickListItem;
 @SuppressWarnings("serial")
 public class JAutoCompComboBox extends JEditComboBox
 {
+    public static int SEARCH_KEY = KeyEvent.VK_F3; 
+    
     /**
      * Constructor
      */
     public JAutoCompComboBox()
     {
         super();
+        init();
     }
     
     /**
@@ -52,6 +58,7 @@ public class JAutoCompComboBox extends JEditComboBox
     public JAutoCompComboBox(final ComboBoxModel arg0)
     {
         super(arg0);
+        init();
     }
 
     /**
@@ -61,6 +68,7 @@ public class JAutoCompComboBox extends JEditComboBox
     public JAutoCompComboBox(final Object[] arg0)
     {
         super(arg0);
+        init();
     }
 
     /**
@@ -70,6 +78,7 @@ public class JAutoCompComboBox extends JEditComboBox
     public JAutoCompComboBox(final Vector<?> arg0)
     {
         super(arg0);
+        init();
     }
 
     /**
@@ -80,6 +89,23 @@ public class JAutoCompComboBox extends JEditComboBox
     {
         super(dbAdapter.getList());
         this.dbAdapter = dbAdapter;
+        init();
+    }
+    
+    protected void init()
+    {
+        addActionListener(new ActionListener() {
+
+            /* (non-Javadoc)
+             * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+             */
+            public void actionPerformed(ActionEvent e)
+            {
+                System.out.println(getSelectedIndex()+ " "+e);
+                
+            }
+            
+        });
     }
     
     
@@ -90,6 +116,8 @@ public class JAutoCompComboBox extends JEditComboBox
     public void setSelectedIndex(int index)
     {
         super.setSelectedIndex(index);
+        
+        System.out.println("++++++ "+ index);
         
         if (textField != null && dbAdapter != null && index > -1)
         {
@@ -186,9 +214,10 @@ public class JAutoCompComboBox extends JEditComboBox
             @Override
             public void keyReleased(KeyEvent ev)
             {
-                if (hasDBAdapter())
+                System.out.println(hasDBAdapter() +"  "+dbAdapter.getType()+"  [" + ((JTextField)cbx.getEditor().getEditorComponent()).getText()+"]");
+                if (!cbx.isPopupVisible() && hasDBAdapter() && dbAdapter.getType() != PickListDBAdapterIFace.Type.Table)
                 {
-                    if (ev.getKeyCode() == KeyEvent.VK_F3)
+                    if (ev.getKeyCode() == SEARCH_KEY)
                     {
                         lookForMatch();
                         SwingUtilities.invokeLater(new Runnable()
@@ -230,6 +259,7 @@ public class JAutoCompComboBox extends JEditComboBox
                     {
                         if (ev.getKeyCode() == KeyEvent.VK_ENTER) 
                         {
+                            System.out.println("*&******");
                             addNewItemFromTextField();
                             
                         } else if (ev.getKeyCode() == KeyEvent.VK_END)

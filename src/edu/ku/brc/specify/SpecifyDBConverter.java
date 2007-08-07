@@ -1,9 +1,9 @@
 package edu.ku.brc.specify;
 
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.deleteAllRecordsFromTable;
-import static edu.ku.brc.specify.tests.DataBuilder.createDataType;
-import static edu.ku.brc.specify.tests.DataBuilder.createSpecifyUser;
-import static edu.ku.brc.specify.tests.DataBuilder.createUserGroup;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createDataType;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createSpecifyUser;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createUserGroup;
 
 import java.awt.HeadlessException;
 import java.io.File;
@@ -57,9 +57,9 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.UserGroup;
-import edu.ku.brc.specify.tests.BuildSampleDatabase;
-import edu.ku.brc.specify.tests.DataBuilder;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
+import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
+import edu.ku.brc.specify.utilapps.DataBuilder;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIHelper;

@@ -131,7 +131,6 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
         this.isViewOnly = isViewOnly;
         
         init(formatter);
-
     }
 
     /**
@@ -183,6 +182,14 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
                 inx++;
             }
         }
+    }
+    
+    /**
+     * @return the text field
+     */
+    public JTextField getTextField()
+    {
+        return viewtextField;
     }
     
     /**
@@ -369,12 +376,20 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
             int inx = 0;
             for (JComponent c : comps)
             {
+                String val = null;
                 if (c instanceof JLabel)
                 {
-                    sb.append(((JLabel)c).getText());
+                    val = ((JLabel)c).getText();
                 } else
                 {
-                    sb.append(((JTextField)c).getText());
+                    val = ((JTextField)c).getText();
+                }
+                
+                sb.append(val);
+                
+                if (StringUtils.isEmpty(val))
+                {
+                    return null;
                 }
                 inx++;
             }
@@ -389,19 +404,37 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
     @Override
     public void setEnabled(boolean enabled)
     {
+        boolean isEnabled = enabled;
         if (!isViewOnly)
         {
             boolean isNeeded = formatter.isUserInputNeeded();
             if (enabled && isNeeded)
             {
-                super.setEnabled(isNeeded);
+                isEnabled = isNeeded;
                 
             } else
             {
-                super.setEnabled(enabled);
+                isEnabled = enabled;
             }
     
-            setBGColor(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
+            setBGColor(isRequired && isEnabled ? requiredfieldcolor.getColor() : bgColor);
+        }
+        
+        super.setEnabled(isEnabled);
+        
+        if (viewtextField != null)
+        {
+            viewtextField.setEnabled(isEnabled);
+            
+        } else if (comps != null)
+        {
+            for (JComponent comp : comps)
+            {
+                if (comp instanceof JTextField)
+                {
+                    ((JTextField)comp).setEnabled(isEnabled);
+                } 
+            }
         }
     }
 
@@ -418,12 +451,34 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
         
         shouldIgnoreNotifyDoc = !notify;
         
+        boolean isTextEmpty = StringUtils.isEmpty(text);
+        
         int len = formatter.getLength();
         int inx = 0;
         int pos = 0;
         for (UIFieldFormatterField field : fields)
         {
-            String val = text.substring(pos, Math.min(pos+field.getSize(), len));
+            String val;
+            if (isTextEmpty)
+            {
+                /*if (field.isEntryField())
+                {
+                    if (field.getType() == UIFieldFormatterField.FieldType.year)
+                    {
+                        val = Integer.toString(Calendar.getInstance().get(Calendar.YEAR));
+                    } else
+                    {
+                        val = "";
+                    }
+                } else
+                {
+                    val = field.getValue();
+                }*/
+                val = "";
+            } else
+            {
+                val = text.substring(pos, Math.min(pos+field.getSize(), len));
+            }
             
             if (comps[inx] instanceof JLabel)
             {
@@ -452,7 +507,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
     {
         super.paint(g);
         
-        if (!isNew && valState == UIValidatable.ErrorType.Error && isEnabled())
+        if (!isViewOnly && !isNew && valState == UIValidatable.ErrorType.Error && isEnabled())
         {
             Graphics2D g2d = (Graphics2D)g;
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -679,12 +734,22 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
         }
         
         String fmtVal;
-        if (formatter != null && formatter.isInBoundFormatter())
+        if (formatter != null)
         {
-            needsUpdating = StringUtils.isEmpty(data) && formatter.getAutoNumber() != null && formatter.isIncrementer();
-            
-            fmtVal = (String)formatter.formatInBound(data);
-
+            if (formatter.isInBoundFormatter())
+            {
+                needsUpdating = StringUtils.isEmpty(data) && formatter.getAutoNumber() != null && formatter.isIncrementer();
+                
+                fmtVal = (String)formatter.formatInBound(data);
+                
+            } else 
+            {
+                if (value == null)
+                {
+                    needsUpdating = true;
+                }
+                fmtVal = data;
+            }
         } else
         {
             fmtVal = data;
@@ -800,7 +865,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
 
             String text = getText();
 
-            if (text != null && text.length() < bgStr.length())
+            if (isEnabled() && text != null && text.length() < bgStr.length())
             {
                 FontMetrics fm   = g.getFontMetrics();
                 int          w   = fm.stringWidth(text);
@@ -904,7 +969,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
                         for (int i=inx+1;i<len;i++)
                         {
                             UIFieldFormatterField nxtField = fields.get(i);
-                            if (!nxtField.isByYear() && !nxtField.isIncrementer() && nxtField.getType() != UIFieldFormatterField.FieldType.separator)
+                            if (!nxtField.isByYear() && nxtField.isEntryField())
                             {
                                 comps[i].requestFocus();
                                 break;

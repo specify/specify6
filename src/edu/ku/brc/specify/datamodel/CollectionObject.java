@@ -712,14 +712,43 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
         this.rightSideRels = rightSideRels;
     }
 
-
-
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#addReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
      */
     @Override
     public void addReference(FormDataObjIFace ref, String refType)
     {
+        //System.out.println(getFieldName(ref));
+        
+        super.addReference(ref, refType);
+        
+        /*
+        DataObjectGettable getter = DataObjectGettableFactory.get(getClass().getName(), "edu.ku.brc.ui.forms.DataGetterForObj");
+        Object dataMember = getter.getFieldValue(this, refType);
+        if (dataMember instanceof Set)
+        {
+            try
+            {
+                Method method = dataMember.getClass().getMethod("add", Object.class);
+                Object value = method.invoke(dataMember, ref);
+    
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+            try
+            {
+                Method method = ref.getDataClass().getMethod("setCollectionObject", getClass());
+                Object value = method.invoke(ref, this);
+    
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+    
+            }
+        }
+        */
+        /*
         if (ref instanceof Preparation)
         {
             preparations.add((Preparation)ref);
@@ -760,6 +789,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
         {
             throw new RuntimeException("Adding Object ["+ref.getClass().getSimpleName()+"] and the refType is null.");
         }
+        */
     }
 
     /* (non-Javadoc)
@@ -767,7 +797,10 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
      */
     @Override
     public void removeReference(FormDataObjIFace ref, String refType)
-    {       
+    {
+        super.removeReference(ref, refType);
+        /*
+        
         if (ref instanceof Preparation)
         {
             preparations.remove(ref);
@@ -808,7 +841,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
         } else
         {
             throw new RuntimeException("Removing Object ["+ref.getClass().getSimpleName()+"] and the refType is null.");
-        }
+        }*/
     }
 
     

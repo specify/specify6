@@ -26,7 +26,8 @@
     <format name="PartialDateYear" type="date" partialdate="Year"/>
     
     <format name="CatalogNumber" class="edu.ku.brc.specify.datamodel.CollectionObject" default="true">
-        <field size="4" type="numeric" value="YEAR"/>
+        <autonumber field="catalogNumber">edu.ku.brc.dbsupport.AutoNumberGeneric</autonumber>
+        <field size="4" type="year" value="YEAR"/>
         <field size="1" type="separator" value="-"/>
         <field size="6" type="numeric" value="NNNNNN" inc="true"/>
     </format>
@@ -36,7 +37,7 @@
          *********************************************************************************************** -->
     <!-- 
     <format name="CatalogNumberNumeric" class="edu.ku.brc.specify.datamodel.CollectionObject" default="false">
-        <autonumber>edu.ku.brc.specify.dbsupport.CollectionAutoNumber</autonumber>
+        <autonumber field="catalogNumber">edu.ku.brc.specify.dbsupport.CollectionAutoNumber</autonumber>
         <external>edu.ku.brc.specify.ui.CatalogNumberUIFieldFormatter</external>
     </format>
     -->

@@ -64,7 +64,7 @@ public interface UIFieldFormatterIFace
     /**
      * @return the class of data object that the format is intended for
      */
-    public abstract Class getDataClass();
+    public abstract Class<?> getDataClass();
 
     /**
      * @return true if it is the default formatter

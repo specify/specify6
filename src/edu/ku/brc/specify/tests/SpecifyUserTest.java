@@ -14,20 +14,21 @@
 package edu.ku.brc.specify.tests;
 
 
-import static edu.ku.brc.specify.tests.DataBuilder.createAgent;
-import static edu.ku.brc.specify.tests.DataBuilder.createCollectionType;
-import static edu.ku.brc.specify.tests.DataBuilder.createDataType;
-import static edu.ku.brc.specify.tests.DataBuilder.createSpecifyUser;
-import static edu.ku.brc.specify.tests.DataBuilder.createTaxonTreeDef;
-import static edu.ku.brc.specify.tests.DataBuilder.createUserGroup;
-import static edu.ku.brc.specify.tests.DataBuilder.createUserPermission;
-import static edu.ku.brc.specify.tests.DataBuilder.setSession;
 import static edu.ku.brc.specify.tests.SpecifyUserTestHelper.deleteSpecifyUserDB;
 import static edu.ku.brc.specify.tests.SpecifyUserTestHelper.deleteUserGroupFromDB;
 import static edu.ku.brc.specify.tests.SpecifyUserTestHelper.deleteUserPermissionFromDB;
 import static edu.ku.brc.specify.tests.SpecifyUserTestHelper.isSpecifyUserInDB;
 import static edu.ku.brc.specify.tests.SpecifyUserTestHelper.isUserGroupInDB;
 import static edu.ku.brc.specify.tests.SpecifyUserTestHelper.isUserPermissionInDB;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createAgent;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectionType;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createDataType;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createLithoStratTreeDef;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createSpecifyUser;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createTaxonTreeDef;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createUserGroup;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createUserPermission;
+import static edu.ku.brc.specify.utilapps.DataBuilder.setSession;
 import junit.framework.TestCase;
 
 import org.apache.log4j.Logger;
@@ -37,6 +38,7 @@ import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.DataType;
+import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.UserGroup;
@@ -285,7 +287,8 @@ public class SpecifyUserTest extends TestCase
             log.info("createSpecifyUser");
             SpecifyUser  user         = createSpecifyUser("rods", "rods@ku.edu", (short)0, "CollectionManager");
             TaxonTreeDef taxonTreeDef = createTaxonTreeDef("Sample Taxon Tree Def");
-
+            LithoStratTreeDef lithoStratTreeDef = createLithoStratTreeDef("Sample Litho Tree Def");
+            
             SpecifyUser testUser = createSpecifyUser(testUserName, testUserEmail, (short) 0, testUserRole);
             assertNotNull("SpecifyUser created is null. ", testUser);
             log.info("checking if the SpecifyUser exists in the database ID: " + testUser.getId());
@@ -303,7 +306,7 @@ public class SpecifyUserTest extends TestCase
             HibernateUtil.commitTransaction();
 
             log.info("createCollectionType");
-            CollectionType collectionType =  createCollectionType("fish", "fish", dataType, user, taxonTreeDef, null, null, null);
+            CollectionType collectionType =  createCollectionType("fish", "fish", dataType, user, taxonTreeDef, null, null, null, lithoStratTreeDef);
 
             //createCollectionType(dataType, testUser, "fish", "fish"); // creates TaxonTreeDef
 
@@ -342,6 +345,7 @@ public class SpecifyUserTest extends TestCase
             Agent            userAgent        = createAgent("", "John", "", "Doe", "", "jd@ku.edu");
             UserGroup        userGroup        = createUserGroup("fish");
             TaxonTreeDef     taxonTreeDef     = createTaxonTreeDef("Sample Taxon Tree Def");
+            LithoStratTreeDef lithoStratTreeDef = createLithoStratTreeDef("Sample Litho Tree Def");
 
             log.info("Creating SpecifyUser");
             SpecifyUser testUser = createSpecifyUser(testUserName, testUserEmail, (short) 0, testUserRole);
@@ -357,7 +361,7 @@ public class SpecifyUserTest extends TestCase
             log.info("createSpecifyUser");
             SpecifyUser      user             = createSpecifyUser("admin", "admin@ku.edu", (short)0, userGroup, "CollectionManager");
 
-            CollectionType collectionType =  createCollectionType("fish", "fish", dataType, user, taxonTreeDef, null, null, null);
+            CollectionType collectionType =  createCollectionType("fish", "fish", dataType, user, taxonTreeDef, null, null, null, lithoStratTreeDef);
             
             UserPermission permission = createUserPermission(testUser, collectionType, true, true);
             assertNotNull("UserPermission is null", permission);

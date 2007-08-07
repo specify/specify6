@@ -12,6 +12,8 @@ import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem;
+import edu.ku.brc.specify.datamodel.LithoStrat;
+import edu.ku.brc.specify.datamodel.LithoStratTreeDefItem;
 import edu.ku.brc.specify.datamodel.Location;
 import edu.ku.brc.specify.datamodel.LocationTreeDef;
 import edu.ku.brc.specify.datamodel.LocationTreeDefItem;
@@ -65,14 +67,19 @@ public class TreeFactory
 			t = (T)new Location();			
 			((Location)t).initialize();
 		}
-		else if( implementingClass.equals(Taxon.class) )
-		{
-			t = (T)new Taxon();
-			((Taxon)t).initialize();
-		}
+        else if( implementingClass.equals(Taxon.class) )
+        {
+            t = (T)new Taxon();
+            ((Taxon)t).initialize();
+        }
+        else if( implementingClass.equals(LithoStrat.class) )
+        {
+            t = (T)new LithoStrat();
+            ((LithoStrat)t).initialize();
+        }
 		else
 		{
-			throw new IllegalArgumentException("Provided class must be one of Geography, GeologicTimePeriod, Location or Taxon");
+			throw new IllegalArgumentException("Provided class must be one of Geography, GeologicTimePeriod, Location, LithoStrat or Taxon");
 		}
 
 		t.setName(name);
@@ -103,11 +110,15 @@ public class TreeFactory
         {
             return (T)createNewTreeable(GeologicTimePeriod.class,name);
         }
+        if (nodeOfSameClass instanceof LithoStrat)
+        {
+            return (T)createNewTreeable(LithoStrat.class,name);
+        }
         if (nodeOfSameClass instanceof Location)
         {
             return (T)createNewTreeable(Location.class,name);
         }
-        throw new IllegalArgumentException("Provided node must be instance of Geography, GeologicTimePeriod, Location or Taxon");
+        throw new IllegalArgumentException("Provided node must be instance of Geography, GeologicTimePeriod, Location, LithoStrat or Taxon");
     }
 		
 	/**
@@ -137,10 +148,14 @@ public class TreeFactory
 		{
 			t = (I)new LocationTreeDefItem();			
 		}
-		else if( implementingClass.equals(TaxonTreeDefItem.class) )
-		{
-			t = (I)new TaxonTreeDefItem();
-		}
+        else if( implementingClass.equals(TaxonTreeDefItem.class) )
+        {
+            t = (I)new TaxonTreeDefItem();
+        }
+        else if( implementingClass.equals(LithoStratTreeDefItem.class) )
+        {
+            t = (I)new LithoStratTreeDefItem();
+        }
 		else
 		{
 			return null;
@@ -243,6 +258,16 @@ public class TreeFactory
             return new Pair<String, String>("SystemSetup","GeologicTimePeriodTreeDefItem");
         }
         
+        if( node instanceof LithoStratTreeDefItem)
+        {
+            TreeDefItemIface<?,?,?> defItem = (TreeDefItemIface<?,?,?>)node;
+            if (defItem.getParent() == null)
+            {
+                return new Pair<String, String>("SystemSetup","RootLithoStratTreeDefItem");
+            }
+            return new Pair<String, String>("SystemSetup","LithoStratTreeDefItem");
+        }
+        
         if( node instanceof LocationTreeDefItem)
         {
             TreeDefItemIface<?,?,?> defItem = (TreeDefItemIface<?,?,?>)node;
@@ -325,13 +350,23 @@ public class TreeFactory
 			{ 800, "County", false }, };
 
     /** An array describing the standard levels of a {@link GeologicTimePeriod} tree. */
-	@SuppressWarnings("unused")
-	private Object[][] stdGtpItems = {
-			{ 0, "Time Root", true },
-			{ 200, "Erathem", false },
-			{ 400, "Period", false },
-			{ 600, "Epoch", false },
-			{ 800, "Age", false }, };
+    @SuppressWarnings("unused")
+    private Object[][] stdGtpItems = {
+            { 0, "Time Root", true },
+            { 200, "Erathem", false },
+            { 400, "Period", false },
+            { 600, "Epoch", false },
+            { 800, "Age", false }, };
+
+    /** An array describing the standard levels of a {@link GeologicTimePeriod} tree. */
+    @SuppressWarnings("unused")
+    private Object[][] stdLithoStratItems = {
+            { 0, "Litho Root", true },
+            { 100, "SuperGroup", false },
+            { 200, "LithoGroup", false },
+            { 300, "Formation", false },
+            { 400, "Member", false },
+            { 500, "Bed", false }, };
 
     /** An array describing the standard levels of a {@link Taxon} tree. */
 	@SuppressWarnings("unused")

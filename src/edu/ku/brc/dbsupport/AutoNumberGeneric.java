@@ -9,10 +9,6 @@
  */
 package edu.ku.brc.dbsupport;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Properties;
@@ -35,7 +31,7 @@ import edu.ku.brc.util.Pair;
  */
 public class AutoNumberGeneric implements AutoNumberIFace
 {
-    protected Class            classObj  = null;
+    protected Class<?>         classObj  = null;
     protected String           fieldName = null;
     protected DataGetterForObj getter    = new DataGetterForObj();
     
@@ -80,34 +76,52 @@ public class AutoNumberGeneric implements AutoNumberIFace
     
     /**
      * @param session
+     * @param yearPos
+     * @param yearPos
+     * @param pos
      * @return
      * @throws Exception
      */
     protected Object getHighestObject(final Session session, 
-                                      final Pair<Integer, Integer> year, 
+                                      final String  value,
+                                      final Pair<Integer, Integer> yearPos, 
                                       final Pair<Integer, Integer> pos) throws Exception
     {
+        Integer yearVal = null;
+        if (yearPos != null && StringUtils.isNotEmpty(value) && value.length() >= yearPos.second)
+        {
+            yearVal = extractIntegerValue(yearPos, value);
+        }
+
         //List list = session.createCriteria(classObj).addOrder( Order.desc(fieldName) ).setMaxResults(1).list();
-        StringBuilder sb = new StringBuilder(" FROM "+classObj.getSimpleName()+" ORDER BY");
+        StringBuilder sb = new StringBuilder(" FROM "+classObj.getSimpleName());
+        if (yearVal != null)
+        {
+            sb.append(" WHERE ");
+            sb.append(yearVal);
+            sb.append(" = substring("+fieldName+","+(yearPos.first+1)+","+yearPos.second+")");
+        }
+        sb.append(" ORDER BY");
+        
         try
         {
-            if (year != null)
+            if (yearPos != null)
             {
-                sb.append(" substring("+fieldName+","+(year.first+1)+","+year.second+") desc");
+                sb.append(" substring("+fieldName+","+(yearPos.first+1)+","+yearPos.second+") desc");
                 
             }
             
             if (pos != null)
             {
-                if (year != null)
+                if (yearPos != null)
                 {
                     sb.append(", ");
                 }
                 sb.append(" substring("+fieldName+","+(pos.first+1)+","+pos.second+") desc");
             }
-
+            
             System.out.println(sb.toString());
-            List list = session.createQuery(sb.toString()).setMaxResults(1).list();
+            List<?> list = session.createQuery(sb.toString()).setMaxResults(1).list();
             if (list.size() == 1)
             {
                 return list.get(0);
@@ -119,100 +133,213 @@ public class AutoNumberGeneric implements AutoNumberIFace
         return null;
     }
     
-    protected String getHighestValue(final Pair<Integer, Integer> year, final Pair<Integer, Integer> pos)
+    /**
+     * Returns the integer from a  portion of the string. If the string is not long enough than it return null.
+     * @param pos the pos to extract
+     * @param value the string value to be extracted from
+     * @return the new integer value or null
+     */
+    protected Integer extractIntegerValue(final Pair<Integer, Integer> pos, final String value)
     {
-        // XXX MYSQL SPECIFIC!
-        
-        StringBuilder sb = new StringBuilder("SELECT ");
-        sb.append(fieldName);
-        sb.append(" FROM ");
-        sb.append(classObj.getSimpleName().toLowerCase());
-        sb.append(" ORDER BY ");
-        
-        if (year != null)
+        if (StringUtils.isNotEmpty(value))
         {
-            sb.append(" substring("+fieldName+","+year.first+","+year.second+") desc");
-            
-        }
-        
-        if (pos != null)
-        {
-            if (year != null)
+            if (pos != null && value.length() >= pos.second)
             {
-                sb.append(", ");
-            }
-            sb.append(" substring("+fieldName+","+pos.first+","+pos.second+") desc");
-        }
-        
-        System.out.println(sb.toString());
-        
-        Connection conn = null;
-        Statement stmt  = null;
-        ResultSet rs  = null;
-        try
-        {
-            conn = DBConnection.getInstance().createConnection();
-            stmt = conn.createStatement();
-            
-            rs = stmt.executeQuery(sb.toString());
-            if (rs.first())
-            {
-                return rs.getString(1);
-            }
-            
-        } catch(Exception ex)
-        {
-            ex.printStackTrace();
-        } finally
-        {
-            try
-            {
-                if (rs != null)
+                String str = value.substring(pos.first, pos.second);
+                if (StringUtils.isNumeric(str))
                 {
-                    rs.close();
+                    try
+                    {
+                        return Integer.parseInt(str);
+                        
+                    } catch (Exception ex) {}
                 }
-                if (stmt != null)
-                {
-                    stmt.close();
-                }
-                if (conn != null)
-                {
-                    conn.close();
-                }
-               
-            } catch (SQLException sqlex)
-            {
-                sqlex.printStackTrace();
             }
         }
         return null;
     }
     
+    /**
+     * Returns the year portion of the string. If the string is not long enough than it return null.
+     * Note: We really shouldn't ever get a string that isn't the right length, but we we will make sure.
+     * @param formatter the formatter describing the format
+     * @param value the string value to be parsed.
+     * @return null or the year
+     */
+    protected Integer getYearValue(final UIFieldFormatterIFace formatter, final String value)
+    {
+        UIFieldFormatterField  yearField = formatter.getYear();
+        if (yearField != null && yearField.isByYear())
+        {
+            return extractIntegerValue(formatter.getYearPosition(), value);
+        }
+        return null;
+    }
+    
+    /**
+     * Returns the increment portion as an Integer.
+     * @param formatter the formatter
+     * @param highestValue the value that the incrementer portion will be extracted from (this value came from the database.
+     * @param formValue value from the form
+     * @return the integer portion for the incrementer part
+     */
+    protected Pair<Integer, Integer> getYearAndIncVal(final UIFieldFormatterIFace formatter, 
+                                                      final String                highestValue, 
+                                                      final String                formValue)
+    {
+        
+        UIFieldFormatterField yearField = formatter.getYear();
+        boolean               isByYear  = yearField != null && yearField.isByYear();
+        
+        Integer valToBeInc      = null;
+        Integer yearToUse      = null;
+        String  strToUseForInc = highestValue;   // This is the string where the incrementer value will be extracted from
+
+        if (isByYear)
+        {
+            Integer highestYear = getYearValue(formatter, highestValue);
+            Integer formYear    = getYearValue(formatter, formValue);
+            
+            boolean calcNewValue   = false;          // Caused by year changing
+            
+            if (highestYear != null && formYear != null)
+            {
+                // Since the Form Value had a good 'Year' number we will always use that
+                // and only when it is greater than the database number do we calculate a new value
+                yearToUse = formYear;
+                
+                if (formYear > highestYear)
+                {
+                    calcNewValue = true;
+                }
+                
+            } else if (highestYear != null && formYear == null)
+            {
+                // The form value was empty or bad form some reason
+                // use the database's value for year
+                yearToUse = highestYear;
+    
+            } else if (highestYear == null && formYear != null)
+            {
+                // Here the database might have been empty
+                // so we will use the form's value
+                // and we will need to calculate a brand new increment number
+                yearToUse    = formYear;
+                calcNewValue = true;
+                
+            } else
+            {
+                // Here both are bad so use the current year and 
+                // calculate a brand new increment number
+                Calendar cal = Calendar.getInstance();
+                yearToUse    = cal.get(Calendar.YEAR);
+                
+                // If this is a "by Year" and the year was null for both than we need to start from scratch
+                if (isByYear)
+                {
+                    strToUseForInc     = null;
+                    calcNewValue = true;
+                }
+            }
+    
+            // Now get the incrementer number portion if we aren't creating a new number
+            if (!calcNewValue)
+            {
+                if (strToUseForInc == null)
+                {
+                    valToBeInc = 0;
+                } else
+                {
+                    valToBeInc = extractIntegerValue(formatter.getIncPosition(), strToUseForInc);
+                }
+            } else
+            {
+                valToBeInc = 0;
+            }
+        } else
+        {
+            yearToUse = null;
+            if (StringUtils.isNotEmpty(highestValue))
+            {
+                valToBeInc = extractIntegerValue(formatter.getIncPosition(), strToUseForInc);
+            } else
+            {
+                valToBeInc = 0;
+            }
+        }
+           
+        return new Pair<Integer, Integer>(yearToUse, valToBeInc);
+    }
+
+    /**
+     * Builds a new string from a formatter.
+     * @param formatter the formatter
+     * @param value the existing largest value
+     * @param yearAndIncVal a year,incVal pair
+     * @return the new formatted value
+     */
+    public String buildNewNumber(final UIFieldFormatterIFace formatter, final String value, final Pair<Integer, Integer> yearAndIncVal)
+    {
+        if (StringUtils.isNotEmpty(value) && value.length() == formatter.getLength())
+        {
+            Pair<Integer, Integer> pos = formatter.getIncPosition();
+            if (pos != null)
+            {
+                int incVal = yearAndIncVal.second + 1;
+                
+                StringBuilder sb        = new StringBuilder(value.substring(0, pos.first));
+                String        formatStr = "%0" + (pos.second - pos.first) + "d";
+                sb.append(String.format(formatStr, incVal));
+                if (formatter.getLength() > pos.second)
+                {
+                    sb.append(value.substring(pos.second, formatter.getLength()));
+                }
+                
+                UIFieldFormatterField  yearField = formatter.getYear();
+                if (yearField != null && yearField.isByYear())
+                {
+                    Pair<Integer, Integer> yrPos = formatter.getYearPosition();
+                    if (yrPos != null)
+                    {
+                        sb.replace(yrPos.first, yrPos.second, Integer.toString(yearAndIncVal.first));
+                    }
+                }
+                
+                return sb.toString();
+                
+            }
+            // else
+            throw new RuntimeException("Formatter ["+formatter.getName()+"] doesn't have an incrementer field.");
+        }
+        return null;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.AutoNumberIFace#getNextNumber(edu.ku.brc.ui.forms.formatters.UIFieldFormatter, java.lang.String)
      */
-    public String getNextNumber(final UIFieldFormatterIFace formatter, final String value)
+    public String getNextNumber(final UIFieldFormatterIFace formatter, final String formValue)
     {
-        if (true)
+        if (StringUtils.isNotEmpty(formValue) && formValue.length() == formatter.getLength())
         {
             Session session = null;
             try
             {
                 session = HibernateUtil.getNewSession();
                 
-                Object dataObj = getHighestObject(session, formatter.getYearPosition(), formatter.getIncPosition());
-                if (dataObj == null)
-                {
-                    return buildNewNumber(formatter, value, 1);
-                }
+                UIFieldFormatterField  yearField = formatter.getYear();
+                Pair<Integer, Integer> yrPos     = yearField != null && yearField.isByYear() ? formatter.getYearPosition() : null;
                 
-                String largestVal = (String)getter.getFieldValue(dataObj, fieldName);
-                int    incr       =  getIncValue(formatter, largestVal);
-                if (incr > -1)
+                Object                 dataObj       = getHighestObject(session, formValue, yrPos, formatter.getIncPosition());
+                String                 highestValue  = dataObj != null ? (String)getter.getFieldValue(dataObj, fieldName) : null;
+                
+                Pair<Integer, Integer> yearAndIncVal = getYearAndIncVal(formatter, highestValue, formValue);
+                
+                // Should NEVER be null
+                if (yearAndIncVal != null)
                 {
-                    incr++;
-                    return buildNewNumber(formatter, value, incr);
+                    return buildNewNumber(formatter, formValue, yearAndIncVal);
                 }
+                throw new RuntimeException("yearAndIncVal was NULL and should NEVER be!");
                 
             } catch (Exception ex)
             {
@@ -225,121 +352,9 @@ public class AutoNumberGeneric implements AutoNumberIFace
                     session.close();
                 }
             }
-        } else
-        {
-            String highestVal = getHighestValue(formatter.getYearPosition(), formatter.getIncPosition());
-            if (StringUtils.isEmpty(highestVal))
-            {
-                return buildNewNumber(formatter, value, 1);
-            }
-            int incr =  getIncValue(formatter, highestVal);
-            if (incr > -1)
-            {
-                incr++;
-                return buildNewNumber(formatter, value, incr);
-            }
         }
-        return null;
+        // This should never happen, so let's throw an exception
+        throw new RuntimeException("Value ["+formValue+"] was not the proper length to be incremented.");
     }
-    
-    /**
-     * Returns the increment portion as an Integer.
-     * @param formatter the formatter
-     * @param value the value that the incrementer portion will be extracted from
-     * @return the integer portion for the incrementer part
-     */
-    public int getIncValue(final UIFieldFormatterIFace formatter, final String value)
-    {
-        UIFieldFormatterField  yearField   = formatter.getYear();
-        Pair<Integer, Integer> yrPos       = null;         
-        if (yearField != null && yearField.isByYear())
-        {
-            yrPos = formatter.getYearPosition();
-            if (yrPos != null)
-            {
-                Calendar cal   = Calendar.getInstance();
-                int      calYr = cal.get(Calendar.YEAR);
-                String   yrStr = value.substring(yrPos.first, yrPos.second);
-                int      year  = Integer.parseInt(yrStr);
-                if (year != calYr)
-                {
-                    return 0;
-                }
-            }
-        }
-        
-        if (StringUtils.isNotEmpty(value) && value.length() == formatter.getLength())
-        {
-            Pair<Integer, Integer> pos = formatter.getIncPosition();
-            if (pos != null)
-            {
-                String fieldStr = value.substring(pos.first, pos.second);
-                if (StringUtils.isNumeric(fieldStr))
-                {
-                    return Integer.parseInt(fieldStr);
-                }
-                throw new RuntimeException("Largest Value in Database  ["+value+"] was not numeric");
-            }
-            throw new RuntimeException("Formatter ["+formatter.getName()+"] doesn't have an incrementer field.");
-        }
-        return -1;
-    }
-
-    /**
-     * Builds a new string from a formatter.
-     * @param formatter the formatter
-     * @param value the existing largest value
-     * @param incVal the inc value that will be substituted in
-     * @return the new formatted value
-     */
-    public String buildNewNumber(final UIFieldFormatterIFace formatter, final String value, final int incVal)
-    {
-        if (StringUtils.isNotEmpty(value) && value.length() == formatter.getLength())
-        {
-            int                    currentYear = -1;
-            UIFieldFormatterField  yearField   = formatter.getYear();
-            Pair<Integer, Integer> yrPos       = null;         
-            if (yearField != null && yearField.isByYear())
-            {
-                yrPos = formatter.getYearPosition();
-                if (yrPos != null)
-                {
-                    Calendar cal   = Calendar.getInstance();
-                    int      calYr = cal.get(Calendar.YEAR);
-                    String   yrStr = value.substring(yrPos.first, yrPos.second);
-                    int      year  = Integer.parseInt(yrStr);
-                    if (year != calYr)
-                    {
-                        currentYear = calYr;
-                    } else
-                    {
-                        //currentYear = year;
-                    }
-                }
-            }
-            
-            Pair<Integer, Integer> pos = formatter.getIncPosition();
-            if (pos != null)
-            {
-                StringBuilder sb        = new StringBuilder(value.substring(0, pos.first));
-                String        formatStr = "%0" + (pos.second - pos.first) + "d";
-                sb.append(String.format(formatStr, incVal));
-                if (formatter.getLength() > pos.second)
-                {
-                    sb.append(value.substring(pos.second, formatter.getLength()));
-                }
-                if (currentYear != -1 && yrPos != null)
-                {
-                    sb.replace(yrPos.first, yrPos.second, Integer.toString(currentYear));
-                }
-                return sb.toString();
-                
-            }
-            // else
-            throw new RuntimeException("Formatter ["+formatter.getName()+"] doesn't have an incrementer field.");
-        }
-        return null;
-    }
-
     
 }

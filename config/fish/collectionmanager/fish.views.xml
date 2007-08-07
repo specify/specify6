@@ -755,10 +755,10 @@
     			
     			<row>
                     <cell type="label" labelfor="10" label="Edited By"/>
-    			    <cell type="field" id="10" name="lastEditedBy" uitype="text" readonly="true"/>
+    			    <cell type="field" id="10" name="lastEditedBy" uitype="label" readonly="true"/>
 
                     <cell type="label" labelfor="11" label="Last Edited"/>
-    			    <cell type="field" id="11" name="timestampModified" uitype="text" readonly="true" cols="20" colspan="2"/>
+    			    <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true" cols="20" colspan="2"/>
     			</row>
     			
     		</rows>
@@ -1455,7 +1455,7 @@
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             
-            <desc><![CDATA[The Collection Object form.]]></desc>
+            <desc><![CDATA[The Info Request form.]]></desc>
             <enableRules/>
             
             <columnDef>p,2px,p,10px,p,2px,p,p:g</columnDef>
@@ -1511,7 +1511,7 @@
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             
-            <desc><![CDATA[The Collection Object form.]]></desc>
+            <desc><![CDATA[The Info Request Collection Object form.]]></desc>
             <enableRules/>
             
             <columnDef></columnDef>

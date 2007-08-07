@@ -48,7 +48,7 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     protected String                     collectionName;
     protected String                     collectionPrefix;
     protected String                     remarks;
-    protected CollectionType           collectionType;
+    protected CollectionType             collectionType;
     protected Set<AppResourceDefault>    appResourceDefaults;
     protected CatalogNumberingScheme     catalogNumberingScheme;
     

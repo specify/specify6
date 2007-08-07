@@ -269,7 +269,7 @@ public class ValListBox extends JList implements UIValidatable, ListSelectionLis
         Iterator<?> iter = null;
         if (value instanceof Set)
         {
-            iter = ((Set)value).iterator();
+            iter = ((Set<?>)value).iterator();
             
         } else if (value instanceof PersistentSet)
         {

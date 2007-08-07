@@ -88,7 +88,7 @@ public class CatalogNumberUIFieldFormatter implements UIFieldFormatterIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getDataClass()
      */
-    public Class getDataClass()
+    public Class<?> getDataClass()
     {
         return String.class;
     }

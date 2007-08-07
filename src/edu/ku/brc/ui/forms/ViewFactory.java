@@ -336,8 +336,18 @@ public class ViewFactory
             textField.setChangeListener(dcn);
             return textField;
  
-        } 
-        return new ValFormattedTextField(cellField.getUIFieldFormatter(), isViewOnly);
+        }
+        
+        if (isViewOnly)
+        {
+            ValFormattedTextFieldSingle vtfs = new ValFormattedTextFieldSingle(cellField.getUIFieldFormatter(), isViewOnly);
+            changeTextFieldUIForDisplay(vtfs, cellField.getPropertyAsBoolean("transparent", false));
+            return vtfs;
+        }
+        // else
+        ValFormattedTextField vtf = new ValFormattedTextField(cellField.getUIFieldFormatter(), isViewOnly);
+        vtf.setEnabled(!cellField.isReadOnly());
+        return vtf;
     }
 
     /**
@@ -1496,17 +1506,11 @@ public class ViewFactory
     /**
      * Creates a FormViewObj.
      * 
-     * @param multiView
-     *            the parent multiView
-     * @param view
-     *            the definition of the form view to be created
-     * @param altName
-     *            the name of the altView to be used (can be null - then it defaults to the default
-     *            AltView)
-     * @param data
-     *            the data to be set into the form
-     * @param options
-     *            the options needed for creating the form
+     * @param multiView the parent multiView
+     * @param view the definition of the form view to be created
+     * @param altName the name of the altView to be used (can be null - then it defaults to the default AltView)
+     * @param data the data to be set into the form
+     * @param options the options needed for creating the form
      * @return a new FormViewObj
      */
     public static Viewable createFormView(final MultiView multiView, 

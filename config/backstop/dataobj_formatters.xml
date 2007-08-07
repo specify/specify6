@@ -143,6 +143,32 @@
     </format>
     
     <format
+        name="LoanPhysicalObject"
+        class="edu.ku.brc.specify.datamodel.LoanPhysicalObject"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field formatter="PrepType">preparation.prepType</field>
+                <field sep=" - "  format="%d" type="int">quantity</field>
+            </fields>
+        </switch>
+    </format>
+    
+    <format
+        name="LoanReturnPhysicalObject"
+        class="edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field formatter="PrepType">loanPhysicalObject.preparation.prepType</field>
+                <field sep=" - "  format="%d" type="int">quantity</field>
+            </fields>
+        </switch>
+    </format>
+    
+    <format
         name="Determination"
         class="edu.ku.brc.specify.datamodel.Determination"
         default="true"
@@ -150,6 +176,7 @@
         <switch single="true">
             <fields>
                 <field>taxon.fullName</field>
+                <field sep=" - ">status.name</field>
             </fields>
         </switch>
     </format>
@@ -166,6 +193,186 @@
         </switch>
     </format>
     
+    <format
+        name="LoanAgent"
+        class="edu.ku.brc.specify.datamodel.LoanAgent"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field formatter="Agent">agent</field>
+            </fields>
+        </switch>
+    </format>
+    
+    <format
+        name="CollectingEvent"
+        class="edu.ku.brc.specify.datamodel.CollectingEvent"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field>startDate</field>
+            </fields>
+        </switch>
+    </format>
+
+    <format
+        name="Location"
+        class="edu.ku.brc.specify.datamodel.Location"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field>fullName</field>
+            </fields>
+        </switch>
+    </format>
+
+    <format
+        name="LithoStrat"
+        class="edu.ku.brc.specify.datamodel.LithoStrat"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field>fullName</field>
+            </fields>
+        </switch>
+    </format>
+
+    <format
+        name="LithoStratTreeDef"
+        class="edu.ku.brc.specify.datamodel.LithoStratTreeDef"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field>name</field>
+            </fields>
+        </switch>
+    </format>
+
+    <format
+        name="LithoStratTreeDefItem"
+        class="edu.ku.brc.specify.datamodel.LithoStratTreeDefItem"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field>name</field>
+            </fields>
+        </switch>
+    </format>
+
+   <format
+        name="GeographyTreeDef"
+        class="edu.ku.brc.specify.datamodel.GeographyTreeDef"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field>name</field>
+            </fields>
+        </switch>
+    </format>
+
+    <format
+        name="GeographyTreeDefItem"
+        class="edu.ku.brc.specify.datamodel.GeographyTreeDefItem"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field>name</field>
+            </fields>
+        </switch>
+    </format>
+
+   <format
+        name="LocationTreeDef"
+        class="edu.ku.brc.specify.datamodel.LocationTreeDef"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field>name</field>
+            </fields>
+        </switch>
+    </format>
+
+    <format
+        name="LocationTreeDefItem"
+        class="edu.ku.brc.specify.datamodel.LocationTreeDefItem"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field>name</field>
+            </fields>
+        </switch>
+    </format>
+
+   <format
+        name="TaxonTreeDef"
+        class="edu.ku.brc.specify.datamodel.TaxonTreeDef"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field>name</field>
+            </fields>
+        </switch>
+    </format>
+
+    <format
+        name="TaxonTreeDefItem"
+        class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field>name</field>
+            </fields>
+        </switch>
+    </format>
+
+    <format
+        name="TaxonCitation"
+        class="edu.ku.brc.specify.datamodel.TaxonCitation"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field formatter="ReferenceWork">referenceWork</field>
+            </fields>
+        </switch>
+    </format>
+
+   <format
+        name="ReferenceWork"
+        class="edu.ku.brc.specify.datamodel.ReferenceWork"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field>title</field>
+            </fields>
+        </switch>
+    </format>
+
+   <format
+        name="Journal"
+        class="edu.ku.brc.specify.datamodel.Journal"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field>journalName</field>
+            </fields>
+        </switch>
+    </format>
+
     <format
         name="LocalityLatitude"
         class="edu.ku.brc.specify.datamodel.Locality"
@@ -244,6 +451,19 @@
         </switch>
     </format>
     
+    <format
+        name="Shipment"
+        class="edu.ku.brc.specify.datamodel.Shipment"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field>shipmentDate</field>
+                <field sep=" - ">shipmentNumber</field>
+                <field sep=" - ">shipmentMethod</field>
+            </fields>
+        </switch>
+    </format>
     
     
     <aggregators>

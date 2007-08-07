@@ -17,6 +17,12 @@ package edu.ku.brc.ui.db;
 import java.util.Vector;
 
 /**
+ * There are three types of PickLists:<br>
+ * 1) A PickList that uses values from the PickListItems table meaning the PickList object is managing all the items.<br>
+ * 2) A PickList that uses the entire table, which really means it is return all the records as items in the PickList and they are formatted using the DataObjectFormatter<br>
+ * For example, a list the DeterminationStatus.<br>
+ * 3) A PickList that uses the values from an arbitrary table and it should search on a field. It returns a list of objects that are formatted with a DataObjectFormatter.
+ * 
  * @author rods
  *
  * @code_status Complete
@@ -46,8 +52,8 @@ public interface PickListDBAdapterIFace
     }
     
     /**
-     * Returns the pciklist object.
-     * @return Returns the pciklist object
+     * Returns the picklist object.
+     * @return Returns the picklist object
      */
     public PickListIFace getPickList();
 

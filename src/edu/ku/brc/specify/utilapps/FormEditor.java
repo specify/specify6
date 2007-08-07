@@ -12,7 +12,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.specify.tests;
+package edu.ku.brc.specify.utilapps;
 
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
@@ -98,6 +98,7 @@ import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.Taxon;
+import edu.ku.brc.specify.tests.SpecifyAppPrefs;
 import edu.ku.brc.specify.tests.forms.TestDataObj;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.IconManager;

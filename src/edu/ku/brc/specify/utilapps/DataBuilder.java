@@ -1,4 +1,4 @@
-package edu.ku.brc.specify.tests;
+package edu.ku.brc.specify.utilapps;
 
 import java.math.BigDecimal;
 import java.text.DateFormat;
@@ -52,6 +52,7 @@ import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem;
 import edu.ku.brc.specify.datamodel.GroupPerson;
 import edu.ku.brc.specify.datamodel.InfoRequest;
 import edu.ku.brc.specify.datamodel.Journal;
+import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanAgent;
 import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
@@ -172,7 +173,8 @@ public class DataBuilder
                                                           final TaxonTreeDef     taxonTreeDef,
                                                           final GeographyTreeDef geographyTreeDef,
                                                           final GeologicTimePeriodTreeDef geologicTimePeriodTreeDef,
-                                                          final LocationTreeDef  locationTreeDef)
+                                                          final LocationTreeDef  locationTreeDef,
+                                                          final LithoStratTreeDef lithoStratTreeDef)
     {
         CollectionType collType = new CollectionType();
         collType.initialize();
@@ -184,6 +186,7 @@ public class DataBuilder
         collType.setGeographyTreeDef(geographyTreeDef);//meg added to support not-null constraints
         collType.setGeologicTimePeriodTreeDef(geologicTimePeriodTreeDef);//meg added to support not-null constraints
         collType.setLocationTreeDef(locationTreeDef);//meg added to support not-null constraints
+        collType.setLithoStratTreeDef(lithoStratTreeDef);
         taxonTreeDef.setCollObjDef(collType);
 
         persist(collType);
@@ -842,6 +845,24 @@ public class DataBuilder
         persist(ttdi);
         return ttdi;
     }
+    
+    /**
+     * Create a <code>LithoStratTreeDef</code> with the given name.  The object is also
+     * persisted with a call to {@link #persist(Object)}.
+     * 
+     * @param name tree def name
+     * @return the LithoStrat tree def
+     */
+    public static LithoStratTreeDef createLithoStratTreeDef(final String name)
+    {
+        LithoStratTreeDef lstd = new LithoStratTreeDef();
+        lstd.initialize();
+        lstd.setName(name);
+        lstd.setFullNameDirection(TreeDefIface.FORWARD);
+        return lstd;
+    }
+
+
 
     /**
      * Creates a new <code>Taxon</code> object using the given values.  The object is also

@@ -32,7 +32,7 @@ import javax.swing.JTextField;
 
 /**
  * An auto-complete text field which is supported through PickList/PickListItem.
- * The searches in the list can be case-sensitive or insensitive. Does search when user presses F3
+ * The searches in the list can be case-sensitive or insensitive. Does search when user presses SEARCH_KEY
  * and pops up a menu for selecting existing values.
  *
  * @code_status Complete
@@ -151,7 +151,7 @@ public class JAutoCompTextField extends JTextField
         System.out.println(ev);
         if (dbAdapter != null)
         {
-            if (ev.getKeyCode() == KeyEvent.VK_F3)
+            if (ev.getKeyCode() == JAutoCompComboBox.SEARCH_KEY)
             {
                 lookup(getText());
                 

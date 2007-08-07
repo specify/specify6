@@ -183,8 +183,7 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
     @Transient
     public String getIdentityTitle()
     {
-        // TODO Auto-generated method stub
-        return "DeterminationStatus: " + this.name;
+        return this.name;
     }
 
 }

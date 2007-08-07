@@ -74,6 +74,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     protected GeologicTimePeriodTreeDef geologicTimePeriodTreeDef;
     protected LocationTreeDef           locationTreeDef;
     protected TaxonTreeDef              taxonTreeDef;
+    protected LithoStratTreeDef         lithoStratTreeDef;
     protected Set<Locality>             localities;
     protected Set<AppResourceDefault>   appResourceDefaults;
     protected Set<UserPermission>       userPermissions;
@@ -118,6 +119,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
         geologicTimePeriodTreeDef = null;
         locationTreeDef = null;
         taxonTreeDef = null;
+        lithoStratTreeDef = null;
         localities = new HashSet<Locality>();
         appResourceDefaults = new HashSet<AppResourceDefault>();
     }
@@ -294,6 +296,20 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
 
     public void setTaxonTreeDef(TaxonTreeDef taxonTreeDef) {
         this.taxonTreeDef = taxonTreeDef;
+    }
+
+    /**
+     *      * @hibernate.many-to-one
+     */
+    @ManyToOne
+    @Cascade( {CascadeType.SAVE_UPDATE} )
+    @JoinColumn(name="LithoStratTreeDefID")
+    public LithoStratTreeDef getLithoStratTreeDef() {
+        return this.lithoStratTreeDef;
+    }
+
+    public void setLithoStratTreeDef(LithoStratTreeDef lithoStratTreeDef) {
+        this.lithoStratTreeDef = lithoStratTreeDef;
     }
 
     /**

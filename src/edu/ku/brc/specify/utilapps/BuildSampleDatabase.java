@@ -5,58 +5,58 @@
  * [INSERT KU-APPROVED LICENSE TEXT HERE]
  * 
  */
-package edu.ku.brc.specify.tests;
+package edu.ku.brc.specify.utilapps;
 
-import static edu.ku.brc.specify.tests.DataBuilder.createAccession;
-import static edu.ku.brc.specify.tests.DataBuilder.createAccessionAgent;
-import static edu.ku.brc.specify.tests.DataBuilder.createAddress;
-import static edu.ku.brc.specify.tests.DataBuilder.createAgent;
-import static edu.ku.brc.specify.tests.DataBuilder.createAttachment;
-import static edu.ku.brc.specify.tests.DataBuilder.createAttributeDef;
-import static edu.ku.brc.specify.tests.DataBuilder.createCatalogNumberingScheme;
-import static edu.ku.brc.specify.tests.DataBuilder.createCollectingEvent;
-import static edu.ku.brc.specify.tests.DataBuilder.createCollectingEventAttr;
-import static edu.ku.brc.specify.tests.DataBuilder.createCollectingTrip;
-import static edu.ku.brc.specify.tests.DataBuilder.createCollection;
-import static edu.ku.brc.specify.tests.DataBuilder.createCollectionObject;
-import static edu.ku.brc.specify.tests.DataBuilder.createCollectionObjectAttr;
-import static edu.ku.brc.specify.tests.DataBuilder.createCollectionType;
-import static edu.ku.brc.specify.tests.DataBuilder.createCollector;
-import static edu.ku.brc.specify.tests.DataBuilder.createDataType;
-import static edu.ku.brc.specify.tests.DataBuilder.createDetermination;
-import static edu.ku.brc.specify.tests.DataBuilder.createDeterminationStatus;
-import static edu.ku.brc.specify.tests.DataBuilder.createGeography;
-import static edu.ku.brc.specify.tests.DataBuilder.createGeographyChildren;
-import static edu.ku.brc.specify.tests.DataBuilder.createGeographyTreeDef;
-import static edu.ku.brc.specify.tests.DataBuilder.createGeographyTreeDefItem;
-import static edu.ku.brc.specify.tests.DataBuilder.createGeologicTimePeriod;
-import static edu.ku.brc.specify.tests.DataBuilder.createGeologicTimePeriodTreeDef;
-import static edu.ku.brc.specify.tests.DataBuilder.createGeologicTimePeriodTreeDefItem;
-import static edu.ku.brc.specify.tests.DataBuilder.createJournal;
-import static edu.ku.brc.specify.tests.DataBuilder.createLoan;
-import static edu.ku.brc.specify.tests.DataBuilder.createLoanAgent;
-import static edu.ku.brc.specify.tests.DataBuilder.createLoanPhysicalObject;
-import static edu.ku.brc.specify.tests.DataBuilder.createLoanReturnPhysicalObject;
-import static edu.ku.brc.specify.tests.DataBuilder.createLocality;
-import static edu.ku.brc.specify.tests.DataBuilder.createLocation;
-import static edu.ku.brc.specify.tests.DataBuilder.createLocationTreeDef;
-import static edu.ku.brc.specify.tests.DataBuilder.createLocationTreeDefItem;
-import static edu.ku.brc.specify.tests.DataBuilder.createPermit;
-import static edu.ku.brc.specify.tests.DataBuilder.createPickList;
-import static edu.ku.brc.specify.tests.DataBuilder.createPrepType;
-import static edu.ku.brc.specify.tests.DataBuilder.createPreparation;
-import static edu.ku.brc.specify.tests.DataBuilder.createReferenceWork;
-import static edu.ku.brc.specify.tests.DataBuilder.createShipment;
-import static edu.ku.brc.specify.tests.DataBuilder.createSpecifyUser;
-import static edu.ku.brc.specify.tests.DataBuilder.createTaxon;
-import static edu.ku.brc.specify.tests.DataBuilder.createTaxonChildren;
-import static edu.ku.brc.specify.tests.DataBuilder.createTaxonTreeDef;
-import static edu.ku.brc.specify.tests.DataBuilder.createTaxonTreeDefItem;
-import static edu.ku.brc.specify.tests.DataBuilder.createUserGroup;
-import static edu.ku.brc.specify.tests.DataBuilder.createWorkbench;
-import static edu.ku.brc.specify.tests.DataBuilder.createWorkbenchDataItem;
-import static edu.ku.brc.specify.tests.DataBuilder.createWorkbenchMappingItem;
-import static edu.ku.brc.specify.tests.DataBuilder.createWorkbenchTemplate;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createAccession;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createAccessionAgent;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createAddress;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createAgent;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createAttachment;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createAttributeDef;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createCatalogNumberingScheme;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectingEvent;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectingEventAttr;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectingTrip;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createCollection;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectionObject;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectionObjectAttr;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectionType;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createCollector;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createDataType;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createDetermination;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createDeterminationStatus;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createGeography;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createGeographyChildren;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createGeographyTreeDef;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createGeographyTreeDefItem;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createGeologicTimePeriod;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createGeologicTimePeriodTreeDef;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createGeologicTimePeriodTreeDefItem;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createJournal;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createLoan;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createLoanAgent;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createLoanPhysicalObject;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createLoanReturnPhysicalObject;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createLocality;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createLocation;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createLocationTreeDef;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createLocationTreeDefItem;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createPermit;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createPickList;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createPrepType;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createPreparation;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createReferenceWork;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createShipment;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createSpecifyUser;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createTaxon;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createTaxonChildren;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createTaxonTreeDef;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createTaxonTreeDefItem;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createUserGroup;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createWorkbench;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createWorkbenchDataItem;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createWorkbenchMappingItem;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createWorkbenchTemplate;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -67,6 +67,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.Calendar;
@@ -104,6 +105,7 @@ import com.jgoodies.looks.plastic.theme.DesertBlue;
 
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.AttributeIFace;
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.SwingWorker;
@@ -133,6 +135,9 @@ import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem;
 import edu.ku.brc.specify.datamodel.Journal;
+import edu.ku.brc.specify.datamodel.LithoStrat;
+import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
+import edu.ku.brc.specify.datamodel.LithoStratTreeDefItem;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanAgent;
 import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
@@ -152,6 +157,7 @@ import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonCitation;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
+import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.datamodel.Workbench;
@@ -177,7 +183,7 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
  */
 public class BuildSampleDatabase
 {
-    private final Logger         log      = Logger.getLogger(BuildSampleDatabase.class);
+    private static final Logger  log      = Logger.getLogger(BuildSampleDatabase.class);
     protected Calendar           calendar = Calendar.getInstance();
     protected Session            session;
     protected Random             rand = new Random(12345678L);
@@ -211,6 +217,82 @@ public class BuildSampleDatabase
     {
         return frame;
     }
+    
+    @SuppressWarnings("unchecked")
+    public static LithoStratTreeDef createStandardLithoStratDefinitionAndItems()
+    {
+        LithoStratTreeDef def = new LithoStratTreeDef();
+        def.initialize();
+        def.setName("Default LithoStrat Definition");
+        def.setRemarks("A simple super, group, formation, member, bed Litho Stratigraphy tree");
+        def.setFullNameDirection(TreeDefIface.REVERSE);
+
+        LithoStratTreeDefItem planet = new LithoStratTreeDefItem();
+        planet.initialize();
+        planet.setName("Surface");
+        planet.setRankId(0);
+        planet.setIsEnforced(true);
+        planet.setFullNameSeparator(", ");
+
+        LithoStratTreeDefItem superLitho = new LithoStratTreeDefItem();
+        superLitho.initialize();
+        superLitho.setName("SuperLitho");
+        superLitho.setRankId(100);
+        superLitho.setFullNameSeparator(", ");
+
+        LithoStratTreeDefItem group = new LithoStratTreeDefItem();
+        group.initialize();
+        group.setName("Group");
+        group.setRankId(200);
+        group.setIsInFullName(true);
+        group.setFullNameSeparator(", ");
+
+        LithoStratTreeDefItem formation = new LithoStratTreeDefItem();
+        formation.initialize();
+        formation.setName("Formation");
+        formation.setRankId(300);
+        formation.setIsInFullName(true);
+        formation.setFullNameSeparator(", ");
+
+        LithoStratTreeDefItem member = new LithoStratTreeDefItem();
+        member.initialize();
+        member.setName("Member");
+        member.setRankId(400);
+        member.setIsInFullName(true);
+        member.setFullNameSeparator(", ");
+
+        LithoStratTreeDefItem bed = new LithoStratTreeDefItem();
+        bed.initialize();
+        bed.setName("Bed");
+        bed.setRankId(500);
+        bed.setIsInFullName(true);
+        bed.setFullNameSeparator(", ");
+
+        // setup parents
+        bed.setParent(member);
+        member.setParent(formation);
+        formation.setParent(group);
+        group.setParent(superLitho);
+        superLitho.setParent(planet);
+
+        // set the tree def for each tree def item
+        planet.setTreeDef(def);
+        superLitho.setTreeDef(def);
+        group.setTreeDef(def);
+        formation.setTreeDef(def);
+        member.setTreeDef(def);
+        bed.setTreeDef(def);
+        
+        Set defItems = def.getTreeDefItems();
+        defItems.add(planet);
+        defItems.add(superLitho);
+        defItems.add(group);
+        defItems.add(formation);
+        defItems.add(member);
+        defItems.add(bed);
+        
+        return def;
+    }
 
     /**
      * Creates a single discipline collection.
@@ -228,12 +310,14 @@ public class BuildSampleDatabase
     {
         Vector<Object> dataObjects = new Vector<Object>();
 
-        Agent            userAgent        = createAgent("", firstName, "", lastName, "", email);
-        UserGroup        userGroup        = createUserGroup(disciplineName);
-        SpecifyUser      user             = createSpecifyUser(username, email, (short) 0, userGroup, userType);
-        DataType         dataType         = createDataType(disciplineName);
-        TaxonTreeDef     taxonTreeDef     = createTaxonTreeDef("Sample Taxon Tree Def");
-        CollectionType collectionType = createCollectionType(collTypeName, disciplineName, dataType, user, taxonTreeDef, null, null, null);
+        Agent             userAgent         = createAgent("", firstName, "", lastName, "", email);
+        UserGroup         userGroup         = createUserGroup(disciplineName);
+        SpecifyUser       user              = createSpecifyUser(username, email, (short) 0, userGroup, userType);
+        DataType          dataType          = createDataType(disciplineName);
+        TaxonTreeDef      taxonTreeDef      = createTaxonTreeDef("Sample Taxon Tree Def");
+        LithoStratTreeDef lithoStratTreeDef = createStandardLithoStratDefinitionAndItems();
+        
+        CollectionType collectionType = createCollectionType(collTypeName, disciplineName, dataType, user, taxonTreeDef, null, null, null, lithoStratTreeDef);
 
         SpecifyUser.setCurrentUser(user);
         user.setAgent(userAgent);
@@ -305,12 +389,15 @@ public class BuildSampleDatabase
         System.out.println("Email:     "+email);
         System.out.println("UserType:  "+userType);
         
+        
         Agent            userAgent        = createAgent(title, firstName, midInit, lastName, abbrev, email);
         UserGroup        userGroup        = createUserGroup(disciplineName);
         SpecifyUser      user             = createSpecifyUser(username, email, (short) 0, userGroup, userType);
         DataType         dataType         = createDataType(disciplineName);
         TaxonTreeDef     taxonTreeDef     = createTaxonTreeDef("Sample Taxon Tree Def");
-        CollectionType collectionType = createCollectionType(collTypeName, disciplineName, dataType, user, taxonTreeDef, null, null, null);
+        LithoStratTreeDef lithoStratTreeDef = createStandardLithoStratDefinitionAndItems();
+        
+        CollectionType collectionType = createCollectionType(collTypeName, disciplineName, dataType, user, taxonTreeDef, null, null, null, lithoStratTreeDef);
         
         SpecifyUser.setCurrentUser(user);
         user.setAgent(userAgent);
@@ -321,6 +408,28 @@ public class BuildSampleDatabase
         dataObjects.add(user);
         dataObjects.add(dataType);
         //dataObjects.add(taxonTreeDef);
+        
+        /*
+        if (false)
+        {
+            try
+            {
+                BasicSQLUtils.setDBConnection(DBConnection.getInstance().getConnection());
+                GenericDBConversion gdbc = new GenericDBConversion();
+                gdbc.setNewDBConn(DBConnection.getInstance().getConnection());
+                LithoStrat earth = gdbc.convertLithoStratFromCSV(lithoStratTreeDef, false);
+                if (earth != null)
+                {
+                    dataObjects.add(earth);
+                }
+                
+            } catch (SQLException ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+        */
+
         
         Journal journal = createJournalsAndReferenceWork();
         List<ReferenceWork> rwList = new Vector<ReferenceWork>();
@@ -1146,7 +1255,7 @@ public class BuildSampleDatabase
 
 
 
-    public List<Object> createSimpleGeography(final CollectionType collType, final String treeDefName)
+    public static List<Object> createSimpleGeography(final CollectionType collType, final String treeDefName)
     {
         log.info("createSimpleGeography " + treeDefName);
 
@@ -1221,7 +1330,7 @@ public class BuildSampleDatabase
     }
 
 
-    public List<Object> createSimpleGeologicTimePeriod(final CollectionType collType,
+    public static List<Object> createSimpleGeologicTimePeriod(final CollectionType collType,
                                                               final String treeDefName)
     {
         log.info("createSimpleGeologicTimePeriod " + treeDefName);
@@ -1275,7 +1384,7 @@ public class BuildSampleDatabase
     }
 
 
-    public List<Object> createSimpleLocation(final CollectionType collType, final String treeDefName)
+    public static List<Object> createSimpleLocation(final CollectionType collType, final String treeDefName)
     {
         log.info("createSimpleLocation " + treeDefName);
 
@@ -1366,7 +1475,7 @@ public class BuildSampleDatabase
     }
 
 
-    public List<Object> createSimpleTaxon(final TaxonTreeDef taxonTreeDef)
+    public static List<Object> createSimpleTaxon(final TaxonTreeDef taxonTreeDef)
     {
         log.info("createSimpleTaxon " + taxonTreeDef.getName());
 
@@ -1447,7 +1556,7 @@ public class BuildSampleDatabase
         return newObjs;
     }
     
-    public Journal createJournalsAndReferenceWork()
+    public static Journal createJournalsAndReferenceWork()
     {
         Journal journal = createJournal("Fish times", "FT");
         
@@ -1460,7 +1569,7 @@ public class BuildSampleDatabase
     }
 
     @SuppressWarnings("unchecked")
-    protected int fixNodeNumbersFromRoot( Treeable root )
+    public static int fixNodeNumbersFromRoot( Treeable root )
     {
         int nextNodeNumber = root.getNodeNumber();
         for( Treeable child: (Set<Treeable>)root.getChildren() )
@@ -1602,10 +1711,10 @@ public class BuildSampleDatabase
             File derbyDir = new File(derbyPath);
             if (!derbyDir.exists())
             {
-            	if (derbyDir.mkdirs())
-            	{
-            		System.err.println("Couldn't create Derby Path["+derbyDir.getAbsolutePath()+"]");
-            	}
+                if (derbyDir.mkdirs())
+                {
+                    System.err.println("Couldn't create Derby Path["+derbyDir.getAbsolutePath()+"]");
+                }
             }
         }
         

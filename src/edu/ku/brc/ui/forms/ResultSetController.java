@@ -260,13 +260,26 @@ public class ResultSetController implements ValidationListener
      * Sets the controller to a new index
      * @param index the new index
      */
-    public void setIndex(final int index)
+    public void setIndex(final int index, final boolean doIndexNotify)
     {
         int oldInx = currentInx;
         currentInx = index;
         updateUI(); 
-        notifyListenersAboutToChangeIndex(oldInx, currentInx);
+        if (doIndexNotify)
+        {
+            notifyListenersAboutToChangeIndex(oldInx, currentInx);
+        }
         notifyListeners();
+    }
+    
+    
+    /**
+     * Sets the controller to a new index
+     * @param index the new index
+     */
+    public void setIndex(final int index)
+    {
+        setIndex(index, true);
     }
     
     

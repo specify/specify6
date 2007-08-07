@@ -51,22 +51,24 @@ import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
-import edu.ku.brc.specify.treeutils.GeologicTimePeriodComparator;
+import edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator;
+
 
 @SuppressWarnings("serial")
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "geologictimeperiod")
-public class GeologicTimePeriod extends DataModelObjBase implements java.io.Serializable, Treeable<GeologicTimePeriod,GeologicTimePeriodTreeDef,GeologicTimePeriodTreeDefItem>{
+@Table(name = "lithostrat")
+public class LithoStrat extends DataModelObjBase implements java.io.Serializable, Treeable<LithoStrat,LithoStratTreeDef,LithoStratTreeDefItem>
+{
 
     /**
      * A <code>Logger</code> object used for all log messages eminating from
      * this class.
      */
-    protected static final Logger log = Logger.getLogger(GeologicTimePeriod.class);
+    protected static final Logger log = Logger.getLogger(LithoStrat.class);
 
-	protected Long						    geologicTimePeriodId;
+	protected Long						    lithoStratId;
 	protected Integer						rankId;
 	protected String						name;
 	protected String						fullName;
@@ -74,29 +76,24 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	protected String                        guid;
 	protected Integer						nodeNumber;
 	protected Integer						highestChildNodeNumber;
-	protected String						standard;
-	protected Float							startPeriod;
-	protected Float							startUncertainty;
-	protected Float							endPeriod;
-	protected Float							endUncertainty;
-	private GeologicTimePeriodTreeDef		definition;
-	private GeologicTimePeriodTreeDefItem	definitionItem;
-	private GeologicTimePeriod				parent;
-	protected Set<GeologicTimePeriod>		children;
+	private LithoStratTreeDef		definition;
+	private LithoStratTreeDefItem	definitionItem;
+	private LithoStrat				parent;
+	protected Set<LithoStrat>		children;
 	protected Set<Stratigraphy>				stratigraphies;
 
 	// Constructors
 
 	/** default constructor */
-	public GeologicTimePeriod()
+	public LithoStrat()
 	{
 		// do nothing
 	}
 
 	/** constructor with id */
-	public GeologicTimePeriod(Long geologicTimePeriodId)
+	public LithoStrat(Long geologicTimePeriodId)
 	{
-		this.geologicTimePeriodId = geologicTimePeriodId;
+		this.lithoStratId = geologicTimePeriodId;
 	}
 
 	// Initializer
@@ -104,22 +101,17 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
     public void initialize()
 	{
         super.init();
-		geologicTimePeriodId = null;
+		lithoStratId = null;
 		rankId = null;
 		name = null;
 		remarks = null;
 		guid = null;
 		nodeNumber = null;
 		highestChildNodeNumber = null;
-		standard = null;
-		startPeriod = null;
-		startUncertainty = null;
-		endPeriod = null;
-		endUncertainty = null;
 		definition = null;
 		definitionItem = null;
 		parent = null;
-		children = new HashSet<GeologicTimePeriod>();
+		children = new HashSet<LithoStrat>();
 		stratigraphies = new HashSet<Stratigraphy>();
 	}
 
@@ -132,10 +124,10 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	 */
     @Id
     @GeneratedValue
-    @Column(name = "GeologicTimePeriodID", unique = false, nullable = false, insertable = true, updatable = true)
-	public Long getGeologicTimePeriodId()
+    @Column(name = "LithoStratID", unique = false, nullable = false, insertable = true, updatable = true)
+	public Long getLithoStratId()
 	{
-		return this.geologicTimePeriodId;
+		return this.lithoStratId;
 	}
 
     /**
@@ -146,7 +138,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
     @Override
     public Long getId()
     {
-        return this.geologicTimePeriodId;
+        return this.lithoStratId;
     }
 
     /* (non-Javadoc)
@@ -156,12 +148,12 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
     @Override
     public Class<?> getDataClass()
     {
-        return GeologicTimePeriod.class;
+        return LithoStrat.class;
     }
 
-	public void setGeologicTimePeriodId(Long geologicTimePeriodId)
+	public void setLithoStratId(Long geologicTimePeriodId)
 	{
-		this.geologicTimePeriodId = geologicTimePeriodId;
+		this.lithoStratId = geologicTimePeriodId;
 	}
 
 	/**
@@ -209,6 +201,18 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 		this.fullName = fullName;
 	}
 
+    /**
+     *
+     */
+    @Column(name = "GUID", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    public String getGuid() {
+        return this.guid;
+    }
+
+    public void setGuid(String guid) {
+        this.guid = guid;
+    }
+	
 	/**
 	 * 
 	 */
@@ -240,64 +244,6 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	/**
 	 * 
 	 */
-    @Column(name = "Standard", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
-	public String getStandard()
-	{
-		return this.standard;
-	}
-
-	public void setStandard(String standard)
-	{
-		this.standard = standard;
-	}
-
-    @Column(name = "EndPeriod", unique = false, nullable = true, insertable = true, updatable = true)
-	public Float getEndPeriod()
-	{
-		return endPeriod;
-	}
-
-	public void setEndPeriod(Float end)
-	{
-		this.endPeriod = end;
-	}
-
-    @Column(name = "EndUncertainty", unique = false, nullable = true, insertable = true, updatable = true)
-	public Float getEndUncertainty()
-	{
-		return endUncertainty;
-	}
-
-	public void setEndUncertainty(Float endUncertainty)
-	{
-		this.endUncertainty = endUncertainty;
-	}
-
-    @Column(name = "StartPeriod", unique = false, nullable = true, insertable = true, updatable = true)
-	public Float getStartPeriod()
-	{
-		return startPeriod;
-	}
-
-	public void setStartPeriod(Float start)
-	{
-		this.startPeriod = start;
-	}
-
-    @Column(name = "StartUncertainty", unique = false, nullable = true, insertable = true, updatable = true)
-	public Float getStartUncertainty()
-	{
-		return startUncertainty;
-	}
-
-	public void setStartUncertainty(Float startUncertainty)
-	{
-		this.startUncertainty = startUncertainty;
-	}
-
-	/**
-	 * 
-	 */
     @Lob
     @Column(name="Remarks", unique=false, nullable=true, updatable=true, insertable=true)
 	public String getRemarks()
@@ -309,31 +255,19 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	{
 		this.remarks = remarks;
 	}
-	
-    /**
-     *
-     */
-    @Column(name = "GUID", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
-    public String getGuid() {
-        return this.guid;
-    }
-
-    public void setGuid(String guid) {
-        this.guid = guid;
-    }
 
 	/**
 	 * 
 	 */
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @Cascade( { CascadeType.LOCK })
-    @JoinColumn(name = "GeologicTimePeriodTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
-	public GeologicTimePeriodTreeDef getDefinition()
+    @JoinColumn(name = "LithoStratTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
+	public LithoStratTreeDef getDefinition()
 	{
 		return this.definition;
 	}
 
-	public void setDefinition(GeologicTimePeriodTreeDef definition)
+	public void setDefinition(LithoStratTreeDef definition)
 	{
 		this.definition = definition;
 	}
@@ -343,13 +277,13 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	 */
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
-    @JoinColumn(name = "GeologicTimePeriodTreeDefItemID", unique = false, nullable = false, insertable = true, updatable = true)
-	public GeologicTimePeriodTreeDefItem getDefinitionItem()
+    @JoinColumn(name = "LithoStratTreeDefItemID", unique = false, nullable = false, insertable = true, updatable = true)
+	public LithoStratTreeDefItem getDefinitionItem()
 	{
 		return this.definitionItem;
 	}
 
-	public void setDefinitionItem(GeologicTimePeriodTreeDefItem definitionItem)
+	public void setDefinitionItem(LithoStratTreeDefItem definitionItem)
 	{
         this.definitionItem = definitionItem;
         if (definitionItem!=null && definitionItem.getRankId()!=null)
@@ -364,12 +298,12 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
     @JoinColumn(name = "ParentID", unique = false, nullable = true, insertable = true, updatable = true)
-	public GeologicTimePeriod getParent()
+	public LithoStrat getParent()
 	{
 		return this.parent;
 	}
 
-	public void setParent(GeologicTimePeriod parent)
+	public void setParent(LithoStrat parent)
 	{
 		this.parent = parent;
 	}
@@ -378,12 +312,12 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	 * 
 	 */
     @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "parent")
-	public Set<GeologicTimePeriod> getChildren()
+	public Set<LithoStrat> getChildren()
 	{
 		return this.children;
 	}
 
-	public void setChildren(Set<GeologicTimePeriod> children)
+	public void setChildren(Set<LithoStrat> children)
 	{
 		this.children = children;
 	}
@@ -404,17 +338,17 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
     @Transient
 	public Long getTreeId()
 	{
-		return getGeologicTimePeriodId();
+		return getLithoStratId();
 	}
 
 	public void setTreeId(Long id)
 	{
-		setGeologicTimePeriodId(id);
+		setLithoStratId(id);
 	}
 
-	public void addChild(GeologicTimePeriod child)
+	public void addChild(LithoStrat child)
 	{
-		GeologicTimePeriod oldParent = child.getParent();
+		LithoStrat oldParent = child.getParent();
 		if( oldParent!=null )
 		{
 			oldParent.removeChild(child);
@@ -424,28 +358,10 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 		child.setParent(this);
 	}
 
-	public void removeChild(GeologicTimePeriod child)
+	public void removeChild(LithoStrat child)
 	{
 		children.remove(child);
 		child.setParent(null);
-	}
-
-	public void addStratigraphy(Stratigraphy strat)
-	{
-		GeologicTimePeriod oldGTP = strat.getGeologicTimePeriod();
-		if( oldGTP!=null )
-		{
-			oldGTP.removeStratigraphy(strat);
-		}
-
-		stratigraphies.add(strat);
-		strat.setGeologicTimePeriod(this);
-	}
-
-	public void removeStratigraphy(Stratigraphy strat)
-	{
-		stratigraphies.remove(strat);
-		strat.setGeologicTimePeriod(null);
 	}
 
     @Override
@@ -479,9 +395,9 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	 */
     public String fixFullName()
     {
-        Vector<GeologicTimePeriod> parts = new Vector<GeologicTimePeriod>();
+        Vector<LithoStrat> parts = new Vector<LithoStrat>();
         parts.add(this);
-        GeologicTimePeriod node = getParent();
+        LithoStrat node = getParent();
         while( node != null )
         {
             Boolean include = node.getDefinitionItem().getIsInFullName();
@@ -502,7 +418,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
             {
                 for( int j = parts.size()-1; j > -1; --j )
                 {
-                    GeologicTimePeriod part = parts.get(j);
+                    LithoStrat part = parts.get(j);
                     String before = part.getDefinitionItem().getTextBefore();
                     String after = part.getDefinitionItem().getTextAfter();
 
@@ -526,7 +442,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
             {
                 for( int j = 0; j < parts.size(); ++j )
                 {
-                    GeologicTimePeriod part = parts.get(j);
+                    LithoStrat part = parts.get(j);
                     String before = part.getDefinitionItem().getTextBefore();
                     String after = part.getDefinitionItem().getTextAfter();
 
@@ -566,7 +482,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	public int getDescendantCount()
 	{
 		int totalDescendants = 0;
-		for( GeologicTimePeriod child: getChildren() )
+		for( LithoStrat child: getChildren() )
 		{
 			totalDescendants += 1 + child.getDescendantCount();
 		}
@@ -594,10 +510,10 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	 * @return all descendants of <code>node</code>
 	 */
     @Transient
-	public List<GeologicTimePeriod> getAllDescendants()
+	public List<LithoStrat> getAllDescendants()
 	{
-		Vector<GeologicTimePeriod> descendants = new Vector<GeologicTimePeriod>();
-		for( GeologicTimePeriod child: getChildren() )
+		Vector<LithoStrat> descendants = new Vector<LithoStrat>();
+		for( LithoStrat child: getChildren() )
 		{
 			descendants.add(child);
 			descendants.addAll(child.getAllDescendants());
@@ -606,10 +522,10 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	}
 	
     @Transient
-	public List<GeologicTimePeriod> getAllAncestors()
+	public List<LithoStrat> getAllAncestors()
 	{
-		Vector<GeologicTimePeriod> ancestors = new Vector<GeologicTimePeriod>();
-		GeologicTimePeriod parentNode = parent;
+		Vector<LithoStrat> ancestors = new Vector<LithoStrat>();
+		LithoStrat parentNode = parent;
 		while(parentNode != null)
 		{
 			ancestors.add(0,parentNode);
@@ -625,7 +541,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	public void fixFullNameForAllDescendants()
 	{
         setFullName(fixFullName());
-		for( GeologicTimePeriod child: getChildren() )
+		for( LithoStrat child: getChildren() )
 		{
 			child.fixFullNameForAllDescendants();
 		}
@@ -662,14 +578,14 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 		setLastEditedBy(user);
 	}
 
-	public boolean isDescendantOf(GeologicTimePeriod node)
+	public boolean isDescendantOf(LithoStrat node)
 	{
 		if( node==null )
 		{
 			throw new NullPointerException();
 		}
 		
-		GeologicTimePeriod i = getParent();
+		LithoStrat i = getParent();
 		while( i != null )
 		{
 			if( i.getId() == getId() )
@@ -681,15 +597,12 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 		}
 		return false;
 	}
-	
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.Treeable#getComparator()
-     */
+    
     @Transient
-	public Comparator<? super GeologicTimePeriod> getComparator()
-	{
-		return new GeologicTimePeriodComparator();
-	}
+    public Comparator<? super LithoStrat> getComparator()
+    {
+        return new TreeOrderSiblingComparator();
+    }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
