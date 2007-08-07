@@ -660,8 +660,11 @@ public class DataObjFieldFormatMgr
                 error.initCause(e);
                 throw error;
             }
-        }
+        } 
+        
+        return instance = new DataObjFieldFormatMgr();
+        
         // should not happen
-        throw new RuntimeException("Can't instantiate DataObjFieldFormatMgr factory [" + factoryNameStr+"]");
+        //throw new RuntimeException("Can't instantiate DataObjFieldFormatMgr factory [" + factoryNameStr+"]");
     }
 }
