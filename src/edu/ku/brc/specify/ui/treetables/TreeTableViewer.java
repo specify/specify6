@@ -99,6 +99,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 								extends BaseSubPane
 								implements DragDropCallback, DualViewSearchable
 {
+    /** Logger for all messages emitted. */
+    private static final Logger log = Logger.getLogger(TreeTableViewer.class);
+    
 	private static final int SINGLE_VIEW_MODE = 0;
 	private static final int DUAL_VIEW_MODE = 1;
 	
@@ -123,12 +126,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	
 	protected D treeDef;
 	
-	// to track name changes by the user
-	protected String nameBeforeEditDialogShown;
-	
-    /** Logger for all messages emitted. */
-    private static final Logger log = Logger.getLogger(TreeTableViewer.class);
-    
     protected String findName;
     protected int resultsIndex;
     protected List<T> findResults;
