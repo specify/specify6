@@ -20,10 +20,10 @@
     <dialog type="display" viewset="Global"     view="Locality"           name="LocalityDisplay"           title="LocalityTitle"           class="edu.ku.brc.specify.datamodel.Locality"/>
     <dialog type="display" viewset="Global"     view="Permit"             name="PermitDisplay"             title="PermitTitle"             class="edu.ku.brc.specify.datamodel.Agent"/>
     <dialog type="display" viewset="Fish Views" view="Preparation"        name="PreparationDisplay"        title="Preparation"             class="edu.ku.brc.specify.datamodel.Preparation"/>
-    <dialog type="display" viewset="System"     view="Taxon"              name="TaxonDisplay"              title="TaxonTitle"              class="edu.ku.brc.specify.datamodel.Taxon"/>
-    <dialog type="display" viewset="System"     view="Geography"          name="GeographyDisplay"          title="GeographyTitle"          class="edu.ku.brc.specify.datamodel.Geography"/>
-    <dialog type="display" viewset="System"     view="Location"           name="LocationDisplay"           title="LocationTitle"           class="edu.ku.brc.specify.datamodel.Location"/>
-    <dialog type="display" viewset="System"     view="GeologicTimePeriod" name="GeologicTimePeriodDisplay" title="GeologicTimePeriodTitle" class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"/>
+    <dialog type="display" viewset="SystemSetup"     view="Taxon"              name="TaxonDisplay"              title="TaxonTitle"              class="edu.ku.brc.specify.datamodel.Taxon"/>
+    <dialog type="display" viewset="SystemSetup"     view="Geography"          name="GeographyDisplay"          title="GeographyTitle"          class="edu.ku.brc.specify.datamodel.Geography"/>
+    <dialog type="display" viewset="SystemSetup"     view="Location"           name="LocationDisplay"           title="LocationTitle"           class="edu.ku.brc.specify.datamodel.Location"/>
+    <dialog type="display" viewset="SystemSetup"     view="GeologicTimePeriod" name="GeologicTimePeriodDisplay" title="GeologicTimePeriodTitle" class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"/>
     
     <!--
     <dialog type="display" viewset="Global" view="PrepType"          name="PrepTypeDisplay"           title="Preparation Type"        class="edu.ku.brc.specify.datamodel.PrepType"/>
