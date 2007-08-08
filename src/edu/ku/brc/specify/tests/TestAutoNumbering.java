@@ -270,8 +270,37 @@ public class TestAutoNumbering extends TestCase
         SpecifyAppPrefs.initialPrefs();
         
         fmtMgr = new MyFmtMgr();
+        
+        //tester();
 
         return true;
+    }
+    
+    protected void myTester()
+    {
+        StringBuilder  sql = new StringBuilder("From CollectionObject c Join c.collection col Join col.catalogNumberingScheme cns where cns.catalogNumberingSchemeId = 1");
+        Session session = HibernateUtil.getNewSession();
+        
+        try
+        {
+            
+            System.out.println(sql.toString());
+            List<?> list = session.createQuery(sql.toString()).setMaxResults(1).list();
+            if (list.size() == 1)
+            {
+                Object[] obj = (Object[])list.get(0);
+                CollectionObject co = (CollectionObject)obj[0];
+                System.out.println(co.getCatalogNumber());
+            }
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        } finally
+        {
+            session.close();
+        }
+        int x = 0;
+        x++;
     }
     
     /**
@@ -298,7 +327,7 @@ public class TestAutoNumbering extends TestCase
     }
     
     /**
-     * Tests a numeric catalog number with an empty database and increments it.
+     * Tests a Numeric CatalogNumberScheme with an empty database.
      */
     public void testNumericNumWithEmptyDB()
     {
@@ -317,9 +346,8 @@ public class TestAutoNumbering extends TestCase
 
     }
 
-    
     /**
-     * Tests a numeric catalog number and increments it.
+     * Tests a Numeric CatalogNumberScheme with a single Collection.
      */
     public void testNumericDBNum()
     {
@@ -351,7 +379,56 @@ public class TestAutoNumbering extends TestCase
     }
     
     /**
-     * Tests a numeric catalog number and increments it.
+     * Tests a Numeric CatalogNumberScheme with two  Collections sharing the same CatalogNumberScheme.
+     */
+    public void testNumericTwoCollDBNum()
+    {
+        log.info("testNumericTwoCollDBNum");
+        
+        Agent      agent      = (Agent)session.createCriteria(Agent.class).list().get(0);
+        Collection collection = (Collection)session.createCriteria(Collection.class).list().get(0);
+        
+        CollectionType colType = (CollectionType)session.createCriteria(CollectionType.class).list().get(0);
+        
+        Collection collection2 = createCollection("Fish", "Fish Tissue", collection.getCatalogNumberingScheme(), colType);
+
+        Collection.setCurrentCollection(collection);
+
+        CollectionObject colObj1 = createCollectionObject("000000100", "RSC100", agent, collection,  3, null, Calendar.getInstance(), "BuildSampleDatabase");
+        CollectionObject colObj2 = createCollectionObject("000000200", "RSC200", agent, collection2,  3, null, Calendar.getInstance(), "BuildSampleDatabase");
+        
+        HibernateUtil.beginTransaction();
+        persist(colObj1);
+        persist(collection2);
+        persist(colObj2);
+        HibernateUtil.commitTransaction();
+        
+        CatalogNumberUIFieldFormatter catalogNumber = new CatalogNumberUIFieldFormatter();
+        catalogNumber.setAutoNumber(new CollectionAutoNumber());
+        
+        ValFormattedTextField valText = new ValFormattedTextField(catalogNumber, false);
+        valText.setValue(null, null);
+        
+        valText.updateAutoNumbers();
+        
+        log.info(valText.getValue());
+        
+        //colObj2.setCollection(null);
+        //colObj1.setCollection(null);
+        collection2.setCatalogNumberingScheme(null);
+        collection.getCatalogNumberingScheme().getCollections().remove(collection2);
+        
+        HibernateUtil.beginTransaction();
+        session.delete(colObj1);
+        session.delete(colObj2);
+        session.delete(collection2);
+        HibernateUtil.commitTransaction();
+        
+        assertEquals(valText.getValue(), "000000201");
+    }
+
+    /**
+     * Tests an AlphaNumeric CatalogNumberScheme for Catalog Numbers.
      */
     public void testAlphaNumCatNumEmptyDB()
     {
@@ -361,6 +438,10 @@ public class TestAutoNumbering extends TestCase
         
         CatalogNumberingScheme catNumSchemeAlphaNumeric = createCatalogNumberingScheme("CatalogNumberAN", "", false);
         Collection collection = createCollection("Fish", "Fish Tissue", catNumSchemeAlphaNumeric, colType);
+
+        HibernateUtil.beginTransaction();
+        persist(collection);
+        HibernateUtil.commitTransaction();
 
         Collection.setCurrentCollection(collection);
         
@@ -376,15 +457,22 @@ public class TestAutoNumbering extends TestCase
         
         Collection.setCurrentCollection(null);
         
+        collection.setCatalogNumberingScheme(null);
+        catNumSchemeAlphaNumeric.getCollections().remove(collection);
+        
+        HibernateUtil.beginTransaction();
+        session.delete(collection);
+        HibernateUtil.commitTransaction();
+        
         assertEquals(valText.getValue(), currentYearCatNum);
     }
     
     /**
-     * Tests a numeric catalog number and increments it.
+     * This tests where two collections share the same CatalogNumberScheme.
      */
     public void testAlphaNumCatNum()
     {
-        log.info("testNumericDBNum");
+        log.info("testAlphaNumCatNum");
         
         Agent          agent   = (Agent)session.createCriteria(Agent.class).list().get(0);
         CollectionType colType = (CollectionType)session.createCriteria(CollectionType.class).list().get(0);
@@ -415,6 +503,9 @@ public class TestAutoNumbering extends TestCase
         
         Collection.setCurrentCollection(null);
         
+        collection.setCatalogNumberingScheme(null);
+        catNumSchemeAlphaNumeric.getCollections().remove(collection);
+        
         HibernateUtil.beginTransaction();
         session.delete(colObj);
         session.delete(collection);
@@ -427,12 +518,234 @@ public class TestAutoNumbering extends TestCase
     }
     
     /**
+     * Test Database with three Collections (all Fish) Where two of the Collections share a single CatalogNumberScheme and the third Collection
+     * has its own CatalogNumberScheme. This test where the code will get the highest of the two Collections and ignore the Third.
+     */
+    public void testAlphaNumCatNumTwoColl()
+    {
+        log.info("testAlphaNumCatNumTwoColl");
+        
+        Agent          agent      = (Agent)session.createCriteria(Agent.class).list().get(0);
+        CollectionType colType    = (CollectionType)session.createCriteria(CollectionType.class).list().get(0);
+        
+        CatalogNumberingScheme catNumSchemeAlphaNumeric = createCatalogNumberingScheme("CatalogNumberAN", "", false);
+        Collection collection1 = createCollection("Fish", "Fish Two",       catNumSchemeAlphaNumeric, colType);
+        Collection collection2 = createCollection("Fish", "Fish Tissue Two",catNumSchemeAlphaNumeric, colType);
+        
+        CatalogNumberingScheme catNumSchemeAlphaNumeric3 = createCatalogNumberingScheme("CatalogNumber3", "", false);
+        Collection collection3 = createCollection("Fish", "Fish Three", catNumSchemeAlphaNumeric3, colType);
+        
+        int    currentYear        = Calendar.getInstance().get(Calendar.YEAR);
+        String currentYearCatNum  = currentYear + "-000001";
+        String currentYearCatNum2 = currentYear + "-000002";
+        String currentYearCatNum3 = currentYear + "-000300";
+        String currentYearNext    = currentYear + "-000003";
+
+        CollectionObject colObj  = createCollectionObject(currentYearCatNum,  "RSC100", agent, collection1, 3, null, Calendar.getInstance(), "me");
+        CollectionObject colObj2 = createCollectionObject(currentYearCatNum2, "RSC200", agent, collection2, 3, null, Calendar.getInstance(), "me");
+        CollectionObject colObj3 = createCollectionObject(currentYearCatNum3, "RSC300", agent, collection3, 3, null, Calendar.getInstance(), "me");
+        
+        HibernateUtil.beginTransaction();
+        persist(catNumSchemeAlphaNumeric);
+        persist(collection1);
+        persist(collection2);
+        persist(collection3);
+        persist(colObj);
+        persist(colObj2);
+        persist(colObj3);
+        HibernateUtil.commitTransaction();
+        
+        Collection.setCurrentCollection(collection1);
+        
+        UIFieldFormatterIFace fmt = fmtMgr.getFmt("CatalogNumber");
+        assertNotNull(fmt);
+        ValFormattedTextField valText = new ValFormattedTextField(fmt, false);
+        valText.setValue(null, null);
+        
+        valText.updateAutoNumbers();
+        
+        log.info("["+currentYearNext+"]["+valText.getValue()+"]");
+        
+        Collection.setCurrentCollection(null);
+        
+        collection2.setCatalogNumberingScheme(null);
+        catNumSchemeAlphaNumeric.getCollections().remove(collection2);
+        
+        collection1.setCatalogNumberingScheme(null);
+        catNumSchemeAlphaNumeric.getCollections().remove(collection1);
+        
+        collection3.setCatalogNumberingScheme(null);
+        catNumSchemeAlphaNumeric3.getCollections().remove(collection3);
+        
+        HibernateUtil.beginTransaction();
+        session.delete(colObj);
+        session.delete(colObj2);
+        session.delete(colObj3);
+        session.delete(collection3);
+        session.delete(collection2);
+        session.delete(collection1);
+        session.delete(catNumSchemeAlphaNumeric);
+        session.delete(catNumSchemeAlphaNumeric3);
+        HibernateUtil.commitTransaction();
+        
+        assertEquals(valText.getValue(), currentYearNext);
+    }
+    
+    /**
+     * Test Database with three Collections (all Fish) Where two of the Collections share a single CatalogNumberScheme and the third Collection
+     * has its own CatalogNumberScheme. This test where the code will get the highest of the two Collections and ignore the Third.
+     */
+    public void testAlphaNumCatNumTwoCollByYearSameYear()
+    {
+        log.info("testAlphaNumCatNumTwoCollByYearSameYear");
+        
+        Agent          agent      = (Agent)session.createCriteria(Agent.class).list().get(0);
+        CollectionType colType    = (CollectionType)session.createCriteria(CollectionType.class).list().get(0);
+        
+        CatalogNumberingScheme catNumSchemeAlphaNumeric = createCatalogNumberingScheme("CatalogNumberAlphaNumByYear", "", false);
+        Collection collection1 = createCollection("Fish", "Fish Two",       catNumSchemeAlphaNumeric, colType);
+        Collection collection2 = createCollection("Fish", "Fish Tissue Two",catNumSchemeAlphaNumeric, colType);
+        
+        CatalogNumberingScheme catNumSchemeAlphaNumeric3 = createCatalogNumberingScheme("CatalogNumber3", "", false);
+        Collection collection3 = createCollection("Fish", "Fish Three", catNumSchemeAlphaNumeric3, colType);
+        
+        int    currentYear        = Calendar.getInstance().get(Calendar.YEAR);
+        String currentYearCatNum  = currentYear + "-000001";
+        String currentYearCatNum2 = currentYear + "-000002";
+        String currentYearCatNum3 = currentYear + "-000300";
+        String currentYearNext    = currentYear + "-000003";
+
+        CollectionObject colObj  = createCollectionObject(currentYearCatNum,  "RSC100", agent, collection1, 3, null, Calendar.getInstance(), "me");
+        CollectionObject colObj2 = createCollectionObject(currentYearCatNum2, "RSC200", agent, collection2, 3, null, Calendar.getInstance(), "me");
+        CollectionObject colObj3 = createCollectionObject(currentYearCatNum3, "RSC300", agent, collection3, 3, null, Calendar.getInstance(), "me");
+        
+        HibernateUtil.beginTransaction();
+        persist(catNumSchemeAlphaNumeric);
+        persist(collection1);
+        persist(collection2);
+        persist(collection3);
+        persist(colObj);
+        persist(colObj2);
+        persist(colObj3);
+        HibernateUtil.commitTransaction();
+        
+        Collection.setCurrentCollection(collection1);
+        
+        UIFieldFormatterIFace fmt = fmtMgr.getFmt("CatalogNumberAlphaNumByYear");
+        assertNotNull(fmt);
+        ValFormattedTextField valText = new ValFormattedTextField(fmt, false);
+        valText.setValue(null, null);
+        
+        valText.updateAutoNumbers();
+        
+        log.info("["+currentYearNext+"]["+valText.getValue()+"]");
+        
+        Collection.setCurrentCollection(null);
+        
+        collection2.setCatalogNumberingScheme(null);
+        catNumSchemeAlphaNumeric.getCollections().remove(collection2);
+        
+        collection1.setCatalogNumberingScheme(null);
+        catNumSchemeAlphaNumeric.getCollections().remove(collection1);
+        
+        collection3.setCatalogNumberingScheme(null);
+        catNumSchemeAlphaNumeric3.getCollections().remove(collection3);
+        
+        HibernateUtil.beginTransaction();
+        session.delete(colObj);
+        session.delete(colObj2);
+        session.delete(colObj3);
+        session.delete(collection3);
+        session.delete(collection2);
+        session.delete(collection1);
+        session.delete(catNumSchemeAlphaNumeric);
+        session.delete(catNumSchemeAlphaNumeric3);
+        HibernateUtil.commitTransaction();
+        
+        assertEquals(valText.getValue(), currentYearNext);
+    }
+    
+    /**
+     * Test Database with three Collections (all Fish) Where two of the Collections share a single CatalogNumberScheme and the third Collection
+     * has its own CatalogNumberScheme. This test where the code will get the highest of the two Collections and ignore the Third.
+     */
+    public void testAlphaNumCatNumTwoCollByYearDiffYear()
+    {
+        log.info("testAlphaNumCatNumTwoCollByYearDiffYear");
+        
+        Agent          agent      = (Agent)session.createCriteria(Agent.class).list().get(0);
+        CollectionType colType    = (CollectionType)session.createCriteria(CollectionType.class).list().get(0);
+        
+        CatalogNumberingScheme catNumSchemeAlphaNumeric = createCatalogNumberingScheme("CatalogNumberAlphaNumByYear", "", false);
+        Collection collection1 = createCollection("Fish", "Fish Two",       catNumSchemeAlphaNumeric, colType);
+        Collection collection2 = createCollection("Fish", "Fish Tissue Two",catNumSchemeAlphaNumeric, colType);
+        
+        CatalogNumberingScheme catNumSchemeAlphaNumeric3 = createCatalogNumberingScheme("CatalogNumber3", "", false);
+        Collection collection3 = createCollection("Fish", "Fish Three", catNumSchemeAlphaNumeric3, colType);
+        
+        int    currentYear        = Calendar.getInstance().get(Calendar.YEAR);
+        String currentYearCatNum  = "2005-000001";
+        String currentYearCatNum2 = "2005-000002";
+        String currentYearCatNum3 = currentYear + "-000300";
+        String currentYearNext    = currentYear + "-000001";
+
+        CollectionObject colObj  = createCollectionObject(currentYearCatNum,  "RSC100", agent, collection1, 3, null, Calendar.getInstance(), "me");
+        CollectionObject colObj2 = createCollectionObject(currentYearCatNum2, "RSC200", agent, collection2, 3, null, Calendar.getInstance(), "me");
+        CollectionObject colObj3 = createCollectionObject(currentYearCatNum3, "RSC300", agent, collection3, 3, null, Calendar.getInstance(), "me");
+        
+        HibernateUtil.beginTransaction();
+        persist(catNumSchemeAlphaNumeric);
+        persist(collection1);
+        persist(collection2);
+        persist(collection3);
+        persist(colObj);
+        persist(colObj2);
+        persist(colObj3);
+        HibernateUtil.commitTransaction();
+        
+        Collection.setCurrentCollection(collection1);
+        
+        UIFieldFormatterIFace fmt = fmtMgr.getFmt("CatalogNumberAlphaNumByYear");
+        assertNotNull(fmt);
+        ValFormattedTextField valText = new ValFormattedTextField(fmt, false);
+        valText.setValue(null, null);
+        
+        valText.updateAutoNumbers();
+        
+        log.info("["+currentYearNext+"]["+valText.getValue()+"]");
+        
+        Collection.setCurrentCollection(null);
+        
+        collection2.setCatalogNumberingScheme(null);
+        catNumSchemeAlphaNumeric.getCollections().remove(collection2);
+        
+        collection1.setCatalogNumberingScheme(null);
+        catNumSchemeAlphaNumeric.getCollections().remove(collection1);
+        
+        collection3.setCatalogNumberingScheme(null);
+        catNumSchemeAlphaNumeric3.getCollections().remove(collection3);
+        
+        HibernateUtil.beginTransaction();
+        session.delete(colObj);
+        session.delete(colObj2);
+        session.delete(colObj3);
+        session.delete(collection3);
+        session.delete(collection2);
+        session.delete(collection1);
+        session.delete(catNumSchemeAlphaNumeric);
+        session.delete(catNumSchemeAlphaNumeric3);
+        HibernateUtil.commitTransaction();
+        
+        assertEquals(valText.getValue(), currentYearNext);
+    }
+    
+    /**
      * Tests the highest Year in the database is less than the current year.
      * and this tests when the user doesn't change the year in the text field.
      */
     public void testAccessionAlphaNumericDBNumOldYear()
     {
-        log.info("testAlphaNumericDBNumOldYear");
+        log.info("testAccessionAlphaNumericDBNumOldYear");
         
         Accession accession = createAccession("XXX", "XXXX", "2005-IC-001", "XXXX", Calendar.getInstance(), Calendar.getInstance());
         HibernateUtil.beginTransaction();

@@ -120,7 +120,7 @@ public class AutoNumberGeneric implements AutoNumberIFace
                 sb.append(" substring("+fieldName+","+(pos.first+1)+","+pos.second+") desc");
             }
             
-            System.out.println(sb.toString());
+            //System.out.println(sb.toString());
             List<?> list = session.createQuery(sb.toString()).setMaxResults(1).list();
             if (list.size() == 1)
             {

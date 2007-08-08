@@ -170,7 +170,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
         projectCollectionObjects = new HashSet<ProjectCollectionObject>();
         //deaccessionPreparations = new HashSet<DeaccessionPreparation>();
         otherIdentifiers      = new HashSet<OtherIdentifier>();
-        collection         = null;
+        collection            = null;
         accession             = null;
         cataloger             = null;
         attachments           = new HashSet<Attachment>();

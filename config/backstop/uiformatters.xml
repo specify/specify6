@@ -32,6 +32,13 @@
         <field size="6" type="numeric" value="NNNNNN" inc="true"/>
     </format>
     
+    <format name="CatalogNumberAlphaNumByYear" class="edu.ku.brc.specify.datamodel.CollectionObject" default="true">
+        <autonumber field="catalogNumber">edu.ku.brc.dbsupport.AutoNumberGeneric</autonumber>
+        <field size="4" type="year" value="YEAR" byyear="true"/>
+        <field size="1" type="separator" value="-"/>
+        <field size="6" type="numeric" value="NNNNNN" inc="true"/>
+    </format>
+    
     <!-- ***********************************************************************************************
          Note: This isn't needed but is provided as an example if someone wants to provide their own
          *********************************************************************************************** -->

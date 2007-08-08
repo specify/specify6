@@ -218,6 +218,34 @@ public class UIFieldFormatterMgr
         //return XMLHelper.readDOMFromConfigDir("backstop/uiformatters.xml");
         return AppContextMgr.getInstance().getResourceAsDOM("UIFormatters");
     }
+    
+    /**
+     * Creates and returns an autonumbering object for the formatter.
+     * @param autoNumberClassName the class name to be instantiated
+     * @param dataClassName the data class name (which the auto number will operate on
+     * @param fieldName the field that will be incremented in the dataClassName object
+     * @return the auto number object or null
+     */
+    protected AutoNumberIFace createAutoNumber(final String autoNumberClassName, 
+                                               final String dataClassName, 
+                                               final String fieldName)
+    {
+        AutoNumberIFace autoNumberObj = null;
+        try 
+        {
+            autoNumberObj = Class.forName(autoNumberClassName).asSubclass(AutoNumberIFace.class).newInstance();
+            Properties props = new Properties();
+            props.put("class", dataClassName);
+            props.put("field", fieldName);
+            autoNumberObj.setProperties(props);
+            
+        } catch (Exception ex)
+        {
+            log.error(ex);
+            ex.printStackTrace();
+        }
+        return autoNumberObj;
+    }
 
     /**
      * Loads the formats from the config file.
@@ -230,8 +258,6 @@ public class UIFieldFormatterMgr
             Element root  = getDOM();
             if (root != null)
             {
-                Properties props = new Properties();
-                
                 List<?> formats = root.selectNodes("/formats/format");
                 for (Object fObj : formats)
                 {
@@ -242,30 +268,19 @@ public class UIFieldFormatterMgr
                     String  dataClassName = formatElement.attributeValue("class");
                     boolean isDefault     = XMLHelper.getAttr(formatElement, "default", true);
                     
-                    AutoNumberIFace autoNumberObj = null;
-                    Element autoNumberElement = (Element)formatElement.selectSingleNode("autonumber");
+                    AutoNumberIFace autoNumberObj     = null;
+                    Element         autoNumberElement = (Element)formatElement.selectSingleNode("autonumber");
                     if (autoNumberElement != null)
                     {
                         String autoNumberClassName = autoNumberElement.getTextTrim();
                         String fieldName           = XMLHelper.getAttr(autoNumberElement, "field", null);
-                        if (StringUtils.isNotEmpty(autoNumberClassName) && StringUtils.isNotEmpty(fieldName))
+                        if (StringUtils.isNotEmpty(autoNumberClassName) && StringUtils.isNotEmpty(dataClassName) && StringUtils.isNotEmpty(fieldName))
                         {
-                            try 
-                            {
-                                autoNumberObj = Class.forName(autoNumberClassName).asSubclass(AutoNumberIFace.class).newInstance();
-                                props.clear();
-                                props.put("class", dataClassName);
-                                props.put("field", fieldName);
-                                autoNumberObj.setProperties(props);
-                                
-                            } catch (Exception ex)
-                            {
-                                log.error(ex);
-                                ex.printStackTrace();
-                            }
+                            autoNumberObj = createAutoNumber(autoNumberClassName, dataClassName, fieldName);
+
                         } else
                         {
-                            throw new RuntimeException("The class cannot be empty for an external formatter! ["+name+"] or missing field name ["+fieldName+"]");
+                            throw new RuntimeException("The class cannot be empty for an external formatter! ["+name+"] or missing field name ["+fieldName+"] or missing data Class name ["+dataClassName+"]");
                         }
                     }
                     

@@ -24,9 +24,12 @@ import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 
 /**
+ * Note: 'getHighestObject' from the base class never gets called. This class' getHighestObject gets called directly from
+ * the owning object which is CatalogNumberUIFieldFormatter. This only 
+ * 
  * @author rod
  *
- * @code_status Alpha
+ * @code_status Beta
  *
  * Jun 20, 2007
  *
@@ -70,7 +73,7 @@ public class CollectionAutoNumber extends AutoNumberGeneric
         criteria.addOrder( Order.desc(fieldName) );
         criteria.createCriteria("collection").add(Restrictions.in("collectionId", ids));
         criteria.setMaxResults(1);
-        List list = criteria.list();
+        List<?> list = criteria.list();
         if (list.size() == 1)
         {
             return list.get(0);

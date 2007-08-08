@@ -19,9 +19,11 @@ package edu.ku.brc.specify.ui;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.dbsupport.AutoNumberIFace;
 import edu.ku.brc.specify.datamodel.CatalogNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.dbsupport.CollectionAutoNumber;
+import edu.ku.brc.specify.dbsupport.CollectionAutoNumberAlphaNum;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 
@@ -37,7 +39,7 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr
 {
     private static final Logger  log      = Logger.getLogger(SpecifyUIFieldFormatterMgr.class);
     
-    protected UIFieldFormatterIFace catalogNumberAlphaNumeric;
+    //protected UIFieldFormatterIFace catalogNumberAlphaNumeric;
     protected UIFieldFormatterIFace catalogNumberNumeric;
     
     public SpecifyUIFieldFormatterMgr()
@@ -53,7 +55,7 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr
     {
         super.load();
         
-        catalogNumberAlphaNumeric = super.getFormatterInternal("CatalogNumber"); 
+        //catalogNumberAlphaNumeric = super.getFormatterInternal("CatalogNumber"); 
         catalogNumberNumeric      = super.getFormatterInternal("CatalogNumberNumeric"); 
         
         // Just in case it got removed accidently
@@ -62,6 +64,27 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr
             catalogNumberNumeric = new CatalogNumberUIFieldFormatter();
             catalogNumberNumeric.setAutoNumber(new CollectionAutoNumber());
         }
+        
+        //if (catalogNumberAlphaNumeric != null)
+        //{
+        //    catalogNumberAlphaNumeric.setAutoNumber(new CollectionAutoNumberAlphaNum());
+        //}
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr#createAutoNumber(java.lang.String, java.lang.String, java.lang.String)
+     */
+    protected AutoNumberIFace createAutoNumber(final String autoNumberClassName, 
+                                               final String dataClassName, 
+                                               final String fieldName)
+    {
+        if (dataClassName.equals("edu.ku.brc.specify.datamodel.CollectionObject") && 
+            fieldName.equals("catalogNumber"))
+        {
+            return new CollectionAutoNumberAlphaNum();
+        }
+
+        return super.createAutoNumber(autoNumberClassName, dataClassName, fieldName);
     }
 
     /* (non-Javadoc)
@@ -81,10 +104,10 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr
                     {
                         return catalogNumberNumeric;
                     }
-                } else if (catalogNumberAlphaNumeric != null)
+                } /*else if (catalogNumberAlphaNumeric != null)
                 {
                     return catalogNumberAlphaNumeric;
-                }
+                }*/
             } else
             {
                 log.error("The CatalogNumberingScheme is null for the current Collection ["+Collection.getCurrentCollection().getCollectionName()+"] and should be!");
