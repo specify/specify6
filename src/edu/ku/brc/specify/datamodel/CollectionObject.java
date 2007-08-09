@@ -100,7 +100,6 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     protected Integer                       visibility;
     protected String                        visibilitySetBy;
     protected CollectingEvent               collectingEvent;
-    protected ContainerItem                 containerItem;
     protected Set<CollectionObjectCitation> collectionObjectCitations;
     protected Set<AttributeIFace>           attrs;
     protected Set<Preparation>              preparations;
@@ -162,7 +161,6 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
         visibility            = null;
         visibilitySetBy       = null; 
         collectingEvent       = null;
-        containerItem         = null;
         collectionObjectCitations = new HashSet<CollectionObjectCitation>();
         attrs                 = new HashSet<AttributeIFace>();
         preparations          = new HashSet<Preparation>();
@@ -518,19 +516,6 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
 
     public void setColObjAttributes(ColObjAttributes colObjAttributes) {
         this.colObjAttributes = colObjAttributes;
-    }
-
-    /**
-     *
-     */
-    @ManyToOne(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY)
-    @JoinColumn(name = "ContainerItemID", unique = false, nullable = true, insertable = true, updatable = true)
-    public ContainerItem getContainerItem() {
-        return this.containerItem;
-    }
-
-    public void setContainerItem(ContainerItem containerItem) {
-        this.containerItem = containerItem;
     }
 
     /**

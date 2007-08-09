@@ -555,7 +555,7 @@ public class DataObjFieldFormatMgr
      * @param formatName the name of the formatter to use
      * @return the string result of the format
      */
-    public static String format(final Object[] dataObjs, final String formatName)
+    public static String format(@SuppressWarnings("unused")final Object[] dataObjs, @SuppressWarnings("unused") final String formatName)
     {
         throw new RuntimeException("OK, I am used, so come and fix me up!");
         //return instance.formatInternal(dataObjs, formatName);

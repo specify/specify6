@@ -364,6 +364,11 @@ public class DataEntryTask extends BaseTask
                         String  toolTip     = getAttr(element, "tooltip", null);
                         boolean sidebar     = getAttr(element, "sidebar", false);
                         
+                        if (StringUtils.isEmpty(toolTip))
+                        {
+                            toolTip = getResourceString("EnterRecordSetTT");
+                        }
+                        
                         ImageIcon iconImage = IconManager.getIcon(iconname, IconManager.IconSize.Std16);
                         if (iconImage != null)
                         {

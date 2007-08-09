@@ -75,7 +75,6 @@
 		<mapping class="edu.ku.brc.specify.datamodel.Collector"/>
 		<mapping class="edu.ku.brc.specify.datamodel.ColObjAttributes"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Container"/>
-		<mapping class="edu.ku.brc.specify.datamodel.ContainerItem"/>
 		<mapping class="edu.ku.brc.specify.datamodel.DataType"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Deaccession"/>
 		<mapping class="edu.ku.brc.specify.datamodel.DeaccessionAgent"/>

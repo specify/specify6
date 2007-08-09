@@ -28,9 +28,6 @@
  */
 package edu.ku.brc.specify.datamodel;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -38,7 +35,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -62,7 +58,7 @@ public class Container extends DataModelObjBase implements java.io.Serializable 
      protected String name;
      protected String description;
      protected Integer number;
-     protected Set<ContainerItem> items;
+     protected Container parent;
      protected CollectionObject container;
      protected Location location;
 
@@ -93,7 +89,7 @@ public class Container extends DataModelObjBase implements java.io.Serializable 
         name = null;
         description = null;
         number = null;
-        items = new HashSet<ContainerItem>();
+        parent = null;
         container = null;
         location = null;
     }
@@ -197,16 +193,22 @@ public class Container extends DataModelObjBase implements java.io.Serializable 
     }
 
     /**
-     *
+     * @return the parent
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "container")
-    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<ContainerItem> getItems() {
-        return this.items;
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @JoinColumn(name = "ParentID")
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
+    public Container getParent()
+    {
+        return parent;
     }
 
-    public void setItems(Set<ContainerItem> items) {
-        this.items = items;
+    /**
+     * @param parent the parent to set
+     */
+    public void setParent(Container parent)
+    {
+        this.parent = parent;
     }
 
     /**
@@ -238,22 +240,6 @@ public class Container extends DataModelObjBase implements java.io.Serializable 
 
 
     // Add Methods
-
-    public void addItems(final ContainerItem item)
-    {
-        this.items.add(item);
-        item.setContainer(this);
-    }
-
-    // Done Add Methods
-
-    // Delete Methods
-
-    public void removeItems(final ContainerItem item)
-    {
-        this.items.remove(item);
-        item.setContainer(null);
-    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()

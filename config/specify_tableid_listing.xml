@@ -4,6 +4,8 @@
 
     Last Used Id is 102 or 502
     
+    (ID 32 is available)
+    
     PLEASE Keep this file in alphabetical order! 
 
 -->
@@ -70,7 +72,6 @@
         <table name="edu.ku.brc.specify.datamodel.CollectionRelationship" id="99"/>
         <table name="edu.ku.brc.specify.datamodel.Collector" id="30"/>
         <table name="edu.ku.brc.specify.datamodel.Container" id="31"/>
-        <table name="edu.ku.brc.specify.datamodel.ContainerItem" id="32"/>
         <table name="edu.ku.brc.specify.datamodel.DataType" id="33">
             <businessrule>edu.ku.brc.specify.datamodel.busrules.DataTypeBusRules</businessrule>          
         </table>

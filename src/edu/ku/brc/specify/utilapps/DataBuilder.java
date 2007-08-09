@@ -25,17 +25,16 @@ import edu.ku.brc.specify.datamodel.BorrowAgent;
 import edu.ku.brc.specify.datamodel.BorrowMaterial;
 import edu.ku.brc.specify.datamodel.BorrowReturnMaterial;
 import edu.ku.brc.specify.datamodel.CatalogNumberingScheme;
-import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectingEventAttr;
 import edu.ku.brc.specify.datamodel.CollectingTrip;
-import edu.ku.brc.specify.datamodel.CollectionType;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
 import edu.ku.brc.specify.datamodel.CollectionObjectCitation;
+import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.Container;
-import edu.ku.brc.specify.datamodel.ContainerItem;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Deaccession;
 import edu.ku.brc.specify.datamodel.DeaccessionAgent;
@@ -1354,7 +1353,6 @@ public class DataBuilder
                                                           final Boolean deaccessioned,
                                                           final String catalogNumber,
                                                           final CollectingEvent collectingEvent,
-                                                          final ContainerItem containerItem,
                                                           final Collection collection,
                                                           final Accession accession,
                                                           final Agent cataloger,
@@ -1375,7 +1373,6 @@ public class DataBuilder
         collectionobject.setDeaccessioned(deaccessioned);
         collectionobject.setCatalogNumber(catalogNumber);
         collectionobject.setCollectingEvent(collectingEvent);
-        collectionobject.setContainerItem(containerItem);
         collectionobject.setCollection(collection);
         collectionobject.setAccession(accession);
         collectionobject.setCataloger(cataloger);
@@ -1450,17 +1447,6 @@ public class DataBuilder
         container.setType(type);
         persist(container);
         return container;
-    }
-
-    public static ContainerItem createContainerItem(final Container container)
-    {
-        ContainerItem containeritem = new ContainerItem();
-        containeritem.initialize();
-        containeritem.setTimestampCreated(new Date());
-        containeritem.setTimestampModified(new Date());
-        containeritem.setContainer(container);
-        persist(containeritem);
-        return containeritem;
     }
 
     public static DataType createDataType(final String name)
