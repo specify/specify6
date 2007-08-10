@@ -447,14 +447,17 @@ public class IconViewObj implements Viewable
                 dataSet.clear();
             }
             
-            if (dataObj instanceof List)
+            if (dataObj != null)
             {
-                dataSet.addAll((List)dataObj);
-                
-            } else
-            {
-                // single object
-                dataSet.add(dataObj);
+                if (dataObj instanceof List)
+                {
+                    dataSet.addAll((List)dataObj);
+                    
+                } else
+                {
+                    // single object
+                    dataSet.add(dataObj);
+                }
             }
         }
         

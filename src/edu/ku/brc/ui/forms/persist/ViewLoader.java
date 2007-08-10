@@ -15,8 +15,8 @@
 package edu.ku.brc.ui.forms.persist;
 
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIHelper.createDuplicateJGoodiesDef;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
@@ -674,7 +674,8 @@ public class ViewLoader
                                                    getAttr(cellElement, "defaulttype", null),
                                                    getAttr(cellElement, "rows", 5),
                                                    colspan,
-                                                   rowspan));
+                                                   rowspan,
+                                                   getAttr(cellElement, "single", false)));
 
                             break;
                         }

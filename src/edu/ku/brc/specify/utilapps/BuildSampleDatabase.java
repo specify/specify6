@@ -354,9 +354,9 @@ public class BuildSampleDatabase
      * @param disciplineName the discipline name
      * @return the entire list of DB object to be persisted
      */
-    public List<Object> createSingleDiscipline(final String collTypeName, final String disciplineName)
+    public List<Object> createSingleDiscipline(final Discipline discipline)
     {
-        System.out.println("Creating single discipline database: " + disciplineName);
+        System.out.println("Creating single discipline database: " + discipline.getTitle());
         
         int createStep = 0;
         
@@ -391,13 +391,13 @@ public class BuildSampleDatabase
         
         
         Agent            userAgent        = createAgent(title, firstName, midInit, lastName, abbrev, email);
-        UserGroup        userGroup        = createUserGroup(disciplineName);
+        UserGroup        userGroup        = createUserGroup(discipline.getTitle());
         SpecifyUser      user             = createSpecifyUser(username, email, (short) 0, userGroup, userType);
-        DataType         dataType         = createDataType(disciplineName);
+        DataType         dataType         = createDataType(discipline.getTitle());
         TaxonTreeDef     taxonTreeDef     = createTaxonTreeDef("Sample Taxon Tree Def");
         LithoStratTreeDef lithoStratTreeDef = createStandardLithoStratDefinitionAndItems();
         
-        CollectionType collectionType = createCollectionType(collTypeName, disciplineName, dataType, user, taxonTreeDef, null, null, null, lithoStratTreeDef);
+        CollectionType collectionType = createCollectionType(discipline.getName(), discipline.getTitle(), dataType, user, taxonTreeDef, null, null, null, lithoStratTreeDef);
         
         SpecifyUser.setCurrentUser(user);
         user.setAgent(userAgent);
@@ -1249,7 +1249,7 @@ public class BuildSampleDatabase
         
 
         // done
-        log.info("Done creating single discipline database: " + disciplineName);
+        log.info("Done creating single discipline database: " + discipline.getTitle());
         return dataObjects;
     }
 
@@ -1792,7 +1792,11 @@ public class BuildSampleDatabase
      * @throws SQLException
      * @throws IOException
      */
-    protected void startBuild(final String dbName, final String driverName, final String username, final String password)
+    protected void startBuild(final String dbName, 
+                              final String driverName, 
+                              final Discipline discipline,
+                              final String username, 
+                              final String password)
     {
         final SwingWorker worker = new SwingWorker()
         {
@@ -1803,13 +1807,12 @@ public class BuildSampleDatabase
                 {
                     if (false) // XXX Debug
                     {
-                        Discipline discipline = Discipline.getDiscipline("fish");
                         DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver("Derby");
                         buildEmptyDatabase(driverInfo, "localhost", "mydata", username, password, "Rod", "Spears", "rods@ku.edu", discipline);
 
                     } else
                     {
-                        build(dbName, driverName);
+                        build(dbName, driverName, discipline);
                     }
                     
                 } catch (Exception ex)
@@ -1987,9 +1990,10 @@ public class BuildSampleDatabase
      * 
      * @throws SQLException
      */
-    protected void build(final String dbName, final String driverName) throws SQLException
+    protected void build(final String dbName, 
+                         final String driverName, 
+                         final Discipline discipline) throws SQLException
     {
-        
         frame = new ProgressFrame("Building sample DB");
         frame.setSize(new Dimension(500,125));
         frame.setTitle("Building Test Database");
@@ -2072,7 +2076,7 @@ public class BuildSampleDatabase
                     AttachmentUtils.setAttachmentManager(attachMgr);
                     AttachmentUtils.setThumbnailer(thumb);
                     
-                    List<Object> dataObjects = createSingleDiscipline("Fish", "fish");
+                    List<Object> dataObjects = createSingleDiscipline(discipline);
 
                     log.info("Persisting in-memory objects to DB");
                     
@@ -2225,6 +2229,7 @@ public class BuildSampleDatabase
         protected JPasswordField     passwdTxtFld;
         protected JTextField         databaseNameTxt;
         protected JComboBox          drivers;
+        protected JComboBox          disciplines;
         protected Vector<DatabaseDriverInfo> driverList;
         protected boolean            wasClosed = false;
         
@@ -2243,12 +2248,16 @@ public class BuildSampleDatabase
             drivers     = new JComboBox(driverList);
             drivers.setSelectedIndex(inx);
             
+            //Vector<Discipline> disciplinesList = Discipline.getDisciplineList();
+            disciplines     = new JComboBox(Discipline.getDisciplineList());
+            disciplines.setSelectedItem(Discipline.getDiscipline("fish"));
+            
             databaseNameTxt = new JTextField(databaseName);
             
             usernameTxtFld = new JTextField("rods");
             passwdTxtFld = new JPasswordField("rods");
             
-            PanelBuilder    builder    = new PanelBuilder(new FormLayout("p,2px,p:g", "p,4px,p,4px,p,4px,p,10px,p"));
+            PanelBuilder    builder    = new PanelBuilder(new FormLayout("p,2px,p:g", "p,4px,p,4px,p,4px,p,4px,p,10px,p"));
             CellConstraints cc         = new CellConstraints();
             builder.add(new JLabel("Username:", SwingConstants.RIGHT),      cc.xy(1,1));
             builder.add(usernameTxtFld,                                     cc.xy(3,1));
@@ -2256,12 +2265,14 @@ public class BuildSampleDatabase
             builder.add(passwdTxtFld,                                       cc.xy(3,3));
             builder.add(new JLabel("Database Name:", SwingConstants.RIGHT), cc.xy(1,5));
             builder.add(databaseNameTxt,                                    cc.xy(3,5));
-            builder.add(new JLabel("Driver:", SwingConstants.RIGHT),        cc.xy(1,7));
-            builder.add(drivers,                                            cc.xy(3,7));
+            builder.add(new JLabel("Discipline Name:", SwingConstants.RIGHT), cc.xy(1,7));
+            builder.add(disciplines,                                    cc.xy(3,7));
+            builder.add(new JLabel("Driver:", SwingConstants.RIGHT),        cc.xy(1,9));
+            builder.add(drivers,                                            cc.xy(3,9));
             
             final JButton okBtn     = new JButton("OK");
             final JButton cancelBtn = new JButton("Cancel");
-            builder.add(ButtonBarFactory.buildOKCancelBar(okBtn, cancelBtn), cc.xywh(1,9,3,1));
+            builder.add(ButtonBarFactory.buildOKCancelBar(okBtn, cancelBtn), cc.xywh(1,11,3,1));
             
             cancelBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae)
@@ -2324,7 +2335,8 @@ public class BuildSampleDatabase
                     {
                         String username = usernameTxtFld.getText();
                         String password = new String(passwdTxtFld.getPassword());
-                        startBuild(databaseName, dbDriver.getName(), username, password);
+                        startBuild(databaseName, dbDriver.getName(), (Discipline)disciplines.getSelectedItem(), username, password);
+                        
                         
                     } catch (Exception ex)
                     {

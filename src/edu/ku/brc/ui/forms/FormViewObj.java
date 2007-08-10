@@ -2104,7 +2104,7 @@ public class FormViewObj implements Viewable,
                     try // XXX RELEASE remove try block
                     {
                         Object[] values = UIHelper.getFieldValues(fieldInfo.getFormCell(), dataObj, dg);
-                        data = values[0];
+                        data = values != null ? values[0] : null;
                         
                     } catch (NullPointerException ex)
                     {

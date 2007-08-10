@@ -65,7 +65,8 @@ public class FormCellSubView extends FormCell
                            final String defaultAltViewType, 
                            final int    tableRows, 
                            final int    colspan, 
-                           final int    rowspan)
+                           final int    rowspan,
+                           final boolean singleValueFromSet)
     {
         super(CellType.subview, id, name, colspan, rowspan);
         this.viewName    = viewName;
@@ -74,6 +75,7 @@ public class FormCellSubView extends FormCell
         this.description = description;
         this.defaultAltViewType = defaultAltViewType;
         this.tableRows = tableRows;
+        this.singleValueFromSet = singleValueFromSet;
     }
     
     /**
@@ -97,7 +99,7 @@ public class FormCellSubView extends FormCell
                            final int    colspan, 
                            final int    rowspan)
     {
-        this(id, name, viewSetName, viewName, classDesc, description, null, 5, colspan, rowspan);
+        this(id, name, viewSetName, viewName, classDesc, description, null, 5, colspan, rowspan, false);
     }
     
     public String getClassDesc()
