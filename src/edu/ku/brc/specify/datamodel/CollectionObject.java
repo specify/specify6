@@ -174,7 +174,9 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
         attachments           = new HashSet<Attachment>();
         container             = null;
         
-        colObjAttributes      = null;
+        // XXX Temp TESTING
+        colObjAttributes      = new ColObjAttributes();
+        colObjAttributes.initialize();
         
         leftSideRels          = new HashSet<CollectionRelationship>();
         rightSideRels         = new HashSet<CollectionRelationship>();

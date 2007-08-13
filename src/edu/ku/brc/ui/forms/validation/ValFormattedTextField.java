@@ -28,7 +28,6 @@ import java.awt.RenderingHints;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.image.BufferedImage;
-import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -54,6 +53,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.forms.ViewFactory;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterField;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
@@ -769,22 +769,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
     {
         if (formatter.isDate())
         {
-            String value = getText();
-            if (StringUtils.isNotEmpty(value))
-            {
-                try
-                {
-                    Calendar cal = Calendar.getInstance();
-                    cal.setTime(formatter.getDateWrapper().getSimpleDateFormat().parse(value));
-                    return cal;
-
-                } catch (ParseException ex)
-                {
-                    log.error("Date is in error for parsing["+value+"]");
-                }
-            }
-            return null;
-
+            return UIHelper.getDate(getText(), formatter.getDateWrapper());
         }
         // else
         String val = getText();

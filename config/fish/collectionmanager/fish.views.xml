@@ -309,7 +309,7 @@
             <desc><![CDATA[The Accession form.]]></desc>
             <enableRules/>
 
-            <columnDef>100px,3dlu,p,3dlu,100px,3dlu,p,3dlu,p,3dlu,p,p:g</columnDef>
+            <columnDef>100px,2px,p,2px,100px,2px,p,2px,p,2px,p,p:g</columnDef>
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
 
             <rows>
@@ -384,7 +384,7 @@
             <desc><![CDATA[The Accession form.]]></desc>
             <enableRules/>
 
-            <columnDef>100px,3dlu,p,3dlu,100px,3dlu,p:g</columnDef>
+            <columnDef>100px,2px,p,2px,100px,2px,p:g</columnDef>
             <rowDef>p:g,2dlu,p:g,2dlu,p,2dlu,p:g</rowDef>
 
             <rows>
@@ -454,7 +454,7 @@
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
 
             <desc><![CDATA[Address subform for Accessions.]]></desc>
-            <columnDef>p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu,p</columnDef>
+            <columnDef>p,2px,p,2px,p,2px,p,2px,p,2px,p</columnDef>
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
 
             <rows>
@@ -508,7 +508,7 @@
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
 
             <desc><![CDATA[Agent subform for Acessions.]]></desc>
-            <columnDef>p,3dlu,p,3dlu,p,3dlu,p</columnDef>
+            <columnDef>p,2px,p,2px,p,2px,p</columnDef>
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,10px,p:g</rowDef>
 
             <rows>
@@ -554,7 +554,7 @@
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
 
             <desc><![CDATA[Agent subform for Acessions.]]></desc>
-            <columnDef>p,3dlu,p,3dlu,p,3dlu,p</columnDef>
+            <columnDef>p,2px,p,2px,p,2px,p</columnDef>
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,10px,p:g</rowDef>
 
             <rows>
@@ -603,7 +603,7 @@
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[The Attachments Icon Viewer]]></desc>
-            <columnDef>p,3dlu,p,15dlu,p</columnDef>
+            <columnDef>p,2px,p,15dlu,p</columnDef>
             <rowDef>p,2dlu,p,2dlu,p,5dlu,p</rowDef>
 
             <rows>
@@ -639,7 +639,7 @@
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
 
             <desc><![CDATA[Locality Mapper]]></desc>
-            <columnDef>p,3dlu,p,5px,p,3dlu,p,5px,p,3dlu,p,p:g</columnDef>
+            <columnDef>p,2px,p,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             
             <rows>
@@ -698,8 +698,8 @@
             <desc><![CDATA[The Collection Object form.]]></desc>
             <enableRules/>
 
-            <columnDef>120px,3dlu,p,3dlu,100px,3dlu,p,3dlu,p,3dlu,p,p:g</columnDef>
-            <rowDef auto="true" cell="p:g" sep="2px"/>
+            <columnDef>120px,2px,p,2px,100px,2px,p,2px,p,2px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
     		<rows>
     		    <row>
     		        <cell type="label" label="Fish" icon="CollectionObject" recordobj="true" colspan="12"/>
@@ -774,7 +774,7 @@
             <desc><![CDATA[The Collection Object form.]]></desc>
             <enableRules/>
             
-            <columnDef>120px,3dlu,p,3dlu,120px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
+            <columnDef>120px,2px,p,2px,120px,2px,p,2px,60px,2px,p,p:g</columnDef>
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,10dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
             
             <rows>
@@ -822,7 +822,7 @@
             <desc><![CDATA[Determination subform for Collection Object form.]]></desc>
             <enableRules/>
 
-            <columnDef>120px,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,p:g</columnDef>
+            <columnDef>120px,2px,p,2px,p,2px,p,2px,p,2px,p,2px,p,2px,p,p:g</columnDef>
     		<rowDef>p,2dlu,p,2dlu,p,2dlu,p:g,2dlu</rowDef>
 
     		<rows>
@@ -867,7 +867,7 @@
             gettable="edu.ku.brc.ui.forms.DataGetterForDOM">
 
             <desc><![CDATA[FishBase]]></desc>
-            <columnDef>p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu</columnDef>
+            <columnDef>p,2px,p,2px,p,2px,p,2px,p,2px,p,2px</columnDef>
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
 
             <rows>
@@ -1098,7 +1098,7 @@
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Locality]]></desc>
-            <columnDef>p,3dlu,p,5px,p,3dlu,p,5px,p,3dlu,p,p:g</columnDef>
+            <columnDef>p,2px,p,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
@@ -1145,7 +1145,7 @@
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Locality SubForm]]></desc>
-            <columnDef>p,3dlu,p,10px,p,3dlu,p,p:g</columnDef>
+            <columnDef>p,2px,p,10px,p,2px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
@@ -1179,7 +1179,7 @@
             settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
 
             <desc><![CDATA[Locality Mapper]]></desc>
-            <columnDef>p,3dlu,p,3dlu</columnDef>
+            <columnDef>p,2px,p,2px</columnDef>
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
 
             <rows>
@@ -1221,7 +1221,7 @@
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
 
             <desc><![CDATA[Agent subform for Acessions.]]></desc>
-            <columnDef>p,3dlu,p,p:g</columnDef>
+            <columnDef>p,2px,p,p:g</columnDef>
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p,10px,p:g</rowDef>
 
             <rows>
@@ -1256,7 +1256,7 @@
             <desc><![CDATA[Permit subform for Acessions.]]></desc>
             <enableRules/>
 
-            <columnDef>100px,3dlu,p,3dlu,100px,3dlu,p,3dlu,p,3dlu,p,p:g</columnDef>
+            <columnDef>100px,2px,p,2px,100px,2px,p,2px,p,2px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
@@ -1315,7 +1315,7 @@
             <desc><![CDATA[Permit subform for Acessions.]]></desc>
             <enableRules/>
 
-            <columnDef>100px,3dlu,p,3dlu,100px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
+            <columnDef>100px,2px,p,2px,100px,2px,p,2px,60px,2px,p,p:g</columnDef>
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu</rowDef>
 
             <rows>
@@ -1378,7 +1378,7 @@
     	    <desc><![CDATA[Preparation for Collection Object form.]]></desc>
     	    <enableRules/>
 
-    	    <columnDef>120px,3dlu,p,3dlu,100px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
+    	    <columnDef>120px,2px,p,2px,100px,2px,p,2px,60px,2px,p,p:g</columnDef>
     		<rowDef>p,2dlu,p,2dlu,p,2dlu,p</rowDef>
 
     		<rows>
@@ -1612,7 +1612,7 @@
             
             <desc><![CDATA[Taxon Label Formatting Plugin Form]]></desc>
             <enableRules/>
-            <columnDef>200px,3dlu,p:g</columnDef>
+            <columnDef>200px,2px,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>

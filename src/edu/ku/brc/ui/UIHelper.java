@@ -40,6 +40,7 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -465,10 +466,58 @@ public final class UIHelper
         {
             return Byte.parseByte(dataStr);
             
+        } else if (cls == Calendar.class)
+        {
+            return getCalendar(dataStr, scrDateFormat);
+            
+        } else if (cls == Date.class)
+        {
+            return getDate(dataStr, scrDateFormat);
+            
         } else
         {
             throw new RuntimeException("Unsupported type for conversion["+cls.getSimpleName()+"]");
         }
+    }
+    
+    /**
+     * Returns a Date object from a string
+     * @param dateStr the string to convert
+     * @param dateWrapper the formatter to use
+     * @return null or a Calendar Object
+     */
+    public static Date getDate(final String dateStr, final DateWrapper dateWrapper)
+    {
+        Calendar cal = getCalendar(dateStr, dateWrapper);
+        if (cal != null)
+        {
+            return cal.getTime();
+        }
+        return null;
+    }
+
+    /**
+     * Returns a Date object from a string
+     * @param dateStr the string to convert
+     * @param dateWrapper the formatter to use
+     * @return null or a Calendar Object
+     */
+    public static Calendar getCalendar(final String dateStr, final DateWrapper dateWrapper)
+    {
+        if (StringUtils.isNotEmpty(dateStr))
+        {
+            try
+            {
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(dateWrapper.getSimpleDateFormat().parse(dateStr));
+                return cal;
+
+            } catch (ParseException ex)
+            {
+                log.error("Date is in error for parsing["+dateStr+"]");
+            }
+        }
+        return null;
     }
 
     public static boolean getBoolean(Object valObj)
