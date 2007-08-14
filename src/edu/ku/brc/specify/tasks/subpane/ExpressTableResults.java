@@ -22,6 +22,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.ExpressSearchResults;
+import edu.ku.brc.af.core.ExpressSearchSQLAdjuster;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.SQLExecutionListener;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
@@ -73,7 +74,7 @@ public class ExpressTableResults extends ExpressTableResultsBase implements SQLE
         {
             sqlStr = results.getTableInfo().getUpdateSql(results.getJoinColTableId());
             sqlStr = String.format(sqlStr, new Object[] {idsStr.toString()});
-            
+            sqlStr = ExpressSearchSQLAdjuster.getInstance().adjustSQL(sqlStr);
         } else
         {
             String vsql = tableInfo.getViewSql();

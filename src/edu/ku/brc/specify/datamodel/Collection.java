@@ -15,6 +15,7 @@
 package edu.ku.brc.specify.datamodel;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -41,7 +42,8 @@ import org.hibernate.annotations.CascadeType;
 @Table(name = "collection")
 public class Collection extends DataModelObjBase implements java.io.Serializable, Comparable<Collection>
 {
-    protected static Collection currentCollection = null;
+    protected static Collection    currentCollection    = null;
+    protected static List<Integer> currentCollectionIds = null;
     
     // Fields
     protected Long                       collectionId;
@@ -72,6 +74,22 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     public static void setCurrentCollection(final Collection currentCollection)
     {
         Collection.currentCollection = currentCollection;
+    }
+
+    /**
+     * @return the currentCollectionIds
+     */
+    public static List<Integer> getCurrentCollectionIds()
+    {
+        return currentCollectionIds;
+    }
+
+    /**
+     * @param currentCollectionIds the currentCollectionIds to set
+     */
+    public static void setCurrentCollectionIds(List<Integer> currentCollectionIds)
+    {
+        Collection.currentCollectionIds = currentCollectionIds;
     }
 
     // Initializer

@@ -963,7 +963,7 @@ public final class UIHelper
      * Return an array of values given a FormCell definition. Note: The returned array is owned by the utility and
      * may be longer than the number of fields defined in the CellForm object. Any additional "slots" in the array that are used
      * are set to null;
-     * @param formCell the defition of the field to get
+     * @param formCell the definition of the field to get
      * @param dataObj the dataObj from which to get the data from
      * @param getter the DataObjectGettable to use to get the data
      * @return an array of values at least as long as the fielName list, but may be longer

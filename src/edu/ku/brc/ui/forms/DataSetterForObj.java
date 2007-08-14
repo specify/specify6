@@ -62,7 +62,7 @@ public class DataSetterForObj implements DataObjectSettable
             {
                 // Check to see if the class of the data we have is different than the one we are trying to set into
                 // This typically happens when we have a TextField with a number and it needs to be converted from a 
-                // String representation of the number to the actuall numeric type like from String to Integer or Short
+                // String representation of the number to the actually numeric type like from String to Integer or Short
                 Object dataVal = data;
                 if (data != null)
                 {

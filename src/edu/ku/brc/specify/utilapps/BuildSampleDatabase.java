@@ -703,20 +703,25 @@ public class BuildSampleDatabase
         log.info("Creating collection objects");
 
         List<CollectionObject> collObjs = new Vector<CollectionObject>();
-        Collection       col      = collection;
-        CollectionType cod     = collectionType;
-        Calendar         catDate = Calendar.getInstance();
-        catDate.set(2006, 01, 29);
+        Collection       col     = collection;
+        CollectionType cod       = collectionType;
+        
+        Calendar[] catDates = new Calendar[8];
+        for (int i=0;i<catDates.length;i++)
+        {
+            catDates[i] = Calendar.getInstance();
+            catDates[i].set(catDates[i].get(Calendar.YEAR), 01, 12 + i);
+        }
         
         String prefix = "000000";
-        collObjs.add(createCollectionObject(prefix + "100", "RSC100", agents.get(0), col,  3, ce1, catDate, "BuildSampleDatabase"));
-        collObjs.add(createCollectionObject(prefix + "101", "RSC101", agents.get(0), col,  2, ce1, catDate, "BuildSampleDatabase"));
-        collObjs.add(createCollectionObject(prefix + "102", "RSC102", agents.get(1), col,  7, ce1, catDate, "BuildSampleDatabase"));
-        collObjs.add(createCollectionObject(prefix + "103", "RSC103", agents.get(1), col, 12, ce1, catDate, "BuildSampleDatabase"));
-        collObjs.add(createCollectionObject(prefix + "104", "RSC104", agents.get(2), col,  8, ce2, catDate, "BuildSampleDatabase"));
-        collObjs.add(createCollectionObject(prefix + "105", "RSC105", agents.get(2), col,  1, ce2, catDate, "BuildSampleDatabase"));
-        collObjs.add(createCollectionObject(prefix + "106", "RSC106", agents.get(2), col,  1, ce2, catDate, "BuildSampleDatabase"));
-        collObjs.add(createCollectionObject(prefix + "107", "RSC107", agents.get(3), col,  1, ce2, catDate, "BuildSampleDatabase"));
+        collObjs.add(createCollectionObject(prefix + "100", "RSC100", agents.get(0), col,  3, ce1, catDates[0], "BuildSampleDatabase"));
+        collObjs.add(createCollectionObject(prefix + "101", "RSC101", agents.get(0), col,  2, ce1, catDates[1], "BuildSampleDatabase"));
+        collObjs.add(createCollectionObject(prefix + "102", "RSC102", agents.get(1), col,  7, ce1, catDates[2], "BuildSampleDatabase"));
+        collObjs.add(createCollectionObject(prefix + "103", "RSC103", agents.get(1), col, 12, ce1, catDates[3], "BuildSampleDatabase"));
+        collObjs.add(createCollectionObject(prefix + "104", "RSC104", agents.get(2), col,  8, ce2, catDates[4], "BuildSampleDatabase"));
+        collObjs.add(createCollectionObject(prefix + "105", "RSC105", agents.get(2), col,  1, ce2, catDates[5], "BuildSampleDatabase"));
+        collObjs.add(createCollectionObject(prefix + "106", "RSC106", agents.get(2), col,  1, ce2, catDates[6], "BuildSampleDatabase"));
+        collObjs.add(createCollectionObject(prefix + "107", "RSC107", agents.get(3), col,  1, ce2, catDates[7], "BuildSampleDatabase"));
         
         AttributeDef colObjAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "MoonPhase", cod, null);//meg added cod
         CollectionObjectAttr colObjAttr = createCollectionObjectAttr(collObjs.get(0), colObjAttrDef, "Full", null);

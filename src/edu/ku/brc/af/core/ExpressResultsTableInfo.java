@@ -66,6 +66,10 @@ public class ExpressResultsTableInfo
     protected ERTICaptionInfo[]         visibleCaptionInfo;  
     
     protected Hashtable<String, String> outOfDate     = new Hashtable<String, String>();
+    
+    // These enables the XML to set a Static Value for a SecondaryKey
+    protected String                    staticValueKey   = null;
+    protected String                    staticValueValue = null;
 
     //protected int                       tableType;
     protected int                       recordSetColumnInx;
@@ -134,7 +138,7 @@ public class ExpressResultsTableInfo
             Vector<ERTICaptionInfo> list = new Vector<ERTICaptionInfo>();
             captionInfo    = new ERTICaptionInfo[captionCount];
             int i          = 0;
-            for (Iterator capIter = captionItems.iterator(); capIter.hasNext(); )
+            for (Iterator<?> capIter = captionItems.iterator(); capIter.hasNext(); )
             {
                 Element captionElement = (Element)capIter.next();
                 ERTICaptionInfo capInfo = new ERTICaptionInfo(captionElement);
@@ -170,8 +174,8 @@ public class ExpressResultsTableInfo
         recordSetColumnInx = Integer.parseInt(rsElement.attributeValue("col"));
 
         
-        List tables = tableElement.selectNodes("outofdate/table");
-        for ( Iterator iter = tables.iterator(); iter.hasNext(); )
+        List<?> tables = tableElement.selectNodes("outofdate/table");
+        for ( Iterator<?> iter = tables.iterator(); iter.hasNext(); )
         {
             Element tblElement = (Element)iter.next();
             outOfDate.put(tblElement.attributeValue("name"), tblElement.attributeValue("title"));
@@ -183,7 +187,7 @@ public class ExpressResultsTableInfo
         patternSql = sqlElement != null ? sqlElement.getText() : "";
  
         StringBuilder strBuf    = new StringBuilder();
-        List          colItems  = indexElement.selectNodes("cols/col");
+        List<?>       colItems  = indexElement.selectNodes("cols/col");
     
         colInfo = new ERTIColInfo[colItems.size()];
         for (int i=0;i<colItems.size();i++)
@@ -194,7 +198,7 @@ public class ExpressResultsTableInfo
             colInfo[i] = columnInfo;
         }
         
-        List joinColItems = indexElement.selectNodes("cols/join");
+        List<?> joinColItems = indexElement.selectNodes("cols/join");
         joinCols = new ERTIJoinColInfo[joinColItems.size()];
         for (int i=0;i<joinColItems.size();i++)
         {
@@ -204,6 +208,13 @@ public class ExpressResultsTableInfo
             joinCols[i] = joinInfo;
         }
         
+        Element staticValueElement  = (Element)indexElement.selectSingleNode("staticvalue");
+        if (staticValueElement != null)
+        {
+            staticValueKey   = getAttr(staticValueElement, "key", null);
+            staticValueValue = staticValueElement.getTextTrim();
+        }
+
         buildSql = patternSql.replaceFirst("ColFieldsDef", strBuf.toString());
     }
 
@@ -399,6 +410,23 @@ public class ExpressResultsTableInfo
     {
         return priority;
     }
+    
+    /**
+     * @return the staticValueKey
+     */
+    public String getStaticValueKey()
+    {
+        return staticValueKey;
+    }
+
+    /**
+     * @return the staticValueValue
+     */
+    public String getStaticValueValue()
+    {
+        return staticValueValue;
+    }
+
     
     public int getIdColIndex()
     {

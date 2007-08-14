@@ -10,13 +10,17 @@
             </outofdate>
             <index>
                 <sql>
-                    <![CDATA[SELECT ColFieldsDef From collectionobject]]>
+                    <![CDATA[SELECT ColFieldsDef FROM collectiontype INNER JOIN collection ON collectiontype.CollectionTypeID = collection.CollectionTypeID
+	 INNER JOIN collectionobject ON collection.CollectionID = collectionobject.CollectionID
+	 INNER JOIN specifyuser ON specifyuser.SpecifyUserID = collectiontype.SpecifyUserID
+WHERE specifyuser.SpecifyUserID = SPECIFYUSERID]]>
                 </sql>
                 <cols>
                    <col pos="1" id="true">CollectionObjectID</col>
-                   <col pos="2" formatter="CatalogNumber">CatalogNumber</col>
-                   <col pos="3">CatalogedDate</col>
-                   <col pos="4">FieldNumber</col>
+                   <col pos="2" key="catnum" formatter="CatalogNumber">CatalogNumber</col>
+                   <col pos="3" key="catdate">CatalogedDate</col>
+                   <col pos="4" key="fldnum">FieldNumber</col>
+                   <col pos="5" key="CL">collection.CollectionID</col>
                 </cols>
             </index>
             <detailView icon="ColObj">
@@ -74,9 +78,10 @@
                 <cols>
                     <col pos="1" id="true">GeographyID</col>
                     <col pos="2">Name</col>
-                    <col pos="3">FullName</col>
+                    <col pos="3" key="geo">FullName</col>
                     <col pos="4">CommonName</col>
                 </cols>
+                <staticvalue key="CL">0</staticvalue>
             </index>
             <detailView icon="Geography">
                 <sql>
@@ -104,7 +109,7 @@
                 <cols>
                     <col pos="1" id="true">TaxonID</col>
                     <col pos="2">Name</col>
-                    <col pos="3">FullName</col>
+                    <col pos="3" key="taxon">FullName</col>
                     <col pos="4">CommonName</col>
                 </cols>
             </index>
@@ -132,7 +137,7 @@
                 <cols>
                     <col pos="1" id="true">AgentID</col>
                     <col pos="2">FirstName</col>
-                    <col pos="3">LastName</col>
+                    <col pos="3" key="lastname">LastName</col>
                 </cols>
             </index>
             <detailView icon="Agent">
@@ -250,12 +255,14 @@
             </outofdate>
             <index>
                 <sql>
-                    <![CDATA[SELECT ColFieldsDef From collectionobject 
-Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID 
-Inner Join agent ON determination.DeterminerID = agent.AgentID 
-Inner Join taxon ON determination.TaxonID = taxon.TaxonID 
-Inner Join determinationstatus ON determination.DeterminationStatusID = determinationstatus.DeterminationStatusID 
-where determinationstatus.DeterminationStatusID = 1]]>
+                    <![CDATA[SELECT ColFieldsDef FROM specifyuser INNER JOIN collectiontype ON specifyuser.SpecifyUserID = collectiontype.SpecifyUserID
+	 INNER JOIN collection ON collectiontype.CollectionTypeID = collection.CollectionTypeID
+	 INNER JOIN collectionobject ON collectionobject.CollectionID = collection.CollectionID
+	 INNER JOIN determination ON collectionobject.CollectionObjectID = determination.CollectionObjectID
+	 INNER JOIN taxon ON determination.TaxonID = taxon.TaxonID
+	 INNER JOIN determinationstatus ON determination.DeterminationStatusID = determinationstatus.DeterminationStatusID
+	 INNER JOIN agent ON determination.DeterminerID = agent.AgentID
+     WHERE specifyuser.SpecifyUserID = SPECIFYUSERID and isCurrent = true]]>
                 </sql>
                 <cols>
                     <col pos="1" id="true">collectionobject.CollectionObjectID</col>
@@ -568,14 +575,15 @@ where collectingevent.CollectingEventID in (%s) order by StartDate]]>
                 <cols>
                     <col pos="1" id="true">PreparationID</col>
                     <col pos="2">Text1</col>
-                    <col pos="2">Text2</col>
-                    <col pos="2">StorageLocation</col>
-                    <col pos="2">Remarks</col>
+                    <col pos="3">Text2</col>
+                    <col pos="4">StorageLocation</col>
+                    <col pos="5">Remarks</col>
+                    <col pos="6" key="prepCnt">count</col>
                 </cols>
             </index>
             <detailView icon="Attachment">
                 <sql>
-                    <![CDATA[SELECT PreparationID, Text1, Text2, StorageLocation, Remarks FROM preparation WHERE PreparationID IN (%s)]]>
+                    <![CDATA[SELECT PreparationID, Text1, Text2, StorageLocation, Remarks, Count FROM preparation WHERE PreparationID IN (%s)]]>
                 </sql>
                 <captions>
                     <caption col="PreparationID" text="PreparationID" visible="false"/>
@@ -583,6 +591,7 @@ where collectingevent.CollectingEventID in (%s) order by StartDate]]>
                     <caption col="Text2" text="Text2"/>
                     <caption col="StorageLocation" text="Storage Location"/>
                     <caption col="Remarks" text="Remarks"/>
+                    <caption col="Count" text="Count"/>
                 </captions>
                <recordset tabletype="8" col="1"/>
             </detailView>

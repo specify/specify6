@@ -33,6 +33,7 @@ import org.apache.lucene.store.FSDirectory;
 
 import edu.ku.brc.af.core.ExpressResultsTableInfo;
 import edu.ku.brc.af.core.ExpressSearchIndexer;
+import edu.ku.brc.af.core.ExpressSearchSQLAdjuster;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 
@@ -95,11 +96,12 @@ public class LuceneUpdater
         String updateSQLStr = tblInfo.getUpdateSql(formObj.getTableId());
         if (updateSQLStr != null)
         {
-            String sql = String.format(updateSQLStr, new Object[] {formObj.getId().toString()});
+            String sqlStr = String.format(updateSQLStr, new Object[] {formObj.getId().toString()});
+            sqlStr = ExpressSearchSQLAdjuster.getInstance().adjustSQL(sqlStr);
+
+            log.info("["+sqlStr+"]");
             
-            log.info("["+sql+"]");
-            
-            indexer.indexQuery(0, writer, tblInfo, sql);
+            indexer.indexQuery(0, writer, tblInfo, sqlStr);
         } else
         {
             log.info("Update String was NUll for TableInfo["+tblInfo.getId() + "]");

@@ -73,6 +73,7 @@ import edu.ku.brc.af.tasks.subpane.ExpressSearchIndexerPane;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.helpers.HTTPGetter;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.dbsupport.SpecifyExpressSearchSQLAdjuster;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPane;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.specify.ui.HelpMgr;
@@ -262,13 +263,13 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
      * @param tableItems the list of Elements to be processed
      * @param tables the table info hash
      */
-    protected static void intializeTableInfo(final List tableItems, 
+    protected static void intializeTableInfo(final List<?> tableItems, 
                                              final Hashtable<String, ExpressResultsTableInfo> tables,
                                              final Hashtable<String, ExpressResultsTableInfo> byIdHash,
                                              Hashtable<String, List<ExpressResultsTableInfo>> joinIdToTableInfoHash,
                                              final boolean isExpressSearch)
     {
-        for ( Iterator iter = tableItems.iterator(); iter.hasNext(); )
+        for (Iterator<?> iter = tableItems.iterator(); iter.hasNext(); )
         {
             Element                 tableElement = (Element)iter.next();
             ExpressResultsTableInfo ti           = new ExpressResultsTableInfo(tableElement, isExpressSearch);
@@ -460,6 +461,8 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
         {
             searchTerm = searchTextStr;
         }
+        
+        searchTerm = SpecifyExpressSearchSQLAdjuster.getInstance().adjustExpressSearchText(searchTerm);
 
         boolean hasResults = false;
         if (searchTerm != null && searchTerm.length() > 0)
@@ -754,7 +757,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
             QueryParser parser = new QueryParser("contents", analyzer);
             //parser.setOperator(QueryParser.DEFAULT_OPERATOR_AND);
             query = parser.parse(searchTextStr);
-            //System.out.println(query.toString());
+            System.out.println(query.toString());
 
             Hits hits = searcher.search(query);
             

@@ -80,7 +80,9 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
     // Static Data Members
     private static final Logger   log      = Logger.getLogger(ExpressSearchIndexer.class);
     private static final Analyzer analyzer = new StandardAnalyzer();//WhitespaceAnalyzer();
+    private static final String   CONTENTS = "contents";
 
+    
     // Data Members
     protected Thread                    thread;
     protected File                      lucenePath        = null;
@@ -148,10 +150,10 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                 esDOM = AppContextMgr.getInstance().getResourceAsDOM("SearchConfig"); // Describes the definitions of the full text search
             }
 
-            List tables = esDOM.selectNodes("/searches/express/table/outofdate/table");
+            List<?> tables = esDOM.selectNodes("/searches/express/table/outofdate/table");
             Hashtable<String, String> namesHash = new Hashtable<String, String>();
             List<String>              sectionNames = new ArrayList<String>(tables.size()+2);
-            for ( Iterator iter = tables.iterator(); iter.hasNext(); )
+            for (Iterator<?> iter = tables.iterator(); iter.hasNext(); )
             {
                 Element tableElement = (Element)iter.next();
                 String  sectionName  = tableElement.attributeValue("title"); 
@@ -258,7 +260,7 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                              final int         index,
                              final String      fieldName,
                              final ERTIColInfo colInfo,
-                             final Class       objClass) throws SQLException
+                             final Class<?>    objClass) throws SQLException
     {
         String value = null;
 
@@ -275,11 +277,9 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                     if (fieldName == null)
                     {
                         doc.add(new Field(fieldName, value, Field.Store.YES, Field.Index.UN_TOKENIZED));
-                        //doc.add(Field.Keyword(fieldName, value));
                     } else
                     {
-                        doc.add(new Field("contents", value, Field.Store.NO, Field.Index.TOKENIZED));
-                        //doc.add(Field.UnStored("contents", value));
+                        doc.add(new Field(CONTENTS, value, Field.Store.NO, Field.Index.TOKENIZED));
                     }
                     //log.debug("["+fieldName+"]["+secondaryKey+"]["+value+"]");
                 }
@@ -303,8 +303,7 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                     {
                         value = str;
                     }
-                    doc.add(new Field("contents", value, Field.Store.NO, Field.Index.TOKENIZED));
-                    //doc.add(Field.UnStored("contents", str));
+                    doc.add(new Field(CONTENTS, value, Field.Store.NO, Field.Index.TOKENIZED));
                 }
             }
 
@@ -318,12 +317,13 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                     value = dateFormatter.format(date);
                     if (fieldName == null)
                     {
-                        doc.add(new Field(fieldName, value, Field.Store.YES, Field.Index.UN_TOKENIZED));
-                        //doc.add(Field.Keyword(fieldName, value));
+                        //doc.add(new Field(fieldName, value, Field.Store.YES, Field.Index.UN_TOKENIZED));
+                        throw new RuntimeException("Filedname is null! Why are we here?");
+                        
                     } else
                     {
-                        doc.add(new Field("contents", value, Field.Store.NO, Field.Index.TOKENIZED));
-                        //doc.add(Field.UnStored("contents", value));
+                        doc.add(new Field(CONTENTS, value, Field.Store.NO, Field.Index.TOKENIZED));
+                        doc.add(new Field(colInfo.getSecondaryKey(), value, Field.Store.NO, Field.Index.TOKENIZED));
                     }
                     //log.debug("["+fieldName+"]["+secondaryKey+"]["+value+"]");
                 }
@@ -347,8 +347,8 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                     {
                         value = str;
                     }
-                    doc.add(new Field("contents", value, Field.Store.NO, Field.Index.TOKENIZED));
-                    //doc.add(Field.UnStored("contents", str));
+                    doc.add(new Field(CONTENTS, value, Field.Store.NO, Field.Index.TOKENIZED));
+                    doc.add(new Field(colInfo.getSecondaryKey(), value, Field.Store.NO, Field.Index.TOKENIZED));
                 }
             }
         }
@@ -384,7 +384,7 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
         {
             // First we create an array of Class so we know what each column's Object class is
             ResultSetMetaData rsmd    = resultset.getMetaData();
-            Class[]           classes = new Class[rsmd.getColumnCount()+1];
+            Class<?>[]        classes = new Class[rsmd.getColumnCount()+1];
             classes[0] = null; // we do this so the "1" based columns match up with the list
             for (int i=1;i<rsmd.getColumnCount();i++)
             {
@@ -492,7 +492,10 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                         {
                             return false;
                         }
-
+                        if (tableInfo.getStaticValueKey() != null)
+                        {
+                            doc.add(new Field(tableInfo.getStaticValueKey(), tableInfo.getStaticValueValue(), Field.Store.NO, Field.Index.TOKENIZED));
+                        }
                     }
                 }
                 
@@ -646,8 +649,8 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                     strBuf.append(form.getDesc());
                     strBuf.append('\t');
 
-                    doc.add(Field.UnStored("contents", form.getName()));
-                    doc.add(Field.UnStored("contents", label));
+                    doc.add(Field.UnStored(CONTENTS, form.getName()));
+                    doc.add(Field.UnStored(CONTENTS, label));
 
                     doc.add(Field.UnIndexed("data", strBuf.toString()));
 
@@ -687,8 +690,8 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
             strBuf.append(form.getDesc());
             strBuf.append('\t');
 
-            doc.add(Field.UnStored("contents", form.getName()));
-            doc.add(Field.UnStored("contents", label));
+            doc.add(Field.UnStored(CONTENTS, form.getName()));
+            doc.add(Field.UnStored(CONTENTS, label));
 
             doc.add(Field.UnIndexed("data", strBuf.toString()));
 
@@ -818,9 +821,9 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                     strBuf.append(label);
                     strBuf.append('\t');
 
-                    doc.add(Field.UnStored("contents", fileName));
-                    doc.add(Field.UnStored("contents", labelName));
-                    doc.add(Field.UnStored("contents", label));
+                    doc.add(Field.UnStored(CONTENTS, fileName));
+                    doc.add(Field.UnStored(CONTENTS, labelName));
+                    doc.add(Field.UnStored(CONTENTS, label));
                     doc.add(Field.UnIndexed("data", strBuf.toString()));
                     strBuf.setLength(0);
 
@@ -862,7 +865,7 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
                 esDOM = XMLHelper.readDOMFromConfigDir("search_config.xml");         // Describes the definitions of the full text search
             }
 
-            List tables = esDOM.selectNodes("/searches/express/table");
+            List<?> tables = esDOM.selectNodes("/searches/express/table");
             List<ExpressResultsTableInfo> tableInfoList = new ArrayList<ExpressResultsTableInfo>(tables.size());
             for (Object obj : tables)
             {

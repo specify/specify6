@@ -15,9 +15,9 @@
 package edu.ku.brc.af.tasks.subpane;
 
 
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIHelper.createDuplicateJGoodiesDef;
 import static edu.ku.brc.ui.UIHelper.getString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.BorderLayout;
@@ -72,6 +72,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ERTIColInfo;
 import edu.ku.brc.af.core.ERTIJoinColInfo;
 import edu.ku.brc.af.core.ExpressResultsTableInfo;
+import edu.ku.brc.af.core.ExpressSearchSQLAdjuster;
 import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
@@ -86,8 +87,8 @@ import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.ui.forms.persist.FormViewDef;
@@ -117,7 +118,8 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
     // Static Data Members
     private static final Logger   log      = Logger.getLogger(ExpressSearchIndexerPane.class);
     private static final Analyzer analyzer = new StandardAnalyzer();//WhitespaceAnalyzer();
-
+    private static final String   CONTENTS = "contents";
+    
     // Data Members
     protected Thread       thread;
     protected File         lucenePath    = null;
@@ -201,8 +203,8 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
 
             Hashtable<String, String> namesHash = new Hashtable<String, String>();
 
-            List tables = esDOM.selectNodes("/searches/express/table/outofdate/table");
-            for ( Iterator iter = tables.iterator(); iter.hasNext(); )
+            List<?> tables = esDOM.selectNodes("/searches/express/table/outofdate/table");
+            for (Iterator<?> iter = tables.iterator(); iter.hasNext(); )
             {
                 Element tableElement = (Element)iter.next();
                 namesHash.put(tableElement.attributeValue("name"), tableElement.attributeValue("title"));
@@ -405,7 +407,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                              final int         index,
                              final String      fieldName,
                              final ERTIColInfo colInfo,
-                             final Class       objClass,
+                             final Class<?>    objClass,
                              final DateFormat  dateFormatter) throws SQLException
     {
         String value = null;
@@ -422,12 +424,12 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                     value = dateFormatter.format(date);
                     if (fieldName == null)
                     {
-                        doc.add(new Field(fieldName, value, Field.Store.YES, Field.Index.UN_TOKENIZED));
-                        //doc.add(Field.Keyword(fieldName, value));
+                        //doc.add(new Field(fieldName, value, Field.Store.YES, Field.Index.UN_TOKENIZED));
+                        throw new RuntimeException("Filedname is null! Why are we here?");
+                        
                     } else
                     {
-                        doc.add(new Field("contents", value, Field.Store.NO, Field.Index.TOKENIZED));
-                        //doc.add(Field.UnStored("contents", value));
+                        doc.add(new Field(CONTENTS, value, Field.Store.NO, Field.Index.TOKENIZED));
                     }
                     //log.debug("["+fieldName+"]["+secondaryKey+"]["+value+"]");
                 }
@@ -451,8 +453,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                     {
                         value = str;
                     }
-                    doc.add(new Field("contents", value, Field.Store.NO, Field.Index.TOKENIZED));
-                    //doc.add(Field.UnStored("contents", str));
+                    doc.add(new Field(CONTENTS, value, Field.Store.NO, Field.Index.TOKENIZED));
                 }
             }
 
@@ -466,12 +467,12 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                     value = dateFormatter.format(date);
                     if (fieldName == null)
                     {
-                        doc.add(new Field(fieldName, value, Field.Store.YES, Field.Index.UN_TOKENIZED));
-                        //doc.add(Field.Keyword(fieldName, value));
+                        //doc.add(new Field(fieldName, value, Field.Store.YES, Field.Index.UN_TOKENIZED));
+                        throw new RuntimeException("Filedname is null! Why are we here?");
                     } else
                     {
-                        doc.add(new Field("contents", value, Field.Store.NO, Field.Index.TOKENIZED));
-                        //doc.add(Field.UnStored("contents", value));
+                        doc.add(new Field(CONTENTS, value, Field.Store.NO, Field.Index.TOKENIZED));
+                        doc.add(new Field(colInfo.getSecondaryKey(), value, Field.Store.NO, Field.Index.TOKENIZED));
                     }
                     //log.debug("["+fieldName+"]["+secondaryKey+"]["+value+"]");
                 }
@@ -495,8 +496,9 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                     {
                         value = str;
                     }
+                    //System.out.println("["+colInfo.getSecondaryKey()+"]["+value+"]");
+                    doc.add(new Field(CONTENTS, value, Field.Store.YES, Field.Index.UN_TOKENIZED));
                     doc.add(new Field(colInfo.getSecondaryKey(), value, Field.Store.YES, Field.Index.UN_TOKENIZED));
-                    //doc.add(Field.Keyword(secondaryKey, str));
                 }
             }
         }
@@ -534,9 +536,19 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
             {
                 dbStatement = dbConnection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
-                log.debug("SQL ["+tableInfo.getBuildSql()+"]");
+                System.out.println(tableInfo.getId() + " " + tableInfo.getName());
+                if (tableInfo.getName().toLowerCase().indexOf("deter") > -1)
+                {
+                    int x = 0;
+                    x++;
+                }
+                
+                
+                String adjustedSQL = ExpressSearchSQLAdjuster.getInstance().adjustSQL(tableInfo.getBuildSql());
+                
+                log.debug("SQL ["+adjustedSQL+"]");
 
-                ResultSet rs = dbStatement.executeQuery(tableInfo.getBuildSql());
+                ResultSet rs = dbStatement.executeQuery(adjustedSQL);
 
                 begin = new Date().getTime();
 
@@ -563,8 +575,8 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                 if (rs.first())
                 {
                     // First we create an array of Class so we know what each column's Object class is
-                    ResultSetMetaData rsmd = rs.getMetaData();
-                    Class[]  classes = new Class[rsmd.getColumnCount()+1];
+                    ResultSetMetaData rsmd    = rs.getMetaData();
+                    Class<?>[]        classes = new Class[rsmd.getColumnCount()+1];
                     classes[0] = null; // we do this so the "1" based columns match up with the list
                     for (int i=1;i<rsmd.getColumnCount();i++)
                     {
@@ -642,6 +654,10 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                             }
 
                             doc.add(new Field("data", strBuf.toString(), Field.Store.YES, Field.Index.NO));
+                            if (tableInfo.getStaticValueKey() != null)
+                            {
+                                doc.add(new Field(tableInfo.getStaticValueKey(), tableInfo.getStaticValueValue(), Field.Store.NO, Field.Index.TOKENIZED));
+                            }
                             //doc.add(Field.UnIndexed("data", strBuf.toString()));
 
                         } else
@@ -673,7 +689,10 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                                     dbConnection.close();
                                     return 0;
                                 }
-
+                            }
+                            if (tableInfo.getStaticValueKey() != null)
+                            {
+                                doc.add(new Field(tableInfo.getStaticValueKey(), tableInfo.getStaticValueValue(), Field.Store.NO, Field.Index.TOKENIZED));
                             }
                         }
                         if (cnt > 0)
@@ -809,8 +828,8 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                     strBuf.append(form.getDesc());
                     strBuf.append('\t');
 
-                    doc.add(Field.UnStored("contents", form.getName()));
-                    doc.add(Field.UnStored("contents", label));
+                    doc.add(Field.UnStored(CONTENTS, form.getName()));
+                    doc.add(Field.UnStored(CONTENTS, label));
 
                     doc.add(Field.UnIndexed("data", strBuf.toString()));
 
@@ -850,8 +869,8 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
             strBuf.append(form.getDesc());
             strBuf.append('\t');
 
-            doc.add(Field.UnStored("contents", form.getName()));
-            doc.add(Field.UnStored("contents", label));
+            doc.add(Field.UnStored(CONTENTS, form.getName()));
+            doc.add(Field.UnStored(CONTENTS, label));
 
             doc.add(Field.UnIndexed("data", strBuf.toString()));
 
@@ -981,9 +1000,9 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                     strBuf.append(label);
                     strBuf.append('\t');
 
-                    doc.add(Field.UnStored("contents", fileName));
-                    doc.add(Field.UnStored("contents", labelName));
-                    doc.add(Field.UnStored("contents", label));
+                    doc.add(Field.UnStored(CONTENTS, fileName));
+                    doc.add(Field.UnStored(CONTENTS, labelName));
+                    doc.add(Field.UnStored(CONTENTS, label));
                     doc.add(Field.UnIndexed("data", strBuf.toString()));
                     strBuf.setLength(0);
 
@@ -1026,7 +1045,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                 esDOM = XMLHelper.readDOMFromConfigDir("search_config.xml");         // Describes the definitions of the full text search
             }
 
-            List tables = esDOM.selectNodes("/searches/express/table");
+            List<?> tables = esDOM.selectNodes("/searches/express/table");
             
             boolean doAll = forceChkbx.isSelected();
 

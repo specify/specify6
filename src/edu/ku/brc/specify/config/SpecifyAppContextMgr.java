@@ -159,6 +159,31 @@ public class SpecifyAppContextMgr extends AppContextMgr
         return count;
         
     }
+    
+    /**
+     * @param sessionArg
+     * @return
+     */
+    public List<Integer> getCollectionIdList(final DataProviderSessionIFace sessionArg)
+    {
+        Vector<Integer> list = new Vector<Integer>();
+        SpecifyUser user = SpecifyUser.getCurrentUser();
+        if (user != null)
+        {
+            sessionArg.attach(user);
+            for (CollectionType types : user.getCollectionTypes())
+            {
+                for (Collection collection : types.getCollections())
+                {
+                    list.add(collection.getCollectionId().intValue());
+                }
+            }
+        } else
+        {
+            log.error("SpecifyUser was null!");
+        }
+        return list;
+    }
 
     /**
      * Sets up the "current" Collection by first checking prefs for the most recent primary key,
@@ -257,6 +282,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
         }
         
         Collection.setCurrentCollection(collection);
+        Collection.setCurrentCollectionIds(getCollectionIdList(sessionArg));
+        
         return collection;
     }
 
@@ -278,7 +305,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
      * @param collType the CollectionType
      * @return the AppResourceDefault object or null
      */
-    protected AppResourceDefault find(final List             appResDefList,
+    protected AppResourceDefault find(final List<?>          appResDefList,
                                       final SpecifyUser      userArg,
                                       final Collection    catSeries,
                                       final CollectionType collType)
@@ -391,7 +418,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
 
-        List list = session.getDataList(SpecifyUser.class, "name", userName);
+        List<?> list = session.getDataList(SpecifyUser.class, "name", userName);
         if (list.size() == 1)
         {
             user = (SpecifyUser)list.get(0);
@@ -428,7 +455,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         appResourceList.clear();
         viewSetHash.clear();
 
-        List appResDefList = session.getDataList( "From AppResourceDefault where specifyUserId = "+user.getSpecifyUserId());
+        List<?> appResDefList = session.getDataList( "From AppResourceDefault where specifyUserId = "+user.getSpecifyUserId());
 
         CollectionType ct = collection.getCollectionType();
         CollectionType.setCurrentCollectionType(ct);
@@ -814,7 +841,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     Element root = XMLHelper.readFileToDOM4J(new FileInputStream(new File(file.getAbsoluteFile() + File.separator + "app_resources.xml")));
                     if (root != null)
                     {
-                        for ( Iterator i = root.elementIterator( "file" ); i.hasNext(); )
+                        for ( Iterator<?> i = root.elementIterator( "file" ); i.hasNext(); )
                         {
                             Element fileElement = (Element) i.next();
                             String  name        = getAttr(fileElement, "name", null);

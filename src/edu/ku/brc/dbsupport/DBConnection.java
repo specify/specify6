@@ -116,7 +116,7 @@ public class DBConnection
             }
             Class.forName(dbDriver); // load driver
             
-            log.debug("["+dbConnectionStr+"]["+dbUsername+"]["+dbPassword+"] "+UIRegistry.getJavaDBPath());
+            //log.debug("["+dbConnectionStr+"]["+dbUsername+"]["+dbPassword+"] "+UIRegistry.getJavaDBPath());
             con = DriverManager.getConnection(dbConnectionStr, dbUsername, dbPassword);
             
         } catch (SQLException sqlEX)
