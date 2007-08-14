@@ -46,6 +46,7 @@ import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.JAutoCompComboBox;
 import edu.ku.brc.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.ui.db.PickListItemIFace;
@@ -407,7 +408,15 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
      */
     public void cleanUp()
     {
-        comboBox  = null;
+        if (comboBox.getTextField() != null)
+        {
+            UIHelper.removeFocusListeners(comboBox.getTextField());
+            UIHelper.removeKeyListeners(comboBox.getTextField());
+        }
+        comboBox.getModel().removeListDataListener(this);
+        UIHelper.removeFocusListeners(comboBox);
+        UIHelper.removeKeyListeners(this);
+        comboBox = null;
         AppPreferences.getRemote().removeChangeListener("ui.formatting.requiredfieldcolor", this);
     }
 

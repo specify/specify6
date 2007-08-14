@@ -27,6 +27,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.ui.GetSetValueIFace;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * Wrapped JCheckBox that can accept Boolean, String, Short, Integer, Long values. String can be mixed case and
@@ -179,7 +180,8 @@ public class ValCheckBox extends JCheckBox implements UIValidatable, GetSetValue
      */
     public void cleanUp()
     {
-        // no op
+        UIHelper.removeFocusListeners(this);
+        UIHelper.removeKeyListeners(this);
     }
 
     //--------------------------------------------------------

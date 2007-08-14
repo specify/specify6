@@ -40,6 +40,7 @@ import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * A JTextArea that implements UIValidatable for participating in validation
@@ -295,6 +296,8 @@ public class ValTextArea extends JTextArea implements UIValidatable,
      */
     public void cleanUp()
     {
+        UIHelper.removeFocusListeners(this);
+        UIHelper.removeKeyListeners(this);
         AppPreferences.getRemote().removeChangeListener("ui.formatting.requiredfieldcolor", this);
     }
 

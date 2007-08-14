@@ -37,6 +37,7 @@ import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * A JTextControl that implements UIValidatable for participating in validation
@@ -195,6 +196,8 @@ public class ValPasswordField extends JPasswordField implements UIValidatable,
      */
     public void cleanUp()
     {
+        UIHelper.removeFocusListeners(this);
+        UIHelper.removeKeyListeners(this);
         AppPreferences.getRemote().removeChangeListener("ui.formatting.requiredfieldcolor", this);
     }
 

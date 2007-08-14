@@ -240,7 +240,7 @@ public class UIValidator
      * Add a validation listener
      * @param l the listener
      */
-    public void addValidationListener(ValidationListener l)
+    public void addValidationListener(final ValidationListener l)
     {
         listeners.addElement(l);
     }
@@ -249,7 +249,7 @@ public class UIValidator
      * remove the validation listener
      * @param l the listener
      */
-    public void removeValidationListener(ValidationListener l)
+    public void removeValidationListener(final ValidationListener l)
     {
         listeners.remove(l);
     }

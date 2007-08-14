@@ -41,6 +41,7 @@ import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * A JList that implements UIValidatable for participating in validation
@@ -233,6 +234,9 @@ public class ValListBox extends JList implements UIValidatable, ListSelectionLis
      */
     public void cleanUp()
     {
+        UIHelper.removeFocusListeners(this);
+        UIHelper.removeListSelectionListeners(this);
+        UIHelper.removeKeyListeners(this);        
         AppPreferences.getRemote().removeChangeListener("ui.formatting.requiredfieldcolor", this);
     }
     

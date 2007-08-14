@@ -37,6 +37,7 @@ import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.JAutoCompTextField;
 import edu.ku.brc.ui.db.PickListDBAdapterIFace;
@@ -76,7 +77,6 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     public ValTextField()
     {
         super();
-        init();
     }
 
     /**
@@ -86,7 +86,6 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     public ValTextField(String arg0)
     {
         super(arg0);
-        init();
     }
 
     /**
@@ -96,7 +95,6 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     public ValTextField(int arg0)
     {
         super(arg0);
-        init();
     }
 
     /**
@@ -106,7 +104,6 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     public ValTextField(int arg0, PickListDBAdapterIFace pickListDBAdapter)
     {
         super(arg0, pickListDBAdapter);
-        init();
     }
 
     /**
@@ -117,7 +114,6 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     public ValTextField(String arg0, int arg1)
     {
         super(arg0, arg1);
-        init();
     }
 
     /* (non-Javadoc)
@@ -307,7 +303,14 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
      */
     public void cleanUp()
     {
-        document           = null;
+        UIHelper.removeFocusListeners(this);
+        UIHelper.removeKeyListeners(this);
+
+        for (DocumentListener l : document.getDocumentListeners())
+        {
+            document.removeDocumentListener(l);
+        }
+        document = null;
         AppPreferences.getRemote().removeChangeListener("ui.formatting.requiredfieldcolor", this);
     }
     

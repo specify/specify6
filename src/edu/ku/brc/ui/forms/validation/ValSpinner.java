@@ -22,6 +22,7 @@ import org.apache.commons.lang.StringUtils;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * @author rod
@@ -211,7 +212,8 @@ public class ValSpinner extends JSpinner implements UIValidatable, GetSetValueIF
      */
     public void cleanUp()
     {
-        // no op
+        UIHelper.removeFocusListeners(this);
+        UIHelper.removeKeyListeners(this);
     }
 
     //--------------------------------------------------------

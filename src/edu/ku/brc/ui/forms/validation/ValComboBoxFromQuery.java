@@ -775,19 +775,30 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     public void cleanUp()
     {
-        classObj   = null;
-        getter     = null;
-        dataObj    = null;
-        frame      = null;
-        multiView  = null;
+        if (comboBox.getTextField() != null)
+        {
+            UIHelper.removeFocusListeners(comboBox.getTextField());
+            UIHelper.removeKeyListeners(comboBox.getTextField());
+        }
+        UIHelper.removeFocusListeners(comboBox);
+        comboBox.getModel().removeListDataListener(this);
+        UIHelper.removeFocusListeners(comboBox);
+        UIHelper.removeKeyListeners(this);
+        
+        classObj  = null;
+        getter    = null;
+        dataObj   = null;
+        frame     = null;
+        multiView = null;
+        comboBox  = null;
 
         focusListeners.clear();
 
-        comboBox           = null;
+        comboBox = null;
         AppPreferences.getRemote().removeChangeListener("ui.formatting.requiredfieldcolor", this);
     }
 
-    //--------------------------------------------------------
+    // --------------------------------------------------------
     // ListDataListener (JComboxBox)
     //--------------------------------------------------------
 

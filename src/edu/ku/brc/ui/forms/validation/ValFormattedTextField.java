@@ -44,7 +44,6 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -76,7 +75,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
                                                              GetSetValueIFace,
                                                              DocumentListener
 {
-    private static final Logger log  = Logger.getLogger(ValFormattedTextField.class);
+    //private static final Logger log  = Logger.getLogger(ValFormattedTextField.class);
 
     protected static ColorWrapper     valtextcolor       = null;
     protected static ColorWrapper     requiredfieldcolor = null;
@@ -97,7 +96,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
     
     protected String                      currCachedValue = null;
 
-    //protected JFormattedDoc               document;
+    protected JFormattedDoc               document;
     protected String                      defaultValue   = null;
 
     protected UIFieldFormatterIFace       formatter;
@@ -203,7 +202,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
         {
             viewtextField = new JTextField();
             
-            JFormattedDoc document = new JFormattedDoc(viewtextField, formatter, formatter.getFields().get(0));
+            document = new JFormattedDoc(viewtextField, formatter, formatter.getFields().get(0));
             viewtextField.setDocument(document);
             document.addDocumentListener(this);
             
@@ -259,7 +258,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
                 } else
                 {
                     JTextField tf = new BGTextField(f.getSize(), f.getValue());
-                    JFormattedDoc document = new JFormattedDoc(tf, formatter, f);
+                    document = new JFormattedDoc(tf, formatter, f);
                     tf.setDocument(document);
                     document.addDocumentListener(this);
                     
@@ -687,8 +686,17 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
      */
     public void cleanUp()
     {
+        UIHelper.removeFocusListeners(this);
+        UIHelper.removeKeyListeners(this);
+
+        for (DocumentListener l : document.getDocumentListeners())
+        {
+            document.removeDocumentListener(l);
+        }
+        document  = null;
         formatter = null;
         fields    = null;
+        UIHelper.removeFocusListeners(this);
     }
 
     //--------------------------------------------------------
