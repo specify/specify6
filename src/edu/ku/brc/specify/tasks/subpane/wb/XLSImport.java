@@ -253,7 +253,10 @@ public class XLSImport extends DataImport implements DataImportIFace
                 String geoData = c.getStringCellValue();
                 if (geoData != null)
                 {
-                    wbRow.setBioGeomancerResults(geoData);
+                    // TEMP FIX FOR BUG 4562 RELEASE
+                    // Only allow 255 chars - Note this really shouldn't happen because 
+                    // the WB should have never been able to save something larger
+                    wbRow.setBioGeomancerResults(geoData.length() <= 255 ? geoData : geoData.substring(0, 254));
                 }
             }
         }

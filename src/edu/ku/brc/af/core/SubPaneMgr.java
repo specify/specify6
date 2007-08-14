@@ -266,7 +266,15 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             
             panes.remove(pane.getPaneName());
             
-            pane.shutdown();
+            // This let's focus get taken away.
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                public void run()
+                {
+                    pane.shutdown();
+                }
+            });
+            
         } else
         {
             log.error("Couldn't find pane named["+pane.getPaneName()+"]");

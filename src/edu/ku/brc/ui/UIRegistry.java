@@ -1591,7 +1591,7 @@ public class UIRegistry
     public class LaunchFindReplaceAction extends AbstractAction
     {
         protected SearchReplacePanel searchReplacePanel = null;
-        //protected SearchableJXTable searchTable = null;
+        
         public LaunchFindReplaceAction()
         {
             super("Find");
@@ -1602,10 +1602,15 @@ public class UIRegistry
         public void actionPerformed(ActionEvent e)
         {
             log.debug("Ctrl-f hit from with UIRegistry - passing action onto the SearchReplacePanel");
-            if(this.isEnabled())
+            if (this.isEnabled())
             {
-                if(searchReplacePanel != null)searchReplacePanel.getLaunchFindAction().actionPerformed(e);
-                else log.error("search panel is null");
+                if (searchReplacePanel != null)
+                {
+                    searchReplacePanel.getLaunchFindAction().actionPerformed(e);
+                } else 
+                {
+                    log.error("search panel is null");
+                }
             }
         }
 
@@ -1628,9 +1633,11 @@ public class UIRegistry
         @SuppressWarnings("synthetic-access")
         public void setSearchReplacePanel(SearchReplacePanel panel)
         {
-            if (panel==null)log.error("Search panel is null but shouldn't be");
             this.searchReplacePanel = panel;
-            setEnabled(true);
+            if (panel == null)
+            {
+                 setEnabled(true);
+            }
         }
     }
     //------------------------------------------------------
@@ -1695,7 +1702,7 @@ public class UIRegistry
         getLaunchFindReplaceAction().setEnabled(false);
     }
     
-    public static void enableFindinEditMenu(SearchReplacePanel findPanel)
+    public static void enableFindinEditMenu(final SearchReplacePanel findPanel)
     {
         getLaunchFindReplaceAction().setSearchReplacePanel(findPanel);
     }

@@ -6,6 +6,7 @@
  */
 package edu.ku.brc.ui.tmanfe;
 
+import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -41,6 +42,18 @@ public abstract class SpreadSheetModel extends AbstractTableModel
     public abstract void appendRow();
     
     public abstract int getColDataLen(final int column);
+    
+    /**
+     * Cleans up references.
+     */
+    public void cleanUp()
+    {
+        for (TableModelListener l : getTableModelListeners())
+        {
+            removeTableModelListener(l);
+        }
+        spreadSheet = null;
+    }
 
 }
 

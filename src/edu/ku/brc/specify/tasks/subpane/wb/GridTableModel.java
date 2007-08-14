@@ -150,7 +150,7 @@ public class GridTableModel extends SpreadSheetModel
      */
     public int getRowCount()
     {
-        return workbench.getWorkbenchRows().size();
+        return workbench != null ? workbench.getWorkbenchRows().size() : 0;
     }
 
     /* (non-Javadoc)
@@ -410,5 +410,21 @@ public class GridTableModel extends SpreadSheetModel
         return headers.get(column).getDataFieldLength();
     }
     
+    /**
+     * Cleans up references.
+     */
+    public void cleanUp()
+    {
+        super.cleanUp();
+        
+        if (headers != null)
+        {
+            headers.clear();
+        }
+        
+        workbench        = null;
+        headers          = null;
+        imageMappingItem = null;
+    }
     
 }

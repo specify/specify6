@@ -1,0 +1,1 @@
+IndexRemove linux-dist/Specify/help/

@@ -311,7 +311,7 @@
 		</copy>
 		
 		<antcall target="build-help-index"/>
-		<antcall target="build-help-fulltext"/>
+		<antcall target="build-help-fulltext-mac"/>
 		
 		<!-- Testing Alt Help 
 		<property name="alt.help.img.dir" value="AltHelpImages/Windows"/>
@@ -438,14 +438,51 @@
 	<!-- *************************************************************
 	     Build Help FullText Index
 	     ************************************************************* -->
-	<target name="build-help-fulltext">
+	
+	<target name="delete-config-files">
+		  <delete file="${appdir}/help/${dist-linux}SearchConfig.txt"/>		
+		  <delete file="${appdir}/help/${dist-mac}SearchConfig.txt"/>		
+		  <delete file="${appdir}/help/${dist-win}SearchConfig.txt"/>		
+	</target>
+
+	<target name="build-help-fulltext-linux">
 	  <java jar="${javahelp-home}/javahelp/bin/jhindexer.jar" fork="true">
-	  	<arg value="-db"/>
-	  	<arg value="${appdir}/help"/>
-	    <arg value="${appdir}/help/SpecifyHelp"/>
+	  	<!-- if definitions for dist-linux,dist-mac, or dist-win change then
+	  		contents of xxxSearchConfig.txt files will need to be changed accordingly -->
+	  	<arg value="-c" />
+	  	<arg value="${appdir}/help/${dist-linux}SearchConfig.txt"/>
+	  	<arg value="-db" />
+	  	<arg value="${appdir}/help/SpecifyHelpSearchIndex"/>
+	    <arg value="${appdir}/help/SpecifyHelp/Workbench"/>
 	  </java>
+		<antcall target="delete-config-files"/>
 	</target>
 	
+	<target name="build-help-fulltext-mac">
+	  <java jar="${javahelp-home}/javahelp/bin/jhindexer.jar" fork="true">
+	  	<!-- if definitions for dist-linux,dist-mac, or dist-win change then
+	  		contents of xxxSearchConfig.txt files will need to be changed accordingly -->
+	  	<arg value="-c" />
+	  	<arg value="${appdir}/help/${dist-mac}SearchConfig.txt"/>
+	  	<arg value="-db" />
+	  	<arg value="${appdir}/help/SpecifyHelpSearchIndex"/>
+	    <arg value="${appdir}/help/SpecifyHelp/Workbench"/>
+	  </java>
+		<antcall target="delete-config-files"/>
+	</target>
+	
+	<target name="build-help-fulltext-win">
+	  <java jar="${javahelp-home}/javahelp/bin/jhindexer.jar" fork="true">
+	  	<!-- if definitions for dist-linux,dist-mac, or dist-win change then
+	  		contents of xxxSearchConfig.txt files will need to be changed accordingly -->
+	  	<arg value="-c" />
+	  	<arg value="${appdir}/help/${dist-win}SearchConfig.txt"/>
+	  	<arg value="-db" />
+	  	<arg value="${appdir}/help/SpecifyHelpSearchIndex"/>
+	    <arg value="${appdir}/help/SpecifyHelp/Workbench"/>
+	  </java>
+		<antcall target="delete-config-files"/>
+	</target>
 	
 	<!-- *************************************************************
 	     Common files between Windows and Linux
@@ -507,7 +544,7 @@
 		<antcall target="basic-non-mac-dist"/>
 
 		<antcall target="build-help-index"/>
-		<antcall target="build-help-fulltext"/>
+		<antcall target="build-help-fulltext-win"/>
 
 		<!-- Copy Alt Help Image Files -->
 		<property name="alt.help.img.dir" value="AltHelpImages/Windows"/>
@@ -556,7 +593,7 @@
 		<antcall target="basic-non-mac-dist"/>
 		
 		<antcall target="build-help-index"/>
-		<antcall target="build-help-fulltext"/>
+		<antcall target="build-help-fulltext-linux"/>
 
 		<!-- Copy Alt Help Image Files -->
 		<property name="alt.help.img.dir" value="AltHelpImages/Windows"/>

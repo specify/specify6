@@ -17,7 +17,6 @@ package edu.ku.brc.ui;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -32,10 +31,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Field;
 import java.sql.Connection;
@@ -61,23 +61,19 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -86,10 +82,6 @@ import javax.swing.table.TableModel;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.prefs.AppPreferences;
@@ -131,8 +123,6 @@ public final class UIHelper
     protected static Object[]       values           = new Object[2];
     protected static DateWrapper    scrDateFormat    = null;
 
-    protected static UIHelper       instance         = new UIHelper();
-    
     protected static Border          emptyBorder     = BorderFactory.createEmptyBorder(1, 1, 1, 1);
     protected static Border          focusBorder     = new LineBorder(Color.GRAY, 1, true);
     protected static RenderingHints  txtRenderingHints;
@@ -1217,7 +1207,7 @@ public final class UIHelper
         {
             public void uncaughtException(Thread t, Throwable e)
             {
-                //UIHelper.showUnhandledException(e);
+                UIHelper.showUnhandledException(e);
                 UsageTracker.incrUsageCount("UncaughtException");
                 e.printStackTrace();
                 
@@ -1228,7 +1218,7 @@ public final class UIHelper
         {
             public void uncaughtException(Thread t, Throwable e)
             {
-                //UIHelper.showUnhandledException(e);
+                UIHelper.showUnhandledException(e);
                 UsageTracker.incrUsageCount("UncaughtException");
                 e.printStackTrace();
             }
@@ -1246,7 +1236,7 @@ public final class UIHelper
         SwingUtilities.invokeLater(new Runnable() {
             public void run()
             {
-                UnhandledExceptionDialog dlg = instance.new UnhandledExceptionDialog(throwable);
+                UnhandledExceptionDialog dlg = new UnhandledExceptionDialog(throwable);
                 dlg.setVisible(true);
 
                 attachUnhandledException();
@@ -1274,118 +1264,6 @@ public final class UIHelper
     //-------------------------------------------------------------------------
     // Inner Classes
     //-------------------------------------------------------------------------
-    
-    class UnhandledExceptionDialog extends JDialog
-    {
-        /**
-         * @param message
-         * @param exception
-         */
-        public UnhandledExceptionDialog(final String message, final Exception exception)
-        {
-            super((Frame)UIRegistry.get(UIRegistry.FRAME), getResourceString("UnhandledExceptionTitle"), true);
-            
-            createUI(message, exception);
-            
-            setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));
-            setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-            this.setAlwaysOnTop(true);
-        }
-
-        /**
-         * @param message
-         */
-        public UnhandledExceptionDialog(final String message)
-        {
-            super((Frame)UIRegistry.get(UIRegistry.FRAME), getResourceString("UnhandledExceptionTitle"), true);
-            
-            createUI(message, null);
-            setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));
-            setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-            this.setAlwaysOnTop(true);
-        }
-
-        /**
-         * @param throwable
-         */
-        public UnhandledExceptionDialog(final Throwable throwable)
-        {
-            super((Frame)UIRegistry.get(UIRegistry.FRAME), getResourceString("UnhandledExceptionTitle"), true);
-            
-            createUI(throwable.getMessage(), throwable);
-            
-            setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));
-            setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-            this.setAlwaysOnTop(true);
-        }
-
-        /**
-         * Creates the Default UI for Lable task
-         * @param message the message
-         * @param throwable the exception that caused it (might be null)
-         */
-        protected void createUI(final String message, final Throwable throwable)
-        {
-            setDefaultCloseOperation(EXIT_ON_CLOSE);
-            this.setModal(false);
-
-            int          height  = 100;
-            PanelBuilder builder = new PanelBuilder(new FormLayout("p:g,1dlu,r:p:g", 
-                                      "p,"+(throwable != null ? "10px,p,2px,f:p:g," : "")+"5px,p"));
-            CellConstraints cc   = new CellConstraints();
-
-            int rowIndex = 1;
-            
-            JTextArea   messageTA            = new JTextArea(message);
-            messageTA.setEditable(false);
-            builder.add(new JScrollPane(messageTA, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED), cc.xyw(1, 1, 3));
-            rowIndex += 2;
-            
-            JTextArea   stackTraceTA         = null;
-            JScrollPane stackTraceScrollPane = null;
-            if (throwable != null)
-            {
-                StringWriter strWriter = new StringWriter();
-                PrintWriter  pw        = new PrintWriter(strWriter);
-
-                throwable.printStackTrace(pw);
-                if (throwable.getCause() != null)
-                {
-                    throwable.getCause().printStackTrace(pw);    
-                }
-                stackTraceTA         = new JTextArea(strWriter.getBuffer().toString().replace("\t", "    "));
-                stackTraceTA.setEditable(false);
-                stackTraceScrollPane = new JScrollPane(stackTraceTA, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-                stackTraceTA.setRows(15);
-                builder.add(new JLabel("Stack Trace", SwingConstants.CENTER), cc.xyw(1, rowIndex, 3));
-                rowIndex += 2;
-                builder.add(stackTraceScrollPane, cc.xyw(1, rowIndex, 3));
-                rowIndex += 2;
-                height += 300;
-            }
-            
-
-            // Bottom Button UI
-            JButton okBtn = new JButton(getResourceString("OK"));
-            builder.add(okBtn, cc.xyw(3, rowIndex, 1));
-
-            okBtn.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent ae)
-                {
-                    setVisible(false);
-                }
-            });
-            getRootPane().setDefaultButton(okBtn);
-            
-            JPanel panel = new JPanel(new BorderLayout());
-            panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
-            panel.add(builder.getPanel(), BorderLayout.CENTER);
-            setContentPane(panel);
-
-            setSize(new Dimension(500, height));
-
-        }
-    }
     
     /**
      * Walks parents until it gets to a Window
@@ -1947,5 +1825,57 @@ public final class UIHelper
         renderingHints.put(RenderingHints.KEY_TEXT_ANTIALIASING, value);
         return renderingHints;
     }
+    
+    /**
+     * Removes all the focus listeners for a component.
+     * @param comp the comp
+     */
+    public static void removeFocusListeners(final Component comp)
+    {
+        for (FocusListener l : comp.getFocusListeners())
+        {
+            comp.removeFocusListener(l);
+        }
+    }
 
+    /**
+     * Removes the ListSelection Listeners.
+     * @param comp the comp
+     */
+    public static void removeListSelectionListeners(final JList comp)
+    {
+        for (ListSelectionListener l : comp.getListSelectionListeners())
+        {
+            comp.removeListSelectionListener(l);
+        }
+    }
+    
+    /**
+     * Removes all the focus listeners for a component.
+     * @param comp the comp
+     */
+    public static void removeKeyListeners(final Component comp)
+    {
+        for (KeyListener l : comp.getKeyListeners())
+        {
+            comp.removeKeyListener(l);
+        }
+    }
+
+    
+    /**
+     * Removes the Mouse Listeners.
+     * @param c component
+     */
+    public static void removeMouseListeners(final Component c)
+    {
+        for (MouseListener l : c.getMouseListeners())
+        {
+            c.removeMouseListener(l);
+        }
+        for (MouseMotionListener l : c.getMouseMotionListeners())
+        {
+            c.removeMouseMotionListener(l);
+        }
+    }
 }

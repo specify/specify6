@@ -436,6 +436,15 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
     }
 
 
-
+    /**
+     * Clean up references.
+     */
+    public void cleanUp()
+    {
+        listeners.clear();
+        glassPane       = null;
+        ghostActionable = null;
+        dropCanvas      = null;
+    }
 
 }

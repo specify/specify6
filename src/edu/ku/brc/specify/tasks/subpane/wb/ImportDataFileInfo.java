@@ -18,6 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.WindowConstants;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -118,6 +119,7 @@ public class ImportDataFileInfo
             CustomFrame cwin = new CustomFrame(getResourceString(MODIFIED_IMPORT_DATA),
                     CustomFrame.OKHELP, mainPane);
             cwin.setHelpContext("WorkbenchImportData"); //help context could be more specific
+            cwin.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             UIHelper.centerAndShow(cwin);
         }
         if (importer.getMessages().size() > 0)
@@ -134,6 +136,7 @@ public class ImportDataFileInfo
             CustomFrame cwin = new CustomFrame(getResourceString(MODIFIED_IMPORT_DATA),
                     CustomFrame.OKHELP, mainPane);
             cwin.setHelpContext("WorkbenchImportData"); //help context could be more specific
+            cwin.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             UIHelper.centerAndShow(cwin);
         }
     }

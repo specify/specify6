@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='ISO-8859-1' ?>
 <!DOCTYPE helpset
-  PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp HelpSet Version 1.0//EN"
-         "http://java.sun.com/products/javahelp/helpset_1_0.dtd">
+  PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp HelpSet Version 2.0//EN"
+         "http://java.sun.com/products/javahelp/helpset_2_0.dtd">
 
 <?TestTarget this is data for the test target ?>
 
-<helpset version="1.0">
+<helpset version="2.0">
 
   <!-- title -->
   <title>Specify Help</title>
@@ -37,7 +37,7 @@
     <label>Search</label>
     <type>javax.help.SearchView</type>
     <data engine="com.sun.java.help.search.DefaultSearchEngine">
-      JavaHelpSearch
+      SpecifyHelpSearchIndex
     </data>
   </view>
   

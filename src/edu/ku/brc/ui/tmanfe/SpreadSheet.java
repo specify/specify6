@@ -100,7 +100,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
     protected boolean            mouseDown           = false;
     private boolean              rowSelectionStarted = false;
 
-    protected SearchReplacePanel findPanel = null;//new SearchReplacePanel(this);
+    protected SearchReplacePanel findPanel = null;
     
     // XXX Fix for Mac OS X Java 5 Bug
     protected int prevRowSelInx = -1;
@@ -115,18 +115,24 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         super(model);
         
         this.model = model;
-        findPanel = new SearchReplacePanel(this);
         buildSpreadsheet();
     }
     
+    /**
+     * @return the Find Replace Panel.
+     */
     public SearchReplacePanel getFindReplacePanel()
     {
         log.debug("Getting mySearchPanel");
+        if (findPanel == null)
+        {
+            findPanel = new SearchReplacePanel(this);
+        }
         return findPanel;
     }
 
     /**
-     * @param model
+     * 
      */
     protected void buildSpreadsheet()
     {
@@ -909,6 +915,59 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         }
     }
     
+
+    /**
+     * @return the model
+     */
+    @Override
+    public SpreadSheetModel getModel()
+    {
+        return model;
+    }
+    
+    /**
+     * Cleans up references.
+     */
+    public void cleanUp()
+    {
+        UIHelper.removeMouseListeners(this);
+        
+        ((JMenuItem)UIRegistry.get(UIRegistry.COPY)).removeActionListener(this);
+        ((JMenuItem)UIRegistry.get(UIRegistry.CUT)).removeActionListener(this);
+        ((JMenuItem)UIRegistry.get(UIRegistry.PASTE)).removeActionListener(this);
+
+        if (findPanel != null)
+        {
+            findPanel.cleanUp();
+            findPanel = null;
+        }
+        
+        if (scrollPane != null)
+        {
+            scrollPane.removeAll();
+            scrollPane.setRowHeader(null);
+        }
+        
+        if (rowHeaderPanel != null)
+        {
+            rowHeaderPanel.removeAll();
+            rowHeaderPanel = null;
+        }
+        if (model != null)
+        {
+            model.cleanUp();
+            model      = null;
+        }
+        scrollPane = null;
+        popupMenu  = null;
+        
+        if (rhCellMouseAdapter != null)
+        {
+            rhCellMouseAdapter.cleanUp();
+            rhCellMouseAdapter = null;
+        }
+    }
+    
     /**
      * MouseAdapter for selecting rows by clicking and dragging on the Row Headers.
      */
@@ -1067,14 +1126,14 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
                 log.debug("mouseEntered exited");
             }
         }
+        
+        /**
+         * Cleans up references.
+         */
+        public void cleanUp()
+        {
+            this.table = null;
+        }
     }
 
-    /**
-     * @return the model
-     */
-    @Override
-    public SpreadSheetModel getModel()
-    {
-        return model;
-    }
 }

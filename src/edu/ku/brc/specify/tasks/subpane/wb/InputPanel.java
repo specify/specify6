@@ -23,6 +23,7 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -37,13 +38,13 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
-import edu.ku.brc.ui.RolloverCommand;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
 import edu.ku.brc.ui.dnd.ShadowFactory;
+import edu.ku.brc.ui.forms.validation.UIValidatable;
 import edu.ku.brc.ui.forms.validation.ValCheckBox;
 
 /**
@@ -80,8 +81,6 @@ public class InputPanel extends JPanel implements GhostActionable
     protected Dimension              prefferedRenderSize = new Dimension(0,0);
     protected boolean                verticalLayout      = false;
 
-    protected RolloverCommand        itself       = null; // for the mouse adapter
-
     protected List<DataFlavor>       dropFlavors  = new ArrayList<DataFlavor>();
     protected List<DataFlavor>       dragFlavors  = new ArrayList<DataFlavor>();
     
@@ -92,10 +91,14 @@ public class InputPanel extends JPanel implements GhostActionable
      * @param wbtmi the mapping template info
      * @param label the label text
      * @param comp the control
+     * @param droppable the droppable canvas
+     * @param clickable the adapter that listens for the click (selection) of the control via the label
      */
     public InputPanel(final WorkbenchTemplateMappingItem wbtmi, 
-                      final String label, 
-                      final JComponent comp)
+                      final String       label, 
+                      final JComponent   comp,
+                      final Component    droppable,
+                      final MouseAdapter clickable)
     {
         setLayout(null);
         
@@ -121,6 +124,16 @@ public class InputPanel extends JPanel implements GhostActionable
         doLayout();
         
         dragFlavors.add(INPUTPANEL_FLAVOR);
+        
+        createMouseInputAdapter(); // this makes it draggable
+        
+        mouseDropAdapter.setDropCanvas(droppable);
+        
+        // Add the listener for double clicking for properties
+        if (clickable != null)
+        {
+            this.label.addMouseListener(clickable);
+        }
     }
     
     /**
@@ -525,6 +538,39 @@ public class InputPanel extends JPanel implements GhostActionable
     public List<DataFlavor> getDragDataFlavors()
     {
         return dragFlavors;
+    }
+    
+    /**
+     * Cleans up references.
+     */
+    public void cleanUp()
+    {
+        removeAll();
+        
+        UIHelper.removeMouseListeners(label);
+        UIHelper.removeMouseListeners(this);
+        
+        if (comp instanceof UIValidatable)
+        {
+            ((UIValidatable)comp).cleanUp();
+        }
+        
+        wbtmi            = null;
+        label            = null;
+        comp             = null;
+        
+        // Ghosting
+        mouseDropAdapter.cleanUp();
+        listeners.clear();
+        dropFlavors.clear();
+        dragFlavors.clear();
+        
+        sizeBufImg       = null;
+        preferredSize    = null;
+        mouseDropAdapter = null;
+        
+        shadowBuffer     = null;
+        buffer           = null;
     }
 
 }

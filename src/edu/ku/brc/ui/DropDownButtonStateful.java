@@ -212,5 +212,15 @@ public class DropDownButtonStateful extends DropDownButton
             }
         }
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.DropDownButton#finalize()
+     */
+    @Override
+    protected void finalize() throws Throwable
+    {
+        menuInfoItems.clear();
+        super.finalize();
+    }
     
 }

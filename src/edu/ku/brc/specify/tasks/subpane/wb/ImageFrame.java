@@ -68,7 +68,6 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.helpers.ImageFilter;
@@ -102,26 +101,26 @@ public class ImageFrame extends JFrame
     protected WorkbenchPaneSS   wbPane;
     protected int               imageIndex                 = -1;
     protected Workbench         workbench;
+    protected WorkbenchTask     workbenchTask;
 
     // the three things that are viewed in the main display area of the frame
     protected JLabel            cardImageLabel             = new JLabel("", SwingConstants.CENTER);
     protected JPanel            noCardImageMessagePanel;
     protected JPanel            noRowSelectedMessagePanel;
     
-    protected ImageIcon         cardImage;
     protected JButton           loadImgBtn;
     protected JPanel            mainPane;
     protected JScrollPane       scrollPane;
     protected JStatusBar        statusBar;
     protected ThumbnailTray     tray;
 
-    protected JMenu             viewMenu;
-    protected JMenu             imageMenu;
-    protected JMenuItem         closeMI;
-    protected JMenuItem         replaceMI;
-    protected JMenuItem         deleteMI;
-    protected JMenuItem         addMI;
-    protected JCheckBoxMenuItem alwaysOnTopMI;
+    protected JMenu                viewMenu;
+    protected JMenu                imageMenu;
+    protected JMenuItem            closeMI;
+    protected JMenuItem            replaceMI;
+    protected JMenuItem            deleteMI;
+    protected JMenuItem            addMI;
+    protected JCheckBoxMenuItem    alwaysOnTopMI;
     protected JRadioButtonMenuItem origMI;
     protected JRadioButtonMenuItem reduceMI;
     
@@ -143,10 +142,11 @@ public class ImageFrame extends JFrame
     /**
      * Constructor. 
      */
-    public ImageFrame(final int mapSize, final WorkbenchPaneSS wbPane, final Workbench workbench)
+    public ImageFrame(final int mapSize, final WorkbenchPaneSS wbPane, final Workbench workbench, final WorkbenchTask workbenchTask)
     {
-        this.workbench = workbench;
-        this.wbPane = wbPane;
+        this.wbPane           = wbPane;
+        this.workbench        = workbench;
+        this.workbenchTask    = workbenchTask;
         this.allowCloseWindow = true;
         this.defaultThumbIcon = IconManager.getIcon("image", IconSize.Std32);
         
@@ -299,8 +299,8 @@ public class ImageFrame extends JFrame
         {
             public void actionPerformed(ActionEvent ae)
             {
-                WorkbenchTask workbenchTask = (WorkbenchTask)TaskMgr.getDefaultTaskable();
-                workbenchTask.importCardImages(workbench);
+                
+                importImages();
             }
         });
         
@@ -345,6 +345,16 @@ public class ImageFrame extends JFrame
         pack();
         
         //HelpMgr.setHelpID(this, "OnRampImageWindow");
+    }
+    
+    /**
+     * NOTE (IMPORTANT): This line of code needs to be in it's own method because it was causing a memory leak
+     * by referencing one of the two data members. Couldn't figure out why the Garbage Collector
+     * wants to hold onto the entire ImageFrame because of it.
+     */
+    protected void importImages()
+    {
+        workbenchTask.importCardImages(workbench);
     }
     
     /**
@@ -763,10 +773,14 @@ public class ImageFrame extends JFrame
     
     protected ImageIcon generateThumbnail(WorkbenchRowImage rowImage) throws IOException
     {
-        File orig = new File(rowImage.getCardImageFullPath());
-        byte[] origData = FileUtils.readFileToByteArray(orig);
-        byte[] thumbData = thumbnailer.generateThumbnail(origData);
-        return new ImageIcon(thumbData);
+        if (thumbnailer != null)
+        {
+            File orig = new File(rowImage.getCardImageFullPath());
+            byte[] origData = FileUtils.readFileToByteArray(orig);
+            byte[] thumbData = thumbnailer.generateThumbnail(origData);
+            return new ImageIcon(thumbData);
+        }
+        return null;
     }
     
     protected void generateThumbnailsInBackground(final List<WorkbenchRowImage> rowImages)
@@ -835,9 +849,35 @@ public class ImageFrame extends JFrame
         row = null;
         cardImageLabel.setIcon(null);
         cardImageLabel.setText(null);
-        cardImage = null;
         super.setVisible(b);
     }
+    
+    /**
+     * Clean up references.
+     */
+    public void cleanUp()
+    {
+        setJMenuBar(null);
+        removeAll();
+        this.progress         = null;
+        this.row              = null;
+        this.wbPane           = null;
+        this.workbench        = null;
+        this.workbenchTask    = null;
+        this.defaultThumbIcon = null;
+        this.mainPane         = null;
+        this.scrollPane       = null;
+        this.statusBar        = null;
+        this.tray             = null;
+        this.thumbnailer      = null;
+        
+        setIconImage(null);
+    }
+    
+    //--------------------------------------------------------------------------------------
+    // Inner Classes
+    //--------------------------------------------------------------------------------------
+    
     
     class ThumbnailTray extends JPanel
     {

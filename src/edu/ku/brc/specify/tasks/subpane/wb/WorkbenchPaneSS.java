@@ -33,6 +33,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.ConnectException;
@@ -142,6 +145,7 @@ import edu.ku.brc.ui.SearchReplacePanel;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.UnhandledExceptionDialog;
 import edu.ku.brc.ui.ToggleButtonChooserDlg.Type;
 import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.ResultSetController;
@@ -211,6 +215,8 @@ public class WorkbenchPaneSS extends BaseSubPane
     
     protected JFrame                mapFrame                   = null;
     protected JLabel                mapImageLabel              = null;
+    
+    protected WindowListener        minMaxWindowListener       = null; 
     
     // XXX PREF
     protected int                   mapSize                    = 500;
@@ -343,7 +349,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 
         // NOTE: This needs to be done after the creation of the saveBtn
         initColumnSizes(spreadSheet, saveBtn);
-
+        
         Action delAction = addRecordKeyMappings(spreadSheet, KeyEvent.VK_F3, "DelRow", new AbstractAction()
         {
             public void actionPerformed(ActionEvent ae)
@@ -518,9 +524,41 @@ public class WorkbenchPaneSS extends BaseSubPane
         });
         
         // setup the JFrame to show images attached to WorkbenchRows
-        imageFrame = new ImageFrame(mapSize, this, this.workbench);
+        imageFrame = new ImageFrame(mapSize, this, this.workbench, (WorkbenchTask)task);
         
         setupWorkbenchRowChangeListener();
+        
+        // setup window minimizing/maximizing listener
+        JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
+        minMaxWindowListener = new WindowAdapter()
+        {
+            @Override
+            public void windowDeiconified(WindowEvent e)
+            {
+                if (imageFrame != null && imageFrame.isVisible())
+                {
+                    imageFrame.setExtendedState(Frame.NORMAL);
+                }
+                if (mapFrame != null && mapFrame.isVisible())
+                {
+                    mapFrame.setExtendedState(Frame.NORMAL);
+                }
+            }
+
+            @Override
+            public void windowIconified(WindowEvent e)
+            {
+                if (imageFrame != null && imageFrame.isVisible())
+                {
+                    imageFrame.setExtendedState(Frame.ICONIFIED);
+                }
+                if (mapFrame != null && mapFrame.isVisible())
+                {
+                    mapFrame.setExtendedState(Frame.ICONIFIED);
+                }
+            }
+        };
+        topFrame.addWindowListener(minMaxWindowListener);
                 
         // setup the mapping features
         mapFrame = new JFrame();
@@ -544,9 +582,6 @@ public class WorkbenchPaneSS extends BaseSubPane
             x += 2;
         }
         
-        //spreadSheetControlBar.getPanel().setBackground(Color.MAGENTA); // DEBUG
-        //spreadSheetControlBar.getPanel().setOpaque(true);
-        
         // Create the Form Pane
         formPane = new FormPane(this, workbench);
         
@@ -557,17 +592,11 @@ public class WorkbenchPaneSS extends BaseSubPane
         resultsetController.getDelRecBtn().addActionListener(delAction);
         rsPanel.add(resultsetController.getPanel(), cc.xy(1,1));
         
-        //rsPanel.getPanel().setBackground(Color.YELLOW); // DEBUG
-        //rsPanel.getPanel().setOpaque(true);
-        
         // This panel is a single row containing the ResultSetContoller and the other controls for the Form Panel  
         PanelBuilder resultSetPanel = new PanelBuilder(new FormLayout("f:p:g, p, f:p:g, p", "c:p:g"));
         // Now put the two panel into the single row panel
         resultSetPanel.add(rsPanel.getPanel(), cc.xy(2,1));
         resultSetPanel.add(formPane.getControlPropsBtn(), cc.xy(4,1));
-        
-        //resultSetPanel.getPanel().setBackground(Color.ORANGE); // DEBUG
-        //resultSetPanel.getPanel().setOpaque(true);
         
         // Create the main panel that uses card layout for the form and spreasheet
         mainPanel = new JPanel(cardLayout = new CardLayout());
@@ -581,9 +610,6 @@ public class WorkbenchPaneSS extends BaseSubPane
         controllerPane.add(spreadSheetControlBar.getPanel(), PanelType.Spreadsheet.toString());
         controllerPane.add(resultSetPanel.getPanel(),        PanelType.Form.toString());
         
-        //controllerPane.setBackground(Color.BLUE); // DEBUG
-        //controllerPane.setOpaque(true);
-        
         JLabel sep1 = new JLabel(IconManager.getIcon("Separator"));
         JLabel sep2 = new JLabel(IconManager.getIcon("Separator"));
         
@@ -596,9 +622,6 @@ public class WorkbenchPaneSS extends BaseSubPane
         ctrlBtns.add(saveBtn,             cc.xy(7,1));
         ctrlBtns.add(sep2,                cc.xy(9,1));
         ctrlBtns.add(createSwitcher(),    cc.xy(10,1));
-        
-        //ctrlBtns.getPanel().setBackground(Color.GREEN); // DEBUG
-        //ctrlBtns.getPanel().setOpaque(true);
         
         add(mainPanel, BorderLayout.CENTER);
         
@@ -663,7 +686,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         boolean isOK = true;
         if (currentPanelType == PanelType.Spreadsheet)
         {
-            if (spreadSheet.getCellEditor() != null)
+            if (spreadSheet != null && spreadSheet.getCellEditor() != null)
             {
                 int index = spreadSheet.getSelectedRow();
                 isOK = spreadSheet.getCellEditor().stopCellEditing();
@@ -1078,6 +1101,8 @@ public class WorkbenchPaneSS extends BaseSubPane
                     }
                 });
             }
+            // Enable the "Find" action in the Edit menu when a spreadsheet is shown
+            UIRegistry.enableFindinEditMenu(findPanel);
 
         } else
         {
@@ -1104,11 +1129,6 @@ public class WorkbenchPaneSS extends BaseSubPane
         JComponent[] comps = { addRowsBtn, deleteRowsBtn, clearCellsBtn};
         for (JComponent c : comps)
         {
-            // Enable the "Find" action in the Edit menu when a spreadsheet is shown
-            if (isSpreadsheet)
-            {
-                UIRegistry.enableFindinEditMenu(findPanel);
-            }
             c.setVisible(isSpreadsheet);
         }
     }
@@ -2190,7 +2210,8 @@ public class WorkbenchPaneSS extends BaseSubPane
                     if (resCount > 0)
                     {
                         // everything must have worked and returned at least 1 result
-                        row.setBioGeomancerResults(bgResults);
+                        // TEMP FIX FOR BUG 4562 RELEASE 
+                        //row.setBioGeomancerResults(bgResults);
                         setChanged(true);
                     }
                     
@@ -2408,9 +2429,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             
             column.setCellEditor(cellEditor);
         }
-        
         //tableArg.setCellEditor(cellEditor);
-
     }
     
     /**
@@ -2546,14 +2565,18 @@ public class WorkbenchPaneSS extends BaseSubPane
             // 
             //recoverFromStaleObject("UPDATE_DATA_STALE");
             UIRegistry.getStatusBar().setErrorMessage(getResourceString("WB_ERROR_SAVING"), ex);
-
+            UnhandledExceptionDialog dlg = new UnhandledExceptionDialog(ex);
+            dlg.setVisible(true);
             
         } catch (Exception ex)
         {
             log.error("******* " + ex);
             ex.printStackTrace();
             session.rollback();
+            
             UIRegistry.getStatusBar().setErrorMessage(getResourceString("WB_ERROR_SAVING"), ex);
+            UnhandledExceptionDialog dlg = new UnhandledExceptionDialog(ex);
+            dlg.setVisible(true);
 
         }
         
@@ -2665,22 +2688,115 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         }
         
+        if (retStatus)
+        {
+            ((WorkbenchTask)task).closing(this);
+            
+            spreadSheet.getSelectionModel().removeListSelectionListener(workbenchRowChangeListener);
+            workbenchRowChangeListener = null;
+        }
+        
+        return retStatus;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.subpane.BaseSubPane#shutdown()
+     */
+    @Override
+    public void shutdown()
+    {
+        //--------------------------------------------------------------------------------
+        // I really don't know how much of all this is necessary
+        // but using the JProfiler it seems things got better when I did certain things.
+        //--------------------------------------------------------------------------------
+        
+        
+        UIRegistry.getLaunchFindReplaceAction().setSearchReplacePanel(null);
+        UIRegistry.enableFindinEditMenu(null);
+        
+        JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
+        
+        if (minMaxWindowListener != null)
+        {
+            topFrame.removeWindowListener(minMaxWindowListener);
+            minMaxWindowListener = null;
+        }
+        
+        removeAll();
+        mainPanel.removeAll();
+        controllerPane.removeAll();
+        
+        if (spreadSheet != null)
+        {
+            spreadSheet.getSelectionModel().removeListSelectionListener(workbenchRowChangeListener);
+            spreadSheet.cleanUp();
+            workbenchRowChangeListener = null;
+        
+            for (int i = 0; i < spreadSheet.getColumnCount(); i++) 
+            {
+                TableColumn column = spreadSheet.getColumnModel().getColumn(i);
+                TableCellEditor editor = column.getCellEditor();
+                if (editor instanceof GridCellEditor)
+                {
+                    ((GridCellEditor)editor).cleanUp();
+                }
+            }
+            TableCellEditor editor = spreadSheet.getCellEditor();
+            if (editor instanceof GridCellEditor)
+            {
+                ((GridCellEditor)editor).cleanUp();
+            }
+        }
+        
+        if (imageFrame != null)
+        {
+            imageFrame.cleanUp();
+            imageFrame.dispose();
+        }
+        
+        if (mapFrame != null)
+        {
+            mapFrame.dispose();
+        }
+        
+        if (model != null)
+        {
+            model.cleanUp();
+        }
+        
+        if (headers != null)
+        {
+            headers.clear();
+        }
+        
+        if (resultsetController != null)
+        {
+            resultsetController.removeListener(formPane);
+            resultsetController = null;
+        }
+        
         if (formPane != null)
         {
             formPane.cleanup();
         }
-        
 
-        if (retStatus)
-        {
-            ((WorkbenchTask)task).closing(this);
-            //UIRegistry.unregisterAction(workbench.getName()+"_AddRow");
-            
-            imageFrame.dispose();
-            mapFrame.dispose();
-        }
+        formPane    = null;
+        findPanel   = null;
+        spreadSheet = null;
+        workbench   = null;
+        model       = null;
+        imageColExt = null;
+        columns     = null;
+        imageFrame  = null;
+        headers     = null;
+        recordSet   = null;
+        mainPanel   = null;
+        controllerPane   = null;
+        currentPanelType = null;
+        cardLayout       = null;
+        cpCardLayout     = null;
         
-        return retStatus;
+        super.shutdown();
     }
 
     /* (non-Javadoc)
@@ -2758,6 +2874,8 @@ public class WorkbenchPaneSS extends BaseSubPane
     {
         return currentPanelType == PanelType.Spreadsheet ? "WorkbenchGridEditing" : "WorkbenchFormEditing";
     }
+    
+    
 
     //------------------------------------------------------------
     // Inner Classes
@@ -2768,7 +2886,8 @@ public class WorkbenchPaneSS extends BaseSubPane
         protected JTextField          textField;
         protected int                 length;
         protected LengthInputVerifier verifier;
-        protected JButton             gcSaveBtn;
+        protected JButton             ceSaveBtn;
+        protected DocumentListener    docListener;
         
         //protected UndoManager undoManager = new UndoManager();
 
@@ -2777,14 +2896,13 @@ public class WorkbenchPaneSS extends BaseSubPane
             super(textField);
             this.textField = textField;
             this.length    = length;
-            this.gcSaveBtn = gcSaveBtn;
+            this.ceSaveBtn = saveBtn;
             
             verifier = new LengthInputVerifier(caption, length);
             textField.setInputVerifier(verifier);
 
             textField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-            
-            textField.getDocument().addDocumentListener(new DocumentListener() {
+            docListener = new DocumentListener() {
                 public void changedUpdate(DocumentEvent e)
                 {
                     validateDoc();
@@ -2799,7 +2917,8 @@ public class WorkbenchPaneSS extends BaseSubPane
                 {
                     validateDoc();
                 }
-            });
+            };
+            textField.getDocument().addDocumentListener(docListener);
         }
         
         /**
@@ -2809,7 +2928,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             if (!verifier.verify(textField))
             {
-                gcSaveBtn.setEnabled(false);
+                ceSaveBtn.setEnabled(false);
             }
         }
 
@@ -2821,7 +2940,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             if (!verifier.verify(textField))
             {
-                gcSaveBtn.setEnabled(false);
+                ceSaveBtn.setEnabled(false);
                 return false;
             }
             return super.stopCellEditing();
@@ -2911,6 +3030,18 @@ public class WorkbenchPaneSS extends BaseSubPane
         public JTextComponent getTextComponent()
         {
             return textField;
+        }
+        
+        /**
+         * cleans up listeners etc.
+         */
+        public void cleanUp()
+        {
+            textField.setInputVerifier(null);
+            textField.getDocument().removeDocumentListener(docListener);
+            textField = null;
+            verifier  = null;
+            ceSaveBtn = null;
         }
      }
 

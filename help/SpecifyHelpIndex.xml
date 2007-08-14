@@ -26,10 +26,6 @@
      <indexitem text="Reorder up"   target="WorkbenchEditMapping"/>
      <indexitem text="Reorder down"   target="WorkbenchEditMapping"/>
 </indexitem>
-<indexitem text="Basic Label">
-     <indexitem text="an index in the basic label file"   target="WorkbenchBasicLabel"/>
-     <indexitem text="another index in the basic label file"   target="WorkbenchBasicLabel"/>
-</indexitem>
 <indexitem text="Grid Editing">
      <indexitem text="Grid Editing"   target="WorkbenchGridEditing"/>
      <indexitem text="Google Earth"   target="WorkbenchGridEditing"/>

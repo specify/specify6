@@ -548,5 +548,17 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
     	mainBtn.setEnabled(value);
     	arrowBtn.setEnabled(value);
     }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#finalize()
+     */
+    @Override
+    protected void finalize() throws Throwable
+    {
+        listeners.clear();
+        menus.clear();
+        UIHelper.removeMouseListeners(this);
+        super.finalize();
+    }
     
 }

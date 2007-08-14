@@ -92,7 +92,7 @@ public class SearchReplacePanel extends JPanel
     private SearchAction             searchAction            = new SearchAction();
     private ReplaceAction            replaceAction           = new ReplaceAction();
     private LaunchFindAction         launchFindAction        = null;
-
+    private ListSelectionListener    listSelectionListener   = null; 
     CellConstraints                  cc                      = new CellConstraints();
     FormLayout                       formLayout              = new FormLayout("p,8px,p,1px,p,1px,p,1px,p,4px,p,1px," +
                                                                               "p,1px,p,1px,p,1px,p", "p,1px,p,1px");
@@ -105,7 +105,7 @@ public class SearchReplacePanel extends JPanel
      * 
      * @param table - a SearchableJXTable table
      */
-    public SearchReplacePanel(SpreadSheet mytable)
+    public SearchReplacePanel(final SpreadSheet mytable)
     {
         this.table = mytable;
         this.setVisible(false);
@@ -119,7 +119,7 @@ public class SearchReplacePanel extends JPanel
      */
    public void handleTableSelections()
     {
-        ListSelectionListener lsl = new ListSelectionListener()
+        listSelectionListener = new ListSelectionListener()
         {
             public void valueChanged(ListSelectionEvent e)
             {
@@ -128,7 +128,7 @@ public class SearchReplacePanel extends JPanel
                 clearStatusLabel();
             }          
         };
-        table.getSelectionModel().addListSelectionListener(lsl);
+        table.getSelectionModel().addListSelectionListener(listSelectionListener);
     }
     
     /**
@@ -264,6 +264,7 @@ public class SearchReplacePanel extends JPanel
         cancelButton.setIcon(IconManager.getIcon("Close"));
         cancelButton.setMargin(new Insets(0, 0, 0, 0));
         cancelButton.setBorder(null);
+        
         findLabel = new JLabel(getResourceString("FIND") + ": ", SwingConstants.RIGHT);
 
         nextButton = new JButton(getResourceString("NEXT"));//, new ImageIcon(Specify.class.getResource("images/down.png")));
@@ -677,6 +678,16 @@ public class SearchReplacePanel extends JPanel
     public Action getLaunchFindAction()
     {
         return launchFindAction;
+    }
+    
+    /**
+     * Clean up references.
+     */
+    public void cleanUp()
+    {
+        this.table.getSelectionModel().removeListSelectionListener(listSelectionListener);
+        this.table.getActionMap().remove("Find");
+        this.table = null;
     }
 
     /**

@@ -124,7 +124,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
     protected boolean            wasShowing        = false;
     protected JScrollPane        scrollPane;
     
-    // This is necessary because CardLayout doe4sn't set visibility
+    // This is necessary because CardLayout doesn't set visibility
     protected Dimension          initialSize       = null; 
     
     /**
@@ -157,17 +157,10 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         
         MouseAdapter clickable = new MouseAdapter()
         {
-            
             @Override
             public void mousePressed(MouseEvent e)
             {
-                //if (e.getClickCount() == 2 && (controlPropsDlg == null || !controlPropsDlg.isVisible()))
-                //{
-                //    showControlProps();
-                //}
-
                 selectControl(e.getSource());
-                
             }
             
             @Override
@@ -190,18 +183,6 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             }
         };
         
-        /*
-        addMouseListener(new MouseAdapter()
-        {
-            @Override
-            public void mouseClicked(MouseEvent e)
-            {
-                // Not a bug, but is leaving the Edit Btn enabled such a bad thing?
-                //selectedInputPanel = null;
-                //controlPropsBtn.setEnabled(false);
-            }
-        });*/
-        
         Point topLeftPnt = new Point(Integer.MAX_VALUE, Integer.MAX_VALUE);
 
         final int LAYOUT_SPACING = 4;
@@ -211,12 +192,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         for (WorkbenchTemplateMappingItem wbtmi : headers)
         {
             // Create the InputPanel and make it draggable
-            InputPanel panel = new InputPanel(wbtmi, wbtmi.getCaption(), createUIComp(wbtmi));
-            panel.createMouseInputAdapter(); // this makes it draggable
-            panel.getMouseInputAdapter().setDropCanvas(this);
-            
-            // Add the listener for double clicking for properties
-            panel.getLabel().addMouseListener(clickable);
+            InputPanel panel = new InputPanel(wbtmi, wbtmi.getCaption(), createUIComp(wbtmi), this, clickable);
 
             Dimension size = panel.getPreferredSize();
             panel.setSize(size);
@@ -248,7 +224,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
                 maxY = (short)Math.max(wbtmi.getYCoord() + size.height, maxY);
             }
         }
-        
+
         // Now align the control by their text fields and skips the ones that have actual positions defined.
         // NOTE: We set the X,Y into the Mapping so that each item knows where it is, then if the user
         // drags and drop anything or save the template everyone knows where they are suppose to be
@@ -256,9 +232,9 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         int   inx        = 0;
         int   maxX       = 0;
         int   y          = maxY + LAYOUT_SPACING;
-        for (WorkbenchTemplateMappingItem wbtmi : headers)
+        for (InputPanel panel : uiComps)
         {
-            InputPanel panel = uiComps.get(inx);
+            WorkbenchTemplateMappingItem wbtmi = headers.get(inx);
             if (delayedLayout.contains(panel))
             {
                 int x = maxWidthOffset - panel.getTextFieldOffset();
@@ -425,7 +401,41 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
      */
     public void cleanup()
     {
-        // no op
+        removeAll();
+        
+        scrollPane.removeAll();
+        
+        for (InputPanel panel : uiComps)
+        {
+            Component comp = panel.getComp();
+            if (comp instanceof ValTextField)
+            {
+                ((ValTextField)comp).getDocument().removeDocumentListener(this);
+            } else if (comp instanceof ValTextArea)
+            {
+                ((ValTextArea)comp).getDocument().removeDocumentListener(this);
+   
+            } else if (comp instanceof ValCheckBox)
+            {
+                ((ValCheckBox)comp).removeChangeListener(this);
+            }
+            panel.cleanUp();
+        }
+        uiComps.clear();
+        headers.clear();
+        dropFlavors.clear();
+
+        workbenchPane      = null;
+        workbench          = null;
+        controlPropsBtn    = null;
+        firstComp          = null;
+        selectedInputPanel = null;   
+        controlPropsDlg    = null;
+        scrollPane         = null; 
+        initialSize        = null; 
+        uiComps            = null; 
+        headers            = null; 
+        dropFlavors        = null; 
     }
 
     /**
@@ -515,6 +525,11 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         return columns;
     }
     
+    /**
+     * Returns the number of rows for the tmeplate column
+     * @param wbtmi the col def
+     * @return the number rows
+     */
     public static short getRows(final WorkbenchTemplateMappingItem wbtmi)
     {
         // Check to see if the length of the data field is past threshold TEXTFIELD_DATA_LEN_MAX
@@ -606,10 +621,6 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
         
         
         comp.addKeyListener(new KeyAdapter() {
-
-            /* (non-Javadoc)
-             * @see java.awt.event.KeyAdapter#keyTyped(java.awt.event.KeyEvent)
-             */
             @Override
             public void keyPressed(KeyEvent e)
             {
@@ -672,13 +683,13 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
      */
     protected void showControlProps()
     {
-        if (controlPropsDlg == null)
-        {
-            controlPropsDlg = new EditFormControlDlg((Frame)UIRegistry.get(UIRegistry.FRAME), "", selectedInputPanel, this); // I18N
-        }
-        
         if (selectedInputPanel != null) // this shouldn't happen
         {
+            if (controlPropsDlg == null)
+            {
+                controlPropsDlg = new EditFormControlDlg((Frame)UIRegistry.get(UIRegistry.FRAME), "", selectedInputPanel, this); // I18N
+            }
+            
             controlPropsDlg.setTitle(String.format(getResourceString("WB_EDIT_DLG_TITLE"), new Object[] {selectedInputPanel.getControlTitle()}));
             
             controlPropsDlg.setVisible(true);

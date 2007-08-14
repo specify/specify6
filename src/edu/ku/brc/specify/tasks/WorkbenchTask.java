@@ -664,6 +664,7 @@ public class WorkbenchTask extends BaseTask
         {
             editorDlg.getMultiView().getDataFromUI();
         }
+        editorDlg.dispose();
         
         return !editorDlg.isCancelled();
     }
@@ -960,12 +961,14 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 return false;
             }
             extension = dlg.getSelectedObject().getExtension();
+            dlg.dispose();
         }
         
         FileDialog fileDialog = new FileDialog((Frame) UIRegistry.get(UIRegistry.FRAME),
                                                getResourceString("CHOOSE_WORKBENCH_EXPORT_FILE"), FileDialog.SAVE);
         fileDialog.setDirectory(getDefaultDirPath(EXPORT_FILE_PATH));
         UIHelper.centerAndShow(fileDialog);
+        fileDialog.dispose();
         
         String path = fileDialog.getDirectory();
         if (StringUtils.isNotEmpty(path))
@@ -975,6 +978,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         }
         
         String fileName = fileDialog.getFile();
+        
         if (StringUtils.isEmpty(fileName))
         {
             UIRegistry.getStatusBar().setErrorMessage(getResourceString("WB_EXPORT_NOFILENAME"));
@@ -1005,6 +1009,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             CustomDialog confirmer = new CustomDialog((Frame)UIRegistry.get(UIRegistry.FRAME), 
                     getResourceString("WB_FILE_EXISTS_TITLE"), true, CustomDialog.OKCANCEL, builder.getPanel(), CustomDialog.CANCEL_BTN);
             UIHelper.centerAndShow(confirmer);
+            confirmer.dispose();
             if (confirmer.isCancelled())
             {
                 return false;
@@ -1263,6 +1268,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
 
         });
         UIHelper.centerAndShow(fileDialog);
+        fileDialog.dispose();
         
         String fileName = fileDialog.getFile();
         String path     = fileDialog.getDirectory();
@@ -1323,6 +1329,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             {   
                 workbenchTemplate = createTemplate(dlg, inputFile != null ? inputFile.getAbsolutePath() : "");
              }
+            dlg.dispose();
             
         } else if (btnPressed == ChooseFromListDlg.OK_BTN && workbenchTemplate != null)
         {
@@ -1394,8 +1401,9 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         {
             String newWorkbenchName = wbName;
             
-            boolean alwaysAsk = true;
-            Object  foundWB   = null;
+            boolean   alwaysAsk   = true;
+            Workbench foundWB     = null;
+            boolean   shouldCheck = false;
             do
             {
                 if (StringUtils.isEmpty(newWorkbenchName))
@@ -1413,6 +1421,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                     skip = false;
                 }
                 
+                String oldName = workbench.getName();
                 if ((foundWB != null || (StringUtils.isNotEmpty(newWorkbenchName) && newWorkbenchName.length() > 64)) || alwaysAsk)
                 {
                     alwaysAsk = false;
@@ -1434,7 +1443,10 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                     }
                     
                 }
-            } while (foundWB != null);
+                
+                shouldCheck = oldName == null || !oldName.equals(newWorkbenchName);
+                
+            } while (shouldCheck);
             
         } catch (Exception ex)
         {
@@ -1622,7 +1634,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                          
                          WorkbenchPaneSS workbenchPane = new WorkbenchPaneSS(workbench.getName(), thisTask, workbench, showImageView);
                          addSubPaneToMgr(workbenchPane);
-
+                         
                          if (convertedAnImage)
                          {
                              Component topFrame = UIRegistry.getTopWindow();
@@ -1865,6 +1877,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         {
             editorDlg.getMultiView().getDataFromUI();
         }
+        editorDlg.dispose();
         
         return !editorDlg.isCancelled();
     }
@@ -2380,6 +2393,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 }  
             }
         }
+        dlg.dispose();
     }
     
     /**
@@ -2601,7 +2615,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 {   
                     workbenchTemplate = createTemplate(dlg, null);
                 }
-                
+                dlg.dispose();
+
             } else if (btnPressed == ChooseFromListDlg.CANCEL_BTN)
             {
                 return;
@@ -2889,7 +2904,6 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         
         UsageTracker.incrUsageCount(cmdAction.getAction());
 
-
         if (cmdAction.isAction(SELECTED_WORKBENCH))
         {
             workbenchSelected(cmdAction);
@@ -2899,7 +2913,6 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             if (isClickedOn)
             {
                 createNewWorkbenchFromFile();
-                
             }
             
         } else if (cmdAction.isAction(EXPORT_DATA_FILE))
@@ -2919,7 +2932,6 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             
         } else if (cmdAction.isAction(NEW_WORKBENCH_FROM_TEMPLATE)) // XXX This can be removed
         {
-            
             createWorkbenchFromTemplate(cmdAction);
             
         } else if (cmdAction.isAction(NEW_WORKBENCH))

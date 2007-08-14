@@ -65,6 +65,7 @@ public class JAutoCompTextField extends JTextField
     public JAutoCompTextField()
     {
         super();
+        init();
     }
     
     /**
