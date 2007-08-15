@@ -139,9 +139,6 @@ public class Locality extends DataModelObjBase implements java.io.Serializable, 
     public Locality(Long localityId) {
         this.localityId = localityId;
     }
-   
-    
-    
 
     // Initializer
     @Override

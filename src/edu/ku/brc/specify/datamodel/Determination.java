@@ -58,7 +58,8 @@ import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "determination")
 @org.hibernate.annotations.Proxy(lazy = false)
-public class Determination extends DataModelObjBase implements java.io.Serializable {
+public class Determination extends DataModelObjBase implements java.io.Serializable, Comparable<Determination>
+{
 
     // Fields    
 
@@ -471,5 +472,23 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
         
         return DataObjFieldFormatMgr.format(this, getClass());
     }
+    
+    //----------------------------------------------------------------------
+    //-- Comparable Interface
+    //----------------------------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(Determination obj)
+    {
+        if (determinedDate != null && obj != null && obj.determinedDate != null)
+        {
+            return determinedDate.compareTo(obj.determinedDate);
+        }
+        // else
+        return timestampCreated.compareTo(obj.timestampCreated);
+    }
+
 
 }

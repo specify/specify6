@@ -75,7 +75,6 @@ import edu.ku.brc.specify.datamodel.ReferenceWork;
 import edu.ku.brc.specify.datamodel.RepositoryAgreement;
 import edu.ku.brc.specify.datamodel.Shipment;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.specify.datamodel.Stratigraphy;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonCitation;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
@@ -1276,8 +1275,7 @@ public class DataBuilder
                                                         final Short endTime,
                                                         final String verbatimLocality,
                                                         final Integer groupPermittedToView,
-                                                        final Locality locality,
-                                                        final Stratigraphy stratigraphy)
+                                                        final Locality locality)
     {
         CollectingEvent collectingevent = new CollectingEvent();
         collectingevent.initialize();
@@ -1295,7 +1293,6 @@ public class DataBuilder
         collectingevent.setEndTime(endTime);
         collectingevent.setVerbatimLocality(verbatimLocality);
         collectingevent.setLocality(locality);
-        collectingevent.setStratigraphy(stratigraphy);
         collectingevent.setMethod(method);
         collectingevent.setStartTime(startTime);
         persist(collectingevent);
@@ -2084,34 +2081,6 @@ public class DataBuilder
         permission.setSpecifyUser(owner);
         persist(permission);
         return permission;
-    }
-
-    public static Stratigraphy createStratigraphy(final String superGroup,
-                                                  final String lithoGroup,
-                                                  final String formation,
-                                                  final String member,
-                                                  final String bed,
-                                                  final CollectingEvent collectingEvent)
-    {
-        Stratigraphy stratigraphy = new Stratigraphy();
-        stratigraphy.initialize();
-        stratigraphy.setTimestampCreated(new Date());
-        stratigraphy.setTimestampModified(new Date());
-        
-        HashSet<CollectingEvent> collectingEvents = new HashSet<CollectingEvent>();
-        if (collectingEvent != null)
-        {
-            collectingEvents.add(collectingEvent);
-            collectingEvent.setStratigraphy(stratigraphy);
-        }
-        stratigraphy.setCollectingEvents(collectingEvents);
-        stratigraphy.setSuperGroup(superGroup);
-        stratigraphy.setLithoGroup(lithoGroup);
-        stratigraphy.setFormation(formation);
-        stratigraphy.setMember(member);
-        stratigraphy.setBed(bed);
-        persist(stratigraphy);
-        return stratigraphy;
     }
 
     public static TaxonCitation createTaxonCitation(final ReferenceWork referenceWork, final Taxon taxon)

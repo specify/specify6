@@ -116,6 +116,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     
     protected Set<CollectionRelationship>   leftSideRels;
     protected Set<CollectionRelationship>   rightSideRels;
+    protected PaleoContext                  paleoContext;
 
     // Constructors
 
@@ -581,6 +582,21 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     public void setProjectCollectionObjects(Set<ProjectCollectionObject> projectCollectionObjects) {
         this.projectCollectionObjects = projectCollectionObjects;
     }
+    
+    /**
+     *
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    @JoinColumn(name = "PaleoContextID", unique = false, nullable = true, insertable = true, updatable = true)
+    public PaleoContext getPaleoContext() {
+        return this.paleoContext;
+    }
+
+    public void setPaleoContext(PaleoContext paleoContext) {
+        this.paleoContext = paleoContext;
+    }
+
 
 //    /**
 //     *

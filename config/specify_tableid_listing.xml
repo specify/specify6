@@ -4,7 +4,7 @@
 
     Last Used Id is 102 or 502
     
-    (ID 32 is available)
+    73 is not used.
     
     PLEASE Keep this file in alphabetical order! 
 
@@ -143,6 +143,7 @@
             <businessrule>edu.ku.brc.specify.datamodel.busrules.LocationBusRules</businessrule>            
 		</table>
         <table name="edu.ku.brc.specify.datamodel.OtherIdentifier" id="61"/>
+        <table name="edu.ku.brc.specify.datamodel.PaleoContext" id="32"/>
         <table name="edu.ku.brc.specify.datamodel.Permit" id="6" query="true">
             <display objtitle="Permit" view="Permit" dataobjformatter="Permit" searchdlg="PermitSearch" newobjdlg="PermitDisplay"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.PermitBusRules</businessrule>            
@@ -173,9 +174,6 @@
             <businessrule>edu.ku.brc.specify.datamodel.busrules.ShipmentBusRules</businessrule>                                    
         </table>
         <table name="edu.ku.brc.specify.datamodel.SpecifyUser" id="72"/>
-        <table name="edu.ku.brc.specify.datamodel.Stratigraphy" id="73" workbench="true" query="true">
-            <display view="Stratigraphy" objtitle="Stratigraphy"/>
-        </table>
         <table name="edu.ku.brc.specify.datamodel.Taxon" id="4" workbench="true" query="true">
             <display objtitle="Taxon" view="Taxon" dataobjformatter="Taxon" searchdlg="TaxonSearch" newobjdlg="TaxonDisplay"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.TaxonBusRules</businessrule>                                                

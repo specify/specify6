@@ -152,7 +152,7 @@ public class XMLHelper
      * @return the root DOM lement
      * @throws Exception any file io exceptions
      */
-   public static org.dom4j.Element readDOMFromConfigDir(final String fileName) throws Exception
+   public static org.dom4j.Element readDOMFromConfigDir(final String fileName)
    {
        try
        {

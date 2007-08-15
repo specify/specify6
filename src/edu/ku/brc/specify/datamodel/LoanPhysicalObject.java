@@ -53,21 +53,22 @@ import org.hibernate.annotations.CascadeType;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "loanphysicalobject")
-public class LoanPhysicalObject extends DataModelObjBase implements java.io.Serializable {
+public class LoanPhysicalObject extends DataModelObjBase implements java.io.Serializable, Comparable<LoanPhysicalObject>
+{
 
     // Fields    
 
-     protected Long loanPhysicalObjectId;
-     protected Integer quantity;
-     protected String descriptionOfMaterial;
-     protected String outComments;
-     protected String inComments;
-     protected Integer quantityResolved;
-     protected Integer quantityReturned;
-     protected Boolean isResolved;
-     protected Preparation preparation;
-     protected Loan loan;
-     protected Set<LoanReturnPhysicalObject> loanReturnPhysicalObjects;
+    protected Long                          loanPhysicalObjectId;
+    protected Integer                       quantity;
+    protected String                        descriptionOfMaterial;
+    protected String                        outComments;
+    protected String                        inComments;
+    protected Integer                       quantityResolved;
+    protected Integer                       quantityReturned;
+    protected Boolean                       isResolved;
+    protected Preparation                   preparation;
+    protected Loan                          loan;
+    protected Set<LoanReturnPhysicalObject> loanReturnPhysicalObjects;
 
 
     // Constructors
@@ -305,5 +306,16 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
     {
         return 54;
     }
-
+    
+    //----------------------------------------------------------------------
+    //-- Comparable Interface
+    //----------------------------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(LoanPhysicalObject obj)
+    {
+        return timestampCreated.compareTo(obj.timestampCreated);
+    }
 }

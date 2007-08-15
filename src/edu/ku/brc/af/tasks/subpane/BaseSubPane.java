@@ -68,25 +68,44 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
     public BaseSubPane(final String name,
                        final Taskable task)
     {
+        this(name, task, true);
+    }
+    
+    /**
+     * Constructs a base class that implements the SubPanelIFace interface
+     * which enables derived classes to participate in the main pane.
+     * It also adds the progress indicator and it provide.
+     *
+     * @param name the name of the subpane
+     * @param task the owning task
+     * @param buildProgressUI true - build progress UI
+     */
+    public BaseSubPane(final String name,
+                       final Taskable task,
+                       final boolean  buildProgressUI)
+    {
         this.name    = name;
         this.task    = task;
 
         setLayout(new BorderLayout());
 
-        progressBar = new JProgressBar();
-        progressBar.setIndeterminate(true);
-        FormLayout      formLayout = new FormLayout("f:max(100px;p):g", "center:p:g, p, center:p:g");
-        PanelBuilder    builder    = new PanelBuilder(formLayout);
-        CellConstraints cc         = new CellConstraints();
-
-        builder.add(progressBar, cc.xy(1,1));
-        builder.add(progressLabel = new JLabel("", SwingConstants.CENTER), cc.xy(1,3));
-
-        PanelBuilder    builder2    = new PanelBuilder(new FormLayout("center:p:g", "center:p:g"));
-        builder2.add(builder.getPanel(), cc.xy(1,1));
-
-        progressBarPanel = builder2.getPanel();
-        add(progressBarPanel, BorderLayout.CENTER);
+        if (buildProgressUI)
+        {
+            progressBar = new JProgressBar();
+            progressBar.setIndeterminate(true);
+            FormLayout      formLayout = new FormLayout("f:max(100px;p):g", "center:p:g, p, center:p:g");
+            PanelBuilder    builder    = new PanelBuilder(formLayout);
+            CellConstraints cc         = new CellConstraints();
+    
+            builder.add(progressBar, cc.xy(1,1));
+            builder.add(progressLabel = new JLabel("", SwingConstants.CENTER), cc.xy(1,3));
+    
+            PanelBuilder    builder2    = new PanelBuilder(new FormLayout("center:p:g", "center:p:g"));
+            builder2.add(builder.getPanel(), cc.xy(1,1));
+    
+            progressBarPanel = builder2.getPanel();
+            add(progressBarPanel, BorderLayout.CENTER);
+        }
     }
     
     //----------------------------------

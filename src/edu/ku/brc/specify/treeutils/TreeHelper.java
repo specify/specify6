@@ -308,6 +308,12 @@ public class TreeHelper
             initializeRelatedObjects((Taxon)treeNode);
             return;
         }
+        
+        if (treeNode instanceof LithoStrat)
+        {
+            initializeRelatedObjects((LithoStrat)treeNode);
+            return;
+        }
     }
     
     public static void initializeRelatedObjects(Location loc)
@@ -318,12 +324,18 @@ public class TreeHelper
     
     public static void initializeRelatedObjects(GeologicTimePeriod gtp)
     {
-        gtp.getStratigraphies().size();
+        gtp.getBioStratsPaleoContext().size();
+        gtp.getChronosStratsPaleoContext().size();
     }
     
     public static void initializeRelatedObjects(Geography geo)
     {
         geo.getLocalities().size();
+    }
+    
+    public static void initializeRelatedObjects(LithoStrat litho)
+    {
+        litho.getPaleoContexts().size();
     }
     
     public static void initializeRelatedObjects(Taxon taxon)

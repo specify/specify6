@@ -83,7 +83,9 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	private GeologicTimePeriodTreeDefItem	definitionItem;
 	private GeologicTimePeriod				parent;
 	protected Set<GeologicTimePeriod>		children;
-	protected Set<Stratigraphy>				stratigraphies;
+    
+    protected Set<PaleoContext>             bioStratsPaleoContext;
+    protected Set<PaleoContext>             chronosStratsPaleoContext;
 
 	// Constructors
 
@@ -119,8 +121,9 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 		definition = null;
 		definitionItem = null;
 		parent = null;
-		children = new HashSet<GeologicTimePeriod>();
-		stratigraphies = new HashSet<Stratigraphy>();
+		children                  = new HashSet<GeologicTimePeriod>();
+        bioStratsPaleoContext     = new HashSet<PaleoContext>();
+        chronosStratsPaleoContext = new HashSet<PaleoContext>();
 	}
 
 	// End Initializer
@@ -388,18 +391,42 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 		this.children = children;
 	}
 
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "geologicTimePeriod")
-	public Set<Stratigraphy> getStratigraphies()
-	{
-		return stratigraphies;
-	}
+    /**
+     * @return the bioStratsPaleoContext
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "bioStrat")
+    public Set<PaleoContext> getBioStratsPaleoContext()
+    {
+        return bioStratsPaleoContext;
+    }
 
-	public void setStratigraphies(Set<Stratigraphy> stratigraphies)
-	{
-		this.stratigraphies = stratigraphies;
-	}
+    /**
+     * @param bioStratsPaleoContext the bioStratsPaleoContext to set
+     */
+    public void setBioStratsPaleoContext(Set<PaleoContext> bioStratsPaleoContext)
+    {
+        this.bioStratsPaleoContext = bioStratsPaleoContext;
+    }
+
 
 	/* Code added in order to implement Treeable */
+
+    /**
+     * @return the chronosStratsPaleoContext
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "chronosStrat")
+    public Set<PaleoContext> getChronosStratsPaleoContext()
+    {
+        return chronosStratsPaleoContext;
+    }
+
+    /**
+     * @param chronosStratsPaleoContext the chronosStratsPaleoContext to set
+     */
+    public void setChronosStratsPaleoContext(Set<PaleoContext> chronosStratsPaleoContext)
+    {
+        this.chronosStratsPaleoContext = chronosStratsPaleoContext;
+    }
 
     @Transient
 	public Long getTreeId()
@@ -428,24 +455,6 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	{
 		children.remove(child);
 		child.setParent(null);
-	}
-
-	public void addStratigraphy(Stratigraphy strat)
-	{
-		GeologicTimePeriod oldGTP = strat.getGeologicTimePeriod();
-		if( oldGTP!=null )
-		{
-			oldGTP.removeStratigraphy(strat);
-		}
-
-		stratigraphies.add(strat);
-		strat.setGeologicTimePeriod(this);
-	}
-
-	public void removeStratigraphy(Stratigraphy strat)
-	{
-		stratigraphies.remove(strat);
-		strat.setGeologicTimePeriod(null);
 	}
 
     @Override

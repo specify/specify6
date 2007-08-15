@@ -231,7 +231,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                 String nameStr = e.nextElement();
                 
                 // Find the last Created Timestamp
-                String sqlStr = "select TimestampCreated from "+nameStr+" order by TimestampCreated desc limit 0,1"; // TODO This needs to be per DB PLATFORM
+                String sqlStr = "select TimestampCreated from "+nameStr+" order by TimestampCreated desc limit 0,1"; // TODO MYSQL This needs to be per DB PLATFORM
                 log.debug(sqlStr);
                 QueryResultsContainer container = new QueryResultsContainer(sqlStr);
                 container.add(new QueryResultsDataObj(nameStr));
@@ -242,7 +242,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                 list.add(container);
                 
                 // Now find the last Modified Timestamp
-                sqlStr = "select TimestampModified from "+nameStr+" order by TimestampModified desc limit 0,1"; // TODO This needs to be per DB PLATFORM
+                sqlStr = "select TimestampModified from "+nameStr+" order by TimestampModified desc limit 0,1"; // TODO MYSQL This needs to be per DB PLATFORM
                 log.debug(sqlStr);
                 container = new QueryResultsContainer(sqlStr);
                 container.add(new QueryResultsDataObj(nameStr));

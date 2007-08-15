@@ -166,12 +166,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     public List<Integer> getCollectionIdList(final DataProviderSessionIFace sessionArg)
     {
-        Vector<Integer> list = new Vector<Integer>();
-        SpecifyUser user = SpecifyUser.getCurrentUser();
-        if (user != null)
+        Vector<Integer> list   = new Vector<Integer>();
+        SpecifyUser     spUser = SpecifyUser.getCurrentUser();
+        if (spUser != null)
         {
-            sessionArg.attach(user);
-            for (CollectionType types : user.getCollectionTypes())
+            sessionArg.attach(spUser);
+            for (CollectionType types : spUser.getCollectionTypes())
             {
                 for (Collection collection : types.getCollections())
                 {

@@ -63,6 +63,7 @@ import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.ERTIJoinColInfo;
 import edu.ku.brc.af.core.ExpressResultsTableInfo;
 import edu.ku.brc.af.core.ExpressSearchResults;
+import edu.ku.brc.af.core.ExpressSearchSQLAdjuster;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
@@ -73,7 +74,6 @@ import edu.ku.brc.af.tasks.subpane.ExpressSearchIndexerPane;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.helpers.HTTPGetter;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
-import edu.ku.brc.specify.dbsupport.SpecifyExpressSearchSQLAdjuster;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPane;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.specify.ui.HelpMgr;
@@ -266,7 +266,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
     protected static void intializeTableInfo(final List<?> tableItems, 
                                              final Hashtable<String, ExpressResultsTableInfo> tables,
                                              final Hashtable<String, ExpressResultsTableInfo> byIdHash,
-                                             Hashtable<String, List<ExpressResultsTableInfo>> joinIdToTableInfoHash,
+                                             final Hashtable<String, List<ExpressResultsTableInfo>> joinIdToTableInfoHash,
                                              final boolean isExpressSearch)
     {
         for (Iterator<?> iter = tableItems.iterator(); iter.hasNext(); )
@@ -380,7 +380,6 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
     protected void doQuery()
     {
         searchText.setBackground(textBGColor);
-        
         String searchTerm = searchText.getText();
         if (isNotEmpty(searchTerm))
         {
@@ -462,7 +461,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
             searchTerm = searchTextStr;
         }
         
-        searchTerm = SpecifyExpressSearchSQLAdjuster.getInstance().adjustExpressSearchText(searchTerm);
+        searchTerm = ExpressSearchSQLAdjuster.getInstance().adjustExpressSearchText(searchTerm);
 
         boolean hasResults = false;
         if (searchTerm != null && searchTerm.length() > 0)
@@ -968,6 +967,18 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
             {
                 lucenePath = getIndexDirPath(); // must be initialized here (again)
                 checkForIndexer();
+                
+            } else if (cmdAction.isAction("Search"))
+            {
+                String searchTerm = cmdAction.getData().toString();
+                ExpressSearchResultsPane expressSearchPane = new ExpressSearchResultsPane(searchTerm, this);
+                if (doQuery(lucenePath, analyzer, null, searchTerm, badSearchColor, expressSearchPane))
+                {
+                    addSubPaneToMgr(expressSearchPane);
+                } else
+                {
+                    UIRegistry.displayLocalizedStatusBarText("NoExpressSearchResults");
+                }
             }  
         }
     }

@@ -67,6 +67,9 @@ public class ExpressSearchResultsPane extends BaseSubPane implements ExpressSear
     protected int         positionOfUnIndexed = -1;
     protected boolean     showing = false;
     protected boolean     added   = false;
+    
+    // Tables are added here waiting for their first results to come back.
+    protected Vector<ExpressTableResultsBase> expTblResultsCache = new Vector<ExpressTableResultsBase>();
 
     /**
      * Default Constructor.
@@ -76,8 +79,7 @@ public class ExpressSearchResultsPane extends BaseSubPane implements ExpressSear
     public ExpressSearchResultsPane(final String name,
                                     final Taskable task)
     {
-        super(name, task);
-        removeAll();
+        super(name, task, false);
 
         setPreferredSize(new Dimension(600,600));
         setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
@@ -99,7 +101,8 @@ public class ExpressSearchResultsPane extends BaseSubPane implements ExpressSear
 
         if (results.getTableInfo().isUseHitsCache())
         {
-            addTable(new ExpressTableResultsHitsCache(this, results, true, hits));
+            //addTable(new ExpressTableResultsHitsCache(this, results, true, hits));
+            expTblResultsCache.add(new ExpressTableResultsHitsCache(this, results, true, hits));
             
         } else
         {
@@ -164,6 +167,9 @@ public class ExpressSearchResultsPane extends BaseSubPane implements ExpressSear
      */
     public synchronized void addTable(ExpressTableResultsBase expTblRes)
     {
+        
+        expTblResultsCache.remove(expTblRes);
+        
         ExpressSearchResults    results = expTblRes.getResults();
         ExpressResultsTableInfo tblInfo = results.getTableInfo();
         

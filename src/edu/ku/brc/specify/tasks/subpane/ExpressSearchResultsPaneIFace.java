@@ -43,7 +43,7 @@ public interface ExpressSearchResultsPaneIFace
     public void removeTable(ExpressTableResultsBase table);
 
     /**
-     * Adds a table to the content pane
+     * Adds a table to the content pane.
      * @param table the table of results to be added
      */
     public void addTable(ExpressTableResultsBase table);

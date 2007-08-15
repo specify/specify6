@@ -109,6 +109,7 @@
 		<mapping class="edu.ku.brc.specify.datamodel.LocationTreeDef"/>
 		<mapping class="edu.ku.brc.specify.datamodel.LocationTreeDefItem"/>
 		<mapping class="edu.ku.brc.specify.datamodel.OtherIdentifier"/>
+		<mapping class="edu.ku.brc.specify.datamodel.PaleoContext"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Permit"/>
 		<mapping class="edu.ku.brc.specify.datamodel.PickList"/>
 		<mapping class="edu.ku.brc.specify.datamodel.PickListItem"/>
@@ -124,7 +125,6 @@
 		<mapping class="edu.ku.brc.specify.datamodel.RepositoryAgreement"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Shipment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpecifyUser"/>
-		<mapping class="edu.ku.brc.specify.datamodel.Stratigraphy"/>
 		<mapping class="edu.ku.brc.specify.datamodel.TaxonCitation"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Taxon"/>
 		<mapping class="edu.ku.brc.specify.datamodel.TaxonTreeDef"/>

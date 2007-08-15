@@ -85,7 +85,6 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     protected Set<CollectionObject> collectionObjects;
     protected Set<Collector>        collectors;
     protected Locality              locality;
-    protected Stratigraphy          stratigraphy;
     protected CollectingTrip        collectingTrip;
     protected Set<AttributeIFace>   attrs;
     protected Set<Attachment>       attachments;
@@ -129,7 +128,6 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
         collectionObjects = new HashSet<CollectionObject>();
         collectors = new HashSet<Collector>();
         locality = null;
-        stratigraphy = null;
         attrs = new HashSet<AttributeIFace>();
         attachments = new HashSet<Attachment>();
         habitatAttributes = null;
@@ -413,19 +411,6 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     
     public void setLocality(Locality locality) {
         this.locality = locality;
-    }
-
-    /**
-     * 
-     */
-    @ManyToOne(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY)
-    @JoinColumn(name = "StratigraphyID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Stratigraphy getStratigraphy() {
-        return this.stratigraphy;
-    }
-    
-    public void setStratigraphy(Stratigraphy stratigraphy) {
-        this.stratigraphy = stratigraphy;
     }
 
     /**

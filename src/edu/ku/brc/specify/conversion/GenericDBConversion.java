@@ -3056,6 +3056,10 @@ public class GenericDBConversion
         colObjTaxonMapper.setShowLogErrors(false); // NOTE: TURN THIS ON FOR DEBUGGING or running new Databases through it
         colObjAttrMapper.setShowLogErrors(false);
         
+        IdHashMapper stratMapper     = (IdHashMapper)idMapperMgr.get("stratigraphy_StratigraphyID");
+        IdHashMapper stratGTPMapper  = (IdHashMapper)idMapperMgr.get("stratigraphy_GeologicTimePeriodID");
+        
+        
         log.info("colObjTaxonMapper: "+colObjTaxonMapper.size());
 
         deleteAllRecordsFromTable(newDBConn, "collectionobject"); // automatically closes the connection
@@ -3162,6 +3166,30 @@ public class GenericDBConversion
                     log.error("Can't find "+catalogSeriesID+"_"+taxonomyTypeID);
                 }
                 
+                String stratGTPIdStr = "SELECT collectionobject.CollectionObjectID, " + 
+                "collectingevent.CollectingEventID, " + 
+                "stratigraphy.StratigraphyID, " + 
+                "geologictimeperiod.GeologicTimePeriodID " + 
+                "FROM collectionobject INNER JOIN collectingevent ON collectionobject.CollectingEventID = collectingevent.CollectingEventID " + 
+                "INNER JOIN stratigraphy ON collectingevent.CollectingEventID = stratigraphy.StratigraphyID " + 
+                "INNER JOIN geologictimeperiod ON stratigraphy.GeologicTimePeriodID = geologictimeperiod.GeologicTimePeriodID " +
+                "where collectionobject.CollectionObjectID = " + rs.getLong(1);
+                rs2   = stmt2.executeQuery(stratGTPIdStr);
+                
+                Long   coId  = null;
+                Long   ceId  = null;
+                Long   stId  = null;
+                Long   gtpId = null;
+                if (rs2.first())
+                {
+                    coId  = rs2.getLong(1);
+                    ceId  = rs2.getLong(2);
+                    stId  = rs2.getLong(3);
+                    gtpId = rs2.getLong(4);
+                }
+                rs2.close();
+
+                
                 String catalogNumber = null;
                 String colObjId      = null;
                 
@@ -3212,6 +3240,10 @@ public class GenericDBConversion
                         str.append("NULL");
 
                     } else if (newFieldName.equals("CollectionID")) //User/Security changes
+                    {
+                        str.append(newCatSeriesId);
+                        
+                    } else if (newFieldName.equals("PaleoContextID")) 
                     {
                         str.append(newCatSeriesId);
                         

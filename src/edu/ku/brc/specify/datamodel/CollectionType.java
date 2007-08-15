@@ -44,6 +44,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
@@ -56,7 +57,7 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name="collectiontype")
-public class CollectionType extends DataModelObjBase implements java.io.Serializable 
+public class CollectionType extends DataModelObjBase implements java.io.Serializable, Comparable<CollectionType>
 {
 
     protected static CollectionType currentCollectionType = null;
@@ -461,5 +462,26 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     public static int getClassTableId()
     {
         return 26;
+    }
+    
+    //----------------------------------------------------------------------
+    //-- Comparable Interface
+    //----------------------------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(CollectionType obj)
+    {
+        if (name != null && obj != null && StringUtils.isNotEmpty(obj.name))
+        {
+            return name.compareTo(obj.name);
+        }
+        if (discipline != null && obj != null && StringUtils.isNotEmpty(obj.discipline))
+        {
+            return discipline.compareTo(obj.discipline);
+        }
+        // else
+        return timestampCreated.compareTo(obj.timestampCreated);
     }
 }

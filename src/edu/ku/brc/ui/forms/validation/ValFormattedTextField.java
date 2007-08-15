@@ -842,7 +842,6 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
          */
         public void setText(final String text)
         {
-            JFormattedDoc document = (JFormattedDoc)getDocument();
             document.setIgnoreNotify(shouldIgnoreNotifyDoc);
             super.setText(text);
             document.setIgnoreNotify(false);

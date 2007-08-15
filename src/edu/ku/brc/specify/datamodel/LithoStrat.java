@@ -76,11 +76,12 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
 	protected String                        guid;
 	protected Integer						nodeNumber;
 	protected Integer						highestChildNodeNumber;
-	private LithoStratTreeDef		definition;
-	private LithoStratTreeDefItem	definitionItem;
-	private LithoStrat				parent;
-	protected Set<LithoStrat>		children;
-	protected Set<Stratigraphy>				stratigraphies;
+	private LithoStratTreeDef		        definition;
+	private LithoStratTreeDefItem	        definitionItem;
+	private LithoStrat				        parent;
+	protected Set<LithoStrat>		        children;
+    
+	protected Set<PaleoContext>	            paleoContexts;
 
 	// Constructors
 
@@ -112,7 +113,7 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
 		definitionItem = null;
 		parent = null;
 		children = new HashSet<LithoStrat>();
-		stratigraphies = new HashSet<Stratigraphy>();
+        paleoContexts = new HashSet<PaleoContext>();
 	}
 
 	// End Initializer
@@ -322,18 +323,24 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
 		this.children = children;
 	}
 
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "geologicTimePeriod")
-	public Set<Stratigraphy> getStratigraphies()
-	{
-		return stratigraphies;
-	}
+    /**
+     * @return the paleoContexts
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "lithoStrat")
+    public Set<PaleoContext> getPaleoContexts()
+    {
+        return paleoContexts;
+    }
 
-	public void setStratigraphies(Set<Stratigraphy> stratigraphies)
-	{
-		this.stratigraphies = stratigraphies;
-	}
+    /**
+     * @param paleoContexts the paleoContexts to set
+     */
+    public void setPaleoContexts(Set<PaleoContext> paleoContexts)
+    {
+        this.paleoContexts = paleoContexts;
+    }
 
-	/* Code added in order to implement Treeable */
+    /* Code added in order to implement Treeable */
 
     @Transient
 	public Long getTreeId()
