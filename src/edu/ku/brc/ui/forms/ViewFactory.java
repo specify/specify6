@@ -24,11 +24,14 @@ import java.awt.Component;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -42,12 +45,14 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.border.BevelBorder;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.helpers.BrowserLauncher;
 import edu.ku.brc.ui.BrowseBtnPanel;
 import edu.ku.brc.ui.ColorChooser;
@@ -58,6 +63,7 @@ import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ImageDisplay;
 import edu.ku.brc.ui.JStatusBar;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIPluginable;
 import edu.ku.brc.ui.db.PickListDBAdapterFactory;
 import edu.ku.brc.ui.db.PickListDBAdapterIFace;
@@ -85,8 +91,8 @@ import edu.ku.brc.ui.forms.validation.UIValidator;
 import edu.ku.brc.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.ui.forms.validation.ValComboBox;
 import edu.ku.brc.ui.forms.validation.ValComboBoxFromQuery;
-import edu.ku.brc.ui.forms.validation.ValFormattedTextFieldSingle;
 import edu.ku.brc.ui.forms.validation.ValFormattedTextField;
+import edu.ku.brc.ui.forms.validation.ValFormattedTextFieldSingle;
 import edu.ku.brc.ui.forms.validation.ValListBox;
 import edu.ku.brc.ui.forms.validation.ValPasswordField;
 import edu.ku.brc.ui.forms.validation.ValSpinner;
@@ -154,7 +160,8 @@ public class ViewFactory
     public Viewable buildViewable(final View      view, 
                                   final AltView   altView, 
                                   final MultiView parentView,
-                                  final int       options)
+                                  final int       options,
+                                  final Color     bgColor)
     {
         if (viewFieldColor == null)
         {
@@ -169,14 +176,14 @@ public class ViewFactory
 
         if (viewDef.getType() == ViewDef.ViewType.form)
         {
-            Viewable viewable = buildFormViewable(view, altView, parentView, options);
+            Viewable viewable = buildFormViewable(view, altView, parentView, options, bgColor);
             this.rootMultiView =  null;
             return viewable;
 
         } else if (viewDef.getType() == FormViewDef.ViewType.table ||
                    viewDef.getType() == FormViewDef.ViewType.formtable)
         {
-            Viewable viewable = buildTableViewable(view, altView, parentView, options);
+            Viewable viewable = buildTableViewable(view, altView, parentView, options, bgColor);
             this.rootMultiView =  null;
             return viewable;
 
@@ -192,7 +199,7 @@ public class ViewFactory
         }
         else if (viewDef.getType() == FormViewDef.ViewType.rstable)
         {
-            return buildRecordSetTableViewable(view, altView, parentView, options);
+            return buildRecordSetTableViewable(view, altView, parentView, options, bgColor);
                 
         } else
         {
@@ -1069,13 +1076,13 @@ public class ViewFactory
                         {
                             int options = MultiView.VIEW_SWITCHER
                                     | (MultiView.isOptionOn(parent.getCreateOptions(), MultiView.IS_NEW_OBJECT) ? MultiView.IS_NEW_OBJECT
-                                            : 0);
+                                            : MultiView.NO_OPTIONS);
 
                             MultiView multiView = new MultiView(parent, 
                                                                 cellSubView.getName(), 
                                                                 subView, 
                                                                 parent.getCreateWithMode(), 
-                                                                options);
+                                                                options, null);
                             parent.addChild(multiView);
 
                             viewBldObj.addSubView(cellSubView, multiView, colInx, rowInx, cellSubView.getColspan(), 1);
@@ -1111,17 +1118,45 @@ public class ViewFactory
                         {
                             if (parent != null)
                             {
-                                int options = (cellSubView.isSingleValueFromSet() ? 0 : MultiView.RESULTSET_CONTROLLER) | MultiView.VIEW_SWITCHER |
-                                              (MultiView.isOptionOn(parent.getCreateOptions(), MultiView.IS_NEW_OBJECT) ? MultiView.IS_NEW_OBJECT : 0);
+                                View parentView = parent.getView();
+                                
+                                boolean isSingle      = cellSubView.isSingleValueFromSet();
+                                boolean isACollection = false;
+                                try
+                                {
+                                    Class cls = Class.forName(parentView.getClassName());
+                                    Field fld = cls.getDeclaredField(cellSubView.getName());
+                                    if (fld != null)
+                                    {
+                                        isACollection = Collection.class.isAssignableFrom(fld.getType());
+                                    } else
+                                    {
+                                        log.error("Couldn't find field ["+cellSubView.getName()+"] in class ["+parentView.getClassName()+"]");
+                                    }
+                                    
+                                } catch (Exception ex)
+                                {
+                                    ex.printStackTrace();
+                                }
+
+                                int options = (isACollection && !isSingle ? MultiView.RESULTSET_CONTROLLER : MultiView.IS_SINGLE_OBJ) | MultiView.VIEW_SWITCHER |
+                                              (MultiView.isOptionOn(parent.getCreateOptions(), MultiView.IS_NEW_OBJECT) ? MultiView.IS_NEW_OBJECT : MultiView.NO_OPTIONS);
+                                
+                                
+                                Color bgColor = getBackgroundColor(cellSubView.getProperties(), parent.getBackground());
+                                
                                 MultiView.printCreateOptions("SUBVIEW", options);
                                 MultiView multiView = new MultiView(parent, 
                                                                     cellSubView.getName(),
                                                                     subView,
                                                                     parent.getCreateWithMode(), 
                                                                     cellSubView.getDefaultAltViewType(),
-                                                                    options);
+                                                                    options, 
+                                                                    bgColor);
+                                setBorder(multiView, cellSubView.getProperties());
+                                
                                 parent.addChild(multiView);
-    
+                                
                                 viewBldObj.addSubView(cellSubView, multiView, colInx, rowInx, cellSubView.getColspan(), 1);                               
                                 viewBldObj.closeSubView(cellSubView);
                                 
@@ -1132,6 +1167,11 @@ public class ViewFactory
                                 }
                                 curMaxRow = rowInx;
                                 
+                                //if (hasColor)
+                                //{
+                                //    setMVBackground(multiView, multiView.getBackground());
+                                //}
+                                
                             } else
                             {
                                 log.error("buildFormView - parent is NULL for subview ["+subViewName+"]");
@@ -1140,7 +1180,7 @@ public class ViewFactory
                         {
                             viewBldObj.addSubView(cellSubView, parent, colInx, rowInx, cellSubView.getColspan(), 1); 
                             
-                            AltView  altView = subView.getDefaultAltView();
+                            AltView     altView        = subView.getDefaultAltView();
                             FormViewDef subFormViewDef = (FormViewDef)altView.getViewDef();
                             processRows(parent, formViewDef, validator, viewBldObj, altView.getMode(), labelsForHash, currDataObj, subFormViewDef.getRows());
                             viewBldObj.closeSubView(cellSubView);
@@ -1228,7 +1268,92 @@ public class ViewFactory
                 }
             }
         }
+    }
+    
+    /**
+     * Sets a border on the component as defined in the properties.
+     * @param comp the component
+     * @param props the list of properties
+     */
+    protected void setBorder(final JComponent comp, final Properties props)
+    {
+        if (props != null)
+        {
+            String borderType = props.getProperty("border");
+            if (StringUtils.isNotEmpty(borderType))
+            {
+                if (borderType.equals("etched"))
+                {
+                    comp.setBorder(BorderFactory.createEtchedBorder());
+                    
+                } else if (borderType.equals("lowered"))
+                {
+                    comp.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
+                    
+                } else if (borderType.equals("raised"))
+                {
+                    comp.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+                    
+                } else if (borderType.equals("empty"))
+                {
+                    comp.setBorder(BorderFactory.createEmptyBorder());
+                    
+                } else if (borderType.equals("line"))
+                {
+                    comp.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+                }
+            }
+        }
+    }
 
+    protected Color getBackgroundColor(final Properties props, final Color bgColor)
+    {
+        if (props != null)
+        {
+            String colorStr = props.getProperty("bgcolor");
+            if (StringUtils.isNotEmpty(colorStr))
+            {
+                if (colorStr.endsWith("%"))
+                {
+                    try
+                    {
+                        int percent = Integer.parseInt(colorStr.substring(0, colorStr.length()-1));
+                        double per = (percent / 100.0);
+                        int r = Math.min((int)(bgColor.getRed() * per), 255);
+                        int g = Math.min((int)(bgColor.getGreen() * per), 255);
+                        int b = Math.min((int)(bgColor.getBlue() * per), 255);
+                        return new Color(r,g,b);
+
+                    } catch (Exception ex)
+                    {
+                        log.error(ex);
+                    }
+                } else
+                {
+                    try
+                    {
+                        return UIHelper.parseRGB(colorStr);
+                        
+                    } catch(ConfigurationException ex)
+                    {
+                        log.error(ex);
+                    }
+                }
+            }
+        }
+        return bgColor;
+    }
+    
+    public void setMVBackground(final MultiView parent, final Color bgColor)
+    {
+        for (MultiView mv : parent.getKids())
+        {
+            setMVBackground(mv, bgColor);
+        }
+        for (Viewable viewable : parent.getViewables())
+        {
+            viewable.getUIComponent().setBackground(bgColor);
+        }
     }
 
     /**
@@ -1284,7 +1409,8 @@ public class ViewFactory
     public FormViewObj buildFormViewable(final View        view,
                                          final AltView     altView,
                                          final MultiView   parentView,
-                                         final int         options)
+                                         final int         options,
+                                         final Color       bgColor)
     {
         try
         {
@@ -1301,7 +1427,7 @@ public class ViewFactory
                 validator.setDataChangeNotification(true);
             }
 
-            FormViewObj formViewObj = new FormViewObj(view, altView, parentView, validator, options);
+            FormViewObj formViewObj = new FormViewObj(view, altView, parentView, validator, options, bgColor);
 
             Object currDataObj = formViewObj.getCurrentDataObj();
 
@@ -1369,7 +1495,8 @@ public class ViewFactory
     public TableViewObj buildTableViewable(final View        view,
                                            final AltView     altView,
                                            final MultiView   parentView,
-                                           final int         options)
+                                           final int         options,
+                                           final Color       bgColor)
     {
         try
         {
@@ -1387,7 +1514,7 @@ public class ViewFactory
             {
                 FormViewDef               formViewDef   = (FormViewDef)viewDef;  
                 Hashtable<String, JLabel> labelsForHash = new Hashtable<String, JLabel>();
-                TableViewObj              tableViewObj  = new TableViewObj(view, altView, parentView, validator, options);
+                TableViewObj              tableViewObj  = new TableViewObj(view, altView, parentView, validator, options, bgColor);
 
                 processRows(parentView, formViewDef, null, tableViewObj, altView.getMode(), labelsForHash, validator, formViewDef.getRows());
                 return tableViewObj;
@@ -1409,7 +1536,7 @@ public class ViewFactory
             }
             */
             
-            TableViewObj tableViewObj = new TableViewObj(view, altView, parentView, null, options);
+            TableViewObj tableViewObj = new TableViewObj(view, altView, parentView, null, options, bgColor);
 
             //Object currDataObj = tableViewObj.getCurrentDataObj();
 
@@ -1475,7 +1602,8 @@ public class ViewFactory
                                                     final AltView     altView,
                                                     final MultiView   parentView,
                                                     @SuppressWarnings("unused")
-                                                    final int         options)
+                                                    final int         options,
+                                                    final Color       bgColor)
     {
         RecordSetTableViewObj rsTableViewObj = null;
         try
@@ -1488,7 +1616,7 @@ public class ViewFactory
                 FormViewDef               formViewDef   = (FormViewDef)viewDef;  
                 Hashtable<String, JLabel> labelsForHash = new Hashtable<String, JLabel>();
                 
-                rsTableViewObj  = new RecordSetTableViewObj(view, altView, parentView, null, 0);
+                rsTableViewObj  = new RecordSetTableViewObj(view, altView, parentView, null, 0, bgColor);
 
                 processRows(parentView, formViewDef, null, rsTableViewObj, altView.getMode(), labelsForHash, null, formViewDef.getRows());
                 return rsTableViewObj;
@@ -1519,6 +1647,28 @@ public class ViewFactory
                                           final Object    data,
                                           final int       options)
     {
+        return createFormView(multiView, view, altName, data, options, null);
+    }
+
+
+    /**
+     * Creates a FormViewObj.
+     * 
+     * @param multiView the parent multiView
+     * @param view the definition of the form view to be created
+     * @param altName the name of the altView to be used (can be null - then it defaults to the default AltView)
+     * @param data the data to be set into the form
+     * @param options the options needed for creating the form
+     * @param bgColor the background color
+     * @return a new FormViewObj
+     */
+    public static Viewable createFormView(final MultiView multiView, 
+                                          final View      view, 
+                                          final String    altName, 
+                                          final Object    data,
+                                          final int       options,
+                                          final Color     bgColor)
+    {
         if (viewFieldColor == null)
         {
             viewFieldColor = AppPrefsCache.getColorWrapper("ui", "formatting", "viewfieldcolor");
@@ -1528,7 +1678,7 @@ public class ViewFactory
 
         if (altView != null)
         {
-            Viewable viewable = instance.buildViewable(view, altView, multiView, options);
+            Viewable viewable = instance.buildViewable(view, altView, multiView, options, bgColor);
             if (viewable != null)
             {
                 if (data != null)
@@ -1537,7 +1687,8 @@ public class ViewFactory
                     //viewable.setDataIntoUI();
                 } else
                 {
-                    throw new RuntimeException("Form could be created because the data was null! ["+view.getName()+"]["+altView.getName()+"]");
+                    // This is bad to have when you don't have any items yet. - rods
+                    //throw new RuntimeException("Form could be created because the data was null! ["+view.getName()+"]["+altView.getName()+"]");
                 }
                 return viewable;
             }

@@ -285,13 +285,13 @@
             </altviews>
         </view>
         
-        <view name="PaleoLocality"
-            class="edu.ku.brc.specify.datamodel.ColObjAttributes"
+        <view name="PaleoContext"
+            class="edu.ku.brc.specify.datamodel.PaleoContext"
             resourcelabels="false">
             <desc><![CDATA[CEColObj Subform within the Loan Object form.]]></desc>
             <altviews>
-                <altview name="PaleoLocality View" viewdef="PaleoLocality" label="View" mode="view"/>
-                <altview name="PaleoLocality Edit" viewdef="PaleoLocality" label="Edit" mode="edit" default="true"/>
+                <altview name="PaleoContext View" viewdef="PaleoContext" label="View" mode="view"/>
+                <altview name="PaleoContext Edit" viewdef="PaleoContext" label="Edit" mode="edit" default="true"/>
             </altviews>
         </view>
         
@@ -683,7 +683,7 @@
                     <cell type="separator" label="Collection Object" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="CEColObj" id="6" name="collectionObjects" colspan="12"/>
+                    <cell type="subview" viewname="CEColObj" id="6" name="collectionObjects" colspan="12" initialize="border=line;"/>
                 </row>
             </rows>
         </viewdef>
@@ -699,7 +699,7 @@
             <enableRules/>
             
             <columnDef>120px,3dlu,p,3dlu,100px,3dlu,p,3dlu,p,3dlu,p,p:g</columnDef>
-            <rowDef auto="true" cell="p:g" sep="2px"/>
+            <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
                 <row>
                     <cell type="label" labelfor="1" label="Catalog Number" uitype="text"/>
@@ -712,24 +712,24 @@
                     <cell type="field" id="3" name="catalogedDate" uitype="formattedtext" uifieldformatter="Date" default="today"/> 
                 </row>
                 <row>
-                    <cell type="separator" label="Determination" colspan="12"/>
+                    <cell type="separator" label="Determination" collapse="determinations" colspan="12"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="Determination" id="5" name="determinations" colspan="12" rows="4"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Stratigraphy" colspan="12"/>
+                    <cell type="separator" label="Stratigraphy" collapse="paleoContext" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="PaleoLocality" id="6" name="colObjAttributes" colspan="12" rows="5" single="true"/>
+                    <cell type="subview" viewname="PaleoContext" id="6" name="paleoContext" colspan="12" rows="5" initialize="bgcolor=105%"/>
                 </row>
             </rows>
         </viewdef>
         
         <viewdef
             type="form"
-            name="PaleoLocality"
-            class="edu.ku.brc.specify.datamodel.ColObjAttributes"
+            name="PaleoContext"
+            class="edu.ku.brc.specify.datamodel.PaleoContext"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             
@@ -737,29 +737,29 @@
             <enableRules/>
             
             <columnDef>120px,3dlu,200px,3dlu,p,3dlu,200px,3dlu,p,3dlu,200px,p:g</columnDef>
-            <rowDef auto="true" cell="p:g" sep="2px"/>
+            <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
                 <row>
-                    <cell type="label" labelfor="1" label="Position" uitype="text"/>
-                    <cell type="field" id="1" name="text4" uitype="text"/>
+                    <cell type="label" labelfor="1" label="Distance" uitype="text"/>
+                    <cell type="field" id="1" name="distance" uitype="text" format="%5.2f"/>
                     
-                    <cell type="label" labelfor="5" label="Direction"/>
-                    <cell type="field" id="5" name="text5" uitype="combobox" initialize="data=Up,Down"/>
+                    <cell type="label" labelfor="5" label="Units"/>
+                    <cell type="field" id="5" name="distanceUnits" uitype="combobox" initialize="data=feet,meters"/>
                     
-                    <cell type="label" labelfor="6" label="Units"/>
-                    <cell type="field" id="6" name="text6" uitype="combobox" initialize="data=feet,meters"/>
+                    <cell type="label" labelfor="6" label="Direction"/>
+                    <cell type="field" id="6" name="direction" uitype="combobox" initialize="data=Up,Down"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="7" label="State"/>
-                    <cell type="field" id="7" name="text7" uitype="combobox" initialize="data=float,in-situ"/>
+                    <cell type="field" id="7" name="positionState" uitype="combobox" initialize="data=float,in-situ"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="2" label="Litho"/>
-                    <cell type="field" id="2" name="text1" uitype="querycbx" initialize="name=Agent;title=Litho" isrequired="true"/>
-                    <cell type="label" labelfor="3" label="Chrono"/>
-                    <cell type="field" id="3" name="text2" uitype="querycbx" initialize="name=Agent;title=Litho" isrequired="true"/>
+                    <cell type="field" id="2" name="lithoStrat" uitype="querycbx" initialize="name=Agent;title=Litho"/>
+                    <cell type="label" labelfor="3" label="Chronos"/>
+                    <cell type="field" id="3" name="chronosStrat" uitype="querycbx" initialize="name=Agent;title=Litho"/>
                     <cell type="label" labelfor="4" label="Bio"/>
-                    <cell type="field" id="4" name="text3" uitype="querycbx" initialize="name=Agent;title=Litho" isrequired="true"/>
+                    <cell type="field" id="4" name="bioStrat" uitype="querycbx" initialize="name=Agent;title=Litho"/>
                 </row>
             </rows>
         </viewdef>
@@ -784,7 +784,7 @@
             <enableRules/>
 
             <columnDef>120px,3dlu,p,3dlu,100px,3dlu,p,3dlu,p,3dlu,p,p:g</columnDef>
-            <rowDef auto="true" cell="p:g" sep="2px"/>
+            <rowDef auto="true" cell="p" sep="2px"/>
     		<rows>
     		    <row>
     		        <cell type="label" label="Fish" icon="CollectionObject" recordobj="true" colspan="12"/>

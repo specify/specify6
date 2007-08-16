@@ -50,6 +50,7 @@ public class PaleoContext extends DataModelObjBase
 {
     protected Long    paleoContextId;
     protected Float   distance;
+    protected String  distanceUnits; // "ft" or "m"
     protected String  direction;     // "up" or "down"
     protected String  positionState; // float or in-situ
     
@@ -97,6 +98,7 @@ public class PaleoContext extends DataModelObjBase
         
         paleoContextId = null;
         distance       = null;
+        distanceUnits  = null;
         direction      = null;
         positionState  = null;
         
@@ -119,6 +121,23 @@ public class PaleoContext extends DataModelObjBase
     public void setDirection(String direction)
     {
         this.direction = direction;
+    }
+
+    /**
+     * @return the distanceUnits
+     */
+    @Column(name="DistanceUnits", unique=false, nullable=true, insertable=true, updatable=true, length=16)
+    public String getDistanceUnits()
+    {
+        return distanceUnits;
+    }
+
+    /**
+     * @param distanceUnits the distanceUnits to set
+     */
+    public void setDistanceUnits(String distanceUnits)
+    {
+        this.distanceUnits = distanceUnits;
     }
 
     /**

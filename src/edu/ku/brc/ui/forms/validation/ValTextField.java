@@ -61,7 +61,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     protected boolean isRequired = false;
     protected boolean isChanged  = false;
     protected boolean isNew      = false;
-    protected Color   bgColor    = null;
+    protected Color   bgColor;
 
     protected static ColorWrapper valtextcolor       = null;
     protected static ColorWrapper requiredfieldcolor = null;
@@ -243,7 +243,14 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
      */
     public void setRequired(boolean isRequired)
     {
-        setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
+        if (isRequired && isEnabled())
+        {
+            setBackground(requiredfieldcolor.getColor());
+            
+        } else if (bgColor != null)
+        {
+            setBackground(bgColor);
+        }
         this.isRequired = isRequired;
     }
 

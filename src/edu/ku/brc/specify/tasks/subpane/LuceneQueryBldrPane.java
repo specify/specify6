@@ -1,26 +1,30 @@
 /*
-     * Copyright (C) 2007  The University of Kansas
-     *
-     * [INSERT KU-APPROVED LICENSE TEXT HERE]
-     *
-     */
-/**
- * 
+ * Copyright (C) 2007  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ *
  */
+
 package edu.ku.brc.specify.tasks.subpane;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.ScrollPane;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -32,23 +36,33 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.ERTICaptionInfo;
+import edu.ku.brc.af.core.ERTIColInfo;
+import edu.ku.brc.af.core.ExpressResultsTableInfo;
 import edu.ku.brc.af.core.NavBoxLayoutManager;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
+import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tasks.subpane.TableNameRenderer.TableNameRendererIFace;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.MultiStateIconButon;
 import edu.ku.brc.ui.UIHelper;
@@ -61,32 +75,52 @@ import edu.ku.brc.ui.UIHelper;
  * Feb 23, 2007
  *
  */
-public class QueryBldrPane extends BaseSubPane
+public class LuceneQueryBldrPane extends BaseSubPane
 {
-    protected Vector<TableInfo>              tableInfoList = new Vector<TableInfo>();
+    protected Vector<TableInfo>              tableInfoList = null;
     protected JList                          fieldList;
     protected JList                          tableList;
-    protected Hashtable<DBTableIdMgr.TableInfo, Vector<TableFieldPair>> tableFieldList = new Hashtable<DBTableIdMgr.TableInfo, Vector<TableFieldPair>>();
+    protected Hashtable<DBTableIdMgr.TableInfo, Vector<KeyColInfo>> tableFieldList = new Hashtable<DBTableIdMgr.TableInfo, Vector<KeyColInfo>>();
     
     protected Vector<QueryFieldPanel>        queryFieldItems = new Vector<QueryFieldPanel>();
     protected int                            currentInx      = -1;
     protected JPanel                         queryFieldsPanel;
 
     protected JButton                        addBtn;
+    protected JButton                        searchBtn;
     
     protected ImageIcon blankIcon   = IconManager.getIcon("BlankIcon", IconManager.IconSize.Std24);
     
-    protected String            columnDefStr = null;
+    protected String                         columnDefStr  = null;
+    protected Element                        esDOM         = null;
+    protected List<ExpressResultsTableInfo>  ertiList      = null;
 
     /**
      * Constructor.
      * @param name name of subpanel
      * @param task the owning task
      */
-    public QueryBldrPane(final String name,
-                         final Taskable task)
+    public LuceneQueryBldrPane(final String name,
+                               final Taskable task)
     {
         super(name, task);
+        
+        if (esDOM == null)
+        {
+            esDOM = XMLHelper.readDOMFromConfigDir("backstop/search_config.xml");         // Describes the definitions of the full text search
+        }
+
+        List<?> tables = esDOM.selectNodes("/searches/express/table");
+        ertiList = new ArrayList<ExpressResultsTableInfo>(tables.size());
+        for (Object obj : tables)
+        {
+            Element tableElement = (Element)obj;
+            ExpressResultsTableInfo tableInfo = new ExpressResultsTableInfo(tableElement, true);
+            if (isNotEmpty(tableInfo.getBuildSql()))
+            {
+                ertiList.add(tableInfo);
+            }
+        }
      
         createUI();
     }
@@ -96,114 +130,44 @@ public class QueryBldrPane extends BaseSubPane
      */
     protected void createUI()
     {
-        String[] skipItems = {"TimestampCreated", "LastEditedBy", "TimestampModified"};
-        Hashtable<String, String> skipHash = new Hashtable<String, String>();
-        for (String nameStr : skipItems)
-        {
-            skipHash.put(nameStr, "X");
-        }
-        
-        Hashtable<Class, Boolean> alreadyThere = new Hashtable<Class, Boolean>();
-        for (DBTableIdMgr.TableInfo ti : DBTableIdMgr.getInstance().getList())
-        {
-            if (ti.isForQuery() && StringUtils.isNotEmpty(ti.toString()))
-            {
-                if (alreadyThere.get(ti.getClassObj()) == null)
-                {
-                    tableInfoList.add(new TableInfo(ti)); 
-                
-                    Vector<TableFieldPair> fldList = new Vector<TableFieldPair>();
-                    /*if (ti.getClassObj() == Geography.class)
-                    {
-                        addGeographyFields(ti, fldList);
-                        
-                    } else if (ti.getClassObj() == Taxon.class)
-                    {
-                        addTaxonFields(ti, fldList);
-                        
-                    } else if (ti.getClassObj() == Location.class)
-                    {
-                        addLocationFields(ti, fldList);
-                        
-                    } else*/
-                    {
-                        for (DBTableIdMgr.FieldInfo fi : ti.getFields())
-                        {
-                            if (fi.getColumn() != null && skipHash.get(fi.getColumn()) == null)
-                            {
-                                fldList.add(new TableFieldPair(ti, fi));
-                            }
-                        }
-                    }
-                    Collections.sort(fldList);
-                    tableFieldList.put(ti, fldList);
-                    alreadyThere.put(ti.getClassObj(), true);                    
-                }
-            }
-        }
-        
         Vector<TableInfo> tempList = new Vector<TableInfo>();
-        for (TableInfo ti : tableInfoList)
+        for (ExpressResultsTableInfo erti : ertiList)
         {
-            if (ti.getTableInfo().getClassObj() == Determination.class)
+            Vector<KeyColInfo> fldList = new Vector<KeyColInfo>();
+            for (ERTIColInfo colInfo : erti.getColInfo())
             {
-                int x = 0;
-                x++;
-            }
-            for (DBTableIdMgr.TableRelationship tr : ti.getTableInfo().getRelationships())
-            {
-                if (tr.getType() == DBTableIdMgr.RelationshipType.ManyToOne)
+                if (StringUtils.isNotEmpty(colInfo.getSecondaryKey()))
                 {
-                    DBTableIdMgr.TableInfo trTI = DBTableIdMgr.getInstance().getByClassName(tr.getClassName());
-                    if (alreadyThere.get(trTI.getClassObj()) == null)
-                    {
-                        tempList.add(new TableInfo(trTI, ti.getTitle() + " - " + UIHelper.makeNamePretty(tr.getName()), trTI.getClassObj().getSimpleName()));
-                        //alreadyThere.put(trTI.getClassObj(), true);
-                        
-                        Vector<TableFieldPair> fldList = new Vector<TableFieldPair>();
-                        /*if (ti.getClassObj() == Geography.class)
-                        {
-                            addGeographyFields(ti, fldList);
-                            
-                        } else if (ti.getClassObj() == Taxon.class)
-                        {
-                            addTaxonFields(ti, fldList);
-                            
-                        } else if (ti.getClassObj() == Location.class)
-                        {
-                            addLocationFields(ti, fldList);
-                            
-                        } else*/
-                        {
-                            for (DBTableIdMgr.FieldInfo fi : trTI.getFields())
-                            {
-                                if (fi.getColumn() != null && skipHash.get(fi.getColumn()) == null)
-                                {
-                                    fldList.add(new TableFieldPair(trTI, fi));
-                                }
-                            }
-                        }
-                        Collections.sort(fldList);
-                        tableFieldList.put(trTI, fldList);
-                    }
+                    fldList.add(new KeyColInfo(erti, colInfo));
                 }
+            }
+            if (fldList.size() > 0)
+            {
+                DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(Integer.parseInt(erti.getTableId()));
+                
+                String title = erti.getTitle();// + " - " + UIHelper.makeNamePretty(colInfo.getColName());
+                
+                tempList.add(new TableInfo(tblInfo, title, tblInfo.getClassObj().getSimpleName()));
+                Collections.sort(fldList);
+                tableFieldList.put(tblInfo, fldList);
             }
         }
 
+        tableInfoList = new Vector<TableInfo>();
         tableInfoList.addAll(tempList);
         Collections.sort(tableInfoList);
         
-        PanelBuilder    builder = new PanelBuilder(new FormLayout("f:p:g", "p,10px,f:p:g"), this);
+        PanelBuilder    builder = new PanelBuilder(new FormLayout("f:p:g", "p,10px,f:p:g,2px,p"), this);
         CellConstraints cc      = new CellConstraints();
 
         PanelBuilder innerBuilder = new PanelBuilder(new FormLayout("max(250px;p):g, 10px, max(250px;p):g, 2px, p, p", "p, 5px, f:p:g, p"));
 
-        innerBuilder.add(new JLabel(getResourceString("WB_DATAOBJECTS"),     JLabel.CENTER), cc.xy(1, 1));
-        innerBuilder.add(new JLabel(getResourceString("WB_DATAOBJ_FIELDS"),  JLabel.CENTER), cc.xy(3, 1));
+        innerBuilder.add(new JLabel(getResourceString("WB_DATAOBJECTS"),     SwingConstants.CENTER), cc.xy(1, 1));
+        innerBuilder.add(new JLabel(getResourceString("WB_DATAOBJ_FIELDS"),  SwingConstants.CENTER), cc.xy(3, 1));
         tableList = new JList(tableInfoList);
         tableList.setCellRenderer(new TableNameRenderer(IconManager.IconSize.Std24));
         
-        JScrollPane sp = new JScrollPane(tableList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        JScrollPane sp = new JScrollPane(tableList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         innerBuilder.add(sp, cc.xywh(1, 3, 1, 2));
         
         tableList.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
@@ -215,9 +179,9 @@ public class QueryBldrPane extends BaseSubPane
         });
         
         fieldList = new JList(new DefaultListModel());
-        fieldList.setCellRenderer(new FieldNameRenderer(IconManager.IconSize.Std16));
+        fieldList.setCellRenderer(new ERTIFieldNameRenderer(IconManager.IconSize.Std16));
         
-        sp = new JScrollPane(fieldList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        sp = new JScrollPane(fieldList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         innerBuilder.add(sp, cc.xywh(3, 3, 1, 2));
         
         fieldList.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
@@ -229,7 +193,7 @@ public class QueryBldrPane extends BaseSubPane
         
         fieldList.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                TableFieldPair fieldItem = (TableFieldPair)fieldList.getSelectedValue();
+                KeyColInfo fieldItem = (KeyColInfo)fieldList.getSelectedValue();
                 if (fieldItem != null && !fieldItem.isInUse() && e.getClickCount() == 2)
                 {   
                     addQueryFieldItem(fieldItem);
@@ -242,7 +206,7 @@ public class QueryBldrPane extends BaseSubPane
         addBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae)
             {
-                addQueryFieldItem((TableFieldPair)fieldList.getSelectedValue());
+                addQueryFieldItem((KeyColInfo)fieldList.getSelectedValue());
             }
         });
         
@@ -251,7 +215,7 @@ public class QueryBldrPane extends BaseSubPane
         
         queryFieldsPanel = new JPanel();
         queryFieldsPanel.setLayout(new NavBoxLayoutManager(0,2));
-        sp = new JScrollPane(queryFieldsPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        sp = new JScrollPane(queryFieldsPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         builder.add(sp, cc.xy(1, 3));
         
         builder.getPanel().setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
@@ -263,20 +227,33 @@ public class QueryBldrPane extends BaseSubPane
             {
                 tableList.setSelectedIndex(initalIndex);
                 
-                TableFieldPair tfp = tableFieldList.get(ti.getTableInfo()).get(0);
-                addQueryFieldItem(tfp);
-                tfp.setInUse(false);
+                KeyColInfo erti = tableFieldList.get(ti.getTableInfo()).get(0);
+                addQueryFieldItem(erti);
+                erti.setInUse(false);
 
                break; 
             }
             initalIndex++;
         }
+        
+        searchBtn = new JButton("Search");
+        PanelBuilder searchPanel = new PanelBuilder(new FormLayout("r:p", "p"));
+        searchPanel.add(searchBtn, cc.xy(1,1));
+        
+        builder.add(searchPanel.getPanel(), cc.xy(1, 5));
+        
+        searchBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                CommandDispatcher.dispatch(new CommandAction(ExpressSearchTask.EXPRESSSEARCH, "Search", "101"));
+            }
+        });
         this.validate();
     }
     
     protected void updateAddBtnState()
     {
-        TableFieldPair fieldItem = (TableFieldPair)fieldList.getSelectedValue();
+        KeyColInfo fieldItem = (KeyColInfo)fieldList.getSelectedValue();
         addBtn.setEnabled(fieldItem != null && !fieldItem.isInUse() );
     }
 
@@ -290,7 +267,7 @@ public class QueryBldrPane extends BaseSubPane
         DefaultListModel model = (DefaultListModel)fieldList.getModel();
         model.clear();
         //System.out.println(tableInfo+" "+tableFieldList.get(tableInfo));
-        for (TableFieldPair fi : tableFieldList.get(tableInfo))
+        for (KeyColInfo fi : tableFieldList.get(tableInfo))
         {
             model.addElement(fi);
         }
@@ -317,10 +294,10 @@ public class QueryBldrPane extends BaseSubPane
     }
     
     /**
-     * Add QueryFieldItem to the list created with a TableFieldPair.
-     * @param fieldItem the TableFieldPair to be in the list
+     * Add QueryFieldItem to the list created with a KeyColInfo.
+     * @param fieldItem the KeyColInfo to be in the list
      */
-    protected void addQueryFieldItem(final TableFieldPair fieldItem)
+    protected void addQueryFieldItem(final KeyColInfo fieldItem)
     {
         if (fieldItem != null)
         {
@@ -354,18 +331,13 @@ public class QueryBldrPane extends BaseSubPane
         protected JLabel           closeBtn;
         protected JLabel           iconLabel;
         protected ImageIcon        icon;
-        protected JCheckBox        isNotCheckbox;
-        protected JComboBox        operatorCBX;
         protected JTextField       criteria;
-        protected MultiStateIconButon sortCheckbox;
-        protected JCheckBox        isDisplayedCkbx;
         
-        
-        protected TableFieldPair   tblField = null;
+        protected KeyColInfo       tblField = null;
         
         protected QueryFieldPanel  thisItem;
         
-        protected String[] labelStrs = {" ", "Field", "Not", "Operator", "Criteria", "Sort", "Display", " ", " "};
+        protected String[] labelStrs = {" ", "Field", "Criteria", " ", " "};
         
         
         /**
@@ -374,7 +346,7 @@ public class QueryBldrPane extends BaseSubPane
          * @param icon the icon to use once it is mapped
          */
         public QueryFieldPanel(final int row, 
-                               final TableFieldPair tableField, 
+                               final KeyColInfo tableField, 
                                final IconManager.IconSize iconSize)
         {
             this.tblField = tableField;
@@ -392,21 +364,11 @@ public class QueryBldrPane extends BaseSubPane
         protected int[] buildControlLayout(final IconManager.IconSize iconSize, final boolean returnWidths)
         {
             iconLabel     = new JLabel(icon);
-            fieldLabel    = new JLabel(fixName(tblField.getTitle()));
-            isNotCheckbox = new JCheckBox("");
-            operatorCBX   = new JComboBox(new String[] { "Like", "Contains"});
+            fieldLabel    = new JLabel(fixName(tblField.getColInfo().getColName()));
             criteria      = new JTextField();
-            sortCheckbox  = new MultiStateIconButon(new ImageIcon[] {
-                                IconManager.getImage("GrayDot",   IconManager.IconSize.Std16),
-                                IconManager.getImage("UpArrow",   IconManager.IconSize.Std16),
-                                IconManager.getImage("DownArrow", IconManager.IconSize.Std16)});
-            //sortCheckbox.setMargin(new Insets(2,2,2,2));
-            //sortCheckbox.setBorder(BorderFactory.createLineBorder(new Color(225,225,225)));
-            isDisplayedCkbx = new JCheckBox("");
             closeBtn = new JLabel(IconManager.getIcon("Close"));
-            
-            //                       0           1           2              3           4           5             6              7
-            JComponent[] comps = {iconLabel, fieldLabel, isNotCheckbox, operatorCBX, criteria, sortCheckbox, isDisplayedCkbx, closeBtn, null};
+
+            JComponent[] comps = {iconLabel, fieldLabel, criteria, closeBtn, null};
 
             StringBuilder sb = new StringBuilder();
             if (columnDefStr == null)
@@ -414,9 +376,8 @@ public class QueryBldrPane extends BaseSubPane
                 for (int i=0;i<comps.length;i++)
                 {
                     sb.append(i == 0 ? "" : ",");
-                    if (i == 2 || i == 3 || i == 6) sb.append("c:");
                     sb.append("p");
-                    if (i == 4) sb.append(":g");
+                    if (i == 2) sb.append(":g");
                     sb.append(",4px");
                 }
             } else
@@ -438,9 +399,8 @@ public class QueryBldrPane extends BaseSubPane
                 col += 2;
             }
 
-            icon = IconManager.getIcon(tblField.getTableinfo().getObjTitle(), iconSize);
+            icon = IconManager.getIcon(tblField.getErti().getName(), iconSize);
             setIcon(icon);
-            isDisplayedCkbx.setSelected(true);
             
             closeBtn.addMouseListener(new MouseAdapter() {
                 public void mousePressed(MouseEvent e) {
@@ -476,18 +436,17 @@ public class QueryBldrPane extends BaseSubPane
             int[]    labelWidths = new int[labelStrs.length];
             for (int i=0;i<labels.length;i++)
             {
-                labels[i] = new JLabel(labelStrs[i], JLabel.CENTER);
+                labels[i] = new JLabel(labelStrs[i], SwingConstants.CENTER);
                 labelWidths[i] = Math.max(widths[i], labels[i].getPreferredSize().width);
             }
             
             for (int i=0;i<labels.length;i++)
             {
                 sb.append(i == 0 ? "" : ",");
-                if (i == 2 || i == 3 || i == 6) sb.append("c:");
                 sb.append("max(");
                 sb.append(labelWidths[i]);
                 sb.append(";p)");
-                if (i == 4) sb.append(":g");
+                if (i == 2) sb.append(":g");
                 sb.append(",4px");
             }
 
@@ -543,7 +502,7 @@ public class QueryBldrPane extends BaseSubPane
         /**
          * @return the TableInfo object
          */
-        public TableFieldPair getTableField()
+        public KeyColInfo getTableField()
         {
             return tblField;
         }
@@ -614,5 +573,102 @@ public class QueryBldrPane extends BaseSubPane
         {
             return title.compareTo(obj.title);
         }
+    }
+    
+    class KeyColInfo implements Comparable<KeyColInfo>
+    {
+        protected ExpressResultsTableInfo erti;
+        protected ERTIColInfo             colInfo;
+        protected boolean                 isInUse = false;
+        
+        public KeyColInfo(ExpressResultsTableInfo erti, ERTIColInfo colInfo)
+        {
+            super();
+            this.erti = erti;
+            this.colInfo = colInfo;
+        }
+        /**
+         * @return the colInfo
+         */
+        public ERTIColInfo getColInfo()
+        {
+            return colInfo;
+        }
+        /**
+         * @return the erti
+         */
+        public ExpressResultsTableInfo getErti()
+        {
+            return erti;
+        }
+        
+        /**
+         * @return the isInUse
+         */
+        public boolean isInUse()
+        {
+            return isInUse;
+        }
+        /**
+         * @param isInUse the isInUse to set
+         */
+        public void setInUse(boolean isInUse)
+        {
+            this.isInUse = isInUse;
+        }
+        
+        //----------------------------------------------------------------------
+        //-- Comparable Interface
+        //----------------------------------------------------------------------
+
+        /* (non-Javadoc)
+         * @see java.lang.Comparable#compareTo(java.lang.Object)
+         */
+        public int compareTo(KeyColInfo obj)
+        {
+            return colInfo.getColName().compareTo(obj.colInfo.getColName());
+        } 
+    }
+    
+    public class ERTIFieldNameRenderer extends DefaultListCellRenderer 
+    {
+        protected ImageIcon checkMark;
+        protected ImageIcon blankIcon;
+        
+        public ERTIFieldNameRenderer(IconManager.IconSize iconSize) 
+        {
+            // Don't paint behind the component
+            this.setOpaque(false);
+            checkMark   = IconManager.getIcon("Checkmark", iconSize);
+            blankIcon   = IconManager.getIcon("BlankIcon", iconSize);
+        }
+
+        public Component getListCellRendererComponent(JList list,
+                                                      Object value,   // value to display
+                                                      int index,      // cell index
+                                                      boolean iss,    // is the cell selected
+                                                      boolean chf)    // the list and the cell have the focus
+        {
+            super.getListCellRendererComponent(list, value, index, iss, chf);
+
+            KeyColInfo tblField = (KeyColInfo)value;
+            setIcon(tblField.isInUse() ? checkMark : blankIcon);
+            
+            if (iss) {
+                setOpaque(true);
+                setBackground(list.getSelectionBackground());
+                setForeground(list.getSelectionForeground());
+                list.setSelectedIndex(index);
+
+            } else {
+                this.setOpaque(false);
+                setBackground(list.getBackground());
+                setForeground(list.getForeground());
+            }
+
+            setText(tblField.getColInfo().getColName());
+            return this;
+        }
+
     }
 }

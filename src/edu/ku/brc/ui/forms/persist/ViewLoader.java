@@ -659,6 +659,8 @@ public class ViewLoader
                         }
                         case subview:
                         {
+                            Properties properties = UIHelper.parseProperties(getAttr(cellElement, "initialize", null));
+
                             String svViewSetName = cellElement.attributeValue("viewsetname");
                             if (StringUtils.isEmpty(svViewSetName))
                             {
@@ -676,7 +678,7 @@ public class ViewLoader
                                                    colspan,
                                                    rowspan,
                                                    getAttr(cellElement, "single", false)));
-
+                            cell.setProperties(properties);
                             break;
                         }
                         case iconview:

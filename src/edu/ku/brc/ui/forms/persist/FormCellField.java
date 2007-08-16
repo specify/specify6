@@ -15,9 +15,6 @@
 package edu.ku.brc.ui.forms.persist;
 
 import java.util.Date;
-import java.util.Properties;
-
-import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.ui.DateWrapper;
@@ -64,8 +61,6 @@ public final class FormCellField extends FormCell
 
     protected boolean  isTextField    = false;
     protected boolean  isDSPTextField = false;
-
-    protected Properties properties = null;
 
     /**
      * Constructor
@@ -136,55 +131,6 @@ public final class FormCellField extends FormCell
         // to whether they are text controls
         setUiType(uiType);
         setDspUIType(dspUIType);
-    }
-
-    public void setProperties(final Properties properties)
-    {
-        this.properties = properties;
-    }
-
-    public void addProperty(final String nameStr, final String value)
-    {
-        if (properties == null)
-        {
-            properties = new Properties();
-        }
-        properties.put(nameStr, value);
-    }
-
-    public String getProperty(final String nameStr)
-    {
-        if (properties != null)
-        {
-            return properties.getProperty(nameStr);
-        }
-        return null;
-    }
-
-    public int getPropertyAsInt(final String nameStr, final int defVal)
-    {
-        if (properties != null)
-        {
-            String str = properties.getProperty(nameStr);
-            if (StringUtils.isNotEmpty(str))
-            {
-                return Integer.parseInt(str);
-            }
-        }
-        return defVal;
-    }
-
-    public boolean getPropertyAsBoolean(final String nameStr, final boolean defVal)
-    {
-        if (properties != null)
-        {
-            String str = properties.getProperty(nameStr);
-            if (StringUtils.isNotEmpty(str))
-            {
-                return str.equalsIgnoreCase("true");
-            }
-        }
-        return defVal;
     }
 
     public int getCols()
@@ -374,11 +320,6 @@ public final class FormCellField extends FormCell
         this.validationType = validationType;
     }
 
-    public Properties getProperties()
-    {
-        return properties;
-    }
-
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormCell#clone()
      */
@@ -404,7 +345,6 @@ public final class FormCellField extends FormCell
         fcf.validationRule = validationRule;
         fcf.isTextField = isTextField;
         fcf.isDSPTextField = isDSPTextField;
-        fcf.properties = properties != null ? (Properties)properties.clone() : null;
         return fcf;      
     }
 

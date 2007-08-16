@@ -131,7 +131,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
                                       null, 
                                       formView, 
                                       isEdit ? AltView.CreationMode.Edit : AltView.CreationMode.View,
-                                      options);
+                                      options, null);
 
         } else
         {

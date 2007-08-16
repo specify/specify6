@@ -65,6 +65,7 @@ public class MenuSwitcherPanel extends JPanel
                              final Vector<AltView> altViewsList)
     {
         super();
+        setOpaque(false);
         
         switcherHash    = new Hashtable<String, DropDownButtonStateful>();
         selectorValHash = new Hashtable<String, Vector<AltView>>();
@@ -89,6 +90,7 @@ public class MenuSwitcherPanel extends JPanel
             {
                 Vector<AltView> avList = selectorValHash.get(selectorVal);
                 DropDownButtonStateful switcherUI = createSwitcher(mvParent, avList);
+                switcherUI.setOpaque(false);
                 add(switcherUI, selectorVal);
                 switcherHash.put(selectorVal, switcherUI);
             }
@@ -97,6 +99,7 @@ public class MenuSwitcherPanel extends JPanel
         {
             setLayout(new BorderLayout());
             DropDownButtonStateful switcherUI = createSwitcher(mvParent, altViewsList);
+            switcherUI.setOpaque(false);
             add(switcherUI, BorderLayout.CENTER);
             switcherHash.put("0", switcherUI);
             selectorValHash.put("0", altViewsList);
@@ -189,7 +192,8 @@ public class MenuSwitcherPanel extends JPanel
             switcher.addActionListener(new SwitcherAL(switcher));
             switcher.validate();
             switcher.doLayout();
-
+            switcher.setOpaque(false);
+            
         }
         return switcher;
     }

@@ -116,7 +116,8 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
      */
     protected ValFormattedTextField()
     {
-        // do nothing
+        super();
+        setOpaque(false);
     }
 
     /**
@@ -125,7 +126,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
      */
     public ValFormattedTextField(final UIFieldFormatterIFace formatter, final boolean isViewOnly)
     {
-        super();
+        this();
         
         this.isViewOnly = isViewOnly;
         

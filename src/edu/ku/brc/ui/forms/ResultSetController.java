@@ -90,7 +90,7 @@ public class ResultSetController implements ValidationListener
                                final boolean addNewBtn,  
                                final boolean addDelBtn, 
                                final String  objTitle,
-                               final int len)
+                               final int     len)
     {
         this.formValidator = formValidator;
        
@@ -156,6 +156,11 @@ public class ResultSetController implements ValidationListener
         prevBtn.setToolTipText(createTooltip("GotoPreviousRecordTT", objTitle));
         nextBtn.setToolTipText(createTooltip("GotoNextRecordTT", objTitle));
         lastBtn.setToolTipText(createTooltip("GotoLastRecordTT", objTitle));
+        
+        firstBtn.setOpaque(false);
+        prevBtn.setOpaque(false);
+        nextBtn.setOpaque(false);
+        lastBtn.setOpaque(false);
         
         CellConstraints cc = new CellConstraints();
         rowBuilder.add(firstBtn, cc.xy(1,1));
@@ -231,7 +236,12 @@ public class ResultSetController implements ValidationListener
                 notifyListeners();
             }
         });
-        panel = rowBuilder.getPanel();    
+        
+        // Make sure it gets centered
+        DefaultFormBuilder outerCenteredPanel = new DefaultFormBuilder(new FormLayout("c:p:g", "p"));
+        outerCenteredPanel.add(rowBuilder.getPanel(), cc.xy(1,1));
+        outerCenteredPanel.getPanel().setOpaque(false);
+        panel = outerCenteredPanel.getPanel();    
     }
     
     /**

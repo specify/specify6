@@ -29,6 +29,7 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
 import edu.ku.brc.exceptions.ConfigurationException;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * Hold information about the subset of returns results. Each Express Search can return results from several different
@@ -91,24 +92,6 @@ public class ExpressResultsTableInfo
     }
 
     /**
-     * Parse comma separated r,g,b string
-     * @param rgb the string with comma separated color values
-     * @return the Color object
-     */
-    protected Color parseRGB(final String rgb)
-    {
-        StringTokenizer st = new StringTokenizer(rgb, ",");
-        if (st.countTokens() == 3)
-        {
-            String r = st.nextToken().trim();
-            String g = st.nextToken().trim();
-            String b = st.nextToken().trim();
-            return new Color(Integer.parseInt(r), Integer.parseInt(g), Integer.parseInt(b));
-        }
-        throw new ConfigurationException("R,G,B value is bad ["+rgb+"]");
-    }
-
-    /**
      * Fill the current object with the info from the DOM depending on the LOAD_TYPE
      * @param tableElement the DOM4J element used to fill the object
      */
@@ -119,7 +102,7 @@ public class ExpressResultsTableInfo
         title           = tableElement.attributeValue("title");
         name            = tableElement.attributeValue("name");
         priority        = getAttr(tableElement, "priority", 1);
-        color           = parseRGB(tableElement.attributeValue("color"));
+        color           = UIHelper.parseRGB(tableElement.attributeValue("color"));
 
         isIndexed    = getAttr(tableElement, "indexed", true);
         useHitsCache = getAttr(tableElement, "usehitscache", false);

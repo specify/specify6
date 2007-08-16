@@ -89,6 +89,7 @@ import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableIdMgr.TableInfo;
+import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.helpers.MenuItemPropertyChangeListener;
 import edu.ku.brc.ui.ViewBasedDialogFactoryIFace.FRAME_TYPE;
 import edu.ku.brc.ui.db.DatabaseLoginDlg;
@@ -1395,6 +1396,8 @@ public final class UIHelper
                                         final ActionListener       al)
     {
         JButton btn = new JButton(size != null ? IconManager.getIcon(iconName, size) : IconManager.getIcon(iconName));
+        btn.setOpaque(false);
+        
         if (!withEmptyBorder)
         {
             btn.addMouseListener(new MouseAdapter() {
@@ -1511,6 +1514,7 @@ public final class UIHelper
                                         final Action               action)
     {
         JButton btn = new JButton(action);
+        btn.setOpaque(false);
         if (!withEmptyBorder)
         {
             btn.addMouseListener(new MouseAdapter() {
@@ -1877,5 +1881,24 @@ public final class UIHelper
         {
             c.removeMouseMotionListener(l);
         }
+    }
+    
+
+    /**
+     * Parse comma separated r,g,b string
+     * @param rgb the string with comma separated color values
+     * @return the Color object
+     */
+    public static Color parseRGB(final String rgb)
+    {
+        StringTokenizer st = new StringTokenizer(rgb, ",");
+        if (st.countTokens() == 3)
+        {
+            String r = st.nextToken().trim();
+            String g = st.nextToken().trim();
+            String b = st.nextToken().trim();
+            return new Color(Integer.parseInt(r), Integer.parseInt(g), Integer.parseInt(b));
+        }
+        throw new ConfigurationException("R,G,B value is bad ["+rgb+"]");
     }
 }

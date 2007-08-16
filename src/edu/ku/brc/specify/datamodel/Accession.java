@@ -391,8 +391,9 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
         this.repositoryAgreement = repositoryAgreement;
     }
 
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "accession")
-    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    //@OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "accession")
+    //@Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "accession")
     public Set<Attachment> getAttachments()
     {
         return attachments;

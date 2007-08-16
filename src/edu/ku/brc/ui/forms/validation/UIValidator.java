@@ -186,13 +186,17 @@ public class UIValidator
             {
                 Object result = exp.evaluate(jc);
 
-                Map<?,?> map = jc.getVars();
-                Object[] keys = map.keySet().toArray();
-                for (Object key : keys)
+                if (false) // XXX DEBUG
                 {
-                    log.debug("## ["+key+"]["+map.get(key).getClass().toString()+"]");
+                    Map<?,?> map = jc.getVars();
+                    Object[] keys = map.keySet().toArray();
+                    for (Object key : keys)
+                    {
+                        log.debug("## ["+key+"]["+map.get(key).getClass().toString()+"]");
+                    }
+                    log.debug("** "+exp.getExpression()+"  "+result+"  "+(result != null ? result.getClass().toString() : ""));
                 }
-                log.debug("** "+exp.getExpression()+"  "+result+"  "+(result != null ? result.getClass().toString() : ""));
+                
                 if (result instanceof Boolean)
                 {
                     errorState = ((Boolean)result).booleanValue() ? UIValidatable.ErrorType.Valid : UIValidatable.ErrorType.Error;

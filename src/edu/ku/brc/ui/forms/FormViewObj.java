@@ -60,6 +60,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.StaleObjectStateException;
 import org.hibernate.exception.ConstraintViolationException;
 
+import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -194,6 +195,8 @@ public class FormViewObj implements Viewable,
     protected RecordSetIFace                recordSet         = null;
     protected List<RecordSetItemIFace>      recordSetItemList = null;  
     protected DBTableIdMgr.TableInfo        tableInfo         = null;
+    
+    protected Color                         bgColor           = null;
 
     /**
      * Constructor with FormView definition
@@ -208,9 +211,10 @@ public class FormViewObj implements Viewable,
                        final AltView       altView,
                        final MultiView     mvParent,
                        final FormValidator formValidator,
-                       final int           options)
+                       final int           options,
+                       final Color         bgColor)
     {
-        this(view, altView, mvParent, formValidator, options, null);
+        this(view, altView, mvParent, formValidator, options, null, bgColor);
     }
     
     /**
@@ -227,12 +231,15 @@ public class FormViewObj implements Viewable,
                        final MultiView     mvParent,
                        final FormValidator formValidator,
                        final int           options,
-                       final String        cellName)
+                       final String        cellName,
+                       final Color         bgColor)
     {
         this.view        = view;
         this.altView     = altView;
         this.mvParent    = mvParent;
         this.cellName    = cellName;
+        this.bgColor     = bgColor;
+
         
         businessRules    = view.getBusinessRule();
         isEditting       = altView.getMode() == AltView.CreationMode.Edit;
@@ -247,8 +254,10 @@ public class FormViewObj implements Viewable,
         {
             builder.getPanel().setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
         }
+        builder.getPanel().setBackground(bgColor);
         
         this.options = options;
+        boolean isSingleObj                = MultiView.isOptionOn(options, MultiView.IS_SINGLE_OBJ);
         boolean createResultSetController  = MultiView.isOptionOn(options, MultiView.RESULTSET_CONTROLLER);
         boolean createViewSwitcher         = MultiView.isOptionOn(options, MultiView.VIEW_SWITCHER);
         boolean isNewObject                = MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT);
@@ -263,7 +272,12 @@ public class FormViewObj implements Viewable,
 
         scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
 
-
+        if (isSingleObj)
+        {
+            int x = 0;
+            x++;
+            
+        }
         AppPreferences.getRemote().addChangeListener("ui.formatting.viewfieldcolor", this);
 
         boolean addController = mvParent != null && view.getAltViews().size() > 1;
@@ -285,12 +299,10 @@ public class FormViewObj implements Viewable,
         
         List<JComponent> comps = new ArrayList<JComponent>();
 
-        // Here we create the JCOmboBox that enables the user to switch between forms
+        // Here we create the JComboBox that enables the user to switch between forms
         // when creating a new object
         if (addSelectorCBX)
         {
-            //mainCompRowInx++;
-            
             Vector<String> cbxList = new Vector<String>();
             cbxList.add(altView.getName());
             for (AltView av : view.getAltViews())
@@ -301,6 +313,8 @@ public class FormViewObj implements Viewable,
                 }
             }
             JPanel p = new JPanel(new BorderLayout());
+            p.setOpaque(false);
+            
             p.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
             selectorCBX = new JComboBox(cbxList);
             p.add(selectorCBX, BorderLayout.WEST);
@@ -327,13 +341,15 @@ public class FormViewObj implements Viewable,
             if (createViewSwitcher) // This is passed in outside
             {
                 // Now we have a Special case that when when there are only two AltViews and
-                // they differ only by Edit & View we hide the switching UI unless
-                // we are the root MultiView. This way when switching the Root View all the other views switch
+                // they differ only by Edit & View we hide the switching UI unless we are the root MultiView. 
+                // This way when switching the Root View all the other views switch
                 // (This is because they were created that way. It also makes no sense that while in "View" mode
                 // you would want to switch an individual subview to a differe "mode" view than the root).
 
                 altViewsList = new Vector<AltView>();
-                switcherUI   = createMenuSwitcherPanel(mvParent, view, altView, altViewsList);
+                
+                // This will return null if it isn't suppose to have a switcher
+                switcherUI = createMenuSwitcherPanel(mvParent, view, altView, altViewsList);
                 
                 if (altViewsList.size() > 0)
                 {
@@ -380,6 +396,7 @@ public class FormViewObj implements Viewable,
             if (!hideSaveBtn)
             {
                 saveBtn = new JButton(UIRegistry.getResourceString("Search"), IconManager.getImage("Search", IconManager.IconSize.Std16));
+                saveBtn.setOpaque(false);
                 comps.add(saveBtn);
             }
 
@@ -387,22 +404,28 @@ public class FormViewObj implements Viewable,
 
         if (comps.size() > 0 || addController || createResultSetController)
         {
-            controlPanel = new ControlBarPanel();
+            controlPanel = new ControlBarPanel(bgColor);
             controlPanel.addComponents(comps, false); // false -> right side
             
             mainComp = new JPanel(new BorderLayout());
             mainComp.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
-
+            mainComp.setBackground(bgColor);
+            
             JScrollPane scrollPane = new JScrollPane(mainBuilder.getPanel(), ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             scrollPane.setBorder(null);
+            mainBuilder.getPanel().setBackground(bgColor);
             
             mainComp.add(scrollPane, BorderLayout.CENTER);
             mainComp.add(controlPanel, BorderLayout.SOUTH);
+            
         }
 
         if (createResultSetController)
         {
             addRSController();
+        } else
+        {
+            createAddDelPanel();
         }
 
     }
@@ -450,6 +473,7 @@ public class FormViewObj implements Viewable,
     protected void addSaveBtn()
     {
         saveBtn = new JButton(UIRegistry.getResourceString("Save"), IconManager.getIcon("Save", IconManager.IconSize.Std16));
+        saveBtn.setOpaque(false);
         saveBtn.setToolTipText(ResultSetController.createTooltip("SaveRecordTT", view.getObjTitle()));
         saveBtn.setMargin(new Insets(1,1,1,1));
         saveBtn.setEnabled(false);
@@ -509,6 +533,7 @@ public class FormViewObj implements Viewable,
         if (viewable.getValidator() != null)
         {
             JButton validationInfoBtn = new JButton(IconManager.getIcon("ValidationValid"));
+            validationInfoBtn.setOpaque(false);
             validationInfoBtn.setToolTipText(getResourceString("ShowValidationInfoTT"));
             validationInfoBtn.setMargin(new Insets(1,1,1,1));
             validationInfoBtn.setBorder(BorderFactory.createEmptyBorder());
@@ -1532,6 +1557,33 @@ public class FormViewObj implements Viewable,
     }
 
     /**
+     * Adds the the ActionListener to the btns.
+     */
+    protected void setAddDelListeners(final JButton addBtn, final JButton delBtn)
+    {
+        if (addBtn != null)
+        {
+            addBtn.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent ae)
+                {
+                    createNewDataObject();
+                    focusFirstFormControl();
+                }
+            });
+        }
+
+        if (delBtn != null)
+        {
+            delBtn.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent ae)
+                {
+                    removeObject();
+                }
+            });
+        }
+    }
+
+    /**
      * Adds the ResultSetController to the panel.
      */
     protected void addRSController()
@@ -1541,29 +1593,40 @@ public class FormViewObj implements Viewable,
         {
             boolean inEditMode = altView.getMode() == AltView.CreationMode.Edit;
             rsController = new ResultSetController(formValidator, inEditMode, inEditMode, view.getObjTitle(), 0);
+            rsController.getPanel().setBackground(bgColor);
+            
             rsController.addListener(this);
-            controlPanel.add(rsController);
-
-            if (rsController.getNewRecBtn() != null)
-            {
-                rsController.getNewRecBtn().addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent ae)
-                    {
-                        createNewDataObject();
-                        focusFirstFormControl();
-                    }
-                });
-            }
-
-            if (rsController.getDelRecBtn() != null)
-            {
-                rsController.getDelRecBtn().addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent ae)
-                    {
-                        removeObject();
-                    }
-                });
-            }
+            controlPanel.addController(rsController.getPanel());
+            controlPanel.setRecordSetController(rsController);
+            
+            setAddDelListeners(rsController.getNewRecBtn(), rsController.getDelRecBtn());
+        }
+    }
+    
+    /**
+     * 
+     */
+    protected void createAddDelPanel()
+    {
+        if (controlPanel != null)
+        {
+            Insets insets = new Insets(1,1,1,1);
+            PanelBuilder rowBuilder = new PanelBuilder(new FormLayout("f:p:g,p,5px,p", "p"));
+            
+            JButton newRecBtn = UIHelper.createIconBtn("NewRecord", null, null);
+            newRecBtn.setToolTipText(ResultSetController.createTooltip("NewRecordTT", view.getObjTitle()));
+            newRecBtn.setEnabled(true);
+            newRecBtn.setMargin(insets);
+            rowBuilder.add(newRecBtn, cc.xy(2,1));
+    
+            JButton delRecBtn = UIHelper.createIconBtn("DeleteRecord", null, null);
+            delRecBtn.setToolTipText(ResultSetController.createTooltip("RemoveRecordTT", view.getObjTitle()));
+            delRecBtn.setMargin(insets);
+            rowBuilder.add(delRecBtn, cc.xy(3,1));
+            
+            rowBuilder.getPanel().setOpaque(false);
+            controlPanel.addController(rowBuilder.getPanel());
+            setAddDelListeners(newRecBtn, delRecBtn);
         }
     }
 
@@ -2576,6 +2639,7 @@ public class FormViewObj implements Viewable,
     public void registerSaveBtn(JButton saveBtnArg)
     {
         this.saveBtn = saveBtnArg;
+        this.saveBtn.setOpaque(false);
     }
     
     /* (non-Javadoc)

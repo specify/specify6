@@ -427,10 +427,8 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                         //doc.add(new Field(fieldName, value, Field.Store.YES, Field.Index.UN_TOKENIZED));
                         throw new RuntimeException("Filedname is null! Why are we here?");
                         
-                    } else
-                    {
-                        doc.add(new Field(CONTENTS, value, Field.Store.NO, Field.Index.TOKENIZED));
                     }
+                    doc.add(new Field(CONTENTS, value, Field.Store.NO, Field.Index.TOKENIZED));
                     //log.debug("["+fieldName+"]["+secondaryKey+"]["+value+"]");
                 }
 
@@ -469,11 +467,9 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                     {
                         //doc.add(new Field(fieldName, value, Field.Store.YES, Field.Index.UN_TOKENIZED));
                         throw new RuntimeException("Filedname is null! Why are we here?");
-                    } else
-                    {
-                        doc.add(new Field(CONTENTS, value, Field.Store.NO, Field.Index.TOKENIZED));
-                        doc.add(new Field(colInfo.getSecondaryKey(), value, Field.Store.NO, Field.Index.TOKENIZED));
                     }
+                    doc.add(new Field(CONTENTS, value, Field.Store.NO, Field.Index.TOKENIZED));
+                    doc.add(new Field(colInfo.getSecondaryKey(), value, Field.Store.NO, Field.Index.TOKENIZED));
                     //log.debug("["+fieldName+"]["+secondaryKey+"]["+value+"]");
                 }
 
@@ -497,8 +493,8 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                         value = str;
                     }
                     //System.out.println("["+colInfo.getSecondaryKey()+"]["+value+"]");
-                    doc.add(new Field(CONTENTS, value, Field.Store.YES, Field.Index.UN_TOKENIZED));
-                    doc.add(new Field(colInfo.getSecondaryKey(), value, Field.Store.YES, Field.Index.UN_TOKENIZED));
+                    doc.add(new Field(CONTENTS, value,                  Field.Store.NO, Field.Index.TOKENIZED));
+                    doc.add(new Field(colInfo.getSecondaryKey(), value, Field.Store.NO, Field.Index.TOKENIZED));
                 }
             }
         }
@@ -676,7 +672,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                                 ERTIColInfo ci = colInfo[i];
                                 int inx = ci.getPosition();
 
-                                if (indexValue(doc, rs, inx, rsmd.getColumnName(inx), ci,
+                                if (indexValue(doc, rs, inx, rsmd.getColumnName(inx), ci, 
                                                classes[inx], formatter) != null)
                                 {
                                     cnt++;

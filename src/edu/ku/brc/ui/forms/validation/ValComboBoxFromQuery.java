@@ -69,6 +69,7 @@ import edu.ku.brc.ui.forms.DataObjectSettable;
 import edu.ku.brc.ui.forms.DataObjectSettableFactory;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.FormHelper;
+import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 
@@ -200,6 +201,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         comboBox.setAllowNewValues(true);
 
         init(objTitle, btns);
+        
+        setOpaque(false);
     }
 
     /**
@@ -257,6 +260,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     protected JButton createBtn(final String iconName, final String tooltipKey, final String objTitle)
     {
         JButton btn = new JButton(IconManager.getIcon(iconName, IconManager.IconSize.Std16));
+        btn.setOpaque(false);
         btn.setToolTipText(String.format(getResourceString(tooltipKey), new Object[] {objTitle}));
         btn.setFocusable(false);
         btn.setMargin(new Insets(1,1,1,1));
@@ -458,7 +462,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                                                                    frameTitle,
                                                                    closeBtnTitle,
                                                                    true,   // false means View Mode
-                                                                   (isNewObject ? MultiView.IS_NEW_OBJECT : 0) | MultiView.HIDE_SAVE_BTN,
+                                                                   (isNewObject ? MultiView.IS_NEW_OBJECT : MultiView.NO_OPTIONS) | MultiView.HIDE_SAVE_BTN,
                                                                    ViewBasedDialogFactoryIFace.FRAME_TYPE.DIALOG);
         if (isNewObject)
         {
@@ -472,7 +476,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             DataObjectSettable ds = DataObjectSettableFactory.get(classObj.getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
             if (ds != null)
             {
-                ds.setFieldValue(newDataObj, fieldNames[0], comboBox.getTextField().getText());
+                ds.setFieldValue(newDataObj, fieldNames[0], "");//comboBox.getTextField().getText());
             }
             frame.setData(newDataObj);
 
@@ -495,6 +499,14 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                 {
                     if (multiView != null)
                     {
+                        
+                        FormViewObj fvo = frame.getMultiView().getCurrentViewAsFormViewObj();
+                        if (fvo != null)
+                        {
+                            fvo.saveObject();
+                            newDataObj = (FormDataObjIFace)fvo.getDataObj();
+                        }
+                        
                         Object parentDataObj = multiView.getData();
                         if (parentDataObj instanceof FormDataObjIFace)
                         {
@@ -505,8 +517,19 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                             FormHelper.addToParent(multiView != null ? multiView.getData() : null, newDataObj);
                         }
                     }
+
                     setValue(newDataObj, null);
                     newDataObj = null;
+                } else
+                {
+                    FormViewObj fvo = frame.getMultiView().getCurrentViewAsFormViewObj();
+                    if (fvo != null)
+                    {
+                        fvo.saveObject();
+                        newDataObj = (FormDataObjIFace)fvo.getDataObj();
+                        setValue(newDataObj, null);
+                        newDataObj = null;
+                    } 
                 }
                 valueHasChanged();
             }

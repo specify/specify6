@@ -11,12 +11,13 @@
             <index>
                 <sql>
                     <![CDATA[SELECT ColFieldsDef FROM collectiontype INNER JOIN collection ON collectiontype.CollectionTypeID = collection.CollectionTypeID
-	 INNER JOIN collectionobject ON collection.CollectionID = collectionobject.CollectionID
-	 INNER JOIN specifyuser ON specifyuser.SpecifyUserID = collectiontype.SpecifyUserID
-WHERE specifyuser.SpecifyUserID = SPECIFYUSERID]]>
+ INNER JOIN collectionobject ON collection.CollectionID = collectionobject.CollectionID
+ INNER JOIN specifyuser ON specifyuser.SpecifyUserID = collectiontype.SpecifyUserID
+ WHERE specifyuser.SpecifyUserID = SPECIFYUSERID]]>
                 </sql>
                 <cols>
                    <col pos="1" id="true">CollectionObjectID</col>
+
                    <col pos="2" key="catnum" formatter="CatalogNumber">CatalogNumber</col>
                    <col pos="3" key="catdate">CatalogedDate</col>
                    <col pos="4" key="fldnum">FieldNumber</col>
@@ -112,6 +113,7 @@ WHERE specifyuser.SpecifyUserID = SPECIFYUSERID]]>
                     <col pos="3" key="taxon">FullName</col>
                     <col pos="4">CommonName</col>
                 </cols>
+                <staticvalue key="CL">0</staticvalue>
             </index>
             <detailView icon="Taxon">
                 <sql>
@@ -139,6 +141,7 @@ WHERE specifyuser.SpecifyUserID = SPECIFYUSERID]]>
                     <col pos="2">FirstName</col>
                     <col pos="3" key="lastname">LastName</col>
                 </cols>
+                <staticvalue key="CL">0</staticvalue>
             </index>
             <detailView icon="Agent">
                 <sql>
@@ -168,6 +171,7 @@ WHERE specifyuser.SpecifyUserID = SPECIFYUSERID]]>
                     <col pos="4">IssuedDate</col>
                     <col pos="5">StartDate</col>
                 </cols>
+                <staticvalue key="CL">0</staticvalue>
             </index>
             <detailView icon="Permit">
                 <sql>
@@ -200,6 +204,7 @@ WHERE specifyuser.SpecifyUserID = SPECIFYUSERID]]>
                     <col pos="5">Type</col>
                     <col pos="6">Text1</col>
                 </cols>
+                <staticvalue key="CL">0</staticvalue>
             </index>
             <detailView icon="Accession">
                 <sql>
@@ -234,6 +239,7 @@ WHERE specifyuser.SpecifyUserID = SPECIFYUSERID]]>
                     <col pos="6" key="country">Country</col>
                     <col pos="7" key="postalcode">PostalCode</col>
                 </cols>
+                <staticvalue key="CL">0</staticvalue>
             </index>
             <detailView icon="Address">
                 <sql>

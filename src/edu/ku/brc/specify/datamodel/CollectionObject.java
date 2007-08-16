@@ -175,10 +175,6 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
         attachments           = new HashSet<Attachment>();
         container             = null;
         
-        // XXX Temp TESTING
-        colObjAttributes      = new ColObjAttributes();
-        colObjAttributes.initialize();
-        
         leftSideRels          = new HashSet<CollectionRelationship>();
         rightSideRels         = new HashSet<CollectionRelationship>();
 
@@ -664,8 +660,9 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     }
 
 
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectionObject")
-    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    //@OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectionObject")
+    //@Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "collectionObject")
     public Set<Attachment> getAttachments()
     {
         return attachments;

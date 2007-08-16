@@ -138,6 +138,8 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
      */
     public void init(final boolean makeEditable)
     {
+        setOpaque(false);
+        
         comboBox.init(makeEditable);
 
         if (defaultTextBGColor == null)

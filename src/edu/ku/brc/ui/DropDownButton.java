@@ -165,7 +165,10 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
      */
     protected void init(final String label, final ImageIcon icon, String toolTip)
     {
+        setOpaque(false);
+        
         mainBtn   = new JButton(label, icon);
+        mainBtn.setOpaque(false);
         mainBtn.addFocusListener(new FocusListener() {
             public void focusGained(FocusEvent arg0)
             {
@@ -196,6 +199,7 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
         }
 
         arrowBtn = new JButton(dropDownArrow);
+        arrowBtn.setOpaque(false);
         arrowBtn.setBorder(new EmptyBorder(6,4,6,4));
         arrowBtn.getModel().addChangeListener(this);
         arrowBtn.addActionListener(this);

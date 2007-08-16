@@ -15,6 +15,7 @@
 
 package edu.ku.brc.af.core;
 
+import java.util.Hashtable;
 import java.util.Vector;
 
 /**
@@ -32,6 +33,8 @@ public class ExpressSearchResults
     protected ExpressResultsTableInfo tableInfo;
     protected Vector<Long>            recIds   = new Vector<Long>();
     protected Vector<Integer>         indexes  = new Vector<Integer>();
+    
+    protected Hashtable<Long, Boolean> duplicateRecId   = new Hashtable<Long, Boolean>();
 
     /**
      * Constructs the Results.
@@ -58,16 +61,22 @@ public class ExpressSearchResults
         
         recIds.clear();
         recIds = null;
+        
+        duplicateRecId.clear();
     }
     
     public void add(long id)
     {
-        recIds.add(id);
+        if (duplicateRecId.get(id) == null)
+        {
+            duplicateRecId.put(id, true);
+            recIds.add(id);
+        }
     }
 
     public void add(String idStr)
     {
-        recIds.add(Long.parseLong(idStr)); 
+        add(Long.parseLong(idStr)); 
     }
     
 

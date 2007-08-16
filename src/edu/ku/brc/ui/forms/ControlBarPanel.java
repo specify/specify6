@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.ui.forms;
 
+import java.awt.Color;
 import java.util.List;
 
 import javax.swing.Box;
@@ -49,20 +50,28 @@ public class ControlBarPanel extends JPanel
     /**
      * Constructor
      */
-    public ControlBarPanel()
+    public ControlBarPanel(final Color bgColor)
     {
-        builder = new PanelBuilder(new FormLayout("p,2px,c:p:g,2px,p", "p"), this);
+        builder = new PanelBuilder(new FormLayout("p,2px,f:p:g,2px,p", "p"), this);
+        setBackground(bgColor);
     }
 
+    /**
+     * @param recordSetController the recordSetController to set
+     */
+    public void setRecordSetController(ResultSetController recordSetController)
+    {
+        this.recordSetController = recordSetController;
+    }
 
     /**
-     * Adds a ResultSetController to the center pane
-     * @param recordSetController the recordset cntroller
+     * Adds a Component that controls the index and/or the creation and deletions of objects, to the center pane
+     * @param comp the recordset cntroller
      */
-    public void add(final ResultSetController _recordSetController)
+    public void addController(final JComponent comp)
     {
         CellConstraints cc = new CellConstraints();
-        builder.add(_recordSetController.getPanel(), cc.xy(3,1));
+        builder.add(comp, cc.xy(3,1));
     }
 
     /**
@@ -74,6 +83,8 @@ public class ControlBarPanel extends JPanel
     {
         CellConstraints cc      = new CellConstraints();
         JPanel panel = ButtonBarFactory.buildGrowingBar(btns);
+        panel.setBackground(getBackground());
+        
         if (onLeftSide)
         {
             if (leftSidePanel != null)
@@ -123,7 +134,7 @@ public class ControlBarPanel extends JPanel
             CellConstraints cc       = new CellConstraints();
             String          colsDef  = compsList.size() == 1 ? "p" : UIHelper.createDuplicateJGoodiesDef("p", "2px", compsList.size());
             PanelBuilder    pBuilder = new PanelBuilder(new FormLayout(colsDef, "p"));
-    
+            
             for (int i=0;i<compsList.size();i++)
             {
                 pBuilder.add(compsList.get(i), cc.xy((i*2)+1, 1));
@@ -168,6 +179,9 @@ public class ControlBarPanel extends JPanel
                 }
             }
         }
+        
+        leftSidePanel.setBackground(getBackground());
+        rightSidePanel.setBackground(getBackground());
     }
 
     /**

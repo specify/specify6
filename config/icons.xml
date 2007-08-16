@@ -139,6 +139,8 @@
     <icon name="Separator"     file="separator16.gif" sizes="16"/>
     
     
+    <icon name="CreateObj" alias="PlusSign"/>
+    
     
     <icon name="WebPage"       file="html.png"          sizes="all"/>
     
@@ -156,9 +158,10 @@
         <icon name="NextRec"  file="go-next.png"  sizes="NonStd"/>
         <icon name="LastRec"  file="go-last.png"  sizes="NonStd"/>
         <icon name="NewRec"   file="document-new16.png"  sizes="NonStd"/>
+        <icon name="CreateObj"    file="document-new32.png"  sizes="all"/>
     -->
     
-    <icon name="CreateObj"    file="document-new32.png"  sizes="all"/>
+    
     
     <!--
         <icon name="Save"     file="document-save16.png"  sizes="NonStd"/>

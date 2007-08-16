@@ -18,6 +18,7 @@
 package edu.ku.brc.ui.forms;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.util.Vector;
 
@@ -76,9 +77,10 @@ public class RecordSetTableViewObj extends TableViewObj
                                  final AltView       altView,
                                  final MultiView     mvParent,
                                  final FormValidator formValidator,
-                                 final int           options)
+                                 final int           options,
+                                 final Color         bgColor)
     {
-        super(view, altView, mvParent, formValidator, options);
+        super(view, altView, mvParent, formValidator, options, bgColor);
         
         // we need a form validator that always says it's valid
         validator = new FormValidator()

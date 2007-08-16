@@ -206,7 +206,8 @@ public class TableViewObj implements Viewable,
                         final AltView       altView,
                         final MultiView     mvParent,
                         final FormValidator formValidator,
-                        final int           options)
+                        final int           options,
+                        final Color         bgColor)
     {
         this.view        = view;
         this.altView     = altView;
@@ -241,6 +242,7 @@ public class TableViewObj implements Viewable,
         boolean addController = mvParent != null && view.getAltViews().size() > 1;
 
         mainComp = new JPanel(new BorderLayout());
+        mainComp.setBackground(bgColor);
         
         if (mvParent == null)
         {
@@ -319,7 +321,7 @@ public class TableViewObj implements Viewable,
                         builder.add(editButton, cc.xy(2,1));
                         builder.add(newButton, cc.xy(4,1));
                         builder.add(deleteButton, cc.xy(6,1));
-        
+                        builder.getPanel().setBackground(bgColor);
                         
                         comps.add(builder.getPanel());
 
@@ -375,7 +377,7 @@ public class TableViewObj implements Viewable,
 
         if (comps.size() > 0 || addController)
         {
-            controlPanel = new ControlBarPanel();
+            controlPanel = new ControlBarPanel(bgColor);
             controlPanel.addComponents(comps, false); // false -> right side
             //mainBuilder.add(controlPanel, cc.xy(1, mainCompRowInx+2));
             mainComp.add(controlPanel, BorderLayout.SOUTH);

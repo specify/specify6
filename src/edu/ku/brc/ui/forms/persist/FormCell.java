@@ -16,6 +16,8 @@ package edu.ku.brc.ui.forms.persist;
 
 import static org.apache.commons.lang.StringUtils.split;
 
+import java.util.Properties;
+
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -42,6 +44,8 @@ public class FormCell implements Comparable<FormCell>, Cloneable
     protected int      colspan = 1;
     protected int      rowspan = 1;
 
+
+    protected Properties properties = null;
 
     /**
      *
@@ -196,6 +200,61 @@ public class FormCell implements Comparable<FormCell>, Cloneable
         return id.compareTo(obj.id);
     }
     
+    public void setProperties(final Properties properties)
+    {
+        this.properties = properties;
+    }
+
+    public void addProperty(final String nameStr, final String value)
+    {
+        if (properties == null)
+        {
+            properties = new Properties();
+        }
+        properties.put(nameStr, value);
+    }
+
+    public String getProperty(final String nameStr)
+    {
+        if (properties != null)
+        {
+            return properties.getProperty(nameStr);
+        }
+        return null;
+    }
+
+    public int getPropertyAsInt(final String nameStr, final int defVal)
+    {
+        if (properties != null)
+        {
+            String str = properties.getProperty(nameStr);
+            if (StringUtils.isNotEmpty(str))
+            {
+                return Integer.parseInt(str);
+            }
+        }
+        return defVal;
+    }
+
+    public boolean getPropertyAsBoolean(final String nameStr, final boolean defVal)
+    {
+        if (properties != null)
+        {
+            String str = properties.getProperty(nameStr);
+            if (StringUtils.isNotEmpty(str))
+            {
+                return str.equalsIgnoreCase("true");
+            }
+        }
+        return defVal;
+    }
+
+    public Properties getProperties()
+    {
+        return properties;
+    }
+
+    
     /* (non-Javadoc)
      * @see java.lang.Object#clone()
      */
@@ -211,7 +270,8 @@ public class FormCell implements Comparable<FormCell>, Cloneable
         formCell.fieldNames         = fieldNames != null ? fieldNames.clone() : null;
         formCell.colspan = colspan;
         formCell.rowspan = colspan;
-        
+        formCell.properties = properties != null ? (Properties)properties.clone() : null;
+
         return formCell;
 
     }

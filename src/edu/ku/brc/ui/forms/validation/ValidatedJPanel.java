@@ -40,6 +40,7 @@ public class ValidatedJPanel extends JPanel
     public ValidatedJPanel()
     {
         super(new BorderLayout()); 
+        setOpaque(false);
     }
     
     /**
@@ -47,7 +48,7 @@ public class ValidatedJPanel extends JPanel
      */
     public ValidatedJPanel(JPanel panel)
     {
-        super(new BorderLayout()); 
+        this();
         
         add(panel, BorderLayout.CENTER);
     }

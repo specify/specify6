@@ -15,6 +15,7 @@
 package edu.ku.brc.ui.forms;
 
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -69,6 +70,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     public static final int IS_NEW_OBJECT        = 4;  // Indicates the form will contain a brand new data object
     public static final int HIDE_SAVE_BTN        = 8;  // Hide the Save Button
     public static final int IS_EDITTING          = 16; // Whether the MultiView is in Edit mode.
+    public static final int IS_SINGLE_OBJ        = 32; // Whether the data being passed into the MultiView is a Collection of Object or a single Object
 
     // Statics
     private static final Logger log = Logger.getLogger(MultiView.class);
@@ -108,7 +110,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      * So forms that may not have multiple views or do not wish to have Edit/View can pass in null. (See Class description)
      * @param mvParent parent of this MultiView the root MultiView is null
      * @param view the view to create for
-     * @param createWithMode how the form should be created (Noe, Edit or View mode)
+     * @param createWithMode how the form should be created (None, Edit or View mode)
      * @param options the options needed for creating the form
      */
     public MultiView(final MultiView mvParent,
@@ -117,7 +119,26 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                      final AltView.CreationMode createWithMode,
                      final int       options)
     {
-        this(mvParent, cellName, view, createWithMode, null, options);
+        this(mvParent, cellName, view, createWithMode, null, options, null);
+    }
+    
+    /**
+     * Constructor - Note that createWithMode can be null and is passed in from parent ALWAYS.
+     * So forms that may not have multiple views or do not wish to have Edit/View can pass in null. (See Class description)
+     * @param mvParent parent of this MultiView the root MultiView is null
+     * @param view the view to create for
+     * @param createWithMode how the form should be created (Noe, Edit or View mode)
+     * @param options the options needed for creating the form
+     * @param bgColor background color
+     */
+    public MultiView(final MultiView mvParent,
+                     final String    cellName,
+                     final View      view,
+                     final AltView.CreationMode createWithMode,
+                     final int       options,
+                     final Color     bgColor)
+    {
+        this(mvParent, cellName, view, createWithMode, null, options, bgColor);
     }
     
     /**
@@ -136,6 +157,27 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                      final String    defaultAltViewType,
                      final int       options)
     {
+        this(mvParent, cellName, view, createWithMode, defaultAltViewType, options, null);
+    }
+    
+    /**
+     * Constructor - Note that createWithMode can be null and is passed in from parent ALWAYS.
+     * So forms that may not have multiple views or do not wish to have Edit/View can pass in null. (See Class description)
+     * @param mvParent parent of this MultiView the root MultiView is null
+     * @param view the view to create for
+     * @param createWithMode how the form should be created (None, Edit or View mode)
+     * @param defaultAltViewType suggestion as to whether to use a form or a grid
+     * @param options the options needed for creating the form
+     * @param bgColor background color
+     */
+    public MultiView(final MultiView mvParent,
+                     final String    cellName,
+                     final View      view,
+                     final AltView.CreationMode createWithMode,
+                     final String    defaultAltViewType,
+                     final int       options,
+                     final Color     bgColor)
+    {
         setLayout(cardLayout);
 
         this.mvParent       = mvParent;
@@ -145,6 +187,11 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         this.createOptions  = options | (createWithMode == AltView.CreationMode.Edit ? IS_EDITTING : 0);
         
         isSelectorForm = StringUtils.isNotEmpty(view.getSelectorName());
+        
+        if (bgColor != null)
+        {
+            setBackground(bgColor);
+        }
 
         createWithAltView(createDefaultViewable(defaultAltViewType));
     }
@@ -463,13 +510,14 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     /**
      * Create MultiView with an AltView.
      * @param altView the altView to use.
+     * @param bgColor the bgColor
      */
     protected Viewable createWithAltView(final AltView altView)
     {
         editable = altView.getMode() == AltView.CreationMode.Edit;
 
         // this call parents the viewable to the multiview
-        Viewable viewable = ViewFactory.getInstance().buildViewable(view, altView, this, createOptions);
+        Viewable viewable = ViewFactory.getInstance().buildViewable(view, altView, this, createOptions, getBackground());
         if (viewable != null)
         {
             viewable.setParentDataObj(parentDataObj);
@@ -640,7 +688,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                     
                     //printCreateOptions("Create Sub View "+altViewName, createOptions);
                     //int adjustedOptions = createOptions | ((editable && MultiView.isOptionOn(createOptions, MultiView.IS_NEW_OBJECT))? MultiView.RESULTSET_CONTROLLER : 0);
-                    viewable = ViewFactory.createFormView(this, newView, altViewName, data, createOptions);
+                    viewable = ViewFactory.createFormView(this, newView, altViewName, data, createOptions, getBackground());
                     if (viewable != null)
                     {
                         if (add(viewable, altViewName))

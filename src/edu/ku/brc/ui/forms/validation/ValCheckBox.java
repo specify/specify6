@@ -62,6 +62,7 @@ public class ValCheckBox extends JCheckBox implements UIValidatable, GetSetValue
         super(label);
         this.isRequired = isRequired;
         this.isReadOnly = isReadOnly;
+        setOpaque(false);
         
         if (isReadOnly)
         {
