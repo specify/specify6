@@ -71,6 +71,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     public static final int HIDE_SAVE_BTN        = 8;  // Hide the Save Button
     public static final int IS_EDITTING          = 16; // Whether the MultiView is in Edit mode.
     public static final int IS_SINGLE_OBJ        = 32; // Whether the data being passed into the MultiView is a Collection of Object or a single Object
+    public static final int NO_SCROLLBARS        = 64; // Whether the form should be scrollable
 
     // Statics
     private static final Logger log = Logger.getLogger(MultiView.class);
@@ -83,7 +84,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     protected Object                       parentDataObj   = null;
     protected CardLayout                   cardLayout      = new CardLayout();
     protected Viewable                     currentViewable = null;
-
+    
     protected boolean                      editable        = false;
     protected AltView.CreationMode         createWithMode  = AltView.CreationMode.None;
     protected Vector<FormValidator>        formValidators  = new Vector<FormValidator>();
@@ -98,7 +99,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     protected boolean                      isSelectorForm;
     protected String                       selectorValue   = null;
     
-    protected Vector<Object>                deletedItems    = null;
+    protected Vector<Object>               deletedItems    = null;
 
 
     // Temp
@@ -218,8 +219,8 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         this.cellName       = cellName;
         this.view           = view;
         this.createWithMode = createWithMode;
-        this.createOptions  = options | (createWithMode == AltView.CreationMode.Edit ? IS_EDITTING : 0);
-
+        this.createOptions  = options | (createWithMode == AltView.CreationMode.Edit ? IS_EDITTING : NO_OPTIONS);
+        
         createWithAltView(altView != null ? altView : createDefaultViewable(null));
     }
     
@@ -699,8 +700,6 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                             }
                             if (mvParent != null)
                             {
-                                //viewable.getUIComponent().setSize(size);
-                                //viewable.getUIComponent().setPreferredSize(size);
                                 viewable.getUIComponent().validate();
                                 viewable.getUIComponent().doLayout();
                             }

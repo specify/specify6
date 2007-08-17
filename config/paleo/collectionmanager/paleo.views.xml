@@ -755,11 +755,11 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="2" label="Litho"/>
-                    <cell type="field" id="2" name="lithoStrat" uitype="querycbx" initialize="name=Agent;title=Litho"/>
+                    <cell type="field" id="2" name="lithoStrat" uitype="querycbx" initialize="name=LithoStrat;title=Litho"/>
                     <cell type="label" labelfor="3" label="Chronos"/>
-                    <cell type="field" id="3" name="chronosStrat" uitype="querycbx" initialize="name=Agent;title=Litho"/>
+                    <cell type="field" id="3" name="chronosStrat" uitype="querycbx" initialize="name=GeologicTimePeriod;title=ChronoStrat"/>
                     <cell type="label" labelfor="4" label="Bio"/>
-                    <cell type="field" id="4" name="bioStrat" uitype="querycbx" initialize="name=Agent;title=Litho"/>
+                    <cell type="field" id="4" name="bioStrat" uitype="querycbx" initialize="name=GeologicTimePeriod;title=BioStrat"/>
                 </row>
             </rows>
         </viewdef>

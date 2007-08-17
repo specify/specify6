@@ -87,6 +87,7 @@ import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.JAutoCompComboBox;
 import edu.ku.brc.ui.db.PickListItemIFace;
+import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.FormCell;
@@ -175,8 +176,12 @@ public class FormViewObj implements Viewable,
     protected JButton                       delRecBtn       = null;
     protected boolean                       wasNull         = false;
     protected MenuSwitcherPanel             switcherUI;
-    protected int                           mainCompRowInx  = 1;
+    protected int                           mainCompRowInx   = 1;
     protected List<UIValidatable>           defaultValueList = new ArrayList<UIValidatable>();
+    
+    
+    protected String                        searchName      = null;
+    protected JButton                       srchRecBtn      = null;
     
     // Forms that have a Selector
     protected JComboBox                     selectorCBX     = null;
@@ -226,6 +231,7 @@ public class FormViewObj implements Viewable,
      * @param createResultSetController indicates that a ResultSet Controller should be created
      * @param formValidator the form's formValidator
      * @param options the options needed for creating the form
+     * @param properties creation properties
      */
     public FormViewObj(final View          view,
                        final AltView       altView,
@@ -403,20 +409,27 @@ public class FormViewObj implements Viewable,
 
         }
 
+        mainComp = new JPanel(new BorderLayout());
+        mainComp.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+        mainComp.setBackground(bgColor);
+        mainBuilder.getPanel().setBackground(bgColor);
+        
+        //if (MultiView.isOptionOn(options, MultiView.NO_SCROLLBARS))
+        //{
+            mainComp.add(mainBuilder.getPanel(), BorderLayout.CENTER);
+            
+        /*} else
+        {
+            JScrollPane scrollPane = new JScrollPane(mainBuilder.getPanel(), ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            scrollPane.setBorder(null);
+            mainComp.add(scrollPane, BorderLayout.CENTER);
+        }*/
+        
         if (comps.size() > 0 || addController || createResultSetController)
         {
             controlPanel = new ControlBarPanel(bgColor);
             controlPanel.addComponents(comps, false); // false -> right side
             
-            mainComp = new JPanel(new BorderLayout());
-            mainComp.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
-            mainComp.setBackground(bgColor);
-            
-            JScrollPane scrollPane = new JScrollPane(mainBuilder.getPanel(), ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-            scrollPane.setBorder(null);
-            mainBuilder.getPanel().setBackground(bgColor);
-            
-            mainComp.add(scrollPane, BorderLayout.CENTER);
             mainComp.add(controlPanel, BorderLayout.SOUTH);
             
         }
@@ -424,9 +437,10 @@ public class FormViewObj implements Viewable,
         if (createResultSetController)
         {
             addRSController();
-        } else
+            
+        } else if (isSingleObj)
         {
-            createAddDelPanel();
+            createAddDelSearchPanel();
         }
 
     }
@@ -697,11 +711,18 @@ public class FormViewObj implements Viewable,
         }
         
         // add new component
-        JScrollPane scrollPane = new JScrollPane(formComp, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setBorder(null);
-        
-        this.mainComp.add(scrollPane, BorderLayout.CENTER);
-        this.formComp = scrollPane;
+        if (MultiView.isOptionOn(options, MultiView.NO_SCROLLBARS))
+        {
+            this.mainComp.add(formComp, BorderLayout.CENTER);
+            this.formComp = formComp;
+            
+        } else
+        {
+            JScrollPane scrollPane = new JScrollPane(formComp, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            scrollPane.setBorder(null);
+            this.mainComp.add(scrollPane, BorderLayout.CENTER); 
+            this.formComp = scrollPane;
+        }
 
         // This is needed to make the form layout correctly
         //XXX I hate that I have to do this
@@ -1612,18 +1633,18 @@ public class FormViewObj implements Viewable,
     }
     
     /**
-     * 
+     * Crates the extra btns.
+     * @param properties properties needed for creation of the search btn
      */
-    protected void createAddDelPanel()
+    protected void createAddDelSearchPanel()
     {
         if (controlPanel != null)
         {
             Insets insets = new Insets(1,1,1,1);
-            PanelBuilder rowBuilder = new PanelBuilder(new FormLayout("f:p:g,p,2px,p", "p"));
+            PanelBuilder rowBuilder = new PanelBuilder(new FormLayout("f:p:g,p,2px,p,2px,p", "p"));
             
             newRecBtn = UIHelper.createIconBtn("NewRecord", null, null);
             newRecBtn.setToolTipText(ResultSetController.createTooltip("NewRecordTT", view.getObjTitle()));
-            newRecBtn.setEnabled(true);
             newRecBtn.setMargin(insets);
             rowBuilder.add(newRecBtn, cc.xy(2,1));
     
@@ -1632,13 +1653,57 @@ public class FormViewObj implements Viewable,
             delRecBtn.setMargin(insets);
             rowBuilder.add(delRecBtn, cc.xy(4,1));
             
+            srchRecBtn = UIHelper.createIconBtn("Search", IconManager.IconSize.Std16, null, null);
+            srchRecBtn.setToolTipText(ResultSetController.createTooltip("SearchForRecordTT", view.getObjTitle()));
+            srchRecBtn.setMargin(insets);
+            rowBuilder.add(srchRecBtn, cc.xy(6,1));
+            
             rowBuilder.getPanel().setOpaque(false);
             controlPanel.addController(rowBuilder.getPanel());
             setAddDelListeners(newRecBtn, delRecBtn);
             
             // Set initial state to disabled
-            newRecBtn.setEnabled(false);
-            delRecBtn.setEnabled(false);
+            //newRecBtn.setEnabled(false);
+            //delRecBtn.setEnabled(false);
+            //srchRecBtn.setEnabled(false);
+            
+            DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
+            if (tblInfo != null)
+            {
+                searchName = tblInfo.getSearchDialog();
+                if (StringUtils.isEmpty(searchName))
+                {
+                    searchName = ""; // Note not null but empty tells it to disable the search btn
+                }
+            }
+            
+            srchRecBtn.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    doSearch();
+                }
+            });
+        }
+    }
+    
+    /**
+     * 
+     */
+    protected void doSearch()
+    {
+        if (StringUtils.isNotEmpty(searchName))
+        {
+            ViewBasedSearchDialogIFace dlg = UIRegistry.getViewbasedFactory().createSearchDialog(UIHelper.getFrame(mainComp), searchName);
+            dlg.getDialog().setVisible(true);
+            if (!dlg.isCancelled())
+            {
+                setDataObj(dlg.getSelectedObject());
+                //valueHasChanged();
+            }
+
+        } else
+        {
+            log.error("Couldn't find TableInfo for class["+view.getClassName()+"] not found.");
         }
     }
 
@@ -1800,9 +1865,9 @@ public class FormViewObj implements Viewable,
             delRecBtn.setEnabled(enableDelBtn);
         }
         
+        boolean enableNewBtn = false;
         if (newRecBtn != null)
         {
-            boolean enableNewBtn;
             if (MultiView.isOptionOn(options, MultiView.IS_SINGLE_OBJ))
             {
                 enableNewBtn = dataObj == null && parentDataObj != null;
@@ -1817,6 +1882,11 @@ public class FormViewObj implements Viewable,
                 log.debug(formViewDef.getName()+" Enabling The New Btn: "+enableNewBtn);
             }*/
             newRecBtn.setEnabled(enableNewBtn);
+        }
+        
+        if (srchRecBtn != null)
+        {
+            srchRecBtn.setEnabled(enableNewBtn && StringUtils.isNotBlank(searchName));
         }
     }
 

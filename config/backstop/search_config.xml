@@ -370,6 +370,7 @@ where collectingevent.CollectingEventID in (%s) order by StartDate]]>
                     <col pos="4">Method</col>
                     <col pos="5">StationFieldNumber</col>
                 </cols>
+                <staticvalue key="CL">0</staticvalue>
             </index>
             <detailView icon="ColEvent">
                 <sql>
@@ -932,7 +933,7 @@ accession.DateAccessioned, accession.DateReceived FROM accession WHERE (%s)]]>
             </index>
             <detailView icon="">
                 <sql>
-                    <![CDATA[SELECT LocationID, FullName FROM location AS newTable WHERE (%s)]]>
+                    <![CDATA[SELECT LocationID, FullName FROM location WHERE (%s)]]>
                 </sql>
                 <captions>
                     <caption col="LocationID" text="LocationID"  visible="false"/>
@@ -957,6 +958,43 @@ accession.DateAccessioned, accession.DateReceived FROM accession WHERE (%s)]]>
                     <caption col="FullName" text="Name"/>
                 </captions>
                 <recordset tabletype="46" col="1"/>
+            </detailView>
+        </table>
+        
+        <table id="111" tableid="100" name="LithoStrat" title="LithoStrat Search" priority="1" color="30, 144, 255">
+            <outofdate/>
+            <index>
+                <sql/>
+                <cols/>
+            </index>
+            <detailView icon="">
+                <sql>
+                    <![CDATA[SELECT LithoStratID, FullName FROM lithostrat WHERE (%s)]]>
+                </sql>
+                <captions>
+                    <caption col="LithoStratID" text="LithoStratID"  visible="false"/>
+                    <caption col="FullName" text="Name"/>
+                </captions>
+                <recordset tabletype="100" col="1"/>
+            </detailView>
+        </table>
+        
+        <table id="112" tableid="32" name="PaleoContextSearch" title="Paleo Context Search" priority="1" color="30, 144, 255">
+            <outofdate/>
+            <index>
+                <sql/>
+                <cols/>
+            </index>
+            <detailView icon="">
+                <sql>
+                    <![CDATA[SELECT PaleoContextID, Distance, DistanceUnits FROM paleocontext WHERE (%s)]]>
+                </sql>
+                <captions>
+                    <caption col="PaleoContextID" text="PaleoContextID"  visible="false"/>
+                    <caption col="Distance" text="Distance"/>
+                    <caption col="DistanceUnits" text="Distance Units"/>
+                </captions>
+                <recordset tabletype="32" col="1"/>
             </detailView>
         </table>
         

@@ -180,8 +180,14 @@ public class ControlBarPanel extends JPanel
             }
         }
         
-        leftSidePanel.setBackground(getBackground());
-        rightSidePanel.setBackground(getBackground());
+        if (leftSidePanel != null)
+        {
+            leftSidePanel.setBackground(getBackground());
+        }
+        if (rightSidePanel != null)
+        {
+            rightSidePanel.setBackground(getBackground());
+        }
     }
 
     /**

@@ -74,7 +74,7 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
                 className, 
                 idFieldName, 
                 isEdit, 
-                options);
+                options | MultiView.NO_SCROLLBARS);
         
         if (StringUtils.isNotEmpty(closeBtnTitle))
         {
@@ -114,7 +114,7 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
                 className, 
                 idFieldName, 
                 isEdit, 
-                options);
+                options | MultiView.NO_SCROLLBARS);
 
         if (StringUtils.isNotEmpty(closeBtnTitle))
         {

@@ -214,7 +214,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
             }
         }
         // else
-        throw new RuntimeException("Couldn't create ViewBasedDisplayFrame by name["+name+"]");
+        throw new RuntimeException("Couldn't create ViewBasedDisplayFrame by name["+name+"] (Check the List of dialog in dailog_defs.xml)");
     }
 
     //-----------------------------------------------------

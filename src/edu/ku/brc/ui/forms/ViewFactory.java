@@ -573,25 +573,30 @@ public class ViewFactory
      * @return the control
      */
     protected TextFieldWithInfo createTextFieldWithInfo(final FormCellField cellField,
-                                                        final MultiView         parent)
+                                                        final MultiView     parent)
     {
-        TextFieldWithInfo textFieldInfo;
+        TextFieldWithInfo textFieldInfo = null;
         String            txtName = cellField.getProperty("name");
         if (isNotEmpty(txtName))
         {
             textFieldInfo = TypeSearchForQueryFactory.getTextFieldWithInfo(txtName);
-            textFieldInfo.setMultiView(parent);
-            textFieldInfo.setFrameTitle(cellField.getProperty("title"));
-            
+            if (textFieldInfo != null)
+            {
+                textFieldInfo.setMultiView(parent);
+                textFieldInfo.setFrameTitle(cellField.getProperty("title"));
+                JTextField textField = textFieldInfo.getTextField();
+                textField.setColumns(cellField.getCols());
+               
+                changeTextFieldUIForDisplay(textField, false);
+                
+            } else
+            {
+                log.error("Could TypeSearchForQueryFactory.getTextFieldWithInfo("+txtName+")");
+            }
         } else
         {
             throw new RuntimeException("textfieldinfo Name for textFieldWithInfo ["+txtName+"] is empty!");
         }
-
-        JTextField textField = textFieldInfo.getTextField();
-        textField.setColumns(cellField.getCols());
-       
-        changeTextFieldUIForDisplay(textField, false);
         return textFieldInfo;
     }
     

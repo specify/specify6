@@ -73,7 +73,7 @@ public class ViewBasedDisplayFrame extends CustomFrame implements ViewBasedDispl
                 className, 
                 idFieldName, 
                 isEdit, 
-                options);
+                options | MultiView.NO_SCROLLBARS);
         
         if (StringUtils.isNotEmpty(closeBtnTitle))
         {

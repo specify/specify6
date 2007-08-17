@@ -626,7 +626,7 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
      */
     public static int getClassTableId()
     {
-        return 46;
+        return 100;
     }
 
 }

@@ -117,8 +117,6 @@ public class JAutoCompComboBox extends JEditComboBox
     {
         super.setSelectedIndex(index);
         
-        System.out.println("++++++ "+ index);
-        
         if (textField != null && dbAdapter != null && index > -1)
         {
             Object item = getItemAt(index);

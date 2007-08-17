@@ -62,7 +62,7 @@ public class MiscPrefsPanel extends JPanel implements PrefsSavable, PrefsPanelIF
 
         if (formView != null)
         {
-            form = ViewFactory.createFormView(null, formView, null, AppPreferences.getRemote(), MultiView.NO_OPTIONS);
+            form = ViewFactory.createFormView(null, formView, null, AppPreferences.getRemote(), MultiView.NO_OPTIONS, null);
             add(form.getUIComponent(), BorderLayout.CENTER);
 
         } else

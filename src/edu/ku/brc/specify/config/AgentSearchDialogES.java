@@ -171,7 +171,7 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
         formView = AppContextMgr.getInstance().getView(name, viewName);
         if (formView != null)
         {
-            form = ViewFactory.createFormView(null, formView, null, dataMap, MultiView.NO_OPTIONS);
+            form = ViewFactory.createFormView(null, formView, null, dataMap, MultiView.NO_OPTIONS, null);
             add(form.getUIComponent(), BorderLayout.CENTER);
             //getter = new DataGetterForObj();
 

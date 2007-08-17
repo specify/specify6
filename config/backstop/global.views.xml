@@ -146,6 +146,26 @@
             </altviews>
         </view>
         
+        <view name="GeologicTimePeriod"
+            class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
+            resourcelabels="false">
+            <desc><![CDATA[The GeologicTimePeriod Form.]]></desc>
+            <altviews>
+                <altview name="GeologicTimePeriod View" viewdef="GeologicTimePeriod" label="View" mode="view" validated="false" default="true"/>                
+                <altview name="GeologicTimePeriod Edit" viewdef="GeologicTimePeriod" label="Edit" mode="edit" validated="true"/>                
+            </altviews>
+        </view>
+        
+        <view name="LithoStrat"
+            class="edu.ku.brc.specify.datamodel.LithoStrat"
+            resourcelabels="false">
+            <desc><![CDATA[The LithoStrat Form.]]></desc>
+            <altviews>
+                <altview name="LithoStrat View" viewdef="LithoStrat" label="View" mode="view" validated="false" default="true"/>                
+                <altview name="LithoStrat Edit" viewdef="LithoStrat" label="Edit" mode="edit" validated="true"/>                
+            </altviews>
+        </view>
+        
         <view name="ReferenceWork"
             class="edu.ku.brc.specify.datamodel.ReferenceWork"
             resourcelabels="false">
@@ -714,6 +734,47 @@
         </viewdef>
         
         <viewdef
+            name="GeologicTimePeriod"
+            type="form"
+            class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[New GeologicTimePeriod Node Form]]></desc>
+            <enableRules>
+                <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
+            </enableRules>
+            <columnDef>100px,3dlu,p:g,3dlu,100px,3dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" label="GeologicTimePeriod" icon="GeologicTimePeriod" recordobj="true" colspan="7"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" uitype="text" cols="16" name="name" colspan="5"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Remarks"/>
+                    <cell type="field" id="2" uitype="textarea" name="remarks" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="Start Period"/>
+                    <cell type="field" id="3" uitype="text" name="startPeriod"/>
+                    <cell type="label" labelfor="4" label="Start Uncertainty"/>
+                    <cell type="field" id="4" uitype="text" name="startUncertainty"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5" label="End Period"/>
+                    <cell type="field" id="5" uitype="text" name="endPeriod"/>
+                    <cell type="label" labelfor="6" label="End Uncertainty"/>
+                    <cell type="field" id="6" uitype="text" name="endUncertainty"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
             type="form"
             name="Journal"
             class="edu.ku.brc.specify.datamodel.Journal"
@@ -736,6 +797,36 @@
                     <cell type="subview" viewname="ReferenceWork" id="3" name="referenceWorks" colspan="7"/>
                 </row>
             </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="LithoStrat"
+            class="edu.ku.brc.specify.datamodel.LithoStrat"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The LithoStrat form]]></desc>
+            <columnDef>100px,3dlu,p:g,3dlu,200px,3dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" label="Lithostratigraphy" icon="Stratigraphy" recordobj="true" colspan="7"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="name" suitype="text" cols="16" colspan="5"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="GUID"/>
+                    <cell type="field" id="2" name="guid" uitype="text" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="Remarks"/>
+                    <cell type="field" id="3" name="remarks"  uitype="textarea" colspan="5"/>
+                </row>
+            </rows>
+            
         </viewdef>
         
         <viewdef

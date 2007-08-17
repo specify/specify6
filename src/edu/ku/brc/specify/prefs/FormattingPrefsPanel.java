@@ -65,7 +65,7 @@ public class FormattingPrefsPanel extends JPanel implements PrefsPanelIFace, Pre
 
         if (formView != null)
         {
-            form = ViewFactory.createFormView(null, formView, null, AppPreferences.getRemote(), MultiView.NO_OPTIONS);
+            form = ViewFactory.createFormView(null, formView, null, AppPreferences.getRemote(), MultiView.NO_OPTIONS, null);
             add(form.getUIComponent(), BorderLayout.CENTER);
 
         } else

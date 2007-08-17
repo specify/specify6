@@ -27,6 +27,8 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import org.apache.log4j.Logger;
+
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
 
@@ -40,8 +42,12 @@ import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
  */
 public class DBObjSearchDialog extends CustomDialog implements ViewBasedSearchDialogIFace
 {
+    private static final Logger  log             = Logger.getLogger(DBObjSearchDialog.class);
+    
+            
     protected Window           parent;
     protected DBObjSearchPanel panel;
+    
     /**
      * Constructs a search dialog from form infor and from search info.
      * @param viewSetName the viewset name
@@ -64,7 +70,11 @@ public class DBObjSearchDialog extends CustomDialog implements ViewBasedSearchDi
         super(parent, title, true, null);
         
         this.parent = parent;
-        panel  = new DBObjSearchPanel(viewSetName, viewName, searchName, className, idFieldName, SwingConstants.CENTER);
+        this.panel  = new DBObjSearchPanel(viewSetName, viewName, searchName, className, idFieldName, SwingConstants.CENTER);
+        if (panel == null)
+        {
+            log.error("ViewSet["+viewSetName+"] View["+viewName+"] searchName["+searchName+"] className["+className+"] could not be created.");
+        }
     }
     
     /**
@@ -88,7 +98,11 @@ public class DBObjSearchDialog extends CustomDialog implements ViewBasedSearchDi
         super(parent, title, true, OK_BTN | CANCEL_BTN, null);
         
         this.parent = parent;
-        panel = new DBObjSearchPanel(viewSetName, viewName, searchName, className, idFieldName, SwingConstants.CENTER);
+        this.panel  = new DBObjSearchPanel(viewSetName, viewName, searchName, className, idFieldName, SwingConstants.CENTER);
+        if (panel == null)
+        {
+            log.error("ViewSet["+viewSetName+"] View["+viewName+"] searchName["+searchName+"] className["+className+"] could not be created.");
+        }
     }
     
     /* (non-Javadoc)
@@ -107,8 +121,12 @@ public class DBObjSearchDialog extends CustomDialog implements ViewBasedSearchDi
     public void createUI()
     {
         super.createUI();
-        panel.setOKBtn(okBtn);
-        panel.getScrollPane().setPreferredSize(new Dimension(300, 200));
+        
+        if (panel != null)
+        {
+            panel.setOKBtn(okBtn);
+            panel.getScrollPane().setPreferredSize(new Dimension(300, 200));
+        }
 
     }
 

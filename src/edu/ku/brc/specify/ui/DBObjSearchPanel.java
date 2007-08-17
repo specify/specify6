@@ -19,6 +19,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -158,33 +159,39 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
         formView = AppContextMgr.getInstance().getView(viewSetName, viewName);
         if (formView != null)
         {
-            form = ViewFactory.createFormView(null, formView, null, dataMap, MultiView.NO_OPTIONS);
+            form = ViewFactory.createFormView(null, formView, null, dataMap, MultiView.NO_OPTIONS, null);
 
         } else
         {
             log.error("Couldn't load form with name ["+viewSetName+"] Id ["+viewName+"]");
         }
         
-        fieldIds = new ArrayList<String>();
-        form.getFieldIds(fieldIds);
-        for (String id : fieldIds)
+        if (form != null)
         {
-            Component comp = form.getCompById(id);
-            if (comp instanceof JTextField)
+            fieldIds = new ArrayList<String>();
+            form.getFieldIds(fieldIds);
+            for (String id : fieldIds)
             {
-                ((JTextField)comp).addActionListener(doQuery);
+                Component comp = form.getCompById(id);
+                if (comp instanceof JTextField)
+                {
+                    ((JTextField)comp).addActionListener(doQuery);
+                }
             }
+            
+            createSearchBtn();
+    
+            builder.add(form.getUIComponent(), cc.xy(1,1));
+    
+            builder.add(searchBtn, cc.xy(3,1));
+    
+            add(builder.getPanel(), BorderLayout.NORTH);
+            
+            createUI();
+        } else
+        {
+            log.error("ViewSet ["+viewSetName + "] View["+viewName + "] could not be created.");
         }
-        
-        createSearchBtn();
-
-        builder.add(form.getUIComponent(), cc.xy(1,1));
-
-        builder.add(searchBtn, cc.xy(3,1));
-
-        add(builder.getPanel(), BorderLayout.NORTH);
-        
-        createUI();
     }
 
     /**
@@ -350,7 +357,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
         scrollPane = new JScrollPane(panel);
         add(scrollPane, BorderLayout.CENTER);
         
-        //scrollPane.setPreferredSize(new Dimension(300,200));
+        panel.setPreferredSize(new Dimension(300,200));
      }
     
     /**
