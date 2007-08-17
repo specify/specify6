@@ -908,7 +908,7 @@
             <enableRules/>
 
             <columnDef>120px,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,3dlu,p,p:g</columnDef>
-    		<rowDef>p,2dlu,p,2dlu,p,2dlu,p:g,2dlu</rowDef>
+    		<rowDef>p,2dlu,p</rowDef>
 
     		<rows>
     			<row>

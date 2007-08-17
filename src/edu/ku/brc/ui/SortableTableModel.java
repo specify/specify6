@@ -46,7 +46,7 @@ public class SortableTableModel implements TableModel, TableModelListener
     protected int[]                sortedIndicies;
     protected int                  sortColumn;
     protected Comparator<Object>   comparator;
-    protected Comparator[] comparators;
+    protected Comparator[]         comparators;
     protected boolean[]            sortDirection;
     protected boolean              isSorted     = false;
 
@@ -155,7 +155,7 @@ public class SortableTableModel implements TableModel, TableModelListener
         // range check
         if (i > comparators.length)
         {
-            Comparator[] newComparators = new Comparator[i + 1];
+            Comparator<?>[] newComparators = new Comparator[i + 1];
             System.arraycopy(comparators, 0, newComparators, 0, comparators.length);
             comparators = newComparators;
         }

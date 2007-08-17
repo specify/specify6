@@ -1124,7 +1124,7 @@ public class ViewFactory
                                 boolean isACollection = false;
                                 try
                                 {
-                                    Class cls = Class.forName(parentView.getClassName());
+                                    Class<?> cls = Class.forName(parentView.getClassName());
                                     Field fld = cls.getDeclaredField(cellSubView.getName());
                                     if (fld != null)
                                     {

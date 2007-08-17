@@ -1513,7 +1513,16 @@ public final class UIHelper
                                         final boolean              withEmptyBorder,
                                         final Action               action)
     {
-        JButton btn = new JButton(action);
+        JButton btn = new JButton(action)
+        {
+            @Override
+            public void setEnabled(boolean enabled)
+            {
+                super.setEnabled(enabled);
+                setBorder(emptyBorder);
+            }
+        };
+        
         btn.setOpaque(false);
         if (!withEmptyBorder)
         {

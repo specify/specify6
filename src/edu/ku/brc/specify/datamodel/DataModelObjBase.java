@@ -23,9 +23,10 @@ package edu.ku.brc.specify.datamodel;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.Date;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
@@ -147,22 +148,60 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
     {
         return false;
     }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.FormDataObjIFace#addReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
+    
+    /**
+     * Sets a value into the current object.
+     * @param clazz the class of the data being set
+     * @param ref the value
+     * @return true on success
      */
-    public void addReference(FormDataObjIFace ref, String refType)
+    public static boolean setDataMember(final Object dataObject, final Class<?> clazz, final FormDataObjIFace ref)
     {
-        DataObjectGettable getter     = DataObjectGettableFactory.get(getClass().getName(), "edu.ku.brc.ui.forms.DataGetterForObj");
-        Object             dataMember = getter.getFieldValue(this, refType);
-        if (dataMember instanceof Set)
+        try
         {
+            String methodName = "set" + clazz.getSimpleName();
+            System.out.println(dataObject.getClass().getSimpleName()+"."+methodName+"("+clazz.getSimpleName()+")");
+            Method method     = dataObject.getClass().getMethod(methodName, clazz);
+            if (method != null)
+            {
+                method.invoke(dataObject, ref);
+                return true;
+                
+            } else
+            {
+                log.error("Missing method "+methodName+" in object ["+dataObject.getClass().getSimpleName()+"]");
+            }
+
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+
+        }
+        return false;
+    }
+    
+    /**
+     * Adds a data object 'ref' to a collection by the name of 'refType' from the data object 'dataObject'.
+     * @param dataObject the data object that owns the collection
+     * @param ref the data being removed from the collection
+     * @param fieldName the name of the data member
+     * @return true on success
+     */
+    public static boolean addToCollection(final Object dataObject, FormDataObjIFace ref, String fieldName)
+    {
+        try
+        {
+            DataObjectGettable getter     = DataObjectGettableFactory.get(dataObject.getClass().getName(), "edu.ku.brc.ui.forms.DataGetterForObj");
+            Object             dataMember = getter.getFieldValue(dataObject, fieldName);
+            
             try
             {
                 Method method = dataMember.getClass().getMethod("add", Object.class);
                 if (method != null)
                 {
                     method.invoke(dataMember, ref);
+                    return true;
+                    
                 } else
                 {
                     log.error("Missing method add(Object) for this type of set ["+dataMember.getClass()+"]");
@@ -172,26 +211,84 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
             {
                 ex.printStackTrace();
             }
-            try
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * Removes a data object 'ref' from a collection by the name of 'refType' from the data object 'dataObject'.
+     * @param dataObject the data object that owns the collection
+     * @param ref the data being removed from the collection
+     * @param fieldName the name of the data member
+     * @return true on success
+     */
+    public static boolean removeFromCollection(final Object dataObject, final FormDataObjIFace ref, final String fieldName)
+    {
+        DataObjectGettable getter     = DataObjectGettableFactory.get(dataObject.getClass().getName(), "edu.ku.brc.ui.forms.DataGetterForObj");
+        Object             dataMember = getter.getFieldValue(dataObject, fieldName);
+        try
+        {
+            Method method = dataMember.getClass().getMethod("remove", Object.class);
+            if (method != null)
             {
-                String methodName = "set" + getClass().getSimpleName();
-                Method method = ref.getDataClass().getMethod(methodName, getClass());
-                if (method != null)
-                {
-                    method.invoke(ref, this);    
-                } else
-                {
-                    log.error("Missing method "+methodName+" for this type of set ["+dataMember.getClass()+"]");
-                }
-    
-            } catch (Exception ex)
+                method.invoke(dataMember, ref);
+                return true;
+                
+            } else
             {
-                ex.printStackTrace();
-    
+                log.error("Missing method remove(Object) for this type of set ["+dataMember.getClass()+"]");
+            }
+
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#addReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
+     */
+    public void addReference(FormDataObjIFace ref, String fieldName)
+    {
+        Field   fld           = null;
+        boolean isACollection = false;
+        try
+        {
+            fld = getClass().getDeclaredField(fieldName);
+            if (fld != null)
+            {
+                isACollection = Collection.class.isAssignableFrom(fld.getType());
+            } else
+            {
+                log.error("Couldn't find field ["+fieldName+"] in class ["+getClass().getSimpleName()+"]");
+            }
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        
+        if (fld != null)
+        {
+            if (isACollection)
+            {
+                addToCollection(this, ref, fieldName);
+                setDataMember(ref, getClass(), this);
+
+            } else
+            {
+                setDataMember(this, fld.getType(), ref);
+                String clsName = getClass().getSimpleName();
+                addToCollection(ref, this, Character.toString(clsName.charAt(0)).toLowerCase() +  clsName.substring(1, clsName.length())+ "s");
             }
         } else
         {
-            log.error("Tring to add a reference to a non-set field["+refType+"] ");
+            log.error("Could not find field["+fieldName+"] in class["+getClass().getSimpleName()+"]");
         }
     }
     
@@ -199,31 +296,39 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#removeReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
      */
-    public void removeReference(FormDataObjIFace ref, String refType)
+    public void removeReference(FormDataObjIFace ref, String fieldName)
     {
-        DataObjectGettable getter     = DataObjectGettableFactory.get(getClass().getName(), "edu.ku.brc.ui.forms.DataGetterForObj");
-        Object             dataMember = getter.getFieldValue(this, refType);
-        if (dataMember instanceof Set)
+        Field   fld           = null;
+        boolean isACollection = false;
+        try
         {
-            try
+            fld = getClass().getDeclaredField(fieldName);
+            if (fld != null)
             {
-                Method method = dataMember.getClass().getMethod("remove", Object.class);
-                if (method != null)
-                {
-                    method.invoke(dataMember, ref);
-                } else
-                {
-                    log.error("Missing method remove(Object) for this type of set ["+dataMember.getClass()+"]");
-                }
-    
-            } catch (Exception ex)
+                isACollection = Collection.class.isAssignableFrom(fld.getType());
+            } else
             {
-                ex.printStackTrace();
+                log.error("Couldn't find field ["+fieldName+"] in class ["+getClass().getSimpleName()+"]");
             }
-
-        } else
+            
+        } catch (Exception ex)
         {
-            log.error("Tring to add a reference to a non-set field["+refType+"] ");
+            ex.printStackTrace();
+        }
+        
+        if (fld != null)
+        {
+            if (isACollection)
+            {
+                removeFromCollection(this, ref, fieldName);
+                setDataMember(ref, getDataClass(), null);
+
+            } else
+            {
+                setDataMember(this, fld.getType(), null);
+                String clsName = getClass().getSimpleName();
+                removeFromCollection(ref, this, Character.toString(clsName.charAt(0)).toLowerCase() +  clsName.substring(1, clsName.length())+ "s");
+            }
         }
 
     }

@@ -60,7 +60,6 @@ import org.apache.log4j.Logger;
 import org.hibernate.StaleObjectStateException;
 import org.hibernate.exception.ConstraintViolationException;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -172,6 +171,8 @@ public class FormViewObj implements Viewable,
     protected Vector<Object>                list            = null;
     protected boolean                       ignoreSelection = false;
     protected JButton                       saveBtn         = null;
+    protected JButton                       newRecBtn       = null;
+    protected JButton                       delRecBtn       = null;
     protected boolean                       wasNull         = false;
     protected MenuSwitcherPanel             switcherUI;
     protected int                           mainCompRowInx  = 1;
@@ -1322,6 +1323,10 @@ public class FormViewObj implements Viewable,
                 setDataObj(null, true); // true means the dataObj is already in the current "list" of data items we are working with
             }
             updateControllerUI();
+            
+        } else if (MultiView.isOptionOn(options, MultiView.IS_SINGLE_OBJ))
+        {
+            setDataObj(null, false); // true means the dataObj is already in the current "list" of data items we are working with
         }
     }
 
@@ -1599,7 +1604,10 @@ public class FormViewObj implements Viewable,
             controlPanel.addController(rsController.getPanel());
             controlPanel.setRecordSetController(rsController);
             
-            setAddDelListeners(rsController.getNewRecBtn(), rsController.getDelRecBtn());
+            newRecBtn = rsController.getNewRecBtn();
+            delRecBtn = rsController.getDelRecBtn();
+            
+            setAddDelListeners(newRecBtn, delRecBtn);
         }
     }
     
@@ -1611,22 +1619,26 @@ public class FormViewObj implements Viewable,
         if (controlPanel != null)
         {
             Insets insets = new Insets(1,1,1,1);
-            PanelBuilder rowBuilder = new PanelBuilder(new FormLayout("f:p:g,p,5px,p", "p"));
+            PanelBuilder rowBuilder = new PanelBuilder(new FormLayout("f:p:g,p,2px,p", "p"));
             
-            JButton newRecBtn = UIHelper.createIconBtn("NewRecord", null, null);
+            newRecBtn = UIHelper.createIconBtn("NewRecord", null, null);
             newRecBtn.setToolTipText(ResultSetController.createTooltip("NewRecordTT", view.getObjTitle()));
             newRecBtn.setEnabled(true);
             newRecBtn.setMargin(insets);
             rowBuilder.add(newRecBtn, cc.xy(2,1));
     
-            JButton delRecBtn = UIHelper.createIconBtn("DeleteRecord", null, null);
+            delRecBtn = UIHelper.createIconBtn("DeleteRecord", null, null);
             delRecBtn.setToolTipText(ResultSetController.createTooltip("RemoveRecordTT", view.getObjTitle()));
             delRecBtn.setMargin(insets);
-            rowBuilder.add(delRecBtn, cc.xy(3,1));
+            rowBuilder.add(delRecBtn, cc.xy(4,1));
             
             rowBuilder.getPanel().setOpaque(false);
             controlPanel.addController(rowBuilder.getPanel());
             setAddDelListeners(newRecBtn, delRecBtn);
+            
+            // Set initial state to disabled
+            newRecBtn.setEnabled(false);
+            delRecBtn.setEnabled(false);
         }
     }
 
@@ -1770,36 +1782,41 @@ public class FormViewObj implements Viewable,
      */
     protected void updateControllerUI()
     {
-        if (rsController != null)
+        //log.debug("----------------- "+formViewDef.getName()+"----------------- ");
+        if (delRecBtn != null)
         {
-            //log.debug("----------------- "+formViewDef.getName()+"----------------- ");
-            if (rsController.getDelRecBtn() != null)
+            boolean enableDelBtn = dataObj != null && (businessRules == null || businessRules.okToDelete(this.dataObj));// && list != null && list.size() > 0;
+            /*log.info(formViewDef.getName()+" Enabling The Del Btn: "+enableDelBtn);
+            if (!enableDelBtn)
             {
-                boolean enableDelBtn = dataObj != null && (businessRules == null || businessRules.okToDelete(this.dataObj));// && list != null && list.size() > 0;
-                //log.info(formViewDef.getName()+" Enabling The Del Btn: "+enableDelBtn);
-                /*if (!enableDelBtn)
-                {
-                    //log.debug("  parentDataObj != null    ["+(parentDataObj != null) + "]");
-                    //log.debug("  formIsInNewDataMode      ["+(!formIsInNewDataMode)+"]");
-                    log.debug("  businessRules != null    ["+(businessRules != null)+"] ");
-                    log.debug("  businessRules.okToDelete ["+(businessRules != null && businessRules.okToDelete(this.dataObj))+"]");
-                    log.debug("  list != null             ["+(list != null)+"]");
-                    log.debug("  list.size() > 0          ["+(list != null && list.size() > 0)+"]");
-                }*/
-                rsController.getDelRecBtn().setEnabled(enableDelBtn);
-            }
-            
-            if (rsController.getNewRecBtn() != null)
+                //log.debug("  parentDataObj != null    ["+(parentDataObj != null) + "]");
+                //log.debug("  formIsInNewDataMode      ["+(!formIsInNewDataMode)+"]");
+                log.debug("  dataObj != null          ["+(dataObj != null)+"] ");
+                log.debug("  businessRules != null    ["+(businessRules != null)+"] ");
+                log.debug("  businessRules.okToDelete ["+(businessRules != null && businessRules.okToDelete(this.dataObj))+"]");
+                log.debug("  list != null             ["+(list != null)+"]");
+                log.debug("  list.size() > 0          ["+(list != null && list.size() > 0)+"]");
+            }*/
+            delRecBtn.setEnabled(enableDelBtn);
+        }
+        
+        if (newRecBtn != null)
+        {
+            boolean enableNewBtn;
+            if (MultiView.isOptionOn(options, MultiView.IS_SINGLE_OBJ))
             {
-                boolean enableNewBtn = dataObj != null || parentDataObj != null || mvParent.isTopLevel();
-                //log.info(formViewDef.getName()+" Enabling The New Btn: "+enableNewBtn);
-                /*if (isEditting)
-                {
-                    log.debug(formViewDef.getName()+" ["+(dataObj != null) + "] ["+(parentDataObj != null)+"]["+(mvParent.isTopLevel())+"] "+enableNewBtn);
-                    log.debug(formViewDef.getName()+" Enabling The New Btn: "+enableNewBtn);
-                }*/
-                rsController.getNewRecBtn().setEnabled(enableNewBtn);
+                enableNewBtn = dataObj == null && parentDataObj != null;
+            } else 
+            {
+                enableNewBtn = dataObj != null || parentDataObj != null || mvParent.isTopLevel();
             }
+            //log.info(formViewDef.getName()+" Enabling The New Btn: "+enableNewBtn);
+            /*if (isEditting)
+            {
+                log.debug(formViewDef.getName()+" ["+(dataObj != null) + "] ["+(parentDataObj != null)+"]["+(mvParent.isTopLevel())+"] "+enableNewBtn);
+                log.debug(formViewDef.getName()+" Enabling The New Btn: "+enableNewBtn);
+            }*/
+            newRecBtn.setEnabled(enableNewBtn);
         }
     }
 

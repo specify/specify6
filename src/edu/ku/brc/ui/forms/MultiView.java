@@ -1001,7 +1001,15 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         {
             deletedItems = new Vector<Object>();
         }
-        deletedItems.add(deletedItem);
+        boolean addToList = true;
+        if (deletedItem instanceof FormDataObjIFace && ((FormDataObjIFace)deletedItem).getId() == null)
+        {
+            addToList = false;
+        }
+        if (addToList)
+        {
+            deletedItems.add(deletedItem);
+        }
     }
     
     /**

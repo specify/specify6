@@ -124,7 +124,7 @@ public class ListSlider extends JPanel
     /**
      * Constructor
      */
-    public ListSlider(List sourceData, String sourceListTitle, List destinationData,
+    public ListSlider(List<?> sourceData, String sourceListTitle, List<?> destinationData,
             String destinationListTitle)
     {
         this.sourceListTitle = sourceListTitle;
