@@ -76,6 +76,7 @@ import edu.ku.brc.helpers.HTTPGetter;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPane;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
+import edu.ku.brc.specify.tasks.subpane.ExpressTableResultsFromQuery;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -814,6 +815,36 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
         return false;
     }
 
+    /**
+     * Executes a Local query directly against the Lucene index that is locally on disk.
+     * @param lucenePath the Path to the Lucene Directory
+     * @param analyzer the analyzer to use
+     * @param searchTextStr the search string to be searched
+     * @param esrPane the desintation panel of the results
+     * @return true if OK
+     */
+    public void doBasicSearch(final String searchName)
+    {
+        
+        Hashtable<String, ExpressResultsTableInfo> idToTableInfoMap = getIdToTableInfoHash();
+        for (ExpressResultsTableInfo erti : idToTableInfoMap.values())
+        {
+            if (erti.getName().equals(searchName))
+            {
+                // This needs to be fixed in that it might not return any results
+                // and we are always adding the pane.
+                ExpressSearchResultsPane     expressSearchPane = new ExpressSearchResultsPane(erti.getTitle(), this);
+                ExpressSearchResults         esr               = new ExpressSearchResults(erti.getTitle(), null, erti);
+                @SuppressWarnings("unused")
+                ExpressTableResultsFromQuery esrfq             = new ExpressTableResultsFromQuery(expressSearchPane, esr, true);
+                addSubPaneToMgr(expressSearchPane);
+                return;
+            }
+        }
+        log.error("Can't find a search definition for name ["+searchName+"]");
+    }
+
+
     //-------------------------------------------------------
     // Taskable
     //-------------------------------------------------------
@@ -968,7 +999,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
                 lucenePath = getIndexDirPath(); // must be initialized here (again)
                 checkForIndexer();
                 
-            } else if (cmdAction.isAction("Search"))
+            } else if (cmdAction.isAction("ExpressSearch"))
             {
                 String searchTerm = cmdAction.getData().toString();
                 ExpressSearchResultsPane expressSearchPane = new ExpressSearchResultsPane(searchTerm, this);
@@ -979,6 +1010,9 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
                 {
                     UIRegistry.displayLocalizedStatusBarText("NoExpressSearchResults");
                 }
+            } else if (cmdAction.isAction("Search"))
+            {
+                doBasicSearch(cmdAction.getData().toString());
             }  
         }
     }
@@ -1027,7 +1061,5 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
         {
             return tables;
         }
-
     }
-
 }

@@ -31,7 +31,7 @@ public interface QueryResultsListener
      * Notifies the consumer that all the results are back.
      *
      */
-    public void allResultsBack();
+    public void allResultsBack(final QueryResultsContainerIFace qrc);
     
     /**
      * Notifies the consumer that an error occurred.

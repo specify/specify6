@@ -176,7 +176,7 @@ public class QueryResultsSerializedGetter implements QRCProcessorListener
         currentProcessingIndex++;
         if (currentProcessingIndex == qrcs.size())
         {
-            listener.allResultsBack();
+            listener.allResultsBack(qrc);
             
             if (connection != null)
             {

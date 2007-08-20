@@ -357,7 +357,7 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
         // Since we have no index then go ahead and display the resullts
         if (noIndexFile)
         {
-            allResultsBack();
+            allResultsBack(null);
         }
 
     }
@@ -1260,11 +1260,10 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
     // QueryResultsListener
     //--------------------------------------
 
-    /*
-     *  (non-Javadoc)
-     * @see edu.ku.brc.dbsupport.QueryResultsListener#allResultsBack()
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.QueryResultsListener#allResultsBack(edu.ku.brc.dbsupport.QueryResultsContainerIFace)
      */
-    public synchronized void allResultsBack()
+    public synchronized void allResultsBack(final QueryResultsContainerIFace qrc)
     {
         boolean allOK = true;
         

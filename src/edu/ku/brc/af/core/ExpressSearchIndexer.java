@@ -1034,11 +1034,10 @@ public class ExpressSearchIndexer implements Runnable, QueryResultsListener
     // QueryResultsListener
     //--------------------------------------
 
-    /*
-     *  (non-Javadoc)
-     * @see edu.ku.brc.dbsupport.QueryResultsListener#allResultsBack()
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.QueryResultsListener#allResultsBack(edu.ku.brc.dbsupport.QueryResultsContainerIFace)
      */
-    public synchronized void allResultsBack()
+    public synchronized void allResultsBack(final QueryResultsContainerIFace qrc)
     {
         boolean allOK = true;
         

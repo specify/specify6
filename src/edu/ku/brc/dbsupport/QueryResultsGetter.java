@@ -119,7 +119,7 @@ public class QueryResultsGetter implements QRCProcessorListener
         {
             if (!hasFailed)
             {
-                listener.allResultsBack();
+                listener.allResultsBack(qrc);
             }
         } 
     }

@@ -178,6 +178,7 @@ public class ExpressTableResults extends ExpressTableResultsBase implements SQLE
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.ExpressTableResultsBase#getRecordSet(int[], int, boolean)
      */
+    @Override
     public RecordSetIFace getRecordSet(final int[] rows, final int column, final boolean returnAll)
     {
         ResultSetTableModelDM rsm = (ResultSetTableModelDM)table.getModel();

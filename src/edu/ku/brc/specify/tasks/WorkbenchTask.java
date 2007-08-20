@@ -2282,7 +2282,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             ChartPane chart      = doBarChart ? new BarChartPane(chartTitle, this) : new PieChartPane(chartTitle, this);
             chart.setTitle(chartTitle);
             chart.setHandler(qrhi);
-            chart.allResultsBack();
+            chart.allResultsBack(null);
             addSubPaneToMgr(chart);
         }
     }

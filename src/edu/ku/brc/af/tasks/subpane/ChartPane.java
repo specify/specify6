@@ -120,11 +120,10 @@ public class ChartPane extends BaseSubPane implements Chartable, QueryResultsPro
     // QueryResultsListener
     //--------------------------------------
 
-    /*
-     *  (non-Javadoc)
-     * @see edu.ku.brc.af.dbsupport.QueryResultsListener#allResultsBack()
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.QueryResultsListener#allResultsBack(edu.ku.brc.dbsupport.QueryResultsContainerIFace)
      */
-    public synchronized void allResultsBack()
+    public synchronized void allResultsBack(final QueryResultsContainerIFace qrc)
     {
         throw new RuntimeException("Not Implemented.");
     }

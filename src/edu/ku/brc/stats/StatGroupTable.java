@@ -49,6 +49,8 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.tasks.StatsTask;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CurvedBorder;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.SortableJTable;
@@ -388,8 +390,9 @@ public class StatGroupTable extends JPanel
                     StatDataItem sdi = getStatDataItem(table, rowInx);
                     if (sdi != null && StringUtils.isNotEmpty(sdi.getLink()))
                     {
-                        StatsTask statTask = (StatsTask)ContextMgr.getTaskByName(StatsTask.STATISTICS);
-                        statTask.createStatPane(sdi.getLink());
+                        //StatsTask statTask = (StatsTask)ContextMgr.getTaskByName(StatsTask.STATISTICS);
+                        //statTask.createStatPane(sdi.getLink());
+                        CommandDispatcher.dispatch(new CommandAction("Express_Search", "Search", sdi.getLink()));
                     }
                 }
 

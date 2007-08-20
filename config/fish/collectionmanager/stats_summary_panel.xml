@@ -104,7 +104,7 @@
         </item>
         <item title="Open Loans">
             <sql><statement><![CDATA[select count(loanid) as OpenLoanCount from loan where loan.IsGift = false and (IsClosed = false or IsClosed is null)]]></statement></sql>
-            <link>ListOnLoan</link>
+            <link>OpenLoans</link>
         </item>
       </box>
       <box title="Locality/Geography">

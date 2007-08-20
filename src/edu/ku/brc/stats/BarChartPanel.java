@@ -128,11 +128,10 @@ public class BarChartPanel extends ChartPanel implements QueryResultsListener, Q
         UIRegistry.forceTopFrameRepaint();
     }
 
-    /*
-     *  (non-Javadoc)
-     * @see edu.ku.brc.specify.dbsupport.QueryResultsListener#allResultsBack()
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.QueryResultsListener#allResultsBack(edu.ku.brc.dbsupport.QueryResultsContainerIFace)
      */
-    public synchronized void allResultsBack()
+    public synchronized void allResultsBack(final QueryResultsContainerIFace qrc)
     {
         // create a dataset...
         String cat = "";

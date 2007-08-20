@@ -30,7 +30,7 @@
             </item>
             <item title="Open Loans">
                 <sql type="jpa" name="OpenLoans"><statement><![CDATA[select count(loanId) as OpenLoanCount from Loan l where l.isGift = 0 and (isClosed = 0 or isClosed is null)]]></statement></sql>
-                <link>ListOnLoan</link>
+                <link>OpenLoans</link>
             </item>
         </box>
     </row>   

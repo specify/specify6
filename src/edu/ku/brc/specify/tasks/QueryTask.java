@@ -113,8 +113,8 @@ public class QueryTask extends BaseTask
      */
     public SubPaneIFace getStarterPane()
     {
-        //return starterPane = new SQLQueryPane(name, this, false, false);
-        return starterPane = new LuceneQueryBldrPane(name, this);
+        return starterPane = new SQLQueryPane(name, this, false, false);
+        //return starterPane = new LuceneQueryBldrPane(name, this);
     }
 
     /*

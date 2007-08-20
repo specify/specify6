@@ -245,7 +245,7 @@ public class LuceneQueryBldrPane extends BaseSubPane
         searchBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
-                CommandDispatcher.dispatch(new CommandAction(ExpressSearchTask.EXPRESSSEARCH, "Search", "101"));
+                CommandDispatcher.dispatch(new CommandAction(ExpressSearchTask.EXPRESSSEARCH, "ExpressSearch", "101"));
             }
         });
         this.validate();
