@@ -5,6 +5,7 @@
 		<attribute name="name" property="name"/>
 		<attribute name="type" property="type"/>
 		<attribute name="length" property="length"/>
+		<attribute name="indexName" property="indexName"/>
 	</element>
 </info>
 

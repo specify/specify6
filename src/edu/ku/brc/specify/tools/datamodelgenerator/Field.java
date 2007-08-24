@@ -1,5 +1,7 @@
 package edu.ku.brc.specify.tools.datamodelgenerator;
 
+import org.apache.commons.lang.StringUtils;
+
 
 /**
  * Create field data.
@@ -11,10 +13,11 @@ package edu.ku.brc.specify.tools.datamodelgenerator;
  */
 public class Field
 {
-    private String name;
-    private String type;
-    private String column;
-    private String length;
+    protected String name;
+    protected String type;
+    protected String column;
+    protected String length;
+    protected String indexName = null;
     
     /**
      * @param name the name of the field	
@@ -105,4 +108,31 @@ public class Field
     {
         return name;
     }
+
+    /**
+     * @return the isIndexed
+     */
+    public boolean isIndexed()
+    {
+        return StringUtils.isNotEmpty(indexName);
+    }
+
+    /**
+     * @return the indexName
+     */
+    public String getIndexName()
+    {
+        return indexName;
+    }
+
+    /**
+     * @param indexName the indexName to set
+     */
+    public void setIndexName(String indexName)
+    {
+        this.indexName = indexName;
+    }
+
+    
+    
 }

@@ -2,6 +2,7 @@ package edu.ku.brc.specify.tools.datamodelgenerator;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Vector;
 
 /**
  * Create table data.
@@ -23,6 +24,9 @@ public class Table implements Comparable<Table>
 	private Collection<Id>           ids           = new ArrayList<Id>();
 	private Collection<Relationship> relationships = new ArrayList<Relationship>();
     private Display                  display;
+    
+    // Transient
+    private Vector<TableIndex>       indexes = new Vector<TableIndex>();
 
 	/**
 	 * @param aName
@@ -206,6 +210,40 @@ public class Table implements Comparable<Table>
     public String getBusinessRule()
     {
         return businessRule;
+    }
+    
+    /**
+     * @return the indexes
+     */
+    public Vector<TableIndex> getIndexes()
+    {
+        return indexes;
+    }
+
+    /**
+     * @param indexes the indexes to set
+     */
+    public void setIndexes(Vector<TableIndex> indexes)
+    {
+        this.indexes = indexes;
+    }
+    
+    public void updateIndexFields()
+    {
+        for (TableIndex ti : indexes)
+        {
+            for (String columnName : ti.getColumnNames())
+            {
+                for (Field f : fields)
+                {
+                    if (f.getColumn().equals(columnName))
+                    {
+                        f.setIndexName(ti.getIndexName());
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     // Comparable

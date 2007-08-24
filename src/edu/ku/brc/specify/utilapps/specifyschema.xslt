@@ -54,15 +54,15 @@
      <html><head>
      <title>Specify 6 Schema</title>
      <style>
-     body { font-family: sans-serif; font-size: 11pt;}
-     table { border-bottom: 1px solid black; border-right: 1px solid black; font-size: 11pt;}
-     table.tbl { background-color: rgb(250,250,255); }
-     td.control { font-size: 14pt; font-weight: bold; }
-     td { border-left: 1px solid black; border-top: 1px solid black; }
-     th { border-left: 1px solid black; border-top: 1px solid black; }
-     td.hd { text-align:center; font-weight: bold; }
-     td.subhead { padding-top: 4px; background-color: white; text-align:center; }
-     span.footer {font-size: 9pt; font-style: italic;}
+     body        { font-family: sans-serif; font-size: 11pt;}
+     table       { border-bottom: 1px solid black; border-right: 1px solid black; font-size: 11pt;}
+     table.tbl   { background-color: rgb(250,250,255); }
+     td          { border-left: 1px solid black; border-top: 1px solid black; }
+     th          { border-left: 1px solid black; border-top: 1px solid black; }
+     td.hd       { text-align:center; font-weight: bold; }
+     td.hdbig    { text-align:center; font-weight: bold; font-size: 12pt;}
+     td.subhead  { padding-top: 4px; background-color: white; text-align:center; }
+     span.footer { font-size: 9pt; font-style: italic;}
      </style>
      </head><body>
  
@@ -99,7 +99,7 @@
 <a name="{@table}"></a>
   <table class="tbl" border="0" cellspacing="0" cellpadding="2" width="50%">
 
-       <tr><td colspan="3" class="hd">
+       <tr><td colspan="4" class="hdbig">
 <xsl:call-template name="substring-after-last">
      <xsl:with-param name="input" select="@classname"/>
      <xsl:with-param name="substr">.</xsl:with-param>
@@ -110,20 +110,18 @@
         <td class="hd">Field</td>
         <td class="hd">Type</td>
         <td class="hd">Length</td>
+        <td class="hd">Index Name</td>
         </tr>
         
         <xsl:apply-templates select="id"/>
         
-       <!--  <tr><td colspan="3" class="control"><xsl:value-of select="@type" /></td></tr> 
-       -->
-
        <xsl:apply-templates select="field">
          <xsl:sort select="@column" />
        </xsl:apply-templates>
        
-       <tr><td colspan="3" class="subhead">Relationships</td></tr>
+       <tr><td colspan="4" class="subhead">Relationships</td></tr>
        <tr>
-        <td class="hd">Type</td>
+        <td class="hd" colspan="2">Type</td>
         <td class="hd" colspan="2">To Table</td>
         </tr>
        
@@ -157,6 +155,12 @@
           </xsl:when>  
           <xsl:otherwise><td align="center"><xsl:text>&#160;</xsl:text></td></xsl:otherwise>
         </xsl:choose>
+        <xsl:choose>
+          <xsl:when test="@indexName != $empty_string">
+             <td align="center"><xsl:value-of select="@indexName"/></td>
+          </xsl:when>  
+          <xsl:otherwise><td align="center"><xsl:text>&#160;</xsl:text></td></xsl:otherwise>
+        </xsl:choose>
         </tr>
 
   </xsl:template>
@@ -177,13 +181,14 @@
           </xsl:when>  
           <xsl:otherwise><td align="center"><xsl:text>&#160;</xsl:text></td></xsl:otherwise>
         </xsl:choose>
+        <td align="center"><xsl:value-of select="@column"/></td>
         </tr>
 
   </xsl:template>
   
   <xsl:template match="relationship">
         <tr>
-        <td align="center"><xsl:value-of select="@type"/></td>
+        <td align="center" colspan="2"><xsl:value-of select="@type"/></td>
         <td align="center" colspan="2">
             <xsl:call-template name="substring-after-last">
 			 <xsl:with-param name="input" select="@classname"/>

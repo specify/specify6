@@ -29,6 +29,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import org.apache.commons.betwixt.XMLIntrospector;
 import org.apache.commons.betwixt.io.BeanWriter;
@@ -36,6 +37,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.hibernate.annotations.Index;
 
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.util.DatamodelHelper;
@@ -54,6 +56,14 @@ public class DatamodelGenerator
 
     Hashtable<String, TableMetaData> tblMetaDataHash = new Hashtable<String, TableMetaData>();
 
+    /**
+     * 
+     */
+    public DatamodelGenerator()
+    {
+        // no op
+    }
+    
     /**
      * Looks for a child node "display" and creates the appropriate object or returns null.
      * @param element the "table".
@@ -99,7 +109,13 @@ public class DatamodelGenerator
                     + " check to see if table is listed in the file: " + DatamodelHelper.getTableIdFilePath());
         }
         
-        return new Table(className, tableName, null, tableMetaData.getId(), tableMetaData.getDisplay(), tableMetaData.isForQuery(), tableMetaData.getBusinessRule());
+        return new Table(className, 
+                         tableName, 
+                         null, 
+                         tableMetaData.getId(), 
+                         tableMetaData.getDisplay(), 
+                         tableMetaData.isForQuery(), 
+                         tableMetaData.getBusinessRule());
 
     }
 
@@ -250,15 +266,27 @@ public class DatamodelGenerator
                 {
                     try
                     {
-                        
                         Class classObj = Class.forName(packageName + "." + className);
+                        
                         
                         if (classObj.isAnnotationPresent(javax.persistence.Table.class))
                         {
+                            Vector<TableIndex> indexes = new Vector<TableIndex>();
+                            
                             javax.persistence.Table tableAnno = (javax.persistence.Table)classObj.getAnnotation(javax.persistence.Table.class);
                             tableName = tableAnno.name();
                             
+                            org.hibernate.annotations.Table hiberTableAnno = (org.hibernate.annotations.Table)classObj.getAnnotation(org.hibernate.annotations.Table.class);
+                            if (hiberTableAnno != null)
+                            {
+                                for (Index index : hiberTableAnno.indexes())
+                                {
+                                    indexes.add(new TableIndex(index.name(), index.columnNames()));
+                                }
+                            }
+                            
                             table = createTable(packageName + "." + className, tableName);
+                            table.setIndexes(indexes);
                             tableList.add(table);
                         }
                         
@@ -305,6 +333,9 @@ public class DatamodelGenerator
                                 }
                                 isLob = false;
                             }
+                            
+                            // This updates each field as to whether it is an index
+                            table.updateIndexFields();
                         }
                                     
                     } catch (Exception ex)
