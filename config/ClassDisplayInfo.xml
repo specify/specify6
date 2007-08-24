@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classes>
+	
+    <class name="Author" linkfield="orderNumber" indexfield="">
+    	<skip>
+			<field>visibility</field>
+			<field>visibilitySetBy</field>
+			<field>groupPermittedToView</field>
+			<field>habitatAttributes</field>
+		</skip>
+		<order>
+			<field>orderNumber</field>
+		</order>
+	</class>
+	
 	<class name="Taxon" linkfield="name" indexfield="fullName">
 		<skip>
 			<field>highestChildNodeNumber</field>
@@ -16,7 +29,8 @@
 			<field>visibility</field>
 			<field>visibilitySetBy</field>
 			<field>groupNumber</field>
-            <field search="ok">rankId</field>
+			<field>determinations</field>
+            <field search="true">rankId</field>
 		</skip>
 		<order>
 			<field>definitionItem</field>
@@ -107,7 +121,7 @@
 		</order>
 	</class>
 	
-    <class name="Agent" linkfield="lastName" indexfield="lastName">
+    <class name="Agent" linkfield="lastName" indexfield="lastName" useindentity="true">
     	<skip>
 			<field>visibility</field>
 			<field>visibilitySetBy</field>
@@ -122,6 +136,8 @@
 			<field>guid</field>
 			<field>remarks</field>
 			<field>addresses</field>
+			<field>accessionAgents</field>
+			<field>collectors</field>
 		</order>
 	</class>
 	
@@ -154,6 +170,9 @@
 		<order>
 			<field>startDate</field>
 		</order>
+		<stats>
+			<stat url="SpecifyExplorer?id=ChartCE">Collecting Events By Decade</stat>stat>
+	    </stats>
 	</class>
 	
     <class name="Determination" linkfield="status" indexfield="">
@@ -195,13 +214,19 @@
 		</order>
 	</class>
 	
-    <class name="Shipment" linkfield="" indexfield="">
+    <class name="Shipment" linkfield="shipmentNumber" indexfield="shipmentNumber">
     	<skip>
 			<field>visibility</field>
 			<field>visibilitySetBy</field>
 			<field>groupPermittedToView</field>
 		</skip>
 		<order>
+			<field>shipmentDate</field>
+			<field>shipmentNumber</field>
+			<field>shipmentMethod</field>
+			<field>numberOfPackages</field>
+			<field>numberOfPackages</field>
+			<field>insuredForAmount</field>
 		</order>
 	</class>
 	
@@ -240,5 +265,77 @@
 			<field>remarks</field>
 		</order>
 	</class>
-
+	
+    <class name="Loan" linkfield="loanNumber" indexfield="loanNumber">
+    	<skip>
+			<field>visibility</field>
+			<field>visibilitySetBy</field>
+			<field>groupPermittedToView</field>
+		</skip>
+		<order>
+			<field>loanNumber</field>
+			<field>loanDate</field>
+			<field>currentDueDate</field>
+			<field>originalDueDate</field>
+			<field>dateClosed</field>
+		</order>
+		 
+	    <additional>
+			<field type="set" label="Loaned Preparations" labellevel="loanPhysicalObjects" >loanPhysicalObjects.preparation</field>
+		</additional>
+	
+	</class>
+	
+    <class name="LoanAgent" linkfield="" indexfield="">
+    	<skip>
+			<field>visibility</field>
+			<field>visibilitySetBy</field>
+			<field>groupPermittedToView</field>
+		</skip>
+		<order>
+		</order>
+	</class>
+	
+    <class name="LoanPhysicalObject" linkfield="" indexfield="">
+    	<skip>
+			<field>visibility</field>
+			<field>visibilitySetBy</field>
+			<field>groupPermittedToView</field>
+		</skip>
+		<order>
+		</order>
+	</class>
+	
+    <class name="LoanReturnPhysicalObject" linkfield="" indexfield="">
+    	<skip>
+			<field>visibility</field>
+			<field>visibilitySetBy</field>
+			<field>groupPermittedToView</field>
+		</skip>
+		<order>
+		</order>
+	</class>
+	
+    <class name="Accession" linkfield="number" indexfield="number">
+    	<skip>
+			<field>visibility</field>
+			<field>visibilitySetBy</field>
+			<field>groupPermittedToView</field>
+		</skip>
+		<order>
+		</order>
+	</class>
+	
+    <class name="AccessionAgent" linkfield="" indexfield="">
+    	<skip>
+			<field>visibility</field>
+			<field>visibilitySetBy</field>
+			<field>groupPermittedToView</field>
+		</skip>
+		<order>
+		</order>
+	</class>
+	
+	
+	
 </classes>
