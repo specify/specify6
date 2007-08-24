@@ -97,6 +97,16 @@ public class DatamodelHelper
 	{
 		return XMLHelper.getConfigDirPath("specify_tableid_listing.xml");
 	}
+    
+    /**
+     * Returns full path to file workbench upload def file
+     * 
+     * @return the path to the file
+     */
+    public static String getWorkbenchUploadDefFilePath()
+    {
+        return XMLHelper.getConfigDirPath("specify_workbench_upload_def.xml");
+    }
 
 	/**
 	 * @param args

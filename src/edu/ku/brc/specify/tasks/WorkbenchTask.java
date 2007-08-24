@@ -26,6 +26,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -106,6 +107,21 @@ import edu.ku.brc.specify.tasks.subpane.wb.TemplateEditor;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchBackupMgr;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchJRDataSource;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
+import edu.ku.brc.specify.tasks.subpane.wb.graph.DirectedGraph;
+import edu.ku.brc.specify.tasks.subpane.wb.graph.DirectedGraphException;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.DB;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadData;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMappingDef;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMappingDefRel;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMappingDefTree;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploaderException;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.TreeMapElement;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.WorkbenchUploadMapper;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMappingDefRel.ImportMappingRelFld;
+import edu.ku.brc.specify.tasks.subpane.wb.schema.Field;
+import edu.ku.brc.specify.tasks.subpane.wb.schema.Relationship;
+import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -148,6 +164,7 @@ public class WorkbenchTask extends BaseTask
     public static final String     WB_TOP10_REPORT       = "WB.Top10Report";
     public static final String     WB_IMPORTCARDS        = "WB.ImportCardImages";
     public static final String     EXPORT_DATA_FILE      = "WB.ExportData";
+    public static final String     UPLOAD             = "WB.Upload";
     public static final String     EXPORT_TEMPLATE       = "WB.ExportTemplate";
     public static final String     NEW_WORKBENCH_FROM_TEMPLATE = "WB.NewDataSetFromTemplate";
     
@@ -210,6 +227,11 @@ public class WorkbenchTask extends BaseTask
             roc.addDragDataFlavor(new DataFlavor(Workbench.class, EXPORT_DATA_FILE));
             enableNavBoxList.add((NavBoxItemIFace)roc);
             
+            roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_UPLOAD"), "Export16", getResourceString("WB_UPLOAD_TT"), new CommandAction(WORKBENCH, UPLOAD, wbTblId), null, true, false);// true means make it draggable
+            roc.addDropDataFlavor(DATASET_FLAVOR);
+            roc.addDragDataFlavor(new DataFlavor(Workbench.class, UPLOAD));
+            enableNavBoxList.add((NavBoxItemIFace)roc);
+
             roc = (RolloverCommand)makeDnDNavBtn(navBox, getResourceString("WB_EXPORT_TEMPLATE"), "ExportExcel16", getResourceString("WB_EXPORT_TEMPLATE_TT"),new CommandAction(WORKBENCH, EXPORT_TEMPLATE, wbTblId), null, true, false);// true means make it draggable
             roc.addDropDataFlavor(DATASET_FLAVOR);
             roc.addDragDataFlavor(new DataFlavor(Workbench.class, EXPORT_TEMPLATE));
@@ -363,6 +385,7 @@ public class WorkbenchTask extends BaseTask
         
         // Drop Flavors
         roc.addDropDataFlavor(new DataFlavor(Workbench.class, EXPORT_DATA_FILE));
+        roc.addDropDataFlavor(new DataFlavor(Workbench.class, UPLOAD));
         roc.addDropDataFlavor(new DataFlavor(Workbench.class, "Report"));
        
         JPopupMenu popupMenu = new JPopupMenu();
@@ -1158,9 +1181,127 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         }
 
     }
+
+    
+    /**
+     * Uploads a Workbench to specify database.
+     * @param cmdAction the incoming command request
+     */
+    protected void uploadWorkbench(final CommandAction cmdAction)
+    {
+        System.out.println("UPLOAD?");
+        // Check incoming command for a RecordSet contain the Workbench
+        Workbench workbench = null;
+        Object data = cmdAction.getData();
+        if (data instanceof CommandAction)
+        {
+            CommandAction subCmd = (CommandAction) data;
+            if (subCmd != cmdAction)
+            {
+                if (subCmd.getTableId() == cmdAction.getTableId())
+                {
+                    workbench = selectWorkbench(subCmd, "WorkbenchExportDataSet"); // XXX ADD HELP
+                }
+            }
+        }
+
+        // The command may have been clicked on so ask for one
+        if (workbench == null)
+        {
+            workbench = selectWorkbench(cmdAction, "WorkbenchUpload"); // XXX ADD HELP
+        }
+
+        if (workbench != null)
+        {
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            try
+            {
+                session.attach(workbench);
+                workbench.forceLoad();
+            }
+            finally
+            {
+                if (session != null)
+                {
+                    session.close();
+                }
+            }
+            doWorkbenchUpload(workbench);
+        }
+
+    }
+    
+    protected void doWorkbenchUpload(final Workbench workbench)
+    {
+
+        System.out.println("creating upload mappings for " + workbench.getName());
+        UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_UPLOADING_DATASET"),
+                new Object[] { workbench.getName() }), GLASSPANE_FONT_SIZE);
+
+        final SwingWorker worker = new SwingWorker()
+        {
+            protected boolean  isOK = false;
+            protected Uploader imp;
+
+            @Override
+            public Object construct()
+            {
+                WorkbenchUploadMapper importMapper = new WorkbenchUploadMapper(workbench
+                        .getWorkbenchTemplate());
+                try
+                {
+                    Vector<UploadMappingDef> maps = importMapper.getImporterMapping();
+                    DB db = new DB();
+                    System.out.println("constructing importer...");
+                    imp = new Uploader(db, new UploadData(maps, workbench.getWorkbenchRowsAsList()));
+                    System.out.println("validate...");
+                    imp.validate();
+                    System.out.println("uploading...");
+                    imp.uploadIt();
+                    System.out.println("upload " + imp.getIdentifier() + " succeeded.");
+                    isOK = true;
+                }
+                catch (DirectedGraphException ex)
+                {
+                    UIRegistry.getStatusBar().setErrorMessage(ex.getMessage());
+                }
+                catch (UploaderException ex)
+                {
+                    UIRegistry.getStatusBar().setErrorMessage(ex.getMessage());
+                }
+                return null;
+            }
+
+            // Runs on the event-dispatching thread.
+            @Override
+            public void finished()
+            {
+                UIRegistry.clearGlassPaneMsg();
+
+                if (isOK)
+                {
+                    try
+                    {
+                        imp.viewUpload();
+                        imp.undoUpload();
+                    }
+                    catch (IllegalAccessException ex)
+                    {
+                        UIRegistry.getStatusBar().setErrorMessage(ex.getMessage());
+                    }
+                    catch (InvocationTargetException ex)
+                    {
+                        UIRegistry.getStatusBar().setErrorMessage(ex.getMessage());
+                    }
+                }
+            }
+        };
+        worker.start();
+    }
     
     /**
      * Creates a new one row Workbench from another workbench's template.
+     * 
      * @param cmdAction the incoming command request
      */
     protected void createWorkbenchFromTemplate(final CommandAction cmdAction)
@@ -2919,7 +3060,11 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         {
             exportWorkbench(cmdAction);
            
-        } else if (cmdAction.isAction(EXPORT_TEMPLATE))
+        } else if (cmdAction.isAction(UPLOAD))
+        {
+            uploadWorkbench(cmdAction);
+        }
+        else if (cmdAction.isAction(EXPORT_TEMPLATE))
         {
             exportWorkbenchTemplate(cmdAction);
             

@@ -1,0 +1,154 @@
+package edu.ku.brc.specify.tasks.subpane.wb.schema;
+
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+
+/**
+ * @author timbo
+ *
+ * @code_status Alpha
+ *
+ * This class basically is a wrapper for DBTableIdMgr with a few enhancments to simplify workbench uploading.
+ */
+public class Field implements Comparable<Field>
+{
+    /**
+     * The name of the field.
+     */
+    protected String                 name;
+    /**
+     * String specification of the field's data type.
+     */
+    protected String                 type;
+    /**
+     * A pointer to the table containing this field.
+     */
+    protected Table                  table;
+    /**
+     * The underlying FieldInfo.
+     */
+    protected DBTableIdMgr.FieldInfo fieldInfo;
+    /**
+     * The column index of the field in Table.
+     * (Not currently necessary?)
+     */
+    protected int                    columnIndex = -1;
+
+    /**
+     * @return the columnIndex
+     */
+    public final int getColumnIndex()
+    {
+        return columnIndex;
+    }
+
+    /**
+     * @param columnIndex the columnIndex to set
+     */
+    public final void setColumnIndex(int columnIndex)
+    {
+        this.columnIndex = columnIndex;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return getName();
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(Field fld)
+    {
+        int tc = table.compareTo(fld.table);
+        if (tc != 0) { return tc; }
+        return name.compareToIgnoreCase(fld.name);
+    }
+
+    /**
+     * @return the name
+     */
+    public final String getName()
+    {
+        return name;
+    }
+
+    /**
+     * @param name the name to set
+     */
+    public final void setName(String name)
+    {
+        this.name = name;
+    }
+
+    /**
+     * @return the type
+     */
+    public final String getType()
+    {
+        return type;
+    }
+
+    /**
+     * @param type the type to set
+     */
+    public final void setType(String type)
+    {
+        this.type = type;
+    }
+
+    /**
+     * @param name
+     * @param type
+     */
+    public Field(String name, String type)
+    {
+        super();
+        this.name = name;
+        this.type = type;
+        this.fieldInfo = null;
+    }
+
+    public Field(final DBTableIdMgr.FieldInfo fieldInfo)
+    {
+        super();
+        this.fieldInfo = fieldInfo;
+        this.name = fieldInfo.getName();
+        this.type = fieldInfo.getType();
+    }
+
+    public Field(final Field field)
+    {
+        super();
+        this.fieldInfo = field.fieldInfo; // NOT copying fieldinfo
+        this.name = field.getName();
+        this.type = field.getType();
+    }
+
+    /**
+     * @return the table
+     */
+    public final Table getTable()
+    {
+        return table;
+    }
+
+    /**
+     * @param table the table to set
+     */
+    public final void setTable(Table table)
+    {
+        this.table = table;
+    }
+
+    /**
+     * @return the fieldInfo
+     */
+    public final DBTableIdMgr.FieldInfo getFieldInfo()
+    {
+        return fieldInfo;
+    }
+}

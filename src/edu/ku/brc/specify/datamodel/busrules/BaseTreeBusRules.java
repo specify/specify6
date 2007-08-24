@@ -147,8 +147,10 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
             // check to see if this node is brand new
             if (node.getTreeId() == null)
             {
-                node.setDefinition(node.getParent().getDefinition());
-                
+                if (node.getParent() != null)
+                {
+                    node.setDefinition(node.getParent().getDefinition());
+                }
                 // this is a new object
                 // set it's fullname
                 String fullname = TreeHelper.generateFullname(node);
