@@ -55,7 +55,7 @@ public class BorrowMaterial extends DataModelObjBase implements java.io.Serializ
 
     // Fields    
 
-     protected Long borrowMaterialId;
+     protected Integer borrowMaterialId;
      protected String materialNumber;
      protected String description;
      protected Short quantity;
@@ -75,7 +75,7 @@ public class BorrowMaterial extends DataModelObjBase implements java.io.Serializ
     }
     
     /** constructor with id */
-    public BorrowMaterial(Long borrowMaterialId) {
+    public BorrowMaterial(Integer borrowMaterialId) {
         this.borrowMaterialId = borrowMaterialId;
     }
    
@@ -108,7 +108,7 @@ public class BorrowMaterial extends DataModelObjBase implements java.io.Serializ
     @Id
     @GeneratedValue
     @Column(name = "BorrowMaterialID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getBorrowMaterialId() {
+    public Integer getBorrowMaterialId() {
         return this.borrowMaterialId;
     }
 
@@ -118,7 +118,7 @@ public class BorrowMaterial extends DataModelObjBase implements java.io.Serializ
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.borrowMaterialId;
     }
@@ -133,7 +133,7 @@ public class BorrowMaterial extends DataModelObjBase implements java.io.Serializ
         return BorrowMaterial.class;
     }
     
-    public void setBorrowMaterialId(Long borrowMaterialId) {
+    public void setBorrowMaterialId(Integer borrowMaterialId) {
         this.borrowMaterialId = borrowMaterialId;
     }
 

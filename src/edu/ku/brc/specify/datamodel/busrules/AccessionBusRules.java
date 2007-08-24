@@ -84,7 +84,7 @@ public class AccessionBusRules extends BaseBusRules
         {
             // Start by checking to see if the permit number has changed
             boolean checkAccessionNumberForDuplicates = true;
-            Long id = accession.getAccessionId();
+            Integer id = accession.getAccessionId();
             if (id != null)
             {
                 DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();

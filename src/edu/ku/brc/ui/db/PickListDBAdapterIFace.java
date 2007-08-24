@@ -23,6 +23,8 @@ import java.util.Vector;
  * For example, a list the DeterminationStatus.<br>
  * 3) A PickList that uses the values from an arbitrary table and it should search on a field. It returns a list of objects that are formatted with a DataObjectFormatter.
  * 
+ * Note: Any Class implementing this interface so it can be used in the ValComboBox must also implement ComboBoxModel!
+ * 
  * @author rods
  *
  * @code_status Complete

@@ -29,7 +29,7 @@ import org.hibernate.annotations.CascadeType;
 @Table(name = "locationtreedef")
 public class LocationTreeDef extends DataModelObjBase implements java.io.Serializable, TreeDefIface<Location, LocationTreeDef, LocationTreeDefItem>
 {
-	protected Long				   locationTreeDefId;
+	protected Integer				   locationTreeDefId;
 	protected String				name;
 	protected String				remarks;
     protected Integer               fullNameDirection;
@@ -44,7 +44,7 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
 	}
 
 	/** constructor with id */
-	public LocationTreeDef(Long locationTreeDefId)
+	public LocationTreeDef(Integer locationTreeDefId)
 	{
 		this.locationTreeDefId = locationTreeDefId;
 	}
@@ -68,7 +68,7 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
     @Id
     @GeneratedValue
     @Column(name = "LocationTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
-	public Long getLocationTreeDefId()
+	public Integer getLocationTreeDefId()
 	{
 		return this.locationTreeDefId;
 	}
@@ -79,7 +79,7 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
      */
     @Override
     @Transient
-    public Long getId()
+    public Integer getId()
     {
         return this.locationTreeDefId;
     }
@@ -94,7 +94,7 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
         return LocationTreeDef.class;
     }
 
-	public void setLocationTreeDefId(Long locationTreeDefId)
+	public void setLocationTreeDefId(Integer locationTreeDefId)
 	{
 		this.locationTreeDefId = locationTreeDefId;
 	}
@@ -181,12 +181,12 @@ public class LocationTreeDef extends DataModelObjBase implements java.io.Seriali
 	}
 
     @Transient
-	public Long getTreeDefId()
+	public Integer getTreeDefId()
 	{
 		return getLocationTreeDefId();
 	}
 
-	public void setTreeDefId(Long id)
+	public void setTreeDefId(Integer id)
 	{
 		setLocationTreeDefId(id);
 	}

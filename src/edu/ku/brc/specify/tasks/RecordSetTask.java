@@ -120,11 +120,11 @@ public class RecordSetTask extends BaseTask
 
             // TODO Search for the the users or group's RecordSets!
             DataProviderSessionIFace session    = DataProviderFactory.getInstance().createSession();
-            List                     recordSets = session.getDataList(RecordSet.class);
+            List<?>                     recordSets = session.getDataList(RecordSet.class);
 
             navBox = new DroppableNavBox(title, RECORDSET_FLAVOR, RECORD_SET, SAVE_RECORDSET);
 
-            for (Iterator iter=recordSets.iterator();iter.hasNext();)
+            for (Iterator<?> iter=recordSets.iterator();iter.hasNext();)
             {
                 RecordSetIFace recordSet = (RecordSetIFace)iter.next();
                 recordSet.getItems(); // loads all lazy object 

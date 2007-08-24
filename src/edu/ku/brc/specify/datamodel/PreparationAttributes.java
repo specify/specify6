@@ -41,7 +41,7 @@ import org.hibernate.annotations.CascadeType;
 @Table(name = "preparationattributes", uniqueConstraints = { @UniqueConstraint(columnNames = { "PreparationAttributesID" }) })
 public class PreparationAttributes extends DataModelObjBase
 {
-    protected Long preparationAttributesId;
+    protected Integer preparationAttributesId;
     protected Date attrDate;
     protected String medium;
     protected String text3;
@@ -140,7 +140,7 @@ public class PreparationAttributes extends DataModelObjBase
     @Id
     @GeneratedValue
     @Column(name = "PreparationAttributesID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getPreparationAttributesId()
+    public Integer getPreparationAttributesId()
     {
         return preparationAttributesId;
     }
@@ -150,7 +150,7 @@ public class PreparationAttributes extends DataModelObjBase
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.preparationAttributesId;
     }
@@ -616,7 +616,7 @@ public class PreparationAttributes extends DataModelObjBase
     /**
      * @param preparationAttributesId the preparationAttributesId to set
      */
-    public void setPreparationAttributesId(Long preparationAttributesId)
+    public void setPreparationAttributesId(Integer preparationAttributesId)
     {
         this.preparationAttributesId = preparationAttributesId;
     }

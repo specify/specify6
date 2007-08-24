@@ -70,7 +70,7 @@ public class ViewSetObj extends DataModelObjBase implements java.io.Serializable
             
     // Fields    
 
-     protected Long                    viewSetObjId;
+     protected Integer                    viewSetObjId;
      protected Short                   level;
      protected String                  name;
      protected String                  description;
@@ -91,7 +91,7 @@ public class ViewSetObj extends DataModelObjBase implements java.io.Serializable
     }
     
     /** constructor with id */
-    public ViewSetObj(Long viewSetObjId) {
+    public ViewSetObj(Integer viewSetObjId) {
         this.viewSetObjId = viewSetObjId;
     }
    
@@ -123,7 +123,7 @@ public class ViewSetObj extends DataModelObjBase implements java.io.Serializable
     @Id
     @GeneratedValue
     @Column(name = "ViewSetObjID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getViewSetObjId() {
+    public Integer getViewSetObjId() {
         return this.viewSetObjId;
     }
 
@@ -133,7 +133,7 @@ public class ViewSetObj extends DataModelObjBase implements java.io.Serializable
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.viewSetObjId;
     }
@@ -158,7 +158,7 @@ public class ViewSetObj extends DataModelObjBase implements java.io.Serializable
         return false;
     }
         
-    public void setViewSetObjId(Long viewSetObjId) {
+    public void setViewSetObjId(Integer viewSetObjId) {
         this.viewSetObjId = viewSetObjId;
     }
 

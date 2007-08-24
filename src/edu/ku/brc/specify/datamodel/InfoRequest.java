@@ -63,7 +63,7 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
 
     // Fields    
 
-     protected Long     infoRequestID;
+     protected Integer     infoRequestID;
      protected String   number;
      protected String   firstName;
      protected String   lastName;
@@ -84,7 +84,7 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
     }
     
     /** constructor with id */
-    public InfoRequest(Long infoRequestID) {
+    public InfoRequest(Integer infoRequestID) {
         this.infoRequestID = infoRequestID;
     }
 
@@ -138,17 +138,17 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
     @Id
     @GeneratedValue
     @Column(name = "InfoRequestID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getInfoRequestID() {
+    public Integer getInfoRequestID() {
         return this.infoRequestID;
     }
     
-    public void setInfoRequestID(Long infoRequestID) {
+    public void setInfoRequestID(Integer infoRequestID) {
         this.infoRequestID = infoRequestID;
     }
     
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return infoRequestID;
     }

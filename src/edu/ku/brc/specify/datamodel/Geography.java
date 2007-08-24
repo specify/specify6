@@ -67,7 +67,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
      */
     protected static final Logger log = Logger.getLogger(Geography.class);
 
-	protected Long			    	geographyId;
+	protected Integer			    	geographyId;
 	protected String				name;
 	protected String				remarks;
 	protected String				commonName;
@@ -101,7 +101,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	}
 
 	/** constructor with id */
-	public Geography(Long geographyId)
+	public Geography(Integer geographyId)
 	{
 		this.geographyId = geographyId;
 	}
@@ -143,7 +143,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
     @Id
     @GeneratedValue
     @Column(name = "GeographyID", unique = false, nullable = false, insertable = true, updatable = true)
-	public Long getGeographyId()
+	public Integer getGeographyId()
 	{
 		return this.geographyId;
 	}
@@ -154,7 +154,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
      */
     @Override
     @Transient
-    public Long getId()
+    public Integer getId()
     {
         return this.geographyId;
     }
@@ -169,7 +169,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
         return Geography.class;
     }
 
-	public void setGeographyId(Long geographyId)
+	public void setGeographyId(Integer geographyId)
 	{
 		this.geographyId = geographyId;
 	}
@@ -502,12 +502,12 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/* Code added in order to implement Treeable */
 
     @Transient
-	public Long getTreeId()
+	public Integer getTreeId()
 	{
 		return getGeographyId();
 	}
 
-	public void setTreeId(Long id)
+	public void setTreeId(Integer id)
 	{
 		setGeographyId(id);
 	}

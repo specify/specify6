@@ -29,7 +29,7 @@ public interface FormDataObjIFace
      * The Record Id.
      * @return Record Id.
      */
-    public Long getId();
+    public Integer getId();
     
     /**
      * Return a String that uniquely identifies this object, usually this is a String field in the object (This should never return null).

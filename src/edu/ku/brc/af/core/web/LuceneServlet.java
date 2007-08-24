@@ -244,10 +244,10 @@ public class LuceneServlet extends HttpServlet implements ExpressSearchIndexerLi
     
     class TableIdInfo
     {
-        protected long         tableId  = -1;
-        protected boolean      useFloat = false;
-        protected Vector<Long> ids      = new Vector<Long>(128);
-        protected boolean      knowsType = false;
+        protected long            tableId  = -1;
+        protected boolean         useFloat = false;
+        protected Vector<Integer> ids      = new Vector<Integer>(128);
+        protected boolean         knowsType = false;
         
         public TableIdInfo()
         {
@@ -270,7 +270,7 @@ public class LuceneServlet extends HttpServlet implements ExpressSearchIndexerLi
             putLong(numItems);
             for (int i=0;i<numItems;i++)
             {
-                putLong(((Long)ids.get(i)).longValue());
+                putLong(((Integer)ids.get(i)).intValue());
             }
         }
         
@@ -281,10 +281,10 @@ public class LuceneServlet extends HttpServlet implements ExpressSearchIndexerLi
                 useFloat  = idStr.indexOf(".") > -1;
                 knowsType = true;
             }
-            ids.add(Long.parseLong(idStr));
+            ids.add(Integer.parseInt(idStr));
         }
 
-        public Vector getIds()
+        public Vector<Integer> getIds()
         {
             return ids;
         }

@@ -62,7 +62,7 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable
 
     // Fields    
 
-    protected Long              prepTypeId;
+    protected Integer              prepTypeId;
     protected String            name;
     protected Boolean           isLoanable;
     protected Set<Preparation>  preparations;
@@ -77,7 +77,7 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable
     }
 
     /** constructor with id */
-    public PrepType(Long prepTypeId)
+    public PrepType(Integer prepTypeId)
     {
         this.prepTypeId = prepTypeId;
     }
@@ -104,7 +104,7 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable
     @Id
     @GeneratedValue
     @Column(name = "PrepTypeID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getPrepTypeId()
+    public Integer getPrepTypeId()
     {
         return this.prepTypeId;
     }
@@ -115,7 +115,7 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.prepTypeId;
     }
@@ -130,7 +130,7 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable
         return PrepType.class;
     }
 
-    public void setPrepTypeId(Long prepTypeId)
+    public void setPrepTypeId(Integer prepTypeId)
     {
         this.prepTypeId = prepTypeId;
     }

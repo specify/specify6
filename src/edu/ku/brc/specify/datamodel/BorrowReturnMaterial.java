@@ -54,7 +54,7 @@ public class BorrowReturnMaterial extends DataModelObjBase implements java.io.Se
 
     // Fields    
 
-     protected Long borrowReturnMaterialId;
+     protected Integer borrowReturnMaterialId;
      protected Calendar returnedDate;
      protected Short quantity;
      protected String remarks;
@@ -70,7 +70,7 @@ public class BorrowReturnMaterial extends DataModelObjBase implements java.io.Se
     }
     
     /** constructor with id */
-    public BorrowReturnMaterial(Long borrowReturnMaterialId) {
+    public BorrowReturnMaterial(Integer borrowReturnMaterialId) {
         this.borrowReturnMaterialId = borrowReturnMaterialId;
     }
    
@@ -99,7 +99,7 @@ public class BorrowReturnMaterial extends DataModelObjBase implements java.io.Se
     @Id
     @GeneratedValue
     @Column(name = "BorrowReturnMaterialID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getBorrowReturnMaterialId() {
+    public Integer getBorrowReturnMaterialId() {
         return this.borrowReturnMaterialId;
     }
 
@@ -109,7 +109,7 @@ public class BorrowReturnMaterial extends DataModelObjBase implements java.io.Se
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.borrowReturnMaterialId;
     }
@@ -124,7 +124,7 @@ public class BorrowReturnMaterial extends DataModelObjBase implements java.io.Se
         return BorrowReturnMaterial.class;
     }
     
-    public void setBorrowReturnMaterialId(Long borrowReturnMaterialId) {
+    public void setBorrowReturnMaterialId(Integer borrowReturnMaterialId) {
         this.borrowReturnMaterialId = borrowReturnMaterialId;
     }
 

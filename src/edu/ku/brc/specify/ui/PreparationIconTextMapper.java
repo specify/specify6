@@ -35,9 +35,9 @@ public class PreparationIconTextMapper implements ObjectTextMapper, ObjectIconMa
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.ObjectIconMapper#getMappedClasses()
      */
-    public Class[] getMappedClasses()
+    public Class<?>[] getMappedClasses()
     {
-        Class[] mappedClasses = new Class[1];
+        Class<?>[] mappedClasses = new Class[1];
         mappedClasses[0] = Preparation.class;
         return mappedClasses;
     }

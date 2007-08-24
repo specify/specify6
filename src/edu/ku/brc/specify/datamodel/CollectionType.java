@@ -64,7 +64,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     
     // Fields
 
-    protected Long                      collectionTypeId;
+    protected Integer                      collectionTypeId;
     protected String                    name;
     protected String                    discipline;
     protected DataType                  dataType;
@@ -89,7 +89,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     }
 
     /** constructor with id */
-    public CollectionType(Long collectionTypeId) {
+    public CollectionType(Integer collectionTypeId) {
         this.collectionTypeId = collectionTypeId;
     }
 
@@ -134,7 +134,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     @Id
     @GeneratedValue
     @Column(name="CollectionTypeID", unique=false, nullable=false, insertable=true, updatable=true)
-    public Long getCollectionTypeId() {
+    public Integer getCollectionTypeId() {
         return this.collectionTypeId;
     }
 
@@ -144,7 +144,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.collectionTypeId;
     }
@@ -159,7 +159,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
         return CollectionType.class;
     }
 
-    public void setCollectionTypeId(Long collectionTypeId) {
+    public void setCollectionTypeId(Integer collectionTypeId) {
         this.collectionTypeId = collectionTypeId;
     }
 

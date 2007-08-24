@@ -42,7 +42,7 @@ public class Institution extends DataModelObjBase implements java.io.Serializabl
 
     // Fields    
 
-     protected Long       institutionId;
+     protected Integer       institutionId;
      protected String     name;
      protected String     title;
      protected String     abbrev;
@@ -64,7 +64,7 @@ public class Institution extends DataModelObjBase implements java.io.Serializabl
     }
     
     /** constructor with id */
-    public Institution(Long institutionId) {
+    public Institution(Integer institutionId) {
         this.institutionId = institutionId;
     }
    
@@ -95,7 +95,7 @@ public class Institution extends DataModelObjBase implements java.io.Serializabl
     @Id
     @GeneratedValue
     @Column(name = "InstitutionID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getInstitutionId()
+    public Integer getInstitutionId()
     {
         return institutionId;
     }
@@ -105,7 +105,7 @@ public class Institution extends DataModelObjBase implements java.io.Serializabl
      */
     @Override
     @Transient
-    public Long getId()
+    public Integer getId()
     {
         return institutionId;
     }
@@ -269,7 +269,7 @@ public class Institution extends DataModelObjBase implements java.io.Serializabl
     /**
      * @param institutionId the institutionId to set
      */
-    public void setInstitutionId(Long institutionId)
+    public void setInstitutionId(Integer institutionId)
     {
         this.institutionId = institutionId;
     }

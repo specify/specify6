@@ -41,6 +41,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cascade;
 
 import edu.ku.brc.util.Orderable;
@@ -56,7 +57,7 @@ public class Collector extends DataModelObjBase implements java.io.Serializable,
 
     // Fields    
 
-     protected Long collectorId;
+     protected Integer collectorId;
      protected Integer orderNumber;
      protected String remarks;
      protected CollectingEvent collectingEvent;
@@ -71,7 +72,7 @@ public class Collector extends DataModelObjBase implements java.io.Serializable,
     }
     
     /** constructor with id */
-    public Collector(Long collectorId) {
+    public Collector(Integer collectorId) {
         this.collectorId = collectorId;
     }
    
@@ -99,7 +100,7 @@ public class Collector extends DataModelObjBase implements java.io.Serializable,
     @Id
     @GeneratedValue
     @Column(name = "CollectorID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getCollectorId() {
+    public Integer getCollectorId() {
         return this.collectorId;
     }
 
@@ -109,7 +110,7 @@ public class Collector extends DataModelObjBase implements java.io.Serializable,
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.collectorId;
     }
@@ -124,7 +125,7 @@ public class Collector extends DataModelObjBase implements java.io.Serializable,
         return Collector.class;
     }
     
-    public void setCollectorId(Long collectorId) {
+    public void setCollectorId(Integer collectorId) {
         this.collectorId = collectorId;
     }
 
@@ -178,6 +179,24 @@ public class Collector extends DataModelObjBase implements java.io.Serializable,
     
     public void setAgent(Agent agent) {
         this.agent = agent;
+    }
+    
+    @Override
+    @Transient
+    public String getIdentityTitle()
+    {
+        String name = "";
+        if (agent != null)
+        {
+            name = agent.getIdentityTitle();
+        }
+
+        if (StringUtils.isNotEmpty(name))
+        {
+            return name;
+        }
+        
+        return super.getIdentityTitle();
     }
 
     /* (non-Javadoc)

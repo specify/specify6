@@ -24,6 +24,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 import javax.swing.AbstractListModel;
 import javax.swing.ImageIcon;
@@ -70,7 +71,7 @@ public class ChooseColObjIdsDlg extends JDialog implements ActionListener
     protected JButton        cancelBtn;
     protected JButton        okBtn;
     protected JList          list;
-    protected java.util.List recordSets;
+    protected List<?>        recordSets;
     
     
     public ChooseColObjIdsDlg(final Frame frame) throws HeadlessException

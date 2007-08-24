@@ -32,8 +32,8 @@ public interface TreeDefItemIface<N extends Treeable<N,D,I>,
 {
 	public void initialize();
 	
-	public Long getTreeDefItemId();
-	public void setTreeDefItemId(Long id);
+	public Integer getTreeDefItemId();
+	public void setTreeDefItemId(Integer id);
 	
 	public String getRemarks();
 	public void setRemarks(String remarks);

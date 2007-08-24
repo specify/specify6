@@ -54,7 +54,7 @@ public class LocalityCitation extends DataModelObjBase implements java.io.Serial
 
     // Fields    
 
-     protected Long localityCitationId;
+     protected Integer localityCitationId;
      protected String remarks;
      protected ReferenceWork referenceWork;
      protected Locality locality;
@@ -68,7 +68,7 @@ public class LocalityCitation extends DataModelObjBase implements java.io.Serial
     }
     
     /** constructor with id */
-    public LocalityCitation(Long localityCitationId) {
+    public LocalityCitation(Integer localityCitationId) {
         this.localityCitationId = localityCitationId;
     }
    
@@ -95,7 +95,7 @@ public class LocalityCitation extends DataModelObjBase implements java.io.Serial
     @Id
     @GeneratedValue
     @Column(name = "LocalityCitationID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getLocalityCitationId() {
+    public Integer getLocalityCitationId() {
         return this.localityCitationId;
     }
 
@@ -105,7 +105,7 @@ public class LocalityCitation extends DataModelObjBase implements java.io.Serial
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.localityCitationId;
     }
@@ -120,7 +120,7 @@ public class LocalityCitation extends DataModelObjBase implements java.io.Serial
         return LocalityCitation.class;
     }
     
-    public void setLocalityCitationId(Long localityCitationId) {
+    public void setLocalityCitationId(Integer localityCitationId) {
         this.localityCitationId = localityCitationId;
     }
 

@@ -51,7 +51,7 @@ public class ProjectCollectionObject extends DataModelObjBase implements java.io
 
     // Fields    
 
-     protected Long projectCollectionObjectId;
+     protected Integer projectCollectionObjectId;
      protected String remarks;
      protected CollectionObject collectionObject;
      protected Project project;
@@ -65,7 +65,7 @@ public class ProjectCollectionObject extends DataModelObjBase implements java.io
     }
     
     /** constructor with id */
-    public ProjectCollectionObject(Long projectCollectionObjectId) {
+    public ProjectCollectionObject(Integer projectCollectionObjectId) {
         this.projectCollectionObjectId = projectCollectionObjectId;
     }
    
@@ -92,7 +92,7 @@ public class ProjectCollectionObject extends DataModelObjBase implements java.io
     @Id
     @GeneratedValue
     @Column(name = "ProjectCollectionObjectID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getProjectCollectionObjectId() {
+    public Integer getProjectCollectionObjectId() {
         return this.projectCollectionObjectId;
     }
 
@@ -102,7 +102,7 @@ public class ProjectCollectionObject extends DataModelObjBase implements java.io
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.projectCollectionObjectId;
     }
@@ -117,7 +117,7 @@ public class ProjectCollectionObject extends DataModelObjBase implements java.io
         return ProjectCollectionObject.class;
     }
     
-    public void setProjectCollectionObjectId(Long projectCollectionObjectId) {
+    public void setProjectCollectionObjectId(Integer projectCollectionObjectId) {
         this.projectCollectionObjectId = projectCollectionObjectId;
     }
 

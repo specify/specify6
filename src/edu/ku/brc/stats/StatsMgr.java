@@ -77,6 +77,7 @@ public class StatsMgr
         if (dom == null)
         {
             statDOM = new WeakReference<Element>(loadDOM());
+            dom     = statDOM.get();
         }
         return dom;
     }
@@ -112,7 +113,7 @@ public class StatsMgr
     /**
      * Reads the Chart INfo from the DOM and sets it into a Chartable object. The info are string used to decorate the chart,
      * like title, X Axis Title, Y Axis Title etc.
-     * @param element the 'chartinfo' element ot be processed
+     * @param element the 'chartinfo' element to be processed
      * @param name the name of the child element that needs to be looked up to get its value
      * @return returns the string value for the info element or an empty string
      */
@@ -127,7 +128,7 @@ public class StatsMgr
     }
 
     /**
-     * Fills the ChartPanel with any extra desxcription information.
+     * Fills the ChartPanel with any extra description information.
      * @param chartPane the chart pane to be augmented
      */
     protected void fillWithChartInfo(final Element element, final Chartable chartable)
@@ -172,7 +173,7 @@ public class StatsMgr
     {
         if (element != null)
         {
-            // Fill the chart with extra descirption and decoration info
+            // Fill the chart with extra description and decoration info
             fillWithChartInfo(element, chartable);
 
             // It better have some SQL
@@ -196,8 +197,8 @@ public class StatsMgr
                 container.setSql(sqlElement.getText().trim());
 
                 String displayType = element.attributeValue("display");
-                List parts = element.selectNodes(displayType.equals("Pie Chart") ? "slice" : "bar");
-                for ( Iterator iter = parts.iterator(); iter.hasNext(); )
+                List<?> parts = element.selectNodes(displayType.equals("Pie Chart") ? "slice" : "bar");
+                for ( Iterator<?> iter = parts.iterator(); iter.hasNext(); )
                 {
                     Element slice = (Element) iter.next();
                     int descRow  = Integer.parseInt(slice.valueOf( "desc/@row" ));
@@ -266,69 +267,76 @@ public class StatsMgr
             idStr   = statName.substring(inx+4, statName.length());
         }
 
-        Element element = (Element)getDOM().selectSingleNode("/statistics/stat[@name='"+nameStr+"']");
-        if (element != null)
+        Element dom = (Element)getDOM();
+        if (dom != null)
         {
-            String displayType = element.attributeValue(DISPLAY).toLowerCase();
-
-
-            if (displayType.equalsIgnoreCase(BAR_CHART))
+            Element element = (Element)dom.selectSingleNode("/statistics/stat[@name='"+nameStr+"']");
+            if (element != null)
             {
-                BarChartPanel barChart = new BarChartPanel();
-                createChart(element, barChart, barChart, barChart);
-                return barChart;
-
-            } else if (displayType.equalsIgnoreCase(PIE_CHART))
-            {
-                PieChartPanel pieChart = new PieChartPanel();
-                createChart(element, pieChart, pieChart, pieChart);
-                return pieChart;
-
-
-            } else if (displayType.equalsIgnoreCase(FORM))
-            {
-                createView(element, idStr);
-
-            } else if (displayType.equals(TABLE))
-            {
-                Element sqlElement = (Element)element.selectSingleNode("sql");
-                if (sqlElement == null)
+                String displayType = element.attributeValue(DISPLAY).toLowerCase();
+    
+    
+                if (displayType.equalsIgnoreCase(BAR_CHART))
                 {
-                    throw new RuntimeException("sql element is null!");
-                }
-
-                Element titleElement = (Element)element.selectSingleNode("title");
-                if (titleElement == null)
+                    BarChartPanel barChart = new BarChartPanel();
+                    createChart(element, barChart, barChart, barChart);
+                    return barChart;
+    
+                } else if (displayType.equalsIgnoreCase(PIE_CHART))
                 {
-                    throw new RuntimeException("sql element is null!");
-                }
-
-                StatsTask    statTask  = (StatsTask)ContextMgr.getTaskByName(StatsTask.STATISTICS);
-                SQLQueryPane queryPane = new SQLQueryPane(titleElement.getTextTrim(), statTask, true, true);
-                String       sqlStr    = sqlElement.getTextTrim();
-                if (idStr != null)
+                    PieChartPanel pieChart = new PieChartPanel();
+                    createChart(element, pieChart, pieChart, pieChart);
+                    return pieChart;
+    
+    
+                } else if (displayType.equalsIgnoreCase(FORM))
                 {
-                    int substInx = sqlStr.lastIndexOf("%s");
-                    if (substInx > -1)
+                    createView(element, idStr);
+    
+                } else if (displayType.equals(TABLE))
+                {
+                    Element sqlElement = (Element)element.selectSingleNode("sql");
+                    if (sqlElement == null)
                     {
-                        sqlStr = sqlStr.substring(0, substInx-1) + idStr + sqlStr.substring(substInx+2, sqlStr.length());
-                    } else
-                    {
-                        log.error("Couldn't find the substitue string \"%s\" in ["+sqlStr+"]");
+                        throw new RuntimeException("sql element is null!");
                     }
-
-                    //sqlStr = String.format(sqlStr, new Object[] {idStr});
+    
+                    Element titleElement = (Element)element.selectSingleNode("title");
+                    if (titleElement == null)
+                    {
+                        throw new RuntimeException("sql element is null!");
+                    }
+    
+                    StatsTask    statTask  = (StatsTask)ContextMgr.getTaskByName(StatsTask.STATISTICS);
+                    SQLQueryPane queryPane = new SQLQueryPane(titleElement.getTextTrim(), statTask, true, true);
+                    String       sqlStr    = sqlElement.getTextTrim();
+                    if (idStr != null)
+                    {
+                        int substInx = sqlStr.lastIndexOf("%s");
+                        if (substInx > -1)
+                        {
+                            sqlStr = sqlStr.substring(0, substInx-1) + idStr + sqlStr.substring(substInx+2, sqlStr.length());
+                        } else
+                        {
+                            log.error("Couldn't find the substitue string \"%s\" in ["+sqlStr+"]");
+                        }
+    
+                        //sqlStr = String.format(sqlStr, new Object[] {idStr});
+                    }
+                    //System.out.println(sqlStr);
+                    queryPane.setSQLStr(sqlStr);
+                    queryPane.doQuery();
+                    SubPaneMgr.getInstance().addPane(queryPane);
+    
+                } else
+                {
+                    // error
+                    log.error("Wrong type of display ["+displayType+"] this type is not supported!");
                 }
-                //System.out.println(sqlStr);
-                queryPane.setSQLStr(sqlStr);
-                queryPane.doQuery();
-                SubPaneMgr.getInstance().addPane(queryPane);
-
-            } else
-            {
-                // error
-                log.error("Wrong type of display ["+displayType+"] this type is not supported!");
             }
+        } else
+        {
+            log.error("DOM is NULL!!"); 
         }
         return null;
     }

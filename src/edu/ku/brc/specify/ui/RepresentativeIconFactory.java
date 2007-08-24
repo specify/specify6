@@ -104,11 +104,11 @@ public class RepresentativeIconFactory implements ObjectIconMapper
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.ObjectTextMapper#getMappedClasses()
      */
-    public Class[] getMappedClasses()
+    public Class<?>[] getMappedClasses()
     {
     	// This class maps no classes on its own.  All mappings are through submappers.
     	// TODO: should this class not really implement ObjectIconMapper?
-    	return new Class[] {};
+    	return new Class<?>[] {};
     }
     
     /**
@@ -151,7 +151,7 @@ public class RepresentativeIconFactory implements ObjectIconMapper
             String classname = entry.getAttributes().getNamedItem("class").getNodeValue();
             // register it as a submapper for each class it handles
             ObjectIconMapper subMapper = Class.forName(classname).asSubclass(ObjectIconMapper.class).newInstance();
-            Class[] handledClasses = subMapper.getMappedClasses();
+            Class<?>[] handledClasses = subMapper.getMappedClasses();
             for (Class<?> clazz: handledClasses)
             {
                 if (clazz==null)

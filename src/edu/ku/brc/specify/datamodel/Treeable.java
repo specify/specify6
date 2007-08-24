@@ -83,14 +83,14 @@ public interface Treeable<N extends Treeable<N,D,I>,
 	/**
 	 * @return the ID (primary key) of this node
 	 */
-	public Long getTreeId();
+	public Integer getTreeId();
 	
 	/**
 	 * Sets the ID of this node
 	 * 
 	 * @param id the new ID value
 	 */
-	public void setTreeId(Long id);
+	public void setTreeId(Integer id);
 	
 	/**
 	 * Returns the parent node object.  If called on the root node of

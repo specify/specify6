@@ -34,7 +34,7 @@ import javax.swing.ImageIcon;
 @org.hibernate.annotations.Proxy(lazy = false)
 public class WorkbenchRowImage implements java.io.Serializable, Comparable<WorkbenchRowImage>
 {
-    protected Long         workbenchRowImageId;
+    protected Integer         workbenchRowImageId;
     protected Integer      imageOrder;
     protected byte[]       cardImageData;
     protected String       cardImageFullPath;
@@ -62,12 +62,12 @@ public class WorkbenchRowImage implements java.io.Serializable, Comparable<Workb
     @Id
     @GeneratedValue
     @Column(name = "WorkbenchRowImageID", nullable = false)
-    public Long getWorkbenchRowImageId()
+    public Integer getWorkbenchRowImageId()
     {
         return workbenchRowImageId;
     }
 
-    public void setWorkbenchRowImageId(Long workbenchRowImageId)
+    public void setWorkbenchRowImageId(Integer workbenchRowImageId)
     {
         this.workbenchRowImageId = workbenchRowImageId;
     }
@@ -77,7 +77,7 @@ public class WorkbenchRowImage implements java.io.Serializable, Comparable<Workb
      * @returns ID Property.
      */
     @Transient
-    public Long getId()
+    public Integer getId()
     {
         return this.workbenchRowImageId;
     }

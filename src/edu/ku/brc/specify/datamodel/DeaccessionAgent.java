@@ -54,7 +54,7 @@ public class DeaccessionAgent extends DataModelObjBase implements java.io.Serial
 
     // Fields    
 
-     protected Long deaccessionAgentId;
+     protected Integer deaccessionAgentId;
      protected String role;
      protected String remarks;
      protected Agent agent;
@@ -69,7 +69,7 @@ public class DeaccessionAgent extends DataModelObjBase implements java.io.Serial
     }
     
     /** constructor with id */
-    public DeaccessionAgent(Long deaccessionAgentId) {
+    public DeaccessionAgent(Integer deaccessionAgentId) {
         this.deaccessionAgentId = deaccessionAgentId;
     }
    
@@ -97,7 +97,7 @@ public class DeaccessionAgent extends DataModelObjBase implements java.io.Serial
     @Id
     @GeneratedValue
     @Column(name = "DeaccessionAgentID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getDeaccessionAgentId() {
+    public Integer getDeaccessionAgentId() {
         return this.deaccessionAgentId;
     }
 
@@ -107,7 +107,7 @@ public class DeaccessionAgent extends DataModelObjBase implements java.io.Serial
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.deaccessionAgentId;
     }
@@ -122,7 +122,7 @@ public class DeaccessionAgent extends DataModelObjBase implements java.io.Serial
         return DeaccessionAgent.class;
     }
     
-    public void setDeaccessionAgentId(Long deaccessionAgentId) {
+    public void setDeaccessionAgentId(Integer deaccessionAgentId) {
         this.deaccessionAgentId = deaccessionAgentId;
     }
 

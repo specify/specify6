@@ -125,8 +125,8 @@ public class InfoRequestTask extends BaseTask
             
             navBox = new NavBox(title);
             
-            List infoRequests = session.getDataList(InfoRequest.class);
-            for (Iterator iter=infoRequests.iterator();iter.hasNext();)
+            List<?> infoRequests = session.getDataList(InfoRequest.class);
+            for (Iterator<?> iter=infoRequests.iterator();iter.hasNext();)
             {
                 addInfoRequest((InfoRequest)iter.next());
                 

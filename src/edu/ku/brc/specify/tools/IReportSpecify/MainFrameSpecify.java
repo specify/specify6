@@ -47,7 +47,7 @@ public class MainFrameSpecify extends MainFrame
      * @param args -
      *            parameters to configure iReport mainframe
      */
-    public MainFrameSpecify(Map args)
+    public MainFrameSpecify(Map<?,?> args)
     {
         setNoExit(true);
         setEmbeddedIreport(true);

@@ -57,7 +57,7 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 
 	// Fields    
 
-	protected Long			    	geographyTreeDefItemId;
+	protected Integer			    	geographyTreeDefItemId;
 	protected String				name;
 	protected String				remarks;
 	protected Integer				rankId;
@@ -80,7 +80,7 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 	}
 
 	/** constructor with id */
-	public GeographyTreeDefItem(Long geographyTreeDefItemId)
+	public GeographyTreeDefItem(Integer geographyTreeDefItemId)
 	{
 		this.geographyTreeDefItemId = geographyTreeDefItemId;
 	}
@@ -112,14 +112,14 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
     @Id
     @GeneratedValue
     @Column(name = "GeographyTreeDefItemID", unique = false, nullable = false, insertable = true, updatable = true, length = 10)
-	public Long getGeographyTreeDefItemId()
+	public Integer getGeographyTreeDefItemId()
 	{
 		return this.geographyTreeDefItemId;
 	}
 
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.geographyTreeDefItemId;
     }
@@ -134,7 +134,7 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
         return GeographyTreeDefItem.class;
     }
 
-	public void setGeographyTreeDefItemId(Long geographyTreeDefItemId)
+	public void setGeographyTreeDefItemId(Integer geographyTreeDefItemId)
 	{
 		this.geographyTreeDefItemId = geographyTreeDefItemId;
 	}
@@ -278,12 +278,12 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 	}
 
     @Transient
-	public Long getTreeDefItemId()
+	public Integer getTreeDefItemId()
 	{
 		return getGeographyTreeDefItemId();
 	}
 
-	public void setTreeDefItemId(Long id)
+	public void setTreeDefItemId(Integer id)
 	{
 		setGeographyTreeDefItemId(id);
 	}

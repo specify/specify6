@@ -43,12 +43,12 @@ public class SpecifyUserTestHelper
      * @param userId
      * @return
      */
-    public static boolean isSpecifyUserInDB(Long userId) {
+    public static boolean isSpecifyUserInDB(Integer userId) {
         log.info("isSpecifyUserInDB: " + userId);
         if(userId==null)return false;
         boolean found = false;        
         Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(SpecifyUser.class);
-        java.util.List list = criteria.list();
+        java.util.List<?> list = criteria.list();
 
         // make sure that the template that was just created is in teh database
         for (int i = 0; i < list.size(); i++) {
@@ -63,12 +63,12 @@ public class SpecifyUserTestHelper
      * @param permId
      * @return
      */
-    public static boolean isUserPermissionInDB(Long permId) {   
-        log.info("isUserPermissionInDB(Long): " + permId);
+    public static boolean isUserPermissionInDB(Integer permId) {   
+        log.info("isUserPermissionInDB(Integer): " + permId);
         if(permId==null)return false;
         boolean found = false;        
         Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(UserPermission.class);
-        java.util.List list = criteria.list();
+        java.util.List<?> list = criteria.list();
 
         for (int i = 0; i < list.size(); i++) {
             UserPermission perm = (UserPermission) list.get(i);
@@ -81,12 +81,12 @@ public class SpecifyUserTestHelper
      * @param groupId
      * @return
      */
-    public static boolean isUserGroupInDB(Long groupId) {
+    public static boolean isUserGroupInDB(Integer groupId) {
         log.info("isUserGroupInDB: " + groupId);
         if(groupId==null)return false;
         boolean found = false;        
         Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(UserGroup.class);
-        java.util.List list = criteria.list();
+        java.util.List<?> list = criteria.list();
 
         for (int i = 0; i < list.size(); i++) {
             UserGroup user = (UserGroup) list.get(i);
@@ -100,13 +100,13 @@ public class SpecifyUserTestHelper
      * @param groupId
      * @return
      */
-    public static boolean deleteUserGroupFromDB(Long groupId) {
+    public static boolean deleteUserGroupFromDB(Integer groupId) {
         log.info("deleteUserGroupFromDB(): " + groupId);
         boolean isDeleted = false;
         try {
             HibernateUtil.beginTransaction();
             Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(UserGroup.class);
-            java.util.List list = criteria.list();
+            java.util.List<?> list = criteria.list();
             
             for(int i = 0; i< list.size(); i++) {
                 UserGroup group = (UserGroup)list.get(i);
@@ -129,13 +129,13 @@ public class SpecifyUserTestHelper
      * @param userId
      * @return
      */
-    public static boolean deleteSpecifyUserDB(Long userId) {
+    public static boolean deleteSpecifyUserDB(Integer userId) {
         log.info("deleteSpecifyUserDB(): " + userId);
         boolean isDeleted = false;
         try {
             HibernateUtil.beginTransaction();
             Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(SpecifyUser.class);
-            java.util.List list = criteria.list();
+            java.util.List<?> list = criteria.list();
             
             for(int i = 0; i< list.size(); i++) {
                 SpecifyUser user = (SpecifyUser)list.get(i);
@@ -158,13 +158,13 @@ public class SpecifyUserTestHelper
      * @param permId
      * @return
      */
-    public static boolean deleteUserPermissionFromDB(Long permId) {
+    public static boolean deleteUserPermissionFromDB(Integer permId) {
         log.info("deleteUserPermissionFromDB(): " + permId);
         boolean isDeleted = false;
         try {
             HibernateUtil.beginTransaction();
             Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(UserPermission.class);
-            java.util.List list = criteria.list();
+            java.util.List<?> list = criteria.list();
             
             for(int i = 0; i< list.size(); i++) {
                 UserPermission perm = (UserPermission)list.get(i);
@@ -175,6 +175,7 @@ public class SpecifyUserTestHelper
             }
             HibernateUtil.commitTransaction();
             return isDeleted;
+            
         } catch (Exception ex) {
             log.error("******* " + ex);
             ex.printStackTrace();

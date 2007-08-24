@@ -284,10 +284,10 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#get(java.lang.Class, java.lang.Long)
+     * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#get(java.lang.Class, java.lang.Integer)
      */
     @SuppressWarnings("unchecked")
-    public <T> T get(Class<T> clsObj, Long id)
+    public <T> T get(Class<T> clsObj, Integer id)
     {
         if (session != null)
         {
@@ -309,7 +309,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
             Criteria criteria = session.createCriteria(clsObject);
             criteria.add(compareType == DataProviderSessionIFace.CompareType.Equals ? Restrictions.eq(fieldName, value) : Restrictions.eq(fieldName, value));
             criteria.setProjection(Projections.rowCount());
-            List countList = criteria.list();
+            List<?> countList = criteria.list();
             
             if (countList == null || countList.size() == 0)
             {
@@ -330,10 +330,10 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#load(java.lang.Class, java.lang.Long)
+     * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#load(java.lang.Class, java.lang.Integer)
      */
     @SuppressWarnings("unchecked")
-    public <T> T load(Class<T> clsObj, Long id)
+    public <T> T load(Class<T> clsObj, Integer id)
     {
         if (session != null)
         {

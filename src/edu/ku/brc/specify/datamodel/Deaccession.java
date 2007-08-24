@@ -56,7 +56,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
 
     // Fields    
 
-    protected Long                        deaccessionId;
+    protected Integer                        deaccessionId;
     protected String                      type;
     protected String                      deaccessionNumber;
     protected Calendar                    deaccessionDate;
@@ -79,7 +79,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     }
     
     /** constructor with id */
-    public Deaccession(Long deaccessionId) {
+    public Deaccession(Integer deaccessionId) {
         this.deaccessionId = deaccessionId;
     }
    
@@ -112,7 +112,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     @Id
     @GeneratedValue
     @Column(name = "DeaccessionID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getDeaccessionId() {
+    public Integer getDeaccessionId() {
         return this.deaccessionId;
     }
 
@@ -122,7 +122,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.deaccessionId;
     }
@@ -137,7 +137,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
         return Deaccession.class;
     }
     
-    public void setDeaccessionId(Long deaccessionId) {
+    public void setDeaccessionId(Integer deaccessionId) {
         this.deaccessionId = deaccessionId;
     }
 

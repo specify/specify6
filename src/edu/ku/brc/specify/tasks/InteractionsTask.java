@@ -447,7 +447,7 @@ public class InteractionsTask extends BaseTask
                     RecordSetItemIFace item = recordSet.getOnlyItem();
                     if (item != null)
                     {
-                        InfoRequest infoReq = session.get(InfoRequest.class, item.getRecordId().longValue());
+                        InfoRequest infoReq = session.get(InfoRequest.class, item.getRecordId().intValue());
                         if (infoReq != null)
                         {
                             createNewLoan(infoReq, infoReq.getRecordSet());

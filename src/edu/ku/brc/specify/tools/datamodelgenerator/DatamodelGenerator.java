@@ -109,7 +109,7 @@ public class DatamodelGenerator
      */
     protected String getReturnType(final Method method)
     {
-        Class classObj = method.getReturnType();
+        Class<?> classObj = method.getReturnType();
         // If there is a better way, PLEASE help me!
         if (classObj == Set.class)
         {
@@ -332,7 +332,7 @@ public class DatamodelGenerator
     public String getColumnName(final Element element)
     {
         String columnName = null;
-        for (Iterator i2 = element.elementIterator("column"); i2.hasNext();)
+        for (Iterator<?> i2 = element.elementIterator("column"); i2.hasNext();)
         {
             Element element1 = (Element) i2.next();
             columnName = element1.attributeValue("name");
@@ -344,7 +344,7 @@ public class DatamodelGenerator
      * Takes a list and prints out datamodel file using betwixt.
      * @param classesList the class list
      */
-    public boolean writeTree(final List classesList)
+    public boolean writeTree(final List<?> classesList)
     {
 
         try
@@ -408,7 +408,7 @@ public class DatamodelGenerator
             Element dbNode = (Element) root.selectSingleNode("database");
             if (dbNode != null)
             {
-                for (Iterator i = dbNode.elementIterator("table"); i.hasNext();)
+                for (Iterator<?> i = dbNode.elementIterator("table"); i.hasNext();)
                 {
                     Element element     = (Element)i.next();
                     String tablename    = element.attributeValue("name");

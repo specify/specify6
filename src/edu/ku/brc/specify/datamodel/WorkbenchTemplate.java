@@ -58,7 +58,7 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
 
      // Fields    
 
-     protected Long                              workbenchTemplateId;
+     protected Integer                              workbenchTemplateId;
      protected String                            name;
      protected String                            remarks;
      protected Set<Workbench>                    workbenches;
@@ -75,7 +75,7 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
     }
     
     /** constructor with id */
-    public WorkbenchTemplate(Long workbenchTemplateId) 
+    public WorkbenchTemplate(Integer workbenchTemplateId) 
     {
         this.workbenchTemplateId = workbenchTemplateId;
     }
@@ -117,7 +117,7 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
     @Id
     @GeneratedValue
     @Column(name = "WorkbenchTemplateID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getWorkbenchTemplateId() {
+    public Integer getWorkbenchTemplateId() {
         return this.workbenchTemplateId;
     }
 
@@ -127,7 +127,7 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.workbenchTemplateId;
     }
@@ -142,7 +142,7 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
         return WorkbenchTemplate.class;
     }
     
-    public void setWorkbenchTemplateId(Long workbenchTemplateId) {
+    public void setWorkbenchTemplateId(Integer workbenchTemplateId) {
         this.workbenchTemplateId = workbenchTemplateId;
     }
 

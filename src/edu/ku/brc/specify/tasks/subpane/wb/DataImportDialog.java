@@ -782,7 +782,7 @@ public class DataImportDialog extends JDialog implements ActionListener
             nf.setGroupingUsed(false); //gets rid of commas
             
             // Iterate over each row in the sheet
-            Iterator rows = sheet.rowIterator();
+            Iterator<?> rows = sheet.rowIterator();
             while (rows.hasNext())
             {
                 numCols = 0;

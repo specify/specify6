@@ -74,7 +74,7 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     public static final Boolean OPEN   = false;
     
     // Fields    
-     protected Long loanId;
+     protected Integer loanId;
      protected String loanNumber;
      protected Calendar loanDate;
      protected Calendar currentDueDate;
@@ -105,7 +105,7 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public Loan(Long loanId) {
+    public Loan(Integer loanId) {
         this.loanId = loanId;
     }
 
@@ -177,7 +177,7 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     @Id
     @GeneratedValue
     @Column(name = "LoanID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getLoanId() {
+    public Integer getLoanId() {
         return this.loanId;
     }
 
@@ -187,12 +187,12 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
      */
     @Override
     @Transient
-    public Long getId()
+    public Integer getId()
     {
         return this.loanId;
     }
    
-    public void setLoanId(Long loanId) {
+    public void setLoanId(Integer loanId) {
         this.loanId = loanId;
     }
     /* (non-Javadoc)

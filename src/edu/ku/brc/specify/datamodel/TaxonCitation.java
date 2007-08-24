@@ -50,7 +50,7 @@ public class TaxonCitation extends DataModelObjBase implements java.io.Serializa
 
     // Fields    
 
-     protected Long taxonCitationId;
+     protected Integer taxonCitationId;
      protected String remarks;
      protected String text1;
      protected String text2;
@@ -70,7 +70,7 @@ public class TaxonCitation extends DataModelObjBase implements java.io.Serializa
     }
     
     /** constructor with id */
-    public TaxonCitation(Long taxonCitationId) {
+    public TaxonCitation(Integer taxonCitationId) {
         this.taxonCitationId = taxonCitationId;
     }
    
@@ -103,7 +103,7 @@ public class TaxonCitation extends DataModelObjBase implements java.io.Serializa
     @Id
     @GeneratedValue
     @Column(name = "TaxonCitationID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getTaxonCitationId() {
+    public Integer getTaxonCitationId() {
         return this.taxonCitationId;
     }
 
@@ -113,7 +113,7 @@ public class TaxonCitation extends DataModelObjBase implements java.io.Serializa
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.taxonCitationId;
     }
@@ -128,7 +128,7 @@ public class TaxonCitation extends DataModelObjBase implements java.io.Serializa
         return TaxonCitation.class;
     }
     
-    public void setTaxonCitationId(Long taxonCitationId) {
+    public void setTaxonCitationId(Integer taxonCitationId) {
         this.taxonCitationId = taxonCitationId;
     }
 

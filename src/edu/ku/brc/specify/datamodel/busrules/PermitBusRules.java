@@ -66,7 +66,7 @@ public class PermitBusRules extends BaseBusRules
         {
             // Start by checking to see if the permit number has changed
             boolean checkPermitNumberForDuplicates = true;
-            Long id = permit.getPermitId();
+            Integer id = permit.getPermitId();
             if (id != null)
             {
                 DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();

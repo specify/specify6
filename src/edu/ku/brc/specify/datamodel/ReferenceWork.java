@@ -57,7 +57,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
 
     // Fields    
 
-     protected Long referenceWorkId;
+     protected Integer referenceWorkId;
      protected Integer containingReferenceWorkId;
      protected Byte referenceWorkType;
      protected String title;
@@ -93,7 +93,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     }
     
     /** constructor with id */
-    public ReferenceWork(Long referenceWorkId) {
+    public ReferenceWork(Integer referenceWorkId) {
         this.referenceWorkId = referenceWorkId;
     }
    
@@ -142,7 +142,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
     @Id
     @GeneratedValue
     @Column(name = "ReferenceWorkID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getReferenceWorkId() {
+    public Integer getReferenceWorkId() {
         return this.referenceWorkId;
     }
 
@@ -152,7 +152,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.referenceWorkId;
     }
@@ -167,7 +167,7 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
         return ReferenceWork.class;
     }
     
-    public void setReferenceWorkId(Long referenceWorkId) {
+    public void setReferenceWorkId(Integer referenceWorkId) {
         this.referenceWorkId = referenceWorkId;
     }
 

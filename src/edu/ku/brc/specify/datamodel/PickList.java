@@ -65,7 +65,7 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
 {
     // Fields    
 
-    protected Long              pickListId;
+    protected Integer              pickListId;
     protected String            name;
     protected Integer           type;  // see PickListDBAdapterIFace.Type
     protected String            tableName;
@@ -84,7 +84,7 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
     }
 
     /** constructor with id */
-    public PickList(Long pickListId)
+    public PickList(Integer pickListId)
     {
         this.pickListId = pickListId;
     }
@@ -114,7 +114,7 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
     @Id
     @GeneratedValue
     @Column(name = "PickListID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getPickListId()
+    public Integer getPickListId()
     {
         return this.pickListId;
     }
@@ -123,7 +123,7 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
      * Sets Primary ID.
      * @param pickListId the id
      */
-    public void setPickListId(Long pickListId)
+    public void setPickListId(Integer pickListId)
     {
         this.pickListId = pickListId;
     }
@@ -133,7 +133,7 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.pickListId;
     }

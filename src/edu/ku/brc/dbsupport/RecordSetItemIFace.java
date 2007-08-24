@@ -16,9 +16,9 @@ package edu.ku.brc.dbsupport;
 public interface RecordSetItemIFace extends Comparable<RecordSetItemIFace>
 {
 
-    public abstract Long getRecordId();
+    public abstract Integer getRecordId();
 
-    public abstract void setRecordId(final Long recordId);
+    public abstract void setRecordId(final Integer recordId);
     
     public int compareTo(RecordSetItemIFace obj);
 

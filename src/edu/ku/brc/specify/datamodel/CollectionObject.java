@@ -77,7 +77,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
 
     // Fields
 
-    protected Long                          collectionObjectId;
+    protected Integer                          collectionObjectId;
     protected String                        fieldNumber;
     protected String                        description;
     protected String                        text1;
@@ -127,7 +127,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     }
 
     /** constructor with id */
-    public CollectionObject(Long collectionObjectId) {
+    public CollectionObject(Integer collectionObjectId) {
         this.collectionObjectId = collectionObjectId;
     }
 
@@ -201,7 +201,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     @Id
     @GeneratedValue
     @Column(name = "CollectionObjectID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getCollectionObjectId() {
+    public Integer getCollectionObjectId() {
         return this.collectionObjectId;
     }
 
@@ -211,7 +211,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.collectionObjectId;
     }
@@ -226,7 +226,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
         return CollectionObject.class;
     }
 
-    public void setCollectionObjectId(Long collectionObjectId) {
+    public void setCollectionObjectId(Integer collectionObjectId) {
         this.collectionObjectId = collectionObjectId;
     }
 

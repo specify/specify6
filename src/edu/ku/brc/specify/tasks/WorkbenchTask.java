@@ -489,7 +489,7 @@ public class WorkbenchTask extends BaseTask
      * @param cmdAttrName the attr name to use when checking CommandActions
      * @return the rollover command that matches
      */
-    protected RolloverCommand getNavBtnById(final NavBox navBox, final Long recordId, final String cmdAttrName)
+    protected RolloverCommand getNavBtnById(final NavBox navBox, final Integer recordId, final String cmdAttrName)
     {
         for (NavBoxItemIFace nbi : navBox.getItems())
         {

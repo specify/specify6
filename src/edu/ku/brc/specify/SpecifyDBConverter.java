@@ -611,7 +611,7 @@ public class SpecifyDBConverter
                                // voucherSeries.setIsTissueSeries(false);
                                 voucherSeries.setTimestampCreated(new Date());
                                 voucherSeries.setTimestampModified(new Date());
-                                voucherSeries.setCollectionId(100L);
+                                voucherSeries.setCollectionId(100);
                                 voucherSeries.setCollectionPrefix("KUFISH");
                                 voucherSeries.setCollectionName("Fish Collection");
                                 session.saveOrUpdate(voucherSeries);
@@ -627,7 +627,7 @@ public class SpecifyDBConverter
                                // tissueSeries.setIsTissueSeries(true);
                                 tissueSeries.setTimestampCreated(new Date());
                                 tissueSeries.setTimestampModified(new Date());
-                                tissueSeries.setCollectionId(101L);
+                                tissueSeries.setCollectionId(101);
                                 tissueSeries.setCollectionPrefix("KUTIS");
                                 tissueSeries.setCollectionName("Fish Tissue");
                                 session.saveOrUpdate(tissueSeries);

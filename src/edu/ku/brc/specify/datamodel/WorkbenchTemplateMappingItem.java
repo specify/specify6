@@ -44,7 +44,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     
     // Fields
 
-    protected Long              workbenchTemplateMappingItemId;
+    protected Integer              workbenchTemplateMappingItemId;
     protected String            tableName;
     protected Integer           srcTableId;
     protected String            fieldName;
@@ -67,7 +67,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     protected Boolean           carryForward;
     
     // Transient
-    protected Class             dataFieldClass = null;
+    protected Class<?>          dataFieldClass = null;
     
     // Constructors
 
@@ -78,7 +78,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     }
 
     /** constructor with id */
-    public WorkbenchTemplateMappingItem(Long workbenchTemplateMappingItemId)
+    public WorkbenchTemplateMappingItem(Integer workbenchTemplateMappingItemId)
     {
         this.workbenchTemplateMappingItemId = workbenchTemplateMappingItemId;
     }
@@ -125,7 +125,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     @Id
     @GeneratedValue
     @Column(name = "WorkbenchTemplateMappingItemID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getWorkbenchTemplateMappingItemId()
+    public Integer getWorkbenchTemplateMappingItemId()
     {
         return this.workbenchTemplateMappingItemId;
     }
@@ -137,7 +137,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.workbenchTemplateMappingItemId;
     }
@@ -154,7 +154,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
         return WorkbenchTemplateMappingItem.class;
     }
 
-    public void setWorkbenchTemplateMappingItemId(Long workbenchTemplateMappingItemId)
+    public void setWorkbenchTemplateMappingItemId(Integer workbenchTemplateMappingItemId)
     {
         this.workbenchTemplateMappingItemId = workbenchTemplateMappingItemId;
     }

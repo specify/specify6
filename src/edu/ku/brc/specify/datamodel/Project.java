@@ -60,7 +60,7 @@ public class Project extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 
-     protected Long projectId;
+     protected Integer projectId;
      protected String projectName;
      protected String projectDescription;
      protected String url;
@@ -85,7 +85,7 @@ public class Project extends DataModelObjBase implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public Project(Long projectId) {
+    public Project(Integer projectId) {
         this.projectId = projectId;
     }
    
@@ -123,7 +123,7 @@ public class Project extends DataModelObjBase implements java.io.Serializable {
     @Id
     @GeneratedValue
     @Column(name = "ProjectID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getProjectId() {
+    public Integer getProjectId() {
         return this.projectId;
     }
 
@@ -133,7 +133,7 @@ public class Project extends DataModelObjBase implements java.io.Serializable {
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.projectId;
     }
@@ -148,7 +148,7 @@ public class Project extends DataModelObjBase implements java.io.Serializable {
         return Project.class;
     }
     
-    public void setProjectId(Long projectId) {
+    public void setProjectId(Integer projectId) {
         this.projectId = projectId;
     }
 

@@ -120,7 +120,7 @@ public final class FormHelper
       * Creates a new data object and initializes it
       * @param newDataClass class of new Object to be created and initialized
      */
-    public static FormDataObjIFace createAndNewDataObj(final Class newDataClass)
+    public static FormDataObjIFace createAndNewDataObj(final Class<?> newDataClass)
     {
         return createAndNewDataObj(newDataClass.getName());
     }
@@ -134,7 +134,7 @@ public final class FormHelper
     {
         try
         {
-            Method method = dataObj.getClass().getMethod("initForSearch", new Class[] {});
+            Method method = dataObj.getClass().getMethod("initForSearch", new Class<?>[] {});
             method.invoke(dataObj, new Object[] {});
     
             return true;
@@ -185,7 +185,7 @@ public final class FormHelper
                 
                 log.debug("Invoking method["+methodName+"] on Object "+(parentDataObj != null ? parentDataObj.getClass().getSimpleName() : " parent is null"));
         
-                Method method = parentDataObj.getClass().getMethod(methodName, new Class[] {newDataObj.getClass()});
+                Method method = parentDataObj.getClass().getMethod(methodName, new Class<?>[] {newDataObj.getClass()});
                 method.invoke(parentDataObj, new Object[] {newDataObj});
                 log.debug("Adding ["+newDataObj+"] to parent Set["+parentDataObj+"]");
         
@@ -212,12 +212,12 @@ public final class FormHelper
      * @param dbDataObj the object that MUST have a "getId" method to get its Id
      * @returns the Id 
      */
-    public static Long getId(final Object dbDataObj)
+    public static Integer getId(final Object dbDataObj)
     {
         try
         {
-            Method method = dbDataObj.getClass().getMethod("getId", new Class[] {});
-            return (Long)method.invoke(dbDataObj, new Object[] {});
+            Method method = dbDataObj.getClass().getMethod("getId", new Class<?>[] {});
+            return (Integer)method.invoke(dbDataObj, new Object[] {});
     
         } catch (NoSuchMethodException ex)
         {
@@ -287,13 +287,13 @@ public final class FormHelper
                                 try
                                 {
                                     PropertyDescriptor descr = PropertyUtils.getPropertyDescriptor(dataObj, fieldName.trim());
-                                    Class  classObj = descr.getPropertyType();
+                                    Class<?>  classObj = descr.getPropertyType();
                                     Object newObj = classObj.newInstance();
                                     log.debug("New Obj ["+newObj+"] of type ["+ classObj +"]being added to ["+dataObj+"]");
                                     if (newObj != null)
                                     {
     
-                                        Method method = newObj.getClass().getMethod("initialize", new Class[] {});
+                                        Method method = newObj.getClass().getMethod("initialize", new Class<?>[] {});
                                         method.invoke(newObj, new Object[] {});
                                         setter.setFieldValue(dataObj, fieldName, newObj);
                                         data = newObj;

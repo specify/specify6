@@ -4,8 +4,8 @@ public class TreeNode
 {
     protected String name;
     protected boolean hasChildren;
-    protected long id;
-    protected long parentId;
+    protected int id;
+    protected int parentId;
     protected Class<?> dataObjClass;
     protected int rank;
     protected int parentRank;
@@ -15,7 +15,7 @@ public class TreeNode
         super();
     }
 
-    public TreeNode(String name, long id, long parentId, int rank, int parentRank, boolean hasChildren)
+    public TreeNode(String name, int id, int parentId, int rank, int parentRank, boolean hasChildren)
     {
         super();
         this.name = name;
@@ -46,12 +46,12 @@ public class TreeNode
         this.hasChildren = hasChildren;
     }
 
-    public long getId()
+    public int getId()
     {
         return id;
     }
 
-    public void setId(long id)
+    public void setId(int id)
     {
         this.id = id;
     }
@@ -69,12 +69,12 @@ public class TreeNode
     /**
      * @return the parent node's ID, or, if this node has no parent, this node's ID
      */
-    public long getParentId()
+    public int getParentId()
     {
         return parentId;
     }
 
-    public void setParentId(long parentId)
+    public void setParentId(int parentId)
     {
         this.parentId = parentId;
     }

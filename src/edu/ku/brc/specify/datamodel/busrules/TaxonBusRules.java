@@ -7,15 +7,11 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
-
-import java.util.Set;
-
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
-import edu.ku.brc.specify.treeutils.TreeHelper;
 
 /**
  * A business rules class that handles various safety checking and housekeeping tasks
@@ -63,7 +59,7 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
     
     public boolean okToDeleteTaxon(Taxon taxon)
     {
-        Long id = taxon.getId();
+        Integer id = taxon.getId();
         if (id == null)
         {
             return true;

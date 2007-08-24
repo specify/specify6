@@ -26,7 +26,7 @@ import java.util.Date;
  */
 public interface PickListItemIFace extends Comparable<PickListItemIFace>
 {
-    public Long   getId();
+    public Integer getId();
     
 	public void setPickList(PickListIFace pickList);
 	

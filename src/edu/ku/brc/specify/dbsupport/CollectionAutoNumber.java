@@ -63,7 +63,7 @@ public class CollectionAutoNumber extends AutoNumberGeneric
     {
         CatalogNumberingScheme cns = Collection.getCurrentCollection().getCatalogNumberingScheme();
         
-        Vector<Long> ids = new Vector<Long>();
+        Vector<Integer> ids = new Vector<Integer>();
         for (Collection collection : cns.getCollections())
         {
             ids.add(collection.getCollectionId());

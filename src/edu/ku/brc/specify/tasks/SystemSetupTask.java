@@ -153,14 +153,14 @@ public class SystemSetupTask extends BaseTask
 
             
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            List pickLists = session.getDataList(PickList.class);
+            List<?> pickLists = session.getDataList(PickList.class);
 
             sysNavBox = new NavBox(getResourceString("picklists"));
 
             addPickList(getResourceString("newpicklist"), null, null, 0);
 
             // Get all the pickList names
-            for (Iterator iter=pickLists.iterator();iter.hasNext();)
+            for (Iterator<?> iter=pickLists.iterator();iter.hasNext();)
             {
                 PickList pickList = (PickList)iter.next();
                 pickListNames.add(pickList.getName());
@@ -168,7 +168,7 @@ public class SystemSetupTask extends BaseTask
             }
 
 
-            for (Iterator iter=pickLists.iterator();iter.hasNext();)
+            for (Iterator<?> iter=pickLists.iterator();iter.hasNext();)
             {
                 PickList pickList = (PickList)iter.next();
                 addPickList(getTitle(pickList), pickList, "DeletePickList", sysNavBox.getItems().size()-1);
@@ -187,7 +187,7 @@ public class SystemSetupTask extends BaseTask
      * @param clazz the class of data to be searched for
      * @return true if found, false if not
      */
-    protected boolean checkForPaneWithData(final Class clazz)
+    protected boolean checkForPaneWithData(final Class<?> clazz)
     {
         for (SubPaneIFace pane : SubPaneMgr.getInstance().getSubPanes())
         {
@@ -240,7 +240,7 @@ public class SystemSetupTask extends BaseTask
         if (!checkForPaneWithData(DataType.class))
         {
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            List prepTypes = session.getDataList(DataType.class);
+            List<?> prepTypes = session.getDataList(DataType.class);
             session.close();
             
             View view = AppContextMgr.getInstance().getView("SystemSetup", "PrepType");
@@ -262,7 +262,7 @@ public class SystemSetupTask extends BaseTask
         if (!checkForPaneWithData(CollectionType.class))
         {
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            List prepTypes = session.getDataList(CollectionType.class);
+            List<?> prepTypes = session.getDataList(CollectionType.class);
             session.close();
             
             View view = AppContextMgr.getInstance().getView("SystemSetup", "PrepType");
@@ -284,7 +284,7 @@ public class SystemSetupTask extends BaseTask
         if (!checkForPaneWithData(DeterminationStatus.class))
         {
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            List prepTypes = session.getDataList(PrepType.class);
+            List<?> prepTypes = session.getDataList(PrepType.class);
             session.close();
             
             View view = AppContextMgr.getInstance().getView("SystemSetup", "PrepType");
@@ -306,7 +306,7 @@ public class SystemSetupTask extends BaseTask
         if (!checkForPaneWithData(DeterminationStatus.class))
         {
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            List determinationStatus = session.getDataList(DeterminationStatus.class);
+            List<?> determinationStatus = session.getDataList(DeterminationStatus.class);
             session.close();
             
             View view = AppContextMgr.getInstance().getView("SystemSetup", "DeterminationStatus");

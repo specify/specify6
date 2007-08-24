@@ -103,7 +103,7 @@ public class QueryBldrPane extends BaseSubPane
             skipHash.put(nameStr, "X");
         }
         
-        Hashtable<Class, Boolean> alreadyThere = new Hashtable<Class, Boolean>();
+        Hashtable<Class<?>, Boolean> alreadyThere = new Hashtable<Class<?>, Boolean>();
         for (DBTableIdMgr.TableInfo ti : DBTableIdMgr.getInstance().getList())
         {
             if (ti.isForQuery() && StringUtils.isNotEmpty(ti.toString()))

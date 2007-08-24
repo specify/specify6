@@ -24,8 +24,6 @@ import java.sql.SQLException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.ui.UIRegistry;
-
 /**
  * A singleton that remembers all the information needed for creating a Database connection. 
  * After setting the necessary parameters you can ask it for a connection at anytime.<br><br>

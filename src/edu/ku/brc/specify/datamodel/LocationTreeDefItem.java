@@ -55,7 +55,7 @@ import org.hibernate.annotations.CascadeType;
 public class LocationTreeDefItem extends DataModelObjBase implements Serializable, TreeDefItemIface<Location,LocationTreeDef,LocationTreeDefItem>
 {
 
-	protected Long   				locationTreeDefItemId;
+	protected Integer   				locationTreeDefItemId;
 	protected String				name;
 	protected String				remarks;
 	protected Integer				rankId;
@@ -76,7 +76,7 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
 	}
 
 	/** constructor with id */
-	public LocationTreeDefItem(Long locationTreeDefItemId)
+	public LocationTreeDefItem(Integer locationTreeDefItemId)
 	{
 		this.locationTreeDefItemId = locationTreeDefItemId;
 	}
@@ -103,7 +103,7 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
     @Id
     @GeneratedValue
     @Column(name = "LocationTreeDefItemID", unique = false, nullable = false, insertable = true, updatable = true, length = 10)
-	public Long getLocationTreeDefItemId()
+	public Integer getLocationTreeDefItemId()
 	{
 		return this.locationTreeDefItemId;
 	}
@@ -114,7 +114,7 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.locationTreeDefItemId;
     }
@@ -129,7 +129,7 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
         return LocationTreeDefItem.class;
     }
 
-	public void setLocationTreeDefItemId(Long locationTreeDefItemId)
+	public void setLocationTreeDefItemId(Integer locationTreeDefItemId)
 	{
 		this.locationTreeDefItemId = locationTreeDefItemId;
 	}
@@ -273,12 +273,12 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
 	}
 
     @Transient
-	public Long getTreeDefItemId()
+	public Integer getTreeDefItemId()
 	{
 		return getLocationTreeDefItemId();
 	}
 
-	public void setTreeDefItemId(Long id)
+	public void setTreeDefItemId(Integer id)
 	{
 		setLocationTreeDefItemId(id);
 	}

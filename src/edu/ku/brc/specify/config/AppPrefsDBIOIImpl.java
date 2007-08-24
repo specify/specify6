@@ -116,7 +116,7 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
                 session = DataProviderFactory.getInstance().createSession();
                 if (session != null)
                 {
-                    List list = session.getDataList(AppResource.class, "name", PREF_NAME);
+                    List<?> list = session.getDataList(AppResource.class, "name", PREF_NAME);
                     if (list.size() == 0)
                     {
                         log.debug("creating AppResource");

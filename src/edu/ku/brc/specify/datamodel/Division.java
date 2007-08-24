@@ -53,7 +53,7 @@ public class Division extends DataModelObjBase implements java.io.Serializable
 
     // Fields    
 
-     protected Long        divisionId;
+     protected Integer        divisionId;
      protected String      name;
      protected String      title;
      protected String      abbrev;
@@ -72,7 +72,7 @@ public class Division extends DataModelObjBase implements java.io.Serializable
     }
     
     /** constructor with id */
-    public Division(Long divisionId) {
+    public Division(Integer divisionId) {
         this.divisionId = divisionId;
     }
    
@@ -99,7 +99,7 @@ public class Division extends DataModelObjBase implements java.io.Serializable
     @Id
     @GeneratedValue
     @Column(name = "DivisionID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getDivisionId()
+    public Integer getDivisionId()
     {
         return divisionId;
     }
@@ -109,7 +109,7 @@ public class Division extends DataModelObjBase implements java.io.Serializable
      */
     @Override
     @Transient
-    public Long getId()
+    public Integer getId()
     {
         return divisionId;
     }
@@ -213,7 +213,7 @@ public class Division extends DataModelObjBase implements java.io.Serializable
     /**
      * @param divisionId the divisionId to set
      */
-    public void setDivisionId(Long divisionId)
+    public void setDivisionId(Integer divisionId)
     {
         this.divisionId = divisionId;
     }

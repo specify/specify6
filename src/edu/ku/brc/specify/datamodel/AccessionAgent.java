@@ -56,7 +56,7 @@ public class AccessionAgent extends DataModelObjBase implements java.io.Serializ
 
     // Fields    
 
-     protected Long accessionAgentId;
+     protected Integer accessionAgentId;
      protected String role;
      protected String remarks;
      protected Agent agent;
@@ -73,7 +73,7 @@ public class AccessionAgent extends DataModelObjBase implements java.io.Serializ
     }
     
     /** constructor with id */
-    public AccessionAgent(Long accessionAgentId)
+    public AccessionAgent(Integer accessionAgentId)
     {
         this.accessionAgentId = accessionAgentId;
     }
@@ -103,7 +103,7 @@ public class AccessionAgent extends DataModelObjBase implements java.io.Serializ
     @Id
     @GeneratedValue
     @Column(name = "AccessionAgentID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getAccessionAgentId() {
+    public Integer getAccessionAgentId() {
         return this.accessionAgentId;
     }
 
@@ -113,7 +113,7 @@ public class AccessionAgent extends DataModelObjBase implements java.io.Serializ
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.accessionAgentId;
     }
@@ -128,7 +128,7 @@ public class AccessionAgent extends DataModelObjBase implements java.io.Serializ
         return AccessionAgent.class;
     }
     
-    public void setAccessionAgentId(Long accessionAgentId) {
+    public void setAccessionAgentId(Integer accessionAgentId) {
         this.accessionAgentId = accessionAgentId;
     }
 

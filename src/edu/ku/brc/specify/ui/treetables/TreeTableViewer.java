@@ -160,7 +160,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     
     protected BusinessRulesIFace businessRules;
     
-    protected Set<Long> idsToReexpand = new HashSet<Long>();
+    protected Set<Integer> idsToReexpand = new HashSet<Integer>();
     
     protected boolean restoreTreeState = false;
     
@@ -938,7 +938,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			return;
 		}
         TreeNode node = (TreeNode)selection;
-        long parentId = node.getParentId();
+        int parentId = node.getParentId();
         if (parentId != node.getId())
         {
             TreeNode parentNode = listModel.getNodeById(parentId);
@@ -1137,7 +1137,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         T visRootRecord = null;
         for (T pathItem: pathToNode)
         {
-            if ((long)(pathItem.getTreeId()) == visRoot.getId())
+            if ((int)(pathItem.getTreeId()) == visRoot.getId())
             {
                 pathContainsVisRoot = true;
                 visRootRecord = pathItem;
@@ -1207,14 +1207,14 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		
         // note some node values so we can see if they change
 		String nodeNameBefore = node.getName();
-		Long parentIdBefore   = (node.getParent() != null) ? node.getParent().getTreeId() : null;
+		Integer parentIdBefore   = (node.getParent() != null) ? node.getParent().getTreeId() : null;
 		
 		// show the dialog
 		dialog.setVisible(true);
 		
 		// see what important stuff was modified
 		String nodeNameAfter  = node.getName();
-		Long parentIdAfter    = (node.getParent() != null) ? node.getParent().getTreeId() : null;
+		Integer parentIdAfter    = (node.getParent() != null) ? node.getParent().getTreeId() : null;
 		boolean nameChanged   = !nodeNameBefore.equals(nodeNameAfter);
 		boolean parentChanged = (parentIdBefore == null && parentIdAfter != null) ||
 		                        (parentIdBefore != null && parentIdAfter == null) ||
@@ -1740,10 +1740,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     private TreeNode createNode(T dataRecord)
     {
         String nodeName = dataRecord.getName();
-        long id = dataRecord.getTreeId();
+        int id = dataRecord.getTreeId();
         int rank = dataRecord.getRankId();
 
-        long parentId;
+        int parentId;
         int parentRank;
         
         T parentRecord = dataRecord.getParent();

@@ -877,7 +877,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     {
         for (FormValidator validator : formValidators)
         {
-            log.debug("*** "+validator.isFormValid()+"  "+validator.getName());
+            //log.debug("*** "+validator.isFormValid()+"  "+validator.getName());
             //validator.dumpState(false);
             if (!validator.isFormValid())
             {

@@ -231,8 +231,8 @@ public class FishBaseInfoGetter extends HTTPGetter
                     int numPictures = XMLHelper.getAttr(speciesElement, "total_adult", 0);
                     if (numPictures > 0)
                     {
-                        List adults = dom.selectNodes("/fishbase/pictures[@type='adult']");
-                        for ( Iterator iter = adults.iterator(); iter.hasNext(); )
+                        List<?> adults = dom.selectNodes("/fishbase/pictures[@type='adult']");
+                        for ( Iterator<?> iter = adults.iterator(); iter.hasNext(); )
                         {
                             Element pictureElement = (Element) iter.next();
                             Element nameElement = (Element)pictureElement.selectSingleNode(type == InfoType.Thumbnail ? "thumbnail" : "actual");

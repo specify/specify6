@@ -68,7 +68,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
 
     // Fields    
 
-    protected Long                   workbenchId;
+    protected Integer                   workbenchId;
     protected String                 name;
     protected Integer                dbTableId;
     protected String                 remarks;
@@ -98,7 +98,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
     }
     
     /** constructor with id */
-    public Workbench(Long workbenchId) 
+    public Workbench(Integer workbenchId) 
     {
         this.workbenchId = workbenchId;
     }
@@ -151,7 +151,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
     @Id
     @GeneratedValue
     @Column(name = "WorkbenchID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getWorkbenchId() {
+    public Integer getWorkbenchId() {
         return this.workbenchId;
     }
 
@@ -161,7 +161,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.workbenchId;
     }
@@ -176,7 +176,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
         return Workbench.class;
     }
     
-    public void setWorkbenchId(Long workbenchId) {
+    public void setWorkbenchId(Integer workbenchId) {
         this.workbenchId = workbenchId;
     }
 
@@ -595,7 +595,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
                     hasLat1 = true;
                 }
                 
-                // look for a Longitude1 field
+                // look for a Integeritude1 field
                 if (fieldName.equals("longitude1"))
                 {
                     hasLon1 = true;
@@ -656,7 +656,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
         return -1;
     }
     
-    public int getColumnIndex(Class dataClass, String fieldNameOrCaption)
+    public int getColumnIndex(Class<?> dataClass, String fieldNameOrCaption)
     {
         int tableId = DBTableIdMgr.getInstance().getIdByClassName(dataClass.getName());
         return getColumnIndex(tableId,fieldNameOrCaption);

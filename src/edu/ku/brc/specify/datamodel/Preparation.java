@@ -65,7 +65,7 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
 
     // Fields    
 
-    protected Long                        preparationId;
+    protected Integer                     preparationId;
     protected String                      text1;
     protected String                      text2;
     protected Integer                     count;
@@ -92,7 +92,7 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
     }
     
     /** constructor with id */
-    public Preparation(Long preparationId) {
+    public Preparation(Integer preparationId) {
         this.preparationId = preparationId;
     }
    
@@ -132,7 +132,7 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
     @Id
     @GeneratedValue
     @Column(name = "PreparationID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getPreparationId() {
+    public Integer getPreparationId() {
         return this.preparationId;
     }
 
@@ -141,7 +141,7 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
      */
     @Override
     @Transient
-    public Long getId()
+    public Integer getId()
     {
         return this.preparationId;
     }
@@ -156,7 +156,7 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
         return Preparation.class;
     }
     
-    public void setPreparationId(Long preparationId) {
+    public void setPreparationId(Integer preparationId) {
         this.preparationId = preparationId;
     }
 

@@ -55,7 +55,7 @@ public class CollectionObjectAttr extends DataModelObjBase implements AttributeI
 
     // Fields
 
-    protected Long             attrId;
+    protected Integer             attrId;
     protected String           strValue;
     protected Double           dblValue;
     protected CollectionObject collectionObject;
@@ -70,7 +70,7 @@ public class CollectionObjectAttr extends DataModelObjBase implements AttributeI
     }
 
     /** constructor with id */
-    public CollectionObjectAttr(Long attrId)
+    public CollectionObjectAttr(Integer attrId)
     {
         this.attrId = attrId;
     }
@@ -97,7 +97,7 @@ public class CollectionObjectAttr extends DataModelObjBase implements AttributeI
     @Id
     @GeneratedValue
     @Column(name = "AttrID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getAttrId()
+    public Integer getAttrId()
     {
         return this.attrId;
     }
@@ -105,14 +105,14 @@ public class CollectionObjectAttr extends DataModelObjBase implements AttributeI
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.AttributeIFace#setAttrId(java.lang.Integer)
      */
-    public void setAttrId(Long attrId)
+    public void setAttrId(Integer attrId)
     {
         this.attrId = attrId;
     }
     
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return attrId;
     }

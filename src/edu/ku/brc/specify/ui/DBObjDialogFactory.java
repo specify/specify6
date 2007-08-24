@@ -91,7 +91,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
             Element root = AppContextMgr.getInstance().getResourceAsDOM("DialogDefs");
             if (root != null)
             {
-                for ( Iterator i = root.elementIterator( "dialog" ); i.hasNext(); )
+                for ( Iterator<?> i = root.elementIterator( "dialog" ); i.hasNext(); )
                 {
                     Element fileElement = (Element) i.next();
                     String  type        = getAttr(fileElement, "type", "display");

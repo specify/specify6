@@ -40,6 +40,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
 
  */
@@ -51,7 +53,7 @@ public class Author extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 
-     protected Long authorId;
+     protected Integer authorId;
      protected Short orderNumber;
      protected String remarks;
      protected ReferenceWork referenceWork;
@@ -66,7 +68,7 @@ public class Author extends DataModelObjBase implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public Author(Long authorId) {
+    public Author(Integer authorId) {
         this.authorId = authorId;
     }
    
@@ -94,7 +96,7 @@ public class Author extends DataModelObjBase implements java.io.Serializable {
     @Id
     @GeneratedValue
     @Column(name = "AuthorID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getAuthorId() {
+    public Integer getAuthorId() {
         return this.authorId;
     }
 
@@ -104,7 +106,7 @@ public class Author extends DataModelObjBase implements java.io.Serializable {
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.authorId;
     }
@@ -119,7 +121,7 @@ public class Author extends DataModelObjBase implements java.io.Serializable {
         return Author.class;
     }
     
-    public void setAuthorId(Long authorId) {
+    public void setAuthorId(Integer authorId) {
         this.authorId = authorId;
     }
 
@@ -172,6 +174,24 @@ public class Author extends DataModelObjBase implements java.io.Serializable {
     
     public void setAgent(Agent agent) {
         this.agent = agent;
+    }
+    
+    @Override
+    @Transient
+    public String getIdentityTitle()
+    {
+        String name = "";
+        if (agent != null)
+        {
+            name = agent.getIdentityTitle();
+        }
+
+        if (StringUtils.isNotEmpty(name))
+        {
+            return name;
+        }
+        
+        return super.getIdentityTitle();
     }
 
     /* (non-Javadoc)

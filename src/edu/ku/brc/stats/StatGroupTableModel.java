@@ -35,7 +35,7 @@ public class StatGroupTableModel extends AbstractTableModel
 
     // Data Members
     protected Vector<StatDataItem> data        = new Vector<StatDataItem>();
-    protected Vector<Class>        classNames  = new Vector<Class>();
+    protected Vector<Class<?>>     classNames  = new Vector<Class<?>>();
     protected int                  currentRow  = 0;
     protected int                  numRows     = 0;
     protected String[]             columnNames;

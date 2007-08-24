@@ -154,7 +154,7 @@ public class Discipline implements Comparable<Discipline>
             Element root = XMLHelper.readFileToDOM4J(new FileInputStream(XMLHelper.getConfigDirPath("disciplines.xml")));
             if (root != null)
             {
-                for ( Iterator i = root.elementIterator( "discipline" ); i.hasNext(); )
+                for ( Iterator<?> i = root.elementIterator( "discipline" ); i.hasNext(); )
                 {
                     Element disciplineNode = (Element) i.next();
 

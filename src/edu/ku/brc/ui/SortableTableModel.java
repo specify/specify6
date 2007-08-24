@@ -46,6 +46,7 @@ public class SortableTableModel implements TableModel, TableModelListener
     protected int[]                sortedIndicies;
     protected int                  sortColumn;
     protected Comparator<Object>   comparator;
+    @SuppressWarnings("unchecked")
     protected Comparator[]         comparators;
     protected boolean[]            sortDirection;
     protected boolean              isSorted     = false;

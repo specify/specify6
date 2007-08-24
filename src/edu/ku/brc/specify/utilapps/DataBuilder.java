@@ -1601,7 +1601,7 @@ public class DataBuilder
         return groupperson;
     }
 
-    public static InfoRequest createInfoRequest(final Long infoRequestID,
+    public static InfoRequest createInfoRequest(final Integer infoRequestID,
                                                 final String firstName,
                                                 final String lastName,
                                                 final String institution,
@@ -1915,7 +1915,7 @@ public class DataBuilder
         return projectcollectionobject;
     }
 
-    public static RecordSetIFace createRecordSet(final Long recordSetID, final String name, final SpecifyUser owner)
+    public static RecordSetIFace createRecordSet(final Integer recordSetID, final String name, final SpecifyUser owner)
     {
         RecordSet recordset = new RecordSet();
         recordset.initialize();

@@ -510,7 +510,7 @@ public class Scriptlet extends JRDefaultScriptlet
 			  Vector<String> labelNames = isCurrent1Labels();
 			  
 			  //create label
-              for (Enumeration e = labelNames.elements(); e.hasMoreElements();)
+              for (Enumeration<?> e = labelNames.elements(); e.hasMoreElements();)
               {
             	  data = rowDataSource.getFieldValue( (String)e.nextElement() ).toString();
             	  
@@ -542,7 +542,7 @@ public class Scriptlet extends JRDefaultScriptlet
 			  Vector<String> labelNames = isCurrent2Labels();
 			  
 			  //create label
-              for (Enumeration e = labelNames.elements(); e.hasMoreElements();)
+              for (Enumeration<?> e = labelNames.elements(); e.hasMoreElements();)
               {
             	  data = rowDataSource.getFieldValue( (String)e.nextElement() ).toString();
             	  

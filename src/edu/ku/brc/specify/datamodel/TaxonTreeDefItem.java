@@ -32,7 +32,7 @@ import org.hibernate.annotations.CascadeType;
 @Table(name = "taxontreedefitem")
 public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, TreeDefItemIface<Taxon,TaxonTreeDef,TaxonTreeDefItem>
 {
-	protected Long				    taxonTreeDefItemId;
+	protected Integer				    taxonTreeDefItemId;
 	protected String				name;
 	protected String				remarks;
 	protected Integer				rankId;
@@ -54,7 +54,7 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 	}
 
 	/** constructor with id */
-	public TaxonTreeDefItem(Long taxonTreeDefItemId)
+	public TaxonTreeDefItem(Integer taxonTreeDefItemId)
 	{
 		this.taxonTreeDefItemId = taxonTreeDefItemId;
 	}
@@ -81,7 +81,7 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
     @Id
     @GeneratedValue
     @Column(name = "TaxonTreeDefItemID", unique = false, nullable = false, insertable = true, updatable = true, length = 10)
-	public Long getTaxonTreeDefItemId()
+	public Integer getTaxonTreeDefItemId()
 	{
 		return this.taxonTreeDefItemId;
 	}
@@ -92,7 +92,7 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.taxonTreeDefItemId;
     }
@@ -107,7 +107,7 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
         return TaxonTreeDefItem.class;
     }
 
-	public void setTaxonTreeDefItemId(Long taxonTreeDefItemId)
+	public void setTaxonTreeDefItemId(Integer taxonTreeDefItemId)
 	{
 		this.taxonTreeDefItemId = taxonTreeDefItemId;
 	}
@@ -263,12 +263,12 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 	}
 
     @Transient
-	public Long getTreeDefItemId()
+	public Integer getTreeDefItemId()
 	{
 		return getTaxonTreeDefItemId();
 	}
 
-	public void setTreeDefItemId(Long id)
+	public void setTreeDefItemId(Integer id)
 	{
 		setTaxonTreeDefItemId(id);
 	}

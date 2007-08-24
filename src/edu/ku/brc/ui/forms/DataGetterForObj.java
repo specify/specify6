@@ -67,7 +67,7 @@ public class DataGetterForObj implements DataObjectGettable
                 Iterator<?> iter = null;
                 if (dataObj instanceof Set)
                 {
-                    iter = ((Set)dataObj).iterator();
+                    iter = ((Set<?>)dataObj).iterator();
 
                 } else if (dataObj instanceof org.hibernate.collection.PersistentSet)
                 {
@@ -123,7 +123,7 @@ public class DataGetterForObj implements DataObjectGettable
                     try
                     {
                         String methodName = fieldName.substring(1, fieldName.length()).trim();
-                        Method method = dataObj.getClass().getMethod(methodName, new Class[] {});
+                        Method method = dataObj.getClass().getMethod(methodName, new Class<?>[] {});
                         value = method.invoke(dataObj, new Object[] {});
 
                     } catch (NoSuchMethodException ex)

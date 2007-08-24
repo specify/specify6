@@ -45,7 +45,7 @@ import org.hibernate.annotations.CascadeType;
 @Table(name = "collectionreltype")
 public class CollectionRelType extends DataModelObjBase implements java.io.Serializable 
 {
-    protected Long        collectionRelTypeId;
+    protected Integer        collectionRelTypeId;
     protected String      name;
     protected Set<CollectionRelationship> relationships;
 
@@ -65,7 +65,7 @@ public class CollectionRelType extends DataModelObjBase implements java.io.Seria
     @Id
     @GeneratedValue
     @Column(name = "CollectionRelTypeID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getCollectionRelTypeId()
+    public Integer getCollectionRelTypeId()
     {
         return collectionRelTypeId;
     }
@@ -73,7 +73,7 @@ public class CollectionRelType extends DataModelObjBase implements java.io.Seria
     /**
      * @param collectionRelTypeId the collectionRelTypeId to set
      */
-    public void setCollectionRelTypeId(Long collectionRelTypeId)
+    public void setCollectionRelTypeId(Integer collectionRelTypeId)
     {
         this.collectionRelTypeId = collectionRelTypeId;
     }
@@ -128,7 +128,7 @@ public class CollectionRelType extends DataModelObjBase implements java.io.Seria
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return collectionRelTypeId;
     }

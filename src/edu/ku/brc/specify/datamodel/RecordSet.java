@@ -62,7 +62,7 @@ import edu.ku.brc.dbsupport.RecordSetItemIFace;
 public class RecordSet extends DataModelObjBase implements java.io.Serializable, RecordSetIFace {
 
     // Fields
-     protected Long                    recordSetId;
+     protected Integer                    recordSetId;
      protected String                  name;
      protected Integer                 dbTableId;
      protected String                  remarks;
@@ -86,7 +86,7 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
     }
 
     /** constructor with id */
-    public RecordSet(Long recordSetId) 
+    public RecordSet(Integer recordSetId) 
     {
         this.recordSetId = recordSetId;
     }
@@ -131,22 +131,22 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
     @Id
     @GeneratedValue
     @Column(name = "RecordSetID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getRecordSetId()
+    public Integer getRecordSetId()
     {
         return this.recordSetId;
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.RecordSetIFace#setRecordSetId(java.lang.Long)
+     * @see edu.ku.brc.specify.datamodel.RecordSetIFace#setRecordSetId(java.lang.Integer)
      */
-    public void setRecordSetId(Long recordSetId)
+    public void setRecordSetId(Integer recordSetId)
     {
         this.recordSetId = recordSetId;
     }
 
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return recordSetId;
     }
@@ -312,9 +312,9 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
 
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.RecordSetIFace#addItem(java.lang.Long)
+     * @see edu.ku.brc.specify.datamodel.RecordSetIFace#addItem(java.lang.Integer)
      */
-    public RecordSetItemIFace addItem(final Long recordId)
+    public RecordSetItemIFace addItem(final Integer recordId)
     {
         RecordSetItem rsi = new RecordSetItem(recordId);
         this.items.add(rsi);

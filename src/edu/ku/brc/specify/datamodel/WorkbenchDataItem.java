@@ -47,7 +47,7 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
     public static final int VAL_ERROR  = 2;
         
     // Fields
-    protected Long         workbenchDataItemId;
+    protected Integer         workbenchDataItemId;
     protected String       cellData;
     protected Short        rowNumber;
     protected Short        validationStatus;
@@ -77,7 +77,7 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
 
 
     /** constructor with id */
-    public WorkbenchDataItem(Long workbenchDataItemId)
+    public WorkbenchDataItem(Integer workbenchDataItemId)
     {
         this.workbenchDataItemId = workbenchDataItemId;
     }
@@ -103,7 +103,7 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
     @Id
     @GeneratedValue
     @Column(name = "WorkbenchDataItemID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getWorkbenchDataItemId()
+    public Integer getWorkbenchDataItemId()
     {
         return this.workbenchDataItemId;
     }
@@ -114,7 +114,7 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
      * @return ID Property
      */
     @Transient
-    public Long getId()
+    public Integer getId()
     {
         return this.workbenchDataItemId;
     }
@@ -130,7 +130,7 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
         return WorkbenchDataItem.class;
     }
 
-    public void setWorkbenchDataItemId(Long workbenchDataItemId)
+    public void setWorkbenchDataItemId(Integer workbenchDataItemId)
     {
         this.workbenchDataItemId = workbenchDataItemId;
     }

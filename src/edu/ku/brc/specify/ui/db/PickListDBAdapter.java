@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Vector;
 
+import javax.swing.AbstractListModel;
 import javax.swing.MutableComboBoxModel;
 import javax.swing.event.ListDataListener;
 
@@ -27,6 +28,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PickListItem;
+import edu.ku.brc.ui.AutoCompComboBoxModelIFace;
 import edu.ku.brc.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.ui.db.PickListIFace;
 import edu.ku.brc.ui.db.PickListItemIFace;
@@ -39,7 +41,7 @@ import edu.ku.brc.ui.db.PickListItemIFace;
  * @author rods
  *
  */
-public class PickListDBAdapter implements PickListDBAdapterIFace, MutableComboBoxModel
+public class PickListDBAdapter extends AbstractListModel implements PickListDBAdapterIFace, MutableComboBoxModel, AutoCompComboBoxModelIFace
 {
     // Static Data Members
     protected static final Logger log                = Logger.getLogger(PickListDBAdapter.class);
@@ -49,8 +51,7 @@ public class PickListDBAdapter implements PickListDBAdapterIFace, MutableComboBo
     protected Vector<PickListItemIFace> items    = new Vector<PickListItemIFace>(); // Make this Vector because the combobox can use it directly
     protected PickListIFace             pickList = null;
     
-    protected int                       selectedIndex = -1;
-    protected Vector<ListDataListener>  listeners = new Vector<ListDataListener>();
+    protected Object                    selectedObject = null;
      
     
     /**
@@ -265,36 +266,35 @@ public class PickListDBAdapter implements PickListDBAdapterIFace, MutableComboBo
      */
     public Object getSelectedItem()
     {
-        return selectedIndex == -1 ? null : items.get(selectedIndex);
+        return selectedObject;
     }
 
     /* (non-Javadoc)
      * @see javax.swing.ComboBoxModel#setSelectedItem(java.lang.Object)
      */
-    public void setSelectedItem(Object arg0)
+    public void setSelectedItem(Object anObject)
     {
-        int index = items.indexOf(arg0);
-        if (index > -1)
+        if ((selectedObject != null && !selectedObject.equals(anObject)) || selectedObject == null
+                && anObject != null)
         {
-            selectedIndex = index;
+            selectedObject = anObject;
+            fireContentsChanged(this, -1, -1);
+            System.out.println("*************** SetSelectedItem["+selectedObject+"]");
         }
-        
-    }
-
-    /* (non-Javadoc)
-     * @see javax.swing.ListModel#addListDataListener(javax.swing.event.ListDataListener)
-     */
-    public void addListDataListener(ListDataListener arg0)
-    {
-        listeners.add(arg0);
     }
 
     /* (non-Javadoc)
      * @see javax.swing.ListModel#getElementAt(int)
      */
-    public Object getElementAt(int arg0)
+    public Object getElementAt(int index)
     {
-        return selectedIndex > -1 && selectedIndex < items.size() ? items.get(selectedIndex) : null;
+        //return selectedIndex > -1 && selectedIndex < items.size() ? items.get(selectedIndex) : null;
+        System.out.println("Getting Item at["+index+"]["+items.get(index)+"]");
+        if ( index >= 0 && index < items.size() )
+        {
+            return items.elementAt(index);
+        }
+        return null;
     }
 
     /* (non-Javadoc)
@@ -306,28 +306,28 @@ public class PickListDBAdapter implements PickListDBAdapterIFace, MutableComboBo
     }
 
     /* (non-Javadoc)
-     * @see javax.swing.ListModel#removeListDataListener(javax.swing.event.ListDataListener)
-     */
-    public void removeListDataListener(ListDataListener arg0)
-    {
-        listeners.remove(arg0);
-    }
-
-    /* (non-Javadoc)
      * @see javax.swing.MutableComboBoxModel#addElement(java.lang.Object)
      */
-    public void addElement(Object obj)
+    public void addElement(Object anObject)
     {
-        if (obj instanceof PickListItemIFace)
+        
+        if (anObject instanceof PickListItemIFace)
         {
-            items.add((PickListItemIFace)obj);
+            items.add((PickListItemIFace)anObject);
+            Collections.sort(items);
             
-        } else if (obj instanceof String)
+        } else if (anObject instanceof String)
         {
-            addItem((String)obj, (String)obj);
+            addItem((String)anObject, (String)anObject);
         } else
         {
-            // error
+            throw new RuntimeException("Inserting item that is not a String or PickListItemIFace");
+        }
+        
+        fireIntervalAdded(this, items.size()-1, items.size()-1);
+        if ( items.size() == 1 && selectedObject == null && anObject != null ) 
+        {
+            setSelectedItem( anObject );
         }
     }
 
@@ -338,26 +338,29 @@ public class PickListDBAdapter implements PickListDBAdapterIFace, MutableComboBo
     {
         if (obj instanceof PickListItemIFace)
         {
-            items.add((PickListItemIFace)obj);
+            items.insertElementAt((PickListItemIFace)obj, index);
             
         } else if (obj instanceof String)
         {
-            //insert((String)obj, (String)obj);
+            addItem((String)obj, (String)obj);
             
         } else
         {
-            // error
+            throw new RuntimeException("Inserting item that is not a String or PickListItemIFace");
         }
-        
+        fireIntervalAdded(this, index, index);
     }
 
     /* (non-Javadoc)
      * @see javax.swing.MutableComboBoxModel#removeElement(java.lang.Object)
      */
-    public void removeElement(Object obj)
+    public void removeElement(Object anObject) 
     {
-        // TODO Auto-generated method stub
-        
+        int index = items.indexOf(anObject);
+        if ( index != -1 ) 
+        {
+            removeElementAt(index);
+        }
     }
 
     /* (non-Javadoc)
@@ -365,9 +368,40 @@ public class PickListDBAdapter implements PickListDBAdapterIFace, MutableComboBo
      */
     public void removeElementAt(int index)
     {
-        // TODO Auto-generated method stub
-        
+        if ( getElementAt( index ) == selectedObject ) 
+        {
+            if ( index == 0 ) 
+            {
+                setSelectedItem( getSize() == 1 ? null : getElementAt( index + 1 ) );
+            } else 
+            {
+                setSelectedItem( getElementAt( index - 1 ) );
+            }
+        }
+
+        items.removeElementAt(index);
+
+        fireIntervalRemoved(this, index, index);
     }
 
+    //-------------------------------------------------
+    // Interface AutoCompComboBoxModelIFace
+    //-------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.AutoCompComboBoxModelIFace#add(java.lang.Object)
+     */
+    public void add(Object item)
+    {
+        addElement(item);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.AutoCompComboBoxModelIFace#isMutable()
+     */
+    public boolean isMutable()
+    {
+        return !isReadOnly();
+    }
     
 }

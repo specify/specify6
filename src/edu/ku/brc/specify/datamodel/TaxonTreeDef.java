@@ -60,7 +60,7 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
     public static final int FORMA         = 260;
     public static final int SUBFORMA      = 270;
 
-    protected Long                  taxonTreeDefId;
+    protected Integer                  taxonTreeDefId;
     protected String                name;
     protected String                remarks;
     protected Integer               fullNameDirection;
@@ -75,7 +75,7 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
 	}
 
 	/** constructor with id */
-	public TaxonTreeDef(Long taxonTreeDefId)
+	public TaxonTreeDef(Integer taxonTreeDefId)
 	{
 		this.taxonTreeDefId = taxonTreeDefId;
 	}
@@ -96,7 +96,7 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
     @Id
     @GeneratedValue
     @Column(name="TaxonTreeDefID", unique=false, nullable=false, insertable=true, updatable=true)
-    public Long getTaxonTreeDefId()
+    public Integer getTaxonTreeDefId()
 	{
 		return this.taxonTreeDefId;
 	}
@@ -107,7 +107,7 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.taxonTreeDefId;
     }
@@ -122,7 +122,7 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
         return TaxonTreeDef.class;
     }
 
-	public void setTaxonTreeDefId(Long taxonTreeDefId)
+	public void setTaxonTreeDefId(Integer taxonTreeDefId)
 	{
 		this.taxonTreeDefId = taxonTreeDefId;
 	}
@@ -197,12 +197,12 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
 	}
 
     @Transient
-	public Long getTreeDefId()
+	public Integer getTreeDefId()
 	{
 		return getTaxonTreeDefId();
 	}
 
-	public void setTreeDefId(Long id)
+	public void setTreeDefId(Integer id)
 	{
 		setTaxonTreeDefId(id);
 	}

@@ -257,7 +257,7 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
                     for (int i=0;i<hits.length();i++)
                     {
                         Document doc  = hits.doc(i);
-                        rs.addItem(Long.parseLong(doc.get("id")));
+                        rs.addItem(Integer.parseInt(doc.get("id")));
                     }
                 } else
                 {
@@ -265,7 +265,7 @@ public class ExpressTableResultsHitsCache extends ExpressTableResultsBase
                     {
                         Document doc  = hits.doc(indexes[rows[i]]);
                         //log.debug("["+doc.get("id")+"]["+doc.get("sid")+"]["+doc.get("data")+"]");
-                        rs.addItem(Long.parseLong(doc.get("id")));
+                        rs.addItem(Integer.parseInt(doc.get("id")));
                     }
                 }
             } catch (Exception ex)

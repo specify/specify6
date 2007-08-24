@@ -134,7 +134,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
     
     private TreeNode createNode(Object[] nodeInfo, T parent)
     {
-        long id = (Long)nodeInfo[0];
+        Integer id = (Integer)nodeInfo[0];
         String nodeName = (String)nodeInfo[1];
         Integer highChild = (Integer)nodeInfo[3];
         Integer nodeNum   = (Integer)nodeInfo[2];
@@ -145,7 +145,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         }
         int rank = (Integer)nodeInfo[4];
 
-        long parentId;
+        int parentId;
         int parentRank;
         
         T parentRecord = parent;
@@ -198,7 +198,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 	}
 
     @SuppressWarnings("unchecked")
-    public synchronized T getNodeById(Class<?> clazz, long id)
+    public synchronized T getNodeById(Class<?> clazz, int id)
     {
         log.debug("getNodeById( " + clazz.getSimpleName() + ", " + id + " )");
         Session session = getNewSession();
@@ -331,10 +331,10 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 	}
 	
 	/* (non-Javadoc)
-	 * @see edu.ku.brc.specify.treeutils.TreeDataService#getTreeDef(java.lang.Class, long)
+	 * @see edu.ku.brc.specify.treeutils.TreeDataService#getTreeDef(java.lang.Class, int)
 	 */
 	@SuppressWarnings("unchecked")
-	public synchronized D getTreeDef(Class<D> defClass, long defId)
+	public synchronized D getTreeDef(Class<D> defClass, int defId)
 	{
         log.trace("enter");
         Session session = getNewSession();

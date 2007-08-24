@@ -937,7 +937,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         if (StringUtils.isNotEmpty(idStr))
         {
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            dObj = (PickListItemIFace)session.get(PickListItem.class, Long.valueOf(idStr));
+            dObj = (PickListItemIFace)session.get(PickListItem.class, Integer.valueOf(idStr));
             session.close();
             
             if (dObj != null)
@@ -1047,7 +1047,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         } else
         {
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            dObj = (FormDataObjIFace)session.get(classObj, Long.valueOf(idStr));
+            dObj = (FormDataObjIFace)session.get(classObj, Integer.valueOf(idStr));
             session.close();
         }
         return dObj;

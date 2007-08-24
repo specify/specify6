@@ -58,7 +58,7 @@ import edu.ku.brc.ui.db.PickListItemIFace;
 public class PickListItem implements PickListItemIFace, java.io.Serializable
 {
     // Fields
-    protected Long pickListItemId;
+    protected Integer pickListItemId;
     private String title;
     private String value;
     private Date   timestampCreated;
@@ -95,12 +95,12 @@ public class PickListItem implements PickListItemIFace, java.io.Serializable
     @Id
     @GeneratedValue
     @Column(name = "PickListItemID", unique = false, nullable = false, insertable = true, updatable = true)
-    protected Long getPickListItemId()
+    protected Integer getPickListItemId()
     {
         return pickListItemId;
     }
 
-    protected void setPickListItemId(Long pickListItemId)
+    protected void setPickListItemId(Integer pickListItemId)
     {
         this.pickListItemId = pickListItemId;
     }
@@ -189,7 +189,7 @@ public class PickListItem implements PickListItemIFace, java.io.Serializable
      * @see edu.ku.brc.ui.db.PickListItemIFace#getId()
      */
     @Transient
-    public Long getId()
+    public Integer getId()
     {
         return pickListItemId;
     }

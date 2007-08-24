@@ -55,7 +55,7 @@ public class DataGetterForHashMap implements DataObjectGettable
                 throw new RuntimeException("In DataGetterForHashMap - Object["+dataObj.getClass().getSimpleName()+
                                             "] does not implement java.util.Map");
             }
-            return ((Map)dataObj).get(fieldName);
+            return ((Map<?,?>)dataObj).get(fieldName);
         }
         return null;
     }

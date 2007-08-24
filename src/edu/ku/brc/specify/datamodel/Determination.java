@@ -63,7 +63,7 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
 
     // Fields    
 
-     protected Long determinationId;
+     protected Integer determinationId;
      protected DeterminationStatus status;
      protected String typeStatusName;
      protected Calendar determinedDate;
@@ -91,7 +91,7 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
     }
     
     /** constructor with id */
-    public Determination(Long determinationId) {
+    public Determination(Integer determinationId) {
         this.determinationId = determinationId;
     }
    
@@ -132,7 +132,7 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
     @Id
     @GeneratedValue
     @Column(name = "DeterminationID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getDeterminationId() 
+    public Integer getDeterminationId() 
     {
         return this.determinationId;
     }
@@ -143,7 +143,7 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.determinationId;
     }
@@ -158,7 +158,7 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
         return Determination.class;
     }
     
-    public void setDeterminationId(Long determinationId) 
+    public void setDeterminationId(Integer determinationId) 
     {
         this.determinationId = determinationId;
     }

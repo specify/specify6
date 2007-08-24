@@ -68,7 +68,7 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
      */
     protected static final Logger log = Logger.getLogger(LithoStrat.class);
 
-	protected Long						    lithoStratId;
+	protected Integer						    lithoStratId;
 	protected Integer						rankId;
 	protected String						name;
 	protected String						fullName;
@@ -92,7 +92,7 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
 	}
 
 	/** constructor with id */
-	public LithoStrat(Long geologicTimePeriodId)
+	public LithoStrat(Integer geologicTimePeriodId)
 	{
 		this.lithoStratId = geologicTimePeriodId;
 	}
@@ -126,7 +126,7 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
     @Id
     @GeneratedValue
     @Column(name = "LithoStratID", unique = false, nullable = false, insertable = true, updatable = true)
-	public Long getLithoStratId()
+	public Integer getLithoStratId()
 	{
 		return this.lithoStratId;
 	}
@@ -137,7 +137,7 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.lithoStratId;
     }
@@ -152,7 +152,7 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
         return LithoStrat.class;
     }
 
-	public void setLithoStratId(Long geologicTimePeriodId)
+	public void setLithoStratId(Integer geologicTimePeriodId)
 	{
 		this.lithoStratId = geologicTimePeriodId;
 	}
@@ -343,12 +343,12 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
     /* Code added in order to implement Treeable */
 
     @Transient
-	public Long getTreeId()
+	public Integer getTreeId()
 	{
 		return getLithoStratId();
 	}
 
-	public void setTreeId(Long id)
+	public void setTreeId(Integer id)
 	{
 		setLithoStratId(id);
 	}

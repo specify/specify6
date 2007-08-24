@@ -22,7 +22,7 @@ public interface DataProviderIFace
      * Eveicts a class of objects from the provider.
      * @param clsObject the class
      */
-    public void evict(Class clsObject);
+    public void evict(Class<?> clsObject);
     
     /**
      * Request the provider to be shutdown.

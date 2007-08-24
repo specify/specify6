@@ -42,7 +42,7 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
 @Table(name = "attachments")
 public class Attachment extends DataModelObjBase implements Serializable, Orderable
 {
-    private Long                    attachmentID;
+    private Integer                    attachmentID;
     private String                  mimeType;
     private String                  origFilename;
     private Calendar                fileCreatedDate;
@@ -69,7 +69,7 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
     }
 
     /** constructor with id */
-    public Attachment(Long attachmentID)
+    public Attachment(Integer attachmentID)
     {
         this.attachmentID = attachmentID;
     }
@@ -102,19 +102,19 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
     @Id
     @GeneratedValue
     @Column(name = "AttachmentID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getAttachmentID()
+    public Integer getAttachmentID()
     {
         return this.attachmentID;
     }
 
-    public void setAttachmentID(Long attachmentID)
+    public void setAttachmentID(Integer attachmentID)
     {
         this.attachmentID = attachmentID;
     }
     
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return attachmentID;
     }

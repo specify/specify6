@@ -50,7 +50,7 @@ public class CollectionObjectCitation extends DataModelObjBase implements java.i
 
     // Fields    
 
-     protected Long collectionObjectCitationId;
+     protected Integer collectionObjectCitationId;
      protected String remarks;
      protected ReferenceWork referenceWork;
      protected CollectionObject collectionObject;
@@ -64,7 +64,7 @@ public class CollectionObjectCitation extends DataModelObjBase implements java.i
     }
     
     /** constructor with id */
-    public CollectionObjectCitation(Long collectionObjectCitationId) {
+    public CollectionObjectCitation(Integer collectionObjectCitationId) {
         this.collectionObjectCitationId = collectionObjectCitationId;
     }
    
@@ -91,7 +91,7 @@ public class CollectionObjectCitation extends DataModelObjBase implements java.i
     @Id
     @GeneratedValue
     @Column(name = "CollectionObjectCitationID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getCollectionObjectCitationId() {
+    public Integer getCollectionObjectCitationId() {
         return this.collectionObjectCitationId;
     }
 
@@ -101,7 +101,7 @@ public class CollectionObjectCitation extends DataModelObjBase implements java.i
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.collectionObjectCitationId;
     }
@@ -116,7 +116,7 @@ public class CollectionObjectCitation extends DataModelObjBase implements java.i
         return CollectionObjectCitation.class;
     }
     
-    public void setCollectionObjectCitationId(Long collectionObjectCitationId) {
+    public void setCollectionObjectCitationId(Integer collectionObjectCitationId) {
         this.collectionObjectCitationId = collectionObjectCitationId;
     }
 

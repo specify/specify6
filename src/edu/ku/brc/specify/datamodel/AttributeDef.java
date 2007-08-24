@@ -55,7 +55,7 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
 
     // Fields
 
-     protected Long attributeDefId;
+     protected Integer attributeDefId;
      protected Short tableType;
      protected String fieldName;
      protected Short dataType;
@@ -74,7 +74,7 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
     }
 
     /** constructor with id */
-    public AttributeDef(Long attributeDefId) {
+    public AttributeDef(Integer attributeDefId) {
         this.attributeDefId = attributeDefId;
     }
 
@@ -106,7 +106,7 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
     @Id
     @GeneratedValue
     @Column(name = "AttributeDefID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getAttributeDefId() {
+    public Integer getAttributeDefId() {
         return this.attributeDefId;
     }
 
@@ -116,7 +116,7 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.attributeDefId;
     }
@@ -131,7 +131,7 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
         return AttributeDef.class;
     }
 
-    public void setAttributeDefId(Long attributeDefId) {
+    public void setAttributeDefId(Integer attributeDefId) {
         this.attributeDefId = attributeDefId;
     }
 

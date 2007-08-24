@@ -56,7 +56,7 @@ public class UserGroup extends DataModelObjBase implements java.io.Serializable 
 
     // Fields
 
-     protected Long userGroupId;
+     protected Integer userGroupId;
      protected String name;
      protected String remarks;
      protected Set<SpecifyUser> specifyUsers;
@@ -72,7 +72,7 @@ public class UserGroup extends DataModelObjBase implements java.io.Serializable 
     }
 
     /** constructor with id */
-    public UserGroup(Long userGroupId) {
+    public UserGroup(Integer userGroupId) {
         this.userGroupId = userGroupId;
     }
 
@@ -102,7 +102,7 @@ public class UserGroup extends DataModelObjBase implements java.io.Serializable 
     @Id
     @GeneratedValue
     @Column(name = "UserGroupID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getUserGroupId() {
+    public Integer getUserGroupId() {
         return this.userGroupId;
     }
 
@@ -112,7 +112,7 @@ public class UserGroup extends DataModelObjBase implements java.io.Serializable 
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.userGroupId;
     }
@@ -137,7 +137,7 @@ public class UserGroup extends DataModelObjBase implements java.io.Serializable 
         return false;
     }
     
-    public void setUserGroupId(Long userGroupId) {
+    public void setUserGroupId(Integer userGroupId) {
         this.userGroupId = userGroupId;
     }
 

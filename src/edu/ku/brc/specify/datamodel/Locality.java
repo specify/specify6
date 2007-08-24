@@ -63,7 +63,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable, 
 
     // Fields    
 
-     protected Long localityId;
+     protected Integer localityId;
      protected String namedPlace;
      protected String relationToNamedPlace;
      protected String localityName;
@@ -136,7 +136,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable, 
     }
     
     /** constructor with id */
-    public Locality(Long localityId) {
+    public Locality(Integer localityId) {
         this.localityId = localityId;
     }
 
@@ -217,7 +217,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable, 
     @Id
     @GeneratedValue
     @Column(name = "LocalityID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getLocalityId() {
+    public Integer getLocalityId() {
         return this.localityId;
     }
 
@@ -227,7 +227,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable, 
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.localityId;
     }
@@ -242,7 +242,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable, 
         return Locality.class;
     }
     
-    public void setLocalityId(Long localityId) {
+    public void setLocalityId(Integer localityId) {
         this.localityId = localityId;
     }
 
@@ -951,7 +951,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable, 
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    @JoinColumn(name = "GeographyID", unique = false, nullable = false, insertable = true, updatable = true)
+    @JoinColumn(name = "GeographyID", unique = false, nullable = true, insertable = true, updatable = true)
     public Geography getGeography() {
         return this.geography;
     }

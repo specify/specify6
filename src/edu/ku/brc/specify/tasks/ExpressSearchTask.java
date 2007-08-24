@@ -116,7 +116,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
 
 
     /**
-     * Deafult Constructor.
+     * Default Constructor.
      */
     public ExpressSearchTask()
     {
@@ -905,13 +905,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
         HelpMgr.setHelpID(searchText, "Express_Search");
         
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-        //searchText.setText("2004-IZ-121");
-        //searchText.setText("platostomus");
         searchText.setText(localPrefs.get(LAST_SEARCH, ""));
-        
-        //searchText  = searchTextAutoComp.getTnew JTextField("2004-IZ-121", 15);
-
-        //searchText  = new JTextField(10);
         textBGColor = searchText.getBackground();
 
         searchText.setMinimumSize(new Dimension(50, searchText.getPreferredSize().height));

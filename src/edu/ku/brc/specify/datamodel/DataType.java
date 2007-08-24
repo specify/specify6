@@ -52,7 +52,7 @@ public class DataType extends DataModelObjBase implements java.io.Serializable {
 
     // Fields
 
-     protected Long dataTypeId;
+     protected Integer dataTypeId;
      protected String name;
      protected Set<CollectionType> collectionType;
 
@@ -65,7 +65,7 @@ public class DataType extends DataModelObjBase implements java.io.Serializable {
     }
 
     /** constructor with id */
-    public DataType(Long dataTypeId) {
+    public DataType(Integer dataTypeId) {
         this.dataTypeId = dataTypeId;
     }
 
@@ -91,7 +91,7 @@ public class DataType extends DataModelObjBase implements java.io.Serializable {
     @Id
     @GeneratedValue
     @Column(name = "DataTypeID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getDataTypeId() {
+    public Integer getDataTypeId() {
         return this.dataTypeId;
     }
 
@@ -101,7 +101,7 @@ public class DataType extends DataModelObjBase implements java.io.Serializable {
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.dataTypeId;
     }
@@ -116,7 +116,7 @@ public class DataType extends DataModelObjBase implements java.io.Serializable {
         return DataType.class;
     }
 
-    public void setDataTypeId(Long dataTypeId) {
+    public void setDataTypeId(Integer dataTypeId) {
         this.dataTypeId = dataTypeId;
     }
 

@@ -73,7 +73,7 @@ public class StatsPane extends BaseSubPane
      * Creates a StatsPane.
      * @param name name of pane
      * @param task the owning task
-     * @param resourceName the name of the resource that contains the configration
+     * @param resourceName the name of the resource that contains the configuration
      * @param useSeparatorTitles indicates the group panels should use separator titles instead of boxes
      * @param bgColor the background color
     */

@@ -72,7 +72,7 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     
     // Fields    
 
-     protected Long                    appResourceId;
+     protected Integer                    appResourceId;
      protected Short                   level;
      protected String                  name;
      protected String                  description;
@@ -99,7 +99,7 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     }
     
     /** constructor with id */
-    public AppResource(Long appResourceId) 
+    public AppResource(Integer appResourceId) 
     {
         this.appResourceId = appResourceId;
     }
@@ -137,7 +137,7 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     @Id
     @GeneratedValue
     @Column(name = "AppResourceID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getAppResourceId() {
+    public Integer getAppResourceId() {
         return this.appResourceId;
     }
 
@@ -147,7 +147,7 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.appResourceId;
     }
@@ -172,7 +172,7 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
         return false;
     }
     
-    public void setAppResourceId(Long appResourceId) {
+    public void setAppResourceId(Integer appResourceId) {
         this.appResourceId = appResourceId;
     }
 

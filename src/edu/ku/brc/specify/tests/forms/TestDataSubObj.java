@@ -17,7 +17,7 @@ public class TestDataSubObj
     protected java.util.Date date;
     protected String  noImage = "";
     
-    protected Set subObjects;
+    protected Set<?> subObjects;
 
     public TestDataSubObj()
     {
@@ -25,11 +25,11 @@ public class TestDataSubObj
         date = new java.util.Date();
     }
 
-    public Set getSubObjects() {
+    public Set<?> getSubObjects() {
         return this.subObjects;
     }
     
-    public void setSubObjects(Set subObjects) {
+    public void setSubObjects(Set<?> subObjects) {
         this.subObjects = subObjects;
     }
     

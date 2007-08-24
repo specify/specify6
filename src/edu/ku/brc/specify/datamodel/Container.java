@@ -52,8 +52,8 @@ public class Container extends DataModelObjBase implements java.io.Serializable 
 
     // Fields
 
-     protected Long containerId;
-     protected Long collectionObjectId;
+     protected Integer containerId;
+     protected Integer collectionObjectId;
      protected Short type;
      protected String name;
      protected String description;
@@ -71,7 +71,7 @@ public class Container extends DataModelObjBase implements java.io.Serializable 
     }
 
     /** constructor with id */
-    public Container(Long containerId) {
+    public Container(Integer containerId) {
         this.containerId = containerId;
     }
 
@@ -103,7 +103,7 @@ public class Container extends DataModelObjBase implements java.io.Serializable 
     @Id
     @GeneratedValue
     @Column(name = "ContainerID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getContainerId() {
+    public Integer getContainerId() {
         return this.containerId;
     }
 
@@ -113,7 +113,7 @@ public class Container extends DataModelObjBase implements java.io.Serializable 
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.containerId;
     }
@@ -128,7 +128,7 @@ public class Container extends DataModelObjBase implements java.io.Serializable 
         return Container.class;
     }
 
-    public void setContainerId(Long containerId) {
+    public void setContainerId(Integer containerId) {
         this.containerId = containerId;
     }
 
@@ -136,11 +136,11 @@ public class Container extends DataModelObjBase implements java.io.Serializable 
      *
      */
     @Column(name = "CollectionObjectID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Long getCollectionObjectId() {
+    public Integer getCollectionObjectId() {
         return this.collectionObjectId;
     }
 
-    public void setCollectionObjectId(Long collectionObjectId) {
+    public void setCollectionObjectId(Integer collectionObjectId) {
         this.collectionObjectId = collectionObjectId;
     }
 

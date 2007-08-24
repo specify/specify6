@@ -46,7 +46,7 @@ import org.hibernate.annotations.CascadeType;
 @Table(name = "catalognumberingscheme")
 public class CatalogNumberingScheme extends DataModelObjBase implements java.io.Serializable
 {
-    protected Long            catalogNumberingSchemeId;
+    protected Integer            catalogNumberingSchemeId;
 
     protected String          schemeName;
     protected String          schemeClassName;
@@ -59,7 +59,7 @@ public class CatalogNumberingScheme extends DataModelObjBase implements java.io.
     }
     
     /** constructor with id */
-    public CatalogNumberingScheme(Long catalogNumberingSchemeId) 
+    public CatalogNumberingScheme(Integer catalogNumberingSchemeId) 
     {
         this.catalogNumberingSchemeId = catalogNumberingSchemeId;
     }
@@ -83,7 +83,7 @@ public class CatalogNumberingScheme extends DataModelObjBase implements java.io.
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.catalogNumberingSchemeId;
     }
@@ -91,12 +91,12 @@ public class CatalogNumberingScheme extends DataModelObjBase implements java.io.
     @Id
     @GeneratedValue
     @Column(name = "CatalogNumberingSchemeID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getCatalogNumberingSchemeId()
+    public Integer getCatalogNumberingSchemeId()
     {
         return catalogNumberingSchemeId;
     }
 
-    public void setCatalogNumberingSchemeId(Long catalogNumberingSchemeId)
+    public void setCatalogNumberingSchemeId(Integer catalogNumberingSchemeId)
     {
         this.catalogNumberingSchemeId = catalogNumberingSchemeId;
     }

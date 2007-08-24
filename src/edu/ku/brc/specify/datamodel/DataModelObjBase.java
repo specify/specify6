@@ -73,7 +73,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getId()
      */
     @Transient
-    public abstract Long getId();
+    public abstract Integer getId();
     
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getIdentityTitle()

@@ -45,7 +45,7 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
      */
     protected static final Logger log = Logger.getLogger(Location.class);
 
-	protected Long			    locationId;
+	protected Integer			    locationId;
 	protected String			name;
 	protected String			fullName;
 	protected String			remarks;
@@ -72,7 +72,7 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
 	}
 
 	/** constructor with id */
-	public Location(Long locationId)
+	public Location(Integer locationId)
 	{
 		this.locationId = locationId;
 	}
@@ -104,7 +104,7 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
     @Id
     @GeneratedValue
     @Column(name = "LocationID", unique = false, nullable = false, insertable = true, updatable = true)
-	public Long getLocationId()
+	public Integer getLocationId()
 	{
 		return this.locationId;
 	}
@@ -115,7 +115,7 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
      */
     @Override
     @Transient
-    public Long getId()
+    public Integer getId()
     {
         return this.locationId;
     }
@@ -130,7 +130,7 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
         return Location.class;
     }
 
-	public void setLocationId(Long locationId)
+	public void setLocationId(Integer locationId)
 	{
 		this.locationId = locationId;
 	}
@@ -351,12 +351,12 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
 	}
 
     @Transient
-	public Long getTreeId()
+	public Integer getTreeId()
 	{
 		return getLocationId();
 	}
 
-	public void setTreeId(Long id)
+	public void setTreeId(Integer id)
 	{
 		setLocationId(id);
 	}

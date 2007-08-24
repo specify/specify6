@@ -57,7 +57,7 @@ public class LithoStratTreeDefItem extends DataModelObjBase implements Serializa
 
 	// Fields    
 
-	protected Long				   lithoStratTreeDefItemId;
+	protected Integer				   lithoStratTreeDefItemId;
 	protected String				name;
 	protected String				remarks;
 	protected Integer				rankId;
@@ -82,7 +82,7 @@ public class LithoStratTreeDefItem extends DataModelObjBase implements Serializa
 	}
 
 	/** constructor with id */
-	public LithoStratTreeDefItem(Long lithoStratTreeDefItemId)
+	public LithoStratTreeDefItem(Integer lithoStratTreeDefItemId)
 	{
 		this.lithoStratTreeDefItemId = lithoStratTreeDefItemId;
 	}
@@ -117,7 +117,7 @@ public class LithoStratTreeDefItem extends DataModelObjBase implements Serializa
     @Id
     @GeneratedValue
     @Column(name = "LithoStratTreeDefItemID", unique = false, nullable = false, insertable = true, updatable = true, length = 10)
-	public Long getLithoStratTreeDefItemId()
+	public Integer getLithoStratTreeDefItemId()
 	{
 		return this.lithoStratTreeDefItemId;
 	}
@@ -128,7 +128,7 @@ public class LithoStratTreeDefItem extends DataModelObjBase implements Serializa
      */
     @Override
     @Transient
-    public Long getId()
+    public Integer getId()
     {
         return this.lithoStratTreeDefItemId;
     }
@@ -143,7 +143,7 @@ public class LithoStratTreeDefItem extends DataModelObjBase implements Serializa
         return LithoStratTreeDefItem.class;
     }
 
-	public void setLithoStratTreeDefItemId(Long lithoStratTreeDefItemId)
+	public void setLithoStratTreeDefItemId(Integer lithoStratTreeDefItemId)
 	{
 		this.lithoStratTreeDefItemId = lithoStratTreeDefItemId;
 	}
@@ -313,12 +313,12 @@ public class LithoStratTreeDefItem extends DataModelObjBase implements Serializa
 	// Code added to implement TreeDefinitionItemIface
 
     @Transient
-	public Long getTreeDefItemId()
+	public Integer getTreeDefItemId()
 	{
 		return getLithoStratTreeDefItemId();
 	}
 
-	public void setTreeDefItemId(Long id)
+	public void setTreeDefItemId(Integer id)
 	{
 		setLithoStratTreeDefItemId(id);
 	}

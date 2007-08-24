@@ -55,7 +55,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
     protected static final Logger log = Logger.getLogger(Taxon.class);
 
     // ID
-	protected Long                 taxonId;
+	protected Integer                 taxonId;
 	
     // names
 	protected String               name;
@@ -121,7 +121,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	}
 
 	/** constructor with id */
-	public Taxon(Long taxonId)
+	public Taxon(Integer taxonId)
 	{
 		this.taxonId = taxonId;
 	}
@@ -186,7 +186,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
     @Id
     @GeneratedValue
     @Column(name = "TaxonID", unique = false, nullable = false, insertable = true, updatable = true)
-	public Long getTaxonId()
+	public Integer getTaxonId()
 	{
 		return this.taxonId;
 	}
@@ -197,7 +197,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
      */
     @Override
     @Transient
-    public Long getId()
+    public Integer getId()
     {
         return this.taxonId;
     }
@@ -223,7 +223,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
         return Taxon.class;
     }
 
-	public void setTaxonId(Long taxonId)
+	public void setTaxonId(Integer taxonId)
 	{
 		this.taxonId = taxonId;
 	}
@@ -688,12 +688,12 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	}
 
     @Transient
-	public Long getTreeId()
+	public Integer getTreeId()
 	{
 		return this.taxonId;
 	}
 
-	public void setTreeId(Long id)
+	public void setTreeId(Integer id)
 	{
         this.taxonId = id;
 	}

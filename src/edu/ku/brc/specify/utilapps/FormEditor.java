@@ -642,7 +642,7 @@ public class FormEditor implements DatabaseLoginListener
                     //criteria.add(Expression.isNull("derivedFromId"));
 
 
-                    java.util.List data = criteria.list();
+                    List<?> data = criteria.list();
                     //System.out.println("Items Returned: "+data.size());
 
                     dataObj = data;
@@ -1187,13 +1187,13 @@ public class FormEditor implements DatabaseLoginListener
             HSSFSheet sheet = wb.getSheetAt(0);
             
             // Iterate over each row in the sheet
-            Iterator rows = sheet.rowIterator();
+            Iterator<?> rows = sheet.rowIterator();
             while( rows.hasNext() ) {           
                 HSSFRow row = (HSSFRow) rows.next();
                 System.out.println( "Row #" + row.getRowNum() );
  
                 // Iterate over each cell in the row and print out the cell's content
-                Iterator cells = row.cellIterator();
+                Iterator<?> cells = row.cellIterator();
                 while( cells.hasNext() ) {
                     HSSFCell cell = (HSSFCell) cells.next();
                     System.out.println( "Cell #" + cell.getCellNum() );
@@ -1444,7 +1444,7 @@ frame.setVisible(true);
         ///////////////////////////
         // TreeNode
         ///////////////////////////
-        public Enumeration children()
+        public Enumeration<?> children()
         {
             return kids.elements();
         }

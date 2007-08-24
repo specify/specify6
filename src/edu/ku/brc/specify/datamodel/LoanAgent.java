@@ -54,7 +54,7 @@ public class LoanAgent extends DataModelObjBase implements java.io.Serializable 
 
     // Fields    
 
-     protected Long loanAgentId;
+     protected Integer loanAgentId;
      protected String role;
      protected String remarks;
      protected Loan loan;
@@ -69,7 +69,7 @@ public class LoanAgent extends DataModelObjBase implements java.io.Serializable 
     }
     
     /** constructor with id */
-    public LoanAgent(Long loanAgentId) {
+    public LoanAgent(Integer loanAgentId) {
         this.loanAgentId = loanAgentId;
     }
    
@@ -97,7 +97,7 @@ public class LoanAgent extends DataModelObjBase implements java.io.Serializable 
     @Id
     @GeneratedValue
     @Column(name = "LoanAgentID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getLoanAgentId() {
+    public Integer getLoanAgentId() {
         return this.loanAgentId;
     }
 
@@ -107,7 +107,7 @@ public class LoanAgent extends DataModelObjBase implements java.io.Serializable 
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.loanAgentId;
     }
@@ -122,7 +122,7 @@ public class LoanAgent extends DataModelObjBase implements java.io.Serializable 
         return LoanAgent.class;
     }
     
-    public void setLoanAgentId(Long loanAgentId) {
+    public void setLoanAgentId(Integer loanAgentId) {
         this.loanAgentId = loanAgentId;
     }
 

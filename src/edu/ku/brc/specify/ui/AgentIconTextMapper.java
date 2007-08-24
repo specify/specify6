@@ -52,9 +52,9 @@ public class AgentIconTextMapper implements ObjectTextMapper, ObjectIconMapper
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.ObjectTextMapper#getMappedClasses()
      */
-    public Class[] getMappedClasses()
+    public Class<?>[] getMappedClasses()
     {
-        Class[] mappedClasses = new Class[6];
+        Class<?>[] mappedClasses = new Class[6];
         mappedClasses[0] = Agent.class;
         mappedClasses[1] = BorrowAgent.class;
         mappedClasses[2] = AccessionAgent.class;

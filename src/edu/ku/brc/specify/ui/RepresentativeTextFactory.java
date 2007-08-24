@@ -79,11 +79,11 @@ public class RepresentativeTextFactory implements ObjectTextMapper
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.ObjectTextMapper#getMappedClasses()
      */
-    public Class[] getMappedClasses()
+    public Class<?>[] getMappedClasses()
     {
     	// this instance only handles FormDataObjIFace if no submappers are registered
     	// TODO: should this return the aggregate of all classes mapped by registered submappers?
-    	return new Class[] {FormDataObjIFace.class};
+    	return new Class<?>[] {FormDataObjIFace.class};
     }
 
     /* (non-Javadoc)
@@ -140,7 +140,7 @@ public class RepresentativeTextFactory implements ObjectTextMapper
             String classname = entry.getAttributes().getNamedItem("class").getNodeValue();
             // register it as a submapper for each class it handles
             ObjectTextMapper subMapper = Class.forName(classname).asSubclass(ObjectTextMapper.class).newInstance();
-            Class[] handledClasses = subMapper.getMappedClasses();
+            Class<?>[] handledClasses = subMapper.getMappedClasses();
             for (Class<?> clazz: handledClasses)
             {
                 if (clazz==null)

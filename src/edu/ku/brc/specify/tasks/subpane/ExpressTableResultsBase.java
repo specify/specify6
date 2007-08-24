@@ -408,9 +408,9 @@ public abstract class ExpressTableResultsBase extends JPanel implements Comparab
      * @param returnAll indicates whether all the records should be returned if nothing was selected
      * @return a list of recordIds
      */
-    public List<Long> getListOfIds(final boolean returnAll)
+    public List<Integer> getListOfIds(final boolean returnAll)
     {
-        List<Long> list = new ArrayList<Long>();
+        List<Integer> list = new ArrayList<Integer>();
         RecordSetIFace rs = getRecordSet(returnAll);
         if (rs != null)
         {

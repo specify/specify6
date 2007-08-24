@@ -30,10 +30,10 @@ import org.hibernate.Query;
 public class ResultsPager 
 {
     
-    private List  resultsList;
-    private int   pageSize;
-    private int   page;
-    private Query query;
+    private List<?> resultsList;
+    private int     pageSize;
+    private int     page;
+    private Query   query;
     private boolean onLastPage = false;
     
     /**
@@ -88,7 +88,7 @@ public class ResultsPager
      * (Note: the number of objects returned maybe less than the number defined for the page)
      * @return a list of objects for the page
      */
-    public List getList() 
+    public List<?> getList() 
     {
         if (isNextPage())
         {

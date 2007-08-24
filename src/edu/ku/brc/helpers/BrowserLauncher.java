@@ -62,7 +62,7 @@ public class BrowserLauncher
             if (osType == UIHelper.OSTYPE.MacOSX)
             {
                 Class<?> fileMgr = Class.forName("com.apple.eio.FileManager");
-                Method openURL = fileMgr.getDeclaredMethod("openURL", new Class[] { String.class });
+                Method openURL = fileMgr.getDeclaredMethod("openURL", new Class<?>[] { String.class });
                 openURL.invoke(null, new Object[] { url });
 
             } else if (osType == UIHelper.OSTYPE.Windows)

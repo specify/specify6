@@ -57,7 +57,7 @@ public class Shipment extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 
-     protected Long shipmentId;
+     protected Integer shipmentId;
      protected Calendar shipmentDate;
      protected String shipmentNumber;
      protected String shipmentMethod;
@@ -88,7 +88,7 @@ public class Shipment extends DataModelObjBase implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public Shipment(Long shipmentId) {
+    public Shipment(Integer shipmentId) {
         this.shipmentId = shipmentId;
     }
    
@@ -132,7 +132,7 @@ public class Shipment extends DataModelObjBase implements java.io.Serializable {
     @Id
     @GeneratedValue
     @Column(name = "ShipmentID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getShipmentId() {
+    public Integer getShipmentId() {
         return this.shipmentId;
     }
 
@@ -142,7 +142,7 @@ public class Shipment extends DataModelObjBase implements java.io.Serializable {
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.shipmentId;
     }
@@ -157,7 +157,7 @@ public class Shipment extends DataModelObjBase implements java.io.Serializable {
         return Shipment.class;
     }
     
-    public void setShipmentId(Long shipmentId) {
+    public void setShipmentId(Integer shipmentId) {
         this.shipmentId = shipmentId;
     }
 

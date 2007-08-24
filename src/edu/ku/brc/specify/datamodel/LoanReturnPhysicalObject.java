@@ -57,7 +57,7 @@ public class LoanReturnPhysicalObject extends DataModelObjBase implements java.i
 
     // Fields    
 
-     protected Long loanReturnPhysicalObjectId;
+     protected Integer loanReturnPhysicalObjectId;
      protected Calendar returnedDate;
      protected Integer quantity;
      protected String remarks;
@@ -74,7 +74,7 @@ public class LoanReturnPhysicalObject extends DataModelObjBase implements java.i
     }
     
     /** constructor with id */
-    public LoanReturnPhysicalObject(Long loanReturnPhysicalObjectId) {
+    public LoanReturnPhysicalObject(Integer loanReturnPhysicalObjectId) {
         this.loanReturnPhysicalObjectId = loanReturnPhysicalObjectId;
     }
    
@@ -104,7 +104,7 @@ public class LoanReturnPhysicalObject extends DataModelObjBase implements java.i
     @Id
     @GeneratedValue
     @Column(name = "LoanReturnPhysicalObjectID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getLoanReturnPhysicalObjectId() {
+    public Integer getLoanReturnPhysicalObjectId() {
         return this.loanReturnPhysicalObjectId;
     }
 
@@ -114,7 +114,7 @@ public class LoanReturnPhysicalObject extends DataModelObjBase implements java.i
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.loanReturnPhysicalObjectId;
     }
@@ -129,7 +129,7 @@ public class LoanReturnPhysicalObject extends DataModelObjBase implements java.i
         return LoanReturnPhysicalObject.class;
     }
     
-    public void setLoanReturnPhysicalObjectId(Long loanReturnPhysicalObjectId) {
+    public void setLoanReturnPhysicalObjectId(Integer loanReturnPhysicalObjectId) {
         this.loanReturnPhysicalObjectId = loanReturnPhysicalObjectId;
     }
 

@@ -62,7 +62,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     
     public enum LoadStatus {None, Successful, Error, OutOfMemory, TooLarge}
     
-    protected Long                   workbenchRowId;
+    protected Integer                   workbenchRowId;
     protected Short                  rowNumber;
     protected byte[]                 cardImageData;
     protected String                 cardImageFullPath;
@@ -132,7 +132,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     @Id
     @GeneratedValue
     @Column(name = "WorkbenchRowID", nullable = false)
-    public Long getWorkbenchRowId()
+    public Integer getWorkbenchRowId()
     {
         return workbenchRowId;
     }
@@ -142,12 +142,12 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
      * @returns ID Property.
      */
     @Transient
-    public Long getId()
+    public Integer getId()
     {
         return this.workbenchRowId;
     }
     
-    public void setWorkbenchRowId(Long workbenchRowId)
+    public void setWorkbenchRowId(Integer workbenchRowId)
     {
         this.workbenchRowId = workbenchRowId;
     }

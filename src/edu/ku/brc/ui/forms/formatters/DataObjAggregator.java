@@ -28,7 +28,7 @@ package edu.ku.brc.ui.forms.formatters;
 public class DataObjAggregator
 {
     protected String          name;
-    protected Class           dataClass;
+    protected Class<?>        dataClass;
     protected boolean         isDefault;
     protected String          separator;
     protected Integer         count      = null;
@@ -36,7 +36,7 @@ public class DataObjAggregator
     protected String          formatName;
     
     public DataObjAggregator(final String name, 
-                             final Class dataClass,
+                             final Class<?> dataClass,
                              final boolean isDefault, 
                              final String separator, 
                              final Integer count, 
@@ -58,7 +58,7 @@ public class DataObjAggregator
         return isDefault;
     }
 
-    public Class getDataClass()
+    public Class<?> getDataClass()
     {
         return dataClass;
     }

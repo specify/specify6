@@ -58,7 +58,7 @@ public class AccessionAuthorization extends DataModelObjBase implements java.io.
 
     // Fields
 
-    protected Long                accessionAuthorizationId;
+    protected Integer                accessionAuthorizationId;
     protected String              remarks;
     protected Permit              permit;
     protected Accession           accession;
@@ -73,7 +73,7 @@ public class AccessionAuthorization extends DataModelObjBase implements java.io.
     }
 
     /** constructor with id */
-    public AccessionAuthorization(Long accessionAuthorizationId)
+    public AccessionAuthorization(Integer accessionAuthorizationId)
     {
         this.accessionAuthorizationId = accessionAuthorizationId;
     }
@@ -100,7 +100,7 @@ public class AccessionAuthorization extends DataModelObjBase implements java.io.
     @Id
     @GeneratedValue
     @Column(name = "AccessionAuthorizationID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getAccessionAuthorizationId()
+    public Integer getAccessionAuthorizationId()
     {
         return this.accessionAuthorizationId;
     }
@@ -112,7 +112,7 @@ public class AccessionAuthorization extends DataModelObjBase implements java.io.
      */
     @Override
     @Transient
-    public Long getId()
+    public Integer getId()
     {
         return this.accessionAuthorizationId;
     }
@@ -127,7 +127,7 @@ public class AccessionAuthorization extends DataModelObjBase implements java.io.
         return AccessionAuthorization.class;
     }
 
-    public void setAccessionAuthorizationId(Long accessionAuthorizationId)
+    public void setAccessionAuthorizationId(Integer accessionAuthorizationId)
     {
         this.accessionAuthorizationId = accessionAuthorizationId;
     }

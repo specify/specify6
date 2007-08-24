@@ -14,14 +14,9 @@
  */
 package edu.ku.brc.specify.security;
 
-import java.util.List;
-
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.SecurityMgr;
-import edu.ku.brc.specify.config.SpecifyAppContextMgr;
-import edu.ku.brc.specify.datamodel.Collection;
 
 /**
  * 

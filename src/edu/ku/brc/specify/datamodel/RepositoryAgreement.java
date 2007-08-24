@@ -60,7 +60,7 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
 
     // Fields
 
-     protected Long repositoryAgreementId;
+     protected Integer repositoryAgreementId;
      protected String number;
      protected String status;
      protected Calendar startDate;
@@ -89,7 +89,7 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
     }
 
     /** constructor with id */
-    public RepositoryAgreement(Long repositoryAgreementId) {
+    public RepositoryAgreement(Integer repositoryAgreementId) {
         this.repositoryAgreementId = repositoryAgreementId;
     }
 
@@ -130,7 +130,7 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
     @Id
     @GeneratedValue
     @Column(name = "RepositoryAgreementID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getRepositoryAgreementId() {
+    public Integer getRepositoryAgreementId() {
         return this.repositoryAgreementId;
     }
 
@@ -140,7 +140,7 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
      */
     @Override
     @Transient
-    public Long getId()
+    public Integer getId()
     {
         return this.repositoryAgreementId;
     }
@@ -155,7 +155,7 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
         return RepositoryAgreement.class;
     }
 
-    public void setRepositoryAgreementId(Long repositoryAgreementId) {
+    public void setRepositoryAgreementId(Integer repositoryAgreementId) {
         this.repositoryAgreementId = repositoryAgreementId;
     }
 

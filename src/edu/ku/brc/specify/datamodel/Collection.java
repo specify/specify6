@@ -46,7 +46,7 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     protected static List<Integer> currentCollectionIds = null;
     
     // Fields
-    protected Long                       collectionId;
+    protected Integer                       collectionId;
     protected String                     collectionName;
     protected String                     collectionPrefix;
     protected String                     remarks;
@@ -62,7 +62,7 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     }
 
     /** constructor with id */
-    public Collection(Long collectionId) {
+    public Collection(Integer collectionId) {
         this.collectionId = collectionId;
     }
 
@@ -115,7 +115,7 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     @Id
     @GeneratedValue
     @Column(name = "CollectionID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getCollectionId() {
+    public Integer getCollectionId() {
         return this.collectionId;
     }
 
@@ -125,7 +125,7 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.collectionId;
     }
@@ -140,7 +140,7 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
         return Collection.class;
     }
 
-    public void setCollectionId(Long collectionId) {
+    public void setCollectionId(Integer collectionId) {
         this.collectionId = collectionId;
     }
 

@@ -44,9 +44,9 @@ public interface DataProviderSessionIFace
     
     //public List getDataList(RecordSetIFace recordSet);
     
-    public <T> T load(Class<T> clsObj, Long id);
+    public <T> T load(Class<T> clsObj, Integer id);
     
-    public <T> T get(Class<T> clsObj, Long id);
+    public <T> T get(Class<T> clsObj, Integer id);
 
     public <T> T getData(Class<T> clsObject, String fieldName, Object value, DataProviderSessionIFace.CompareType compareType);
     

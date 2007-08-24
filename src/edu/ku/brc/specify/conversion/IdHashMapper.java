@@ -273,9 +273,9 @@ public class IdHashMapper implements IdMapperIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.conversion.IdMapperIFace#put(long, long)
+     * @see edu.ku.brc.specify.conversion.IdMapperIFace#put(int, int)
      */
-    public void put(final long oldIndex, final long newIndex)
+    public void put(final int oldIndex, final int newIndex)
     {
         try
         {
@@ -293,9 +293,9 @@ public class IdHashMapper implements IdMapperIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.conversion.IdMapperIFace#get(java.lang.Long)
+     * @see edu.ku.brc.specify.conversion.IdMapperIFace#get(java.lang.Integer)
      */
-    public Long get(final Long oldId)
+    public Integer get(final Integer oldId)
     {
         if (oldId == null )
         {
@@ -304,12 +304,12 @@ public class IdHashMapper implements IdMapperIFace
 
         try
         {
-            Long   newId = null;
+            Integer   newId = null;
             Statement stmtNew = newConn.createStatement();
             ResultSet rs      = stmtNew.executeQuery("select NewID from "+mapTableName+" where OldID = " + oldId);
             if (rs.first())
             {
-                newId = rs.getLong(1);
+                newId = rs.getInt(1);
 
             } else
             {

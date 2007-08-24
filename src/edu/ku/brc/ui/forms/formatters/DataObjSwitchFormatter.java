@@ -37,7 +37,7 @@ public class DataObjSwitchFormatter
     protected String                 name;
     protected boolean                isSingle;
     protected boolean                isDefault;
-    protected Class                  dataClass;
+    protected Class<?>               dataClass;
     protected String                 fieldName;
     protected DataObjDataFieldFormatIFace single     = null;
     
@@ -54,7 +54,7 @@ public class DataObjSwitchFormatter
     public DataObjSwitchFormatter(final String  name, 
                                   final boolean isSingle, 
                                   final boolean isDefault, 
-                                  final Class   dataClass, 
+                                  final Class<?>  dataClass, 
                                   final String  fieldName)
     {
         this.name      = name;
@@ -141,7 +141,7 @@ public class DataObjSwitchFormatter
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.DataObjectFormatterIFace#getDataClass()
      */
-    public Class getDataClass()
+    public Class<?> getDataClass()
     {
         return dataClass;
     }

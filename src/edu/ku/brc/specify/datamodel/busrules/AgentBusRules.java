@@ -68,7 +68,7 @@ public class AgentBusRules extends BaseBusRules
 
         Agent agent = (Agent)dataObj;
         
-        Long agentId = agent.getId();
+        Integer agentId = agent.getId();
         if (agentId==null)
         {
             return true;

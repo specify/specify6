@@ -57,7 +57,7 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
 
     // Fields
 
-     protected Long             appResourceDefaultId;
+     protected Integer             appResourceDefaultId;
      protected Collection       collection;
      protected CollectionType collectionType;
      protected SpecifyUser      specifyUser;
@@ -78,7 +78,7 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
     }
 
     /** constructor with id */
-    public AppResourceDefault(Long appResourceDefaultId) {
+    public AppResourceDefault(Integer appResourceDefaultId) {
         this.appResourceDefaultId = appResourceDefaultId;
     }
 
@@ -113,7 +113,7 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
     @Id
     @GeneratedValue
     @Column(name = "AppResourceDefaultID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getAppResourceDefaultId() {
+    public Integer getAppResourceDefaultId() {
         return this.appResourceDefaultId;
     }
 
@@ -123,7 +123,7 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.appResourceDefaultId;
     }
@@ -148,7 +148,7 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
         return false;
     }
     
-    public void setAppResourceDefaultId(Long appResourceDefaultId) {
+    public void setAppResourceDefaultId(Integer appResourceDefaultId) {
         this.appResourceDefaultId = appResourceDefaultId;
     }
 

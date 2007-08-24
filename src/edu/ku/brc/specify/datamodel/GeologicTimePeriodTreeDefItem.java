@@ -57,7 +57,7 @@ public class GeologicTimePeriodTreeDefItem extends DataModelObjBase implements S
 
 	// Fields    
 
-	protected Long				    geologicTimePeriodTreeDefItemId;
+	protected Integer				    geologicTimePeriodTreeDefItemId;
 	protected String				name;
 	protected String				remarks;
 	protected Integer				rankId;
@@ -82,7 +82,7 @@ public class GeologicTimePeriodTreeDefItem extends DataModelObjBase implements S
 	}
 
 	/** constructor with id */
-	public GeologicTimePeriodTreeDefItem(Long geologicTimePeriodTreeDefItemId)
+	public GeologicTimePeriodTreeDefItem(Integer geologicTimePeriodTreeDefItemId)
 	{
 		this.geologicTimePeriodTreeDefItemId = geologicTimePeriodTreeDefItemId;
 	}
@@ -117,7 +117,7 @@ public class GeologicTimePeriodTreeDefItem extends DataModelObjBase implements S
     @Id
     @GeneratedValue
     @Column(name = "GeologicTimePeriodTreeDefItemID", unique = false, nullable = false, insertable = true, updatable = true, length = 10)
-	public Long getGeologicTimePeriodTreeDefItemId()
+	public Integer getGeologicTimePeriodTreeDefItemId()
 	{
 		return this.geologicTimePeriodTreeDefItemId;
 	}
@@ -128,7 +128,7 @@ public class GeologicTimePeriodTreeDefItem extends DataModelObjBase implements S
      */
     @Override
     @Transient
-    public Long getId()
+    public Integer getId()
     {
         return this.geologicTimePeriodTreeDefItemId;
     }
@@ -143,7 +143,7 @@ public class GeologicTimePeriodTreeDefItem extends DataModelObjBase implements S
         return GeologicTimePeriodTreeDefItem.class;
     }
 
-	public void setGeologicTimePeriodTreeDefItemId(Long geologicTimePeriodTreeDefItemId)
+	public void setGeologicTimePeriodTreeDefItemId(Integer geologicTimePeriodTreeDefItemId)
 	{
 		this.geologicTimePeriodTreeDefItemId = geologicTimePeriodTreeDefItemId;
 	}
@@ -313,12 +313,12 @@ public class GeologicTimePeriodTreeDefItem extends DataModelObjBase implements S
 	// Code added to implement TreeDefinitionItemIface
 
     @Transient
-	public Long getTreeDefItemId()
+	public Integer getTreeDefItemId()
 	{
 		return getGeologicTimePeriodTreeDefItemId();
 	}
 
-	public void setTreeDefItemId(Long id)
+	public void setTreeDefItemId(Integer id)
 	{
 		setGeologicTimePeriodTreeDefItemId(id);
 	}

@@ -54,6 +54,7 @@ import javax.swing.event.ListDataListener;
 @SuppressWarnings("serial")
 public class SortedListModel extends DefaultListModel {
     
+    @SuppressWarnings("unused")
     private SortedListModel() {}
     
     /**
@@ -87,7 +88,7 @@ public class SortedListModel extends DefaultListModel {
      *@param comp
      *
      */
-    public SortedListModel(ListModel model, SortOrder sortOrder, Comparator comp) {
+    public SortedListModel(ListModel model, SortOrder sortOrder, Comparator<Object> comp) {
         unsortedModel = model;
         unsortedModel.addListDataListener(new ListDataListener() {
             public void intervalAdded(ListDataEvent e) {
@@ -352,7 +353,7 @@ public class SortedListModel extends DefaultListModel {
     
     private List<SortedListEntry> sortedModel;
     private ListModel unsortedModel;
-    private Comparator comparator;
+    private Comparator<Object> comparator;
     private SortOrder sortOrder;
     
     public enum SortOrder {
@@ -361,7 +362,8 @@ public class SortedListModel extends DefaultListModel {
         DESCENDING;
     }
     
-    class SortedListEntry  implements Comparable {
+    class SortedListEntry implements Comparable<SortedListEntry> {
+        @SuppressWarnings("unused")
         private SortedListEntry() {
             
         }
@@ -379,7 +381,7 @@ public class SortedListModel extends DefaultListModel {
         }
         
         @SuppressWarnings("unchecked")
-        public int compareTo(Object o) {
+        public int compareTo(SortedListEntry o) {
             // retrieve the element that this entry points to
             // in the original model
             Object thisElement = unsortedModel.getElementAt(index);

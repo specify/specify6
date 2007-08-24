@@ -16,8 +16,17 @@ public class UIControlTOHTML
             TransformerConfigurationException, FileNotFoundException, IOException
     {
         TransformerFactory tFactory = TransformerFactory.newInstance();
-        Transformer transformer = tFactory.newTransformer(new StreamSource("src/edu/ku/brc/specify/tests/uicontrols.xslt"));
-        transformer.transform(new StreamSource("UIControls.xml"), new StreamResult(new FileOutputStream("UIControls.html")));
+        if (false)
+        {
+          Transformer transformer = tFactory.newTransformer(new StreamSource("src/edu/ku/brc/specify/utilapps/uicontrols.xslt"));
+          transformer.transform(new StreamSource("UIControls.xml"), new StreamResult(new FileOutputStream("UIControls.html")));
+        } else
+        {
+            Transformer transformer = tFactory.newTransformer(new StreamSource("src/edu/ku/brc/specify/utilapps/specifyschema.xslt"));
+            transformer.transform(new StreamSource("config/specify_datamodel.xml"), new StreamResult(new FileOutputStream("SpecifySchema.html")));
+        }
         System.out.println("** The output is written.");
+        
+        
     }
 }

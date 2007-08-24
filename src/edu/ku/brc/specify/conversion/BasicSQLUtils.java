@@ -834,7 +834,7 @@ public class BasicSQLUtils
                             if (idMapper != null)
                             {
 
-                                long oldPrimaryKeyId = rs.getLong(columnIndex);
+                                int oldPrimaryKeyId = rs.getInt(columnIndex);
 
                                 // if the value was null, getInt() returns 0
                                 // use wasNull() to distinguish real 0 from a null return
@@ -944,7 +944,7 @@ public class BasicSQLUtils
                         if (idMapper != null)
                         {
                             idMapper.setShowLogErrors(false);
-                            Long newPrimaryId = idMapper.get(Long.parseLong(id));
+                            Integer newPrimaryId = idMapper.get(Integer.parseInt(id));
                             if (newPrimaryId != null)
                             {
                                 if (i > 0) str.append(", ");
@@ -1139,16 +1139,16 @@ public class BasicSQLUtils
      * @param idColName primary key column name
      * @return the last ID that was inserted into the database
      */
-    public static long getHighestId(final Connection connection, final String idColName, final String tableName)
+    public static int getHighestId(final Connection connection, final String idColName, final String tableName)
     {
         try
         {
             Statement cntStmt = connection.createStatement();
             ResultSet rs      = cntStmt.executeQuery("select "+idColName+" from "+tableName+" order by "+idColName+" asc");
-            long id = 0;
+            int id = 0;
             if (rs.last())
             {
-                id = rs.getLong(1);
+                id = rs.getInt(1);
             } else
             {
                 id = 1;

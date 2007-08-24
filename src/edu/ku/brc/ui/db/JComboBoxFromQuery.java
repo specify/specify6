@@ -310,6 +310,7 @@ public class JComboBoxFromQuery extends JComboBox
             String queryString;
             if (sql == null)
             {
+                // XXX MYSQL
                 queryString= "select distinct " + displayColumns + "," + idColumn  + " from " + tableName + " where lower(" + keyColumn +
                                  ") like '"+ entryStr.toLowerCase() +"%' order by " + keyColumn + " asc";
             } else

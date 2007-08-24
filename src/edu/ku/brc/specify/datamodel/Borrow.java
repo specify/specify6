@@ -61,7 +61,7 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 
-     protected Long borrowId;
+     protected Integer borrowId;
      protected String invoiceNumber;
      protected Calendar receivedDate;
      protected Calendar originalDueDate;
@@ -89,7 +89,7 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public Borrow(Long borrowId) {
+    public Borrow(Integer borrowId) {
         this.borrowId = borrowId;
     }
    
@@ -130,7 +130,7 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
     @Id
     @GeneratedValue
     @Column(name = "BorrowID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getBorrowId() {
+    public Integer getBorrowId() {
         return this.borrowId;
     }
 
@@ -140,7 +140,7 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
      */
     @Override
     @Transient
-    public Long getId()
+    public Integer getId()
     {
         return this.borrowId;
     }
@@ -155,7 +155,7 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
         return Borrow.class;
     }
     
-    public void setBorrowId(Long borrowId) {
+    public void setBorrowId(Integer borrowId) {
         this.borrowId = borrowId;
     }
 

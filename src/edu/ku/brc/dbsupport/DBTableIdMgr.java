@@ -541,7 +541,7 @@ public class DBTableIdMgr
      * @param classOfObj the class to look up
      * @return the business rule object or null
      */
-    public BusinessRulesIFace getBusinessRule(Class classOfObj)
+    public BusinessRulesIFace getBusinessRule(Class<?> classOfObj)
     {
         TableInfo ti = getByClassName(classOfObj.getName());
         if (ti != null)
@@ -945,7 +945,7 @@ public class DBTableIdMgr
             return name.compareTo(obj.name);
         }
         
-        public Class getDataClass()
+        public Class<?> getDataClass()
         {
             if (StringUtils.isNotEmpty(type))
             {

@@ -28,7 +28,7 @@ import javax.swing.table.TableCellEditor;
  */
 public class ImageCombobox extends JComboBox implements TableCellEditor
 {
-    protected Vector<?> values = new Vector();
+    protected Vector<?> values = new Vector<Object>();
     
     public ImageCombobox(final Vector<?> values)
     {

@@ -113,7 +113,7 @@ public class WorkbenchBackupMgr
      * loads workbench from the database and backs it up (exports to an xls file) in a subdir in the
      * default working Path, and deletes old backups if necessary.
      */
-    public static String backupWorkbench(final long workbenchId, final WorkbenchTask task)
+    public static String backupWorkbench(final int workbenchId, final WorkbenchTask task)
     {
         String backupName = null;
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();

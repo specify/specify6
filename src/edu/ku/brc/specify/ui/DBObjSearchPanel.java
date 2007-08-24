@@ -110,7 +110,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
     protected ExpressResultsTableInfo  tableInfo;
     protected ExpressTableResultsBase  etrb = null;
 
-    protected List<Long>     idList         = null;
+    protected List<Integer>  idList         = null;
     protected String         sqlStr;
 
     protected Hashtable<String, Object> dataMap = new Hashtable<String, Object>();
@@ -507,7 +507,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
     {
         if (idList != null && idList.size() > 0)
         {
-            Long id = idList.get(0);
+            Integer id = idList.get(0);
             try
             {
                 log.debug("getSelectedObject class["+className+"] idFieldName["+idFieldName+"] id["+id+"]");

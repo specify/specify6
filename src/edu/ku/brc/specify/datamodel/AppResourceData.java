@@ -55,7 +55,7 @@ public class AppResourceData extends DataModelObjBase implements java.io.Seriali
 
     // Fields    
 
-     protected Long        appResourceDataId;
+     protected Integer        appResourceDataId;
      protected byte[]      data;
      protected AppResource AppResource;
      protected ViewSetObj  ViewSetObj;
@@ -69,7 +69,7 @@ public class AppResourceData extends DataModelObjBase implements java.io.Seriali
     }
     
     /** constructor with id */
-    public AppResourceData(Long appResourceDataId) {
+    public AppResourceData(Integer appResourceDataId) {
         this.appResourceDataId = appResourceDataId;
     }
    
@@ -91,7 +91,7 @@ public class AppResourceData extends DataModelObjBase implements java.io.Seriali
     @Id
     @GeneratedValue
     @Column(name = "AppResourceDataID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getAppResourceDataId() {
+    public Integer getAppResourceDataId() {
         return this.appResourceDataId;
     }
 
@@ -101,7 +101,7 @@ public class AppResourceData extends DataModelObjBase implements java.io.Seriali
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.appResourceDataId;
     }
@@ -126,7 +126,7 @@ public class AppResourceData extends DataModelObjBase implements java.io.Seriali
         return false;
     }
     
-    public void setAppResourceDataId(Long appResourceDataId) {
+    public void setAppResourceDataId(Integer appResourceDataId) {
         this.appResourceDataId = appResourceDataId;
     }
 

@@ -13,8 +13,6 @@ import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
-import edu.ku.brc.specify.datamodel.Treeable;
-
 /**
  * A JPopupMenu customized for use within a TreeTableViewer for displaying
  * actions that can be performed on nodes.

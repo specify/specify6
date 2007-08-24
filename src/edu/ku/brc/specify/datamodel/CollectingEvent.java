@@ -65,7 +65,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
 
     // Fields    
 
-    protected Long                  collectingEventId;
+    protected Integer               collectingEventId;
     protected String                stationFieldNumber;
     protected String                method;
     protected String                verbatimDate;
@@ -100,7 +100,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     }
     
     /** constructor with id */
-    public CollectingEvent(Long collectingEventId) {
+    public CollectingEvent(Integer collectingEventId) {
         this.collectingEventId = collectingEventId;
     }
    
@@ -142,7 +142,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     @Id
     @GeneratedValue
     @Column(name = "CollectingEventID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getCollectingEventId() {
+    public Integer getCollectingEventId() {
         return this.collectingEventId;
     }
 
@@ -152,7 +152,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.collectingEventId;
     }
@@ -167,7 +167,7 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
         return CollectingEvent.class;
     }
     
-    public void setCollectingEventId(Long collectingEventId) {
+    public void setCollectingEventId(Integer collectingEventId) {
         this.collectingEventId = collectingEventId;
     }
 

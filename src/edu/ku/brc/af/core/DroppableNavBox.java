@@ -98,7 +98,7 @@ public class DroppableNavBox extends NavBox implements GhostActionable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.dnd.GhostActionable#getDataForClass(java.lang.Class)
      */
-    public Object getDataForClass(Class classObj)
+    public Object getDataForClass(Class<?> classObj)
     {
         return UIHelper.getDataForClass(data, classObj);
     }

@@ -27,5 +27,5 @@ public interface ObjectTextMapper
      *
      * @return an array containing the mapped classes
      */
-    public Class[] getMappedClasses();
+    public Class<?>[] getMappedClasses();
 }

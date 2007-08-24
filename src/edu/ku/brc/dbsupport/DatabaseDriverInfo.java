@@ -220,7 +220,7 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
             {
                 Hashtable<String, String> hash = new Hashtable<String, String>();
 
-                for ( Iterator i = root.elementIterator( "db" ); i.hasNext(); ) 
+                for ( Iterator<?> i = root.elementIterator( "db" ); i.hasNext(); ) 
                 {
                     Element dbElement = (Element) i.next();
                     String  name      = getAttr(dbElement, "name", null);
@@ -245,7 +245,7 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
                         DatabaseDriverInfo drv = new DatabaseDriverInfo(name, driver, dialect);
                         
                         // Load up the Connection Types
-                        for ( Iterator connIter = dbElement.elementIterator( "connection" ); connIter.hasNext(); ) 
+                        for ( Iterator<?> connIter = dbElement.elementIterator( "connection" ); connIter.hasNext(); ) 
                         {
                             Element connElement = (Element) connIter.next();
                             String  typeStr     = getAttr(connElement, "type", null);

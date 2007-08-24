@@ -14,25 +14,11 @@
  */
 package edu.ku.brc.specify.tests;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import junit.framework.TestCase;
-
-import org.apache.log4j.Logger;
-import org.hibernate.Criteria;
-import org.hibernate.Query;
-import org.hibernate.criterion.Expression;
-
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DBConnection;
-import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.specify.config.SpecifyAppContextMgr;
-import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.CollectionType;
-import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * Tests the AppResources.
@@ -43,7 +29,7 @@ import edu.ku.brc.ui.UIHelper;
 public class AppResourceTest extends TestCase
 {
 
-    private static final Logger log = Logger.getLogger(AppResourceTest.class);
+    //private static final Logger log = Logger.getLogger(AppResourceTest.class);
     protected String databaseName = "fish";
     protected String userName = "rods";
     protected String password = "rods";

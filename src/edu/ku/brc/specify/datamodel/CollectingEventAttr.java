@@ -54,7 +54,7 @@ public class CollectingEventAttr extends DataModelObjBase implements AttributeIF
 
     // Fields    
 
-     protected Long attrId;
+     protected Integer attrId;
      protected String strValue;
      protected Double dblValue;
      protected CollectingEvent collectingEvent;
@@ -69,7 +69,7 @@ public class CollectingEventAttr extends DataModelObjBase implements AttributeIF
     }
     
     /** constructor with id */
-    public CollectingEventAttr(Long attrId) {
+    public CollectingEventAttr(Integer attrId) {
         this.attrId = attrId;
     }
    
@@ -97,7 +97,7 @@ public class CollectingEventAttr extends DataModelObjBase implements AttributeIF
     @Id
     @GeneratedValue
     @Column(name = "AttrID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getAttrId()
+    public Integer getAttrId()
     {
         return this.attrId;
     }
@@ -105,14 +105,14 @@ public class CollectingEventAttr extends DataModelObjBase implements AttributeIF
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.AttributeIFace#setAttrId(java.lang.Integer)
      */
-    public void setAttrId(Long attrId)
+    public void setAttrId(Integer attrId)
     {
         this.attrId = attrId;
     }
     
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return attrId;
     }

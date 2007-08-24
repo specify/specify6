@@ -19,9 +19,9 @@ import javax.swing.ImageIcon;
 public interface RecordSetIFace
 {
 
-    public abstract Long getRecordSetId();
+    public abstract Integer getRecordSetId();
 
-    public abstract void setRecordSetId(Long recordSetId);
+    public abstract void setRecordSetId(Integer recordSetId);
 
     public abstract String getName();
 
@@ -39,7 +39,7 @@ public interface RecordSetIFace
 
     public abstract void setRemarks(String remarks);
 
-    public abstract RecordSetItemIFace addItem(final Long recordId);
+    public abstract RecordSetItemIFace addItem(final Integer recordId);
 
     public abstract RecordSetItemIFace addItem(final String recordId);
 

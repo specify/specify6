@@ -62,7 +62,7 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
 
     // Fields
 
-     protected Long permitId;
+     protected Integer permitId;
      protected String permitNumber;
      protected String type;
      protected Calendar issuedDate;
@@ -91,7 +91,7 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
     }
 
     /** constructor with id */
-    public Permit(Long permitId) {
+    public Permit(Integer permitId) {
         this.permitId = permitId;
     }
 
@@ -132,7 +132,7 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
     @Id
     @GeneratedValue
     @Column(name = "PermitID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getPermitId() {
+    public Integer getPermitId() {
         return this.permitId;
     }
 
@@ -142,7 +142,7 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.permitId;
     }
@@ -157,7 +157,7 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
         return Permit.class;
     }
 
-    public void setPermitId(Long permitId) {
+    public void setPermitId(Integer permitId) {
         this.permitId = permitId;
     }
 

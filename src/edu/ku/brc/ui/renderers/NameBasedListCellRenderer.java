@@ -40,7 +40,7 @@ public class NameBasedListCellRenderer extends DefaultListCellRenderer
 		Method getName = null;
 		try
 		{
-			getName = value.getClass().getMethod("getName",new Class[]{});
+			getName = value.getClass().getMethod("getName",new Class<?>[]{});
 		}
 		catch( NoSuchMethodException e )
 		{

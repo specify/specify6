@@ -41,10 +41,10 @@ public class SpecifyExpressSearchSQLAdjuster extends ExpressSearchSQLAdjuster
         SpecifyUser user = SpecifyUser.getCurrentUser();
         if (user != null)
         {
-            Long id = user.getId();
+            Integer id = user.getId();
             if (id != null)
             {
-                return StringUtils.replace(sql, "SPECIFYUSERID", Long.toString(id));
+                return StringUtils.replace(sql, "SPECIFYUSERID", Integer.toString(id));
             }
         }
         return super.adjustSQL(sql);

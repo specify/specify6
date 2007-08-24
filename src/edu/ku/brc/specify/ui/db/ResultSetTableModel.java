@@ -43,7 +43,7 @@ public class ResultSetTableModel extends AbstractTableModel
     // Data Members
     protected ResultSet         resultSet   = null;
     protected ResultSetMetaData metaData    = null;
-    protected Vector<Class>     classNames  = new Vector<Class>();
+    protected Vector<Class<?>>     classNames  = new Vector<Class<?>>();
     protected int               currentRow  = 0;
     protected int               numRows     = 0;
 
@@ -146,7 +146,7 @@ public class ResultSetTableModel extends AbstractTableModel
      */
     public Class<?> getColumnClass(int column)
     {
-        return classNames.size() == 0 ? (Class)String.class : (Class)classNames.elementAt(column);
+        return classNames.size() == 0 ? (Class<?>)String.class : (Class<?>)classNames.elementAt(column);
     }
 
     /**
@@ -304,7 +304,7 @@ public class ResultSetTableModel extends AbstractTableModel
             {
                 do
                 {
-                    rs.addItem(resultSet.getLong(column+1));
+                    rs.addItem(resultSet.getInt(column+1));
                 } while (resultSet.next());
 
                 return rs;
@@ -315,7 +315,7 @@ public class ResultSetTableModel extends AbstractTableModel
             {
                 if (resultSet.absolute(rows[i]))
                 {
-                    rs.addItem(resultSet.getLong(column+1));
+                    rs.addItem(resultSet.getInt(column+1));
                 }
             }
 

@@ -29,5 +29,5 @@ public interface ObjectIconMapper
      *
      * @return an array containing the mapped classes
      */
-    public Class[] getMappedClasses();
+    public Class<?>[] getMappedClasses();
 }

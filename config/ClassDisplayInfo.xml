@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classes>
+	<class name="Taxon" linkfield="name" indexfield="fullName">
+		<skip>
+			<field>highestChildNodeNumber</field>
+			<field>definition</field>
+			<field>nodeNumber</field>
+			<field>unitInd1</field>
+			<field>unitName1</field>
+			<field>unitInd2</field>
+			<field>unitName2</field>
+			<field>unitInd3</field>
+			<field>unitName3</field>
+			<field>unitInd4</field>
+			<field>unitName4</field>
+			<field>visibility</field>
+			<field>visibilitySetBy</field>
+			<field>groupNumber</field>
+            <field search="ok">rankId</field>
+		</skip>
+		<order>
+			<field>definitionItem</field>
+			<field>name</field>
+			<field>fullName</field>
+			<field>commonName</field>
+			<field>taxonomicSerialNumber</field>
+			<field>environmentalProtectionStatus</field>
+			<field>author</field>
+			<field>source</field>
+			<field>guid</field>
+			<field>remarks</field>
+			<field>rankId</field>
+		</order>
+		<additional>
+			<field type="set" label="Collection Objects" labellevel="determinations" >determinations.collectionObject</field>
+		</additional>
+	</class>
+	
+    <class name="Geography" linkfield="name" indexfield="name">
+    	<skip>
+			<field>visibility</field>
+			<field>visibilitySetBy</field>
+		</skip>
+	</class>
+	
+    <class name="Location" linkfield="name" indexfield="fullName">
+    	<skip>
+			<field>visibility</field>
+			<field>visibilitySetBy</field>
+		</skip>
+	</class>
+	
+    <class name="CollectionObject" linkfield="catalogNumber" indexfield="catalogNumber">
+    	<skip>
+			<field>visibility</field>
+			<field>visibilitySetBy</field>
+			<field>groupPermittedToView</field>
+			<field>colObjAttributes</field>
+			<field>attrs</field>
+		</skip>
+		<order>
+			<field>catalogNumber</field>
+			<field>fieldNumber</field>
+			<field>catalogedDate</field>
+			<field>catalogedDateVerbatim</field>
+			<field>name</field>
+			<field>description</field>
+			<field>guid</field>
+			<field>remarks</field>
+		</order>
+	</class>
+		
+    <class name="Locality" linkfield="namedPlace" indexfield="">
+    	<skip>
+			<field>visibility</field>
+			<field>visibilitySetBy</field>
+			<field>groupPermittedToView</field>
+			<field>attrs</field>
+		</skip>
+		<order>
+			<field>namedPlace</field>
+			<field>relationToNamedPlace</field>
+			<field>localityName</field>
+			<field>baseMeridian</field>
+			<field>range</field>
+			<field>rangeDirection</field>
+			<field>township</field>
+			<field>townshipDirection</field>
+			<field>section</field>
+			<field>sectionPart</field>
+			<field>verbatimElevation</field>
+			<field>originalElevationUnit</field>
+			<field>minElevation</field>
+			<field>maxElevation</field>
+			<field>elevationMethod</field>
+			<field>elevationAccuracy</field>
+			<field>originalLatLongUnit</field>
+			<field>latLongType</field>
+			<field>latitude1</field>
+			<field>longitude1</field>
+			<field>latitude2</field>
+			<field>longitude2</field>
+			<field>latLongMethod</field>
+			<field>latLongAccuracy</field>
+			<field>guid</field>
+			<field>remarks</field>
+		</order>
+	</class>
+	
+    <class name="Agent" linkfield="lastName" indexfield="lastName">
+    	<skip>
+			<field>visibility</field>
+			<field>visibilitySetBy</field>
+			<field>groupPermittedToView</field>
+		</skip>
+		<order>
+			<field>lastName</field>
+			<field>firstName</field>
+			<field>name</field>
+			<field>address</field>
+			<field>name</field>
+			<field>guid</field>
+			<field>remarks</field>
+			<field>addresses</field>
+		</order>
+	</class>
+	
+    <class name="Address" linkfield="address" indexfield="city">
+    	<skip>
+			<field>visibility</field>
+			<field>visibilitySetBy</field>
+			<field>groupPermittedToView</field>
+		</skip>
+		<order>
+			<field>address</field>
+			<field>address2</field>
+			<field>city</field>
+			<field>state</field>
+			<field>country</field>
+			<field>postalcode</field>isPrimary
+			<field>isPrimary</field>
+			<field>phone1</field>
+			<field>fax</field>
+		</order>
+	</class>
+	
+    <class name="CollectingEvent" linkfield="startDate" indexfield="startDate">
+    	<skip>
+			<field>visibility</field>
+			<field>visibilitySetBy</field>
+			<field>groupPermittedToView</field>
+			<field>habitatAttributes</field>
+		</skip>
+		<order>
+			<field>startDate</field>
+		</order>
+	</class>
+	
+    <class name="Determination" linkfield="status" indexfield="">
+    	<skip>
+			<field>visibility</field>
+			<field>visibilitySetBy</field>
+			<field>groupPermittedToView</field>
+		</skip>
+		<order>
+			<field>status</field>
+			<field>determinedDate</field>
+			<field>determiner</field>
+		</order>
+	</class>
+	
+    <class name="Preparation" linkfield="prepType" indexfield="">
+    	<skip>
+			<field>visibility</field>
+			<field>visibilitySetBy</field>
+			<field>groupPermittedToView</field>
+			<field>preparationAttributes</field>
+			<field>attrs</field>
+		</skip>
+		<order>
+			<field>prepType</field>
+			<field>count</field>
+			<field>preparedDate</field>
+			<field>preparedByAgent</field>
+		</order>
+	</class>
+	
+    <class name="Collector" linkfield="" indexfield="">
+    	<skip>
+			<field>visibility</field>
+			<field>visibilitySetBy</field>
+			<field>groupPermittedToView</field>
+		</skip>
+		<order>
+		</order>
+	</class>
+	
+    <class name="Shipment" linkfield="" indexfield="">
+    	<skip>
+			<field>visibility</field>
+			<field>visibilitySetBy</field>
+			<field>groupPermittedToView</field>
+		</skip>
+		<order>
+		</order>
+	</class>
+	
+    <class name="TaxonCitation" linkfield="" indexfield="">
+    	<skip>
+			<field>visibility</field>
+			<field>visibilitySetBy</field>
+			<field>groupPermittedToView</field>
+		</skip>
+		<order>
+		</order>
+	</class>
+	
+    <class name="ReferenceWork" linkfield="title" indexfield="title">
+    	<skip>
+			<field>visibility</field>
+			<field>visibilitySetBy</field>
+			<field>groupPermittedToView</field>
+		</skip>
+		<order>
+			<field>title</field>
+			<field>publisher</field>
+			<field>placeOfPublication</field>
+		</order>
+	</class>
+	
+    <class name="Journal" linkfield="journalName" indexfield="journalName">
+    	<skip>
+			<field>visibility</field>
+			<field>visibilitySetBy</field>
+			<field>groupPermittedToView</field>
+		</skip>
+		<order>
+			<field>journalName</field>
+			<field>journalAbbreviation</field>
+			<field>remarks</field>
+		</order>
+	</class>
+
+</classes>

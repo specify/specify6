@@ -51,7 +51,7 @@ import org.hibernate.annotations.CascadeType;
 @Table(name = "geographytreedef")
 public class GeographyTreeDef extends DataModelObjBase implements java.io.Serializable, TreeDefIface<Geography, GeographyTreeDef, GeographyTreeDefItem>
 {
-	protected Long				        geographyTreeDefId;
+	protected Integer				        geographyTreeDefId;
 	protected String				    name;
 	protected String				    remarks;
     protected Integer                   fullNameDirection;
@@ -66,7 +66,7 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
 	}
 
 	/** constructor with id */
-	public GeographyTreeDef(Long geographyTreeDefId)
+	public GeographyTreeDef(Integer geographyTreeDefId)
 	{
 		this.geographyTreeDefId = geographyTreeDefId;
 	}
@@ -87,7 +87,7 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
     @Id
     @GeneratedValue
     @Column(name = "GeographyTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
-	public Long getGeographyTreeDefId()
+	public Integer getGeographyTreeDefId()
 	{
 		return this.geographyTreeDefId;
 	}
@@ -98,7 +98,7 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.geographyTreeDefId;
     }
@@ -113,7 +113,7 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
         return GeographyTreeDef.class;
     }
 
-	public void setGeographyTreeDefId(Long geographyTreeDefId)
+	public void setGeographyTreeDefId(Integer geographyTreeDefId)
 	{
 		this.geographyTreeDefId = geographyTreeDefId;
 	}
@@ -200,12 +200,12 @@ public class GeographyTreeDef extends DataModelObjBase implements java.io.Serial
 	}
 
     @Transient
-	public Long getTreeDefId()
+	public Integer getTreeDefId()
 	{
 		return getGeographyTreeDefId();
 	}
 
-	public void setTreeDefId(Long id)
+	public void setTreeDefId(Integer id)
 	{
 		setGeographyTreeDefId(id);
 	}

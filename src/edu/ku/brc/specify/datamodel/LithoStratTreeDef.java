@@ -51,7 +51,7 @@ import org.hibernate.annotations.CascadeType;
 @Table(name = "lithostrattreedef")
 public class LithoStratTreeDef extends DataModelObjBase implements java.io.Serializable, TreeDefIface<LithoStrat, LithoStratTreeDef, LithoStratTreeDefItem>
 {
-	protected Long                               lithoStratTreeDefId;
+	protected Integer                               lithoStratTreeDefId;
     protected String                             name;
     protected String                             remarks;
     protected Integer                            fullNameDirection;
@@ -68,7 +68,7 @@ public class LithoStratTreeDef extends DataModelObjBase implements java.io.Seria
 	}
 
 	/** constructor with id */
-	public LithoStratTreeDef(Long geologicTimePeriodTreeDefId)
+	public LithoStratTreeDef(Integer geologicTimePeriodTreeDefId)
 	{
 		this.lithoStratTreeDefId = geologicTimePeriodTreeDefId;
 	}
@@ -97,7 +97,7 @@ public class LithoStratTreeDef extends DataModelObjBase implements java.io.Seria
     @Id
     @GeneratedValue
     @Column(name = "LithoStratTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
-	public Long getLithoStratTreeDefId()
+	public Integer getLithoStratTreeDefId()
 	{
 		return this.lithoStratTreeDefId;
 	}
@@ -108,7 +108,7 @@ public class LithoStratTreeDef extends DataModelObjBase implements java.io.Seria
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.lithoStratTreeDefId;
     }
@@ -123,7 +123,7 @@ public class LithoStratTreeDef extends DataModelObjBase implements java.io.Seria
         return LithoStratTreeDef.class;
     }
 
-	public void setLithoStratTreeDefId(Long geologicTimePeriodTreeDefId)
+	public void setLithoStratTreeDefId(Integer geologicTimePeriodTreeDefId)
 	{
 		this.lithoStratTreeDefId = geologicTimePeriodTreeDefId;
 	}
@@ -230,12 +230,12 @@ public class LithoStratTreeDef extends DataModelObjBase implements java.io.Seria
 	//
 
     @Transient
-	public Long getTreeDefId()
+	public Integer getTreeDefId()
 	{
 		return getLithoStratTreeDefId();
 	}
 
-	public void setTreeDefId(Long id)
+	public void setTreeDefId(Integer id)
 	{
 		setLithoStratTreeDefId(id);
 	}

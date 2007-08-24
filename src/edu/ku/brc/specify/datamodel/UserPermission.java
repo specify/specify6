@@ -26,7 +26,7 @@ public class UserPermission extends DataModelObjBase implements java.io.Serializ
 {
     // Fields    
 
-     protected Long userPermissionId;
+     protected Integer userPermissionId;
      protected Boolean dataAccessPrivilege;
      protected Boolean adminPrivilege;
      protected SpecifyUser specifyUser;
@@ -41,7 +41,7 @@ public class UserPermission extends DataModelObjBase implements java.io.Serializ
     }
     
     /** constructor with id */
-    public UserPermission(Long userPermissionId) {
+    public UserPermission(Integer userPermissionId) {
         this.userPermissionId = userPermissionId;
     }
    
@@ -67,11 +67,11 @@ public class UserPermission extends DataModelObjBase implements java.io.Serializ
     @Id
     @GeneratedValue
     @Column(name = "UserPermissionID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getUserPermissionId() {
+    public Integer getUserPermissionId() {
         return this.userPermissionId;
     }
     
-    public void setUserPermissionId(Long userPermissionId) {
+    public void setUserPermissionId(Integer userPermissionId) {
         this.userPermissionId = userPermissionId;
     }
 
@@ -130,7 +130,7 @@ public class UserPermission extends DataModelObjBase implements java.io.Serializ
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.userPermissionId;
     }

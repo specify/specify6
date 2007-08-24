@@ -58,7 +58,7 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
 
     // Fields    
 
-    protected Long                          loanPhysicalObjectId;
+    protected Integer                       loanPhysicalObjectId;
     protected Integer                       quantity;
     protected String                        descriptionOfMaterial;
     protected String                        outComments;
@@ -79,7 +79,7 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
     }
     
     /** constructor with id */
-    public LoanPhysicalObject(Long loanPhysicalObjectId) {
+    public LoanPhysicalObject(Integer loanPhysicalObjectId) {
         this.loanPhysicalObjectId = loanPhysicalObjectId;
     }
    
@@ -113,7 +113,7 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
     @Id
     @GeneratedValue
     @Column(name = "LoanPhysicalObjectID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getLoanPhysicalObjectId() {
+    public Integer getLoanPhysicalObjectId() {
         return this.loanPhysicalObjectId;
     }
 
@@ -123,7 +123,7 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.loanPhysicalObjectId;
     }
@@ -138,7 +138,7 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
         return LoanPhysicalObject.class;
     }
     
-    public void setLoanPhysicalObjectId(Long loanPhysicalObjectId) {
+    public void setLoanPhysicalObjectId(Integer loanPhysicalObjectId) {
         this.loanPhysicalObjectId = loanPhysicalObjectId;
     }
 

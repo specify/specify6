@@ -969,14 +969,14 @@ public class ExpressSearchIndexerPane extends BaseSubPane implements Runnable, Q
                 indvLabel.setText(labelName);
 
                 //List textFields = root.selectNodes("/jasperReport/detail/band/textField");
-                //for ( Iterator iter = textFields.iterator(); iter.hasNext(); )
+                //for ( Iterator<?> iter = textFields.iterator(); iter.hasNext(); )
                 //{
                 //    Element textField = (Element)iter.next();
                 //}
 
                 StringBuilder strBuf = new StringBuilder(128);
                 List staticTexts = root.selectNodes("/jasperReport/detail/band/staticText/text");
-                for ( Iterator iter = staticTexts.iterator(); iter.hasNext(); )
+                for ( Iterator<?> iter = staticTexts.iterator(); iter.hasNext(); )
                 {
                     Element text = (Element)iter.next();
                     String label = text.getTextTrim();

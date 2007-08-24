@@ -22,7 +22,7 @@ public class RecordSetLoader
 		Vector<Object> records = new Vector<Object>();
 		for (RecordSetItemIFace rsItem: recordSet.getItems())
 		{
-			Long id = rsItem.getRecordId();
+			Integer id = rsItem.getRecordId();
 			Object record = session.get(recordClass,id);
 			records.add(record);
 		}

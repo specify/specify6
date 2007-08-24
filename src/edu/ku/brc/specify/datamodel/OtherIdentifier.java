@@ -50,7 +50,7 @@ public class OtherIdentifier extends DataModelObjBase implements java.io.Seriali
 
     // Fields    
 
-     protected Long otherIdentifierId;
+     protected Integer otherIdentifierId;
      protected String identifier;
      protected String institution;
      protected String remarks;
@@ -65,7 +65,7 @@ public class OtherIdentifier extends DataModelObjBase implements java.io.Seriali
     }
     
     /** constructor with id */
-    public OtherIdentifier(Long otherIdentifierId) {
+    public OtherIdentifier(Integer otherIdentifierId) {
         this.otherIdentifierId = otherIdentifierId;
     }
    
@@ -92,7 +92,7 @@ public class OtherIdentifier extends DataModelObjBase implements java.io.Seriali
     @Id
     @GeneratedValue
     @Column(name = "OtherIdentifierID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getOtherIdentifierId() {
+    public Integer getOtherIdentifierId() {
         return this.otherIdentifierId;
     }
 
@@ -102,7 +102,7 @@ public class OtherIdentifier extends DataModelObjBase implements java.io.Seriali
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.otherIdentifierId;
     }
@@ -117,7 +117,7 @@ public class OtherIdentifier extends DataModelObjBase implements java.io.Seriali
         return OtherIdentifier.class;
     }
     
-    public void setOtherIdentifierId(Long otherIdentifierId) {
+    public void setOtherIdentifierId(Integer otherIdentifierId) {
         this.otherIdentifierId = otherIdentifierId;
     }
 

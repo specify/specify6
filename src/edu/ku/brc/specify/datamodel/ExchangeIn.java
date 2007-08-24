@@ -57,7 +57,7 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
 
     // Fields    
 
-     protected Long exchangeInId;
+     protected Integer exchangeInId;
      protected Calendar exchangeDate;
      protected Short quantityExchanged;
      protected String descriptionOfMaterial;
@@ -80,7 +80,7 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
     }
     
     /** constructor with id */
-    public ExchangeIn(Long exchangeInId) {
+    public ExchangeIn(Integer exchangeInId) {
         this.exchangeInId = exchangeInId;
     }
    
@@ -116,7 +116,7 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
     @Id
     @GeneratedValue
     @Column(name = "ExchangeInID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getExchangeInId() {
+    public Integer getExchangeInId() {
         return this.exchangeInId;
     }
 
@@ -126,7 +126,7 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.exchangeInId;
     }
@@ -141,7 +141,7 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
         return ExchangeIn.class;
     }
     
-    public void setExchangeInId(Long exchangeInId) {
+    public void setExchangeInId(Integer exchangeInId) {
         this.exchangeInId = exchangeInId;
     }
 

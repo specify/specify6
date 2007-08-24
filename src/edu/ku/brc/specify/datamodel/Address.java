@@ -43,6 +43,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
 
  */
@@ -54,7 +56,7 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
 
     // Fields
 
-    protected Long              addressId;
+    protected Integer              addressId;
     protected String            address;
     protected String            address2;
     protected String            city;
@@ -84,7 +86,7 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
     }
 
     /** constructor with id */
-    public Address(Long addressId) {
+    public Address(Integer addressId) {
         this.addressId = addressId;
     }
 
@@ -126,7 +128,7 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
     @Id
     @GeneratedValue
     @Column(name = "AddressID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getAddressId() {
+    public Integer getAddressId() {
         return this.addressId;
     }
 
@@ -136,7 +138,7 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.addressId;
     }
@@ -151,7 +153,7 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
         return Address.class;
     }
 
-    public void setAddressId(Long addressId) {
+    public void setAddressId(Integer addressId) {
         this.addressId = addressId;
     }
 
@@ -369,6 +371,39 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
     {
         this.positionHeld = positionHeld;
     }
+    
+    protected void append(final StringBuilder sb, final String val)
+    {
+        if (StringUtils.isNotEmpty(val))
+        {
+            if (sb.length() > 0)
+            {
+                sb.append("; ");
+            }
+            sb.append(val);
+        }
+    }
+    
+    @Override
+    @Transient
+    public String getIdentityTitle()
+    {
+        StringBuilder sb = new StringBuilder();
+        
+        append(sb, address);
+        append(sb, address2);
+        append(sb, city);
+        append(sb, state);
+        append(sb, country);
+        append(sb, postalCode);
+
+        if (sb.length() > 0)
+        {
+            return sb.toString();
+        }
+        return super.getIdentityTitle();
+    }
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()

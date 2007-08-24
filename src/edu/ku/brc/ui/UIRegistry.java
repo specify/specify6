@@ -1349,11 +1349,11 @@ public class UIRegistry
             {
                 // If the class is an inner class, its constuctor takes a hidden
                 // parameter, an objext of it enclosing class.
-                c = actionClass.getConstructor(new Class[] { owner.getClass() });
+                c = actionClass.getConstructor(new Class<?>[] { owner.getClass() });
                 a = (Action) c.newInstance(new Object[] { owner });
             } else
             {
-                c = actionClass.getConstructor((Class[]) null);
+                c = actionClass.getConstructor((Class<?>[]) null);
                 a = (Action) c.newInstance((Object[])null);
             }
             

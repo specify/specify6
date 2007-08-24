@@ -40,7 +40,7 @@ public class BorrowAgent extends DataModelObjBase implements java.io.Serializabl
 
     // Fields    
 
-     protected Long borrowAgentId;
+     protected Integer borrowAgentId;
      protected String role;
      protected String remarks;
      protected Agent agent;
@@ -55,7 +55,7 @@ public class BorrowAgent extends DataModelObjBase implements java.io.Serializabl
     }
     
     /** constructor with id */
-    public BorrowAgent(Long borrowAgentId) {
+    public BorrowAgent(Integer borrowAgentId) {
         this.borrowAgentId = borrowAgentId;
     }
    
@@ -83,7 +83,7 @@ public class BorrowAgent extends DataModelObjBase implements java.io.Serializabl
     @Id
     @GeneratedValue
     @Column(name = "BorrowAgentID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getBorrowAgentId() {
+    public Integer getBorrowAgentId() {
         return this.borrowAgentId;
     }
 
@@ -93,7 +93,7 @@ public class BorrowAgent extends DataModelObjBase implements java.io.Serializabl
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.borrowAgentId;
     }
@@ -108,7 +108,7 @@ public class BorrowAgent extends DataModelObjBase implements java.io.Serializabl
         return BorrowAgent.class;
     }
     
-    public void setBorrowAgentId(Long borrowAgentId) {
+    public void setBorrowAgentId(Integer borrowAgentId) {
         this.borrowAgentId = borrowAgentId;
     }
 

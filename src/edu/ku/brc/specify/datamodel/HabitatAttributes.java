@@ -40,7 +40,7 @@ import org.hibernate.annotations.CascadeType;
 @Table(name = "habitatattributes", uniqueConstraints = { @UniqueConstraint(columnNames = { "HabitatAttributesID" }) })
 public class HabitatAttributes extends DataModelObjBase
 {
-    protected Long habitatAttributesId;
+    protected Integer habitatAttributesId;
     protected Float airTempC;
     protected Float waterTempC;
     protected Float waterPH;
@@ -88,7 +88,7 @@ public class HabitatAttributes extends DataModelObjBase
     }
 
     /** constructor with id */
-    public HabitatAttributes(Long habitatAttributesId) 
+    public HabitatAttributes(Integer habitatAttributesId) 
     {
         this.habitatAttributesId = habitatAttributesId;
     }
@@ -142,7 +142,7 @@ public class HabitatAttributes extends DataModelObjBase
     @Id
     @GeneratedValue
     @Column(name = "HabitatAttributesID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getHabitatAttributesId()
+    public Integer getHabitatAttributesId()
     {
         return habitatAttributesId;
     }
@@ -152,12 +152,12 @@ public class HabitatAttributes extends DataModelObjBase
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.habitatAttributesId;
     }
 
-    public void setHabitatAttributesId(Long habitatAttributesId)
+    public void setHabitatAttributesId(Integer habitatAttributesId)
     {
         this.habitatAttributesId = habitatAttributesId;
     }

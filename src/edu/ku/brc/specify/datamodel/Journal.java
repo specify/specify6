@@ -55,7 +55,7 @@ public class Journal extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 
-     protected Long journalId;
+     protected Integer journalId;
      protected String journalName;
      protected String journalAbbreviation;
      protected String remarks;
@@ -70,7 +70,7 @@ public class Journal extends DataModelObjBase implements java.io.Serializable {
     }
     
     /** constructor with id */
-    public Journal(Long journalId) {
+    public Journal(Integer journalId) {
         this.journalId = journalId;
     }
    
@@ -98,7 +98,7 @@ public class Journal extends DataModelObjBase implements java.io.Serializable {
     @Id
     @GeneratedValue
     @Column(name = "JournalID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getJournalId() {
+    public Integer getJournalId() {
         return this.journalId;
     }
 
@@ -108,7 +108,7 @@ public class Journal extends DataModelObjBase implements java.io.Serializable {
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.journalId;
     }
@@ -123,7 +123,7 @@ public class Journal extends DataModelObjBase implements java.io.Serializable {
         return Journal.class;
     }
     
-    public void setJournalId(Long journalId) {
+    public void setJournalId(Integer journalId) {
         this.journalId = journalId;
     }
 

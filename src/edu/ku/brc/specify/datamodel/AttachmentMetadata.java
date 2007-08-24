@@ -28,7 +28,7 @@ public class AttachmentMetadata extends DataModelObjBase implements java.io.Seri
 
     // Fields
 
-    private Long       attachmentMetadataID;
+    private Integer       attachmentMetadataID;
     private String     name;
     private String     value;
     private Attachment attachment;
@@ -42,7 +42,7 @@ public class AttachmentMetadata extends DataModelObjBase implements java.io.Seri
     }
 
     /** constructor with id */
-    public AttachmentMetadata(Long attachmentMetadataID)
+    public AttachmentMetadata(Integer attachmentMetadataID)
     {
         this.attachmentMetadataID = attachmentMetadataID;
     }
@@ -67,19 +67,19 @@ public class AttachmentMetadata extends DataModelObjBase implements java.io.Seri
     @Id
     @GeneratedValue
     @Column(name = "AttachmentMetadataID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getAttachmentMetadataID()
+    public Integer getAttachmentMetadataID()
     {
         return this.attachmentMetadataID;
     }
 
-    public void setAttachmentMetadataID(Long attachmentMetadataID)
+    public void setAttachmentMetadataID(Integer attachmentMetadataID)
     {
         this.attachmentMetadataID = attachmentMetadataID;
     }
 
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return attachmentMetadataID;
     }

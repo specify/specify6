@@ -52,7 +52,7 @@ public class PreparationAttr extends DataModelObjBase implements AttributeIFace,
 
     // Fields
 
-    protected Long      attrId;
+    protected Integer      attrId;
     protected String       strValue;
     protected Double       dblValue;
     protected AttributeDef definition;
@@ -67,7 +67,7 @@ public class PreparationAttr extends DataModelObjBase implements AttributeIFace,
     }
 
     /** constructor with id */
-    public PreparationAttr(Long attrId)
+    public PreparationAttr(Integer attrId)
     {
         this.attrId = attrId;
     }
@@ -94,7 +94,7 @@ public class PreparationAttr extends DataModelObjBase implements AttributeIFace,
     @Id
     @GeneratedValue
     @Column(name = "AttrID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getAttrId()
+    public Integer getAttrId()
     {
         return this.attrId;
     }
@@ -102,14 +102,14 @@ public class PreparationAttr extends DataModelObjBase implements AttributeIFace,
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.AttributeIFace#setAttrId(java.lang.Integer)
      */
-    public void setAttrId(Long attrId)
+    public void setAttrId(Integer attrId)
     {
         this.attrId = attrId;
     }
 
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return attrId;
     }

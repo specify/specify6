@@ -57,7 +57,7 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
 
     // Fields    
 
-     protected Long deaccessionPreparationId;
+     protected Integer deaccessionPreparationId;
      protected Short quantity;
      protected String remarks;
      protected Deaccession deaccession;
@@ -73,7 +73,7 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
     }
     
     /** constructor with id */
-    public DeaccessionPreparation(Long deaccessionPreparationId) {
+    public DeaccessionPreparation(Integer deaccessionPreparationId) {
         this.deaccessionPreparationId = deaccessionPreparationId;
     }
    
@@ -102,7 +102,7 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
     @Id
     @GeneratedValue
     @Column(name = "DeaccessionPreparationID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getDeaccessionPreparationId() {
+    public Integer getDeaccessionPreparationId() {
         return this.deaccessionPreparationId;
     }
 
@@ -112,7 +112,7 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.deaccessionPreparationId;
     }
@@ -127,7 +127,7 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
         return DeaccessionPreparation.class;
     }
     
-    public void setDeaccessionPreparationId(Long deaccessionPreparationId) {
+    public void setDeaccessionPreparationId(Integer deaccessionPreparationId) {
         this.deaccessionPreparationId = deaccessionPreparationId;
     }
 

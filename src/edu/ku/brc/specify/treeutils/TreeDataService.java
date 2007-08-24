@@ -44,7 +44,7 @@ public interface TreeDataService <T extends Treeable<T,D,I>,
 	 */
 	public T getRootNode(D treeDef);
 	
-    public T getNodeById(Class<?> clazz, long id);
+    public T getNodeById(Class<?> clazz, int id);
     
     /**
      * Returns all of the trees of the given class.
@@ -61,7 +61,7 @@ public interface TreeDataService <T extends Treeable<T,D,I>,
 	 * @param defId the tree ID
 	 * @return the tree definition
 	 */
-	public D getTreeDef(Class<D> defClass, long defId);
+	public D getTreeDef(Class<D> defClass, int defId);
     
     /**
      * Returns the {@link Set} of the children of the given node.

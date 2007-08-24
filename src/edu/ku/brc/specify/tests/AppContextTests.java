@@ -15,19 +15,8 @@
 
 package edu.ku.brc.specify.tests;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import junit.framework.TestCase;
-
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Expression;
-
-import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
-import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.specify.config.SpecifyAppContextMgr;
-import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.ui.UIRegistry;
 
 public class AppContextTests extends TestCase

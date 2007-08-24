@@ -54,9 +54,9 @@ public class RecordSetItem implements java.io.Serializable, RecordSetItemIFace {
 
     // Fields
 
-    protected Long      recordSetItemId;
+    protected Integer   recordSetItemId;
     protected RecordSet recordSet;
-    protected Long      recordId;
+    protected Integer   recordId;
 
 
     // Constructors
@@ -67,14 +67,14 @@ public class RecordSetItem implements java.io.Serializable, RecordSetItemIFace {
          //
      }
      
-     public RecordSetItem(final Long recordId) 
+     public RecordSetItem(final Integer recordId) 
      {
          this.recordId = recordId;
      }
      
      public RecordSetItem(final String recordId) 
      {
-         this.recordId = Long.parseLong(recordId);
+         this.recordId = Integer.parseInt(recordId);
      }
 
     // Initializer
@@ -91,12 +91,12 @@ public class RecordSetItem implements java.io.Serializable, RecordSetItemIFace {
     @Id
     @GeneratedValue
     @Column(name = "RecordSetItemID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getRecordSetItemId()
+    public Integer getRecordSetItemId()
     {
         return recordSetItemId;
     }
 
-    public void setRecordSetItemId(Long recordSetItemId)
+    public void setRecordSetItemId(Integer recordSetItemId)
     {
         this.recordSetItemId = recordSetItemId;
     }
@@ -105,14 +105,14 @@ public class RecordSetItem implements java.io.Serializable, RecordSetItemIFace {
      * @see edu.ku.brc.specify.datamodel.RecordSetItemIFace#getRecordId()
      */
     @Column(name = "RecordId", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getRecordId() {
+    public Integer getRecordId() {
         return this.recordId;
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.RecordSetItemIFace#setRecordId(java.lang.Long)
+     * @see edu.ku.brc.specify.datamodel.RecordSetItemIFace#setRecordId(java.lang.Integer)
      */
-    public void setRecordId(final Long recordId) {
+    public void setRecordId(final Integer recordId) {
         this.recordId = recordId;
     }
     

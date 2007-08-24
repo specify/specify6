@@ -48,7 +48,7 @@ import org.hibernate.annotations.CascadeType;
 @Table(name="paleocontext")
 public class PaleoContext extends DataModelObjBase
 {
-    protected Long    paleoContextId;
+    protected Integer    paleoContextId;
     protected Float   distance;
     protected String  distanceUnits; // "ft" or "m"
     protected String  direction;     // "up" or "down"
@@ -74,7 +74,7 @@ public class PaleoContext extends DataModelObjBase
     @Id
     @GeneratedValue
     @Column(name="PaleoContextID", unique=false, nullable=false, insertable=true, updatable=true)
-    public Long getPaleoContextId()
+    public Integer getPaleoContextId()
     {
         return paleoContextId;
     }
@@ -82,7 +82,7 @@ public class PaleoContext extends DataModelObjBase
     /**
      * @param paleoContextId the paleoContextId to set
      */
-    public void setPaleoContextId(Long paleoContextId)
+    public void setPaleoContextId(Integer paleoContextId)
     {
         this.paleoContextId = paleoContextId;
     }
@@ -275,7 +275,7 @@ public class PaleoContext extends DataModelObjBase
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return paleoContextId;
     }

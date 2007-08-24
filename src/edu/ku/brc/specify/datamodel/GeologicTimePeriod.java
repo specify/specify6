@@ -66,7 +66,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
      */
     protected static final Logger log = Logger.getLogger(GeologicTimePeriod.class);
 
-	protected Long						    geologicTimePeriodId;
+	protected Integer						    geologicTimePeriodId;
 	protected Integer						rankId;
 	protected String						name;
 	protected String						fullName;
@@ -96,7 +96,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	}
 
 	/** constructor with id */
-	public GeologicTimePeriod(Long geologicTimePeriodId)
+	public GeologicTimePeriod(Integer geologicTimePeriodId)
 	{
 		this.geologicTimePeriodId = geologicTimePeriodId;
 	}
@@ -136,7 +136,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
     @Id
     @GeneratedValue
     @Column(name = "GeologicTimePeriodID", unique = false, nullable = false, insertable = true, updatable = true)
-	public Long getGeologicTimePeriodId()
+	public Integer getGeologicTimePeriodId()
 	{
 		return this.geologicTimePeriodId;
 	}
@@ -147,7 +147,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.geologicTimePeriodId;
     }
@@ -162,7 +162,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
         return GeologicTimePeriod.class;
     }
 
-	public void setGeologicTimePeriodId(Long geologicTimePeriodId)
+	public void setGeologicTimePeriodId(Integer geologicTimePeriodId)
 	{
 		this.geologicTimePeriodId = geologicTimePeriodId;
 	}
@@ -429,12 +429,12 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
     }
 
     @Transient
-	public Long getTreeId()
+	public Integer getTreeId()
 	{
 		return getGeologicTimePeriodId();
 	}
 
-	public void setTreeId(Long id)
+	public void setTreeId(Integer id)
 	{
 		setGeologicTimePeriodId(id);
 	}

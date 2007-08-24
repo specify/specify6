@@ -40,7 +40,7 @@ import org.hibernate.annotations.CascadeType;
 @Table(name = "colobjattributes", uniqueConstraints = { @UniqueConstraint(columnNames = { "ColObjAttributesID" }) })
 public class ColObjAttributes extends DataModelObjBase
 {
-    protected Long colObjAttributesId;
+    protected Integer colObjAttributesId;
     protected String sex;
     protected String age;
     protected String stage;
@@ -116,7 +116,7 @@ public class ColObjAttributes extends DataModelObjBase
     }
 
     /** constructor with id */
-    public ColObjAttributes(Long colObjAttributesId) 
+    public ColObjAttributes(Integer colObjAttributesId) 
     {
         this.colObjAttributesId = colObjAttributesId;
     }
@@ -198,7 +198,7 @@ public class ColObjAttributes extends DataModelObjBase
     @Id
     @GeneratedValue
     @Column(name = "ColObjAttributesID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getColObjAttributesId()
+    public Integer getColObjAttributesId()
     {
         return colObjAttributesId;
     }
@@ -208,7 +208,7 @@ public class ColObjAttributes extends DataModelObjBase
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.colObjAttributesId;
     }
@@ -540,9 +540,9 @@ public class ColObjAttributes extends DataModelObjBase
     }
     
     @Column(name = "Text8", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
-    public void setText8(String text8)
+    public String getText8(String text8)
     {
-        this.text8 = text8;
+        return text8;
     }
 
     @Column(name = "Text9", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
@@ -615,7 +615,7 @@ public class ColObjAttributes extends DataModelObjBase
         this.collectionObjects = collectionObjects;
     }
 
-    public void setColObjAttributesId(Long colObjAttributesId)
+    public void setColObjAttributesId(Integer colObjAttributesId)
     {
         this.colObjAttributesId = colObjAttributesId;
     }
@@ -878,6 +878,11 @@ public class ColObjAttributes extends DataModelObjBase
     public void setText7(String text7)
     {
         this.text7 = text7;
+    }
+
+    public void setText8(String text8)
+    {
+        this.text8 = text8;
     }
 
     public void setText9(String text9)

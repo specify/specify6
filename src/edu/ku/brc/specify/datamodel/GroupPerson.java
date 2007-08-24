@@ -54,7 +54,7 @@ public class GroupPerson extends DataModelObjBase implements java.io.Serializabl
 
     // Fields    
 
-     protected Long groupPersonId;
+     protected Integer groupPersonId;
      protected Short orderNumber;
      protected String remarks;
      protected Agent group;
@@ -69,7 +69,7 @@ public class GroupPerson extends DataModelObjBase implements java.io.Serializabl
     }
     
     /** constructor with id */
-    public GroupPerson(Long groupPersonId) {
+    public GroupPerson(Integer groupPersonId) {
         this.groupPersonId = groupPersonId;
     }
    
@@ -97,7 +97,7 @@ public class GroupPerson extends DataModelObjBase implements java.io.Serializabl
     @Id
     @GeneratedValue
     @Column(name = "GroupPersonID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getGroupPersonId() {
+    public Integer getGroupPersonId() {
         return this.groupPersonId;
     }
 
@@ -107,7 +107,7 @@ public class GroupPerson extends DataModelObjBase implements java.io.Serializabl
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.groupPersonId;
     }
@@ -122,7 +122,7 @@ public class GroupPerson extends DataModelObjBase implements java.io.Serializabl
         return GroupPerson.class;
     }
     
-    public void setGroupPersonId(Long groupPersonId) {
+    public void setGroupPersonId(Integer groupPersonId) {
         this.groupPersonId = groupPersonId;
     }
 

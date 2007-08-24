@@ -31,7 +31,7 @@ public class TreeViewerListModel extends AbstractListModel
     protected TreeNode visibleRoot;
     protected int visibleSize;
     
-    protected Set<Long> idsShowingChildren = new HashSet<Long>();
+    protected Set<Integer> idsShowingChildren = new HashSet<Integer>();
     
     public TreeViewerListModel(TreeNode rootNode)
     {

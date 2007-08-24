@@ -134,7 +134,7 @@ public class JasperReportsCache implements DataCacheIFace
     {
         try
         {
-            for (Iterator iter = FileUtils.iterateFiles(cachePath, new String[] {"jasper"}, false);iter.hasNext();)
+            for (Iterator<?> iter = FileUtils.iterateFiles(cachePath, new String[] {"jasper"}, false);iter.hasNext();)
             {
                 FileUtils.forceDelete((File)iter.next());
             }

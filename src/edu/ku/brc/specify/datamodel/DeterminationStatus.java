@@ -45,7 +45,7 @@ import javax.persistence.Transient;
 @Table(name = "determinationstatus")
 public class DeterminationStatus extends DataModelObjBase implements Serializable
 {
-    protected Long               determinationStatusId;
+    protected Integer               determinationStatusId;
     protected Boolean            isCurrent;
     protected String             name;
     protected String             remarks;
@@ -56,7 +56,7 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
         super();
     }
 
-    public DeterminationStatus(Long determinationStatusId)
+    public DeterminationStatus(Integer determinationStatusId)
     {
         super();
         this.determinationStatusId = determinationStatusId;
@@ -89,7 +89,7 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
     @Id
     @GeneratedValue
     @Column(name = "DeterminationStatusID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getDeterminationStatusId()
+    public Integer getDeterminationStatusId()
     {
         return determinationStatusId;
     }
@@ -101,7 +101,7 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
      */
     @Override
     @Transient
-    public Long getId()
+    public Integer getId()
     {
         return this.determinationStatusId;
     }
@@ -116,7 +116,7 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
         return DeterminationStatus.class;
     }
 
-    public void setDeterminationStatusId(Long determinationStatusId)
+    public void setDeterminationStatusId(Integer determinationStatusId)
     {
         this.determinationStatusId = determinationStatusId;
     }

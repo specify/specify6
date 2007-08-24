@@ -66,7 +66,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
 
     // Fields
 
-     protected Long accessionId;
+     protected Integer accessionId;
      protected String type;
      protected String status;
      protected String number;
@@ -97,7 +97,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
     }
 
     /** constructor with id */
-    public Accession(Long accessionId) 
+    public Accession(Integer accessionId) 
     {
         this.accessionId = accessionId;
     }
@@ -137,7 +137,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
     @Id
     @GeneratedValue
     @Column(name = "AccessionID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getAccessionId() {
+    public Integer getAccessionId() {
         return this.accessionId;
     }
 
@@ -146,7 +146,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.accessionId;
     }
@@ -161,7 +161,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
         return Accession.class;
     }
 
-    public void setAccessionId(Long accessionId) {
+    public void setAccessionId(Integer accessionId) {
         this.accessionId = accessionId;
     }
 

@@ -270,7 +270,7 @@ public class ResultSetTableModelDM extends ResultSetTableModel
                     }                   
                     do
                     {                   
-                        rs.addItem(resultSet.getLong(column));
+                        rs.addItem(resultSet.getInt(column));
                     } while (resultSet.next());
                 }    
 
@@ -283,7 +283,7 @@ public class ResultSetTableModelDM extends ResultSetTableModel
                     int rowInx = displayRowIndexes != null ? displayRowIndexes[rows[i]] : rows[i];
                     if (resultSet.absolute(rowInx+1))
                     {
-                        rs.addItem(resultSet.getLong(column));
+                        rs.addItem(resultSet.getInt(column));
                     }
                 }
             }

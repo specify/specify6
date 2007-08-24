@@ -73,7 +73,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     public static final byte                OTHER  = 2;
     public static final byte                GROUP  = 3;
 
-    protected Long                       agentId;
+    protected Integer                       agentId;
     /** Organization (0), Person (1), Other (2) or Group (3) */
     protected Byte                          agentType;
     
@@ -146,7 +146,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     }
 
     /** constructor with id */
-    public Agent(Long agentId) {
+    public Agent(Integer agentId) {
         this.agentId = agentId;
     }
 
@@ -220,7 +220,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     @Id
     @GeneratedValue
     @Column(name = "AgentID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getAgentId() {
+    public Integer getAgentId() {
         return this.agentId;
     }
 
@@ -230,7 +230,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.agentId;
     }
@@ -245,7 +245,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
         return Agent.class;
     }
 
-    public void setAgentId(Long agentId) {
+    public void setAgentId(Integer agentId) {
         this.agentId = agentId;
     }
 

@@ -1012,7 +1012,7 @@ public class FormViewObj implements Viewable,
         
         if (recordSetItemList != null)
         {
-            RecordSetItemIFace recordSetItem = recordSet.addItem(-1L);
+            RecordSetItemIFace recordSetItem = recordSet.addItem(-1);
             recordSetItemList.add(recordSetItem);
         }
         
@@ -1046,7 +1046,7 @@ public class FormViewObj implements Viewable,
         
         if (dataObj instanceof FormDataObjIFace)
         {
-            Long id = ((FormDataObjIFace)dataObj).getId();
+            Integer id = ((FormDataObjIFace)dataObj).getId();
             Class<?> cls = dataObj.getClass();
             dataObj = session.get(cls, id);
             

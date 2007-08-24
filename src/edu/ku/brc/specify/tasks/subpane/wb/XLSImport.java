@@ -156,7 +156,7 @@ public class XLSImport extends DataImport implements DataImportIFace
                                     
                                 } else
                                 {
-                                    Class classObj = WorkbenchTask.getDataType(wbtmi);
+                                    Class<?> classObj = WorkbenchTask.getDataType(wbtmi);
                                     if (classObj.equals(Calendar.class) || classObj.equals(Date.class))
                                     {
                                         value = scrDateFormat.getSimpleDateFormat().format(cell.getDateCellValue());

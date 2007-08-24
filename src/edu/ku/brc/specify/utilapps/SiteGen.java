@@ -236,7 +236,7 @@ public class SiteGen
         try
         {
             String methodName = "get" + field.getName().substring(0,1).toUpperCase() + field.getName().substring(1);
-            Method method = dataObj.getClass().getMethod(methodName, (Class[])null);
+            Method method = dataObj.getClass().getMethod(methodName, (Class<?>[])null);
             if (method != null)
             {
                 return method.invoke(dataObj, (Object[])null);

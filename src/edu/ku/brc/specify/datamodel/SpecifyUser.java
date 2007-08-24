@@ -60,7 +60,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
 
     // Fields
 
-    protected Long                    specifyUserId;
+    protected Integer                    specifyUserId;
     protected String                  name;
     protected String                  email;
     protected String                  userType;
@@ -84,7 +84,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     }
 
     /** constructor with id */
-    public SpecifyUser(Long specifyUserId)
+    public SpecifyUser(Integer specifyUserId)
     {
         this.specifyUserId = specifyUserId;
     }
@@ -140,7 +140,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     @Id
     @GeneratedValue
     @Column(name = "SpecifyUserID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getSpecifyUserId()
+    public Integer getSpecifyUserId()
     {
         return this.specifyUserId;
     }
@@ -152,7 +152,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.specifyUserId;
     }
@@ -178,7 +178,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
         return false;
     }
     
-    public void setSpecifyUserId(Long specifyUserId) {
+    public void setSpecifyUserId(Integer specifyUserId) {
         this.specifyUserId = specifyUserId;
     }
 

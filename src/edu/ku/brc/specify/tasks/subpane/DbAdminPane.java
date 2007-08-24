@@ -25,6 +25,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListCellRenderer;
@@ -91,11 +92,11 @@ public class DbAdminPane extends BaseSubPane
     protected boolean           isAutoClose = false;
     // private static String value = "";
     private JList               list;
-    protected java.util.List    listOfSpecifyUsers;
-    protected java.util.List    listOfAvailableUserGroups;
-    protected java.util.List    listOfSelectedUserGroups;
-    protected java.util.List    listOfAvailableCoDs;
-    protected java.util.List    listOfSelectedCoDs;
+    protected List<SpecifyUser> listOfSpecifyUsers;
+    protected List<?>           listOfAvailableUserGroups;
+    protected List<?>           listOfSelectedUserGroups;
+    protected List<?>           listOfAvailableCoDs;
+    protected List<?>           listOfSelectedCoDs;
     // protected java.util.List listOfSpecifyUserNames;
     // Object[] arrayOfObjects = null;
 

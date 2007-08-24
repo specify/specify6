@@ -44,7 +44,7 @@ public class CollectingTrip extends DataModelObjBase implements java.io.Serializ
 
     // Fields    
 
-     private Long collectingTripId;
+     private Integer collectingTripId;
      private String remarks;
      private Calendar startDate;
      private Short startDatePrecision;
@@ -66,7 +66,7 @@ public class CollectingTrip extends DataModelObjBase implements java.io.Serializ
     }
     
     /** constructor with id */
-    public CollectingTrip(Long collectingTripId) {
+    public CollectingTrip(Integer collectingTripId) {
         this.collectingTripId = collectingTripId;
     }
    
@@ -99,17 +99,17 @@ public class CollectingTrip extends DataModelObjBase implements java.io.Serializ
     @Id
     @GeneratedValue
     @Column(name = "CollectingTripID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getCollectingTripId() {
+    public Integer getCollectingTripId() {
         return this.collectingTripId;
     }
     
-    public void setCollectingTripId(Long collectingTripId) {
+    public void setCollectingTripId(Integer collectingTripId) {
         this.collectingTripId = collectingTripId;
     }
 
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return collectingTripId;
     }

@@ -24,7 +24,7 @@ public class HibernateDataProvider implements DataProviderIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderIFace#evict(java.lang.Class)
      */
-    public void evict(Class clsObject)
+    public void evict(Class<?> clsObject)
     {
         HibernateUtil.getSessionFactory().evict(clsObject);
     }

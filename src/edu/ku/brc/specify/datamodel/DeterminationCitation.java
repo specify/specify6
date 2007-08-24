@@ -54,7 +54,7 @@ public class DeterminationCitation extends DataModelObjBase implements java.io.S
 
     // Fields    
 
-     protected Long determinationCitationId;
+     protected Integer determinationCitationId;
      protected String remarks;
      protected ReferenceWork referenceWork;
      protected Determination determination;
@@ -68,7 +68,7 @@ public class DeterminationCitation extends DataModelObjBase implements java.io.S
     }
     
     /** constructor with id */
-    public DeterminationCitation(Long determinationCitationId) {
+    public DeterminationCitation(Integer determinationCitationId) {
         this.determinationCitationId = determinationCitationId;
     }
    
@@ -95,7 +95,7 @@ public class DeterminationCitation extends DataModelObjBase implements java.io.S
     @Id
     @GeneratedValue
     @Column(name = "DeterminationCitationID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Long getDeterminationCitationId() {
+    public Integer getDeterminationCitationId() {
         return this.determinationCitationId;
     }
 
@@ -105,7 +105,7 @@ public class DeterminationCitation extends DataModelObjBase implements java.io.S
      */
     @Transient
     @Override
-    public Long getId()
+    public Integer getId()
     {
         return this.determinationCitationId;
     }
@@ -120,7 +120,7 @@ public class DeterminationCitation extends DataModelObjBase implements java.io.S
         return DeterminationCitation.class;
     }
     
-    public void setDeterminationCitationId(Long determinationCitationId) {
+    public void setDeterminationCitationId(Integer determinationCitationId) {
         this.determinationCitationId = determinationCitationId;
     }
 
