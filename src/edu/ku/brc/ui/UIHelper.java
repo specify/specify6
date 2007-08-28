@@ -91,6 +91,10 @@ import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableIdMgr.TableInfo;
 import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.helpers.MenuItemPropertyChangeListener;
+import edu.ku.brc.specify.conversion.CustomDBConverter;
+import edu.ku.brc.specify.conversion.CustomDBConverterDlg;
+import edu.ku.brc.specify.conversion.CustomDBConverterListener;
+import edu.ku.brc.specify.conversion.CustomDBConverterPanel;
 import edu.ku.brc.ui.ViewBasedDialogFactoryIFace.FRAME_TYPE;
 import edu.ku.brc.ui.db.DatabaseLoginDlg;
 import edu.ku.brc.ui.db.DatabaseLoginListener;
@@ -1186,6 +1190,85 @@ public final class UIHelper
         return panel;
     }
     
+    /**
+     * Tries to do the login, if doAutoLogin is set to true it will try without displaying a dialog
+     * and if the login fails then it will display the dialog
+     * @param doAutoLogin whether to try to utomatically log the user in
+     * @param doAutoClose hwther it should automatically close the window when it is logged in successfully
+     * @param useDialog use a Dialog or a Frame
+     * @param listener a listener for when it is logged in or fails
+     */
+    public static CustomDBConverterPanel doSpecifyConvert()
+    {
+        log.debug("doSpecifyConvert");
+        CustomDBConverter converter = new CustomDBConverter();
+        converter.setUpSystemProperties();
+        converter.setUpPreferrences();  
+        
+        final CustomDBConverterListener listener = converter;
+//        boolean doAutoLoginNow = doAutoLogin && AppPreferences.getLocalPrefs().getBoolean("login.autologin", false);
+//
+       // if (useDialog)
+       // {
+            JDialog.setDefaultLookAndFeelDecorated(false); 
+            CustomDBConverterDlg dlg = new CustomDBConverterDlg((Frame)UIRegistry.getTopWindow(), listener);
+            JDialog.setDefaultLookAndFeelDecorated(true); 
+            //dlg.setDoAutoLogin(doAutoLoginNow);
+           // dlg.setDoAutoClose(doAutoClose);
+            UIHelper.centerAndShow(dlg);
+
+            return dlg.getCustomDBConverterPanel();
+
+      //  }
+//        // else
+//        class DBConverterListener implements CustomDBConverterListener
+//        {
+//            protected JFrame                frame;
+//            protected CustomDBConverterListener frameDBListener;
+//           // protected boolean               doAutoCloseOfListener;
+//
+//            public DBConverterListener(JFrame frame, CustomDBConverterListener frameDBListener)
+//            {
+//                this.frame                 = frame;
+//                this.frameDBListener       = frameDBListener;
+//                //this.doAutoCloseOfListener = doAutoCloseOfListener;
+//            }
+//            
+//            public void loggedIn(final String databaseName, final String userName)
+//            {
+//               // if (doAutoCloseOfListener)
+//                //{
+//                //    frame.setVisible(false);
+//                //}
+//                frameDBListener.loggedIn(databaseName, userName);
+//            }
+//
+//            public void cancelled()
+//            {
+//                frame.setVisible(false);
+//                frameDBListener.cancelled();
+//            }
+//        }
+//        JFrame.setDefaultLookAndFeelDecorated(false);
+//
+//        JFrame frame = new JFrame(getResourceString("CONVERTER_TITLE"));
+//        CustomDBConverterPanel panel = new CustomDBConverterPanel(new DBConverterListener(frame, listener), false);
+//        //panel.setAutoClose(doAutoClose);
+//        panel.setWindow(frame);
+//        frame.setContentPane(panel);
+//        //frame.setIconImage(IconManager.getIcon("AppIcon", IconManager.IconSize.Std16).getImage());
+//        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+//
+//        frame.pack();
+//
+////        if (doAutoLoginNow)
+////        {
+////            panel.doLogin();
+////        }
+//        UIHelper.centerAndShow(frame);
+//
+//        return panel;
+    }
     /**
      * Creates an UnhandledException dialog.
      * @param message the string

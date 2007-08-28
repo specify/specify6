@@ -42,12 +42,13 @@ import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.ResultsPager;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.conversion.CustomDBConverterPanel;
 import edu.ku.brc.specify.conversion.GenericDBConversion;
 import edu.ku.brc.specify.conversion.IdMapperMgr;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
@@ -108,6 +109,8 @@ public class SpecifyDBConverter
             System.out.println("Setting "+ logger.getName() + " to " + logger.getLevel());
         }*/
         
+        final SpecifyDBConverter converter = new  SpecifyDBConverter();
+        
         Logger logger = LogManager.getLogger("edu.ku.brc");
         if (logger != null)
         {
@@ -142,25 +145,37 @@ public class SpecifyDBConverter
                 
                 frame = new ProgressFrame("Converting");
                 old2NewDBNames = new Hashtable<String, String>();
-                String[] names = {"Fish", "sp4_fish", "Accessions", "sp4_accessions", "Cranbrook", "sp4_cranbrook", "Ento", "sp4_ento"};
+                String[] names = {"Fish", "sp4_fish", "Accessions", "sp4_accessions", "Cranbrook", "sp4_cranbrook", "Ento", "sp4_ento", "Custom", ""};
                 for (int i=0;i<names.length;i++)
                 {
                     old2NewDBNames.put(names[i], names[++i]);
                 }
                 UIRegistry.setAppName("Specify");
                 
-                dbNamesToConvert = selectedDBsToConvert(names);
-                currentIndex = 0;
-                processDB();
-
+                dbNamesToConvert = converter.selectedDBsToConvert(names);
+                log.debug("size of name to conver: " + dbNamesToConvert.size());
+                
+                if((dbNamesToConvert.size()>=1)&&(dbNamesToConvert.get(0).equals("Custom")))
+                {
+                    log.debug("Running custom converter");
+                    CustomDBConverterPanel panel = converter.runCustomConverter();
+                    dbNamesToConvert = panel.getSelectedObjects();
+                    log.debug("Source db: " + dbNamesToConvert.get(0));
+                    log.debug("Dest db: " + dbNamesToConvert.get(1));
+                    //converter.processDB(t);
+                }
+                else {
+                    currentIndex = 0;
+                    converter.processDB(false);
+                }
             }
         });
     }
     
-    protected static void processDB()
+    protected  void processDB(final boolean isCustomConvert)
     {
         
-        if (dbNamesToConvert.size() > 0 && currentIndex < dbNamesToConvert.size())
+        if(!(isCustomConvert) && (dbNamesToConvert.size() > 0 && currentIndex < dbNamesToConvert.size()))
         {
             
             final SwingWorker worker = new SwingWorker()
@@ -172,7 +187,7 @@ public class SpecifyDBConverter
                     {
                         String currentDBName = dbNamesToConvert.get(currentIndex++);
                         frame.setTitle("Converting "+currentDBName+"...");
-                        convertDB(old2NewDBNames.get(currentDBName), currentDBName.toLowerCase());
+                        convertDB(old2NewDBNames.get(currentDBName), currentDBName.toLowerCase(), isCustomConvert);
                         
                     } catch (Exception ex)
                     {
@@ -185,10 +200,39 @@ public class SpecifyDBConverter
                 @Override
                 public void finished()
                 {
-                    processDB();
+                    processDB(isCustomConvert);
                 }
             };
             worker.start();
+        }
+        else if(isCustomConvert)
+        {
+            final SwingWorker worker = new SwingWorker()
+            {
+                @Override
+                public Object construct()
+                {
+                    try
+                    {
+                        String currentDBName = dbNamesToConvert.get(currentIndex++);
+                        frame.setTitle("Converting "+currentDBName+"...");
+                        convertDB(old2NewDBNames.get(currentDBName), currentDBName.toLowerCase(), isCustomConvert);
+                        
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                    return null;
+                }
+
+                //Runs on the event-dispatching thread.
+                @Override
+                public void finished()
+                {
+                    processDB(isCustomConvert);
+                }
+            };
+            worker.start();        
         }
     }
 
@@ -198,7 +242,7 @@ public class SpecifyDBConverter
      * @param databaseName name of new DB
      * @throws Exception xx
      */
-    protected static void convertDB(final String oldDatabaseName, final String databaseName) throws Exception
+    protected  void convertDB(final String oldDatabaseName, final String databaseName, final boolean isCustomConvert) throws Exception
     {
         boolean doAll            = true; 
         boolean startfromScratch = true; 
@@ -785,7 +829,7 @@ public class SpecifyDBConverter
      * @param hashNames every other one is the new name
      * @return the list of selected DBs
      */
-    protected static List<String> selectedDBsToConvert(final String[] hashNames)
+    protected  List<String> selectedDBsToConvert(final String[] hashNames)
     {
         String initStr = "";
         String selKey  = "Database_Selected";
@@ -883,7 +927,7 @@ public class SpecifyDBConverter
         
         dlg.dispose();
         if (dlg.isCancelled())
-        {
+        {           
             return new ArrayList<String>();
         }
         
@@ -905,5 +949,10 @@ public class SpecifyDBConverter
         }
         
         return dlg.getSelectedObjects();
+    }
+    
+    public CustomDBConverterPanel runCustomConverter()
+    {       
+        return UIHelper.doSpecifyConvert();
     }
 }
