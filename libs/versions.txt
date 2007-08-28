@@ -55,6 +55,10 @@ javacsv									2.0
 jh										2.0_02
 swingx									0.8.0
 
+mssqlserver.jar 						2.2.0040
+	msbase.jar							dist w/ ms driver
+	msutil.jar 							dist w/ ms driver
+
 Missing information:
 --------------------
 commons-codec.jar

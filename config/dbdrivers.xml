@@ -22,10 +22,10 @@ There are three types of connection strings:
     </db>
     
     <!-- not sure if I have the connection string is correct -->
-    <!--
-    <db name="SQLServer" driver="com.microsoft.jdbc.sqlserver.SQLServerDriver" dialect="org.hibernate.dialect.SQLServerDriver">
-        <connection type="open">jdbc:microsoft:sqlserver://SERVER/?database=DATABASE</connection>
+    
+    <db name="SQLServer" driver="com.microsoft.jdbc.sqlserver.SQLServerDriver" dialect="org.hibernate.dialect.SQLServerDialect">
+        <connection type="open">jdbc:sqlserver://SERVER:1433;Database=DATABASE;User=USERNAME;Password=PWD</connection>
     </db>
-    -->
+    
 </databases>
     
