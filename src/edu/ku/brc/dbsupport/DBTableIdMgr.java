@@ -851,7 +851,7 @@ public class DBTableIdMgr
 
 	}
     
-    public class TableRelationship
+    public class TableRelationship implements Comparable<TableRelationship>
     {
         protected String           name;
         protected RelationshipType type;
@@ -886,6 +886,16 @@ public class DBTableIdMgr
         {
             return type;
         }
+
+        /* (non-Javadoc)
+         * @see java.lang.Comparable#compareTo(java.lang.Object)
+         */
+        public int compareTo(TableRelationship o)
+        {
+            return className.compareTo(o.className);
+        }
+        
+        
         
     }
     

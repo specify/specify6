@@ -13,9 +13,9 @@ public class Relationship
 
     protected String   type;
     protected String   className;
-    protected Table classObj;
-    protected String columnName;
-    protected String relationshipName;
+    protected Table    classObj;
+    protected String   columnName;
+    protected String   relationshipName;
     
     
 //    /**

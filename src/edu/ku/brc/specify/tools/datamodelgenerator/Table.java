@@ -2,6 +2,8 @@ package edu.ku.brc.specify.tools.datamodelgenerator;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -20,14 +22,15 @@ public class Table implements Comparable<Table>
 	private String                   tableId;
     private boolean                  query;
     private String                   businessRule;
-	private Collection<Field>        fields        = new ArrayList<Field>();
-	private Collection<Id>           ids           = new ArrayList<Id>();
-	private Collection<Relationship> relationships = new ArrayList<Relationship>();
+	private List<Field>              fields        = new ArrayList<Field>();
+	private List<Id>                 ids           = new ArrayList<Id>();
+	private List<Relationship>       relationships = new ArrayList<Relationship>();
     private Display                  display;
     
     // Transient
     private Vector<TableIndex>       indexes = new Vector<TableIndex>();
-
+    
+    
 	/**
 	 * @param aName
 	 * @param aTable
@@ -230,6 +233,8 @@ public class Table implements Comparable<Table>
     
     public void updateIndexFields()
     {
+        Collections.sort(fields);
+        
         for (TableIndex ti : indexes)
         {
             for (String columnName : ti.getColumnNames())
@@ -245,7 +250,8 @@ public class Table implements Comparable<Table>
             }
         }
     }
-
+    
+    
     // Comparable
     public int compareTo(Table obj)
     {

@@ -48,7 +48,7 @@ import org.hibernate.annotations.CascadeType;
 @Table(name="paleocontext")
 public class PaleoContext extends DataModelObjBase
 {
-    protected Integer    paleoContextId;
+    protected Integer paleoContextId;
     protected Float   distance;
     protected String  distanceUnits; // "ft" or "m"
     protected String  direction;     // "up" or "down"

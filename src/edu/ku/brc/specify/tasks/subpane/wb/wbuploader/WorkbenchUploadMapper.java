@@ -29,7 +29,6 @@ import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableIdMgr.TableRelationship;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMappingDefRel.ImportMappingRelFld;
 import edu.ku.brc.util.DatamodelHelper;
 
 
@@ -136,7 +135,6 @@ public class WorkbenchUploadMapper
             this.sequence = sequence;
         }
         
-        @Override
         public int compareTo(TreeLevelInfo info)
         {
             if (this.rank < info.rank)

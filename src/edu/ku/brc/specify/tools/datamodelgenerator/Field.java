@@ -11,7 +11,7 @@ import org.apache.commons.lang.StringUtils;
  * @author megkumin
  *
  */
-public class Field
+public class Field implements Comparable<Field>
 {
     protected String name;
     protected String type;
@@ -30,8 +30,8 @@ public class Field
                     String column,
                     String length)
     {
-        this.name = name;
-        this.type = type;
+        this.name   = name;
+        this.type   = type;
         this.column = column;
         this.length = length;
     }
@@ -133,6 +133,12 @@ public class Field
         this.indexName = indexName;
     }
 
-    
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(Field arg0)
+    {
+        return name.compareTo(arg0.name);
+    }
     
 }

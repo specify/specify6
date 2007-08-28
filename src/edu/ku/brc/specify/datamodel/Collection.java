@@ -46,12 +46,13 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     protected static List<Integer> currentCollectionIds = null;
     
     // Fields
-    protected Integer                       collectionId;
+    protected Integer                    collectionId;
     protected String                     collectionName;
     protected String                     collectionPrefix;
     protected String                     remarks;
     protected CollectionType             collectionType;
     protected Set<AppResourceDefault>    appResourceDefaults;
+    protected Set<CollectionObject>      collectionObjects;
     protected CatalogNumberingScheme     catalogNumberingScheme;
     
     // Constructors
@@ -101,8 +102,9 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
         collectionName         = null;
         collectionPrefix       = null;
         remarks                = null;
-        collectionType       = null;
+        collectionType         = null;
         appResourceDefaults    = new HashSet<AppResourceDefault>();
+        collectionObjects      = new HashSet<CollectionObject>();
         catalogNumberingScheme = null;
     }
     // End Initializer
@@ -228,6 +230,17 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     public void setAppResourceDefaults(Set<AppResourceDefault> appResourceDefaults)
     {
         this.appResourceDefaults = appResourceDefaults;
+    }
+
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collection")
+    public Set<CollectionObject> getCollectionObjects()
+    {
+        return collectionObjects;
+    }
+
+    public void setCollectionObjects(Set<CollectionObject> collectionObjects)
+    {
+        this.collectionObjects = collectionObjects;
     }
 
     @Override

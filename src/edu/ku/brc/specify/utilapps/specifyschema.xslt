@@ -11,6 +11,7 @@
 
   <xsl:variable name="empty_string"/>
   <xsl:variable name="memo_text">text</xsl:variable>
+  <xsl:variable name="bodyTextSize">10pt</xsl:variable>
   
 <xsl:template name="substring-before-last">
   <xsl:param name="input" />
@@ -73,29 +74,37 @@
   <H3>Table of Contents</H3>
   <UL>
   <xsl:for-each select="//table">
-  
     <LI><a href="#{@table}">
 <xsl:call-template name="substring-after-last">
- <xsl:with-param name="input" select="@classname"/>
- <xsl:with-param name="substr">.</xsl:with-param>
+   <xsl:with-param name="input" select="@classname"/>
+   <xsl:with-param name="substr">.</xsl:with-param>
 </xsl:call-template>
 </a></LI>
   </xsl:for-each>
+    <LI><a href="#indexes">Table Indexes</a></LI>
   </UL>
   
   <H3>Table Definitions</H3>
-     <xsl:apply-templates select="database/table">
+     <xsl:apply-templates select="database/table" mode="table">
        <xsl:sort select="@table" />
      </xsl:apply-templates>
+       
+       <H3>Table Indexes</H3>
+       <a name="indexes"></a>
+     <table class="tbl" border="0" cellspacing="0" cellpadding="2" width="50%">
+     <xsl:apply-templates select="database/table" mode="index">
+       <xsl:sort select="@table" />
+     </xsl:apply-templates>
+     </table>
      
 </xsl:template>
 <br/>
-<span class="footer">Created: 2007-08-23</span>
+<span class="footer">Created: 2007-08-25</span>
      </body></html>
   </xsl:template>
 
 
-<xsl:template match="table">
+<xsl:template match="table" mode="table">
 <a name="{@table}"></a>
   <table class="tbl" border="0" cellspacing="0" cellpadding="2" width="50%">
 
@@ -191,11 +200,57 @@
         <td align="center" colspan="2"><xsl:value-of select="@type"/></td>
         <td align="center" colspan="2">
             <xsl:call-template name="substring-after-last">
-			 <xsl:with-param name="input" select="@classname"/>
-			 <xsl:with-param name="substr">.</xsl:with-param>
+			   <xsl:with-param name="input" select="@classname"/>
+			   <xsl:with-param name="substr">.</xsl:with-param>
 			</xsl:call-template>
         </td>
         </tr>
   </xsl:template>
+
+   
+  
+  <xsl:template match="table" mode="index">
+  <!--  
+    <xsl:for-each select="field">
+    <tr><td>{$bodyTextSize}</td><td>
+    <a href="#{@table}"><xsl:value-of select="@column"/></a>
+       </td></tr>
+    </xsl:for-each>
+    -->
+    
+    <xsl:apply-templates select="field" mode="index">
+         <xsl:sort select="@column" />
+         <xsl:with-param name="cname" select="@classname"/>
+         <xsl:with-param name="tname" select="@table"/>
+       </xsl:apply-templates>
+    </xsl:template>
+
+    <xsl:template match="field" mode="index">
+        <xsl:param name="cname" />
+        <xsl:param name="tname" />
+        <xsl:choose>
+          <xsl:when test="@indexName != $empty_string">
+        <tr>
+        <td align="center">
+           <!--  <xsl:value-of select="$tname" />-->
+           <a href="#{$tname}">
+           <xsl:call-template name="substring-after-last">
+			     <xsl:with-param name="input" select="$cname"/>
+			     <xsl:with-param name="substr">.</xsl:with-param>
+		   </xsl:call-template>
+		   </a>
+        </td>
+        <xsl:choose>
+          <xsl:when test="@indexName != $empty_string">
+             <td align="center"><xsl:value-of select="@indexName"/></td>
+          </xsl:when>  
+          <xsl:otherwise><td align="center"><xsl:text>&#160;</xsl:text></td></xsl:otherwise>
+        </xsl:choose>
+        </tr>
+        </xsl:when>  
+		<xsl:otherwise></xsl:otherwise>
+        </xsl:choose>
+  </xsl:template>
+  
   
 </xsl:stylesheet>

@@ -58,7 +58,7 @@ public class AccessionAuthorization extends DataModelObjBase implements java.io.
 
     // Fields
 
-    protected Integer                accessionAuthorizationId;
+    protected Integer             accessionAuthorizationId;
     protected String              remarks;
     protected Permit              permit;
     protected Accession           accession;
