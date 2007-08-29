@@ -30,6 +30,7 @@ package edu.ku.brc.specify.datamodel;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -261,36 +262,37 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
         this.attachments = attachments;
     }
     
-    @Transient
-    public String getImageURL()
-    {
-        for (Attachment a: attachments)
-        {
-            if (a.getMimeType().startsWith("image"))
-            {
-                File thumb = AttachmentUtils.getAttachmentManager().getThumbnail(a);
-                try
-                {
-                    return thumb.toURI().toURL().toString();
-                }
-                catch (MalformedURLException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return null;
-    }
-    
-    public void setImageURL(String url)
-    {
-        Attachment newImage = new Attachment();
-        newImage.initialize();
-        newImage.setOrigFilename(url);
-        newImage.setAgent(this);
-        this.attachments.add(newImage);
-        return;
-    }
+//    @Transient
+//    public String getImageURL()
+//    {
+//        for (Attachment a: attachments)
+//        {
+//            if (a.getMimeType().startsWith("image"))
+//            {
+//                File thumb = AttachmentUtils.getAttachmentManager().getThumbnail(a);
+//                try
+//                {
+//                    URL imageURL = thumb.toURI().toURL();
+//                    return imageURL.toString();
+//                }
+//                catch (MalformedURLException e)
+//                {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+//        return null;
+//    }
+//    
+//    public void setImageURL(String url)
+//    {
+//        Attachment newImage = new Attachment();
+//        newImage.initialize();
+//        newImage.setOrigFilename(url);
+//        newImage.setAgent(this);
+//        this.attachments.add(newImage);
+//        return;
+//    }
 
     /**
      *

@@ -460,8 +460,8 @@
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
 
             <desc><![CDATA[Agent subform for Acessions.]]></desc>
-            <columnDef>p,2px,p,2px,p,2px,p</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,10px,p:g</rowDef>
+            <columnDef>p,2px,p,2px,p,2px,p:g</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,10px,p:g,10px,p:g</rowDef>
 
             <rows>
                 <row>
@@ -470,7 +470,7 @@
                 <row>
                     <cell type="label" labelfor="1" label="Title"/>
                     <cell type="field" id="1" name="title" uitype="combobox" initialize="data=Asst. Director, Curator, Mr., Mrs., Ms., Dr." valtype="Changed"/> <!-- Needs to be a PickList -->
-                    <cell type="field" id="image" name="imageURL" uitype="image" rowspan="11" initialize="size=128,128;border=true"/>
+                    <!--<cell type="field" id="image" name="imageURL" uitype="image" rowspan="11" initialize="size=128,128;border=true"/>-->
                 </row>
                 <row>
                     <cell type="label" labelfor="3" label="Last Name"/>
@@ -495,6 +495,11 @@
                 <row>
                     <cell type="subview" viewname="Address" id="9" name="addresses" colspan="7" valtype="Changed"/>
                 </row>
+                <row>
+                    <cell type="label" labelfor="attachments" label="Attachments"/>
+                    <cell type="subview" id="attachments" viewname="AttachmentsIconView" name="attachments" colspan="5"/>
+                </row>
+                
             </rows>
         </viewdef>
 

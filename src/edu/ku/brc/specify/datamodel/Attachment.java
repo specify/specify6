@@ -42,15 +42,15 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
 @Table(name = "attachments")
 public class Attachment extends DataModelObjBase implements Serializable, Orderable
 {
-    private Integer                    attachmentID;
+    private Integer                 attachmentID;
     private String                  mimeType;
     private String                  origFilename;
     private Calendar                fileCreatedDate;
     private Integer                 ordinal;
     private String                  remarks;
     private String                  attachmentLocation;
-    protected Integer visibility;
-    protected String visibilitySetBy;
+    protected Integer               visibility;
+    protected String                visibilitySetBy;
     private Set<AttachmentMetadata> metadata;
     private Agent                   agent;
     private CollectionObject        collectionObject;
@@ -62,6 +62,7 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
     private Taxon                   taxon;
     private Accession accession;
     private RepositoryAgreement repositoryAgreement;
+    
     /** default constructor */
     public Attachment()
     {
@@ -148,6 +149,12 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
 
     public void setOrigFilename(String origFilename)
     {
+        if ((origFilename != null && origFilename.equals(this.origFilename)) || (origFilename == null && this.origFilename == null))
+        {
+            // nothing is being changed
+            return;
+        }
+        
         this.origFilename = origFilename;
 
         // for newly created attachments, setup the attachmentLocation field

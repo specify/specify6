@@ -171,16 +171,16 @@ public class AccessionAgent extends DataModelObjBase implements java.io.Serializ
         this.agent = agent;
     }
     
-    @Transient
-    public String getImageURL()
-    {
-        return agent.getImageURL();
-    }
-    
-    public void setImageURL(String url)
-    {
-        agent.setImageURL(url);
-    }
+//    @Transient
+//    public String getImageURL()
+//    {
+//        return agent.getImageURL();
+//    }
+//    
+//    public void setImageURL(String url)
+//    {
+//        agent.setImageURL(url);
+//    }
 
     /**
      *      * Accession in which the Agent played a role
