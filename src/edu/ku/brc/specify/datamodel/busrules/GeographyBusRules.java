@@ -185,7 +185,7 @@ public class GeographyBusRules extends BaseTreeBusRules<Geography, GeographyTree
                 }
             }
         }
-        // else don't change anything
+        // else don't change anything (i.e. !changeThisLevel && !changeAllDescendants)
         
         session.close();
     }
