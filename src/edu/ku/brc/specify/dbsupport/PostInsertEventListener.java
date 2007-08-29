@@ -21,7 +21,9 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 /**
- * This class listens for Insert events from Hibernate so it can update the Lucene index.
+ * This class listens for Insert events from Hibernate so it can update the Lucene index.  This
+ * mechanism is also being used by the AttachmentManager system as a trigger to copy the original
+ * files into the storage location.
  * 
  * @author rods
  *
