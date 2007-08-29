@@ -65,6 +65,12 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
 	protected Set<Container>	containers;
 	protected Set<Location>		children;
 
+    // for synonym support
+    protected Boolean             isAccepted;
+    protected Location            acceptedLocation;
+    protected Set<Location>       acceptedChildren;
+
+
 	/** default constructor */
 	public Location()
 	{
@@ -273,6 +279,52 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
 	{
 		this.timestampVersion = timestampVersion;
 	}
+    @Column(name="IsAccepted", unique=false, nullable=true, insertable=true, updatable=true)
+    public Boolean getIsAccepted()
+    {
+        return this.isAccepted;
+    }
+
+    public void setIsAccepted(Boolean accepted)
+    {
+        this.isAccepted = accepted;
+    }
+
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "acceptedLocation")
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
+    public Set<Location> getAcceptedChildren()
+    {
+        return this.acceptedChildren;
+    }
+
+    public void setAcceptedChildren(Set<Location> acceptedChildren)
+    {
+        this.acceptedChildren = acceptedChildren;
+    }
+
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @JoinColumn(name = "AcceptedID")
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
+    public Location getAcceptedLocation()
+    {
+        return this.acceptedLocation;
+    }
+
+    public void setAcceptedLocation(Location acceptedLocation)
+    {
+        this.acceptedLocation = acceptedLocation;
+    }
+    
+    @Transient
+    public Location getAcceptedParent()
+    {
+        return getAcceptedLocation();
+    }
+    
+    public void setAcceptedParent(Location acceptedParent)
+    {
+        setAcceptedLocation(acceptedParent);
+    }
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @Cascade( { CascadeType.MERGE, CascadeType.LOCK })

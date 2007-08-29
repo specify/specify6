@@ -87,6 +87,11 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
     protected Set<PaleoContext>             bioStratsPaleoContext;
     protected Set<PaleoContext>             chronosStratsPaleoContext;
 
+    // for synonym support
+    protected Boolean                       isAccepted;
+    protected GeologicTimePeriod            acceptedGeologicTimePeriod;
+    protected Set<GeologicTimePeriod>       acceptedChildren;
+
 	// Constructors
 
 	/** default constructor */
@@ -323,6 +328,53 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 
     public void setGuid(String guid) {
         this.guid = guid;
+    }
+
+    @Column(name="IsAccepted", unique=false, nullable=true, insertable=true, updatable=true)
+    public Boolean getIsAccepted()
+    {
+        return this.isAccepted;
+    }
+
+    public void setIsAccepted(Boolean accepted)
+    {
+        this.isAccepted = accepted;
+    }
+
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "acceptedGeologicTimePeriod")
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
+    public Set<GeologicTimePeriod> getAcceptedChildren()
+    {
+        return this.acceptedChildren;
+    }
+
+    public void setAcceptedChildren(Set<GeologicTimePeriod> acceptedChildren)
+    {
+        this.acceptedChildren = acceptedChildren;
+    }
+
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @JoinColumn(name = "AcceptedID")
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
+    public GeologicTimePeriod getAcceptedGeologicTimePeriod()
+    {
+        return this.acceptedGeologicTimePeriod;
+    }
+
+    public void setAcceptedGeologicTimePeriod(GeologicTimePeriod acceptedGeologicTimePeriod)
+    {
+        this.acceptedGeologicTimePeriod = acceptedGeologicTimePeriod;
+    }
+    
+    @Transient
+    public GeologicTimePeriod getAcceptedParent()
+    {
+        return getAcceptedGeologicTimePeriod();
+    }
+    
+    public void setAcceptedParent(GeologicTimePeriod acceptedParent)
+    {
+        setAcceptedGeologicTimePeriod(acceptedParent);
     }
 
 	/**

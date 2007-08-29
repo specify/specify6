@@ -14,11 +14,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -504,6 +507,23 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
         if (nodeInForm.getDefinitionItem() != null)
         {
             adjustRankComboBoxModel((GetSetValueIFace)parentComboBox, rankComboBox, nodeInForm);
+        }
+        
+        // TODO: the form system MUST require the accepted parent widget to be present if the isAccepted checkbox is present
+        final JCheckBox acceptedCheckBox = (JCheckBox)form.getControlByName("isAccepted");
+        final GetSetValueIFace acceptedParentWidget = (GetSetValueIFace)form.getControlByName("acceptedParent");
+        if (acceptedCheckBox != null && acceptedParentWidget != null)
+        {
+            acceptedCheckBox.addItemListener(new ItemListener()
+            {
+                public void itemStateChanged(ItemEvent e)
+                {
+                    if (acceptedCheckBox.isSelected())
+                    {
+                        acceptedParentWidget.setValue(null, null);
+                    }
+                }
+            });
         }
     }
     

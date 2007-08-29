@@ -92,6 +92,11 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	protected Geography				parent;
 	protected Set<Geography>		children;
 
+    // for synonym support
+    protected Boolean              isAccepted;
+    protected Geography            acceptedGeography;
+    protected Set<Geography>       acceptedChildren;
+
 	// Constructors
 
 	/** default constructor */
@@ -405,9 +410,6 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 		this.timestampVersion = timestampVersion;
 	}
 
-	/**
-	 *
-	 */
     @Column(name = "IsCurrent", unique = false, nullable = true, insertable = true, updatable = true)
 	public Boolean getIsCurrent()
 	{
@@ -418,6 +420,53 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	{
 		this.isCurrent = isCurrent;
 	}
+
+    @Column(name="IsAccepted", unique=false, nullable=true, insertable=true, updatable=true)
+    public Boolean getIsAccepted()
+    {
+        return this.isAccepted;
+    }
+
+    public void setIsAccepted(Boolean accepted)
+    {
+        this.isAccepted = accepted;
+    }
+
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "acceptedGeography")
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
+    public Set<Geography> getAcceptedChildren()
+    {
+        return this.acceptedChildren;
+    }
+
+    public void setAcceptedChildren(Set<Geography> acceptedChildren)
+    {
+        this.acceptedChildren = acceptedChildren;
+    }
+
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @JoinColumn(name = "AcceptedID")
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
+    public Geography getAcceptedGeography()
+    {
+        return this.acceptedGeography;
+    }
+
+    public void setAcceptedGeography(Geography acceptedGeography)
+    {
+        this.acceptedGeography = acceptedGeography;
+    }
+    
+    @Transient
+    public Geography getAcceptedParent()
+    {
+        return getAcceptedGeography();
+    }
+    
+    public void setAcceptedParent(Geography acceptedParent)
+    {
+        setAcceptedGeography(acceptedParent);
+    }
 
 	/**
 	 *

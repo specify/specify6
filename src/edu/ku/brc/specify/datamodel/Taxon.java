@@ -537,6 +537,18 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		this.acceptedTaxon = acceptedTaxon;
 	}
 
+    @Transient
+    public Taxon getAcceptedParent()
+    {
+        return getAcceptedTaxon();
+    }
+    
+    public void setAcceptedParent(Taxon acceptedParent)
+    {
+        setAcceptedTaxon(acceptedParent);
+    }
+
+
     /**
      * If this object represents a hybrid taxon, this returns the primary parent of the taxon.
      * 

@@ -68,7 +68,7 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
      */
     protected static final Logger log = Logger.getLogger(LithoStrat.class);
 
-	protected Integer						    lithoStratId;
+	protected Integer					    lithoStratId;
 	protected Integer						rankId;
 	protected String						name;
 	protected String						fullName;
@@ -83,6 +83,12 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
     
 	protected Set<PaleoContext>	            paleoContexts;
 
+    // for synonym support
+    protected Boolean               isAccepted;
+    protected LithoStrat            acceptedLithoStrat;
+    protected Set<LithoStrat>       acceptedChildren;
+
+
 	// Constructors
 
 	/** default constructor */
@@ -92,9 +98,9 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
 	}
 
 	/** constructor with id */
-	public LithoStrat(Integer geologicTimePeriodId)
+	public LithoStrat(Integer lithoStratId)
 	{
-		this.lithoStratId = geologicTimePeriodId;
+		this.lithoStratId = lithoStratId;
 	}
 
 	// Initializer
@@ -152,9 +158,9 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
         return LithoStrat.class;
     }
 
-	public void setLithoStratId(Integer geologicTimePeriodId)
+	public void setLithoStratId(Integer lithoStratId)
 	{
-		this.lithoStratId = geologicTimePeriodId;
+		this.lithoStratId = lithoStratId;
 	}
 
 	/**
@@ -256,6 +262,53 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
 	{
 		this.remarks = remarks;
 	}
+    
+    @Column(name="IsAccepted", unique=false, nullable=true, insertable=true, updatable=true)
+    public Boolean getIsAccepted()
+    {
+        return this.isAccepted;
+    }
+
+    public void setIsAccepted(Boolean accepted)
+    {
+        this.isAccepted = accepted;
+    }
+
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "acceptedLithoStrat")
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
+    public Set<LithoStrat> getAcceptedChildren()
+    {
+        return this.acceptedChildren;
+    }
+
+    public void setAcceptedChildren(Set<LithoStrat> acceptedChildren)
+    {
+        this.acceptedChildren = acceptedChildren;
+    }
+
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @JoinColumn(name = "AcceptedID")
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
+    public LithoStrat getAcceptedLithoStrat()
+    {
+        return this.acceptedLithoStrat;
+    }
+
+    public void setAcceptedLithoStrat(LithoStrat acceptedLithoStrat)
+    {
+        this.acceptedLithoStrat = acceptedLithoStrat;
+    }
+    
+    @Transient
+    public LithoStrat getAcceptedParent()
+    {
+        return getAcceptedLithoStrat();
+    }
+    
+    public void setAcceptedParent(LithoStrat acceptedParent)
+    {
+        setAcceptedLithoStrat(acceptedParent);
+    }
 
 	/**
 	 * 
@@ -340,7 +393,7 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
         this.paleoContexts = paleoContexts;
     }
 
-    /* Code added in order to implement Treeable */
+	/* Code added in order to implement Treeable */
 
     @Transient
 	public Integer getTreeId()

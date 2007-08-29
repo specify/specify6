@@ -863,7 +863,7 @@
             
             <desc><![CDATA[New Taxon Node Form]]></desc>
             <enableRules>
-                <rule id="acceptedTaxon"><![CDATA[!isAccepted.isSelected()]]></rule>
+                <rule id="acceptedParent"><![CDATA[!isAccepted.isSelected()]]></rule>
                 <rule id="hybridParent1"><![CDATA[isHybrid.isSelected()]]></rule>
                 <rule id="hybridParent2"><![CDATA[isHybrid.isSelected()]]></rule>
                 <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
@@ -920,8 +920,8 @@
                 	<cell type="field" id="isAccepted" uitype="checkbox" name="isAccepted" default="true"/>
                 </row>
                 <row>
-                	<cell type="label" labelfor="acceptedTaxon" label="Accepted Taxon"/>
-                	<cell type="field" id="acceptedTaxon" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="acceptedTaxon"/>
+                	<cell type="label" labelfor="acceptedParent" label="Accepted Taxon"/>
+                	<cell type="field" id="acceptedParent" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="acceptedParent"/>
                 </row>
                 <row>
                 	<cell type="label" labelfor="isHybrid" label="Is Hybrid?"/>
@@ -959,6 +959,7 @@
             
             <desc><![CDATA[New Geography Node Form]]></desc>
             <enableRules>
+                <rule id="acceptedParent"><![CDATA[!isAccepted.isSelected()]]></rule>
                 <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
             </enableRules>
             <columnDef>200px,3dlu,p:g</columnDef>
@@ -983,6 +984,14 @@
                 <row>
                     <cell type="label" labelfor="definitionItem" label="Rank"/>
                 	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem"/>
+                </row>
+                <row>
+                	<cell type="label" labelfor="isAccepted" label="Is Accepted?"/>
+                	<cell type="field" id="isAccepted" uitype="checkbox" name="isAccepted" default="true"/>
+                </row>
+                <row>
+                	<cell type="label" labelfor="acceptedParent" label="Accepted Geography"/>
+                	<cell type="field" id="acceptedParent" isrequired="true" uitype="querycbx" initialize="name=Geography;title=Geography;editbtn=false;newbtn=false" name="acceptedParent"/>
                 </row>
                 <row>
                     <cell type="separator" label="Children" colspan="3"/>

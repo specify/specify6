@@ -194,6 +194,13 @@ public interface Treeable<N extends Treeable<N,D,I>,
 	public int getTableId();
 	
 	public boolean isDescendantOf(N node);
+    
+    public Boolean getIsAccepted();
+    public void setIsAccepted(Boolean accepted);
+    public N getAcceptedParent();
+    public void setAcceptedParent(N acceptedParent);
+    public Set<N> getAcceptedChildren();
+    public void setAcceptedChildren(Set<N> acceptedChildren);
 	
 	public Comparator<? super N> getComparator();
 }

@@ -126,23 +126,6 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
         
         // Taxon specific stuff...
         
-        // TODO: the form system MUST require the acceptedTaxon widget to be present if the isAccepted checkbox is present
-        final JCheckBox acceptedCheckBox = (JCheckBox)form.getControlByName("isAccepted");
-        final GetSetValueIFace acceptedParentWidget = (GetSetValueIFace)form.getControlByName("acceptedTaxon");
-        if (acceptedCheckBox != null)
-        {
-            acceptedCheckBox.addItemListener(new ItemListener()
-            {
-                public void itemStateChanged(ItemEvent e)
-                {
-                    if (acceptedCheckBox.isSelected())
-                    {
-                        acceptedParentWidget.setValue(null, null);
-                    }
-                }
-            });
-        }
-        
         // TODO: the form system MUST require the hybridParent1 and hybridParent2 widgets to be present if the isHybrid checkbox is present
         final JCheckBox hybridCheckBox = (JCheckBox)form.getControlByName("isHybrid");
         final GetSetValueIFace hybrid1Widget = (GetSetValueIFace)form.getControlByName("hybridParent1");
