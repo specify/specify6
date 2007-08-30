@@ -210,7 +210,6 @@ public abstract class BaseBusRules implements BusinessRulesIFace
      */
     public boolean afterSaveCommit(Object dataObj)
     {
-        System.err.println("beforeSaveCommit(" + dataObj + ")");
         return true;
     }
 
@@ -219,7 +218,6 @@ public abstract class BaseBusRules implements BusinessRulesIFace
      */
     public void beforeSave(Object dataObj, DataProviderSessionIFace session)
     {
-        System.err.println("beforeSave(" + dataObj + ")");
         // do nothing
     }
     
@@ -228,7 +226,6 @@ public abstract class BaseBusRules implements BusinessRulesIFace
      */
     public void beforeSaveCommit(Object dataObj, DataProviderSessionIFace session)
     {
-        System.err.println("beforeSaveCommit(" + dataObj + ")");
         // do nothing
     }
     
