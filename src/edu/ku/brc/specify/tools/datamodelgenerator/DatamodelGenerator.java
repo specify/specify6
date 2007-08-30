@@ -379,7 +379,6 @@ public class DatamodelGenerator
                                 } else
                                 {
                                     typeClass = null;
-                                    continue;
                                 }
                                 
                                 String thisSideName = getFieldNameFromMethod(method);
@@ -404,7 +403,7 @@ public class DatamodelGenerator
                                     javax.persistence.JoinColumn join = method.isAnnotationPresent(javax.persistence.JoinColumn.class) ? (javax.persistence.JoinColumn)method.getAnnotation(javax.persistence.JoinColumn.class) : null;
                                     if (join != null)
                                     {
-                                        String othersideName = getOthersideName(typeClass, thisSideName, RelType.OneToMany);
+                                        String othersideName = typeClass == null ? "" : getOthersideName(typeClass, thisSideName, RelType.OneToMany);
                                         table.addRelationship(createRelationsip(method, "many-to-one", join, othersideName, join != null ? !join.nullable() : false));
                                         
                                     } else
@@ -415,19 +414,19 @@ public class DatamodelGenerator
                                 } else if (method.isAnnotationPresent(javax.persistence.ManyToMany.class))
                                 {
                                     javax.persistence.JoinColumn join = method.isAnnotationPresent(javax.persistence.JoinColumn.class) ? (javax.persistence.JoinColumn)method.getAnnotation(javax.persistence.JoinColumn.class) : null;
-                                    String othersideName = getOthersideName(typeClass, thisSideName, RelType.ManyToMany);
+                                    String othersideName = typeClass == null ? "" : getOthersideName(typeClass, thisSideName, RelType.ManyToMany);
                                     table.addRelationship(createRelationsip(method, "many-to-many", join, othersideName, join != null ? !join.nullable() : false));
                                     
                                 } else if (method.isAnnotationPresent(javax.persistence.OneToMany.class))
                                 {
                                     javax.persistence.JoinColumn join = method.isAnnotationPresent(javax.persistence.JoinColumn.class) ? (javax.persistence.JoinColumn)method.getAnnotation(javax.persistence.JoinColumn.class) : null;
-                                    String othersideName = getOthersideName(typeClass, thisSideName, RelType.ManyToOne);
+                                    String othersideName = typeClass == null ? "" : getOthersideName(typeClass, thisSideName, RelType.ManyToOne);
                                     table.addRelationship(createRelationsip(method, "one-to-many", join, othersideName, join != null ? !join.nullable() : false));
                                     
                                 } else if (method.isAnnotationPresent(javax.persistence.OneToOne.class))
                                 {
                                     javax.persistence.JoinColumn join = method.isAnnotationPresent(javax.persistence.JoinColumn.class) ? (javax.persistence.JoinColumn)method.getAnnotation(javax.persistence.JoinColumn.class) : null;
-                                    String othersideName = getOthersideName(typeClass, thisSideName, RelType.OneToOne);
+                                    String othersideName = typeClass == null ? "" : getOthersideName(typeClass, thisSideName, RelType.OneToOne);
                                     table.addRelationship(createRelationsip(method, "one-to-one", join, othersideName, join != null ? !join.nullable() : false));
                                     
                                 }
@@ -593,7 +592,6 @@ public class DatamodelGenerator
             // Sort all the elements by class name
             Collections.sort(tableList);
 
-            int x = tableList.size();
             boolean didWrite = datamodelWriter.writeTree(tableList);
             if (!didWrite)
             {
