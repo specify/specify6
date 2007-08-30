@@ -884,7 +884,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         }
         
         Object value = null;
-        Long  id     = comboBox.getSelectedId();
+        Integer id   = comboBox.getSelectedId();
         if (id != null)
         {
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();

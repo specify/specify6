@@ -606,7 +606,10 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         BusinessRulesIFace busRules = DBTableIdMgr.getInstance().getBusinessRule(mergedNode);
         HibernateDataProviderSession sessionWrapper = new HibernateDataProviderSession(session);
         
-        busRules.beforeSave(mergedNode, sessionWrapper);
+        if (busRules != null)
+        {
+            busRules.beforeSave(mergedNode, sessionWrapper);
+        }
         session.saveOrUpdate(mergedNode);
         
         // fix all the node numbers for effected nodes
@@ -732,8 +735,15 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
             step6Query.executeUpdate();
         }
 
+        if (busRules != null)
+        {
+            busRules.beforeSaveCommit(node, sessionWrapper);
+        }
         boolean success = commitTransaction(session, tx);
-        success &= busRules.afterSave(node);
+        if (busRules != null)
+        {
+            success &= busRules.afterSaveCommit(node);
+        }
         
         return success;
     }

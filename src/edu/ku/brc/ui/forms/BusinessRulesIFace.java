@@ -72,23 +72,33 @@ public interface BusinessRulesIFace
     public String getDeleteMsg(Object dataObj);
     
     /**
-     * Called BEFORE committing a transaction in which the passed in data object will
-     * be saved to the DB.  This can be called on newly created objects or existing data
-     * objects that have been editted.
+     * Called BEFORE saving an object to the DB.  This can be called on newly
+     * created objects or existing data objects that have been editted.
      * 
-     * @param dataObj the object being saved
+     * @param dataObj the object to be saved
      * @param session the data provider session
      */
     public void beforeSave(Object dataObj, DataProviderSessionIFace session);
     
     /**
-     * Called AFTER committing a transaction in which the passed in data object will
-     * be saved to the DB.  This can be called on newly created objects or existing data
+     * Called BEFORE committing a transaction in which the passed in data object will
+     * be saved to the DB.  When this is called, the transaction has already been started.
+     * Any new DB actions will be added to the open transaction.  This can be called on
+     * newly created objects or existing data objects that have been editted.
+     * 
+     * @param dataObj the object that is being saved
+     * @param session the data provider session
+     */
+    public void beforeSaveCommit(Object dataObj, DataProviderSessionIFace session);
+    
+    /**
+     * Called AFTER committing a transaction in which the passed in data object was
+     * saved to the DB.  This can be called on newly created objects or existing data
      * objects that have been editted.
      * 
      * @param dataObj the object that was saved
      */
-    public boolean afterSave(Object dataObj);
+    public boolean afterSaveCommit(Object dataObj);
     
     /**
      * Called before committing a transaction in which the passed in data object will

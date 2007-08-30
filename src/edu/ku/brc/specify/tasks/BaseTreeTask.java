@@ -499,7 +499,13 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
                 public void focusLost(FocusEvent e)
                 {
                     // set the contents of this combobox based on the value chosen as the parent
-                    adjustRankComboBoxModel((GetSetValueIFace)parentComboBox, rankComboBox, nodeInForm);
+                    GetSetValueIFace parentField = (GetSetValueIFace)parentComboBox;
+                    adjustRankComboBoxModel(parentField, rankComboBox, nodeInForm);
+                    T parent = (T)parentField.getValue();
+                    if (parent != null)
+                    {
+                        nodeInForm.setDefinition(parent.getDefinition());
+                    }
                 }
             });
         }
@@ -547,6 +553,15 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
         // grab all the def items from just below the parent's item all the way to the next enforced level
         // or to the level of the highest ranked child
         topItem = parent.getDefinitionItem().getChild();
+        
+        if (topItem == null)
+        {
+            // this only happens if a parent was chosen that cannot have children b/c it is at the
+            // lowest defined level in the tree
+            log.warn("Chosen node cannot be a parent node.  It is at the lowest defined level of the tree.");
+            log.warn("Figure out how to restrict the searching in the combobox from allowing non-parent nodes from appearing.");
+            return;
+        }
 
         // find the child with the highest rank and set that child's def item as the bottom of the range
         if (!nodeInForm.getChildren().isEmpty())

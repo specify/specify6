@@ -1367,11 +1367,17 @@ public class UploadTable implements Comparable<UploadTable>
                 {
                     busRule.beforeSave(rec, tblSession);
                 }
+                tblSession.beginTransaction();
                 tblSession.save(rec);
+                if (busRule != null)
+                {
+                    busRule.beforeSaveCommit(rec, tblSession);
+                }
+                tblSession.commit();
                 uploadedKeys.add(rec.getId());
                 if (busRule != null)
                 {
-                    busRule.afterSave(rec);
+                    busRule.afterSaveCommit(rec);
                 }
             }
             catch (Exception ex)

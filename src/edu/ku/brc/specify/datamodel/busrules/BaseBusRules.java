@@ -208,8 +208,9 @@ public abstract class BaseBusRules implements BusinessRulesIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#afterSave(java.lang.Object)
      */
-    public boolean afterSave(Object dataObj)
+    public boolean afterSaveCommit(Object dataObj)
     {
+        System.err.println("beforeSaveCommit(" + dataObj + ")");
         return true;
     }
 
@@ -218,6 +219,16 @@ public abstract class BaseBusRules implements BusinessRulesIFace
      */
     public void beforeSave(Object dataObj, DataProviderSessionIFace session)
     {
+        System.err.println("beforeSave(" + dataObj + ")");
+        // do nothing
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#beforeSave(java.lang.Object)
+     */
+    public void beforeSaveCommit(Object dataObj, DataProviderSessionIFace session)
+    {
+        System.err.println("beforeSaveCommit(" + dataObj + ")");
         // do nothing
     }
     

@@ -136,8 +136,10 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
      */
     @SuppressWarnings("unchecked")
     @Override
-    public void beforeSave(Object dataObj, DataProviderSessionIFace session)
+    public void beforeSaveCommit(Object dataObj, DataProviderSessionIFace session)
     {
+        super.beforeSaveCommit(dataObj, session);
+        
         if (dataObj instanceof Treeable)
         {
             // NOTE: the instanceof check can't check against 'T' since T isn't a class
@@ -164,8 +166,10 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
      */
     @SuppressWarnings("unchecked")
     @Override
-    public boolean afterSave(Object dataObj)
+    public boolean afterSaveCommit(Object dataObj)
     {
+        super.afterSaveCommit(dataObj);
+        
         boolean success = true;
         
         // compare the dataObj values to the nodeBeforeSave values to determine if a node was moved or added

@@ -1253,6 +1253,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                     {
                         session.beginTransaction();
                         session.saveOrUpdate(mergedNode);
+                        if (businessRules != null)
+                        {
+                            businessRules.beforeSaveCommit(mergedNode, session);
+                        }
                         session.commit();
                         log.info("Successfully saved changes to " + mergedNode.getFullName());
                         
@@ -1271,7 +1275,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 
                     if (businessRules != null)
                     {
-                        afterSaveSuccess = businessRules.afterSave(mergedNode);
+                        afterSaveSuccess = businessRules.afterSaveCommit(mergedNode);
                     }
                     
                     return success;

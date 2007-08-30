@@ -1158,6 +1158,10 @@ public class FormViewObj implements Viewable,
                 log.debug("CurrentDO "+(dataObjArg != null ? dataObjArg.getClass().getSimpleName()+" "+dataObjArg.hashCode() : "N/A")+"  Merged: "+dObj.getClass().getSimpleName()+" "+dObj.hashCode());
 
                 session.saveOrUpdate(dObj);
+                if (businessRules != null)
+                {
+                    businessRules.beforeSaveCommit(dataObjArg,session);
+                }
                 session.commit();
                 session.flush();
                 
@@ -1233,7 +1237,7 @@ public class FormViewObj implements Viewable,
         {
             if (businessRules != null)
             {
-                businessRules.afterSave(dObj);
+                businessRules.afterSaveCommit(dObj);
             }
 
             formValidator.setHasChanged(false);

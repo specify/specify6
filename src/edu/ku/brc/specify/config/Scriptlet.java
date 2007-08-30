@@ -431,7 +431,7 @@ public class Scriptlet extends JRDefaultScriptlet
      * @param colEvId
      * @return
      */
-    public String getCollectors(final Long colEvId)
+    public String getCollectors(final Integer colEvId)
     {
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         //System.out.println(colEvId);
