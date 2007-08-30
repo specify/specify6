@@ -7,6 +7,9 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
+
+import org.apache.log4j.Logger;
+
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Taxon;
@@ -23,7 +26,7 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
  */
 public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTreeDefItem>
 {
-    //private static final Logger log = Logger.getLogger(TaxonBusRules.class);
+    private static final Logger log = Logger.getLogger(TaxonBusRules.class);
     
     /**
      * Constructor.
@@ -160,6 +163,7 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
         // we set these options before shipping the DB, then not let them change it ever again?
         // Or perhaps they can't change it if there are records at this level.
         
+        log.warn("TODO: need to make a decision here");
         return;
         
 //        // we need a way to determine if the 'isInFullname' value changed
