@@ -6,6 +6,9 @@
 		<attribute name="shortname" property="shortName"/>
 		<attribute name="relationshipname" property="relationshipName"/>
 		<attribute name="columnname" property="columnName"/>
+		<attribute name="othersidename" property="otherSideName"/>
+		<attribute name="updatable" property="updatable"/>
+		<attribute name="required" property="required"/>
 		<addDefaults/>
 	</element>
 </info>

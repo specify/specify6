@@ -191,7 +191,10 @@ public class DBTableIdMgr
                                 irNode.attributeValue("relationshipname"),
                                 getRelationshipType(irNode.attributeValue("type")),
                                 irNode.attributeValue("classname"),
-                                irNode.attributeValue("columnname"));
+                                irNode.attributeValue("columnname"),
+                                irNode.attributeValue("othersidename"),
+                                getAttr(irNode, "required", false),
+                                getAttr(irNode, "updatable", false));
                         tblInfo.getRelationships().add(tblRel);
                     }
                     
@@ -209,7 +212,10 @@ public class DBTableIdMgr
                                 irNode.attributeValue("column"),
                                 irNode.attributeValue("name"),
                                 irNode.attributeValue("type"),
-                                len);
+                                len,
+                                getAttr(irNode, "required", false),
+                                getAttr(irNode, "updatable", false),
+                                getAttr(irNode, "unique", false));
                         tblInfo.addField(fieldInfo);
                     }
                     //Collections.sort(tblInfo.getFields());
@@ -242,20 +248,6 @@ public class DBTableIdMgr
             ti.cleanUp();
         }
         hash.clear();
-    }
-    
-    /**
-     * Helper to create a FieldInfo Object.
-     * @param tableInfo TableInfo Object (owner)
-     * @param column the column name
-     * @param name the field name
-     * @param type the type of field it is
-     * @param length the length of the field
-     * @return the FieldInfo object
-     */
-    public FieldInfo createFieldInfo(TableInfo tableInfo, String column, String name, String type, int length)
-    {
-        return new FieldInfo(tableInfo, column, name, type, length);
     }
     
     /**
@@ -857,14 +849,26 @@ public class DBTableIdMgr
         protected RelationshipType type;
         protected String           className;
         protected String           colName;
+        protected String           otherSide;
+        protected boolean          isRequired;
+        protected boolean          isUpdatable;
         
-        public TableRelationship(String name, RelationshipType type, String className, String colName)
+        public TableRelationship(final String name, 
+                                 final RelationshipType type, 
+                                 final String className, 
+                                 final String colName, 
+                                 final String otherSide, 
+                                 final boolean isRequired, 
+                                 final boolean isUpdatable)
         {
             super();
             this.name = name;
             this.type = type;
             this.className = className;
             this.colName = colName;
+            this.otherSide = otherSide;
+            this.isRequired = isRequired;
+            this.isUpdatable = isUpdatable;
         }
 
         public String getClassName()
@@ -894,9 +898,14 @@ public class DBTableIdMgr
         {
             return className.compareTo(o.className);
         }
-        
-        
-        
+
+        /**
+         * @return the otherSide
+         */
+        public String getOtherSide()
+        {
+            return otherSide;
+        }
     }
     
     public class FieldInfo implements Comparable<FieldInfo>
@@ -906,8 +915,18 @@ public class DBTableIdMgr
         protected String    name;
         protected String    type;
         protected int       length;
-        
-        public FieldInfo(TableInfo tableInfo, String column, String name, String type, int length)
+        protected boolean   isRequired;
+        protected boolean   isUpdatable;
+        protected boolean   isUnique;
+
+        public FieldInfo(final TableInfo tableInfo, 
+                         final String column, 
+                         final String name, 
+                         final String type, 
+                         final int length, 
+                         final boolean isRequired, 
+                         final boolean isUpdatable, 
+                         final boolean isUnique)
         {
             super();
             this.tableInfo = tableInfo;
@@ -915,6 +934,9 @@ public class DBTableIdMgr
             this.name = name;
             this.type = type;
             this.length = length;
+            this.isRequired = isRequired;
+            this.isUpdatable = isUpdatable;
+            this.isUnique = isUnique;
         }
 
         public String getColumn()
@@ -947,6 +969,30 @@ public class DBTableIdMgr
             return column;
         }
         
+        /**
+         * @return the isRequired
+         */
+        public boolean isRequired()
+        {
+            return isRequired;
+        }
+
+        /**
+         * @return the isUpdatable
+         */
+        public boolean isUpdatable()
+        {
+            return isUpdatable;
+        }
+
+        /**
+         * @return the isUnique
+         */
+        public boolean isUnique()
+        {
+            return isUnique;
+        }
+
         /* (non-Javadoc)
          * @see java.lang.Comparable#compareTo(java.lang.Object)
          */

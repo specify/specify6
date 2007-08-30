@@ -52,6 +52,8 @@ import edu.ku.brc.util.DatamodelHelper;
  */
 public class DatamodelGenerator
 {
+    enum RelType {OneToMany, OneToOne, ManyToOne, ManyToMany}
+    
     private static final Logger log = Logger.getLogger(DatamodelGenerator.class);
 
     Hashtable<String, TableMetaData> tblMetaDataHash = new Hashtable<String, TableMetaData>();
@@ -159,9 +161,14 @@ public class DatamodelGenerator
      */
     public Relationship createRelationsip(final Method method, 
                                           final String type,
-                                          final javax.persistence.JoinColumn joinCol)
+                                          final javax.persistence.JoinColumn joinCol,
+                                          final String otherSideName,
+                                          final boolean isRequired)
     {
-        return new Relationship(type, getReturnType(method), joinCol != null ? joinCol.name() : "", getNameFromMethod(method));
+        Relationship rel = new Relationship(type, getReturnType(method), joinCol != null ? joinCol.name() : "", getNameFromMethod(method));
+        rel.setOtherSideName(otherSideName);
+        rel.setRequired(isRequired);
+        return rel;
     }
 
 
@@ -197,7 +204,76 @@ public class DatamodelGenerator
             retType = isLob ? "text" : getReturnType(method);
             len = retType.equals("java.lang.String") ? Integer.toString(col.length()) : (col.length() != 255 ? Integer.toString(col.length()) : "");
         }
-        return new Field(getNameFromMethod(method), retType, col.name(), len);
+        Field field = new Field(getNameFromMethod(method), retType, col.name(), len);
+        field.setRequired(!col.nullable());
+        field.setUpdatable(col.updatable());
+        field.setUnique(col.unique());
+        return field;
+    }
+    
+    /**
+     * @param classObj
+     * @param mappedByName
+     * @param relType
+     * @return
+     */
+    @SuppressWarnings("cast")
+    protected String getOthersideName(final Class<?> classObj, final String mappedByName, final RelType relType)
+    {
+        for (Method method : classObj.getMethods())
+        {
+            switch (relType)
+            {
+                case OneToOne:
+                    if (method.isAnnotationPresent(javax.persistence.OneToOne.class))
+                    {
+                        return getFieldNameFromMethod(method);
+                    }
+                    break;
+                    
+                case OneToMany:
+                    if (method.isAnnotationPresent(javax.persistence.OneToMany.class))
+                    {
+                        javax.persistence.OneToMany oneToMany = (javax.persistence.OneToMany)method.getAnnotation(javax.persistence.OneToMany.class);
+                        //System.out.println("["+mappedByName+"]["+oneToMany.mappedBy()+"]");
+                        if (oneToMany != null && mappedByName.equals(oneToMany.mappedBy()))
+                        {
+                            return getFieldNameFromMethod(method);
+                        }
+                    }
+                    break;
+                    
+                case ManyToOne:
+                    if (method.isAnnotationPresent(javax.persistence.ManyToOne.class))
+                    {
+                        return getFieldNameFromMethod(method);
+                    }
+                    break;
+                    
+                case ManyToMany:
+                    if (method.isAnnotationPresent(javax.persistence.ManyToMany.class))
+                    {
+                        javax.persistence.ManyToMany manyToMany = (javax.persistence.ManyToMany)method.getAnnotation(javax.persistence.ManyToMany.class);
+                        //System.out.println("["+mappedByName+"]["+manyToMany.mappedBy()+"]");
+                        if (manyToMany != null && mappedByName.equals(manyToMany.mappedBy()))
+                        {
+                            return getFieldNameFromMethod(method);
+                        }
+                    }
+                    break;
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * @param method
+     * @return
+     */
+    protected String getFieldNameFromMethod(final Method method)
+    {
+        String methodName = method.getName().substring(3);
+        return methodName.substring(0,1).toLowerCase() + methodName.substring(1, methodName.length());
     }
 
     /**
@@ -295,6 +371,19 @@ public class DatamodelGenerator
                             boolean isLob = false;
                             for (Method method : classObj.getMethods())
                             {
+                                Type type = method.getGenericReturnType();
+                                Class<?> typeClass;
+                                if (type instanceof Class<?>)
+                                {
+                                    typeClass = (Class<?>)type;
+                                } else
+                                {
+                                    typeClass = null;
+                                    continue;
+                                }
+                                
+                                String thisSideName = getFieldNameFromMethod(method);
+
                                 if (method.isAnnotationPresent(javax.persistence.Lob.class))
                                 {
                                     isLob = true;
@@ -313,22 +402,33 @@ public class DatamodelGenerator
                                 } else if (method.isAnnotationPresent(javax.persistence.ManyToOne.class))
                                 {
                                     javax.persistence.JoinColumn join = method.isAnnotationPresent(javax.persistence.JoinColumn.class) ? (javax.persistence.JoinColumn)method.getAnnotation(javax.persistence.JoinColumn.class) : null;
-                                    table.addRelationship(createRelationsip(method, "many-to-one", join));
+                                    if (join != null)
+                                    {
+                                        String othersideName = getOthersideName(typeClass, thisSideName, RelType.OneToMany);
+                                        table.addRelationship(createRelationsip(method, "many-to-one", join, othersideName, join != null ? !join.nullable() : false));
+                                        
+                                    } else
+                                    {
+                                        log.error("No Join!");
+                                    }
                                     
                                 } else if (method.isAnnotationPresent(javax.persistence.ManyToMany.class))
                                 {
                                     javax.persistence.JoinColumn join = method.isAnnotationPresent(javax.persistence.JoinColumn.class) ? (javax.persistence.JoinColumn)method.getAnnotation(javax.persistence.JoinColumn.class) : null;
-                                    table.addRelationship(createRelationsip(method, "many-to-many", join));
+                                    String othersideName = getOthersideName(typeClass, thisSideName, RelType.ManyToMany);
+                                    table.addRelationship(createRelationsip(method, "many-to-many", join, othersideName, join != null ? !join.nullable() : false));
                                     
                                 } else if (method.isAnnotationPresent(javax.persistence.OneToMany.class))
                                 {
                                     javax.persistence.JoinColumn join = method.isAnnotationPresent(javax.persistence.JoinColumn.class) ? (javax.persistence.JoinColumn)method.getAnnotation(javax.persistence.JoinColumn.class) : null;
-                                    table.addRelationship(createRelationsip(method, "one-to-many", join));
+                                    String othersideName = getOthersideName(typeClass, thisSideName, RelType.ManyToOne);
+                                    table.addRelationship(createRelationsip(method, "one-to-many", join, othersideName, join != null ? !join.nullable() : false));
                                     
                                 } else if (method.isAnnotationPresent(javax.persistence.OneToOne.class))
                                 {
                                     javax.persistence.JoinColumn join = method.isAnnotationPresent(javax.persistence.JoinColumn.class) ? (javax.persistence.JoinColumn)method.getAnnotation(javax.persistence.JoinColumn.class) : null;
-                                    table.addRelationship(createRelationsip(method, "one-to-one", join));
+                                    String othersideName = getOthersideName(typeClass, thisSideName, RelType.OneToOne);
+                                    table.addRelationship(createRelationsip(method, "one-to-one", join, othersideName, join != null ? !join.nullable() : false));
                                     
                                 }
                                 isLob = false;
@@ -493,6 +593,7 @@ public class DatamodelGenerator
             // Sort all the elements by class name
             Collections.sort(tableList);
 
+            int x = tableList.size();
             boolean didWrite = datamodelWriter.writeTree(tableList);
             if (!didWrite)
             {

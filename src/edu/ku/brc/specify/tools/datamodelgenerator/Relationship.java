@@ -17,19 +17,10 @@ public class Relationship
     protected String   columnName;
     protected String   relationshipName;
     
+    protected String   otherSideName;
+    protected boolean  isRequired;
+    protected boolean  isUpdatable;
     
-//    /**
-//     * @param type
-//     * @param className
-//     */
-//    public Relationship(String type, String className)
-//    {
-//        this.type = type;
-//        this.className = className;
-//        this.columnName = "";
-//        this.relationshipName = "";
-//    }
-
     /**
      * @param type
      * @param className
@@ -122,5 +113,54 @@ public class Relationship
     public void setRelationshipName(String relationshipName)
     {
         this.relationshipName = relationshipName;
-    }             
+    }
+
+    /**
+     * @return the otherSideName
+     */
+    public String getOtherSideName()
+    {
+        return otherSideName;
+    }
+
+    /**
+     * @param otherSideName the otherSideName to set
+     */
+    public void setOtherSideName(String otherSideName)
+    {
+        this.otherSideName = otherSideName;
+    }
+
+    /**
+     * @return the isRequired
+     */
+    public boolean isRequired()
+    {
+        return isRequired;
+    }
+
+    /**
+     * @param isRequired the isRequired to set
+     */
+    public void setRequired(boolean isRequired)
+    {
+        this.isRequired = isRequired;
+    }
+
+    /**
+     * @return the isUpdatable
+     */
+    public boolean isUpdatable()
+    {
+        return isUpdatable;
+    }
+
+    /**
+     * @param isUpdatable the isUpdatable to set
+     */
+    public void setUpdatable(boolean isUpdatable)
+    {
+        this.isUpdatable = isUpdatable;
+    }
+    
 }

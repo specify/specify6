@@ -6,6 +6,9 @@
 		<attribute name="type" property="type"/>
 		<attribute name="length" property="length"/>
 		<attribute name="indexName" property="indexName"/>
+		<attribute name="updatable" property="updatable"/>
+		<attribute name="required" property="required"/>
+		<attribute name="unique" property="unique"/>
 	</element>
 </info>
 

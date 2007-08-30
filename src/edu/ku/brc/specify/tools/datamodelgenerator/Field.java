@@ -13,11 +13,14 @@ import org.apache.commons.lang.StringUtils;
  */
 public class Field implements Comparable<Field>
 {
-    protected String name;
-    protected String type;
-    protected String column;
-    protected String length;
-    protected String indexName = null;
+    protected String  name;
+    protected String  type;
+    protected String  column;
+    protected String  length;
+    protected String  indexName = null;
+    protected boolean isRequired;
+    protected boolean isUpdatable;
+    protected boolean isUnique;
     
     /**
      * @param name the name of the field	
@@ -133,12 +136,60 @@ public class Field implements Comparable<Field>
         this.indexName = indexName;
     }
 
+    /**
+     * @return the isRequired
+     */
+    public boolean isRequired()
+    {
+        return isRequired;
+    }
+
+    /**
+     * @param isRequired the isRequired to set
+     */
+    public void setRequired(boolean isRequired)
+    {
+        this.isRequired = isRequired;
+    }
+
+    /**
+     * @return the isUpdatable
+     */
+    public boolean isUpdatable()
+    {
+        return isUpdatable;
+    }
+
+    /**
+     * @param isUpdatable the isUpdatable to set
+     */
+    public void setUpdatable(boolean isUpdatable)
+    {
+        this.isUpdatable = isUpdatable;
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
     public int compareTo(Field arg0)
     {
         return name.compareTo(arg0.name);
+    }
+
+    /**
+     * @return the isUnique
+     */
+    public boolean isUnique()
+    {
+        return isUnique;
+    }
+
+    /**
+     * @param isUnique the isUnique to set
+     */
+    public void setUnique(boolean isUnique)
+    {
+        this.isUnique = isUnique;
     }
     
 }
