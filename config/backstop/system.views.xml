@@ -1013,7 +1013,7 @@
             <enableRules>
                 <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
             </enableRules>
-            <columnDef>200px,3dlu,p:g</columnDef>
+            <columnDef>100px,3dlu,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
@@ -1156,7 +1156,7 @@
             <desc><![CDATA[New Location Node Form]]></desc>
             <enableRules>
             </enableRules>
-            <columnDef>200px,3dlu,p:g</columnDef>
+            <columnDef>100px,3dlu,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
