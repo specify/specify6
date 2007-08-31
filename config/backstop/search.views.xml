@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <viewset name="Search" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
     <views>
@@ -84,7 +85,7 @@
         <view name="TaxonSearch"
             class="edu.ku.brc.specify.datamodel.Taxon"
             resourcelabels="false">
-            <desc><![CDATA[Taxon data entry form.]]></desc>
+            <desc><![CDATA[The Taxon Search Form]]></desc>
             <altviews>
                 <altview name="TaxonSearch" viewdef="TaxonSearch" label="Edit" mode="edit" validated="true" default="true"/>
             </altviews>
@@ -142,6 +143,21 @@
         
         
     </views>
+
+
+<!--
+////////////////////////////////////////////////////////
+IMPORTANT NOTE:
+
+Values inside the "name" attribute of any "field" cell must
+have COLUMN names, not Java object field names.
+
+Example:
+Bad:  <cell type="field" name="fieldNum" ...>
+Good: <cell type="field" name="FieldNum" ...>
+
+////////////////////////////////////////////////////////
+-->
     
     <viewdefs>
         <viewdef type="form"
@@ -426,8 +442,8 @@
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="name" label="Name"/>
-                    <cell type="field" id="name" name="name" isrequired="true" uitype="text"/>
+                    <cell type="label" labelfor="FullName" label="Full Name"/>
+                    <cell type="field" id="FullName" name="FullName" isrequired="true" uitype="text"/>
                 </row>
             </rows>
         </viewdef>
@@ -446,8 +462,8 @@
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="name" label="Name"/>
-                    <cell type="field" id="name" name="name" isrequired="true" uitype="text"/>
+                    <cell type="label" labelfor="FullName" label="Full Name"/>
+                    <cell type="field" id="FullName" name="FullName" isrequired="true" uitype="text"/>
                 </row>
             </rows>
         </viewdef>
