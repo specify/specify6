@@ -19,6 +19,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
@@ -432,20 +433,28 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
             parent.removeChild(node);
             node.setParent(null);
         }
+        
         // let Hibernate delete the subtree
+        DataProviderSessionIFace sessionWrapper = new HibernateDataProviderSession(session);
+        
         BusinessRulesIFace busRulesObj = DBTableIdMgr.getInstance().getBusinessRule(node);
         if (busRulesObj != null)
         {
             // TODO: Have to rework this to provide a non-null DataProviderSessionIFace thingy
-            busRulesObj.beforeDelete(node, null);
+            busRulesObj.beforeDelete(node, sessionWrapper);
         }
         session.delete(node);
         
+        if (busRulesObj != null)
+        {
+            // TODO: Have to rework this to provide a non-null DataProviderSessionIFace thingy
+            busRulesObj.beforeDeleteCommit(node, sessionWrapper);
+        }
         commitTransaction(session, tx);
         
         if (busRulesObj != null)
         {
-            busRulesObj.afterDelete(node);
+            busRulesObj.afterDeleteCommit(node);
         }
         
         log.trace("exit");

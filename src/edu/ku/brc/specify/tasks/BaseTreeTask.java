@@ -501,6 +501,8 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
                     // set the contents of this combobox based on the value chosen as the parent
                     GetSetValueIFace parentField = (GetSetValueIFace)parentComboBox;
                     adjustRankComboBoxModel(parentField, rankComboBox, nodeInForm);
+                    
+                    // set the tree def for the object being edited by using the parent node's tree def
                     T parent = (T)parentField.getValue();
                     if (parent != null)
                     {

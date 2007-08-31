@@ -1125,6 +1125,14 @@ public class FormViewObj implements Viewable,
                             }
                             session.delete(obj);
                         }
+                        for (Object obj : deletedItems)
+                        {
+                            // notify the business rules object that a deletion is going to be committed
+                            if (businessRules != null)
+                            {
+                                businessRules.beforeDeleteCommit(obj, session);
+                            }
+                        }
                         session.commit();
                         session.flush();
 
@@ -1133,7 +1141,7 @@ public class FormViewObj implements Viewable,
                         {
                             for (Object obj: deletedItems)
                             {
-                                businessRules.afterDelete(obj);
+                                businessRules.afterDeleteCommit(obj);
                             }
                         }
                         
@@ -1413,11 +1421,15 @@ public class FormViewObj implements Viewable,
                         businessRules.beforeDelete(dataObj, session);
                     }
                     session.delete(dataObj);
+                    if (businessRules != null)
+                    {
+                        businessRules.beforeDeleteCommit(dataObj, session);
+                    }
                     session.commit();
                     session.flush();
                     if (businessRules != null)
                     {
-                        businessRules.afterDelete(dataObj);
+                        businessRules.afterDeleteCommit(dataObj);
                     }
                 }
                 

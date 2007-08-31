@@ -38,6 +38,7 @@ public interface BusinessRulesIFace
     
     /**
      * Notification a form was just filled with data.
+     * 
      * @param dataObj the data object that went into the form
      * @param viewable the viewable that recieved the dataObject (using getDataOject would return the same object)
      */
@@ -45,6 +46,7 @@ public interface BusinessRulesIFace
     
     /**
      * Processes the business rules for the data object.
+     * 
      * @param dataObj the data object for rthe rules to be processed on.
      * @return the result status after processing the busniess rules.
      */
@@ -52,12 +54,14 @@ public interface BusinessRulesIFace
     
     /**
      * Returns a list of warnings and errors after processing the business rules.
+     * 
      * @return a list of warnings and errors after processing the business rules.
      */
     public List<String> getWarningsAndErrors();
     
     /**
      * Asks if the object can be deleted.
+     * 
      * @param dataObj the data object in question
      * @return true if it can be deleted, false if not
      */
@@ -66,6 +70,7 @@ public interface BusinessRulesIFace
     
     /**
      * Returns a message for the user describing what was deleted (intended to be a single line of text).
+     * 
      * @param dataObj the data object that will be or has been deleted but still continas its values
      * @return the single line text string
      */
@@ -101,21 +106,30 @@ public interface BusinessRulesIFace
     public boolean afterSaveCommit(Object dataObj);
     
     /**
-     * Called before committing a transaction in which the passed in data object will
-     * be deleted from the DB.
+     * Called BEFORE deleting an object from the DB.  This is called before the object is even
+     * slated for deletion within the DB access code (e.g. Hibernate, etc).
      * 
-     * @param dataObj the object being deleted
+     * @param dataObj the object to be deleted
      * @param session the data provider session
      */
     public void beforeDelete(Object dataObj, DataProviderSessionIFace session);
     
     /**
-     * Called after committing a transaction in which the passed in data object will
+     * Called BEFORE committing a transaction in which the passed in data object will
      * be deleted from the DB.
+     * 
+     * @param dataObj the object being deleted
+     * @param session the data provider session
+     */
+    public void beforeDeleteCommit(Object dataObj, DataProviderSessionIFace session);
+    
+    /**
+     * Called AFTER committing a transaction in which the passed in data object was
+     * deleted from the DB.
      * 
      * @param dataObj the object that was deleted
      */
-    public void afterDelete(Object dataObj);
+    public void afterDeleteCommit(Object dataObj);
     
     public void setObjectIdentity(final Object dataObj, final DraggableRecordIdentifier draggableIcon);
     

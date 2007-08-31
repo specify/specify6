@@ -18,6 +18,11 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 {
     private static final Logger log = Logger.getLogger(BaseTreeBusRules.class);
 
+    /**
+     * Constructor.
+     * 
+     * @param dataClasses a var args list of classes that this business rules implementation handles
+     */
     public BaseTreeBusRules(Class<?>... dataClasses)
     {
         super(dataClasses);
@@ -136,9 +141,9 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
      */
     @SuppressWarnings("unchecked")
     @Override
-    public void beforeSaveCommit(Object dataObj, DataProviderSessionIFace session)
+    public void beforeSave(Object dataObj, DataProviderSessionIFace session)
     {
-        super.beforeSaveCommit(dataObj, session);
+        super.beforeSave(dataObj, session);
         
         if (dataObj instanceof Treeable)
         {
@@ -146,14 +151,8 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
             //       this has a SMALL amount of risk to it
             T node = (T)dataObj;
             
-            // check to see if this node is brand new
-            if (node.getTreeId() == null)
+            if (node.getFullName() == null)
             {
-                if (node.getParent() != null)
-                {
-                    node.setDefinition(node.getParent().getDefinition());
-                }
-                // this is a new object
                 // set it's fullname
                 String fullname = TreeHelper.generateFullname(node);
                 node.setFullName(fullname);
@@ -162,7 +161,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#afterSave(java.lang.Object)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#afterSaveCommit(java.lang.Object)
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -194,11 +193,11 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#afterDelete(java.lang.Object)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#afterDeleteCommit(java.lang.Object)
      */
     @SuppressWarnings("unchecked")
     @Override
-    public void afterDelete(Object dataObj)
+    public void afterDeleteCommit(Object dataObj)
     {
         if (dataObj instanceof Treeable)
         {
