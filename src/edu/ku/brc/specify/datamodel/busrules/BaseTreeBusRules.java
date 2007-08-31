@@ -1,9 +1,12 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
@@ -27,7 +30,43 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
     {
         super(dataClasses);
     }
+    
+    public abstract boolean hasNoConnections(T node);
 
+    @SuppressWarnings("unchecked")
+    public boolean okToDeleteNode(T node)
+    {
+        Integer id = node.getTreeId();
+        if (id == null)
+        {
+            return true;
+        }
+        
+        boolean okSoFar = hasNoConnections(node);
+        
+        if (okSoFar)
+        {
+            // now check the children
+
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            T tmpT = (T)session.load(node.getClass(), id);
+
+            for (T child: tmpT.getChildren())
+            {
+                if (!okToDeleteNode(child))
+                {
+                    // this child can't be deleted
+                    // stop right here
+                    okSoFar = false;
+                    break;
+                }
+            }
+            session.close();
+        }
+        
+        return okSoFar;
+    }
+    
     /**
      * Updates the fullname field of any nodes effected by changes to <code>node</code> that are about
      * to be saved to the DB.
@@ -212,6 +251,97 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         }
     }
     
+    /**
+     * Handles the {@link #beforeSave(Object)} method if the passed in {@link Object}
+     * is an instance of {@link TreeDefItemIface}.  The real work of this method is to
+     * update the 'fullname' field of all {@link Treeable} objects effected by the changes
+     * to the passed in {@link TreeDefItemIface}.
+     *
+     * @param defItem the {@link TreeDefItemIface} being saved
+     */
+    @SuppressWarnings("unchecked")
+    protected void beforeSaveTreeDefItem(I defItem)
+    {
+        // we need a way to determine if the 'isInFullname' value changed
+        // load a fresh copy from the DB and get the values needed for comparison
+        DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
+        I fromDB = (I)tmpSession.load(defItem.getClass(), defItem.getTreeDefItemId());
+        tmpSession.close();
+
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        session.attach(defItem);
+
+        boolean changeThisLevel = false;
+        boolean changeAllDescendants = false;
+        
+        boolean fromDBIsInFullname = makeNotNull(fromDB.getIsInFullName());
+        boolean currentIsInFullname = makeNotNull(defItem.getIsInFullName());
+        if (fromDBIsInFullname != currentIsInFullname)
+        {
+            changeAllDescendants = true;
+        }
+        
+        // look for changes in the 'textBefore', 'textAfter' or 'fullNameSeparator' fields
+        String fromDbBeforeText = makeNotNull(fromDB.getTextBefore());
+        String fromDbAfterText = makeNotNull(fromDB.getTextAfter());
+        String fromDbSeparator = makeNotNull(fromDB.getFullNameSeparator());
+        
+        String before = makeNotNull(defItem.getTextBefore());
+        String after = makeNotNull(defItem.getTextAfter());
+        String separator = makeNotNull(defItem.getFullNameSeparator());
+        
+        boolean textFieldChanged = false;
+        boolean beforeChanged = !before.equals(fromDbBeforeText);
+        boolean afterChanged = !after.equals(fromDbAfterText);
+        boolean sepChanged = !separator.equals(fromDbSeparator);
+        if (beforeChanged || afterChanged || sepChanged)
+        {
+            textFieldChanged = true;
+        }
+        
+        if (textFieldChanged)
+        {
+            if (currentIsInFullname)
+            {
+                changeAllDescendants = true;
+            }
+            changeThisLevel = true;
+        }
+        
+        if (changeThisLevel && !changeAllDescendants)
+        {
+            Set<T> levelNodes = defItem.getTreeEntries();
+            for (T node: levelNodes)
+            {
+                String generated = TreeHelper.generateFullname(node);
+                node.setFullName(generated);
+            }
+        }
+        else if (changeThisLevel && changeAllDescendants)
+        {
+            Set<T> levelNodes = defItem.getTreeEntries();
+            for (T node: levelNodes)
+            {
+                TreeHelper.fixFullnameForNodeAndDescendants(node);
+            }
+        }
+        else if (!changeThisLevel && changeAllDescendants)
+        {
+            Set<T> levelNodes = defItem.getTreeEntries();
+            for (T node: levelNodes)
+            {
+                // grab all child nodes and go from there
+                for (T child: node.getChildren())
+                {
+                    TreeHelper.fixFullnameForNodeAndDescendants(child);
+                }
+            }
+        }
+        // else don't change anything
+        
+        session.close();
+    }
+    
     protected boolean booleanValue(Boolean bool, boolean defaultIfNull)
     {
         if (bool != null)
@@ -220,4 +350,28 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         }
         return defaultIfNull;
     }
+    
+    /**
+     * Converts a null string into an empty string.  If the provided String is not
+     * null, it is returned unchanged.
+     * 
+     * @param s a string
+     * @return the string or " ", if null
+     */
+    private String makeNotNull(String s)
+    {
+        return (s == null) ? "" : s;
+    }
+    
+    /**
+     * Returns the provided {@link Boolean}, or <code>false</code> if null
+     * 
+     * @param b the {@link Boolean} to convert to non-null
+     * @returnthe provided {@link Boolean}, or <code>false</code> if null
+     */
+    private boolean makeNotNull(Boolean b)
+    {
+        return (b == null) ? false : b.booleanValue();
+    }
+
 }

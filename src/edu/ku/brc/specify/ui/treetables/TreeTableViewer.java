@@ -822,6 +822,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         
         if (userChoice == JOptionPane.OK_OPTION)
         {
+            UIRegistry.writeGlassPaneMsg(getResourceString("TTV_Deleting"), 24);
+            
             TreeNode parent = listModel.getNodeById(node.getParentId());
             // hide the children of the parent node (which will hide the node we're going to delete)
             hideChildren(parent);
@@ -830,6 +832,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             // re-show the children of the parent node
             showChildren(parent);
             setStatusBarText(numNodesToDelete + " node(s) deleted");
+            
+            UIRegistry.clearGlassPaneMsg();
         }
 	}
     

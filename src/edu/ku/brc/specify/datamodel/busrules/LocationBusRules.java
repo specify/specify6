@@ -8,16 +8,12 @@ package edu.ku.brc.specify.datamodel.busrules;
 
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 
-import java.util.Set;
-
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Location;
 import edu.ku.brc.specify.datamodel.LocationTreeDef;
 import edu.ku.brc.specify.datamodel.LocationTreeDefItem;
-import edu.ku.brc.specify.treeutils.TreeHelper;
 
 /**
  * A business rules class that handles various safety checking and housekeeping tasks
@@ -109,86 +105,34 @@ public class LocationBusRules extends BaseTreeBusRules<Location, LocationTreeDef
      */
     protected void beforeSaveLocationTreeDefItem(LocationTreeDefItem defItem)
     {
-        // we need a way to determine if the 'isInFullname' value changed
-        // load a fresh copy from the DB and get the values needed for comparison
-        DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
-        LocationTreeDefItem fromDB = tmpSession.load(LocationTreeDefItem.class, defItem.getId());
-        tmpSession.close();
+        // This is a LONG process for some trees.  I wouldn't recommend doing it.  Can
+        // we set these options before shipping the DB, then not let them change it ever again?
+        // Or perhaps they can't change it if there are records at this level.
+        
+        log.warn("TODO: need to make a decision here");
+        return;
 
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        session.attach(defItem);
-
-        boolean changeThisLevel = false;
-        boolean changeAllDescendants = false;
-        
-        boolean fromDBIsInFullname = makeNotNull(fromDB.getIsInFullName());
-        boolean currentIsInFullname = makeNotNull(defItem.getIsInFullName());
-        if (fromDBIsInFullname != currentIsInFullname)
-        {
-            changeAllDescendants = true;
-        }
-        
-        // look for changes in the 'textBefore', 'textAfter' or 'fullNameSeparator' fields
-        String fromDbBeforeText = makeNotNull(fromDB.getTextBefore());
-        String fromDbAfterText = makeNotNull(fromDB.getTextAfter());
-        String fromDbSeparator = makeNotNull(fromDB.getFullNameSeparator());
-        
-        String before = makeNotNull(defItem.getTextBefore());
-        String after = makeNotNull(defItem.getTextAfter());
-        String separator = makeNotNull(defItem.getFullNameSeparator());
-        
-        boolean textFieldChanged = false;
-        boolean beforeChanged = !before.equals(fromDbBeforeText);
-        boolean afterChanged = !after.equals(fromDbAfterText);
-        boolean sepChanged = !separator.equals(fromDbSeparator);
-        if (beforeChanged || afterChanged || sepChanged)
-        {
-            textFieldChanged = true;
-        }
-        
-        if (textFieldChanged)
-        {
-            if (currentIsInFullname)
-            {
-                changeAllDescendants = true;
-            }
-            changeThisLevel = true;
-        }
-        
-        if (changeThisLevel && !changeAllDescendants)
-        {
-            Set<Location> levelNodes = defItem.getTreeEntries();
-            for (Location node: levelNodes)
-            {
-                String generated = TreeHelper.generateFullname(node);
-                node.setFullName(generated);
-            }
-        }
-        else if (changeThisLevel && changeAllDescendants)
-        {
-            Set<Location> levelNodes = defItem.getTreeEntries();
-            for (Location node: levelNodes)
-            {
-                TreeHelper.fixFullnameForNodeAndDescendants(node);
-            }
-        }
-        else if (!changeThisLevel && changeAllDescendants)
-        {
-            Set<Location> levelNodes = defItem.getTreeEntries();
-            for (Location node: levelNodes)
-            {
-                // grab all child nodes and go from there
-                for (Location child: node.getChildren())
-                {
-                    TreeHelper.fixFullnameForNodeAndDescendants(child);
-                }
-            }
-        }
-        // else don't change anything
-        
-        session.close();
+        //super.beforeSaveTreeDefItem(defItem);
     }
     
+    @Override
+    public boolean hasNoConnections(Location loc)
+    {
+        Integer id = loc.getTreeId();
+        if (id == null)
+        {
+            return true;
+        }
+        
+        boolean noPreps       = super.okToDelete("preparation", "LocationID", id);
+        boolean noContainers  = super.okToDelete("container",   "LocationID", id);
+        boolean noSyns        = super.okToDelete("location",    "AcceptedID", id);
+
+        boolean noConns = noPreps && noContainers && noSyns;
+        
+        return noConns;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object)
      */
@@ -197,42 +141,15 @@ public class LocationBusRules extends BaseTreeBusRules<Location, LocationTreeDef
     {
         if (dataObj instanceof Location)
         {
-            return okToDeleteLocation((Location)dataObj);
+            return super.okToDeleteNode((Location)dataObj);
         }
-        
+
         if (dataObj instanceof LocationTreeDefItem)
         {
             return okToDeleteLocDefItem((LocationTreeDefItem)dataObj);
         }
-        
-        return true;
-    }
-    
-    /**
-     * Handles the {@link #okToDelete(Object)} method in the case that the passed in
-     * {@link Object} is an instance of {@link Location}.
-     * 
-     * @param loc the {@link Location} being inspected
-     * @return true if the passed in item is deletable
-     */
-    public boolean okToDeleteLocation(Location loc)
-    {
-        if (!okToDelete("preparation", "LocationID", loc.getId()))
-        {
-            return false;
-        }
-        
-        if (!okToDelete("container", "LocationID", loc.getId()))
-        {
-            return false;
-        }
 
-        if (!okToDelete("location", "ParentID", loc.getId()))
-        {
-            return false;
-        }
-        
-        return true;
+        return false;
     }
     
     /**
@@ -257,28 +174,5 @@ public class LocationBusRules extends BaseTreeBusRules<Location, LocationTreeDef
         }
         
         return true;
-    }
-    
-    /**
-     * Converts a null string into an empty string.  If the provided String is not
-     * null, it is returned unchanged.
-     * 
-     * @param s a string
-     * @return the string or " ", if null
-     */
-    private String makeNotNull(String s)
-    {
-        return (s == null) ? "" : s;
-    }
-    
-    /**
-     * Returns the provided {@link Boolean}, or <code>false</code> if null
-     * 
-     * @param b the {@link Boolean} to convert to non-null
-     * @returnthe provided {@link Boolean}, or <code>false</code> if null
-     */
-    private boolean makeNotNull(Boolean b)
-    {
-        return (b == null) ? false : b.booleanValue();
     }
 }

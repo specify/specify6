@@ -8,16 +8,12 @@ package edu.ku.brc.specify.datamodel.busrules;
 
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 
-import java.util.Set;
-
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem;
-import edu.ku.brc.specify.treeutils.TreeHelper;
 
 /**
  * A business rules class that handles various safety checking and housekeeping tasks
@@ -49,16 +45,38 @@ public class GeologicTimePeriodBusRules extends BaseTreeBusRules<GeologicTimePer
         return getLocalizedMessage("GEOLOGICAL_TIME_PERIOD_DELETED", ((GeologicTimePeriod)dataObj).getName());
     }
 
+    @Override
+    public boolean hasNoConnections(GeologicTimePeriod gtp)
+    {
+        Integer id = gtp.getTreeId();
+        if (id == null)
+        {
+            return true;
+        }
+        
+        boolean noBSPCs = super.okToDelete("paleocontext",       "BioStratID",     id);
+        boolean noCSPCs = super.okToDelete("paleocontext",       "ChronosStratID", id);
+        boolean noSyns  = super.okToDelete("geologictimeperiod", "AcceptedID",     id);
+
+        boolean noConns = noBSPCs && noCSPCs && noSyns;
+        
+        return noConns;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object)
      */
     @Override
     public boolean okToDelete(Object dataObj)
     {
-        // TODO Auto-generated method stub
+        if (dataObj instanceof GeologicTimePeriod)
+        {
+            return super.okToDeleteNode((GeologicTimePeriod)dataObj);
+        }
+        
         return false;
     }
-
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#beforeSave(java.lang.Object)
      */
@@ -112,106 +130,13 @@ public class GeologicTimePeriodBusRules extends BaseTreeBusRules<GeologicTimePer
      */
     protected void beforeSaveGeologicTimePeriodTreeDefItem(GeologicTimePeriodTreeDefItem defItem)
     {
-        // we need a way to determine if the 'isInFullname' value changed
-        // load a fresh copy from the DB and get the values needed for comparison
-        DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
-        GeologicTimePeriodTreeDefItem fromDB = tmpSession.load(GeologicTimePeriodTreeDefItem.class, defItem.getId());
-        tmpSession.close();
+        // This is a LONG process for some trees.  I wouldn't recommend doing it.  Can
+        // we set these options before shipping the DB, then not let them change it ever again?
+        // Or perhaps they can't change it if there are records at this level.
+        
+        log.warn("TODO: need to make a decision here");
+        return;
 
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        session.attach(defItem);
-
-        boolean changeThisLevel = false;
-        boolean changeAllDescendants = false;
-        
-        boolean fromDBIsInFullname = makeNotNull(fromDB.getIsInFullName());
-        boolean currentIsInFullname = makeNotNull(defItem.getIsInFullName());
-        if (fromDBIsInFullname != currentIsInFullname)
-        {
-            changeAllDescendants = true;
-        }
-        
-        // look for changes in the 'textBefore', 'textAfter' or 'fullNameSeparator' fields
-        String fromDbBeforeText = makeNotNull(fromDB.getTextBefore());
-        String fromDbAfterText = makeNotNull(fromDB.getTextAfter());
-        String fromDbSeparator = makeNotNull(fromDB.getFullNameSeparator());
-        
-        String before = makeNotNull(defItem.getTextBefore());
-        String after = makeNotNull(defItem.getTextAfter());
-        String separator = makeNotNull(defItem.getFullNameSeparator());
-        
-        boolean textFieldChanged = false;
-        boolean beforeChanged = !before.equals(fromDbBeforeText);
-        boolean afterChanged = !after.equals(fromDbAfterText);
-        boolean sepChanged = !separator.equals(fromDbSeparator);
-        if (beforeChanged || afterChanged || sepChanged)
-        {
-            textFieldChanged = true;
-        }
-        
-        if (textFieldChanged)
-        {
-            if (currentIsInFullname)
-            {
-                changeAllDescendants = true;
-            }
-            changeThisLevel = true;
-        }
-        
-        if (changeThisLevel && !changeAllDescendants)
-        {
-            Set<GeologicTimePeriod> levelNodes = defItem.getTreeEntries();
-            for (GeologicTimePeriod node: levelNodes)
-            {
-                String generated = TreeHelper.generateFullname(node);
-                node.setFullName(generated);
-            }
-        }
-        else if (changeThisLevel && changeAllDescendants)
-        {
-            Set<GeologicTimePeriod> levelNodes = defItem.getTreeEntries();
-            for (GeologicTimePeriod node: levelNodes)
-            {
-                TreeHelper.fixFullnameForNodeAndDescendants(node);
-            }
-        }
-        else if (!changeThisLevel && changeAllDescendants)
-        {
-            Set<GeologicTimePeriod> levelNodes = defItem.getTreeEntries();
-            for (GeologicTimePeriod node: levelNodes)
-            {
-                // grab all child nodes and go from there
-                for (GeologicTimePeriod child: node.getChildren())
-                {
-                    TreeHelper.fixFullnameForNodeAndDescendants(child);
-                }
-            }
-        }
-        // else don't change anything
-        
-        session.close();
-    }
-    
-    /**
-     * Converts a null string into an empty string.  If the provided String is not
-     * null, it is returned unchanged.
-     * 
-     * @param s a string
-     * @return the string or " ", if null
-     */
-    private String makeNotNull(String s)
-    {
-        return (s == null) ? "" : s;
-    }
-    
-    /**
-     * Returns the provided {@link Boolean}, or <code>false</code> if null
-     * 
-     * @param b the {@link Boolean} to convert to non-null
-     * @returnthe provided {@link Boolean}, or <code>false</code> if null
-     */
-    private boolean makeNotNull(Boolean b)
-    {
-        return (b == null) ? false : b.booleanValue();
+        //super.beforeSaveTreeDefItem(defItem);
     }
 }
