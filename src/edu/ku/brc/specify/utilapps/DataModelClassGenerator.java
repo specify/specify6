@@ -155,7 +155,6 @@ public class DataModelClassGenerator extends JFrame
         JButton cancelBtn  = new JButton("Cancel");
         
         processBtn.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e)
             {
                 process();
@@ -163,7 +162,6 @@ public class DataModelClassGenerator extends JFrame
         });
         
         cancelBtn.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e)
             {
                 setVisible(false);
