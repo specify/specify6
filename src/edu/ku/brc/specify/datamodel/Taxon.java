@@ -261,7 +261,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
         this.commonName = commonName;
     }
 
-    @Column(name = "TaxonomicSerialNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "TaxonomicSerialNumber", unique = true, length = 50)
 	public String getTaxonomicSerialNumber()
 	{
 		return this.taxonomicSerialNumber;
