@@ -1254,6 +1254,8 @@ public class FormViewObj implements Viewable,
                 mvParent.clearValidators();
             }
             
+            session.refresh(dObj);
+            
             replaceDataObjInList(dataObj, dObj);
             
             if (origDataSet != null)

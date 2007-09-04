@@ -96,7 +96,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#refresh(java.lang.Object)
      */
-    public boolean refresh(Object dataObj) throws Exception
+    public boolean refresh(Object dataObj)
     {
         if (session != null)
         {

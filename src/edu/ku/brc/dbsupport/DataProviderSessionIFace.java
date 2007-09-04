@@ -71,7 +71,7 @@ public interface DataProviderSessionIFace
     
     public boolean save(Object dataObj) throws Exception;
     
-    public boolean refresh(Object dataObj) throws Exception;
+    public boolean refresh(Object dataObj);
     
     public boolean update(Object dataObj) throws Exception;
     
