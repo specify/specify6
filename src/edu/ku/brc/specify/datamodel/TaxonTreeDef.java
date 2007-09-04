@@ -60,11 +60,11 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
     public static final int FORMA         = 260;
     public static final int SUBFORMA      = 270;
 
-    protected Integer                  taxonTreeDefId;
+    protected Integer               taxonTreeDefId;
     protected String                name;
     protected String                remarks;
     protected Integer               fullNameDirection;
-    protected CollectionType        collObjDef;
+    protected CollectionType        collectionType;
     protected Set<Taxon>            treeEntries;
     protected Set<TaxonTreeDefItem> treeDefItems;
     
@@ -88,7 +88,7 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
 		name = null;
 		remarks = null;
         fullNameDirection = null;
-		collObjDef = null;
+        collectionType = null;
 		treeEntries = new HashSet<Taxon>();
 		treeDefItems = new HashSet<TaxonTreeDefItem>();
 	}
@@ -162,14 +162,14 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
 
     @OneToOne(mappedBy="taxonTreeDef", fetch=FetchType.EAGER)
     @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
-    public CollectionType getCollObjDef()
+    public CollectionType getCollectionType()
 	{
-		return this.collObjDef;
+		return this.collectionType;
 	}
 
-	public void setCollObjDef(CollectionType collObjDef)
+	public void setCollectionType(CollectionType collectionType)
 	{
-		this.collObjDef = collObjDef;
+		this.collectionType = collectionType;
 	}
 
     @OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="definition")

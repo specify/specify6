@@ -120,10 +120,10 @@ public class Locality extends DataModelObjBase implements java.io.Serializable, 
      protected String   geoRefRemarks;
      protected String   geoRefVerificationStatus; 
      
-     protected Set<CollectionType> collectionTypes;
-     protected Geography geography;
-     protected Set<LocalityCitation> localityCitations;
-     protected Set<CollectingEvent> collectingEvents;
+     protected Set<CollectionType>      collectionTypes;
+     protected Geography                geography;
+     protected Set<LocalityCitation>    localityCitations;
+     protected Set<CollectingEvent>     collectingEvents;
      protected Set<Attachment>          attachments;
 
 
@@ -847,7 +847,6 @@ public class Locality extends DataModelObjBase implements java.io.Serializable, 
      * @return the geoRefDetBy
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "GeoRefDetByID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getGeoRefDetBy()
     {
@@ -950,7 +949,6 @@ public class Locality extends DataModelObjBase implements java.io.Serializable, 
      *      * Link to Country, State, County, WaterBody, Island, IslandGroup ... info
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "GeographyID", unique = false, nullable = true, insertable = true, updatable = true)
     public Geography getGeography() {
         return this.geography;
@@ -989,6 +987,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable, 
      * 
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "locality")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<CollectingEvent> getCollectingEvents() {
         return this.collectingEvents;
     }

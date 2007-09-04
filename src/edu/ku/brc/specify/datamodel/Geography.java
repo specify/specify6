@@ -446,7 +446,6 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "AcceptedID")
-    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public Geography getAcceptedGeography()
     {
         return this.acceptedGeography;
@@ -472,6 +471,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	 *
 	 */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "geography")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
 	public Set<Locality> getLocalities()
 	{
 		return this.localities;
@@ -486,7 +486,6 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	 *
 	 */
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( { CascadeType.LOCK })
     @JoinColumn(name = "GeographyTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
 	public GeographyTreeDef getDefinition()
 	{
@@ -502,7 +501,6 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	 *
 	 */
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
     @JoinColumn(name = "GeographyTreeDefItemID", unique = false, nullable = false, insertable = true, updatable = true)
 	public GeographyTreeDefItem getDefinitionItem()
 	{
@@ -522,7 +520,6 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	 *
 	 */
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
     @JoinColumn(name = "ParentID", unique = false, nullable = true, insertable = true, updatable = true)
 	public Geography getParent()
 	{
@@ -538,6 +535,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	 *
 	 */
     @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "parent")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
 	public Set<Geography> getChildren()
 	{
 		return this.children;

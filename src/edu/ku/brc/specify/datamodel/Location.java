@@ -304,7 +304,6 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "AcceptedID")
-    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public Location getAcceptedLocation()
     {
         return this.acceptedLocation;
@@ -327,7 +326,6 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
     }
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( { CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "LocationTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
 	public LocationTreeDef getDefinition()
 	{
@@ -340,7 +338,6 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
 	}
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "LocationTreeDefItemID", unique = false, nullable = false, insertable = true, updatable = true)
 	public LocationTreeDefItem getDefinitionItem()
 	{
@@ -357,7 +354,6 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
 	}
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "ParentID", unique = false, nullable = true, insertable = true, updatable = true)
 	public Location getParent()
 	{
@@ -370,6 +366,7 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
 	}
 
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "location")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
 	public Set<Preparation> getPreparations()
 	{
 		return this.preparations;
@@ -381,6 +378,7 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
 	}
 
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "location")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
 	public Set<Container> getContainers()
 	{
 		return this.containers;
@@ -392,6 +390,7 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
 	}
 
     @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "parent")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
 	public Set<Location> getChildren()
 	{
 		return this.children;

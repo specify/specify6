@@ -55,6 +55,8 @@ public class DataObjFieldFormatMgr
     protected static final Logger log = Logger.getLogger(DataObjFieldFormatMgr.class);
     
     protected static DataObjFieldFormatMgr  instance = null;
+    
+    protected boolean domFound = false;
 
 
     protected Hashtable<String, DataObjSwitchFormatter>   formatHash      = new Hashtable<String, DataObjSwitchFormatter>();
@@ -88,7 +90,12 @@ public class DataObjFieldFormatMgr
      */
     protected Element getDOM() throws Exception
     {
-        return AppContextMgr.getInstance().getResourceAsDOM("DataObjFormatters");
+        AppContextMgr mgr = AppContextMgr.getInstance();
+        if (mgr != null)
+        {
+            return mgr.getResourceAsDOM("DataObjFormatters");
+        }
+        return null;
     }
 
     /**
@@ -103,6 +110,7 @@ public class DataObjFieldFormatMgr
             
             if (root != null)
             {
+                domFound = true;
                 List<?> formatters = root.selectNodes("/formatters/format");
                 for ( Object formatObj : formatters)
                 {
@@ -507,20 +515,23 @@ public class DataObjFieldFormatMgr
      */
     public static String format(final Object dataObj, final String formatName)
     {
-        DataObjSwitchFormatter sf = getInstance().formatHash.get(formatName);
-        if (sf != null)
+        if (getInstance().domFound)
         {
-            DataObjDataFieldFormatIFace dff = getInstance().getDataFormatter(dataObj, sf);
-            if (dff != null)
+            DataObjSwitchFormatter sf = getInstance().formatHash.get(formatName);
+            if (sf != null)
             {
-                return getInstance().formatInternal(dff, dataObj);
-                
+                DataObjDataFieldFormatIFace dff = getInstance().getDataFormatter(dataObj, sf);
+                if (dff != null)
+                {
+                    return getInstance().formatInternal(dff, dataObj);
+                    
+                }
+                // else
+                log.error("Couldn't find DataObjDataFieldFormat for ["+sf.getName()+"] value["+dataObj+"]");
+            } else
+            {
+                log.error("Couldn't find DataObjSwitchFormatter for class ["+formatName+"]"); 
             }
-            // else
-            log.error("Couldn't find DataObjDataFieldFormat for ["+sf.getName()+"] value["+dataObj+"]");
-        } else
-        {
-            log.error("Couldn't find DataObjSwitchFormatter for class ["+formatName+"]"); 
         }
         return null;
     }
@@ -533,19 +544,22 @@ public class DataObjFieldFormatMgr
      */
     public static String format(final Object dataObj, final Class<?> dataClass)
     {
-        DataObjSwitchFormatter sf = getInstance().formatClassHash.get(dataClass);
-        if (sf != null)
+        if (getInstance().domFound)
         {
-            DataObjDataFieldFormatIFace dff = getInstance().getDataFormatter(dataObj, sf);
-            if (dff != null)
+            DataObjSwitchFormatter sf = getInstance().formatClassHash.get(dataClass);
+            if (sf != null)
             {
-                return getInstance().formatInternal(dff, dataObj);
+                DataObjDataFieldFormatIFace dff = getInstance().getDataFormatter(dataObj, sf);
+                if (dff != null)
+                {
+                    return getInstance().formatInternal(dff, dataObj);
+                }
+                // else
+                log.error("Couldn't find DataObjDataFieldFormat for ["+sf.getName()+"] value["+dataObj+"]");
             }
             // else
-            log.error("Couldn't find DataObjDataFieldFormat for ["+sf.getName()+"] value["+dataObj+"]");
+            log.error("Couldn't find DataObjSwitchFormatter for class ["+dataClass.getName()+"]");
         }
-        // else
-        log.error("Couldn't find DataObjSwitchFormatter for class ["+dataClass.getName()+"]"); 
         return null;
     }
 
@@ -569,16 +583,19 @@ public class DataObjFieldFormatMgr
      */
     public static String aggregate(final Collection<?> items, final String aggName)
     {
-        if (items != null && items.size() > 0)
+        if (getInstance().domFound)
         {
-            DataObjAggregator agg = getInstance().aggHash.get(aggName);
-            if (agg != null)
+            if (items != null && items.size() > 0)
             {
-                return getInstance().aggregateInternal(items, agg);
-                
+                DataObjAggregator agg = getInstance().aggHash.get(aggName);
+                if (agg != null)
+                {
+                    return getInstance().aggregateInternal(items, agg);
+                    
+                }
+                // else
+                log.error("Couldn't find Aggegrator ["+aggName+"]");
             }
-            // else
-            log.error("Couldn't find Aggegrator ["+aggName+"]");
         }
         // else
         return "";
@@ -592,36 +609,39 @@ public class DataObjFieldFormatMgr
      */
     public static String aggregate(final Collection<?> items, final Class<?> dataClass)
     {
-        DataObjAggregator defAgg = null;
-        if (dataClass == Determination.class)
+        if (getInstance().domFound)
         {
-            int x = 0;
-            x++;
-        }
-        for (Enumeration<DataObjAggregator> e=getInstance().aggHash.elements();e.hasMoreElements();)
-        {
-            DataObjAggregator agg = e.nextElement();
-            if (dataClass == agg.getDataClass())
+            DataObjAggregator defAgg = null;
+            if (dataClass == Determination.class)
             {
-                if (agg.isDefault())
+                int x = 0;
+                x++;
+            }
+            for (Enumeration<DataObjAggregator> e=getInstance().aggHash.elements();e.hasMoreElements();)
+            {
+                DataObjAggregator agg = e.nextElement();
+                if (dataClass == agg.getDataClass())
                 {
-                    defAgg = agg;
-                    break;
-                    
-                } else if (defAgg == null)
-                {
-                    defAgg = agg;
+                    if (agg.isDefault())
+                    {
+                        defAgg = agg;
+                        break;
+                        
+                    } else if (defAgg == null)
+                    {
+                        defAgg = agg;
+                    }
                 }
             }
-        }
-        
-        if (defAgg != null)
-        {
-            return getInstance().aggregateInternal(items, defAgg);
             
+            if (defAgg != null)
+            {
+                return getInstance().aggregateInternal(items, defAgg);
+                
+            }
+            // else
+            log.error("Could find aggregator of class ["+dataClass.getCanonicalName()+"]");
         }
-        // else
-        log.error("Could find aggregator of class ["+dataClass.getCanonicalName()+"]");
         return "";
     }
     

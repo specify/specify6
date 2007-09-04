@@ -51,7 +51,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
 import edu.ku.brc.dbsupport.AttributeIFace;
-import edu.ku.brc.ui.forms.FormDataObjIFace;
+import edu.ku.brc.dbsupport.AttributeProviderIFace;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 
 /**
@@ -61,7 +61,7 @@ import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "collectingevent")
-public class CollectingEvent extends DataModelObjBase implements java.io.Serializable, Comparable<CollectingEvent> {
+public class CollectingEvent extends DataModelObjBase implements AttributeProviderIFace, java.io.Serializable, Comparable<CollectingEvent> {
 
     // Fields    
 
@@ -86,9 +86,11 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     protected Set<Collector>        collectors;
     protected Locality              locality;
     protected CollectingTrip        collectingTrip;
-    protected Set<AttributeIFace>   attrs;
     protected Set<Attachment>       attachments;
-    protected HabitatAttributes habitatAttributes;
+    
+    protected HabitatAttributes         habitatAttributes;      // Specify 5 Attributes table
+    protected Set<CollectingEventAttr>  collectingEventAttrs; // Generic Expandable Attributes
+
 
 
     // Constructors
@@ -128,9 +130,10 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
         collectionObjects = new HashSet<CollectionObject>();
         collectors = new HashSet<Collector>();
         locality = null;
-        attrs = new HashSet<AttributeIFace>();
-        attachments = new HashSet<Attachment>();
-        habitatAttributes = null;
+        attachments         = new HashSet<Attachment>();
+        
+        habitatAttributes    = null;
+        collectingEventAttrs = new HashSet<CollectingEventAttr>();
     }
     // End Initializer
 
@@ -377,7 +380,6 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
      * 
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectingEvent")
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     public Set<CollectionObject> getCollectionObjects() {
         return this.collectionObjects;
     }
@@ -403,7 +405,6 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
      *      * Locality where collection took place
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "LocalityID", unique = false, nullable = true, insertable = true, updatable = true)
     public Locality getLocality() {
         return this.locality;
@@ -414,21 +415,47 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     }
 
     /**
-     * 
+     * @return the collectingEventAttrs
      */
     @OneToMany(targetEntity=CollectingEventAttr.class,
             cascade = {}, fetch = FetchType.LAZY, mappedBy="collectingEvent")
     @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<AttributeIFace> getAttrs() {
-        return this.attrs;
-    }
-    
-    public void setAttrs(Set<AttributeIFace> attrs) {
-        this.attrs = attrs;
+    public Set<CollectingEventAttr> getCollectingEventAttrs()
+    {
+        return collectingEventAttrs;
     }
 
+    /**
+     * @param collectingEventAttrs the collectingEventAttrs to set
+     */
+    public void setCollectingEventAttrs(Set<CollectingEventAttr> collectingEventAttrs)
+    {
+        this.collectingEventAttrs = collectingEventAttrs;
+    }
+
+   /**
+    *
+    */
+   @Transient
+   public Set<AttributeIFace> getAttrs() 
+   {
+       return new HashSet<AttributeIFace>(this.collectingEventAttrs);
+   }
+
+   public void setAttrs(Set<AttributeIFace> collectingEventAttrs) 
+   {
+       this.collectingEventAttrs.clear();
+       for (AttributeIFace a : collectingEventAttrs)
+       {
+           if (a instanceof CollectingEventAttr)
+           {
+               this.collectingEventAttrs.add((CollectingEventAttr)a);
+           }
+       }
+   }
+
+
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "CollectingTripID", unique = false, nullable = true, insertable = true, updatable = true)
     public CollectingTrip getCollectingTrip()
     {
@@ -452,28 +479,8 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
 		this.attachments = attachments;
 	}
 
-    // Add Methods
-
-	public void addCollectionObjects(final CollectionObject collectionObject)
-    {
-        this.collectionObjects.add(collectionObject);
-        collectionObject.setCollectingEvent(this);
-    }
-
-    public void addCollector(final Collector collector)
-    {
-        this.collectors.add(collector);
-        collector.setCollectingEvent(this);
-    }
-
-    public void addAttrs(final CollectingEventAttr attr)
-    {
-        this.attrs.add(attr);
-        attr.setCollectingEvent(this);
-    }
     
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "HabitatAttributesID", unique = false, nullable = true, insertable = true, updatable = true)
     public HabitatAttributes getHabitatAttributes()
     {
@@ -484,30 +491,6 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     {
         this.habitatAttributes = habitatAttributes;
     }
-
-    // Done Add Methods
-
-    // Delete Methods
-
-    public void removeCollectionObjects(final CollectionObject collectionObject)
-    {
-        this.collectionObjects.remove(collectionObject);
-        collectionObject.setCollectingEvent(null);
-    }
-
-    public void removeCollector(final Collector collector)
-    {
-        this.collectors.remove(collector);
-        collector.setCollectingEvent(null);
-    }
-
-    public void removeAttrs(final CollectingEventAttr attr)
-    {
-        this.attrs.remove(attr);
-        attr.setCollectingEvent(null);
-    }
-
-    // Delete Add Methods
     
     // Comparable
     public int compareTo(CollectingEvent obj)
@@ -544,36 +527,6 @@ public class CollectingEvent extends DataModelObjBase implements java.io.Seriali
     public static int getClassTableId()
     {
         return 10;
-    }
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#addReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
-     */
-    @Override
-    public void addReference(FormDataObjIFace ref, String refType)
-    {
-        if( ref instanceof Attachment )
-        {
-            Attachment a = (Attachment)ref;
-            attachments.add(a);
-            a.setCollectingEvent(this);
-            return;
-        }
-        super.addReference(ref, refType);
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#removeReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
-     */
-    @Override
-    public void removeReference(FormDataObjIFace refObj, String refType)
-    {
-        if( refObj instanceof Attachment )
-        {
-            attachments.remove(refObj);
-            return;
-        }
-        super.removeReference(refObj, refType);
     }
     
     @Override

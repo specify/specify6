@@ -50,8 +50,6 @@ import javax.persistence.UniqueConstraint;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
-import edu.ku.brc.ui.forms.FormDataObjIFace;
-
 
 
 
@@ -81,11 +79,12 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
      protected String remarks;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
-     protected Set<CollectionObject> collectionObjects;
+     protected Set<CollectionObject>       collectionObjects;
      protected Set<AccessionAuthorization> accessionAuthorizations;
-     protected Set<AccessionAgent> accessionAgents;
-     protected RepositoryAgreement repositoryAgreement;
-     protected Set<Attachment>          attachments;
+     protected Set<AccessionAgent>         accessionAgents;
+     protected RepositoryAgreement         repositoryAgreement;
+     protected Set<Attachment>             attachments;
+     protected Set<ConservDescription>     conservDescriptions;
 
 
     // Constructors
@@ -122,10 +121,11 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
         remarks = null;
         yesNo1 = null;
         yesNo2 = null;
-        collectionObjects = new HashSet<CollectionObject>();
+        collectionObjects       = new HashSet<CollectionObject>();
         accessionAuthorizations = new HashSet<AccessionAuthorization>();
-        accessionAgents = new HashSet<AccessionAgent>();
-        repositoryAgreement = null;
+        accessionAgents         = new HashSet<AccessionAgent>();
+        repositoryAgreement     = null;
+        conservDescriptions     = new HashSet<ConservDescription>();
     }
     // End Initializer
 
@@ -394,6 +394,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
     //@OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "accession")
     //@Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "accession")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Attachment> getAttachments()
     {
         return attachments;
@@ -404,69 +405,22 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
         this.attachments = attachments;
     }
     
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.FormDataObjIFace#addReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
-     */
-    @Override
-    public void addReference(FormDataObjIFace ref, String refType)
-    {
-        if (ref instanceof CollectionObject)
-        {
-            collectionObjects.add((CollectionObject)ref);
-            ((CollectionObject)ref).setAccession(this);
-            
-        } else if (ref instanceof AccessionAuthorization)
-        {
-            accessionAuthorizations.add((AccessionAuthorization)ref);
-            ((AccessionAuthorization)ref).setAccession(this);
 
-        } else if (ref instanceof AccessionAgent)
-        {
-            accessionAgents.add((AccessionAgent)ref);
-            ((AccessionAgent)ref).setAccession(this);
-            
-        } else if (ref instanceof RepositoryAgreement)
-        {
-            repositoryAgreement = (RepositoryAgreement)ref;
-            ((RepositoryAgreement)ref).getAccessions().add(this);
-
-        } else
-        {
-            throw new RuntimeException("Adding Object ["+ref.getClass().getSimpleName()+"] and the refType is null.");
-        }
-    }
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#removeReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
+    /**
+     *
      */
-    @Override
-    public void removeReference(FormDataObjIFace ref, String refType)
+    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "accession")
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    public Set<ConservDescription> getConservDescriptions()
     {
-        if (ref instanceof CollectionObject)
-        {
-            collectionObjects.remove(ref);
-            ((CollectionObject)ref).setAccession(null);
-                
-        } else if (ref instanceof AccessionAuthorization)
-        {
-            accessionAuthorizations.remove(ref);
-            ((AccessionAuthorization)ref).setAccession(null);
-            
-        } else if (ref instanceof AccessionAgent)
-        {
-            accessionAgents.remove(ref);
-            ((AccessionAgent)ref).setAccession(null);
-            
-        } else if (ref instanceof RepositoryAgreement)
-        {
-            repositoryAgreement = null;
-            ((RepositoryAgreement)ref).getAccessions().remove(this);
-            
-        } else
-        {
-            throw new RuntimeException("Removing Object ["+ref.getClass().getSimpleName()+"] and the refType is null.");
-        }
+        return this.conservDescriptions;
     }
+
+    public void setConservDescriptions(final Set<ConservDescription> conservDescriptions)
+    {
+        this.conservDescriptions = conservDescriptions;
+    }
+
 
     //---------------------------------------------------------------------------
     // Overrides DataModelObjBase

@@ -54,7 +54,6 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
 import edu.ku.brc.dbsupport.DBConnection;
-import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 /**
 
@@ -420,6 +419,7 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     public void setShipments(Set<Shipment> shipments) {
         this.shipments = shipments;
     }
+    
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "loan")
     @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<Attachment> getAttachments()
@@ -502,36 +502,6 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     public String getIdentityTitle()
     {
         return loanNumber != null ? loanNumber : super.getIdentityTitle();
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#addReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
-     */
-    @Override
-    public void addReference(FormDataObjIFace ref, String refType)
-    {
-        if( ref instanceof Attachment )
-        {
-            Attachment a = (Attachment)ref;
-            attachments.add(a);
-            a.setLoan(this);
-            return;
-        }
-        super.addReference(ref, refType);
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#removeReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
-     */
-    @Override
-    public void removeReference(FormDataObjIFace refObj, String refType)
-    {
-        if( refObj instanceof Attachment )
-        {
-            attachments.remove(refObj);
-            return;
-        }
-        super.removeReference(refObj, refType);
     }
 
 }

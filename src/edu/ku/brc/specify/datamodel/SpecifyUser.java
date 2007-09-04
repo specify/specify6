@@ -254,6 +254,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
      * 
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "specifyUser")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<CollectionType> getCollectionTypes()
     {
         return this.collectionTypes;
@@ -272,6 +273,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
      * 
      */
     @OneToMany(cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY, mappedBy = "specifyUser")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<RecordSet> getRecordSets()
     {
         return this.recordSets;
@@ -315,6 +317,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
      * Set<AppResourceDefault>
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "specifyUser")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<AppResourceDefault> getAppResourceDefaults()
     {
         return appResourceDefaults;
@@ -354,6 +357,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
      * Set<AppResource>
      */
     @OneToMany(cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY, mappedBy = "specifyUser")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<AppResource> getAppResources()
     {
         return this.appResources;
@@ -372,6 +376,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
      * 
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "specifyUser")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Workbench> getWorkbenches()
     {
         return this.workbenches;
@@ -399,6 +404,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
      * 
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "specifyUser")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<WorkbenchTemplate> getWorkbenchTemplates()
     {
         return this.workbenchTemplates;
@@ -409,7 +415,6 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
      * Agent
      */
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( { org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.LOCK })
     @JoinColumn(name = "AgentID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getAgent()
     {

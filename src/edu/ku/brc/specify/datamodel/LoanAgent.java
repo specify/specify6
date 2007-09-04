@@ -55,10 +55,10 @@ public class LoanAgent extends DataModelObjBase implements java.io.Serializable 
     // Fields    
 
      protected Integer loanAgentId;
-     protected String role;
-     protected String remarks;
-     protected Loan loan;
-     protected Agent agent;
+     protected String  role;
+     protected String  remarks;
+     protected Loan    loan;
+     protected Agent   agent;
 
 
     // Constructors
@@ -168,7 +168,6 @@ public class LoanAgent extends DataModelObjBase implements java.io.Serializable 
      *      * Address of agent
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "AgentID", unique = false, nullable = false, insertable = true, updatable = true)
     public Agent getAgent() {
         return this.agent;

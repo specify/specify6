@@ -229,7 +229,6 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
     }
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
     @JoinColumn(name = "GeographyTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
 	public GeographyTreeDef getTreeDef()
 	{
@@ -242,7 +241,6 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 	}
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
     @JoinColumn(name = "ParentItemID", unique = false, nullable = true, insertable = true, updatable = true)
 	public GeographyTreeDefItem getParent()
 	{
@@ -267,6 +265,7 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 	}
 
     @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.EAGER, mappedBy = "parent")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
 	public Set<GeographyTreeDefItem> getChildren()
 	{
 		return this.children;

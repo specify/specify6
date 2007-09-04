@@ -48,8 +48,6 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
-import edu.ku.brc.ui.forms.FormDataObjIFace;
-
 /**
 
  */
@@ -64,7 +62,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     
     // Fields
 
-    protected Integer                      collectionTypeId;
+    protected Integer                   collectionTypeId;
     protected String                    name;
     protected String                    discipline;
     protected DataType                  dataType;
@@ -193,7 +191,6 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
      *
      */
     @ManyToOne
-    @Cascade( {CascadeType.SAVE_UPDATE} )
     @JoinColumn(name="DataTypeID", unique=false, nullable=false, insertable=true, updatable=true)
     public DataType getDataType() {
         return this.dataType;
@@ -220,7 +217,6 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
      *
      */
     @ManyToOne
-    @Cascade( {CascadeType.SAVE_UPDATE} )
     @JoinColumn(name="SpecifyUserID", unique=false, nullable=false, insertable=true, updatable=true)
     public SpecifyUser getSpecifyUser() {
         return this.specifyUser;
@@ -247,7 +243,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
      *
      */
     @ManyToOne
-    @Cascade( {CascadeType.SAVE_UPDATE} )
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL })
     @JoinColumn(name="GeographyTreeDefID", unique=false, nullable=true, insertable=true, updatable=true)
     public GeographyTreeDef getGeographyTreeDef() {
         return this.geographyTreeDef;
@@ -261,7 +257,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
      *
      */
     @ManyToOne
-    @Cascade( {CascadeType.SAVE_UPDATE} )
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL })
     @JoinColumn(name="GeologicTimePeriodTreeDefID", unique=false, nullable=false, insertable=true, updatable=true)
     public GeologicTimePeriodTreeDef getGeologicTimePeriodTreeDef() {
         return this.geologicTimePeriodTreeDef;
@@ -275,7 +271,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
      *
      */
     @ManyToOne
-    @Cascade( {CascadeType.SAVE_UPDATE} )
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL })
     @JoinColumn(name="LocationTreeDefID", unique=false, nullable=true, insertable=true, updatable=true)
     public LocationTreeDef getLocationTreeDef() {
         return this.locationTreeDef;
@@ -303,7 +299,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
      *      * @hibernate.many-to-one
      */
     @ManyToOne
-    @Cascade( {CascadeType.SAVE_UPDATE} )
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL })
     @JoinColumn(name="LithoStratTreeDefID")
     public LithoStratTreeDef getLithoStratTreeDef() {
         return this.lithoStratTreeDef;
@@ -327,6 +323,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     } 
 
     @OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="collectionType")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<AppResourceDefault> getAppResourceDefaults()
     {
         return appResourceDefaults;
@@ -363,77 +360,6 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
         return buffer.toString();
     }
 
-    // Add Methods
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.FormDataObjIFace#addReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
-     */
-    @Override
-    public void addReference(FormDataObjIFace ref, String refType)
-    {
-        if (ref instanceof Collection)
-        {
-            this.collections.add((Collection)ref);
-            ((Collection)ref).setCollectionType(this);
-            
-        } else if (ref instanceof AttributeDef)
-        {
-            this.attributeDefs.add((AttributeDef)ref);
-            ((AttributeDef)ref).setCollectionType(this);
-
-        } else if (ref instanceof Locality)
-        {
-            this.localities.add((Locality)ref);
-            ((Locality)ref).getCollectionTypes().add(this);
-            
-        } else if (ref instanceof UserPermission)
-        {
-            userPermissions.add((UserPermission)ref);
-            ((UserPermission)ref).setCollectionType(this);
-
-        } else
-        {
-            throw new RuntimeException("Adding Object ["+ref.getClass().getSimpleName()+"] and the refType is null.");
-        }
-    }
-    // Done Add Methods
-
-    // Delete Methods
-
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#removeReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
-     */
-    @Override
-    public void removeReference(FormDataObjIFace ref, String refType)
-    {
-        if (ref instanceof Collection)
-        {
-            collections.remove(ref);
-            ((Collection)ref).setCollectionType(null);
-                
-        } else if (ref instanceof AttributeDef)
-        {
-            attributeDefs.remove(ref);
-            ((AttributeDef)ref).setCollectionType(null);
-            
-        } else if (ref instanceof Locality)
-        {
-            localities.remove(ref);
-            ((Locality)ref).setCollectionTypes(null);
-            
-        } else if (ref instanceof UserPermission)
-        {
-            this.userPermissions.remove(ref);
-            ((UserPermission)ref).setCollectionType(null);
-            
-        } else
-        {
-            throw new RuntimeException("Removing Object ["+ref.getClass().getSimpleName()+"] and the refType is null.");
-        }
-    }
-
-    // Delete Add Methods
-    
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()

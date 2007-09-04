@@ -30,7 +30,6 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
-import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.Orderable;
@@ -42,7 +41,7 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
 @Table(name = "attachments")
 public class Attachment extends DataModelObjBase implements Serializable, Orderable
 {
-    private Integer                 attachmentID;
+    private Integer                 attachmentId;
     private String                  mimeType;
     private String                  origFilename;
     private Calendar                fileCreatedDate;
@@ -61,7 +60,9 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
     private Preparation             preparation;
     private Taxon                   taxon;
     private Accession accession;
-    private RepositoryAgreement repositoryAgreement;
+    private RepositoryAgreement     repositoryAgreement;
+    protected ConservEvent          conservEvent;
+    protected ConservDescription    conservDescription;
     
     /** default constructor */
     public Attachment()
@@ -70,9 +71,9 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
     }
 
     /** constructor with id */
-    public Attachment(Integer attachmentID)
+    public Attachment(Integer attachmentId)
     {
-        this.attachmentID = attachmentID;
+        this.attachmentId = attachmentId;
     }
 
     /* (non-Javadoc)
@@ -82,7 +83,7 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
     public void initialize()
     {
         super.init();
-        attachmentID = null;
+        attachmentId = null;
         mimeType = null;
         origFilename = null;
         fileCreatedDate = null;
@@ -98,26 +99,29 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
         permit = null;
         preparation = null;
         taxon = null;
+        conservEvent = null;
+        conservDescription = null;
+
     }
 
     @Id
     @GeneratedValue
     @Column(name = "AttachmentID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Integer getAttachmentID()
+    public Integer getAttachmentId()
     {
-        return this.attachmentID;
+        return this.attachmentId;
     }
 
-    public void setAttachmentID(Integer attachmentID)
+    public void setAttachmentId(Integer attachmentId)
     {
-        this.attachmentID = attachmentID;
+        this.attachmentId = attachmentId;
     }
     
     @Transient
     @Override
     public Integer getId()
     {
-        return attachmentID;
+        return attachmentId;
     }
 
     /* (non-Javadoc)
@@ -158,7 +162,7 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
         this.origFilename = origFilename;
 
         // for newly created attachments, setup the attachmentLocation field
-        if (this.attachmentID == null && origFilename != null)
+        if (this.attachmentId == null && origFilename != null)
         {
             // set the attachmentLocation field
             AttachmentUtils.getAttachmentManager().setStorageLocationIntoAttachment(this);
@@ -224,18 +228,6 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
         this.metadata = metadata;
     }
     
-    public void addAttachmentMetadata(AttachmentMetadata meta)
-    {
-        this.metadata.add(meta);
-        meta.setAttachment(this);
-    }
-    
-    public void removeAttachmentMetadata(AttachmentMetadata meta)
-    {
-        this.metadata.remove(meta);
-        meta.setAttachment(null);
-    }
-
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "AgentID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getAgent()
@@ -331,6 +323,37 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
     {
         this.taxon = taxon;
     }
+    
+    /**
+     *
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "ConservEventID", unique = false, nullable = true, insertable = true, updatable = true)
+    public ConservEvent getConservEvent()
+    {
+        return this.conservEvent;
+    }
+
+    public void setConservEvent(final ConservEvent conservEvent)
+    {
+        this.conservEvent = conservEvent;
+    }
+
+    /**
+     *
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "ConservDescriptionID", unique = false, nullable = true, insertable = true, updatable = true)
+    public ConservDescription getConservDescription()
+    {
+        return this.conservDescription;
+    }
+
+    public void setConservDescription(final ConservDescription conservDescription)
+    {
+        this.conservDescription = conservDescription;
+    }
+    
     /**
      *      * Indicates whether this record can be viewed - by owner, by instituion, or by all
      */
@@ -358,16 +381,6 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
     {
         this.visibilitySetBy = visibilitySetBy;
     }   
-    @Override
-    public void addReference(FormDataObjIFace ref, String refType)
-    {
-        if (ref instanceof AttachmentMetadata)
-        {
-            addAttachmentMetadata((AttachmentMetadata)ref);
-            return;
-        }
-        super.addReference(ref, refType);
-    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.OrderableFormDataObj#getOrderIndex()

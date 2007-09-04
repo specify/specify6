@@ -311,6 +311,7 @@ public class ViewSetObj extends DataModelObjBase implements java.io.Serializable
      * 
      */
     @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "viewSetObj")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<AppResourceData> getAppResourceDatas() {
         return appResourceDatas;
     }

@@ -14,7 +14,8 @@
  */
 package edu.ku.brc.specify.datamodel;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -25,8 +26,6 @@ import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
-import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 
 
@@ -123,6 +122,7 @@ public class Institution extends DataModelObjBase implements java.io.Serializabl
      * @return the contentContacts
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "instContentContact")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Agent> getContentContacts()
     {
         return contentContacts;
@@ -191,6 +191,7 @@ public class Institution extends DataModelObjBase implements java.io.Serializabl
      * @return the technicalContacts
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "instTechContact")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Agent> getTechnicalContacts()
     {
         return technicalContacts;
@@ -369,19 +370,5 @@ public class Institution extends DataModelObjBase implements java.io.Serializabl
         
         return super.getIdentityTitle();
     }
-
-    @Override
-    public void addReference(FormDataObjIFace ref, String refType)
-    {
-
-        super.addReference(ref, refType);
-    }
-
-    @Override
-    public void removeReference(FormDataObjIFace ref, String refType)
-    {
-        super.removeReference(ref, refType);
-    }
-
 
 }

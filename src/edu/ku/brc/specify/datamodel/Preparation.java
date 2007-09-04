@@ -51,6 +51,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
 import edu.ku.brc.dbsupport.AttributeIFace;
+import edu.ku.brc.dbsupport.AttributeProviderIFace;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 
 /**
@@ -60,7 +61,7 @@ import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "preparation")
-public class Preparation extends DataModelObjBase implements java.io.Serializable, Comparable<Preparation>
+public class Preparation extends DataModelObjBase implements AttributeProviderIFace, java.io.Serializable, Comparable<Preparation>
 {
 
     // Fields    
@@ -73,16 +74,16 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
     protected String                      remarks;
     protected Calendar                    preparedDate;
     protected Set<LoanPhysicalObject>     loanPhysicalObjects;
-    protected Set<AttributeIFace>         attrs;
     protected PrepType                    prepType;
     protected CollectionObject            collectionObject;
     protected Agent                       preparedByAgent;
     protected Location                    location;
     protected Set<Attachment>             attachments;
     protected Set<DeaccessionPreparation> deaccessionPreparations;
-    protected PreparationAttributes       preparationAttributes;
 
-
+    protected PreparationAttributes       preparationAttributes;   // Specify 5 Attributes table
+    protected Set<PreparationAttr>        preparationAttrs;        // Generic Expandable Attributes
+    
     // Constructors
 
     /** default constructor */
@@ -112,14 +113,15 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
         remarks = null;
         preparedDate = null;
         loanPhysicalObjects = new HashSet<LoanPhysicalObject>();
-        attrs = new HashSet<AttributeIFace>();
         prepType = null;
         collectionObject = null;
         preparedByAgent = null;
         location = null;
         attachments = new HashSet<Attachment>();
         deaccessionPreparations = new HashSet<DeaccessionPreparation>();
+        
         preparationAttributes = null;
+        preparationAttrs      = new HashSet<PreparationAttr>();
 
     }
     // End Initializer
@@ -261,6 +263,7 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
      * 
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "preparation")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<LoanPhysicalObject> getLoanPhysicalObjects() {
         return this.loanPhysicalObjects;
     }
@@ -269,25 +272,49 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
         this.loanPhysicalObjects = loanPhysicalObjects;
     }
 
-    /**
-     * 
+   /**
+     * @return the preparationAttrs
      */
     @OneToMany(targetEntity=PreparationAttr.class,
             cascade = {}, fetch = FetchType.LAZY, mappedBy="preparation")
     @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<AttributeIFace> getAttrs() {
-        return this.attrs;
-    }
-    
-    public void setAttrs(Set<AttributeIFace> attrs) {
-        this.attrs = attrs;
+    public Set<PreparationAttr> getPreparationAttrs()
+    {
+        return preparationAttrs;
     }
 
+    /**
+     * @param preparationAttrs the preparationAttrs to set
+     */
+    public void setPreparationAttrs(Set<PreparationAttr> preparationAttrs)
+    {
+        this.preparationAttrs = preparationAttrs;
+    }
+
+   /**
+    *
+    */
+   @Transient
+   public Set<AttributeIFace> getAttrs() 
+   {
+       return new HashSet<AttributeIFace>(this.preparationAttrs);
+   }
+
+   public void setAttrs(Set<AttributeIFace> preparationAttrs) 
+   {
+       this.preparationAttrs.clear();
+       for (AttributeIFace a : preparationAttrs)
+       {
+           if (a instanceof PreparationAttr)
+           {
+               this.preparationAttrs.add((PreparationAttr)a);
+           }
+       }
+   }
     /**
      * 
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "PrepTypeID", unique = false, nullable = false, insertable = true, updatable = true)
     public PrepType getPrepType() {
         return this.prepType;
@@ -314,7 +341,6 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
      * 
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "PreparedByID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getPreparedByAgent() {
         return this.preparedByAgent;
@@ -340,7 +366,6 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
      * 
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "LocationID", unique = false, nullable = true, insertable = true, updatable = true)
     public Location getLocation() {
         return this.location;
@@ -354,6 +379,7 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
     *
     */
    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "preparation")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
    public Set<DeaccessionPreparation> getDeaccessionPreparations() {
        return this.deaccessionPreparations;
    }
@@ -366,7 +392,6 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
    *
    */
    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-   @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
    @JoinColumn(name = "PreparationAttributesID", unique = false, nullable = true, insertable = true, updatable = true)
    public PreparationAttributes getPreparationAttributes() {
        return this.preparationAttributes;
@@ -375,36 +400,6 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
    public void setPreparationAttributes(PreparationAttributes preparationAttributes) {
        this.preparationAttributes = preparationAttributes;
    }
-
-    // Add Methods
-
-    public void addLoanPhysicalObjects(final LoanPhysicalObject loanPhysicalObject)
-    {
-        this.loanPhysicalObjects.add(loanPhysicalObject);
-        loanPhysicalObject.setPreparation(this);
-    }
-
-    public void addAttrs(final PreparationAttr attr)
-    {
-        this.attrs.add(attr);
-        attr.setPreparation(this);
-    }
-
-    // Done Add Methods
-
-    // Delete Methods
-
-    public void removeLoanPhysicalObjects(final LoanPhysicalObject loanPhysicalObject)
-    {
-        this.loanPhysicalObjects.remove(loanPhysicalObject);
-        loanPhysicalObject.setPreparation(null);
-    }
-
-    public void removeAttrs(final PreparationAttr attr)
-    {
-        this.attrs.remove(attr);
-        attr.setPreparation(null);
-    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
@@ -424,6 +419,9 @@ public class Preparation extends DataModelObjBase implements java.io.Serializabl
         return 63;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
+     */
     @Override
     @Transient
     public String getIdentityTitle()

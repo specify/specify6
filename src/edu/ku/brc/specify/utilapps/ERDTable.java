@@ -50,7 +50,7 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
     
     public enum DisplayType { All, Title, TitleAndRel }
     
-    protected DisplayType displayType = DisplayType.Title;
+    protected DisplayType displayType = DisplayType.All;
     
     protected Hashtable<DBTableIdMgr.TableRelationship, JComponent> relUIHash   = new Hashtable<DBTableIdMgr.TableRelationship, JComponent>();
     

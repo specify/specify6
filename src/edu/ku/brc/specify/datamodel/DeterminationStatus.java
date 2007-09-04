@@ -76,6 +76,7 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
     }
 
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "status")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Determination> getDeterminations()
     {
         return determinations;

@@ -178,27 +178,6 @@ public class Journal extends DataModelObjBase implements java.io.Serializable {
     }
 
 
-
-
-
-    // Add Methods
-
-    public void addReferenceWorks(final ReferenceWork referenceWork)
-    {
-        this.referenceWorks.add(referenceWork);
-        referenceWork.setJournal(this);
-    }
-
-    // Done Add Methods
-
-    // Delete Methods
-
-    public void removeReferenceWorks(final ReferenceWork referenceWork)
-    {
-        this.referenceWorks.remove(referenceWork);
-        referenceWork.setJournal(null);
-    }
-
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */

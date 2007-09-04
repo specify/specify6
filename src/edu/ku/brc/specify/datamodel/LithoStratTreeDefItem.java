@@ -253,7 +253,6 @@ public class LithoStratTreeDefItem extends DataModelObjBase implements Serializa
 	 * 
 	 */
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
     @JoinColumn(name = "LithoStratTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
 	public LithoStratTreeDef getTreeDef()
 	{
@@ -269,7 +268,6 @@ public class LithoStratTreeDefItem extends DataModelObjBase implements Serializa
 	 * 
 	 */
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
     @JoinColumn(name = "ParentItemID", unique = false, nullable = true, insertable = true, updatable = true)
 	public LithoStratTreeDefItem getParent()
 	{
@@ -300,6 +298,7 @@ public class LithoStratTreeDefItem extends DataModelObjBase implements Serializa
 	 * 
 	 */
     @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.EAGER, mappedBy = "parent")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
 	public Set<LithoStratTreeDefItem> getChildren()
 	{
 		return this.children;

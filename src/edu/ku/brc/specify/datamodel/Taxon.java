@@ -32,7 +32,6 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator;
-import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 @SuppressWarnings("serial")
 @Entity
@@ -526,7 +525,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "AcceptedID")
-    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
 	public Taxon getAcceptedTaxon()
 	{
 		return this.acceptedTaxon;
@@ -556,7 +554,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
      */
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "HybridParent1ID")
-    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public Taxon getHybridParent1()
     {
         return hybridParent1;
@@ -574,7 +571,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
      */
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "HybridParent2ID")
-    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public Taxon getHybridParent2()
     {
         return hybridParent2;
@@ -645,7 +641,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "TaxonTreeDefID", nullable = false)
-    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
 	public TaxonTreeDef getDefinition()
 	{
 		return this.definition;
@@ -658,7 +653,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "TaxonTreeDefItemID", nullable = false)
-    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
 	public TaxonTreeDefItem getDefinitionItem()
 	{
 		return this.definitionItem;
@@ -675,7 +669,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "ParentID")
-    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
 	public Taxon getParent()
 	{
 		return this.parent;
@@ -804,35 +797,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
     public String getFullNameSeparator()
     {
         return definitionItem.getFullNameSeparator();
-    }
-
-	/* (non-Javadoc)
-	 * @see edu.ku.brc.specify.datamodel.DataModelObjBase#addReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
-	 */
-	@Override
-    public void addReference(FormDataObjIFace ref, String type)
-    {
-        if (type.equals("child") && ref instanceof Taxon)
-        {
-            addChild((Taxon)ref);
-            return;
-        }
-        
-        if (type.equals("accepted child") && ref instanceof Taxon)
-        {
-            addAcceptedChild((Taxon)ref);
-            return;
-        }
-        
-        if (ref instanceof Determination)
-        {
-            addDetermination((Determination)ref);
-            return;
-        }
-        
-        log.error("Unfinished implementation");
-        super.addReference(ref, type);
-        //TODO: finish this impl
     }
 
 	/**

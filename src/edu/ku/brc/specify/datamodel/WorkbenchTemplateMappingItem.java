@@ -389,6 +389,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     
     
     @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "workbenchTemplateMappingItem")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<WorkbenchDataItem> getWorkbenchDataItems() 
     {
         return this.workbenchDataItems;

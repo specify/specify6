@@ -228,6 +228,7 @@ public class BorrowMaterial extends DataModelObjBase implements java.io.Serializ
      * 
      */
     @OneToMany(cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY, mappedBy = "borrowMaterial")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<BorrowReturnMaterial> getBorrowReturnMaterials() {
         return this.borrowReturnMaterials;
     }

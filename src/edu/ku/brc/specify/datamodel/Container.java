@@ -28,6 +28,9 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -35,6 +38,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -52,15 +56,15 @@ public class Container extends DataModelObjBase implements java.io.Serializable 
 
     // Fields
 
-     protected Integer containerId;
-     protected Integer collectionObjectId;
-     protected Short type;
-     protected String name;
-     protected String description;
-     protected Integer number;
-     protected Container parent;
-     protected CollectionObject container;
-     protected Location location;
+     protected Integer               containerId;
+     protected Short                 type;
+     protected String                name;
+     protected String                description;
+     protected Integer               number;
+     protected Container             parent;
+     protected Set<CollectionObject> collectionObjects;
+     protected Set<CollectionObject> collectionObjectOwners;
+     protected Location              location;
 
 
     // Constructors
@@ -75,22 +79,19 @@ public class Container extends DataModelObjBase implements java.io.Serializable 
         this.containerId = containerId;
     }
 
-
-
-
     // Initializer
     @Override
     public void initialize()
     {
         super.init();
         containerId = null;
-        collectionObjectId = null;
         type = null;
         name = null;
         description = null;
         number = null;
         parent = null;
-        container = null;
+        collectionObjects = new HashSet<CollectionObject>();
+        collectionObjectOwners = new HashSet<CollectionObject>();
         location = null;
     }
     // End Initializer
@@ -130,18 +131,6 @@ public class Container extends DataModelObjBase implements java.io.Serializable 
 
     public void setContainerId(Integer containerId) {
         this.containerId = containerId;
-    }
-
-    /**
-     *
-     */
-    @Column(name = "CollectionObjectID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getCollectionObjectId() {
-        return this.collectionObjectId;
-    }
-
-    public void setCollectionObjectId(Integer collectionObjectId) {
-        this.collectionObjectId = collectionObjectId;
     }
 
     /**
@@ -197,7 +186,6 @@ public class Container extends DataModelObjBase implements java.io.Serializable 
      */
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "ParentID")
-    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public Container getParent()
     {
         return parent;
@@ -214,21 +202,30 @@ public class Container extends DataModelObjBase implements java.io.Serializable 
     /**
      *
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "CollectionObjectID", unique = false, nullable = true, insertable = false, updatable = false)
-    public CollectionObject getContainer() {
-        return this.container;
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "container")
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    public Set<CollectionObject> getCollectionObjects() {
+        return this.collectionObjects;
     }
 
-    public void setContainer(CollectionObject container) {
-        this.container = container;
+    public void setCollectionObjects(Set<CollectionObject> collectionObjects) {
+        this.collectionObjects = collectionObjects;
+    }
+
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "containerOwner")
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    public Set<CollectionObject> getCollectionObjectOwners() {
+        return this.collectionObjectOwners;
+    }
+
+    public void setCollectionObjectOwners(Set<CollectionObject> collectionObjectOwners) {
+        this.collectionObjectOwners = collectionObjectOwners;
     }
 
     /**
      *
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "LocationID", unique = false, nullable = true, insertable = true, updatable = true)
     public Location getLocation() {
         return this.location;

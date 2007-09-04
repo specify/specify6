@@ -76,8 +76,8 @@ public class ERDVisualizer extends JFrame
         
     public ERDVisualizer(final TableTracker tblOrg, final File schemaDir)
     {
-        this.tblTracker    = tblOrg;
-        this.schemaDir = schemaDir;
+        this.tblTracker = tblOrg;
+        this.schemaDir  = schemaDir;
         
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -106,10 +106,13 @@ public class ERDVisualizer extends JFrame
             File srcDir = new File(UIRegistry.getDefaultWorkingPath() + File.separator + "site");
             for (File f: srcDir.listFiles())
             {
-                File dst = new File(UIRegistry.getDefaultWorkingPath() + File.separator + "schema" + File.separator + f.getName());
-                if (!FilenameUtils.getExtension(f.getName()).toLowerCase().equals("html"))
+                if (!f.getName().startsWith("."))
                 {
-                    FileUtils.copyFile(f, dst);
+                    File dst = new File(UIRegistry.getDefaultWorkingPath() + File.separator + "schema" + File.separator + f.getName());
+                    if (!FilenameUtils.getExtension(f.getName()).toLowerCase().equals("html"))
+                    {
+                        FileUtils.copyFile(f, dst);
+                    }
                 }
             }
         } catch (Exception ex)
@@ -117,14 +120,15 @@ public class ERDVisualizer extends JFrame
             ex.printStackTrace();
         }
         
-        if (false)
+        if (true)
         {
             advance();
             
             int period = isDoShadow() ? 10000 : 1000;
             int delay  = isDoShadow() ? 5000 : 1000;
             timer = new Timer();
-            if (true)
+            
+            if (false)
             {
                 timer.scheduleAtFixedRate(new TimerTask() {
                         public void run() 

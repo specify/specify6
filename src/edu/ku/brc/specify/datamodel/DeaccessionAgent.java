@@ -54,10 +54,10 @@ public class DeaccessionAgent extends DataModelObjBase implements java.io.Serial
 
     // Fields    
 
-     protected Integer deaccessionAgentId;
-     protected String role;
-     protected String remarks;
-     protected Agent agent;
+     protected Integer     deaccessionAgentId;
+     protected String      role;
+     protected String      remarks;
+     protected Agent       agent;
      protected Deaccession deaccession;
 
 
@@ -155,7 +155,6 @@ public class DeaccessionAgent extends DataModelObjBase implements java.io.Serial
      *      * AgentID for agent
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "AgentID", unique = false, nullable = false, insertable = true, updatable = true)
     public Agent getAgent() {
         return this.agent;

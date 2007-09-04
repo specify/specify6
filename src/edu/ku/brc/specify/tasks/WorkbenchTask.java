@@ -1530,7 +1530,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
     
     /**
      * @param workbench
-     * @param name
+     * @param title
      * @return
      */
     protected boolean fillInWorkbenchNameAndAttrs(final Workbench workbench, final String wbName, final boolean skipFirstCheck)

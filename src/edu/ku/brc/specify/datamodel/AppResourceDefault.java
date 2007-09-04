@@ -57,9 +57,9 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
 
     // Fields
 
-     protected Integer             appResourceDefaultId;
+     protected Integer          appResourceDefaultId;
      protected Collection       collection;
-     protected CollectionType collectionType;
+     protected CollectionType   collectionType;
      protected SpecifyUser      specifyUser;
      protected Set<AppResource> persistedAppResources;
      protected Set<ViewSetObj>  persistedViewSets;
@@ -156,7 +156,6 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
      * @see edu.ku.brc.specify.datamodel.AppResourceDefaultIFace#getCollection()
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "CollectionID", unique = false, nullable = true, insertable = true, updatable = true)
     public Collection getCollection() {
         return this.collection;
@@ -173,7 +172,6 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
      * @see edu.ku.brc.specify.datamodel.AppResourceDefaultIFace#getCollectionType()
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "CollectionTypeID", unique = false, nullable = true, insertable = true, updatable = true)
     public CollectionType getCollectionType() {
         return this.collectionType;
@@ -190,7 +188,6 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
      * @see edu.ku.brc.specify.datamodel.AppResourceDefaultIFace#getSpecifyUser()
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "SpecifyUserID", unique = false, nullable = true, insertable = true, updatable = true)
     public SpecifyUser getSpecifyUser() {
         return this.specifyUser;

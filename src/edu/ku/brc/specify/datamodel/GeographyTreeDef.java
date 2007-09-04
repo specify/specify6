@@ -51,7 +51,7 @@ import org.hibernate.annotations.CascadeType;
 @Table(name = "geographytreedef")
 public class GeographyTreeDef extends DataModelObjBase implements java.io.Serializable, TreeDefIface<Geography, GeographyTreeDef, GeographyTreeDefItem>
 {
-	protected Integer				        geographyTreeDefId;
+	protected Integer				    geographyTreeDefId;
 	protected String				    name;
 	protected String				    remarks;
     protected Integer                   fullNameDirection;

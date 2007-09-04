@@ -288,7 +288,6 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "AcceptedID")
-    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public LithoStrat getAcceptedLithoStrat()
     {
         return this.acceptedLithoStrat;
@@ -314,7 +313,6 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
 	 * 
 	 */
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( { CascadeType.LOCK })
     @JoinColumn(name = "LithoStratTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
 	public LithoStratTreeDef getDefinition()
 	{
@@ -330,7 +328,6 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
 	 * 
 	 */
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
     @JoinColumn(name = "LithoStratTreeDefItemID", unique = false, nullable = false, insertable = true, updatable = true)
 	public LithoStratTreeDefItem getDefinitionItem()
 	{
@@ -350,7 +347,6 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
 	 * 
 	 */
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
     @JoinColumn(name = "ParentID", unique = false, nullable = true, insertable = true, updatable = true)
 	public LithoStrat getParent()
 	{
@@ -366,6 +362,7 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
 	 * 
 	 */
     @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "parent")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
 	public Set<LithoStrat> getChildren()
 	{
 		return this.children;
@@ -380,6 +377,7 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
      * @return the paleoContexts
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "lithoStrat")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<PaleoContext> getPaleoContexts()
     {
         return paleoContexts;

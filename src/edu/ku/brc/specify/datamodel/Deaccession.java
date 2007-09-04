@@ -267,6 +267,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
      * 
      */
     @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "deaccession")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<DeaccessionAgent> getDeaccessionAgents() {
         return this.deaccessionAgents;
     }
@@ -279,6 +280,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
      * 
      */
     @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "deaccession")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<DeaccessionPreparation> getDeaccessionPreparations() {
         return this.deaccessionPreparations;
     }

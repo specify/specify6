@@ -456,7 +456,6 @@ public class ReferenceWork extends DataModelObjBase implements java.io.Serializa
      *      * Link to Journal containing the reference (if applicable)
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "JournalID", unique = false, nullable = true, insertable = true, updatable = true)
     public Journal getJournal() {
         return this.journal;

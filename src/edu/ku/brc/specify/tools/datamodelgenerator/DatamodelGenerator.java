@@ -19,10 +19,12 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
@@ -34,12 +36,18 @@ import java.util.Vector;
 import org.apache.commons.betwixt.XMLIntrospector;
 import org.apache.commons.betwixt.io.BeanWriter;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.dbsupport.AttributeIFace;
+import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.util.DatamodelHelper;
 
 /**
@@ -55,8 +63,15 @@ public class DatamodelGenerator
     enum RelType {OneToMany, OneToOne, ManyToOne, ManyToMany}
     
     private static final Logger log = Logger.getLogger(DatamodelGenerator.class);
+    
+    protected static final boolean DEBUG = false;
 
-    Hashtable<String, TableMetaData> tblMetaDataHash = new Hashtable<String, TableMetaData>();
+    protected Hashtable<String, TableMetaData> tblMetaDataHash = new Hashtable<String, TableMetaData>();
+    
+    protected File    srcCodeDir = null;
+    protected String  packageName = null;
+    protected int     missing = 0;
+    
 
     /**
      * 
@@ -210,62 +225,279 @@ public class DatamodelGenerator
         field.setUnique(col.unique());
         return field;
     }
+
+    @SuppressWarnings("unchecked")
+    public Class<?> getSetsClassType(final Class<?> cls, final String methodName)
+    {
+        try
+        {
+            File f = new File(srcCodeDir.getAbsoluteFile() + File.separator + cls.getSimpleName() + ".java");
+            if (!f.exists())
+            {
+                log.error("Can't locate source file["+f.getAbsolutePath()+"]");
+                return null;
+            }
+            
+            List<String> lines = FileUtils.readLines(f);
+            for (String line : lines)
+            {
+                int sInx = line.indexOf("Set<");
+                if (sInx > -1 && line.indexOf(methodName) > -1)
+                {
+                    int eInx = line.indexOf(">", sInx);
+                    String className = line.substring(sInx+4, eInx);
+                    return Class.forName(packageName + "." + className);
+                }
+            }
+            
+        } catch (ClassNotFoundException ex)
+        {
+            
+        } catch (IOException ex)
+        {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+    
+
     
     /**
-     * @param classObj
+     * @param leftSide
+     * @param rightSide
      * @param mappedByName
-     * @param relType
      * @return
      */
-    @SuppressWarnings("cast")
-    protected String getOthersideName(final Class<?> classObj, final String mappedByName, final RelType relType)
+    protected String getRightSideForOneToMany(final Class<?> leftSide,
+                                              final Class<?> rightSide, 
+                                              final String   mappedByName)
     {
-        for (Method method : classObj.getMethods())
+        if (StringUtils.isEmpty(mappedByName))
         {
-            switch (relType)
+            throw new RuntimeException("Couldn't find otherside method name missing for ["+ rightSide.getSimpleName()+ "]  mappedByName[" + mappedByName + "]");
+        }
+        
+        for (Method method : rightSide.getMethods())
+        {
+            String methodName = method.getName();
+            // Skip if it is a not a getter
+            if (!methodName.startsWith("get"))
             {
-                case OneToOne:
-                    if (method.isAnnotationPresent(javax.persistence.OneToOne.class))
-                    {
-                        return getFieldNameFromMethod(method);
-                    }
-                    break;
-                    
-                case OneToMany:
-                    if (method.isAnnotationPresent(javax.persistence.OneToMany.class))
-                    {
-                        javax.persistence.OneToMany oneToMany = (javax.persistence.OneToMany)method.getAnnotation(javax.persistence.OneToMany.class);
-                        //System.out.println("["+mappedByName+"]["+oneToMany.mappedBy()+"]");
-                        if (oneToMany != null && mappedByName.equals(oneToMany.mappedBy()))
-                        {
-                            return getFieldNameFromMethod(method);
-                        }
-                    }
-                    break;
-                    
-                case ManyToOne:
-                    if (method.isAnnotationPresent(javax.persistence.ManyToOne.class))
-                    {
-                        return getFieldNameFromMethod(method);
-                    }
-                    break;
-                    
-                case ManyToMany:
-                    if (method.isAnnotationPresent(javax.persistence.ManyToMany.class))
-                    {
-                        javax.persistence.ManyToMany manyToMany = (javax.persistence.ManyToMany)method.getAnnotation(javax.persistence.ManyToMany.class);
-                        //System.out.println("["+mappedByName+"]["+manyToMany.mappedBy()+"]");
-                        if (manyToMany != null && mappedByName.equals(manyToMany.mappedBy()))
-                        {
-                            return getFieldNameFromMethod(method);
-                        }
-                    }
-                    break;
+                continue;
+            }
+            //System.out.println("Left Class["+leftSide.getSimpleName()+"]  Right["+rightSide.getSimpleName()+"] Right Side Method ["+methodName+"] Ret["+method.getReturnType().getSimpleName()+"]");
+            
+            // Skip if it is a not a ManyToOne
+            if (!method.isAnnotationPresent(javax.persistence.ManyToOne.class))
+            {
+                continue;
+            }
+            
+            Class<?> retType = method.getReturnType();
+            boolean isSet = Collection.class.isAssignableFrom(retType);
+            if (isSet)
+            {
+                Class<?> rt = getSetsClassType(rightSide, methodName);
+                if (rt == null)
+                {
+                    continue; // probably because of an interface
+                }
+                retType = rt;                
+                //System.out.println("Set["+(retType != null ? retType.getSimpleName() : "NULL")+"]");
+            }
+            
+            // Skip if the Return Types don't match
+            if (leftSide != retType)
+            {
+                continue;
+            }
+            
+            return getFieldNameFromMethod(method);
+
+        }
+        return null;
+    }
+    
+    /**
+     * @param leftSide
+     * @param rightSide
+     * @param leftSideVarName
+     * @return
+     */
+    protected String getRightSideForManyToOne(final Class<?> leftSide,
+                                              final Class<?> rightSide, 
+                                              final String   leftSideVarName)
+    {
+        for (Method method : rightSide.getMethods())
+        {
+            String methodName = method.getName();
+            // Skip if it is a not a getter
+            if (!methodName.startsWith("get"))
+            {
+                continue;
+            }
+            //System.out.println("getRightSideForManyToOne Left Class["+leftSide.getSimpleName()+"]  Right["+rightSide.getSimpleName()+"] Right Side Method ["+methodName+"] Ret["+method.getReturnType().getSimpleName()+"]");
+            
+            // Skip if it is a not a ManyToOne
+            if (!method.isAnnotationPresent(javax.persistence.OneToMany.class))
+            {
+                continue;
+            }
+            
+            Class<?> retType = method.getReturnType();
+            boolean isSet = Collection.class.isAssignableFrom(retType);
+            if (isSet)
+            {
+                Class<?> rt = getSetsClassType(rightSide, methodName);
+                if (rt == null)
+                {
+                    continue; // probably because of an interface
+                }
+                retType = rt;
+                //System.out.println("Set["+(retType != null ? retType.getSimpleName() : "NULL")+"]");
+            }
+
+            if (leftSide != retType)
+            {
+                continue;
+            }
+            
+            javax.persistence.OneToMany oneToMany = (javax.persistence.OneToMany)method.getAnnotation(javax.persistence.OneToMany.class);
+            String othersideName = oneToMany.mappedBy();
+            if (StringUtils.isNotEmpty(othersideName)) // This should never be null
+            {
+                //System.out.println("\nXXX["+othersideName+"]["+retType+"]");
+                //System.out.println("othersideName["+othersideName+"]  leftSideVarName["+leftSideVarName+"]");
+                //System.out.println("["+leftSide.getSimpleName()+"]["+retType.getSimpleName()+"]");
+                if (othersideName.equals(leftSideVarName))
+                {
+                    return getFieldNameFromMethod(method);
+                }
             }
         }
         return null;
     }
     
+    /**
+     * @param leftSide
+     * @param rightSide
+     * @param leftSideVarName
+     * @param isMappedBy
+     * @return
+     */
+    protected String getRightSideForManyToMany(final Class<?> leftSide,
+                                               final Class<?> rightSide, 
+                                               final String   leftSideVarName)
+    {
+        for (Method method : rightSide.getMethods())
+        {
+            String methodName = method.getName();
+            // Skip if it is a not a getter
+            if (!methodName.startsWith("get"))
+            {
+                continue;
+            }
+            //System.out.println("getRightSideForManyToMany Left Class["+leftSide.getSimpleName()+"]  Right["+rightSide.getSimpleName()+"] Right Side Method ["+methodName+"] Ret["+method.getReturnType().getSimpleName()+"]");
+            
+            // Skip if it is a not a ManyToOne
+            if (!method.isAnnotationPresent(javax.persistence.ManyToMany.class))
+            {
+                continue;
+            }
+            
+            Class<?> retType = method.getReturnType();
+            boolean isSet = Collection.class.isAssignableFrom(retType);
+            if (isSet)
+            {
+                Class<?> rt = getSetsClassType(rightSide, methodName);
+                if (rt == null)
+                {
+                    continue; // probably because of an interface
+                }
+                retType = rt;
+                //System.out.println("Set["+(retType != null ? retType.getSimpleName() : "NULL")+"]");
+            }
+            
+            if (leftSide == retType)
+            {
+                javax.persistence.ManyToMany manyToMany = (javax.persistence.ManyToMany)method.getAnnotation(javax.persistence.ManyToMany.class);
+                // Caller wasn't mappedBy so look for mapped By
+                String othersideName = manyToMany.mappedBy();
+                
+                if (StringUtils.isNotEmpty(othersideName) && leftSideVarName.equals(othersideName))
+                {
+                    return getFieldNameFromMethod(method);
+                }
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * @param leftSide
+     * @param rightSide
+     * @param mappedByName
+     * @return
+     */
+    @SuppressWarnings("cast")
+    protected String getRightSideForOneToOne(final Class<?> leftSide,
+                                             final Class<?> rightSide, 
+                                             final String   leftSideVarName,
+                                             final String   mappedName,
+                                             final boolean  isMappedBy)
+    {
+        for (Method method : rightSide.getMethods())
+        {
+            String methodName = method.getName();
+            // Skip if it is a not a getter
+            if (!methodName.startsWith("get"))
+            {
+                continue;
+            }
+            //System.out.println("Left Class["+leftSide.getSimpleName()+"]  Right["+rightSide.getSimpleName()+"] Right Side Method ["+methodName+"] Ret["+method.getReturnType().getSimpleName()+"]");
+            
+            // Skip if it is a not a OneToOne
+            if (!method.isAnnotationPresent(javax.persistence.OneToOne.class))
+            {
+                continue;
+            }
+            
+            Class<?> retType = method.getReturnType();
+            boolean isSet = Collection.class.isAssignableFrom(retType);
+            if (isSet)
+            {
+                Class<?> rt = getSetsClassType(rightSide, methodName);
+                if (rt == null)
+                {
+                    continue; // probably because of an interface
+                }
+                retType = rt;
+                //System.out.println("Set["+(retType != null ? retType.getSimpleName() : "NULL")+"]");
+            }
+            
+            String othersideName = "";
+            if (isMappedBy)
+            {
+                othersideName = getFieldNameFromMethod(method);
+                
+            } else
+            {
+                javax.persistence.OneToOne oneToOne = (javax.persistence.OneToOne)method.getAnnotation(javax.persistence.OneToOne.class);
+                // Caller wasn't mappedBy so look for mapped By
+                othersideName = oneToOne.mappedBy();
+            }
+            
+            if (StringUtils.isNotEmpty(othersideName) && leftSideVarName.equals(othersideName))
+            {
+                return getFieldNameFromMethod(method);
+            }
+
+        }
+        return null;
+    }
+    
+
+
     /**
      * @param method
      * @return
@@ -275,20 +507,437 @@ public class DatamodelGenerator
         String methodName = method.getName().substring(3);
         return methodName.substring(0,1).toLowerCase() + methodName.substring(1, methodName.length());
     }
+    
+    /**
+     * @param className
+     * @param tableList
+     */
+    protected void processClass(final String className, final List<Table> tableList)
+    {
+        try
+        {
+            Class classObj = Class.forName(packageName + "." + className);
+            
+            Table   table       = null; 
+            String  tableName   = null;
 
+            if (classObj.isAnnotationPresent(javax.persistence.Table.class))
+            {
+                Vector<TableIndex> indexes = new Vector<TableIndex>();
+                
+                javax.persistence.Table tableAnno = (javax.persistence.Table)classObj.getAnnotation(javax.persistence.Table.class);
+                tableName = tableAnno.name();
+                
+                org.hibernate.annotations.Table hiberTableAnno = (org.hibernate.annotations.Table)classObj.getAnnotation(org.hibernate.annotations.Table.class);
+                if (hiberTableAnno != null)
+                {
+                    for (Index index : hiberTableAnno.indexes())
+                    {
+                        indexes.add(new TableIndex(index.name(), index.columnNames()));
+                    }
+                }
+                
+                table = createTable(packageName + "." + className, tableName);
+                table.setIndexes(indexes);
+                tableList.add(table);
+            }
+            
+            if (table != null)
+            {
+                boolean isLob = false;
+                for (Method method : classObj.getMethods())
+                {
+                    String methodName = method.getName();
+                    if (!methodName.startsWith("get"))
+                    {
+                        continue;
+                    }
+                    
+                    if (DEBUG)
+                    {
+                        System.out.println(className + " " + method.getName());
+                    }
+                    Type type = method.getGenericReturnType();
+                    Class<?> typeClass;
+                    if (type instanceof Class<?>)
+                    {
+                        typeClass = (Class<?>)type;
+                    } else
+                    {
+                        typeClass = null;
+                        for (Type t : ((ParameterizedType)type).getActualTypeArguments())
+                        {
+                            if (t instanceof Class<?>)
+                            {
+                                typeClass = (Class<?>)t;
+                            }
+                        }
+                    }
+                    if (typeClass == classObj || 
+                            typeClass == AttributeIFace.class || 
+                            typeClass == PickListItemIFace.class || 
+                            typeClass == RecordSetItemIFace.class)
+                    {
+                        continue;
+                    }
+                    
+                    String thisSideName = getFieldNameFromMethod(method);
+
+                    if (method.isAnnotationPresent(javax.persistence.Lob.class))
+                    {
+                        isLob = true;
+                    }
+
+                    if (method.isAnnotationPresent(javax.persistence.Column.class))
+                    {
+                        if (method.isAnnotationPresent(javax.persistence.Id.class))
+                        {
+                            table.addId(createId(method, (javax.persistence.Column)method.getAnnotation(javax.persistence.Column.class)));
+                        } else
+                        {
+                            table.addField(createField(method, (javax.persistence.Column)method.getAnnotation(javax.persistence.Column.class), isLob));
+                        }
+                        
+                    } else if (method.isAnnotationPresent(javax.persistence.ManyToOne.class))
+                    {
+                        String otherSideName = getRightSideForManyToOne(classObj, typeClass, thisSideName);
+                        
+                        javax.persistence.JoinColumn join = method.isAnnotationPresent(javax.persistence.JoinColumn.class) ? (javax.persistence.JoinColumn)method.getAnnotation(javax.persistence.JoinColumn.class) : null;
+                        if (join != null)
+                        {
+                            //String othersideName = typeClass == null ? "" : getOthersideName(classObj, typeClass, thisSideName, RelType.OneToMany);
+                            table.addRelationship(createRelationsip(method, "many-to-one", join, otherSideName, join != null ? !join.nullable() : false));
+                            
+                        } else
+                        {
+                            log.error("No Join!");
+                        }
+                        
+                    } else if (method.isAnnotationPresent(javax.persistence.ManyToMany.class))
+                    {
+                        javax.persistence.ManyToMany manyToMany = method.getAnnotation(javax.persistence.ManyToMany.class);
+
+                        String  othersideName = manyToMany.mappedBy();
+                        if (StringUtils.isEmpty(othersideName))
+                        {
+                            othersideName = getRightSideForManyToMany(classObj, typeClass, getFieldNameFromMethod(method));
+                        }
+
+                        javax.persistence.JoinColumn join = method.isAnnotationPresent(javax.persistence.JoinColumn.class) ? (javax.persistence.JoinColumn)method.getAnnotation(javax.persistence.JoinColumn.class) : null;
+                        table.addRelationship(createRelationsip(method, "many-to-many", join, othersideName, join != null ? !join.nullable() : false));
+                        
+                    } else if (method.isAnnotationPresent(javax.persistence.OneToMany.class))
+                    {
+                        javax.persistence.OneToMany oneToMany = (javax.persistence.OneToMany)method.getAnnotation(javax.persistence.OneToMany.class);
+                        
+                        String  othersideName = oneToMany.mappedBy();
+                        if (StringUtils.isEmpty(othersideName))
+                        {
+                            // This Should never happen
+                            othersideName = getRightSideForOneToMany(classObj, typeClass, oneToMany.mappedBy());
+                        }
+                        
+                        javax.persistence.JoinColumn join = method.isAnnotationPresent(javax.persistence.JoinColumn.class) ? (javax.persistence.JoinColumn)method.getAnnotation(javax.persistence.JoinColumn.class) : null;
+                        table.addRelationship(createRelationsip(method, "one-to-many", join, othersideName, join != null ? !join.nullable() : false));
+                        
+                    } else if (method.isAnnotationPresent(javax.persistence.OneToOne.class))
+                    {
+                        javax.persistence.OneToOne oneToOne = (javax.persistence.OneToOne)method.getAnnotation(javax.persistence.OneToOne.class);
+                        String  leftSideVarName = getFieldNameFromMethod(method);
+                        boolean isMappedBy      = true;
+                        String  othersideName   = oneToOne.mappedBy();
+                        if (StringUtils.isEmpty(othersideName))
+                        {
+                            isMappedBy    = false;
+                            othersideName = getRightSideForOneToOne(classObj, typeClass, leftSideVarName, othersideName, isMappedBy);
+                        }
+                        
+                        javax.persistence.JoinColumn join = method.isAnnotationPresent(javax.persistence.JoinColumn.class) ? (javax.persistence.JoinColumn)method.getAnnotation(javax.persistence.JoinColumn.class) : null;
+                        table.addRelationship(createRelationsip(method, "one-to-one", join, othersideName, join != null ? !join.nullable() : false));
+                        
+                    }
+                    isLob = false;
+                }
+                
+                // This updates each field as to whether it is an index
+                table.updateIndexFields();
+            }
+                        
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }  
+    }
+
+    protected void addCascadeRule(Class<?> cls, Method method, final String rule)
+    {
+        
+        String import1 = "import org.hibernate.annotations.Cascade;";
+        String import2 = "import org.hibernate.annotations.CascadeType;";
+        try
+        {
+            File f = new File(srcCodeDir.getAbsoluteFile() + File.separator + cls.getSimpleName() + ".java");
+            if (!f.exists())
+            {
+                log.error("Can't locate source file["+f.getAbsolutePath()+"]");
+                return;
+            }
+    
+            List<String>   strLines = FileUtils.readLines(f);
+            Vector<String> lines    = new Vector<String>();
+            boolean addedImports = false;
+            boolean fnd          = false;
+            boolean passedImport = false;
+            
+            String methodName = method.getName()+"(";
+            for (String line : strLines)
+            {
+                if (!passedImport && line.indexOf("import") > -1)
+                {
+                    passedImport = true;
+                }
+                
+                if (!fnd && line.indexOf(import1) > -1)
+                {
+                    fnd = true;
+                }
+                
+                /*if (!fnd && !addedImports && passedImport && (line.indexOf("/**") > -1 || line.indexOf("@Entity") > -1))
+                {
+                    lines.add(import1);
+                    lines.add(import2);
+                    lines.add("");
+                    addedImports = true;
+                }*/
+                
+                if (line.indexOf(methodName) > -1 && line.indexOf("public") > -1)
+                {
+                    lines.add(rule);
+                }
+                lines.add(line);
+            }
+            
+            FileUtils.writeLines(f, lines);
+            
+        } catch (IOException ex)
+        {
+            ex.printStackTrace();
+        }
+
+        
+        
+    }
+
+    
+    /**
+     * @param className
+     * @param tableList
+     */
+    @SuppressWarnings("unchecked")
+    protected void processCascadeAddCascade(final String className, final List<Table> tableList)
+    {
+        //System.out.println(className);
+        try
+        {
+            Class classObj = Class.forName(packageName + "." + className);
+            
+            Table   table       = null; 
+            String  tableName   = null;
+
+            if (classObj.isAnnotationPresent(javax.persistence.Table.class))
+            {
+                Vector<TableIndex> indexes = new Vector<TableIndex>();
+                
+                javax.persistence.Table tableAnno = (javax.persistence.Table)classObj.getAnnotation(javax.persistence.Table.class);
+                tableName = tableAnno.name();
+                
+                org.hibernate.annotations.Table hiberTableAnno = (org.hibernate.annotations.Table)classObj.getAnnotation(org.hibernate.annotations.Table.class);
+                if (hiberTableAnno != null)
+                {
+                    for (Index index : hiberTableAnno.indexes())
+                    {
+                        indexes.add(new TableIndex(index.name(), index.columnNames()));
+                    }
+                }
+                
+                table = createTable(packageName + "." + className, tableName);
+                table.setIndexes(indexes);
+                tableList.add(table);
+            }
+            
+            if (table != null)
+            {
+                
+                for (Method method : classObj.getMethods())
+                {
+                    String methodName = method.getName();
+                    if (!methodName.startsWith("get") || method.isAnnotationPresent(javax.persistence.Transient.class))
+                    {
+                        continue;
+                    }
+                    
+                    String thisSideName = getFieldNameFromMethod(method);
+
+                    if (method.isAnnotationPresent(javax.persistence.ManyToOne.class))
+                    {
+                        if (!method.isAnnotationPresent(org.hibernate.annotations.Cascade.class))
+                        {
+                            System.out.println("Missing Cascade["+method.getName()+"]");
+                            missing++;
+                            //addCascadeRule(classObj, method, "    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.LOCK })");
+                        }
+
+                        
+                    } else if (method.isAnnotationPresent(javax.persistence.ManyToMany.class))
+                    {
+                        if (!method.isAnnotationPresent(org.hibernate.annotations.Cascade.class))
+                        {
+                            System.out.println("Missing Cascade["+method.getName()+"]");
+                            missing++;
+                            //addCascadeRule(classObj, method, "    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.LOCK })");
+                        }
+                        
+                    } else if (method.isAnnotationPresent(javax.persistence.OneToMany.class))
+                    {
+                        if (!method.isAnnotationPresent(org.hibernate.annotations.Cascade.class))
+                        {
+                            System.out.println("Missing Cascade["+method.getName()+"]");
+                            missing++;
+                            addCascadeRule(classObj, method, "    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })");
+
+                        }
+                        
+                    } else if (method.isAnnotationPresent(javax.persistence.OneToOne.class))
+                    {
+                        if (!method.isAnnotationPresent(org.hibernate.annotations.Cascade.class))
+                        {
+                            //System.out.println("Missing Cascade["+method.getName()+"]");
+                            missing++;
+                        }
+                        
+                    }
+                }
+                
+                // This updates each field as to whether it is an index
+                table.updateIndexFields();
+            }
+                        
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }  
+    }
+    
+    protected void removeCascadeRule(Class<?> cls, Method method)
+    {
+        
+        try
+        {
+            File f = new File(srcCodeDir.getAbsoluteFile() + File.separator + cls.getSimpleName() + ".java");
+            if (!f.exists())
+            {
+                log.error("Can't locate source file["+f.getAbsolutePath()+"]");
+                return;
+            }
+    
+            List<String>   strLines = FileUtils.readLines(f);
+            Vector<String> lines    = new Vector<String>();
+            
+            String methodName = method.getName()+"(";
+            int inx = 0;
+            for (String line : strLines)
+            {
+                
+                if (line.indexOf(methodName) > -1 && line.indexOf("public") > -1)
+                {
+                    int i = inx;
+                    int stop = i - 10;
+                    System.out.println("["+strLines.get(i)+"]");
+                    while (!StringUtils.contains(strLines.get(i), "@Cascade") && i > stop)
+                    {
+                        i--;
+                        System.out.println("["+strLines.get(i)+"]");
+                    }
+                    
+                    if (i < stop || StringUtils.contains(strLines.get(i), "@Cascade"))
+                    {
+                        lines.remove(i);
+                    } else
+                    {
+                        int x = 0;
+                        x++;
+                    }
+                }
+                lines.add(line);
+                inx++;
+            }
+            
+            FileUtils.writeLines(f, lines);
+            
+        } catch (IOException ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+
+    /**
+     * @param className
+     * @param tableList
+     */
+    @SuppressWarnings("unchecked")
+    protected void processCascade(final String className, final List<Table> tableList)
+    {
+        //System.out.println(className);
+        try
+        {
+            Class classObj = Class.forName(packageName + "." + className);
+            
+            Table   table       = null; 
+            String  tableName   = null;
+
+            if (classObj.isAnnotationPresent(javax.persistence.Table.class))
+            {
+                for (Method method : classObj.getMethods())
+                {
+                    String methodName = method.getName();
+                    if (!methodName.startsWith("get") || method.isAnnotationPresent(javax.persistence.Transient.class))
+                    {
+                        continue;
+                    }
+                    
+                    if (method.isAnnotationPresent(javax.persistence.ManyToOne.class))
+                    {
+                        if (method.isAnnotationPresent(org.hibernate.annotations.Cascade.class))
+                        {
+                            System.out.println("Missing Cascade["+method.getName()+"]");
+                            missing++;
+                            removeCascadeRule(classObj, method);
+                        }
+                    }
+                }
+            }
+                        
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }  
+    }
+    
+   
     /**
      * Reads in hbm files and generates datamodel tree.
      * @return List datamodel tree
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "cast" })
     public List<Table> generateDatamodelTree(final List<Table> tableList, final String dataModelPath)
     {
         try
         {
             log.debug("Preparing to read in DataModel Classes files from  path: " + dataModelPath);
-            File dir = new File(dataModelPath);
+            
+            srcCodeDir = new File(dataModelPath);
 
-            String path = dir.getAbsolutePath();
+            String path = srcCodeDir.getAbsolutePath();
             log.info(path);
             //dir = new File(path.substring(0, path.lastIndexOf(File.separator)));
 
@@ -304,18 +953,17 @@ public class DatamodelGenerator
             String PACKAGE = "package ";
             String CLASS   = "public class ";
             
-            File[] files = dir.listFiles(fileFilter);
+            File[] files = srcCodeDir.listFiles(fileFilter);
             int count = 0;
             for (File file : files)
             {
+                
+                
                 log.debug("Reading    " + file.getAbsolutePath());
                 List<?> lines = FileUtils.readLines(file);
                 count++;
                 log.debug("Processing " + count + " of " + lines.size() + "  " + file.getAbsolutePath());
 
-                String  packageName = null;
-                String  tableName   = null;
-                Table   table       = null; 
                 String  className   = null;
                 
                 for (Object lineObj : lines)
@@ -340,109 +988,15 @@ public class DatamodelGenerator
                 
                 if (className != null)
                 {
-                    try
-                    {
-                        Class classObj = Class.forName(packageName + "." + className);
-                        
-                        
-                        if (classObj.isAnnotationPresent(javax.persistence.Table.class))
-                        {
-                            Vector<TableIndex> indexes = new Vector<TableIndex>();
-                            
-                            javax.persistence.Table tableAnno = (javax.persistence.Table)classObj.getAnnotation(javax.persistence.Table.class);
-                            tableName = tableAnno.name();
-                            
-                            org.hibernate.annotations.Table hiberTableAnno = (org.hibernate.annotations.Table)classObj.getAnnotation(org.hibernate.annotations.Table.class);
-                            if (hiberTableAnno != null)
-                            {
-                                for (Index index : hiberTableAnno.indexes())
-                                {
-                                    indexes.add(new TableIndex(index.name(), index.columnNames()));
-                                }
-                            }
-                            
-                            table = createTable(packageName + "." + className, tableName);
-                            table.setIndexes(indexes);
-                            tableList.add(table);
-                        }
-                        
-                        if (table != null)
-                        {
-                            boolean isLob = false;
-                            for (Method method : classObj.getMethods())
-                            {
-                                Type type = method.getGenericReturnType();
-                                Class<?> typeClass;
-                                if (type instanceof Class<?>)
-                                {
-                                    typeClass = (Class<?>)type;
-                                } else
-                                {
-                                    typeClass = null;
-                                }
-                                
-                                String thisSideName = getFieldNameFromMethod(method);
-
-                                if (method.isAnnotationPresent(javax.persistence.Lob.class))
-                                {
-                                    isLob = true;
-                                }
-
-                                if (method.isAnnotationPresent(javax.persistence.Column.class))
-                                {
-                                    if (method.isAnnotationPresent(javax.persistence.Id.class))
-                                    {
-                                        table.addId(createId(method, (javax.persistence.Column)method.getAnnotation(javax.persistence.Column.class)));
-                                    } else
-                                    {
-                                        table.addField(createField(method, (javax.persistence.Column)method.getAnnotation(javax.persistence.Column.class), isLob));
-                                    }
-                                    
-                                } else if (method.isAnnotationPresent(javax.persistence.ManyToOne.class))
-                                {
-                                    javax.persistence.JoinColumn join = method.isAnnotationPresent(javax.persistence.JoinColumn.class) ? (javax.persistence.JoinColumn)method.getAnnotation(javax.persistence.JoinColumn.class) : null;
-                                    if (join != null)
-                                    {
-                                        String othersideName = typeClass == null ? "" : getOthersideName(typeClass, thisSideName, RelType.OneToMany);
-                                        table.addRelationship(createRelationsip(method, "many-to-one", join, othersideName, join != null ? !join.nullable() : false));
-                                        
-                                    } else
-                                    {
-                                        log.error("No Join!");
-                                    }
-                                    
-                                } else if (method.isAnnotationPresent(javax.persistence.ManyToMany.class))
-                                {
-                                    javax.persistence.JoinColumn join = method.isAnnotationPresent(javax.persistence.JoinColumn.class) ? (javax.persistence.JoinColumn)method.getAnnotation(javax.persistence.JoinColumn.class) : null;
-                                    String othersideName = typeClass == null ? "" : getOthersideName(typeClass, thisSideName, RelType.ManyToMany);
-                                    table.addRelationship(createRelationsip(method, "many-to-many", join, othersideName, join != null ? !join.nullable() : false));
-                                    
-                                } else if (method.isAnnotationPresent(javax.persistence.OneToMany.class))
-                                {
-                                    javax.persistence.JoinColumn join = method.isAnnotationPresent(javax.persistence.JoinColumn.class) ? (javax.persistence.JoinColumn)method.getAnnotation(javax.persistence.JoinColumn.class) : null;
-                                    String othersideName = typeClass == null ? "" : getOthersideName(typeClass, thisSideName, RelType.ManyToOne);
-                                    table.addRelationship(createRelationsip(method, "one-to-many", join, othersideName, join != null ? !join.nullable() : false));
-                                    
-                                } else if (method.isAnnotationPresent(javax.persistence.OneToOne.class))
-                                {
-                                    javax.persistence.JoinColumn join = method.isAnnotationPresent(javax.persistence.JoinColumn.class) ? (javax.persistence.JoinColumn)method.getAnnotation(javax.persistence.JoinColumn.class) : null;
-                                    String othersideName = typeClass == null ? "" : getOthersideName(typeClass, thisSideName, RelType.OneToOne);
-                                    table.addRelationship(createRelationsip(method, "one-to-one", join, othersideName, join != null ? !join.nullable() : false));
-                                    
-                                }
-                                isLob = false;
-                            }
-                            
-                            // This updates each field as to whether it is an index
-                            table.updateIndexFields();
-                        }
-                                    
-                    } catch (Exception ex)
-                    {
-                        ex.printStackTrace();
-                    }
+                    processClass(className, tableList);
+                    
+                    // These were used for correcting Cascading rules
+                    // Eventually these can be removed along with the methods.
+                    //processCascade(className, tableList);
+                    //processCascadeAddCascade(className, tableList);
                 }
             }
+            System.out.println(missing);
             return tableList;
 
         } catch (Exception ex)

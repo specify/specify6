@@ -540,7 +540,7 @@ public class ColObjAttributes extends DataModelObjBase
     }
     
     @Column(name = "Text8", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
-    public String getText8(String text8)
+    public String getText8()
     {
         return text8;
     }

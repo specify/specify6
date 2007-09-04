@@ -49,8 +49,6 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
-import edu.ku.brc.ui.forms.FormDataObjIFace;
-
 /**
 
  */
@@ -340,7 +338,6 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
      *      * AgentID of Issuee
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "IssuedToID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getIssuedTo() {
         return this.issuedTo;
@@ -354,7 +351,6 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
      *      * AgentID of Issuer
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "IssuedByID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getIssuedBy() {
         return this.issuedBy;
@@ -408,46 +404,4 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
         return 6;
     }
 
-//    protected Set<AccessionAuthorization> accessionAuthorizations;
-//    protected Agent agentByIssuee;
-//    protected Agent agentByIssuer;
-//    protected Set<Attachment>          attachments;
-
-    @Override
-    public void addReference(FormDataObjIFace ref, String refType)
-    {
-        if (ref instanceof Attachment)
-        {
-            Attachment attach = (Attachment)ref;
-            attachments.add(attach);
-            attach.setPermit(this);
-            return;
-        }
-        
-        super.addReference(ref, refType);
-    }
-
-    @Override
-    public Object getReferenceValue(String refName)
-    {
-        if (refName.equals("attachments"))
-        {
-            return attachments;
-        }
-        return super.getReferenceValue(refName);
-    }
-
-    @Override
-    public void removeReference(FormDataObjIFace ref, String refType)
-    {
-        if (ref instanceof Attachment)
-        {
-            Attachment attach = (Attachment)ref;
-            attachments.remove(attach);
-            attach.setPermit(null);
-            return;
-        }
-        
-        super.removeReference(ref, refType);
-    }
 }

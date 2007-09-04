@@ -360,7 +360,6 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
      *
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "AgentID", unique = false, nullable = false, insertable = true, updatable = true)
     public Agent getOriginator() {
         return this.originator;

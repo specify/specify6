@@ -136,6 +136,7 @@ public class DataType extends DataModelObjBase implements java.io.Serializable {
      *
      */
     @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "dataType")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<CollectionType> getCollectionType() {
         return this.collectionType;
     }

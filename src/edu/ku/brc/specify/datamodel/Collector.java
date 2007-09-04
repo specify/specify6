@@ -158,7 +158,6 @@ public class Collector extends DataModelObjBase implements java.io.Serializable,
      *      * The CollectingEvent the agent participated in
      */
     @ManyToOne(cascade = { CascadeType.PERSIST }, fetch = FetchType.LAZY)
-    @Cascade( { org.hibernate.annotations.CascadeType.SAVE_UPDATE })
     @JoinColumn(name = "CollectingEventID", unique = false, nullable = false, insertable = true, updatable = true)
     public CollectingEvent getCollectingEvent() {
         return this.collectingEvent;

@@ -89,7 +89,6 @@ public class CollectionRelationship extends DataModelObjBase implements java.io.
     }
 
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "CollectionRelTypeID", unique = false, nullable = true, insertable = true, updatable = true)
     public CollectionRelType getCollectionRelType() {
         return this.collectionRelType;

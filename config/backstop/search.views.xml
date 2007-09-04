@@ -331,7 +331,7 @@ Good: <cell type="field" name="FieldNum" ...>
             <rows>
                 <row>
                     <cell type="label" labelfor="1" label="Name"/>
-                    <cell type="field" id="1" name="locality.LocalityName" isrequired="true" uitype="text"/>
+                    <cell type="field" id="1" name="LocalityName" isrequired="true" uitype="text"/>
                 </row>
             </rows>
         </viewdef>

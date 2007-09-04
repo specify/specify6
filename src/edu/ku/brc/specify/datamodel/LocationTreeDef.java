@@ -29,12 +29,12 @@ import org.hibernate.annotations.CascadeType;
 @Table(name = "locationtreedef")
 public class LocationTreeDef extends DataModelObjBase implements java.io.Serializable, TreeDefIface<Location, LocationTreeDef, LocationTreeDefItem>
 {
-	protected Integer				   locationTreeDefId;
-	protected String				name;
-	protected String				remarks;
-    protected Integer               fullNameDirection;
-	protected Set<CollectionType>   collectionTypes;
-	protected Set<Location>			treeEntries;
+	protected Integer				    locationTreeDefId;
+	protected String				    name;
+	protected String				    remarks;
+    protected Integer                   fullNameDirection;
+	protected Set<CollectionType>       collectionTypes;
+	protected Set<Location>			    treeEntries;
 	protected Set<LocationTreeDefItem>	treeDefItems;
 
 	/** default constructor */

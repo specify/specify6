@@ -253,7 +253,6 @@ public class GeologicTimePeriodTreeDefItem extends DataModelObjBase implements S
 	 * 
 	 */
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
     @JoinColumn(name = "GeologicTimePeriodTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
 	public GeologicTimePeriodTreeDef getTreeDef()
 	{
@@ -269,7 +268,6 @@ public class GeologicTimePeriodTreeDefItem extends DataModelObjBase implements S
 	 * 
 	 */
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
     @JoinColumn(name = "ParentItemID", unique = false, nullable = true, insertable = true, updatable = true)
 	public GeologicTimePeriodTreeDefItem getParent()
 	{
@@ -300,6 +298,7 @@ public class GeologicTimePeriodTreeDefItem extends DataModelObjBase implements S
 	 * 
 	 */
     @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.EAGER, mappedBy = "parent")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
 	public Set<GeologicTimePeriodTreeDefItem> getChildren()
 	{
 		return this.children;

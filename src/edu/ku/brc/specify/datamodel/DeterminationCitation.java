@@ -141,7 +141,6 @@ public class DeterminationCitation extends DataModelObjBase implements java.io.S
      *      * ID of the publication citing the determination
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "ReferenceWorkID", unique = false, nullable = false, insertable = true, updatable = true)
     public ReferenceWork getReferenceWork() {
         return this.referenceWork;
@@ -155,7 +154,6 @@ public class DeterminationCitation extends DataModelObjBase implements java.io.S
      *      * Determination being cited
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "DeterminationID", unique = false, nullable = false, insertable = true, updatable = true)
     public Determination getDetermination() {
         return this.determination;

@@ -323,7 +323,6 @@ public class Shipment extends DataModelObjBase implements java.io.Serializable {
      *      * AgentID of agent transporting the material
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "ShipperID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getShipper() {
         return this.shipper;
@@ -337,7 +336,6 @@ public class Shipment extends DataModelObjBase implements java.io.Serializable {
      *      * AgentID of agent material is shipped to
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "ShippedToID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getShippedTo() {
         return this.shippedTo;
@@ -351,7 +349,6 @@ public class Shipment extends DataModelObjBase implements java.io.Serializable {
      *      * AgentID of person approving/initiating the shipment
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "ShippedByID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getShippedBy() {
         return this.shippedBy;

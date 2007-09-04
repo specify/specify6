@@ -53,7 +53,7 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.dbsupport.AttributeIFace;
-import edu.ku.brc.ui.forms.FormDataObjIFace;
+import edu.ku.brc.dbsupport.AttributeProviderIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 
@@ -72,12 +72,12 @@ import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
         @Index (name="CatalogedDateIDX", columnNames={"CatalogedDate"}),
         @Index (name="CatalogNumberIDX", columnNames={"CatalogNumber"})
     })
-public class CollectionObject extends DataModelObjBase implements java.io.Serializable, Comparable<CollectionObject>
+public class CollectionObject extends DataModelObjBase implements java.io.Serializable, AttributeProviderIFace, Comparable<CollectionObject>
 {
 
     // Fields
 
-    protected Integer                          collectionObjectId;
+    protected Integer                       collectionObjectId;
     protected String                        fieldNumber;
     protected String                        description;
     protected String                        text1;
@@ -101,7 +101,6 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     protected String                        visibilitySetBy;
     protected CollectingEvent               collectingEvent;
     protected Set<CollectionObjectCitation> collectionObjectCitations;
-    protected Set<AttributeIFace>           attrs;
     protected Set<Preparation>              preparations;
     protected Set<Determination>            determinations;
     protected Set<ProjectCollectionObject>  projectCollectionObjects;
@@ -112,11 +111,14 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     protected Agent                         cataloger;
     protected Set<Attachment>               attachments;
     protected Container                     container;
-    protected ColObjAttributes              colObjAttributes;
-    
+    protected Container                     containerOwner;
+    protected ColObjAttributes              colObjAttributes;      // Specify 5 Attributes table
+    protected Set<CollectionObjectAttr>     collectionObjectAttrs; // Generic Expandable Attributes
     protected Set<CollectionRelationship>   leftSideRels;
     protected Set<CollectionRelationship>   rightSideRels;
     protected PaleoContext                  paleoContext;
+    
+    protected Set<ConservDescription>       conservDescriptions;
 
     // Constructors
 
@@ -163,7 +165,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
         visibilitySetBy       = null; 
         collectingEvent       = null;
         collectionObjectCitations = new HashSet<CollectionObjectCitation>();
-        attrs                 = new HashSet<AttributeIFace>();
+        collectionObjectAttrs = new HashSet<CollectionObjectAttr>();
         preparations          = new HashSet<Preparation>();
         determinations        = new HashSet<Determination>();
         projectCollectionObjects = new HashSet<ProjectCollectionObject>();
@@ -174,9 +176,12 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
         cataloger             = null;
         attachments           = new HashSet<Attachment>();
         container             = null;
+        containerOwner         = null;
         
         leftSideRels          = new HashSet<CollectionRelationship>();
         rightSideRels         = new HashSet<CollectionRelationship>();
+        
+        conservDescriptions   = new HashSet<ConservDescription>();
 
     }
     // End Initializer
@@ -507,7 +512,6 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
      *
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "ColObjAttributesID", unique = false, nullable = true, insertable = true, updatable = true)
     public ColObjAttributes getColObjAttributes() {
         return this.colObjAttributes;
@@ -521,6 +525,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
      *
      */
     @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "collectionObject")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<CollectionObjectCitation> getCollectionObjectCitations() {
         return this.collectionObjectCitations;
     }
@@ -532,21 +537,48 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     /**
      *
      */
+    @Transient
+    public Set<AttributeIFace> getAttrs() 
+    {
+        return new HashSet<AttributeIFace>(this.collectionObjectAttrs);
+    }
+
+    public void setAttrs(Set<AttributeIFace> collectionObjectAttrs) 
+    {
+        this.collectionObjectAttrs.clear();
+        for (AttributeIFace a : collectionObjectAttrs)
+        {
+            if (a instanceof CollectionObjectAttr)
+            {
+                this.collectionObjectAttrs.add((CollectionObjectAttr)a);
+            }
+        }
+    }
+
+    /**
+     * @return the collectionObjectAttrs
+     */
     @OneToMany(targetEntity=CollectionObjectAttr.class,
             cascade = {}, fetch = FetchType.LAZY, mappedBy="collectionObject")
     @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<AttributeIFace> getAttrs() {
-        return this.attrs;
+    public Set<CollectionObjectAttr> getCollectionObjectAttrs()
+    {
+        return collectionObjectAttrs;
     }
 
-    public void setAttrs(Set<AttributeIFace> attrs) {
-        this.attrs = attrs;
+    /**
+     * @param collectionObjectAttrs the collectionObjectAttrs to set
+     */
+    public void setCollectionObjectAttrs(Set<CollectionObjectAttr> collectionObjectAttrs)
+    {
+        this.collectionObjectAttrs = collectionObjectAttrs;
     }
 
     /**
      *
      */
     @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "collectionObject")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Preparation> getPreparations() {
         return this.preparations;
     }
@@ -559,6 +591,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
      *
      */
     @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "collectionObject")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Determination> getDeterminations() {
         return this.determinations;
     }
@@ -571,6 +604,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
      *
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectionObject")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<ProjectCollectionObject> getProjectCollectionObjects() {
         return this.projectCollectionObjects;
     }
@@ -583,7 +617,6 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
      *
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "PaleoContextID", unique = false, nullable = true, insertable = true, updatable = true)
     public PaleoContext getPaleoContext() {
         return this.paleoContext;
@@ -609,6 +642,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
      *
      */
     @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "collectionObject")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<OtherIdentifier> getOtherIdentifiers() {
         return this.otherIdentifiers;
     }
@@ -621,7 +655,6 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
      *
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "CollectionID", unique = false, nullable = false, insertable = true, updatable = true)
     public Collection getCollection() {
         return this.collection;
@@ -635,7 +668,6 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
      *
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "AccessionID", unique = false, nullable = true, insertable = true, updatable = true)
     public Accession getAccession() {
         return this.accession;
@@ -649,7 +681,6 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
      *
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "CatalogerID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getCataloger() {
         return this.cataloger;
@@ -663,6 +694,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     //@OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectionObject")
     //@Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "collectionObject")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Attachment> getAttachments()
     {
         return attachments;
@@ -685,6 +717,20 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     public void setContainer(Container container) {
         this.container = container;
     }
+    
+    /**
+     *      * Preparation, Container
+     */
+    @ManyToOne(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY)
+    @JoinColumn(name = "ContainerOwnerID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Container getContainerOwner() {
+        return this.containerOwner;
+    }
+
+    public void setContainerOwner(Container containerOwner) {
+        this.containerOwner = containerOwner;
+    }
+
     
     /**
      * 
@@ -711,140 +757,23 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     public void setRightSideRels(Set<CollectionRelationship> rightSideRels) {
         this.rightSideRels = rightSideRels;
     }
+    
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.FormDataObjIFace#addReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
+    /**
+     *
      */
-    @Override
-    public void addReference(FormDataObjIFace ref, String refType)
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectionObject")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<ConservDescription> getConservDescriptions()
     {
-        //System.out.println(getFieldName(ref));
-        
-        super.addReference(ref, refType);
-        
-        /*
-        DataObjectGettable getter = DataObjectGettableFactory.get(getClass().getName(), "edu.ku.brc.ui.forms.DataGetterForObj");
-        Object dataMember = getter.getFieldValue(this, refType);
-        if (dataMember instanceof Set)
-        {
-            try
-            {
-                Method method = dataMember.getClass().getMethod("add", Object.class);
-                Object value = method.invoke(dataMember, ref);
-    
-            } catch (Exception ex)
-            {
-                ex.printStackTrace();
-            }
-            try
-            {
-                Method method = ref.getDataClass().getMethod("setCollectionObject", getClass());
-                Object value = method.invoke(ref, this);
-    
-            } catch (Exception ex)
-            {
-                ex.printStackTrace();
-    
-            }
-        }
-        */
-        /*
-        if (ref instanceof Preparation)
-        {
-            preparations.add((Preparation)ref);
-            ((Preparation)ref).setCollectionObject(this);
-            
-        } else if (ref instanceof Determination)
-        {
-            determinations.add((Determination)ref);
-            ((Determination)ref).setCollectionObject(this);
-            
-        } else if (ref instanceof CollectionObjectCitation)
-        {
-            collectionObjectCitations.add((CollectionObjectCitation)ref);
-            ((CollectionObjectCitation)ref).setCollectionObject(this);
-            
-        } else if (ref instanceof CollectionObjectAttr)
-        {
-            attrs.add((CollectionObjectAttr)ref);
-            ((CollectionObjectAttr)ref).setCollectionObject(this);
-            
-        } else if (ref instanceof ProjectCollectionObject)
-        {
-            projectCollectionObjects.add((ProjectCollectionObject)ref);
-            ((ProjectCollectionObject)ref).setCollectionObject(this);
-            
-        } //else if (ref instanceof DeaccessionPreparation)
-//        {
-//            deaccessionPreparations.add((DeaccessionPreparation)ref);
-//            ((DeaccessionPreparation)ref).setCollectionObject(this);
-//            
-//        } 
-            else if (ref instanceof OtherIdentifier)
-        {
-            otherIdentifiers.add((OtherIdentifier)ref);
-            ((OtherIdentifier)ref).setCollectionObject(this);
-
-        } else
-        {
-            throw new RuntimeException("Adding Object ["+ref.getClass().getSimpleName()+"] and the refType is null.");
-        }
-        */
+        return this.conservDescriptions;
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#removeReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
-     */
-    @Override
-    public void removeReference(FormDataObjIFace ref, String refType)
+    public void setConservDescriptions(final Set<ConservDescription> conservDescriptions)
     {
-        super.removeReference(ref, refType);
-        /*
-        
-        if (ref instanceof Preparation)
-        {
-            preparations.remove(ref);
-            //((Preparation)ref).setCollectionObject(null);
-            
-        } else if (ref instanceof Determination)
-        {
-            determinations.remove(ref);
-            //((Determination)ref).setCollectionObject(null);
-            
-        } else if (ref instanceof CollectionObjectCitation)
-        {
-            collectionObjectCitations.remove(ref);
-            //((CollectionObjectCitation)ref).setCollectionObject(null);
-            
-        } else if (ref instanceof CollectionObjectAttr)
-        {
-            attrs.remove(ref);
-            //((CollectionObjectAttr)ref).setCollectionObject(null);
-            
-        } else if (ref instanceof ProjectCollectionObject)
-        {
-            projectCollectionObjects.remove(ref);
-            //((ProjectCollectionObject)ref).setCollectionObject(null);
-            
-        } 
-//        else if (ref instanceof DeaccessionPreparation)
-//        {
-//            deaccessionPreparations.remove(ref);
-//            ((DeaccessionPreparation)ref).setCollectionObject(null);
-//            
-//        } 
-        else if (ref instanceof OtherIdentifier)
-        {
-            otherIdentifiers.remove(ref);
-            //((OtherIdentifier)ref).setCollectionObject(null);
-
-        } else
-        {
-            throw new RuntimeException("Removing Object ["+ref.getClass().getSimpleName()+"] and the refType is null.");
-        }*/
+        this.conservDescriptions = conservDescriptions;
     }
 
-    
     //---------------------------------------------------------------------------
     // Overrides DataModelObjBase
     //---------------------------------------------------------------------------

@@ -257,7 +257,6 @@ public class CollectingEventAttr extends DataModelObjBase implements AttributeIF
      * 
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "AttributeDefID", unique = false, nullable = false, insertable = true, updatable = true)
     public AttributeDef getDefinition() {
         return this.definition;

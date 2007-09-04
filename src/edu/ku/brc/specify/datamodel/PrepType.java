@@ -175,6 +175,7 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable
      * 
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "prepType")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Preparation> getPreparations()
     {
         return this.preparations;

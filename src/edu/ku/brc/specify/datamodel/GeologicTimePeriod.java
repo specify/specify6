@@ -355,7 +355,6 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "AcceptedID")
-    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public GeologicTimePeriod getAcceptedGeologicTimePeriod()
     {
         return this.acceptedGeologicTimePeriod;
@@ -381,7 +380,6 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	 * 
 	 */
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( { CascadeType.LOCK })
     @JoinColumn(name = "GeologicTimePeriodTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
 	public GeologicTimePeriodTreeDef getDefinition()
 	{
@@ -397,7 +395,6 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	 * 
 	 */
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
     @JoinColumn(name = "GeologicTimePeriodTreeDefItemID", unique = false, nullable = false, insertable = true, updatable = true)
 	public GeologicTimePeriodTreeDefItem getDefinitionItem()
 	{
@@ -417,7 +414,6 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	 * 
 	 */
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
     @JoinColumn(name = "ParentID", unique = false, nullable = true, insertable = true, updatable = true)
 	public GeologicTimePeriod getParent()
 	{
@@ -433,6 +429,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	 * 
 	 */
     @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "parent")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
 	public Set<GeologicTimePeriod> getChildren()
 	{
 		return this.children;
@@ -447,6 +444,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
      * @return the bioStratsPaleoContext
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "bioStrat")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<PaleoContext> getBioStratsPaleoContext()
     {
         return bioStratsPaleoContext;
@@ -467,6 +465,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
      * @return the chronosStratsPaleoContext
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "chronosStrat")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<PaleoContext> getChronosStratsPaleoContext()
     {
         return chronosStratsPaleoContext;

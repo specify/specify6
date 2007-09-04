@@ -194,6 +194,7 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
      * 
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "workbenchTemplate")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Workbench> getWorkbenches() {
         return this.workbenches;
     }

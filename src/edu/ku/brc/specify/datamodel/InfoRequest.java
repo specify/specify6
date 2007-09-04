@@ -63,17 +63,17 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
 
     // Fields    
 
-     protected Integer     infoRequestID;
-     protected String   number;
-     protected String   firstName;
-     protected String   lastName;
-     protected String   institution;
-     protected String   email;
-     protected Calendar requestDate;
-     protected Calendar replyDate;
-     protected String   remarks;
+     protected Integer   infoRequestID;
+     protected String    number;
+     protected String    firstName;
+     protected String    lastName;
+     protected String    institution;
+     protected String    email;
+     protected Calendar  requestDate;
+     protected Calendar  replyDate;
+     protected String    remarks;
      protected RecordSet recordSet;
-     protected Agent    agent;
+     protected Agent     agent;
 
 
     // Constructors
@@ -254,16 +254,22 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
      * 
      */
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "RecordSetID", unique = false, nullable = false, insertable = true, updatable = true)
     public RecordSet getRecordSet() {
         return this.recordSet;
     }
     
-    public void setRecordSet(RecordSet recordSet) {
+    /**
+     * @param recordSet
+     */
+    public void setRecordSet(RecordSet recordSet)
+    {
         this.recordSet = recordSet;
     }
-    
+
+    /**
+     * @param recordSet
+     */
     public void setRecordSet(RecordSetIFace recordSet)
     {
         this.recordSet = (RecordSet)recordSet;
@@ -284,7 +290,6 @@ public class InfoRequest extends DataModelObjBase implements java.io.Serializabl
      * 
      */
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "AgentID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getAgent() {
         return this.agent;

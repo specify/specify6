@@ -26,13 +26,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
-
-import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 
 
@@ -53,7 +52,7 @@ public class Division extends DataModelObjBase implements java.io.Serializable
 
     // Fields    
 
-     protected Integer        divisionId;
+     protected Integer     divisionId;
      protected String      name;
      protected String      title;
      protected String      abbrev;
@@ -61,8 +60,10 @@ public class Division extends DataModelObjBase implements java.io.Serializable
      protected String      iconURI;
      protected String      discipline;
      protected String      remarks;
-     protected Set<Agent>  members;
      protected Institution institution;
+     
+     protected Set<Agent>              members;
+     protected Set<ConservDescription> conservDescriptions;
      
 
     // Constructors
@@ -82,15 +83,16 @@ public class Division extends DataModelObjBase implements java.io.Serializable
     {
         super.init();
         
-        divisionId        = null;
-        name              = null;
-        title             = null;
-        abbrev            = null;
-        uri               = null;
-        iconURI           = null;
-        discipline        = null;
-        remarks           = null;
-        members           = new HashSet<Agent>();
+        divisionId          = null;
+        name                = null;
+        title               = null;
+        abbrev              = null;
+        uri                 = null;
+        iconURI             = null;
+        discipline          = null;
+        remarks             = null;
+        members             = new HashSet<Agent>();
+        conservDescriptions = new HashSet<ConservDescription>();
     }
     
     /**
@@ -266,6 +268,21 @@ public class Division extends DataModelObjBase implements java.io.Serializable
         this.uri = uri;
     }
 
+    /**
+     *
+     */
+    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "division")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<ConservDescription> getConservDescriptions()
+    {
+        return this.conservDescriptions;
+    }
+
+    public void setConservDescriptions(final Set<ConservDescription> conservDescriptions)
+    {
+        this.conservDescriptions = conservDescriptions;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
      */
@@ -306,18 +323,4 @@ public class Division extends DataModelObjBase implements java.io.Serializable
         return super.getIdentityTitle();
     }
 
-    @Override
-    public void addReference(FormDataObjIFace ref, String refType)
-    {
-
-        super.addReference(ref, refType);
-    }
-
-    @Override
-    public void removeReference(FormDataObjIFace ref, String refType)
-    {
-        super.removeReference(ref, refType);
-    }
-
-
-}
+ }

@@ -43,8 +43,6 @@ import javax.persistence.UniqueConstraint;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
-import edu.ku.brc.ui.forms.FormDataObjIFace;
-
 /**
 
  */
@@ -161,7 +159,6 @@ public class AccessionAgent extends DataModelObjBase implements java.io.Serializ
      *      * AgentAdress of agent playing role in Accession
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "AgentID", unique = false, nullable = false, insertable = true, updatable = true)
     public Agent getAgent() {
         return this.agent;
@@ -207,123 +204,6 @@ public class AccessionAgent extends DataModelObjBase implements java.io.Serializ
     public void setRepositoryAgreement(RepositoryAgreement repositoryAgreement) 
     {
         this.repositoryAgreement = repositoryAgreement;
-    }
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.FormDataObjIFace#addReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
-     */
-    @Override
-    public void addReference(FormDataObjIFace ref, String refType)
-    {
-        if (ref instanceof Agent)
-        {
-            Agent a = (Agent)ref;
-            setAgent(a);
-            a.getAccessionAgents().add(this);
-            return;
-        }
-        
-        super.addReference(ref, refType);
-        
-        /*
-        if (StringUtils.isNotEmpty(refType))
-        {
-            if (refType.equals("agent"))
-            {
-                if (ref instanceof Agent)
-                {
-                    agent = (Agent)ref;
-                    ((Agent)ref).getAccessionAgents().add(this);
-                    
-                } else
-                {
-                    throw new RuntimeException("ref ["+ref.getClass().getSimpleName()+"] is not an instance of Agent");
-                }
-                
-            } else if (refType.equals("accession"))
-            {
-                if (ref instanceof Accession)
-                {
-                    accession = (Accession)ref;
-                    ((Accession)ref).getAccessionAgents().add(this);
-                    
-                } else
-                {
-                    throw new RuntimeException("ref ["+ref.getClass().getSimpleName()+"] is not an instance of Accession");
-                }
-                
-            } else if (refType.equals("repositoryAgreement"))
-            {
-                if (ref instanceof RepositoryAgreement)
-                {
-                    repositoryAgreement = (RepositoryAgreement)ref;
-                    ((RepositoryAgreement)ref).getRepositoryAgreementAgents().add(this);
-                    
-                } else
-                {
-                    throw new RuntimeException("ref ["+ref.getClass().getSimpleName()+"] is not an instance of RepositoryAgreement");
-                }
-                
-            }
-        } else
-        {
-            throw new RuntimeException("Adding Object ["+ref.getClass().getSimpleName()+"] and the refType is null.");
-        }
-        */
-    }
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#removeReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
-     */
-    @Override
-    public void removeReference(FormDataObjIFace ref, String refType)
-    {
-        super.removeReference(ref, refType);
-        /*
-        if (StringUtils.isNotEmpty(refType))
-        {
-            if (refType.equals("agent"))
-            {
-                if (ref instanceof Agent)
-                {
-                    agent = null;
-                    ((Agent)ref).getAccessionAgents().remove(this);
-                    
-                } else
-                {
-                    throw new RuntimeException("ref ["+ref.getClass().getSimpleName()+"] is not an instance of Agent");
-                }
-                
-            } else if (refType.equals("accession"))
-            {
-                if (ref instanceof Accession)
-                {
-                    accession = null;
-                    ((Accession)ref).getAccessionAgents().remove(this);
-                    
-                } else
-                {
-                    throw new RuntimeException("ref ["+ref.getClass().getSimpleName()+"] is not an instance of Accession");
-                }
-                
-            } else if (refType.equals("repositoryAgreement"))
-            {
-                if (ref instanceof RepositoryAgreement)
-                {
-                    repositoryAgreement = null;
-                    ((RepositoryAgreement)ref).getRepositoryAgreementAgents().remove(this);
-                    
-                } else
-                {
-                    throw new RuntimeException("ref ["+ref.getClass().getSimpleName()+"] is not an instance of RepositoryAgreement");
-                }
-                
-            }
-        } else
-        {
-            throw new RuntimeException("Removing Object ["+ref.getClass().getSimpleName()+"] and the refType is null.");
-        }
-        */
     }
     
     /* (non-Javadoc)

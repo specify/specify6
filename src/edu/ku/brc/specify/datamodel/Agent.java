@@ -28,9 +28,6 @@
  */
 package edu.ku.brc.specify.datamodel;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -51,9 +48,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
-import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
-import edu.ku.brc.util.AttachmentUtils;
 
 /**
 
@@ -113,6 +108,8 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     protected Set<Attachment>               attachments;
     protected Set<RepositoryAgreement>      repositoryAgreements;
     protected Set<Locality>                 localities;
+    protected Set<CollectionObject>         catalogers;
+    
     
     protected Set<Division>                 divisions;
     protected Institution                   instTechContact;
@@ -135,6 +132,12 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     protected Set<AccessionAgent>           accessionAgents;
     protected Set<ExchangeOut>              exchangeOutSentToOrganizations;
     protected Set<SpecifyUser>              specifyUsers;
+    
+    protected Set<InfoRequest>              infoRequests;
+    protected Set<ConservEvent>             examinedByAgentConservEvents;
+    protected Set<ConservEvent>             treatedByAgentConservEvents;
+    
+    protected Set<ConservDescription>       conservDescriptions;
     
     protected static Agent                  currentUserAgent = null;
 
@@ -188,6 +191,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
         attachments = new HashSet<Attachment>();
         repositoryAgreements = new HashSet<RepositoryAgreement>();
         localities = new HashSet<Locality>();
+        catalogers = new HashSet<CollectionObject>();
         
         divisions = new HashSet<Division>();
         instTechContact = null;
@@ -210,6 +214,13 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
         accessionAgents = new HashSet<AccessionAgent>();
         exchangeOutSentToOrganizations = new HashSet<ExchangeOut>();
         organization = null;
+        
+        infoRequests                  = new HashSet<InfoRequest>();
+        examinedByAgentConservEvents  = new HashSet<ConservEvent>();
+        treatedByAgentConservEvents   = new HashSet<ConservEvent>();
+        
+        conservDescriptions          = new HashSet<ConservDescription>();
+
     }
     // End Initializer
 
@@ -260,6 +271,18 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     public void setAttachments(Set<Attachment> attachments)
     {
         this.attachments = attachments;
+    }
+    
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "cataloger")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    public Set<CollectionObject> getCatalogers()
+    {
+        return catalogers;
+    }
+
+    public void setCatalogers(Set<CollectionObject> catalogers)
+    {
+        this.catalogers = catalogers;
     }
     
 //    @Transient
@@ -437,6 +460,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
      *
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Author> getAuthors() {
         return this.authors;
     }
@@ -449,6 +473,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
      *
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "receivedBy")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<LoanReturnPhysicalObject> getLoanReturnPhysicalObjects() {
         return this.loanReturnPhysicalObjects;
     }
@@ -461,6 +486,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
      *
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<BorrowReturnMaterial> getBorrowReturnMaterials() {
         return this.borrowReturnMaterials;
     }
@@ -473,6 +499,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
      *
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agentCatalogedBy")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<ExchangeIn> getExchangeInCatalogedBys() {
         return this.exchangeInCatalogedBys;
     }
@@ -490,15 +517,14 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
         return this.orgMembers;
     }
 
-    public void setOrgMembers(Set<Agent> members) {
-        this.orgMembers = members;
+    public void setOrgMembers(Set<Agent> orgMembers) {
+        this.orgMembers = orgMembers;
     }
 
     /**
      *      * of organization
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "ParentOrganizationID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getOrganization() {
         return this.organization;
@@ -512,6 +538,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
      *
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Project> getProjects() {
         return this.projects;
     }
@@ -524,6 +551,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
      *
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "preparedByAgent")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Preparation> getPreparations() {
         return this.preparations;
     }
@@ -562,6 +590,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     *
     */
    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "determiner")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
    public Set<Determination> getDeterminations() {
        return this.determinations;
    }
@@ -574,6 +603,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
    *
    */
   @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "geoRefDetBy")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
   public Set<Locality> getLocalities() {
       return this.localities;
   }
@@ -586,6 +616,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
      *
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "shippedBy")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Shipment> getShipments() {
         return this.shipments;
     }
@@ -598,6 +629,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
      *
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Collector> getCollectors() {
         return this.collectors;
     }
@@ -610,6 +642,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
      *
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agentCatalogedBy")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<ExchangeOut> getExchangeOutCatalogedBys() {
         return this.exchangeOutCatalogedBys;
     }
@@ -622,6 +655,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     *
     */
    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "originator")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
    public Set<RepositoryAgreement> getRepositoryAgreements() {
        return this.repositoryAgreements;
    }
@@ -777,6 +811,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
      *
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<LoanAgent> getLoanAgents() {
         return this.loanAgents;
     }
@@ -789,6 +824,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
      *
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "shipper")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Shipment> getShipmentsByShipper() {
         return this.shipmentsByShipper;
     }
@@ -801,6 +837,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
      *
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "shippedTo")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Shipment> getShipmentsByShippedTo() {
         return this.shipmentsByShippedTo;
     }
@@ -813,6 +850,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
      *
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<DeaccessionAgent> getDeaccessionAgents() {
         return this.deaccessionAgents;
     }
@@ -825,6 +863,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
      *
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agentReceivedFrom")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<ExchangeIn> getExchangeInFromOrganizations() {
         return this.exchangeInFromOrganizations;
     }
@@ -837,6 +876,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
      *
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "issuedTo")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Permit> getPermitsIssuedTo() {
         return this.permitsIssuedTo;
     }
@@ -849,6 +889,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
      *
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "issuedBy")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Permit> getPermitsIssuedBy() {
         return this.permitsIssuedBy;
     }
@@ -861,6 +902,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
      *
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<BorrowAgent> getBorrowAgents() {
         return this.borrowAgents;
     }
@@ -873,6 +915,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
      *
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<AccessionAgent> getAccessionAgents() {
         return this.accessionAgents;
     }
@@ -885,6 +928,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
      *
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agentSentTo")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<ExchangeOut> getExchangeOutSentToOrganizations() {
         return this.exchangeOutSentToOrganizations;
     }
@@ -916,70 +960,68 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     
     public void setSpecifyUsers(Set<SpecifyUser> specifyUser) {
         this.specifyUsers = specifyUser;
-    }  
-
-
-    // Add Methods
-
-    public void addAuthor(final Author author)
-    {
-        this.authors.add(author);
-        author.setAgent(this);
-    }
-
-    public void addLoanReturnPhysicalObjects(final LoanReturnPhysicalObject loanReturnPhysicalObject)
-    {
-        this.loanReturnPhysicalObjects.add(loanReturnPhysicalObject);
-        loanReturnPhysicalObject.setReceivedBy(this);
-    }
-
-    public void addBorrowReturnMaterials(final BorrowReturnMaterial borrowReturnMaterial)
-    {
-        this.borrowReturnMaterials.add(borrowReturnMaterial);
-        borrowReturnMaterial.setAgent(this);
-    }
-
-    public void addOrgMembers(final Agent orgMember)
-    {
-        this.orgMembers.add(orgMember);
-        orgMember.getOrgMembers().add(this);
-    }
-
-    public void addProjects(final Project project)
-    {
-        this.projects.add(project);
-        project.setAgent(this);
-    }
+    } 
     
-    public void addAddresses(final Address address)
-    {
-        this.addresses.add(address);
-        address.setAgent(this);
-    }
+    /**
+    *
+    */
+   @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
+   @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+   public Set<InfoRequest> getInfoRequests()
+   {
+       return this.infoRequests;
+   }
 
+   public void setInfoRequests(final Set<InfoRequest> infoRequests)
+   {
+       this.infoRequests = infoRequests;
+   }
 
+    /**
+    *
+    */
+   @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "examinedByAgent")
+   @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+   public Set<ConservEvent> getExaminedByAgentConservEvents()
+   {
+       return this.examinedByAgentConservEvents;
+   }
 
-    // Done Add Methods
+   public void setExaminedByAgentConservEvents(final Set<ConservEvent> examinedByAgentConservEvents)
+   {
+       this.examinedByAgentConservEvents = examinedByAgentConservEvents;
+   }
 
-    // Delete Methods
+   /**
+    *
+    */
+   @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "treatedByAgent")
+   @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+   public Set<ConservEvent> getTreatedByAgentConservEvents()
+   {
+       return this.treatedByAgentConservEvents;
+   }
 
-    public void removeOrgMembers(final Agent orgMember)
-    {
-        this.orgMembers.remove(orgMember);
-        orgMember.getOrgMembers().remove(this);
-    }
+   public void setTreatedByAgentConservEvents(final Set<ConservEvent> treatedByAgentConservEvents)
+   {
+       this.treatedByAgentConservEvents = treatedByAgentConservEvents;
+   }
+   
 
-    public void removeProjects(final Project project)
-    {
-        this.projects.remove(project);
-        project.setAgent(null);
-    }
+   /**
+    *
+    */
+   @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "curator")
+   @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+   public Set<ConservDescription> getConservDescriptions()
+   {
+       return this.conservDescriptions;
+   }
 
-    public void removeAddresses(final Address address)
-    {
-        this.addresses.remove(address);
-        address.setAgent(null);
-    }
+   public void setConservDescriptions(final Set<ConservDescription> conservDescriptions)
+   {
+       this.conservDescriptions = conservDescriptions;
+   }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
@@ -1017,37 +1059,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
         }
         
         return super.getIdentityTitle();
-    }
-
-    @Override
-    public void addReference(FormDataObjIFace ref, String refType)
-    {
-        if (ref instanceof Address)
-        {
-            Address addr = (Address)ref;
-            addresses.add(addr);
-            addr.setAgent(this);
-            return;
-        }
-        if (ref instanceof AccessionAgent)
-        {
-            AccessionAgent aa = (AccessionAgent)ref;
-            accessionAgents.add(aa);
-            aa.setAgent(this);
-            return;
-        }
-        super.addReference(ref, refType);
-    }
-
-    @Override
-    public void removeReference(FormDataObjIFace ref, String refType)
-    {
-        if (ref instanceof Address)
-        {
-            addresses.remove(ref);
-            return;
-        }
-        super.removeReference(ref, refType);
     }
 
     /* (non-Javadoc)

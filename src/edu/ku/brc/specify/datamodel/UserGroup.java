@@ -182,6 +182,7 @@ public class UserGroup extends DataModelObjBase implements java.io.Serializable 
     *
     */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "group")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
    public Set<RecordSet> getRecordsets() {
        return this.recordsets;
    }
@@ -194,6 +195,7 @@ public class UserGroup extends DataModelObjBase implements java.io.Serializable 
     * 
     */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "group")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
    public Set<AppResource> getAppResources() {
        return this.appResources;
    }
@@ -205,6 +207,7 @@ public class UserGroup extends DataModelObjBase implements java.io.Serializable 
      * 
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "group")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Workbench> getWorkbenches()
     {
         return this.workbenches;

@@ -213,7 +213,6 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
     }
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     @JoinColumn(name = "TaxonTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
     public TaxonTreeDef getTreeDef()
 	{
@@ -226,7 +225,6 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 	}
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     @JoinColumn(name = "ParentItemID", unique = false, nullable = true, insertable = true, updatable = true)
 	public TaxonTreeDefItem getParent()
 	{

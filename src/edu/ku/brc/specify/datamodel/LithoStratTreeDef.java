@@ -51,11 +51,11 @@ import org.hibernate.annotations.CascadeType;
 @Table(name = "lithostrattreedef")
 public class LithoStratTreeDef extends DataModelObjBase implements java.io.Serializable, TreeDefIface<LithoStrat, LithoStratTreeDef, LithoStratTreeDefItem>
 {
-	protected Integer                               lithoStratTreeDefId;
-    protected String                             name;
-    protected String                             remarks;
-    protected Integer                            fullNameDirection;
-    protected Set<CollectionType>                collectionTypes;
+	protected Integer                    lithoStratTreeDefId;
+    protected String                     name;
+    protected String                     remarks;
+    protected Integer                    fullNameDirection;
+    protected Set<CollectionType>        collectionTypes;
     protected Set<LithoStrat>            treeEntries;
     protected Set<LithoStratTreeDefItem> treeDefItems;
 
@@ -171,7 +171,7 @@ public class LithoStratTreeDef extends DataModelObjBase implements java.io.Seria
     /**
 	 * 
 	 */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "geologicTimePeriodTreeDef")
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "lithoStratTreeDef")
 	public Set<CollectionType> getCollectionTypes()
 	{
 		return this.collectionTypes;

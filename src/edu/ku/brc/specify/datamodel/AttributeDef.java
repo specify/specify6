@@ -55,14 +55,14 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
 
     // Fields
 
-     protected Integer attributeDefId;
-     protected Short tableType;
-     protected String fieldName;
-     protected Short dataType;
-     protected CollectionType collectionType;
-     protected PrepType prepType;
+     protected Integer                  attributeDefId;
+     protected Short                    tableType;
+     protected String                   fieldName;
+     protected Short                    dataType;
+     protected CollectionType           collectionType;
+     protected PrepType                 prepType;
      protected Set<CollectingEventAttr> collectingEventAttrs;
-     protected Set<PreparationAttr> preparationAttrs;
+     protected Set<PreparationAttr>     preparationAttrs;
      protected Set<CollectionObjectAttr> collectionObjectAttrs;
 
     // Constructors
@@ -86,14 +86,14 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
     public void initialize()
     {
         super.init();
-        attributeDefId = null;
-        tableType = null;
-        fieldName = null;
-        dataType = null;
-        collectionType = null;
-        prepType = null;
-        collectingEventAttrs = new HashSet<CollectingEventAttr>();
-        preparationAttrs = new HashSet<PreparationAttr>();
+        attributeDefId        = null;
+        tableType             = null;
+        fieldName             = null;
+        dataType              = null;
+        collectionType        = null;
+        prepType              = null;
+        collectingEventAttrs  = new HashSet<CollectingEventAttr>();
+        preparationAttrs      = new HashSet<PreparationAttr>();
         collectionObjectAttrs = new HashSet<CollectionObjectAttr>();
     }
     // End Initializer
@@ -201,6 +201,7 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
      *
      */
     @OneToMany(cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY, mappedBy = "definition")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<CollectingEventAttr> getCollectingEventAttrs() {
         return this.collectingEventAttrs;
     }
@@ -213,6 +214,7 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
      *
      */
     @OneToMany(cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY, mappedBy = "definition")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<PreparationAttr> getPreparationAttrs() {
         return this.preparationAttrs;
     }
@@ -225,6 +227,7 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
      *
      */
     @OneToMany(cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY, mappedBy = "definition")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<CollectionObjectAttr> getCollectionObjectAttrs() {
         return this.collectionObjectAttrs;
     }

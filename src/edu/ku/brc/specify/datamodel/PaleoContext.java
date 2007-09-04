@@ -193,7 +193,6 @@ public class PaleoContext extends DataModelObjBase
      * @return the bioStrat
      */
     @ManyToOne
-    @Cascade( {CascadeType.SAVE_UPDATE} )
     @JoinColumn(name="BioStratID", unique=false, nullable=true, insertable=true, updatable=true)
     public GeologicTimePeriod getBioStrat()
     {
@@ -215,7 +214,6 @@ public class PaleoContext extends DataModelObjBase
     *
     */
     @ManyToOne
-    @Cascade( {CascadeType.SAVE_UPDATE} )
     @JoinColumn(name="ChronosStratID", unique=false, nullable=true, insertable=true, updatable=true)
     public GeologicTimePeriod getChronosStrat()
     {
@@ -234,7 +232,6 @@ public class PaleoContext extends DataModelObjBase
      * @return the lithoStrat
      */
     @ManyToOne
-    @Cascade( {CascadeType.SAVE_UPDATE} )
     @JoinColumn(name="LithoStratID", unique=false, nullable=true, insertable=true, updatable=true)
     public LithoStrat getLithoStrat()
     {

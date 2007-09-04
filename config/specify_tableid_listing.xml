@@ -71,6 +71,10 @@
         </table>
         <table name="edu.ku.brc.specify.datamodel.CollectionRelationship" id="99"/>
         <table name="edu.ku.brc.specify.datamodel.Collector" id="30"/>
+        <table name="edu.ku.brc.specify.datamodel.ConservEvent" id="73"/>
+        <table name="edu.ku.brc.specify.datamodel.ConservDescription" id="103"/>
+        <table name="edu.ku.brc.specify.datamodel.ConservRecommendation" id="104"/>
+        <table name="edu.ku.brc.specify.datamodel.ConservRecmdType" id="105"/>
         <table name="edu.ku.brc.specify.datamodel.Container" id="31"/>
         <table name="edu.ku.brc.specify.datamodel.DataType" id="33">
             <businessrule>edu.ku.brc.specify.datamodel.busrules.DataTypeBusRules</businessrule>          

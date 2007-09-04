@@ -59,10 +59,11 @@ import edu.ku.brc.dbsupport.RecordSetItemIFace;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "recordset")
-public class RecordSet extends DataModelObjBase implements java.io.Serializable, RecordSetIFace {
+public class RecordSet extends DataModelObjBase implements java.io.Serializable, RecordSetIFace 
+{
 
     // Fields
-     protected Integer                    recordSetId;
+     protected Integer                 recordSetId;
      protected String                  name;
      protected Integer                 dbTableId;
      protected String                  remarks;
@@ -72,6 +73,8 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
      protected Integer                 groupPermissionLevel;
      protected Integer                 allPermissionLevel;
      protected UserGroup               group;
+     
+     protected Set<InfoRequest>        infoRequests;
 
 
      // Non-Database Memebers
@@ -116,10 +119,11 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
         remarks = null;
         ownerPermissionLevel = null;
         groupPermissionLevel = null;
-        allPermissionLevel = null;
-        items = new HashSet<RecordSetItemIFace>();
-        specifyUser = null;
-        group = null;
+        allPermissionLevel   = null;
+        items                = new HashSet<RecordSetItemIFace>();
+        specifyUser          = null;
+        group                = null;
+        infoRequests         = new HashSet<InfoRequest>();
     }
     // End Initializer
 
@@ -219,6 +223,24 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
      */
     public void setItems(Set<RecordSetItemIFace> items) {
         this.items = items;
+    }
+
+    /**
+     * @return the infoRequests
+     */
+    @OneToMany(cascade = {}, targetEntity=RecordSetItem.class, fetch = FetchType.EAGER, mappedBy = "recordSet")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    public Set<InfoRequest> getInfoRequests()
+    {
+        return infoRequests;
+    }
+
+    /**
+     * @param infoRequests the infoRequests to set
+     */
+    public void setInfoRequests(Set<InfoRequest> infoRequests)
+    {
+        this.infoRequests = infoRequests;
     }
 
     /**

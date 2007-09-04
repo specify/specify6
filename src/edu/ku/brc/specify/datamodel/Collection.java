@@ -196,7 +196,6 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
 
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "CatalogNumberingSchemeID", unique = false, nullable = false, insertable = true, updatable = true)
     public CatalogNumberingScheme getCatalogNumberingScheme()
     {
@@ -222,6 +221,7 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     }
     
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collection")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<AppResourceDefault> getAppResourceDefaults()
     {
         return appResourceDefaults;
@@ -233,6 +233,7 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     }
 
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collection")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<CollectionObject> getCollectionObjects()
     {
         return collectionObjects;

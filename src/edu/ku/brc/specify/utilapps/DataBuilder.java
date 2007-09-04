@@ -161,6 +161,9 @@ public class DataBuilder
         attrDef.setFieldName(name);
         attrDef.setPrepType(prepType);
         attrDef.setCollectionType(collectionType);
+        
+        collectionType.getAttributeDefs().add(attrDef);
+        
         return attrDef;
     }
 
@@ -185,7 +188,7 @@ public class DataBuilder
         collType.setGeologicTimePeriodTreeDef(geologicTimePeriodTreeDef);//meg added to support not-null constraints
         collType.setLocationTreeDef(locationTreeDef);//meg added to support not-null constraints
         collType.setLithoStratTreeDef(lithoStratTreeDef);
-        taxonTreeDef.setCollObjDef(collType);
+        taxonTreeDef.setCollectionType(collType);
 
         persist(collType);
         return collType;
@@ -306,6 +309,8 @@ public class DataBuilder
         colEvAttr.initialize();
 
         colEvAttr.setDefinition(colObjAttrDef);
+        colObjAttrDef.getCollectingEventAttrs().add(colEvAttr);
+        
         colEvAttr.setCollectingEvent(colEv);
         if (strVal != null)
         {
@@ -1437,7 +1442,7 @@ public class DataBuilder
         container.setNumber(number);
         container.setTimestampCreated(new Date());
         container.setTimestampModified(new Date());
-        container.setContainer(colObj);
+        container.getCollectionObjects().add(colObj);
         container.setName(name);
         container.setLocation(location);
         container.setDescription(description);

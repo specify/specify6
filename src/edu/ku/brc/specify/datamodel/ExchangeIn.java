@@ -272,7 +272,6 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
      *      * Agent ID of organization that sent material
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "ReceivedFromOrganizationID", unique = false, nullable = false, insertable = true, updatable = true)
     public Agent getAgentReceivedFrom() {
         return this.agentReceivedFrom;
@@ -286,7 +285,6 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
      *      * Agent ID of person recording the exchange
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "CatalogedByID", unique = false, nullable = false, insertable = true, updatable = true)
     public Agent getAgentCatalogedBy() {
         return this.agentCatalogedBy;

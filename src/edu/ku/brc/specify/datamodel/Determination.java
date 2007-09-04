@@ -167,7 +167,6 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
      * 
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "DeterminationStatusID", unique = false, nullable = false, insertable = true, updatable = true)
     public DeterminationStatus getStatus() 
     {
@@ -365,7 +364,6 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
      * 
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "TaxonID", unique = false, nullable = true, insertable = true, updatable = true)
     public Taxon getTaxon() 
     {
@@ -396,6 +394,7 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
      * 
      */
     @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "determination")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<DeterminationCitation> getDeterminationCitations() 
     {
         return this.determinationCitations;
@@ -410,7 +409,6 @@ public class Determination extends DataModelObjBase implements java.io.Serializa
      *      * id of the Person making the determination
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     @JoinColumn(name = "DeterminerID", unique = false, nullable = true, insertable = true, updatable = true)
     public Agent getDeterminer() 
     {

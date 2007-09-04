@@ -93,6 +93,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
+import org.hibernate.event.PostInsertEvent;
+import org.hibernate.event.PreInsertEvent;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.ButtonBarFactory;
@@ -123,9 +125,14 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
 import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.Collector;
+import edu.ku.brc.specify.datamodel.ConservDescription;
+import edu.ku.brc.specify.datamodel.ConservEvent;
+import edu.ku.brc.specify.datamodel.ConservRecmdType;
+import edu.ku.brc.specify.datamodel.ConservRecommendation;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
+import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
@@ -168,6 +175,7 @@ import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.PickListDBAdapterIFace;
+import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.FileStoreAttachmentManager;
@@ -316,6 +324,10 @@ public class BuildSampleDatabase
         
         CollectionType collectionType = createCollectionType(collTypeName, disciplineName, dataType, user, taxonTreeDef, null, null, null, lithoStratTreeDef);
 
+        startTx();
+        persist(collectionType);
+        commitTx();
+        
         SpecifyUser.setCurrentUser(user);
         user.setAgent(userAgent);
 
@@ -346,6 +358,84 @@ public class BuildSampleDatabase
     }
     
     /**
+     * Returns a list of object of a specified class.
+     * @param cls the clas 
+     * @param dataObjects the list of possible object
+     * @return the list
+     */
+    protected List<?> getObjectsOfClass(final Class<?> cls, final List<Object> dataObjects)
+    {
+        Vector<Object> list = new Vector<Object>();
+        for (Object obj : dataObjects)
+        {
+            if (obj.getClass() == cls)
+            {
+                list.add(obj);
+            }
+        }
+        return list;
+    }
+    
+    /**
+     * @param dataObjects
+     */
+    @SuppressWarnings("unchecked")
+    protected void addConservatorData(final Agent userAgent, 
+                                      final List<Agent> agents, 
+                                      final List<CollectionObject> colObjs)
+    {
+        //startTx();
+        
+        ConservRecmdType type = new ConservRecmdType();
+        type.initialize();
+        type.setTitle("Avoid Light");
+        persist(type);
+        
+        ConservDescription desc = new ConservDescription();
+        desc.initialize();
+        desc.setShortDesc("Short Description");
+        //desc.addReference(divs.get(0), "division");
+        
+        desc.addReference(userAgent, "curator");
+        desc.addReference(colObjs.get(0), "collectionObject");
+        
+        //desc.setCollectionObject(colObjs.get(0));
+        //colObjs.get(0).getConservDescriptions().add(desc);
+        
+        ConservEvent ce = new ConservEvent();
+        ce.initialize();
+        ce.setExamDate(Calendar.getInstance());
+        
+        ce.addReference(agents.get(1), "examinedByAgent");
+        ce.addReference(agents.get(2), "treatedByAgent");
+        
+        /*int inx = 5;
+        ce.setExaminedByAgent(agents.get(inx));
+        agents.get(inx).getExaminedByAgentConservEvents().add(ce);
+        System.out.println(agents.get(inx).getLastName());
+        
+        //ce.setTreatedByAgent(agents.get(7));
+        //agents.get(7).getTreatedByAgentConservEvents().add(ce);
+         */
+        
+        //desc.getEvents().add(ce);
+        //ce.setConservDescription(desc);
+        desc.addReference(ce, "events");
+        
+        
+        ConservRecommendation recommend = new ConservRecommendation();
+        recommend.initialize();
+        recommend.setCompletedDate(Calendar.getInstance());
+        recommend.addReference(type, "conservRecmdType");
+        ce.addReference(recommend, "lightRecommendations");
+ 
+        persist(desc);
+        
+        //commitTx();
+        
+    }
+    
+    /**
      * Creates a single discipline collection.
      * @param collTypeName the name of the Collection Type to use
      * @param disciplineName the discipline name
@@ -361,7 +451,6 @@ public class BuildSampleDatabase
         
         frame.setProcess(++createStep);
 
-        Vector<Object> dataObjects = new Vector<Object>();
         List<Agent>    agents      = new Vector<Agent>();
         
         ////////////////////////////////
@@ -389,69 +478,59 @@ public class BuildSampleDatabase
         
         Agent            userAgent        = createAgent(title, firstName, midInit, lastName, abbrev, email);
         UserGroup        userGroup        = createUserGroup(discipline.getTitle());
+        
+        
+        startTx();
+        persist(userGroup);
+        //commitTx();
+        
         SpecifyUser      user             = createSpecifyUser(username, email, (short) 0, userGroup, userType);
+        //startTx();
+        persist(user);
+        //commitTx();
+        
         DataType         dataType         = createDataType(discipline.getTitle());
+        //startTx();
+        persist(dataType);
+        //commitTx();
+        
         TaxonTreeDef     taxonTreeDef     = createTaxonTreeDef("Sample Taxon Tree Def");
+
         LithoStratTreeDef lithoStratTreeDef = createStandardLithoStratDefinitionAndItems();
         
         CollectionType collectionType = createCollectionType(discipline.getName(), discipline.getTitle(), dataType, user, taxonTreeDef, null, null, null, lithoStratTreeDef);
+        List<Object> gtps = createSimpleGeologicTimePeriod(collectionType, "Geologic Time Period");
+        
+        //startTx();
+        persist(collectionType);
+        persist(userAgent);
+        //commitTx();
         
         SpecifyUser.setCurrentUser(user);
         user.setAgent(userAgent);
-
-        //dataType.addCollectionType(collectionType);
-        dataObjects.add(collectionType);
-        dataObjects.add(userGroup);
-        dataObjects.add(user);
-        dataObjects.add(dataType);
-        //dataObjects.add(taxonTreeDef);
         
-        /*
-        if (false)
-        {
-            try
-            {
-                BasicSQLUtils.setDBConnection(DBConnection.getInstance().getConnection());
-                GenericDBConversion gdbc = new GenericDBConversion();
-                gdbc.setNewDBConn(DBConnection.getInstance().getConnection());
-                LithoStrat earth = gdbc.convertLithoStratFromCSV(lithoStratTreeDef, false);
-                if (earth != null)
-                {
-                    dataObjects.add(earth);
-                }
-                
-            } catch (SQLException ex)
-            {
-                ex.printStackTrace();
-            }
-        }
-        */
+        //startTx();
+        persist(user);
+        //commitTx();
 
-        
         Journal journal = createJournalsAndReferenceWork();
-        List<ReferenceWork> rwList = new Vector<ReferenceWork>();
-        rwList.addAll(journal.getReferenceWorks());
-        dataObjects.add(journal);
-        for (ReferenceWork rw : rwList)
-        {
-            dataObjects.add(rw);
-        }
         
         frame.setProcess(++createStep);
         
         ////////////////////////////////
-        // build the trees
+        // build some of the trees
         ////////////////////////////////
         List<Object> taxa = createSimpleTaxon(collectionType.getTaxonTreeDef());
         List<Object> geos = createSimpleGeography(collectionType, "Geography");
         List<Object> locs = createSimpleLocation(collectionType, "Location");
-        List<Object> gtps = createSimpleGeologicTimePeriod(collectionType, "Geologic Time Period");
-
-        dataObjects.addAll(taxa);
-        dataObjects.addAll(geos);
-        dataObjects.addAll(locs);
-        dataObjects.addAll(gtps);
         
+        //startTx();
+        persist(journal);
+        persist(taxa);
+        persist(geos);
+        persist(locs);
+        persist(gtps);
+        //commitTx();
         
         frame.setProcess(++createStep);
         
@@ -463,13 +542,15 @@ public class BuildSampleDatabase
         int tableType      = PickListDBAdapterIFace.Type.Table.ordinal();
         int tableFieldType = PickListDBAdapterIFace.Type.TableField.ordinal();
         
+        Vector<Object> dataObjects = new Vector<Object>();
+
         //                                 Name                Type           Table Name           Field       Formatter          R/O  Size
         dataObjects.add(createPickList("DeterminationStatus", tableType,      "determinationstatus", null, "DeterminationStatus", true, -1));
         dataObjects.add(createPickList("DataType",            tableType,      "datatype",            null, "DataType",            true, -1));
         dataObjects.add(createPickList("Department",          tableFieldType, "accession",         "text1" ,       null,          true, -1));
         dataObjects.add(createPickList("AgentTitle",          tableFieldType, "agent",             "title" ,       null,          true, -1));
         dataObjects.add(createPickList("PrepType",            tableType,      "preptype",           null, "PrepType",             true, -1));
-        dataObjects.add(createPickList("CollectionType",    tableType,      "collectiontype",   null, "CollectionType",     true, -1));
+        dataObjects.add(createPickList("CollectionType",      tableType,      "collectiontype",     null, "CollectionType",     true, -1));
         dataObjects.add(createPickList("GeologicTimePeriodTreeDef", tableType, "geologictimeperiodtreedef", null, "GeologicTimePeriodTreeDef", true, -1));
         dataObjects.add(createPickList("CatalogNumberingScheme", tableType, "catalognumberingscheme", null, "CatalogNumberingScheme", true, -1));
         
@@ -508,6 +589,11 @@ public class BuildSampleDatabase
         
         String[] taxonLabelFormatter = {"%G %S", "%G %S (%A1 ex. %A2)"};
         dataObjects.add(createPickList("TaxonLabelFormatter", false, taxonLabelFormatter, 500));
+        
+        //startTx();
+        persist(dataObjects);
+        //commitTx();
+        dataObjects.clear();
         
         frame.setProcess(++createStep);
         
@@ -553,10 +639,11 @@ public class BuildSampleDatabase
         farmpond.setLong2text("-55.112163 deg W");
         farmpond.setLongitude2(new BigDecimal(-55.112163));
 
-        dataObjects.add(forestStream);
-        dataObjects.add(lake);
-        dataObjects.add(farmpond);
-        
+        //startTx();
+        persist(forestStream);
+        persist(lake);
+        persist(farmpond);
+        //commitTx();
         
         frame.setProcess(++createStep);
         
@@ -572,8 +659,8 @@ public class BuildSampleDatabase
         if (!lastName.equals("Byrn")) agents.add(createAgent("Mr.", "John", "D", "Byrn", "jb", "jb@net.edu"));
         if (!lastName.equals("Thompson")) agents.add(createAgent("Sir", "Dudley", "X", "Thompson", "dxt", ""));
         if (!lastName.equals("Campbell")) agents.add(createAgent("Mr.", "Joe", "A", "Campbell", "jb", ""));
+        if (!lastName.equals("Tester")) agents.add(createAgent("Mr.", "Joe", "A", "Tester", "jb", ""));
         agents.add(userAgent);
-
         
         Agent ku = new Agent();
         ku.initialize();
@@ -609,8 +696,9 @@ public class BuildSampleDatabase
         // User Agent Address
         addrs.add(createAddress(userAgent, "1214 East Street", null, "Grinnell", "IA", "USA", "56060"));
                 
-        dataObjects.addAll(agents);
-        dataObjects.addAll(addrs);
+        //startTx();
+        persist(agents);
+        //commitTx();
         
         frame.setProcess(++createStep);
         
@@ -629,8 +717,13 @@ public class BuildSampleDatabase
         ce1.setEndDateVerbatim("19 Mar 1993, 1:03 PM");   
         ce1.setMethod(collMethods[1]);
         
-        AttributeDef cevAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "ParkName", collectionType, null);//meg added cod
-        CollectingEventAttr cevAttr = createCollectingEventAttr(ce1, cevAttrDef, "Sleepy Hollow", null);
+        AttributeDef        cevAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "ParkName", collectionType, null);//meg added cod
+        
+        //startTx();
+        persist(cevAttrDef);
+        //commitTx();
+        
+        CollectingEventAttr cevAttr    = createCollectingEventAttr(ce1, cevAttrDef, "Sleepy Hollow", null);
 
         Collector collectorMeg = createCollector(agents.get(2), 1);
         Collector collectorRod = createCollector(agents.get(3), 2);
@@ -644,16 +737,21 @@ public class BuildSampleDatabase
         ce2.setMethod(collMethods[2]);
 
         CollectingTrip trip = createCollectingTrip("Sample collecting trip", new CollectingEvent[]{ce1,ce2});
+
         
+        dataObjects.add(trip);
+        dataObjects.add(ce1);
+        dataObjects.add(cevAttr);
+        dataObjects.add(ce2);
         dataObjects.add(collectorJosh);
         dataObjects.add(collectorJim);
         dataObjects.add(collectorMeg);
         dataObjects.add(collectorRod);
-        dataObjects.add(ce1);
-        dataObjects.add(ce2);
-        dataObjects.add(trip);
-        dataObjects.add(cevAttrDef);
-        dataObjects.add(cevAttr);
+        
+        //startTx();
+        persist(dataObjects);
+        //commitTx();
+        dataObjects.clear();
         
         ////////////////////////////////
         // permit
@@ -670,17 +768,27 @@ public class BuildSampleDatabase
         permit.setIssuedBy(agents.get(4));
         dataObjects.add(permit);
         
+        //startTx();
+        persist(dataObjects);
+        //commitTx();
+        dataObjects.clear();
+        
         frame.setProcess(++createStep);
                 
         CatalogNumberingScheme cns = createCatalogNumberingScheme("CatalogNumber", "", true);
-        dataObjects.add(cns);
+        
+        //startTx();
+        persist(cns);
+        //commitTx();
         
         ////////////////////////////////
         // Create Collection
         ////////////////////////////////
         log.info("Creating a catalog series");
         Collection collection = createCollection("KUFSH", "Fish", cns, collectionType);
-        dataObjects.add(collection);
+        //startTx();
+        persist(collection);
+        //commitTx();
         
         ////////////////////////////////
         // Determination Status (Must be done here)
@@ -690,18 +798,19 @@ public class BuildSampleDatabase
         DeterminationStatus notCurrent = createDeterminationStatus("Not current","Test Status", false);
         DeterminationStatus incorrect  = createDeterminationStatus("Incorrect","Test Status", false);
         
-        dataObjects.add(current);
-        dataObjects.add(notCurrent);
-        dataObjects.add(incorrect);
-
+        //startTx();
+        persist(current);
+        persist(notCurrent);
+        persist(incorrect);
+        //commitTx();
+        
         ////////////////////////////////
         // collection objects
         ////////////////////////////////
         log.info("Creating collection objects");
 
         List<CollectionObject> collObjs = new Vector<CollectionObject>();
-        Collection       col     = collection;
-        CollectionType cod       = collectionType;
+        Collection      col     = collection;
         
         Calendar[] catDates = new Calendar[8];
         for (int i=0;i<catDates.length;i++)
@@ -720,11 +829,20 @@ public class BuildSampleDatabase
         collObjs.add(createCollectionObject(prefix + "106", "RSC106", agents.get(2), col,  1, ce2, catDates[6], "BuildSampleDatabase"));
         collObjs.add(createCollectionObject(prefix + "107", "RSC107", agents.get(3), col,  1, ce2, catDates[7], "BuildSampleDatabase"));
         
-        AttributeDef colObjAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "MoonPhase", cod, null);//meg added cod
+        AttributeDef colObjAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "MoonPhase", collectionType, null);//meg added cod
+        colObjAttrDef.setCollectionType(collectionType);
+        collectionType.getAttributeDefs().add(colObjAttrDef);
+        
         CollectionObjectAttr colObjAttr = createCollectionObjectAttr(collObjs.get(0), colObjAttrDef, "Full", null);
-        dataObjects.addAll(collObjs);
         dataObjects.add(colObjAttrDef);
+        dataObjects.addAll(collObjs);
         dataObjects.add(colObjAttr);
+        
+        //startTx();
+        persist(dataObjects);
+        //commitTx();
+        dataObjects.clear();
+
         
         frame.setProcess(++createStep);
         
@@ -758,7 +876,10 @@ public class BuildSampleDatabase
         determs.add(createDetermination(collObjs.get(4), agents.get(4), (Taxon)taxa.get(22), incorrect, longAgo));
         determs.get(13).setRemarks("This determination is totally wrong.  What a foolish determination.");
         
-        dataObjects.addAll(determs);
+        //startTx();
+        persist(determs);
+        //commitTx();
+        dataObjects.clear();
         
         frame.setProcess(++createStep);
                 
@@ -803,6 +924,11 @@ public class BuildSampleDatabase
         dataObjects.add(xray);
         dataObjects.addAll(preps);
         
+        //startTx();
+        persist(dataObjects);
+        //commitTx();
+        dataObjects.clear();
+        
         frame.setProcess(++createStep);
         
         ////////////////////////////////
@@ -837,6 +963,11 @@ public class BuildSampleDatabase
         dataObjects.add(acc2);
         dataObjects.addAll(accAgents);
         
+        //startTx();
+        persist(dataObjects);
+        //commitTx();
+        dataObjects.clear();
+        
         frame.setProcess(++createStep);
         
 
@@ -846,8 +977,10 @@ public class BuildSampleDatabase
         log.info("Creating loans, loan agents, and shipments");
         Calendar loanDate1 = Calendar.getInstance();
         loanDate1.set(2004, 03, 19);
+        
         Calendar currentDueDate1 = Calendar.getInstance();
         currentDueDate1.set(2004, 9, 19);
+        
         Calendar originalDueDate1 = currentDueDate1;
         Calendar dateClosed1 = Calendar.getInstance();
         dateClosed1.set(2004, 7, 4);
@@ -886,8 +1019,10 @@ public class BuildSampleDatabase
         
         Calendar loanDate2 = Calendar.getInstance();
         loanDate2.set(2005, 11, 24);
+        
         Calendar currentDueDate2 = Calendar.getInstance();
         currentDueDate2.set(2006, 5, 24);
+        
         Calendar originalDueDate2 = currentDueDate2;
         Loan overdueLoan = createLoan("2006-002", loanDate2, currentDueDate2, originalDueDate2,  
                                       null, Loan.LOAN, Loan.OPEN, null);
@@ -909,10 +1044,13 @@ public class BuildSampleDatabase
 
         Calendar loanDate3 = Calendar.getInstance();
         loanDate3.set(2006, 3, 21);
+        
         Calendar currentDueDate3 = Calendar.getInstance();
         currentDueDate3.set(2007, 3, 21);
+        
         Calendar originalDueDate3 = Calendar.getInstance();
         originalDueDate3.set(2006, 9, 21);
+        
         Loan loan3 = createLoan("2006-003", loanDate3, currentDueDate3, originalDueDate3,  
                                       null, Loan.LOAN, Loan.OPEN, null);
         Vector<LoanPhysicalObject> newLoanLPOs = new Vector<LoanPhysicalObject>();
@@ -961,9 +1099,11 @@ public class BuildSampleDatabase
             i++;
         }
         
-        frame.setProcess(++createStep);
+        LoanAgent loanAgent1 = createLoanAgent("loaner", closedLoan, agents.get(1));
+        LoanAgent loanAgent2 = createLoanAgent("loaner", overdueLoan, agents.get(3));
+        LoanAgent loanAgent3 = createLoanAgent("Borrower", closedLoan, agents.get(4));
+        LoanAgent loanAgent4 = createLoanAgent("Borrower", overdueLoan, agents.get(4));
         
-
         dataObjects.add(closedLoan);
         dataObjects.add(overdueLoan);
         dataObjects.add(loan3);
@@ -971,14 +1111,13 @@ public class BuildSampleDatabase
         dataObjects.addAll(newLoanLPOs);
         dataObjects.addAll(returns);
         
-        LoanAgent loanAgent1 = createLoanAgent("loaner", closedLoan, agents.get(1));
-        LoanAgent loanAgent2 = createLoanAgent("loaner", overdueLoan, agents.get(3));
-        LoanAgent loanAgent3 = createLoanAgent("Borrower", closedLoan, agents.get(4));
-        LoanAgent loanAgent4 = createLoanAgent("Borrower", overdueLoan, agents.get(4));
         dataObjects.add(loanAgent1);
         dataObjects.add(loanAgent2);
         dataObjects.add(loanAgent3);
         dataObjects.add(loanAgent4);
+        
+        frame.setProcess(++createStep);
+        
         
         Calendar ship1Date = Calendar.getInstance();
         ship1Date.set(2004, 03, 19);
@@ -994,8 +1133,15 @@ public class BuildSampleDatabase
         overdueLoan.getShipments().add(loan2Ship);
         dataObjects.add(loan1Ship);
         dataObjects.add(loan2Ship);   
+        
+        //startTx();
+        persist(dataObjects);
+        //commitTx();
+        dataObjects.clear();
+        
 
-        if (false)
+
+        /*if (false)
         {
             TaxonCitation taxonCitation = new TaxonCitation();
             taxonCitation.initialize();
@@ -1014,7 +1160,7 @@ public class BuildSampleDatabase
             localityCitation.setReferenceWork(rwList.get(1));
             rwList.get(1).addLocalityCitations(localityCitation);
             dataObjects.add(localityCitation);
-        }
+        }*/
         
         ////////////////////////////////
         // Workbench
@@ -1182,13 +1328,18 @@ public class BuildSampleDatabase
             }
         }
 
+        //startTx();
+        persist(dataObjects);
+        //commitTx();
+        dataObjects.clear();
         
         frame.setProcess(++createStep);
                
         ////////////////////////////////
         // attachments (attachment metadata)
         ////////////////////////////////
-        if (true)
+        /*
+        if (false)
         {
             log.info("Creating attachments and attachment metadata");
             try
@@ -1245,7 +1396,11 @@ public class BuildSampleDatabase
             {
                 log.error("Could not create attachments", e);
             }
-        }
+        }*/
+        
+        addConservatorData(userAgent, agents, collObjs);
+        
+        commitTx();
         
         frame.setProcess(++createStep);
         
@@ -1608,7 +1763,7 @@ public class BuildSampleDatabase
         for (Object o: oList)
         {
             frame.setProcess(++cnt);
-            //System.out.println(cnt + " " + o.getClass().getSimpleName());
+            System.out.println("* " + cnt + " " + o.getClass().getSimpleName());
             persist(o);
         }
         frame.setProcess(oList.size());
@@ -2032,11 +2187,82 @@ public class BuildSampleDatabase
         }
         SpecifySchemaGenerator.generateSchema(driverInfo, databaseHost, dbName, userName, password);
 
+        class PostInsertEL implements org.hibernate.event.PostInsertEventListener
+        {
+            protected int counter = 0;
+            public void onPostInsert(PostInsertEvent arg0)
+            {
+                if (arg0.getEntity() instanceof FormDataObjIFace)
+                {
+                    FormDataObjIFace dataObj = (FormDataObjIFace)arg0.getEntity();
+                    System.out.println(counter + " PostInsert["+dataObj.getId()+"] "+dataObj.getDataClass().getSimpleName() + " Id: " +dataObj.getId());
+                    counter++;
+                }
+            }
+
+        }
+        
+        class PreInsertEL implements org.hibernate.event.PreInsertEventListener
+        {
+            protected int counter = 0;
+            /* (non-Javadoc)
+             * @see org.hibernate.event.PreInsertEventListener#onPreInsert(org.hibernate.event.PreInsertEvent)
+             */
+            @Override
+            public boolean onPreInsert(PreInsertEvent arg0)
+            {
+                if (arg0.getEntity() instanceof FormDataObjIFace)
+                {
+                    FormDataObjIFace dataObj = (FormDataObjIFace)arg0.getEntity();
+                    //if (dataObj.getDataClass().getSimpleName().indexOf("Conserv") > -1)
+                    System.out.println(counter + " PreInsert["+dataObj.getId()+"] "+dataObj.getDataClass().getSimpleName());// + " Id: " +dataObj.getId());
+                    /*
+                    if (counter == 73)
+                    {
+                        int x = 0;
+                        x++;
+                        CollectingEvent ce = (CollectingEvent)dataObj;
+                        for (AttributeIFace a : ce.getAttrs())
+                        {
+                            CollectingEventAttr cea = (CollectingEventAttr)a;
+                            AttributeDef def = cea.getDefinition();
+                            if (def != null)
+                            {
+                                if (def.getCollectionType() != null)
+                                {
+                                    if (def.getCollectionType().getAttributeDefs().contains(def.getCollectionType()))
+                                    {
+                                        System.out.println("CollectionType doesn't contain attr");
+                                        for (AttributeDef ad : def.getCollectionType().getAttributeDefs())
+                                        {
+                                            if (ad.getCollectionType() == null)
+                                            {
+                                                System.out.println("Def has null CT");
+                                            }
+                                        }
+                                    }
+                                } else
+                                {
+                                    System.out.println("CollectionType is null");
+                                }
+                            } else
+                            {
+                                System.out.println("Def is null");
+                            }
+                        }
+                    }*/
+                    counter++;
+                }
+                return false;
+            }
+            
+        }
         //HibernateUtil.setListener("post-commit-update", new edu.ku.brc.specify.dbsupport.PostUpdateEventListener());
-        HibernateUtil.setListener("post-commit-insert", new edu.ku.brc.specify.dbsupport.PostInsertEventListener());
+        HibernateUtil.setListener("post-commit-insert", new PostInsertEL());
+        HibernateUtil.setListener("pre-insert", new PreInsertEL());
         //HibernateUtil.setListener("post-commit-delete", new edu.ku.brc.specify.dbsupport.PostDeleteEventListener());
         //HibernateUtil.setListener("delete", new edu.ku.brc.specify.dbsupport.DeleteEventListener());
-
+        
         SwingUtilities.invokeLater(new Runnable()
         {
             public void run()
@@ -2078,6 +2304,9 @@ public class BuildSampleDatabase
                     AttachmentUtils.setAttachmentManager(attachMgr);
                     AttachmentUtils.setThumbnailer(thumb);
                     
+                    // save it all to the DB
+                    setSession(HibernateUtil.getCurrentSession());
+
                     List<Object> dataObjects = createSingleDiscipline(discipline);
 
                     log.info("Persisting in-memory objects to DB");
@@ -2089,9 +2318,6 @@ public class BuildSampleDatabase
                     frame.setDesc("Getting Session...");
                     frame.setOverall(steps++);
                     
-                    // save it all to the DB
-                    setSession(HibernateUtil.getCurrentSession());
-
                     SwingUtilities.invokeLater(new Runnable()
                     {
                         public void run()
