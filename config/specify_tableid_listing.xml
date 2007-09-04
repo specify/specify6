@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last Used Id is 106 or 502
+    Last Used Id is 107 or 502
     
     PLEASE Keep this file in alphabetical order! 
 
@@ -27,6 +27,7 @@
             <display objtitle="Agent" view="Agent" dataobjformatter="Agent" searchdlg="AgentSearch" newobjdlg="AgentDisplay"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.AgentBusRules</businessrule>        
         </table>
+        <table name="edu.ku.brc.specify.datamodel.AgentVariant" id="107" workbench="false"/>
         <table name="edu.ku.brc.specify.datamodel.AppResource" id="83"/>
         <table name="edu.ku.brc.specify.datamodel.AppResourceData" id="84"/>
         <table name="edu.ku.brc.specify.datamodel.AppResourceDefault" id="85"/>    

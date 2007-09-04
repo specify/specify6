@@ -136,8 +136,10 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     protected Set<InfoRequest>              infoRequests;
     protected Set<ConservEvent>             examinedByAgentConservEvents;
     protected Set<ConservEvent>             treatedByAgentConservEvents;
-    
     protected Set<ConservDescription>       conservDescriptions;
+    
+    protected Set<AgentVariant>             variants;
+
     
     protected static Agent                  currentUserAgent = null;
 
@@ -219,7 +221,9 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
         examinedByAgentConservEvents  = new HashSet<ConservEvent>();
         treatedByAgentConservEvents   = new HashSet<ConservEvent>();
         
-        conservDescriptions          = new HashSet<ConservDescription>();
+        conservDescriptions           = new HashSet<ConservDescription>();
+        
+        variants                      = new HashSet<AgentVariant>();
 
     }
     // End Initializer
@@ -1008,20 +1012,38 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
    }
    
 
-   /**
-    *
-    */
-   @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "curator")
-   @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-   public Set<ConservDescription> getConservDescriptions()
-   {
-       return this.conservDescriptions;
-   }
+    /**
+     *
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "curator")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    public Set<ConservDescription> getConservDescriptions()
+    {
+        return this.conservDescriptions;
+    }
 
-   public void setConservDescriptions(final Set<ConservDescription> conservDescriptions)
-   {
-       this.conservDescriptions = conservDescriptions;
-   }
+    public void setConservDescriptions(final Set<ConservDescription> conservDescriptions)
+    {
+        this.conservDescriptions = conservDescriptions;
+    }
+
+    /**
+     * @return the variants
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    public Set<AgentVariant> getVariants()
+    {
+        return variants;
+    }
+    
+    /**
+     * @param variants the variants to set
+     */
+    public void setVariants(Set<AgentVariant> variants)
+    {
+        this.variants = variants;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()

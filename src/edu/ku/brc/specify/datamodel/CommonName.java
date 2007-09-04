@@ -58,8 +58,11 @@ public class CommonName extends DataModelObjBase implements Serializable
     {
         super.init();
         commonNameId = null;
-        name = null;
-        taxon = null;
+        name         = null;
+        country      = null;
+        language     = null;
+        variant      = null;
+        taxon        = null;
     }
 
     @Id
@@ -97,7 +100,7 @@ public class CommonName extends DataModelObjBase implements Serializable
         this.commonNameId = commonNameId;
     }
 
-    @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 255)
     public String getName()
     {
         return name;
@@ -193,7 +196,7 @@ public class CommonName extends DataModelObjBase implements Serializable
      */
     public static int getClassTableId()
     {
-        return 501;
+        return 106;
     }
 
     @Override

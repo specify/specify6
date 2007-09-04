@@ -50,6 +50,7 @@
 		<mapping class="edu.ku.brc.specify.datamodel.AccessionAuthorization"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Address"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Agent"/>
+		<mapping class="edu.ku.brc.specify.datamodel.AgentVariant"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AppResourceDefault"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AppResource"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AppResourceData"/>
