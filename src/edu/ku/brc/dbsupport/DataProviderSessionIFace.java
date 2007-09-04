@@ -67,7 +67,7 @@ public interface DataProviderSessionIFace
     
     public void attach(Object dataObj);
     
-    public Object merge(Object dataObj);
+    public Object merge(Object dataObj) throws StaleObjectException;
     
     public boolean save(Object dataObj) throws Exception;
     

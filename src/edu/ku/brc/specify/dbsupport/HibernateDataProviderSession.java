@@ -19,6 +19,7 @@ import org.hibernate.LockMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.StaleObjectStateException;
+import org.hibernate.StaleStateException;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -139,11 +140,20 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#deleteOnSaveOrUpdate(java.lang.Object)
      */
-    public Object merge(Object dataObj)
+    public Object merge(Object dataObj) throws StaleObjectException
     {
         if (session != null)
         {
-            return session.merge(dataObj);
+            Object mergedObj = null;
+            try
+            {
+                mergedObj = session.merge(dataObj);
+            }
+            catch (StaleStateException sse)
+            {
+                throw new StaleObjectException(sse);
+            }
+            return mergedObj;
         }
         log.error("Session was null.", new NullPointerException("Session was null"));
         return null;

@@ -60,6 +60,7 @@ import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.StaleObjectException;
 import edu.ku.brc.dbsupport.DBTableIdMgr.TableInfo;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
@@ -1211,14 +1212,14 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		
         // note some node values so we can see if they change
 		String nodeNameBefore = node.getName();
-		Integer parentIdBefore   = (node.getParent() != null) ? node.getParent().getTreeId() : null;
+		Integer parentIdBefore = (node.getParent() != null) ? node.getParent().getTreeId() : null;
 		
 		// show the dialog
 		dialog.setVisible(true);
 		
 		// see what important stuff was modified
 		String nodeNameAfter  = node.getName();
-		Integer parentIdAfter    = (node.getParent() != null) ? node.getParent().getTreeId() : null;
+		Integer parentIdAfter = (node.getParent() != null) ? node.getParent().getTreeId() : null;
 		boolean nameChanged   = !nodeNameBefore.equals(nodeNameAfter);
 		boolean parentChanged = (parentIdBefore == null && parentIdAfter != null) ||
 		                        (parentIdBefore != null && parentIdAfter == null) ||
@@ -1244,7 +1245,23 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 {
                     // save the node and update the tree viewer appropriately
                     DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                    mergedNode = (T)session.merge(node);
+                    try
+                    {
+                        mergedNode = (T)session.merge(node);
+                    }
+                    catch (StaleObjectException e1)
+                    {
+                        // another user or process has changed the data "underneath" us
+                        JOptionPane.showMessageDialog(null, getResourceString("UPDATE_DATA_STALE"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); 
+                        if (session != null)
+                        {
+                            session.close();
+                        }
+                        session = DataProviderFactory.getInstance().createSession();
+                        mergedNode = (T)session.load(node.getClass(), node.getTreeId());
+                        success = false;
+                        return success;
+                    }
                     success = true;
                     afterSaveSuccess = false;
                     
@@ -1268,6 +1285,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                     catch (Exception e)
                     {
                         success = false;
+                        JOptionPane.showMessageDialog(null, getResourceString("UNRECOVERABLE_DB_ERROR"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); 
+
                         log.error("Error while saving node changes.  Rolling back transaction.", e);
                         session.rollback();
                     }
@@ -1275,9 +1294,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                     {
                         session.close();
                     }
-                    // at this point, the new node is in the DB
+                    
+                    // at this point, the new node is in the DB (if success == true)
 
-                    if (businessRules != null)
+                    if (businessRules != null && success == true)
                     {
                         afterSaveSuccess = businessRules.afterSaveCommit(mergedNode);
                     }
