@@ -552,11 +552,11 @@ public class WorkbenchTask extends BaseTask
 
     /**
      * Finds the Rollover command that represents the item that has the passed in Record id and
-     * it is checking the CmmandAction's attr by name for the RecordSet
+     * it is checking the CommandAction's attr by name for the RecordSet
      * @param workbench
      * @return
      */
-    protected int getCountOfPanesForTemplate(final Long templateId)
+    protected int getCountOfPanesForTemplate(final Integer templateId)
     {
         int count = 0;
         for (SubPaneIFace sbi : SubPaneMgr.getInstance().getSubPanes())
