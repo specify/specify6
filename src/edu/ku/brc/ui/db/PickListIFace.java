@@ -18,7 +18,6 @@
 package edu.ku.brc.ui.db;
 
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.Set;
 
 /**

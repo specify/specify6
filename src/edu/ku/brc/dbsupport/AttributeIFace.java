@@ -14,7 +14,6 @@
  */
 package edu.ku.brc.dbsupport;
 import java.sql.Timestamp;
-import java.util.Date;
 
 import edu.ku.brc.specify.datamodel.AttributeDef;
 

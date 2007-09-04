@@ -8,7 +8,6 @@ package edu.ku.brc.ui.forms;
 
 import java.beans.PropertyChangeListener;
 import java.sql.Timestamp;
-import java.util.Date;
 
 /**
  * Interface that all Data Model class MUST implement to play nice in the form system.

@@ -13,7 +13,6 @@ import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Timestamp;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;

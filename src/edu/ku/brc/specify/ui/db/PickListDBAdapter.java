@@ -20,7 +20,6 @@ import java.util.Vector;
 
 import javax.swing.AbstractListModel;
 import javax.swing.MutableComboBoxModel;
-import javax.swing.event.ListDataListener;
 
 import org.apache.log4j.Logger;
 
