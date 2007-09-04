@@ -623,18 +623,6 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
 		return ancestors;
 	}
 
-	/**
-	 * Fixes the fullname for the given node and all of its descendants.
-	 */
-	public void fixFullNameForAllDescendants()
-	{
-		setFullName(fixFullName());
-		for( Location child: getChildren() )
-		{
-			child.fixFullNameForAllDescendants();
-		}
-	}
-	
 	public boolean isDescendantOf(Location node)
 	{
 		if( node==null )

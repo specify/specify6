@@ -189,7 +189,6 @@ public interface Treeable<N extends Treeable<N,D,I>,
 	public List<N> getAllDescendants();
     public int getDescendantCount();
 	public List<N> getAllAncestors();
-	public void fixFullNameForAllDescendants();
 	
 	public int getTableId();
 	

@@ -775,18 +775,6 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 		return ancestors;
 	}
 
-	/**
-	 * Fixes the fullname for the given node and all of its descendants.
-	 */
-	public void fixFullNameForAllDescendants()
-	{
-		setFullName(fixFullName());
-		for( Geography child: getChildren() )
-		{
-			child.fixFullNameForAllDescendants();
-		}
-	}
-	
 	public boolean isDescendantOf(Geography node)
 	{
 		if( node==null )

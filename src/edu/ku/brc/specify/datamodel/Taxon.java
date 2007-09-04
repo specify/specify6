@@ -969,18 +969,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		return ancestors;
 	}
 
-	/**
-	 * Fixes the fullname for the given node and all of its descendants.
-	 */
-	public void fixFullNameForAllDescendants()
-	{
-		setFullName(fixFullName());
-		for( Taxon child: getChildren() )
-		{
-			child.fixFullNameForAllDescendants();
-		}
-	}
-	
 	public boolean isDescendantOf(Taxon node)
 	{
 		if( node==null )

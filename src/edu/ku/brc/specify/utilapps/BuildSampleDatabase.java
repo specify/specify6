@@ -171,6 +171,7 @@ import edu.ku.brc.specify.datamodel.WorkbenchRowImage;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
+import edu.ku.brc.specify.treeutils.TreeHelper;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -1479,7 +1480,7 @@ public class BuildSampleDatabase
         // 21, 22, 23, 24, 25
         newObjs.addAll(counties);
         
-        earth.fixFullNameForAllDescendants();
+        TreeHelper.fixFullnameForNodeAndDescendants(earth);
         earth.setNodeNumber(1);
         fixNodeNumbersFromRoot(earth);
 
@@ -1533,7 +1534,7 @@ public class BuildSampleDatabase
         newObjs.add(level3_2);
         newObjs.add(level3_3);
 
-        level0.fixFullNameForAllDescendants();
+        TreeHelper.fixFullnameForNodeAndDescendants(level0);
         level0.setNodeNumber(1);
         fixNodeNumbersFromRoot(level0);
         
@@ -1624,7 +1625,7 @@ public class BuildSampleDatabase
         // 20
         newObjs.add(shelf3_703);
         
-        dyche.fixFullNameForAllDescendants();
+        TreeHelper.fixFullnameForNodeAndDescendants(dyche);
         dyche.setNodeNumber(1);
         fixNodeNumbersFromRoot(dyche);
         
@@ -1697,7 +1698,7 @@ public class BuildSampleDatabase
         // 18, 19, 20, 21, 22, 23, 24
         newObjs.addAll(kids);
 
-        life.fixFullNameForAllDescendants();
+        TreeHelper.fixFullnameForNodeAndDescendants(life);
         life.setNodeNumber(1);
         fixNodeNumbersFromRoot(life);
         

@@ -592,18 +592,6 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
 		return ancestors;
 	}
 
-	/**
-	 * Fixes the fullname for the given node and all of its descendants.
-	 */
-	public void fixFullNameForAllDescendants()
-	{
-        setFullName(fixFullName());
-		for( LithoStrat child: getChildren() )
-		{
-			child.fixFullNameForAllDescendants();
-		}
-	}
-	
 	public boolean isDescendantOf(LithoStrat node)
 	{
 		if( node==null )

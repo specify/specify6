@@ -86,6 +86,7 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.treeutils.TreeFactory;
+import edu.ku.brc.specify.treeutils.TreeHelper;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIHelper;
@@ -4370,9 +4371,9 @@ public class GenericDBConversion
             log.info("Converted " + counter + " geography records");
         }
       
+        TreeHelper.fixFullnameForNodeAndDescendants(planetEarth);
         planetEarth.setNodeNumber(1);
         fixNodeNumbersFromRoot(planetEarth);
-        planetEarth.fixFullNameForAllDescendants();
         session.save(planetEarth);
         
     	HibernateUtil.commitTransaction();
@@ -4566,9 +4567,9 @@ public class GenericDBConversion
             log.info("Converted " + counter + " Stratigraphy records");
         }
       
+        TreeHelper.fixFullnameForNodeAndDescendants(earth);
         earth.setNodeNumber(1);
         fixNodeNumbersFromRoot(earth);
-        earth.fixFullNameForAllDescendants();
         
         HibernateUtil.commitTransaction();
         log.info("Converted " + counter + " Stratigraphy records");
@@ -4700,9 +4701,9 @@ public class GenericDBConversion
             log.info("Converted " + counter + " Stratigraphy records");
         }
       
+        TreeHelper.fixFullnameForNodeAndDescendants(earth);
         earth.setNodeNumber(1);
         fixNodeNumbersFromRoot(earth);
-        //earth.fixFullNameForAllDescendants();
         
         if (doSave)
         {
@@ -5095,10 +5096,10 @@ public class GenericDBConversion
     		}
     	}
     	
+        TreeHelper.fixFullnameForNodeAndDescendants(allTime);
     	// fix node number, child node number stuff
     	allTime.setNodeNumber(1);
     	fixNodeNumbersFromRoot(allTime);
-    	allTime.fixFullNameForAllDescendants();
         session.save(allTime);
         
     	HibernateUtil.commitTransaction();

@@ -678,18 +678,6 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 		return ancestors;
 	}
 
-	/**
-	 * Fixes the fullname for the given node and all of its descendants.
-	 */
-	public void fixFullNameForAllDescendants()
-	{
-        setFullName(fixFullName());
-		for( GeologicTimePeriod child: getChildren() )
-		{
-			child.fixFullNameForAllDescendants();
-		}
-	}
-	
 	public boolean isDescendantOf(GeologicTimePeriod node)
 	{
 		if( node==null )
