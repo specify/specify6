@@ -28,8 +28,8 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.sql.Timestamp;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -173,11 +173,11 @@ public interface Treeable<N extends Treeable<N,D,I>,
 	public String getFullName();
 	public void setFullName(String fullName);
 	
-	public Date getTimestampCreated();
-	public void setTimestampCreated(Date created);
+	public Timestamp getTimestampCreated();
+	public void setTimestampCreated(Timestamp created);
 	
-	public Date getTimestampModified();
-	public void setTimestampModified(Date modified);
+	public Timestamp getTimestampModified();
+	//public void setTimestampModified(Date modified);
 	
 	public String getLastEditedBy();
 	public void setLastEditedBy(String user);

@@ -1,9 +1,9 @@
 package edu.ku.brc.specify.utilapps;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Vector;
@@ -107,8 +107,8 @@ public class DataBuilder
     {
         AccessionAgent accessionAgent = new AccessionAgent();
 
-        accessionAgent.setTimestampCreated(new Date());
-        accessionAgent.setTimestampModified(new Date());
+        accessionAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //accessionAgent.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         accessionAgent.setAccession(accession);
         accessionAgent.setAgent(agent);
         persist(accessionAgent);
@@ -252,8 +252,8 @@ public class DataBuilder
         }
         colEv.setCollectors(collectorSet);
         colEv.setLocality(locality);
-        colEv.setTimestampCreated(new Date());
-        colEv.setTimestampModified(new Date());
+        colEv.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //colEv.setTimestampModified(new Timestamp(System.currentTimeMillis()));
 
         persist(colEv);
         persist(locality);
@@ -265,9 +265,9 @@ public class DataBuilder
         CollectingTrip trip = new CollectingTrip();
         trip.initialize();
         trip.setRemarks(remarks);
-        Date now = new Date();
+        Timestamp now = new Timestamp(System.currentTimeMillis());
         trip.setTimestampCreated(now);
-        trip.setTimestampModified(now);
+        //trip.setTimestampModified(now);
 
         Calendar startDate = Calendar.getInstance();
         startDate.set(9999, 12, 31);
@@ -320,8 +320,8 @@ public class DataBuilder
         {
             colEvAttr.setDblValue(dblVal);
         }
-        colEvAttr.setTimestampCreated(new Date());
-        colEvAttr.setTimestampModified(new Date());
+        colEvAttr.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //colEvAttr.setTimestampModified(new Timestamp(System.currentTimeMillis()));
 
         colEv.getAttrs().add(colEvAttr);
 
@@ -348,8 +348,8 @@ public class DataBuilder
         {
             colObjAttr.setDblValue(dblVal);
         }
-        colObjAttr.setTimestampCreated(new Date());
-        colObjAttr.setTimestampModified(new Date());
+        colObjAttr.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //colObjAttr.setTimestampModified(new Timestamp(System.currentTimeMillis()));
 
         colObj.getAttrs().add(colObjAttr);
 
@@ -366,8 +366,8 @@ public class DataBuilder
         collector.setLastEditedBy(null);
         collector.setOrderNumber(orderNum);
         collector.setRemarks("");
-        collector.setTimestampCreated(new Date());
-        collector.setTimestampModified(new Date());
+        collector.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //collector.setTimestampModified(new Timestamp(System.currentTimeMillis()));
 
         persist(collector);
         return collector;
@@ -395,8 +395,8 @@ public class DataBuilder
         colObj.setCountAmt(count);
         colObj.setFieldNumber(fieldNumber);
         colObj.setLastEditedBy(lastEditedBy);
-        colObj.setTimestampCreated(new Date());
-        colObj.setTimestampModified(new Date());
+        colObj.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //colObj.setTimestampModified(new Timestamp(System.currentTimeMillis()));
 
         if (collectingEvent != null)
         {
@@ -700,7 +700,7 @@ public class DataBuilder
     public static PickListItem createPickListItem(PickList pickList, String value)
     {
         PickListItem item = new PickListItem();
-        item.setTimestampCreated(new Date());
+        item.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
         item.setValue(value);
         item.setTitle(value);
         pickList.addPickListItem(item);
@@ -954,7 +954,7 @@ public class DataBuilder
         prep.setStorageLocation(null);
         prep.setText1(null);
         prep.setText2(null);
-        prep.setTimestampModified(new Date());
+        //prep.setTimestampModified(new Timestamp(System.currentTimeMillis()));
 
         colObj.getPreparations().add(prep);
 
@@ -969,7 +969,7 @@ public class DataBuilder
 
         locality.setLocalityName(name);
         locality.setGeography(geo);
-        locality.setTimestampModified(new Date());
+        //locality.setTimestampModified(new Timestamp(System.currentTimeMillis()));
 
         persist(locality);
         return locality;
@@ -994,8 +994,8 @@ public class DataBuilder
         {
             prepAttr.setDblValue(dblVal);
         }
-        prepAttr.setTimestampCreated(new Date());
-        prepAttr.setTimestampModified(new Date());
+        prepAttr.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //prepAttr.setTimestampModified(new Timestamp(System.currentTimeMillis()));
 
         prep.getAttrs().add(prepAttr);
         persist(prepAttr);
@@ -1013,8 +1013,8 @@ public class DataBuilder
         Address address = new Address();
         address.initialize();
         address.setAgent(agent);
-        address.setTimestampCreated(new Date());
-        address.setTimestampModified(new Date());
+        address.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //address.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         address.setAddress(address1);
         address.setAddress2(address2);
         address.setCity(city);
@@ -1038,8 +1038,8 @@ public class DataBuilder
     {
         Permit permit = new Permit();
         permit.initialize();
-        permit.setTimestampCreated(new Date());
-        permit.setTimestampModified(new Date());
+        permit.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //permit.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         permit.setStartDate(startDate);
         permit.setEndDate(endDate);
         permit.setPermitNumber(permitNumber);
@@ -1065,8 +1065,8 @@ public class DataBuilder
         accession.setVerbatimDate(verbatimDate);
         accession.setDateAccessioned(dateAccessioned);
         accession.setDateReceived(dateReceived);
-        accession.setTimestampCreated(new Date());
-        accession.setTimestampModified(new Date());
+        accession.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //accession.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         accession.setStatus(status);
         accession.setType(type);
         persist(accession);
@@ -1080,8 +1080,8 @@ public class DataBuilder
     {
         AccessionAgent accessionagent = new AccessionAgent();
         accessionagent.initialize();
-        accessionagent.setTimestampCreated(new Date());
-        accessionagent.setTimestampModified(new Date());
+        accessionagent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //accessionagent.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         accessionagent.setAccession(accession);
         accessionagent.setRepositoryAgreement(repositoryAgreement);
         accessionagent.setRole(role);
@@ -1096,8 +1096,8 @@ public class DataBuilder
     {
         AccessionAuthorization accessionauthorization = new AccessionAuthorization();
         accessionauthorization.initialize();
-        accessionauthorization.setTimestampCreated(new Date());
-        accessionauthorization.setTimestampModified(new Date());
+        accessionauthorization.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //accessionauthorization.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         accessionauthorization.setAccession(accession);
         accessionauthorization.setPermit(permit);
         accessionauthorization.setRepositoryAgreement(repositoryAgreement);
@@ -1117,8 +1117,8 @@ public class DataBuilder
     {
         Agent agent = new Agent();
         agent.initialize();
-        agent.setTimestampCreated(new Date());
-        agent.setTimestampModified(new Date());
+        agent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //agent.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         agent.setOrganization(organization);
         agent.setAgentType(agentType);
         agent.setFirstName(firstName);
@@ -1153,8 +1153,8 @@ public class DataBuilder
     {
         Author author = new Author();
         author.initialize();
-        author.setTimestampCreated(new Date());
-        author.setTimestampModified(new Date());
+        author.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //author.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         author.setAgent(agent);
         author.setOrderNumber(orderNumber);
         author.setReferenceWork(referenceWork);
@@ -1171,8 +1171,8 @@ public class DataBuilder
     {
         Borrow borrow = new Borrow();
         borrow.initialize();
-        borrow.setTimestampCreated(new Date());
-        borrow.setTimestampModified(new Date());
+        borrow.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //borrow.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         borrow.setInvoiceNumber(invoiceNumber);
         borrow.setReceivedDate(receivedDate);
         borrow.setOriginalDueDate(originalDueDate);
@@ -1187,8 +1187,8 @@ public class DataBuilder
     {
         BorrowAgent borrowagent = new BorrowAgent();
         borrowagent.initialize();
-        borrowagent.setTimestampCreated(new Date());
-        borrowagent.setTimestampModified(new Date());
+        borrowagent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //borrowagent.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         borrowagent.setRole(role);
         borrowagent.setAgent(agent);
         borrowagent.setBorrow(borrow);
@@ -1207,8 +1207,8 @@ public class DataBuilder
     {
         BorrowMaterial borrowmaterial = new BorrowMaterial();
         borrowmaterial.initialize();
-        borrowmaterial.setTimestampCreated(new Date());
-        borrowmaterial.setTimestampModified(new Date());
+        borrowmaterial.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //borrowmaterial.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         borrowmaterial.setQuantity(quantity);
         borrowmaterial.setBorrow(borrow);
         borrowmaterial.setMaterialNumber(materialNumber);
@@ -1228,8 +1228,8 @@ public class DataBuilder
     {
         BorrowReturnMaterial borrowreturnmaterial = new BorrowReturnMaterial();
         borrowreturnmaterial.initialize();
-        borrowreturnmaterial.setTimestampCreated(new Date());
-        borrowreturnmaterial.setTimestampModified(new Date());
+        borrowreturnmaterial.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //borrowreturnmaterial.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         borrowreturnmaterial.setAgent(agent);
         borrowreturnmaterial.setReturnedDate(returnedDate);
         borrowreturnmaterial.setQuantity(quantity);
@@ -1242,8 +1242,8 @@ public class DataBuilder
 //    {
 //        BorrowShipment borrowshipment = new BorrowShipment();
 //        borrowshipment.initialize();
-//        borrowshipment.setTimestampCreated(new Date());
-//        borrowshipment.setTimestampModified(new Date());
+//        borrowshipment.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+//        borrowshipment.setTimestampModified(new Timestamp(System.currentTimeMillis()));
 //        borrowshipment.setShipment(shipment);
 //        borrowshipment.setBorrow(borrow);
 //        persist(borrowshipment);
@@ -1257,8 +1257,8 @@ public class DataBuilder
     {
         Collection collection = new Collection();
         collection.initialize();
-        collection.setTimestampCreated(new Date());
-        collection.setTimestampModified(new Date());
+        collection.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //collection.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         //collection.setIsTissueSeries(isTissueSeries);
         collection.setCollectionName(seriesName);
         collection.setCollectionPrefix(collectionPrefix);
@@ -1285,8 +1285,8 @@ public class DataBuilder
         CollectingEvent collectingevent = new CollectingEvent();
         collectingevent.initialize();
         collectingevent.setVerbatimDate(verbatimDate);
-        collectingevent.setTimestampCreated(new Date());
-        collectingevent.setTimestampModified(new Date());
+        collectingevent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //collectingevent.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         collectingevent.setGroupPermittedToView(groupPermittedToView);
         collectingevent.setStartDate(startDate);
         collectingevent.setEndDate(endDate);
@@ -1311,8 +1311,8 @@ public class DataBuilder
     {
         CollectingEventAttr collectingeventattr = new CollectingEventAttr();
         collectingeventattr.initialize();
-        collectingeventattr.setTimestampCreated(new Date());
-        collectingeventattr.setTimestampModified(new Date());
+        collectingeventattr.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //collectingeventattr.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         collectingeventattr.setCollectingEvent(collectingEvent);
         collectingeventattr.setStrValue(strValue);
         collectingeventattr.setDblValue(dblValue);
@@ -1362,8 +1362,8 @@ public class DataBuilder
     {
         CollectionObject collectionobject = new CollectionObject();
         collectionobject.initialize();
-        collectionobject.setTimestampCreated(new Date());
-        collectionobject.setTimestampModified(new Date());
+        collectionobject.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //collectionobject.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         collectionobject.setFieldNumber(fieldNumber);
         collectionobject.setCountAmt(countAmt);
         collectionobject.setModifier(modifier);
@@ -1392,8 +1392,8 @@ public class DataBuilder
     {
         CollectionObjectAttr collectionobjectattr = new CollectionObjectAttr();
         collectionobjectattr.initialize();
-        collectionobjectattr.setTimestampCreated(new Date());
-        collectionobjectattr.setTimestampModified(new Date());
+        collectionobjectattr.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //collectionobjectattr.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         collectionobjectattr.setCollectionObject(collectionObject);
         collectionobjectattr.setStrValue(strValue);
         collectionobjectattr.setDblValue(dblValue);
@@ -1407,8 +1407,8 @@ public class DataBuilder
     {
         CollectionObjectCitation collectionobjectcitation = new CollectionObjectCitation();
         collectionobjectcitation.initialize();
-        collectionobjectcitation.setTimestampCreated(new Date());
-        collectionobjectcitation.setTimestampModified(new Date());
+        collectionobjectcitation.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //collectionobjectcitation.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         collectionobjectcitation.setCollectionObject(collectionObject);
         collectionobjectcitation.setReferenceWork(referenceWork);
         persist(collectionobjectcitation);
@@ -1421,8 +1421,8 @@ public class DataBuilder
     {
         Collector collector = new Collector();
         collector.initialize();
-        collector.setTimestampCreated(new Date());
-        collector.setTimestampModified(new Date());
+        collector.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //collector.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         collector.setCollectingEvent(collectingEvent);
         collector.setAgent(agent);
         collector.setOrderNumber(orderNumber);
@@ -1440,8 +1440,8 @@ public class DataBuilder
         Container container = new Container();
         container.initialize();
         container.setNumber(number);
-        container.setTimestampCreated(new Date());
-        container.setTimestampModified(new Date());
+        container.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //container.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         container.getCollectionObjects().add(colObj);
         container.setName(name);
         container.setLocation(location);
@@ -1466,8 +1466,8 @@ public class DataBuilder
     {
         Deaccession deaccession = new Deaccession();
         deaccession.initialize();
-        deaccession.setTimestampCreated(new Date());
-        deaccession.setTimestampModified(new Date());
+        deaccession.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //deaccession.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         deaccession.setDeaccessionNumber(deaccessionNumber);
         deaccession.setDeaccessionDate(deaccessionDate);
         deaccession.setType(type);
@@ -1481,8 +1481,8 @@ public class DataBuilder
     {
         DeaccessionAgent deaccessionagent = new DeaccessionAgent();
         deaccessionagent.initialize();
-        deaccessionagent.setTimestampCreated(new Date());
-        deaccessionagent.setTimestampModified(new Date());
+        deaccessionagent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //deaccessionagent.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         deaccessionagent.setRole(role);
         deaccessionagent.setAgent(agent);
         deaccessionagent.setDeaccession(deaccession);
@@ -1496,8 +1496,8 @@ public class DataBuilder
     {
         DeaccessionPreparation deaccessionpreparation = new DeaccessionPreparation();
         deaccessionpreparation.initialize();
-        deaccessionpreparation.setTimestampCreated(new Date());
-        deaccessionpreparation.setTimestampModified(new Date());
+        deaccessionpreparation.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //deaccessionpreparation.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         deaccessionpreparation.setQuantity(quantity);
         deaccessionpreparation.setDeaccession(deaccession);
         persist(deaccessionpreparation);
@@ -1516,8 +1516,8 @@ public class DataBuilder
     {
         Determination determination = new Determination();
         determination.initialize();
-        determination.setTimestampCreated(new Date());
-        determination.setTimestampModified(new Date());
+        determination.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //determination.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         determination.setStatus(status);
         determination.setCollectionObject(collectionObject);
         determination.setTypeStatusName(typeStatusName);
@@ -1536,8 +1536,8 @@ public class DataBuilder
     {
         DeterminationCitation determinationcitation = new DeterminationCitation();
         determinationcitation.initialize();
-        determinationcitation.setTimestampCreated(new Date());
-        determinationcitation.setTimestampModified(new Date());
+        determinationcitation.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //determinationcitation.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         determinationcitation.setReferenceWork(referenceWork);
         determinationcitation.setDetermination(determination);
         persist(determinationcitation);
@@ -1553,8 +1553,8 @@ public class DataBuilder
      {
      ExchangeIn exchangein = new ExchangeIn();
      exchangein.initialize();
-     exchangein.setTimestampCreated(new Date());
-     exchangein.setTimestampModified(new Date());
+     exchangein.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+     exchangein.setTimestampModified(new Timestamp(System.currentTimeMillis()));
      exchangein.setAgent(agent);
      exchangein.setAgent(agent);
      exchangein.setExchangeDate(exchangeDate);
@@ -1576,8 +1576,8 @@ public class DataBuilder
      {
      ExchangeOut exchangeout = new ExchangeOut();
      exchangeout.initialize();
-     exchangeout.setTimestampCreated(new Date());
-     exchangeout.setTimestampModified(new Date());
+     exchangeout.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+     exchangeout.setTimestampModified(new Timestamp(System.currentTimeMillis()));
      exchangeout.setAgent(agent);
      exchangeout.setAgent(agent);
      exchangeout.setExchangeDate(exchangeDate);
@@ -1597,8 +1597,8 @@ public class DataBuilder
     {
         GroupPerson groupperson = new GroupPerson();
         groupperson.initialize();
-        groupperson.setTimestampCreated(new Date());
-        groupperson.setTimestampModified(new Date());
+        groupperson.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //groupperson.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         groupperson.setOrderNumber(orderNumber);
         groupperson.setGroup(agentByGroup);
         groupperson.setMember(agentByMember);
@@ -1618,8 +1618,8 @@ public class DataBuilder
     {
         InfoRequest inforequest = new InfoRequest();
         inforequest.initialize();
-        inforequest.setTimestampCreated(new Date());
-        inforequest.setTimestampModified(new Date());
+        inforequest.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //inforequest.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         inforequest.setEmail(email);
         inforequest.setAgent(agent);
         inforequest.setFirstName(firstName);
@@ -1637,8 +1637,8 @@ public class DataBuilder
     {
         Journal journal = new Journal();
         journal.initialize();
-        journal.setTimestampCreated(new Date());
-        journal.setTimestampModified(new Date());
+        journal.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //journal.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         journal.setJournalName(journalName);
         journal.setJournalAbbreviation(journalAbbreviation);
         persist(journal);
@@ -1656,8 +1656,8 @@ public class DataBuilder
     {
         Loan loan = new Loan();
         loan.initialize();
-        loan.setTimestampCreated(new Date());
-        loan.setTimestampModified(new Date());
+        loan.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //loan.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         //loan.setShipment(shipment);
         loan.addShipment(shipment);
         loan.setOriginalDueDate(originalDueDate);
@@ -1675,8 +1675,8 @@ public class DataBuilder
     {
         LoanAgent loanAgent = new LoanAgent();
         loanAgent.initialize();
-        loanAgent.setTimestampCreated(new Date());
-        loanAgent.setTimestampModified(new Date());
+        loanAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //loanAgent.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         loanAgent.setRole(role);
         loanAgent.setAgent(agent);
         agent.getLoanAgents().add(loanAgent);
@@ -1696,8 +1696,8 @@ public class DataBuilder
     {
         LoanPhysicalObject loanphysicalobject = new LoanPhysicalObject();
         loanphysicalobject.initialize();
-        loanphysicalobject.setTimestampCreated(new Date());
-        loanphysicalobject.setTimestampModified(new Date());
+        loanphysicalobject.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //loanphysicalobject.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         loanphysicalobject.setDescriptionOfMaterial(descriptionOfMaterial);
         loanphysicalobject.setQuantity(quantity);
         loanphysicalobject.setLoan(loan);
@@ -1721,8 +1721,8 @@ public class DataBuilder
     {
         LoanReturnPhysicalObject loanreturnphysicalobject = new LoanReturnPhysicalObject();
         loanreturnphysicalobject.initialize();
-        loanreturnphysicalobject.setTimestampCreated(new Date());
-        loanreturnphysicalobject.setTimestampModified(new Date());
+        loanreturnphysicalobject.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //loanreturnphysicalobject.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         loanreturnphysicalobject.setReceivedBy(agent);
         loanreturnphysicalobject.setReturnedDate(returnedDate);
         loanreturnphysicalobject.setQuantity(quantity);
@@ -1771,8 +1771,8 @@ public class DataBuilder
     {
         Locality locality = new Locality();
         locality.initialize();
-        locality.setTimestampCreated(new Date());
-        locality.setTimestampModified(new Date());
+        locality.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //locality.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         locality.setGroupPermittedToView(groupPermittedToView);
         locality.setNamedPlace(namedPlace);
         locality.setRelationToNamedPlace(relationToNamedPlace);
@@ -1817,8 +1817,8 @@ public class DataBuilder
     {
         LocalityCitation localitycitation = new LocalityCitation();
         localitycitation.initialize();
-        localitycitation.setTimestampCreated(new Date());
-        localitycitation.setTimestampModified(new Date());
+        localitycitation.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //localitycitation.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         localitycitation.setReferenceWork(referenceWork);
         localitycitation.setLocality(locality);
         persist(localitycitation);
@@ -1829,8 +1829,8 @@ public class DataBuilder
     {
         OtherIdentifier otheridentifier = new OtherIdentifier();
         otheridentifier.initialize();
-        otheridentifier.setTimestampCreated(new Date());
-        otheridentifier.setTimestampModified(new Date());
+        otheridentifier.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //otheridentifier.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         otheridentifier.setCollectionObject(collectionObject);
         otheridentifier.setIdentifier(identifier);
         persist(otheridentifier);
@@ -1856,8 +1856,8 @@ public class DataBuilder
     {
         Preparation preparation = new Preparation();
         preparation.initialize();
-        preparation.setTimestampCreated(new Date());
-        preparation.setTimestampModified(new Date());
+        preparation.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //preparation.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         preparation.setCount(count);
         preparation.setStorageLocation(storageLocation);
         preparation.setPreparedDate(preparedDate);
@@ -1876,8 +1876,8 @@ public class DataBuilder
     {
         PreparationAttr preparationattr = new PreparationAttr();
         preparationattr.initialize();
-        preparationattr.setTimestampCreated(new Date());
-        preparationattr.setTimestampModified(new Date());
+        preparationattr.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //preparationattr.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         preparationattr.setStrValue(strValue);
         preparationattr.setDblValue(dblValue);
         preparationattr.setDefinition(definition);
@@ -1895,8 +1895,8 @@ public class DataBuilder
     {
         Project project = new Project();
         project.initialize();
-        project.setTimestampCreated(new Date());
-        project.setTimestampModified(new Date());
+        project.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //project.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         project.setUrl(url);
         project.setAgent(agent);
         project.setStartDate(startDate);
@@ -1912,8 +1912,8 @@ public class DataBuilder
     {
         ProjectCollectionObject projectcollectionobject = new ProjectCollectionObject();
         projectcollectionobject.initialize();
-        projectcollectionobject.setTimestampCreated(new Date());
-        projectcollectionobject.setTimestampModified(new Date());
+        projectcollectionobject.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //projectcollectionobject.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         projectcollectionobject.setCollectionObject(collectionObject);
         projectcollectionobject.setProject(project);
         persist(projectcollectionobject);
@@ -1924,8 +1924,8 @@ public class DataBuilder
     {
         RecordSet recordset = new RecordSet();
         recordset.initialize();
-        recordset.setTimestampCreated(new Date());
-        recordset.setTimestampModified(new Date());
+        recordset.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //recordset.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         recordset.setRecordSetId(recordSetID);
         recordset.setOwner(owner);
         recordset.setName(name);
@@ -1947,8 +1947,8 @@ public class DataBuilder
     {
         ReferenceWork referencework = new ReferenceWork();
         referencework.initialize();
-        referencework.setTimestampCreated(new Date());
-        referencework.setTimestampModified(new Date());
+        referencework.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //referencework.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         referencework.setUrl(url);
         referencework.setReferenceWorkType(referenceWorkType);
         referencework.setPublisher(publisher);
@@ -1979,8 +1979,8 @@ public class DataBuilder
         repositoryagreement.initialize();
         repositoryagreement.setNumber(number);
         repositoryagreement.setDateReceived(dateReceived);
-        repositoryagreement.setTimestampCreated(new Date());
-        repositoryagreement.setTimestampModified(new Date());
+        repositoryagreement.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //repositoryagreement.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         repositoryagreement.setStartDate(startDate);
         repositoryagreement.setEndDate(endDate);
         repositoryagreement.setOriginator(originator);
@@ -2001,8 +2001,8 @@ public class DataBuilder
     {
         Shipment shipment = new Shipment();
         shipment.initialize();
-        shipment.setTimestampCreated(new Date());
-        shipment.setTimestampModified(new Date());
+        shipment.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //shipment.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         shipment.setShippedBy(agent);
         shipment.setShipmentDate(shipmentDate);
         shipment.setShipmentNumber(shipmentNumber);
@@ -2092,8 +2092,8 @@ public class DataBuilder
     {
         TaxonCitation taxoncitation = new TaxonCitation();
         taxoncitation.initialize();
-        taxoncitation.setTimestampCreated(new Date());
-        taxoncitation.setTimestampModified(new Date());
+        taxoncitation.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //taxoncitation.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         taxoncitation.setTaxon(taxon);
         taxoncitation.setReferenceWork(referenceWork);
         persist(taxoncitation);

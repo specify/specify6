@@ -68,6 +68,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Collections;
@@ -668,8 +669,8 @@ public class BuildSampleDatabase
         ku.setAgentType(Agent.ORG);
         ku.setName("University of Swaledale");
         ku.setEmail("webadmin@sd.edu");
-        ku.setTimestampCreated(new Date());
-        ku.setTimestampModified(ku.getTimestampCreated());
+        ku.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //ku.setTimestampModified(ku.getTimestampCreated());
         agents.add(ku);
         agents.get(0).setOrganization(ku);
         agents.get(1).setOrganization(ku);

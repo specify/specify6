@@ -29,6 +29,7 @@
 package edu.ku.brc.specify.datamodel;
 
 import java.io.File;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -466,8 +467,8 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
         {
             File file = new File(fileName);
             str = XMLHelper.getContents(file);
-            timestampCreated  = new Date(file.lastModified());
-            timestampModified = timestampCreated;
+            timestampCreated  = new Timestamp(file.lastModified());
+            //timestampModified = timestampCreated;
         }
 
         if (str != null && str.length() > 0)

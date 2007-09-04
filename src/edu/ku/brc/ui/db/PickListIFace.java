@@ -17,6 +17,7 @@
  */
 package edu.ku.brc.ui.db;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Set;
 
@@ -59,9 +60,9 @@ public interface PickListIFace
 
     public void setSizeLimit(Integer sizeLimit);
 
-    public Date getTimestampCreated();
+    public Timestamp getTimestampCreated();
 
-    public void setTimestampCreated(Date created);
+    public void setTimestampCreated(Timestamp created);
 
     public Set<PickListItemIFace> getItems();
 

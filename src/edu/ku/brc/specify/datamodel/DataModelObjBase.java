@@ -25,12 +25,14 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
+import javax.persistence.Version;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -50,9 +52,9 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
     
     protected PropertyChangeSupport changes;
     
-    protected Date   timestampCreated;
-    protected Date   timestampModified;
-    protected String lastEditedBy;
+    protected Timestamp timestampCreated;
+    protected Timestamp timestampModified;
+    protected String    lastEditedBy;
     
     
     /* (non-Javadoc)
@@ -66,7 +68,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
      */
     protected void init()
     {
-        Date now = new Date();
+        Timestamp now = new Timestamp(System.currentTimeMillis());
         timestampCreated  = now;
         timestampModified = now;
         lastEditedBy      = null;
@@ -96,15 +98,15 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTimestampCreated()
      */
     @Column(name = "TimestampCreated", unique = false, nullable = false, insertable = true, updatable = false, length = 23)
-    public Date getTimestampCreated()
+    public Timestamp getTimestampCreated()
     {
         return this.timestampCreated;
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.FormDataObjIFace#setTimestampCreated(java.util.Date)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#setTimestampCreated(java.sql.Timestamp)
      */
-    public void setTimestampCreated(Date timestampCreated)
+    public void setTimestampCreated(Timestamp timestampCreated)
     {
         this.timestampCreated = timestampCreated;
     }
@@ -112,16 +114,17 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTimestampModified()
      */
+    @Version
     @Column(name = "TimestampModified", unique = false, nullable = false, insertable = true, updatable = true)
-    public Date getTimestampModified()
+    public Timestamp getTimestampModified()
     {
-        return this.timestampModified != null ? this.timestampModified : timestampCreated;
+        return this.timestampModified;
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#setTimestampModified(java.util.Date)
      */
-    public void setTimestampModified(Date timestampModified)
+    public void setTimestampModified(Timestamp timestampModified)
     {
         this.timestampModified = timestampModified;
     }

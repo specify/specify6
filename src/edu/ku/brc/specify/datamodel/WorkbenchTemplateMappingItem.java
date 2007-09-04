@@ -13,6 +13,7 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -455,7 +456,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
         wbtmi.isRequired            = isRequired;
         wbtmi.workbenchDataItems    = new HashSet<WorkbenchDataItem>();
         
-        wbtmi.timestampCreated      = new Date();
+        wbtmi.timestampCreated      = new Timestamp(System.currentTimeMillis());
         wbtmi.timestampModified     = null;
         wbtmi.lastEditedBy          = null;
 

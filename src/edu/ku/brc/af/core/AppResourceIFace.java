@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.af.core;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Map;
 
@@ -53,13 +54,13 @@ public interface AppResourceIFace
 
     public abstract void setMimeType(String mimeType);
 
-    public abstract Date getTimestampCreated();
+    public abstract Timestamp getTimestampCreated();
 
-    public abstract void setTimestampCreated(Date timestampCreated);
+    public abstract void setTimestampCreated(Timestamp timestampCreated);
 
-    public abstract Date getTimestampModified();
+    public abstract Timestamp getTimestampModified();
 
-    public abstract void setTimestampModified(Date timestampModified);
+    //public abstract void setTimestampModified(Date timestampModified);
 
     public abstract String getLastEditedBy();
 

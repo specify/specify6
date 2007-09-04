@@ -196,7 +196,7 @@ public class EditFormDialog<T> extends JDialog implements ActionListener
             FormDataObjIFace formObj = (FormDataObjIFace)dataObj;
             String currentUserString = FormHelper.getCurrentUserEditStr();
             formObj.setLastEditedBy(currentUserString);
-            formObj.setTimestampModified(new Timestamp(System.currentTimeMillis()));
+            //formObj.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         }
         
         // save changes to any object that already exists in the DB

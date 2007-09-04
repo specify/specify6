@@ -7,6 +7,7 @@
 package edu.ku.brc.ui.forms;
 
 import java.beans.PropertyChangeListener;
+import java.sql.Timestamp;
 import java.util.Date;
 
 /**
@@ -41,25 +42,25 @@ public interface FormDataObjIFace
      * Return the Timestamp Created.
      * @return the Timestamp Created
      */
-    public Date getTimestampCreated();
+    public Timestamp getTimestampCreated();
 
     /**
      * Sets the Timestamp Created.
      * @param timestampCreated
      */
-    public void setTimestampCreated(Date timestampCreated);
+    public void setTimestampCreated(Timestamp timestampCreated);
 
     /**
      * Returns the Timestamp Modified.
      * @return the Timestamp Modified.
      */
-    public Date getTimestampModified();
+    public Timestamp getTimestampModified();
 
-    /**
-     * Sets the Timestamp Modified.
-     * @param timestampModified the new timestamp 
-     */
-    public void setTimestampModified(Date timestampModified);
+//    /**
+//     * Sets the Timestamp Modified.
+//     * @param timestampModified the new timestamp 
+//     */
+//    public void setTimestampModified(Timestamp timestampModified);
     
     /**
      * Returns lastEditedBy.

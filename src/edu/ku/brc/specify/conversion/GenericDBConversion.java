@@ -2365,8 +2365,8 @@ public class GenericDBConversion
                                 CollectionObjectAttr colObjAttr = new CollectionObjectAttr();
                                 colObjAttr.setCollectionObject(colObj);
                                 colObjAttr.setDefinition(attrDef);
-                                colObjAttr.setTimestampCreated(new Date());
-                                colObjAttr.setTimestampModified(new Date());
+                                colObjAttr.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+                                //colObjAttr.setTimestampModified(new Date());
 
                                 //String oldName = newNameToOldNameMap.get(attrDef.getFieldName());
                                 //System.out.println("["+attrDef.getFieldName()+"]["+oldName+"]");
@@ -5021,7 +5021,7 @@ public class GenericDBConversion
     	allTime.setEndPeriod(0f);
     	allTime.setEndUncertainty(0f);
     	allTime.setTimestampCreated(now);
-    	allTime.setTimestampModified(now);
+    	//allTime.setTimestampModified(now);
     	++count;
     	newItems.add(allTime);
     	
@@ -5032,27 +5032,28 @@ public class GenericDBConversion
     		String name  = rs.getString(3);
     		String std   = rs.getString(4);
     		String rem   = rs.getString(5);
-    		Date modT    = rs.getDate(6);
-    		Date creT    = rs.getDate(7);
+            Date modTDate = rs.getDate(6);
+    		Date creTDate = rs.getDate(7);
+            Timestamp modT = (modTDate != null) ? new Timestamp(modTDate.getTime()) : null;
+            Timestamp creT = (creTDate != null) ? new Timestamp(creTDate.getTime()) : null;
     		Float upper  = rs.getFloat(8);
     		Float uError = (Float)rs.getObject(9);
     		Float lower  = rs.getFloat(10);
     		Float lError = (Float)rs.getObject(11);
             
-
             if (modT == null && creT == null)
             {
-                creT = Calendar.getInstance().getTime();
-                modT = Calendar.getInstance().getTime();
+                creT = new Timestamp(System.currentTimeMillis());
+                modT = new Timestamp(System.currentTimeMillis());
                 
             } else if (modT == null && creT != null)
             {
-                modT = new Date(creT.getTime());
-            } else
+                modT = new Timestamp(creT.getTime());
+            } else if (modT != null && creT == null)
             {
-                creT = new Date(modT != null ? modT.getTime() : (new Date()).getTime());
+                creT = new Timestamp(modT.getTime());
             }
-
+            // else (neither are null, so do nothing)
     		
     		GeologicTimePeriod gtp = new GeologicTimePeriod();
     		gtp.initialize();
@@ -5069,7 +5070,7 @@ public class GenericDBConversion
     		gtp.setStandard(std);
     		gtp.setRemarks(rem);
     		gtp.setTimestampCreated(creT);
-    		gtp.setTimestampModified(modT);
+    		//gtp.setTimestampModified(modT);
 
     		newItems.add(gtp);
 

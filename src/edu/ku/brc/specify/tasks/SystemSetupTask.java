@@ -19,6 +19,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -551,7 +552,7 @@ public class SystemSetupTask extends BaseTask
             {
                 if (pickList.getTimestampCreated() == null)
                 {
-                    pickList.setTimestampCreated(new Date());
+                    pickList.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
                     addPickList(getTitle(pickList), pickList, "DeletePickList", navBox.getItems().size()-1);
 
                     navBox.invalidate();

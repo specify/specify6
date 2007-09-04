@@ -635,37 +635,6 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
 		}
 	}
 	
-	/**
-	 * Updates the created and modified timestamps to now.  Also
-	 * updates the <code>lastEditedBy</code> field to the current
-	 * value of the <code>user.name</code> system property.
-	 */
-	public void setTimestampsToNow()
-	{
-		Date now = new Date();
-		setTimestampCreated(now);
-		setTimestampModified(now);
-
-		//TODO: fix this somehow
-		String user = System.getProperty("user.name");
-		setLastEditedBy(user);
-	}
-	
-	/**
-	 * Updates the modified timestamp to now.  Also updates the
-	 * <code>lastEditedBy</code> field to the current value
-	 * of the <code>user.name</code> system property.
-	 */
-	public void updateModifiedTimeAndUser()
-	{
-		Date now = new Date();
-		setTimestampModified(now);
-		
-		//TODO: fix this somehow
-		String user = System.getProperty("user.name");
-		setLastEditedBy(user);
-	}
-
 	public boolean isDescendantOf(Location node)
 	{
 		if( node==null )

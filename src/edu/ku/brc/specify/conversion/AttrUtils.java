@@ -16,6 +16,7 @@ package edu.ku.brc.specify.conversion;
 
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.getStrValue;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -155,8 +156,8 @@ public class AttrUtils
             prepAttr.setDblValue(dblValue);
             prepAttr.setPreparation(null);
             prepAttr.setStrValue(strValue);
-            prepAttr.setTimestampCreated(new Date());
-            prepAttr.setTimestampModified(new Date());
+            prepAttr.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+            //prepAttr.setTimestampModified(new Date());
             
             session.save(prepAttr);
             

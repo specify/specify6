@@ -20,6 +20,7 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -211,7 +212,7 @@ public class RecordSetTask extends BaseTask
     {
         NavBoxItemIFace nbi = addToNavBox(recordSet);
         
-        recordSet.setTimestampCreated(Calendar.getInstance().getTime());
+        recordSet.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
         recordSet.setOwner(SpecifyUser.getCurrentUser());
         persistRecordSet(recordSet);
         

@@ -13,6 +13,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package edu.ku.brc.dbsupport;
+import java.sql.Timestamp;
 import java.util.Date;
 
 import edu.ku.brc.specify.datamodel.AttributeDef;
@@ -134,26 +135,26 @@ public interface AttributeIFace
      * Returns the timestamp it was created.
      * @return the timestamp it was created
      */
-    public Date getTimestampCreated();
+    public Timestamp getTimestampCreated();
     
     /**
      * Sets the timestamp it was created.
      * @param timestampCreated the timestamp it was created
      */
-    public void setTimestampCreated(Date timestampCreated);
+    public void setTimestampCreated(Timestamp timestampCreated);
     
 
     /**
      * Returns the timestamp of the record (could be null for a new object).
      * @return the timestamp of the record (could be null for a new object)
      */
-    public Date getTimestampModified();
+    public Timestamp getTimestampModified();
     
-    /**
-     * Sets the timestamp.
-     * @param timestampModified the timestamp value
-     */
-    public void setTimestampModified(Date timestampModified);
+//    /**
+//     * Sets the timestamp.
+//     * @param timestampModified the timestamp value
+//     */
+//    public void setTimestampModified(Date timestampModified);
 
 
     /**

@@ -20,6 +20,7 @@ import java.awt.Component;
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.io.File;
+import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -164,8 +165,8 @@ public class InfoRequestTask extends BaseTask
     {
         addInfoRequest(infoRequest);
 
-        infoRequest.setTimestampCreated(Calendar.getInstance().getTime());
-        infoRequest.setTimestampModified(Calendar.getInstance().getTime());
+        infoRequest.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        //infoRequest.setTimestampModified(Calendar.getInstance().getTime());
         
         // save to database
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
