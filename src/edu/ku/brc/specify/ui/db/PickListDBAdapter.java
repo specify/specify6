@@ -289,7 +289,7 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
     public Object getElementAt(int index)
     {
         //return selectedIndex > -1 && selectedIndex < items.size() ? items.get(selectedIndex) : null;
-        System.out.println("Getting Item at["+index+"]["+items.get(index)+"]");
+        //System.out.println("Getting Item at["+index+"]["+items.get(index)+"]");
         if ( index >= 0 && index < items.size() )
         {
             return items.elementAt(index);

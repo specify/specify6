@@ -2,9 +2,7 @@
 
 <!-- 
 
-    Last Used Id is 102 or 502
-    
-    73 is not used.
+    Last Used Id is 106 or 502
     
     PLEASE Keep this file in alphabetical order! 
 
@@ -71,6 +69,7 @@
         </table>
         <table name="edu.ku.brc.specify.datamodel.CollectionRelationship" id="99"/>
         <table name="edu.ku.brc.specify.datamodel.Collector" id="30"/>
+        <table name="edu.ku.brc.specify.datamodel.CommonName" id="106"/>
         <table name="edu.ku.brc.specify.datamodel.ConservEvent" id="73"/>
         <table name="edu.ku.brc.specify.datamodel.ConservDescription" id="103"/>
         <table name="edu.ku.brc.specify.datamodel.ConservRecommendation" id="104"/>

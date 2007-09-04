@@ -74,6 +74,7 @@
 		<mapping class="edu.ku.brc.specify.datamodel.CollectionType"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Collector"/>
 		<mapping class="edu.ku.brc.specify.datamodel.ColObjAttributes"/>
+		<mapping class="edu.ku.brc.specify.datamodel.CommonName"/>
 		<mapping class="edu.ku.brc.specify.datamodel.ConservEvent"/>
 		<mapping class="edu.ku.brc.specify.datamodel.ConservDescription"/>
 		<mapping class="edu.ku.brc.specify.datamodel.ConservRecommendation"/>

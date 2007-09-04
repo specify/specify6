@@ -38,9 +38,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-
 import edu.ku.brc.dbsupport.AttributeIFace;
 
 /**

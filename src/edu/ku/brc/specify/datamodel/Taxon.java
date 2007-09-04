@@ -104,6 +104,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	protected Set<Determination>   determinations;
 	protected Set<TaxonCitation>   taxonCitations;
 	protected Set<Attachment>      attachments;
+    protected Set<CommonName>      commonNames;
 
     // non-user fields
     protected Integer              nodeNumber;
@@ -175,6 +176,7 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		determinations = new HashSet<Determination>();
 		acceptedTaxon = null;
 		taxonCitations = new HashSet<TaxonCitation>();
+        commonNames = new HashSet<CommonName>();
 		definition = null;
 		definitionItem = null;
 		parent = null;
@@ -626,6 +628,24 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 	{
 		this.determinations = determinations;
 	}
+
+    /**
+     * @return the commonNames
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "taxon")
+    @Cascade( {CascadeType.MERGE, CascadeType.LOCK} )
+    public Set<CommonName> getCommonNames()
+    {
+        return commonNames;
+    }
+
+    /**
+     * @param commonNames the commonNames to set
+     */
+    public void setCommonNames(Set<CommonName> commonNames)
+    {
+        this.commonNames = commonNames;
+    }
 
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "taxon")
     @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )

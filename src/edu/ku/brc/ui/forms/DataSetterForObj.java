@@ -54,7 +54,7 @@ public class DataSetterForObj implements DataObjectSettable
      */
     public void setFieldValue(Object dataObj, String fieldName, Object data)
     {
-        log.debug("fieldName["+fieldName+"] dataObj["+dataObj+"] data ["+data+"]");
+        //log.debug("fieldName["+fieldName+"] dataObj["+dataObj+"] data ["+data+"]");
         try
         {
             PropertyDescriptor descr = PropertyUtils.getPropertyDescriptor(dataObj, fieldName.trim());
@@ -76,7 +76,7 @@ public class DataSetterForObj implements DataObjectSettable
                 if (setter != null)
                 {
                     args[0] = dataVal;
-                    log.debug("fieldname["+fieldName+"] dataObj["+dataObj+"] data ["+dataVal+"] ("+(dataVal != null ? dataVal.getClass().getSimpleName() : "")+")");
+                    //log.debug("fieldname["+fieldName+"] dataObj["+dataObj+"] data ["+dataVal+"] ("+(dataVal != null ? dataVal.getClass().getSimpleName() : "")+")");
                     setter.invoke(dataObj, new Object[] {dataVal});
                 }
             } else

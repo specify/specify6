@@ -1763,7 +1763,7 @@ public class BuildSampleDatabase
         for (Object o: oList)
         {
             frame.setProcess(++cnt);
-            System.out.println("* " + cnt + " " + o.getClass().getSimpleName());
+            //System.out.println("* " + cnt + " " + o.getClass().getSimpleName());
             persist(o);
         }
         frame.setProcess(oList.size());
@@ -2187,7 +2187,7 @@ public class BuildSampleDatabase
         }
         SpecifySchemaGenerator.generateSchema(driverInfo, databaseHost, dbName, userName, password);
 
-        class PostInsertEL implements org.hibernate.event.PostInsertEventListener
+        /*class PostInsertEL implements org.hibernate.event.PostInsertEventListener
         {
             protected int counter = 0;
             public void onPostInsert(PostInsertEvent arg0)
@@ -2205,9 +2205,6 @@ public class BuildSampleDatabase
         class PreInsertEL implements org.hibernate.event.PreInsertEventListener
         {
             protected int counter = 0;
-            /* (non-Javadoc)
-             * @see org.hibernate.event.PreInsertEventListener#onPreInsert(org.hibernate.event.PreInsertEvent)
-             */
             @Override
             public boolean onPreInsert(PreInsertEvent arg0)
             {
@@ -2216,50 +2213,16 @@ public class BuildSampleDatabase
                     FormDataObjIFace dataObj = (FormDataObjIFace)arg0.getEntity();
                     //if (dataObj.getDataClass().getSimpleName().indexOf("Conserv") > -1)
                     System.out.println(counter + " PreInsert["+dataObj.getId()+"] "+dataObj.getDataClass().getSimpleName());// + " Id: " +dataObj.getId());
-                    /*
-                    if (counter == 73)
-                    {
-                        int x = 0;
-                        x++;
-                        CollectingEvent ce = (CollectingEvent)dataObj;
-                        for (AttributeIFace a : ce.getAttrs())
-                        {
-                            CollectingEventAttr cea = (CollectingEventAttr)a;
-                            AttributeDef def = cea.getDefinition();
-                            if (def != null)
-                            {
-                                if (def.getCollectionType() != null)
-                                {
-                                    if (def.getCollectionType().getAttributeDefs().contains(def.getCollectionType()))
-                                    {
-                                        System.out.println("CollectionType doesn't contain attr");
-                                        for (AttributeDef ad : def.getCollectionType().getAttributeDefs())
-                                        {
-                                            if (ad.getCollectionType() == null)
-                                            {
-                                                System.out.println("Def has null CT");
-                                            }
-                                        }
-                                    }
-                                } else
-                                {
-                                    System.out.println("CollectionType is null");
-                                }
-                            } else
-                            {
-                                System.out.println("Def is null");
-                            }
-                        }
-                    }*/
                     counter++;
                 }
                 return false;
             }
             
-        }
+        }*/
+        
         //HibernateUtil.setListener("post-commit-update", new edu.ku.brc.specify.dbsupport.PostUpdateEventListener());
-        HibernateUtil.setListener("post-commit-insert", new PostInsertEL());
-        HibernateUtil.setListener("pre-insert", new PreInsertEL());
+        //HibernateUtil.setListener("post-commit-insert", new PostInsertEL());
+        //HibernateUtil.setListener("pre-insert", new PreInsertEL());
         //HibernateUtil.setListener("post-commit-delete", new edu.ku.brc.specify.dbsupport.PostDeleteEventListener());
         //HibernateUtil.setListener("delete", new edu.ku.brc.specify.dbsupport.DeleteEventListener());
         

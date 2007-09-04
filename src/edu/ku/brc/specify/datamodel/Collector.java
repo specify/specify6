@@ -42,7 +42,6 @@ import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.Cascade;
 
 import edu.ku.brc.util.Orderable;
 

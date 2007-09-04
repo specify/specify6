@@ -46,9 +46,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 
