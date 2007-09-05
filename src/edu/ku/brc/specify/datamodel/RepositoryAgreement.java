@@ -48,6 +48,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
 
 /**
 
@@ -56,29 +57,34 @@ import org.hibernate.annotations.CascadeType;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "repositoryagreement")
-public class RepositoryAgreement extends DataModelObjBase implements java.io.Serializable {
+@org.hibernate.annotations.Table(appliesTo="repositoryagreement", indexes =
+    {   @Index (name="RefWrkNumberIDX", columnNames={"number"}),
+        @Index (name="RefWrkStartDate", columnNames={"StartDate"})
+    })
+public class RepositoryAgreement extends DataModelObjBase implements java.io.Serializable 
+{
 
     // Fields
 
-     protected Integer repositoryAgreementId;
-     protected String number;
-     protected String status;
-     protected Calendar startDate;
-     protected Calendar endDate;
-     protected Calendar dateReceived;
-     protected String text1;
-     protected String text2;
-     protected String text3;
-     protected Float number1;
-     protected Float number2;
-     protected String remarks;
-     protected Boolean yesNo1;
-     protected Boolean yesNo2;
-     protected Set<AccessionAuthorization> repositoryAgreementAuthorizations;
-     protected Set<AccessionAgent>         repositoryAgreementAgents;
-     protected Set<Accession>               accessions;
-     protected Set<Attachment>          attachments;
-     protected Agent originator;
+    protected Integer                     repositoryAgreementId;
+    protected String                      number;
+    protected String                      status;
+    protected Calendar                    startDate;
+    protected Calendar                    endDate;
+    protected Calendar                    dateReceived;
+    protected String                      text1;
+    protected String                      text2;
+    protected String                      text3;
+    protected Float                       number1;
+    protected Float                       number2;
+    protected String                      remarks;
+    protected Boolean                     yesNo1;
+    protected Boolean                     yesNo2;
+    protected Set<AccessionAuthorization> repositoryAgreementAuthorizations;
+    protected Set<AccessionAgent>         repositoryAgreementAgents;
+    protected Set<Accession>              accessions;
+    protected Set<Attachment>             attachments;
+    protected Agent                       originator;
 
 
     // Constructors

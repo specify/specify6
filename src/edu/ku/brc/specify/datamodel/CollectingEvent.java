@@ -49,6 +49,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
 
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.AttributeProviderIFace;
@@ -61,6 +62,11 @@ import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "collectingevent")
+@org.hibernate.annotations.Table(appliesTo="collectingevent", indexes =
+    {   @Index (name="StationFieldNumberIDX", columnNames={"StationFieldNumber"}),
+        @Index (name="StartDateIDX", columnNames={"StartDate"}),
+        @Index (name="EndDateIDX", columnNames={"EndDate"})
+    })
 public class CollectingEvent extends DataModelObjBase implements AttributeProviderIFace, java.io.Serializable, Comparable<CollectingEvent> {
 
     // Fields    

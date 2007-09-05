@@ -43,6 +43,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Index;
+
 /**
 
  */
@@ -50,17 +52,20 @@ import javax.persistence.Transient;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "loanreturnphysicalobject")
+@org.hibernate.annotations.Table(appliesTo="loanreturnphysicalobject", indexes =
+    {   @Index (name="ReturnedDateIDX", columnNames={"ReturnedDate"})
+    })
 public class LoanReturnPhysicalObject extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer loanReturnPhysicalObjectId;
-     protected Calendar returnedDate;
-     protected Integer quantity;
-     protected String remarks;
-     protected LoanPhysicalObject loanPhysicalObject;
-     protected DeaccessionPreparation deaccessionPreparation;
-     protected Agent receivedBy;
+    protected Integer                loanReturnPhysicalObjectId;
+    protected Calendar               returnedDate;
+    protected Integer                quantity;
+    protected String                 remarks;
+    protected LoanPhysicalObject     loanPhysicalObject;
+    protected DeaccessionPreparation deaccessionPreparation;
+    protected Agent                  receivedBy;
 
 
     // Constructors

@@ -45,6 +45,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Index;
+
 /**
 
  */
@@ -52,11 +54,15 @@ import javax.persistence.Transient;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "deaccession")
+@org.hibernate.annotations.Table(appliesTo="deaccession", indexes =
+    {   @Index (name="DeaccessionNumberIDX", columnNames={"DeaccessionNumber"}),
+        @Index (name="DeaccessionDateIDX", columnNames={"DeaccessionDate"})
+    })
 public class Deaccession extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 
-    protected Integer                        deaccessionId;
+    protected Integer                     deaccessionId;
     protected String                      type;
     protected String                      deaccessionNumber;
     protected Calendar                    deaccessionDate;

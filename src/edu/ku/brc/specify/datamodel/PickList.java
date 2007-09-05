@@ -43,6 +43,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
 
 import edu.ku.brc.ui.db.PickListIFace;
 import edu.ku.brc.ui.db.PickListItemIFace;
@@ -61,11 +62,13 @@ import edu.ku.brc.ui.db.PickListItemIFace;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "picklist")
-public class PickList extends DataModelObjBase implements PickListIFace, java.io.Serializable
+@org.hibernate.annotations.Table(appliesTo="picklist", indexes =
+    {   @Index (name="PickListNameIDX", columnNames={"Name"})
+    })public class PickList extends DataModelObjBase implements PickListIFace, java.io.Serializable
 {
     // Fields    
 
-    protected Integer              pickListId;
+    protected Integer           pickListId;
     protected String            name;
     protected Integer           type;  // see PickListDBAdapterIFace.Type
     protected String            tableName;

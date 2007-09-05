@@ -49,6 +49,7 @@ import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
 
 
 
@@ -60,6 +61,10 @@ import org.hibernate.annotations.CascadeType;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "accession", uniqueConstraints = { @UniqueConstraint(columnNames = { "RepositoryAgreementID" }) })
+@org.hibernate.annotations.Table(appliesTo="accession", indexes =
+    {   @Index (name="AccessionNumberIDX", columnNames={"Number"}),
+        @Index (name="AccessionDateIDX", columnNames={"DateAccessioned"})
+    })
 public class Accession extends DataModelObjBase implements java.io.Serializable {
 
     // Fields

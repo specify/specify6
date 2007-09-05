@@ -49,6 +49,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
 
 import edu.ku.brc.services.mapping.LocalityMapper.MapLocationIFace;
 
@@ -59,72 +60,75 @@ import edu.ku.brc.services.mapping.LocalityMapper.MapLocationIFace;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "locality")
+@org.hibernate.annotations.Table(appliesTo="locality", indexes =
+    {   @Index (name="localityNameIDX", columnNames={"LocalityName"})
+    })
 public class Locality extends DataModelObjBase implements java.io.Serializable, MapLocationIFace {
 
     // Fields    
 
-     protected Integer localityId;
-     protected String namedPlace;
-     protected String relationToNamedPlace;
-     protected String localityName;
-     protected String baseMeridian;
-     protected String range;
-     protected String rangeDirection;
-     protected String township;
-     protected String townshipDirection;
-     protected String section;
-     protected String sectionPart;
-     protected String verbatimElevation;
-     protected String originalElevationUnit;
-     protected Double minElevation;
-     protected Double maxElevation;
-     protected String elevationMethod;
-     protected Double elevationAccuracy;
-     protected Integer originalLatLongUnit;
-     protected String latLongType;
-     protected BigDecimal latitude1;
-     protected BigDecimal longitude1;
-     protected BigDecimal latitude2;
-     protected BigDecimal longitude2;
-     protected String latLongMethod;
-     protected Double latLongAccuracy;
-     protected String gml;
-     protected String datum;
-     protected Integer groupPermittedToView;
-     protected String remarks;
-     protected String text1;
-     protected String text2;
-     protected Double number1;
-     protected Double number2;
-     protected Boolean yesNo1;
-     protected Boolean yesNo2;
-     protected String lat1text;
-     protected String lat2text;
-     protected String long1text;
-     protected String long2text;
-     protected String nationalParkName;
-     protected String islandGroup;
-     protected String island;
-     protected String waterBody;
-     protected String drainage;
-     protected Integer visibility;
-     protected String visibilitySetBy;
+    protected Integer               localityId;
+    protected String                namedPlace;
+    protected String                relationToNamedPlace;
+    protected String                localityName;
+    protected String                baseMeridian;
+    protected String                range;
+    protected String                rangeDirection;
+    protected String                township;
+    protected String                townshipDirection;
+    protected String                section;
+    protected String                sectionPart;
+    protected String                verbatimElevation;
+    protected String                originalElevationUnit;
+    protected Double                minElevation;
+    protected Double                maxElevation;
+    protected String                elevationMethod;
+    protected Double                elevationAccuracy;
+    protected Integer               originalLatLongUnit;
+    protected String                latLongType;
+    protected BigDecimal            latitude1;
+    protected BigDecimal            longitude1;
+    protected BigDecimal            latitude2;
+    protected BigDecimal            longitude2;
+    protected String                latLongMethod;
+    protected Double                latLongAccuracy;
+    protected String                gml;
+    protected String                datum;
+    protected Integer               groupPermittedToView;
+    protected String                remarks;
+    protected String                text1;
+    protected String                text2;
+    protected Double                number1;
+    protected Double                number2;
+    protected Boolean               yesNo1;
+    protected Boolean               yesNo2;
+    protected String                lat1text;
+    protected String                lat2text;
+    protected String                long1text;
+    protected String                long2text;
+    protected String                nationalParkName;
+    protected String                islandGroup;
+    protected String                island;
+    protected String                waterBody;
+    protected String                drainage;
+    protected Integer               visibility;
+    protected String                visibilitySetBy;
      
      // Manis Fields
-     protected Float    namedPlaceExtent;
-     protected String   geoRefAccuracyUnits;
-     protected String   geoRefDetRef;
-     protected Calendar geoRefDetDate;
-     protected Agent    geoRefDetBy;
-     protected String   noGeoRefBecause;
-     protected String   geoRefRemarks;
-     protected String   geoRefVerificationStatus; 
+    protected Float                 namedPlaceExtent;
+    protected String                geoRefAccuracyUnits;
+    protected String                geoRefDetRef;
+    protected Calendar              geoRefDetDate;
+    protected Agent                 geoRefDetBy;
+    protected String                noGeoRefBecause;
+    protected String                geoRefRemarks;
+    protected String                geoRefVerificationStatus; 
      
-     protected Set<CollectionType>      collectionTypes;
-     protected Geography                geography;
-     protected Set<LocalityCitation>    localityCitations;
-     protected Set<CollectingEvent>     collectingEvents;
-     protected Set<Attachment>          attachments;
+    protected Set<CollectionType>   collectionTypes;
+    protected Geography             geography;
+    protected Set<LocalityCitation> localityCitations;
+    protected Set<CollectingEvent>  collectingEvents;
+    protected Set<Attachment>       attachments;
 
 
     // Constructors

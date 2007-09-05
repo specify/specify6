@@ -29,6 +29,7 @@ import javax.persistence.Transient;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
 
 import edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator;
 
@@ -37,6 +38,10 @@ import edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "location")
+@org.hibernate.annotations.Table(appliesTo="location", indexes =
+    {   @Index (name="LocNameIDX", columnNames={"Name"}),
+        @Index (name="LocFullNameIDX", columnNames={"FullName"})
+    })
 public class Location extends DataModelObjBase implements Serializable, Treeable<Location,LocationTreeDef,LocationTreeDefItem>{
 
     /**

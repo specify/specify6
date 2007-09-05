@@ -44,6 +44,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Index;
+
 /**
 
  */
@@ -51,6 +53,9 @@ import javax.persistence.Transient;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "borrowmaterial")
+@org.hibernate.annotations.Table(appliesTo="borrowmaterial", indexes =
+    {   @Index (name="MaterialNumberIDX", columnNames={"MaterialNumber"})
+    })
 public class BorrowMaterial extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    

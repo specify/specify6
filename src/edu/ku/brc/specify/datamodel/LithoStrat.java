@@ -49,6 +49,7 @@ import javax.persistence.Transient;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
 
 import edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator;
 
@@ -58,6 +59,10 @@ import edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "lithostrat")
+@org.hibernate.annotations.Table(appliesTo="lithostrat", indexes =
+    {   @Index (name="LithoNameIDX", columnNames={"Name"}),
+        @Index (name="LithoFullNameIDX", columnNames={"FullName"})
+    })
 public class LithoStrat extends DataModelObjBase implements java.io.Serializable, Treeable<LithoStrat,LithoStratTreeDef,LithoStratTreeDefItem>
 {
 

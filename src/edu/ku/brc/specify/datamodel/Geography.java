@@ -51,6 +51,7 @@ import javax.persistence.Transient;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
 
 import edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator;
 
@@ -59,6 +60,10 @@ import edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "geography")
+@org.hibernate.annotations.Table(appliesTo="geography", indexes =
+    {   @Index (name="GeoNameIDX", columnNames={"Name"}),
+        @Index (name="GeoFullNameIDX", columnNames={"FullName"})
+    })
 public class Geography extends DataModelObjBase implements java.io.Serializable, Treeable<Geography,GeographyTreeDef,GeographyTreeDefItem>{
 
     /**
@@ -67,7 +72,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
      */
     protected static final Logger log = Logger.getLogger(Geography.class);
 
-	protected Integer			    	geographyId;
+	protected Integer			    geographyId;
 	protected String				name;
 	protected String				remarks;
 	protected String				commonName;

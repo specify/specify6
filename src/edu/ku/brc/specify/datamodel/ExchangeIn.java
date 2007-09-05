@@ -43,6 +43,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Index;
+
 /**
 
  */
@@ -50,6 +52,9 @@ import javax.persistence.Transient;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "exchangein")
+@org.hibernate.annotations.Table(appliesTo="exchangein", indexes =
+    {   @Index (name="ExchangeDateIDX", columnNames={"ExchangeDate"})
+    })
 public class ExchangeIn extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    

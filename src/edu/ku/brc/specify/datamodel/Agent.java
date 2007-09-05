@@ -59,7 +59,11 @@ import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 @Table(name = "agent")
 @org.hibernate.annotations.Table(appliesTo="agent", indexes =
     {   @Index (name="AgentLastNameIDX", columnNames={"LastName"}),
-        @Index (name="AgentFirstNameIDX", columnNames={"FirstName"})  })
+        @Index (name="AgentFirstNameIDX", columnNames={"FirstName"}),
+        @Index (name="AgentNameIDX", columnNames={"Name"}),
+        @Index (name="AuthorNameIDX", columnNames={"AuthorName"}), 
+        @Index (name="CollectorNameIDX", columnNames={"CollectorName"})  
+    })
 public class Agent extends DataModelObjBase implements java.io.Serializable {
 
     // Fields

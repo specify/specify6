@@ -31,6 +31,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
 
 /**
  * @author rods
@@ -44,6 +45,9 @@ import org.hibernate.annotations.CascadeType;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "catalognumberingscheme")
+@org.hibernate.annotations.Table(appliesTo="catalognumberingscheme", indexes =
+    {   @Index (name="SchemeNameIDX", columnNames={"SchemeName"})
+    })
 public class CatalogNumberingScheme extends DataModelObjBase implements java.io.Serializable
 {
     protected Integer            catalogNumberingSchemeId;

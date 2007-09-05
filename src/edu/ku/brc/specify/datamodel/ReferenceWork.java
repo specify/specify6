@@ -45,6 +45,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
 
 /**
 
@@ -53,36 +54,41 @@ import org.hibernate.annotations.CascadeType;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "referencework")
-public class ReferenceWork extends DataModelObjBase implements java.io.Serializable {
+@org.hibernate.annotations.Table(appliesTo="referencework", indexes =
+    {   @Index (name="RefWrkTitleIDX", columnNames={"Title"}),
+        @Index (name="RefWrkPublisherIDX", columnNames={"Publisher"})
+    })
+public class ReferenceWork extends DataModelObjBase implements java.io.Serializable 
+{
 
     // Fields    
 
-     protected Integer referenceWorkId;
-     protected Integer containingReferenceWorkId;
-     protected Byte referenceWorkType;
-     protected String title;
-     protected String publisher;
-     protected String placeOfPublication;
-     protected String workDate;
-     protected String volume;
-     protected String pages;
-     protected String url;
-     protected String libraryNumber;
-     protected String remarks;
-     protected String text1;
-     protected String text2;
-     protected Float number1;
-     protected Float number2;
-     protected Boolean isPublished;
-     protected Boolean yesNo1;
-     protected Boolean yesNo2;
-     protected String  guid;
-     protected Set<LocalityCitation> localityCitations;
-     protected Set<CollectionObjectCitation> collectionObjectCitations;
-     protected Set<TaxonCitation> taxonCitations;
-     protected Set<DeterminationCitation> determinationCitations;
-     protected Journal journal;
-     protected Set<Author> authors;
+    protected Integer                       referenceWorkId;
+    protected Integer                       containingReferenceWorkId;
+    protected Byte                          referenceWorkType;
+    protected String                        title;
+    protected String                        publisher;
+    protected String                        placeOfPublication;
+    protected String                        workDate;
+    protected String                        volume;
+    protected String                        pages;
+    protected String                        url;
+    protected String                        libraryNumber;
+    protected String                        remarks;
+    protected String                        text1;
+    protected String                        text2;
+    protected Float                         number1;
+    protected Float                         number2;
+    protected Boolean                       isPublished;
+    protected Boolean                       yesNo1;
+    protected Boolean                       yesNo2;
+    protected String                        guid;
+    protected Set<LocalityCitation>         localityCitations;
+    protected Set<CollectionObjectCitation> collectionObjectCitations;
+    protected Set<TaxonCitation>            taxonCitations;
+    protected Set<DeterminationCitation>    determinationCitations;
+    protected Journal                       journal;
+    protected Set<Author>                   authors;
 
 
     // Constructors

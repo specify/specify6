@@ -48,6 +48,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
 
 /**
 
@@ -56,25 +57,28 @@ import org.hibernate.annotations.CascadeType;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "project")
+@org.hibernate.annotations.Table(appliesTo="project", indexes =
+    {   @Index (name="ProjectNameIDX", columnNames={"ProjectName"})
+    })
 public class Project extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer projectId;
-     protected String projectName;
-     protected String projectDescription;
-     protected String url;
-     protected Calendar startDate;
-     protected Calendar endDate;
-     protected String remarks;
-     protected String text1;
-     protected String text2;
-     protected Float number1;
-     protected Float number2;
-     protected Boolean yesNo1;
-     protected Boolean yesNo2;
-     protected Agent agent;
-     protected Set<ProjectCollectionObject> projectCollectionObjects;
+    protected Integer                      projectId;
+    protected String                       projectName;
+    protected String                       projectDescription;
+    protected String                       url;
+    protected Calendar                     startDate;
+    protected Calendar                     endDate;
+    protected String                       remarks;
+    protected String                       text1;
+    protected String                       text2;
+    protected Float                        number1;
+    protected Float                        number2;
+    protected Boolean                      yesNo1;
+    protected Boolean                      yesNo2;
+    protected Agent                        agent;
+    protected Set<ProjectCollectionObject> projectCollectionObjects;
 
 
     // Constructors

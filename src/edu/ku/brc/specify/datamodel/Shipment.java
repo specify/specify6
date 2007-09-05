@@ -48,36 +48,42 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
 
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "shipment")
-public class Shipment extends DataModelObjBase implements java.io.Serializable {
+@org.hibernate.annotations.Table(appliesTo="shipment", indexes =
+    {   @Index (name="ShipmentNumberIDX", columnNames={"ShipmentNumber"}),
+        @Index (name="ShipmentDateIDX", columnNames={"ShipmentDate"})
+    })
+public class Shipment extends DataModelObjBase implements java.io.Serializable 
+{
 
     // Fields    
 
-     protected Integer shipmentId;
-     protected Calendar shipmentDate;
-     protected String shipmentNumber;
-     protected String shipmentMethod;
-     protected Short numberOfPackages;
-     protected String weight;
-     protected String insuredForAmount;
-     protected String remarks;
-     protected String text1;
-     protected String text2;
-     protected Float number1;
-     protected Float number2;
-     protected Boolean yesNo1;
-     protected Boolean yesNo2;
-     protected Agent shipper;
-     protected Agent shippedTo;
-     protected Agent shippedBy;
-     //protected Set<BorrowShipment> borrowShipments;
-     protected Set<Borrow> borrows;
-     protected Set<Loan> loans;
-     protected Set<ExchangeOut> exchangeOuts;
+    protected Integer          shipmentId;
+    protected Calendar         shipmentDate;
+    protected String           shipmentNumber;
+    protected String           shipmentMethod;
+    protected Short            numberOfPackages;
+    protected String           weight;
+    protected String           insuredForAmount;
+    protected String           remarks;
+    protected String           text1;
+    protected String           text2;
+    protected Float            number1;
+    protected Float            number2;
+    protected Boolean          yesNo1;
+    protected Boolean          yesNo2;
+    protected Agent            shipper;
+    protected Agent            shippedTo;
+    protected Agent            shippedBy;
+    // protected Set<BorrowShipment> borrowShipments;
+    protected Set<Borrow>      borrows;
+    protected Set<Loan>        loans;
+    protected Set<ExchangeOut> exchangeOuts;
 
 
     // Constructors

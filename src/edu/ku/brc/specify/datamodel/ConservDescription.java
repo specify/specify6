@@ -34,6 +34,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
 
 /**
  * 
@@ -49,6 +50,9 @@ import org.hibernate.annotations.CascadeType;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "conservdescription")
+@org.hibernate.annotations.Table(appliesTo="conservdescription", indexes =
+    {   @Index (name="ConservDescShortDescIDX", columnNames={"ShortDesc"})
+    })
 public class ConservDescription extends DataModelObjBase implements java.io.Serializable
 {
     // Fields    
@@ -135,7 +139,7 @@ public class ConservDescription extends DataModelObjBase implements java.io.Seri
     /**
      *
      */
-    @Column(name = "hortDesc", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Column(name = "ShortDesc", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
     public String getShortDesc()
     {
         return this.shortDesc;

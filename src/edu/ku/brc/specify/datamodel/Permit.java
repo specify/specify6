@@ -48,6 +48,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
 
 /**
 
@@ -56,28 +57,32 @@ import org.hibernate.annotations.CascadeType;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "permit")
+@org.hibernate.annotations.Table(appliesTo="permit", indexes =
+    {   @Index (name="PermitNumberIDX", columnNames={"PermitNumber"}),
+        @Index (name="IssuedDateIDX", columnNames={"IssuedDate"})
+    })
 public class Permit extends DataModelObjBase implements java.io.Serializable {
 
     // Fields
 
-     protected Integer permitId;
-     protected String permitNumber;
-     protected String type;
-     protected Calendar issuedDate;
-     protected Calendar startDate;
-     protected Calendar endDate;
-     protected Calendar renewalDate;
-     protected String remarks;
-     protected String text1;
-     protected String text2;
-     protected Float number1;
-     protected Float number2;
-     protected Boolean yesNo1;
-     protected Boolean yesNo2;
-     protected Set<AccessionAuthorization> accessionAuthorizations;
-     protected Agent issuedTo;
-     protected Agent issuedBy;
-     protected Set<Attachment>          attachments;
+    protected Integer                     permitId;
+    protected String                      permitNumber;
+    protected String                      type;
+    protected Calendar                    issuedDate;
+    protected Calendar                    startDate;
+    protected Calendar                    endDate;
+    protected Calendar                    renewalDate;
+    protected String                      remarks;
+    protected String                      text1;
+    protected String                      text2;
+    protected Float                       number1;
+    protected Float                       number2;
+    protected Boolean                     yesNo1;
+    protected Boolean                     yesNo2;
+    protected Set<AccessionAuthorization> accessionAuthorizations;
+    protected Agent                       issuedTo;
+    protected Agent                       issuedBy;
+    protected Set<Attachment>             attachments;
 
 
     // Constructors

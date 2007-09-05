@@ -49,6 +49,7 @@ import javax.persistence.Transient;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
 
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.AttributeProviderIFace;
@@ -61,6 +62,9 @@ import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "preparation")
+@org.hibernate.annotations.Table(appliesTo="preparation", indexes =
+    {   @Index (name="PreparedDateIDX", columnNames={"preparedDate"})
+    })
 public class Preparation extends DataModelObjBase implements AttributeProviderIFace, java.io.Serializable, Comparable<Preparation>
 {
 

@@ -44,16 +44,16 @@ public class CollectingTrip extends DataModelObjBase implements java.io.Serializ
 
     // Fields    
 
-     private Integer collectingTripId;
-     private String remarks;
+     private Integer  collectingTripId;
+     private String   remarks;
      private Calendar startDate;
-     private Short startDatePrecision;
-     private String startDateVerbatim;
+     private Short    startDatePrecision;
+     private String   startDateVerbatim;
      private Calendar endDate;
-     private Short endDatePrecision;
-     private String endDateVerbatim;
-     private Short startTime;
-     private Short endTime;
+     private Short    endDatePrecision;
+     private String   endDateVerbatim;
+     private Short    startTime;
+     private Short    endTime;
      private Set<CollectingEvent> collectingEvents;
 
 

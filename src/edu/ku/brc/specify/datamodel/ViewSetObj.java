@@ -52,6 +52,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
 
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.helpers.XMLHelper;
@@ -63,14 +64,17 @@ import edu.ku.brc.helpers.XMLHelper;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "viewsetobj")
+@org.hibernate.annotations.Table(appliesTo="viewsetobj", indexes =
+    {   @Index (name="ViewObjNameIDX", columnNames={"name"})
+    })
 public class ViewSetObj extends DataModelObjBase implements java.io.Serializable, AppResourceIFace 
 {
 
-    private static final Logger  log       = Logger.getLogger(ViewSetObj.class);
+     private static final Logger  log       = Logger.getLogger(ViewSetObj.class);
             
-    // Fields    
+     // Fields    
 
-     protected Integer                    viewSetObjId;
+     protected Integer                 viewSetObjId;
      protected Short                   level;
      protected String                  name;
      protected String                  description;

@@ -46,6 +46,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Index;
+
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 
 /**
@@ -55,6 +57,9 @@ import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @Table(name = "determination")
 @org.hibernate.annotations.Proxy(lazy = false)
+@org.hibernate.annotations.Table(appliesTo="determination", indexes =
+    {   @Index (name="DeterminedDateIDX", columnNames={"DeterminedDate"})
+    })
 public class Determination extends DataModelObjBase implements java.io.Serializable, Comparable<Determination>
 {
 

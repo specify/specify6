@@ -30,6 +30,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Index;
+
 /**
 
  */
@@ -37,6 +39,9 @@ import javax.persistence.Transient;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "collection")
+@org.hibernate.annotations.Table(appliesTo="collection", indexes =
+    {   @Index (name="CollectionNameIDX", columnNames={"CollectionName"})
+    })
 public class Collection extends DataModelObjBase implements java.io.Serializable, Comparable<Collection>
 {
     protected static Collection    currentCollection    = null;

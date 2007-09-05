@@ -46,6 +46,7 @@ import javax.swing.ImageIcon;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
 
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
@@ -59,6 +60,9 @@ import edu.ku.brc.dbsupport.RecordSetItemIFace;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "recordset")
+@org.hibernate.annotations.Table(appliesTo="recordset", indexes =
+    {   @Index (name="RecordSetNameIDX", columnNames={"name"})
+    })
 public class RecordSet extends DataModelObjBase implements java.io.Serializable, RecordSetIFace 
 {
 

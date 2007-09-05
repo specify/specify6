@@ -43,6 +43,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
 
 /**
 
@@ -51,14 +52,16 @@ import org.hibernate.annotations.CascadeType;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "journal")
-public class Journal extends DataModelObjBase implements java.io.Serializable {
+@org.hibernate.annotations.Table(appliesTo="journal", indexes =
+    {   @Index (name="JournalNameIDX", columnNames={"JournalName"})
+    })public class Journal extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 
      protected Integer journalId;
-     protected String journalName;
-     protected String journalAbbreviation;
-     protected String remarks;
+     protected String  journalName;
+     protected String  journalAbbreviation;
+     protected String  remarks;
      protected Set<ReferenceWork> referenceWorks;
 
 

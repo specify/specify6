@@ -34,10 +34,10 @@
       <field name="text3" type="java.lang.String">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="type" type="java.lang.String">
@@ -52,7 +52,6 @@
       <field name="yesNo2" type="java.lang.Boolean">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="repositoryAgreement" type="ManyToOne"/>
     </table>
     <table name="accessionagent">
       <field name="lastEditedBy" type="java.lang.String">
@@ -64,15 +63,12 @@
       <field name="role" type="java.lang.String">
         <desc country="US" lang="en">Role the agent played in the accession process</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="agent" type="ManyToOne"/>
-      <field name="repositoryAgreement" type="ManyToOne"/>
-      <field name="accession" type="ManyToOne"/>
     </table>
     <table name="accessionauthorization">
       <field name="lastEditedBy" type="java.lang.String">
@@ -81,15 +77,12 @@
       <field name="remarks" type="text">
         <desc country="US" lang="en">Additional Comments</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="repositoryAgreement" type="ManyToOne"/>
-      <field name="permit" type="ManyToOne"/>
-      <field name="accession" type="ManyToOne"/>
     </table>
     <table name="address">
       <field name="address" type="java.lang.String">
@@ -140,13 +133,12 @@
       <field name="state" type="java.lang.String">
         <desc country="US" lang="en">The state within the country</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="agent" type="ManyToOne"/>
     </table>
     <table name="agent">
       <field name="abbreviation" type="java.lang.String">
@@ -194,10 +186,10 @@
       <field name="remarks" type="text">
         <desc country="US" lang="en">Additional Comments</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="title" type="java.lang.String">
@@ -212,9 +204,6 @@
       <field name="visibilitySetBy" type="java.lang.String">
         <desc country="US" lang="en"/>
       </field>
-      <field name="instContentContact" type="ManyToOne"/>
-      <field name="divisions" type="ManyToMany"/>
-      <field name="instTechContact" type="ManyToOne"/>
     </table>
     <table name="agentvariant">
       <field name="lastEditedBy" type="java.lang.String">
@@ -223,16 +212,15 @@
       <field name="name" type="java.lang.String">
         <desc country="US" lang="en">THe full name used as a variant or vernacular name</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="varType" type="java.lang.Byte">
         <desc country="US" lang="en">Indicates whether the record is a variant (0) or a vernacular name (1)</desc>
       </field>
-      <field name="agent" type="ManyToOne"/>
     </table>
     <table name="appresource">
       <field name="allPermissionLevel" type="java.lang.Integer">
@@ -262,15 +250,12 @@
       <field name="ownerPermissionLevel" type="java.lang.Integer">
         <desc country="US" lang="en"/>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="group" type="ManyToOne"/>
-      <field name="appResourceDefaults" type="ManyToMany"/>
-      <field name="specifyUser" type="ManyToOne"/>
     </table>
     <table name="appresourcedata">
       <field name="data" type="text">
@@ -279,14 +264,12 @@
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="viewSetObj" type="ManyToOne"/>
-      <field name="appResource" type="ManyToOne"/>
     </table>
     <table name="appresourcedefault">
       <field name="disciplineType" type="java.lang.String">
@@ -295,20 +278,15 @@
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="userType" type="java.lang.String">
         <desc country="US" lang="en"/>
       </field>
-      <field name="specifyUser" type="ManyToOne"/>
-      <field name="persistedViewSets" type="ManyToMany"/>
-      <field name="collectionType" type="ManyToOne"/>
-      <field name="collection" type="ManyToOne"/>
-      <field name="persistedAppResources" type="ManyToMany"/>
     </table>
     <table name="attachments">
       <field name="attachmentLocation" type="java.lang.String">
@@ -332,10 +310,10 @@
       <field name="remarks" type="text">
         <desc country="US" lang="en">Additional Comments</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="visibility" type="java.lang.Integer">
@@ -344,18 +322,6 @@
       <field name="visibilitySetBy" type="java.lang.String">
         <desc country="US" lang="en"/>
       </field>
-      <field name="accession" type="ManyToOne"/>
-      <field name="collectionObject" type="ManyToOne"/>
-      <field name="taxon" type="ManyToOne"/>
-      <field name="loan" type="ManyToOne"/>
-      <field name="conservDescription" type="ManyToOne"/>
-      <field name="conservEvent" type="ManyToOne"/>
-      <field name="collectingEvent" type="ManyToOne"/>
-      <field name="permit" type="ManyToOne"/>
-      <field name="agent" type="ManyToOne"/>
-      <field name="repositoryAgreement" type="ManyToOne"/>
-      <field name="locality" type="ManyToOne"/>
-      <field name="preparation" type="ManyToOne"/>
     </table>
     <table name="attachmentmetadata">
       <field name="lastEditedBy" type="java.lang.String">
@@ -364,16 +330,15 @@
       <field name="name" type="java.lang.String">
         <desc country="US" lang="en"/>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="value" type="java.lang.String">
         <desc country="US" lang="en"/>
       </field>
-      <field name="attachment" type="ManyToOne"/>
     </table>
     <table name="attributedef">
       <field name="dataType" type="java.lang.Short">
@@ -388,14 +353,12 @@
       <field name="tableType" type="java.lang.Short">
         <desc country="US" lang="en"/>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="collectionType" type="ManyToOne"/>
-      <field name="prepType" type="ManyToOne"/>
     </table>
     <table name="author">
       <field name="lastEditedBy" type="java.lang.String">
@@ -407,14 +370,12 @@
       <field name="remarks" type="text">
         <desc country="US" lang="en">Additional Comments</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="agent" type="ManyToOne"/>
-      <field name="referenceWork" type="ManyToOne"/>
     </table>
     <table name="borrow">
       <field name="currentDueDate" type="java.util.Calendar">
@@ -453,10 +414,10 @@
       <field name="text2" type="java.lang.String">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="yesNo1" type="java.lang.Boolean">
@@ -465,7 +426,6 @@
       <field name="yesNo2" type="java.lang.Boolean">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="shipments" type="ManyToMany"/>
     </table>
     <table name="borrowagent">
       <field name="lastEditedBy" type="java.lang.String">
@@ -477,14 +437,12 @@
       <field name="role" type="java.lang.String">
         <desc country="US" lang="en">Role played by agent in borrow</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="agent" type="ManyToOne"/>
-      <field name="borrow" type="ManyToOne"/>
     </table>
     <table name="borrowmaterial">
       <field name="description" type="java.lang.String">
@@ -511,13 +469,12 @@
       <field name="quantityReturned" type="java.lang.Short">
         <desc country="US" lang="en">Quantity returned</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="borrow" type="ManyToOne"/>
     </table>
     <table name="borrowreturnmaterial">
       <field name="lastEditedBy" type="java.lang.String">
@@ -532,14 +489,12 @@
       <field name="returnedDate" type="java.util.Calendar">
         <desc country="US" lang="en">The date the material was returned</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="borrowMaterial" type="ManyToOne"/>
-      <field name="agent" type="ManyToOne"/>
     </table>
     <table name="recordset">
       <field name="allPermissionLevel" type="java.lang.Integer">
@@ -563,14 +518,12 @@
       <field name="remarks" type="text">
         <desc country="US" lang="en">Additional Comments</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="specifyUser" type="ManyToOne"/>
-      <field name="group" type="ManyToOne"/>
     </table>
     <table name="catalognumberingscheme">
       <field name="isNumericOnly" type="java.lang.Boolean">
@@ -585,10 +538,10 @@
       <field name="schemeName" type="java.lang.String">
         <desc country="US" lang="en"/>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
     </table>
@@ -632,10 +585,10 @@
       <field name="stationFieldNumber" type="java.lang.String">
         <desc country="US" lang="en">Station number or field number of the site where collecting event took place, A number or code recorded in field notes and/or written on field tags that identifies ALL material collected in a CollectingEvent.</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="verbatimDate" type="java.lang.String">
@@ -650,9 +603,6 @@
       <field name="visibilitySetBy" type="java.lang.String">
         <desc country="US" lang="en"/>
       </field>
-      <field name="locality" type="ManyToOne"/>
-      <field name="collectingTrip" type="ManyToOne"/>
-      <field name="habitatAttributes" type="ManyToOne"/>
     </table>
     <table name="collectingeventattr">
       <field name="dblValue" type="java.lang.Double">
@@ -664,14 +614,12 @@
       <field name="strValue" type="java.lang.String">
         <desc country="US" lang="en"/>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="definition" type="ManyToOne"/>
-      <field name="collectingEvent" type="ManyToOne"/>
     </table>
     <table name="collectingtrip">
       <field name="endDate" type="java.util.Calendar">
@@ -687,7 +635,7 @@
         <desc country="US" lang="en">The ending time of the collecting trip</desc>
       </field>
       <field name="lastEditedBy" type="java.lang.String">
-        <desc country="US" lang="en"></desc>
+        <desc country="US" lang="en"/>
       </field>
       <field name="remarks" type="text">
         <desc country="US" lang="en">Additional Comments</desc>
@@ -704,10 +652,10 @@
       <field name="startTime" type="java.lang.Short">
         <desc country="US" lang="en">The start time of the collecting trip</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
     </table>
@@ -724,14 +672,12 @@
       <field name="remarks" type="text">
         <desc country="US" lang="en">Additional Comments</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="collectionType" type="ManyToOne"/>
-      <field name="catalogNumberingScheme" type="ManyToOne"/>
     </table>
     <table name="collectionobject">
       <field name="catalogNumber" type="java.lang.String">
@@ -785,10 +731,10 @@
       <field name="text2" type="java.lang.String">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="visibility" type="java.lang.Integer">
@@ -803,14 +749,6 @@
       <field name="yesNo2" type="java.lang.Boolean">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="container" type="ManyToOne"/>
-      <field name="paleoContext" type="ManyToOne"/>
-      <field name="collection" type="ManyToOne"/>
-      <field name="collectingEvent" type="ManyToOne"/>
-      <field name="accession" type="ManyToOne"/>
-      <field name="containerOwner" type="ManyToOne"/>
-      <field name="cataloger" type="ManyToOne"/>
-      <field name="colObjAttributes" type="ManyToOne"/>
     </table>
     <table name="collectionobjectattr">
       <field name="dblValue" type="java.lang.Double">
@@ -822,14 +760,12 @@
       <field name="strValue" type="java.lang.String">
         <desc country="US" lang="en"/>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="definition" type="ManyToOne"/>
-      <field name="collectionObject" type="ManyToOne"/>
     </table>
     <table name="colobjattributes">
       <field name="age" type="java.lang.String">
@@ -1000,10 +936,10 @@
       <field name="text9" type="java.lang.String">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="weight" type="java.lang.Float">
@@ -1041,28 +977,23 @@
       <field name="remarks" type="text">
         <desc country="US" lang="en">Additional Comments</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="referenceWork" type="ManyToOne"/>
-      <field name="collectionObject" type="ManyToOne"/>
     </table>
     <table name="collectionrelationship">
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="leftSide" type="ManyToOne"/>
-      <field name="collectionRelType" type="ManyToOne"/>
-      <field name="rightSide" type="ManyToOne"/>
     </table>
     <table name="collectionreltype">
       <field name="lastEditedBy" type="java.lang.String">
@@ -1071,10 +1002,10 @@
       <field name="name" type="java.lang.String">
         <desc country="US" lang="en">The name of the Collection Relationship</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
     </table>
@@ -1088,19 +1019,12 @@
       <field name="name" type="java.lang.String">
         <desc country="US" lang="en">The name of the Collection Type, often the same as the discipline</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="localities" type="ManyToMany"/>
-      <field name="geographyTreeDef" type="ManyToOne"/>
-      <field name="dataType" type="ManyToOne"/>
-      <field name="lithoStratTreeDef" type="ManyToOne"/>
-      <field name="specifyUser" type="ManyToOne"/>
-      <field name="locationTreeDef" type="ManyToOne"/>
-      <field name="geologicTimePeriodTreeDef" type="ManyToOne"/>
     </table>
     <table name="collector">
       <field name="lastEditedBy" type="java.lang.String">
@@ -1112,14 +1036,12 @@
       <field name="remarks" type="text">
         <desc country="US" lang="en">Additional Comments</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="agent" type="ManyToOne"/>
-      <field name="collectingEvent" type="ManyToOne"/>
     </table>
     <table name="commonname">
       <field name="country" type="java.lang.String">
@@ -1134,16 +1056,15 @@
       <field name="name" type="java.lang.String">
         <desc country="US" lang="en"/>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="variant" type="java.lang.String">
         <desc country="US" lang="en"/>
       </field>
-      <field name="taxon" type="ManyToOne"/>
     </table>
     <table name="conservdescription">
       <field name="backgroundInfo" type="text">
@@ -1176,10 +1097,10 @@
       <field name="source" type="text">
         <desc country="US" lang="en"/>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="units" type="java.lang.String">
@@ -1188,10 +1109,6 @@
       <field name="width" type="java.lang.Float">
         <desc country="US" lang="en"/>
       </field>
-      <field name="accession" type="ManyToOne"/>
-      <field name="division" type="ManyToOne"/>
-      <field name="collectionObject" type="ManyToOne"/>
-      <field name="curator" type="ManyToOne"/>
     </table>
     <table name="conservevent">
       <field name="advTestingExam" type="text">
@@ -1212,10 +1129,10 @@
       <field name="photoDocs" type="text">
         <desc country="US" lang="en"/>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="treatmentCompDate" type="java.util.Calendar">
@@ -1224,9 +1141,6 @@
       <field name="treatmentReport" type="text">
         <desc country="US" lang="en"/>
       </field>
-      <field name="examinedByAgent" type="ManyToOne"/>
-      <field name="treatedByAgent" type="ManyToOne"/>
-      <field name="conservDescription" type="ManyToOne"/>
     </table>
     <table name="conservrecommendation">
       <field name="completedComments" type="text">
@@ -1241,16 +1155,12 @@
       <field name="remarks" type="text">
         <desc country="US" lang="en">Additional Comments</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="conservRecmdType" type="ManyToOne"/>
-      <field name="displayRecommendationConservEvent" type="ManyToOne"/>
-      <field name="lightRecommendationConservEvent" type="ManyToOne"/>
-      <field name="otherRecommendationConservEvent" type="ManyToOne"/>
     </table>
     <table name="conservrecmdtype">
       <field name="lastEditedBy" type="java.lang.String">
@@ -1259,10 +1169,10 @@
       <field name="rcmdType" type="java.lang.Byte">
         <desc country="US" lang="en"/>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="title" type="java.lang.String">
@@ -1282,16 +1192,15 @@
       <field name="number" type="java.lang.Integer">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="type" type="java.lang.Short">
         <desc country="US" lang="en"/>
       </field>
-      <field name="location" type="ManyToOne"/>
     </table>
     <table name="datatype">
       <field name="lastEditedBy" type="java.lang.String">
@@ -1300,10 +1209,10 @@
       <field name="name" type="java.lang.String">
         <desc country="US" lang="en"/>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
     </table>
@@ -1332,10 +1241,10 @@
       <field name="text2" type="java.lang.String">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="type" type="java.lang.String">
@@ -1358,14 +1267,12 @@
       <field name="role" type="java.lang.String">
         <desc country="US" lang="en">Role agent played in deaccession</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="agent" type="ManyToOne"/>
-      <field name="deaccession" type="ManyToOne"/>
     </table>
     <table name="deaccessionpreparation">
       <field name="lastEditedBy" type="java.lang.String">
@@ -1377,14 +1284,12 @@
       <field name="remarks" type="text">
         <desc country="US" lang="en">Additional Comments</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="preparation" type="ManyToOne"/>
-      <field name="deaccession" type="ManyToOne"/>
     </table>
     <table name="determination">
       <field name="confidence" type="java.lang.String">
@@ -1417,10 +1322,10 @@
       <field name="text2" type="java.lang.String">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="typeStatusName" type="java.lang.String">
@@ -1432,10 +1337,6 @@
       <field name="yesNo2" type="java.lang.Boolean">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="status" type="ManyToOne"/>
-      <field name="taxon" type="ManyToOne"/>
-      <field name="collectionObject" type="ManyToOne"/>
-      <field name="determiner" type="ManyToOne"/>
     </table>
     <table name="determinationcitation">
       <field name="lastEditedBy" type="java.lang.String">
@@ -1444,14 +1345,12 @@
       <field name="remarks" type="text">
         <desc country="US" lang="en">Additional Comments</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="determination" type="ManyToOne"/>
-      <field name="referenceWork" type="ManyToOne"/>
     </table>
     <table name="determinationstatus">
       <field name="isCurrent" type="java.lang.Boolean">
@@ -1466,10 +1365,10 @@
       <field name="remarks" type="text">
         <desc country="US" lang="en">Additional Comments</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
     </table>
@@ -1492,10 +1391,10 @@
       <field name="remarks" type="text">
         <desc country="US" lang="en">Additional Comments</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="title" type="java.lang.String">
@@ -1504,7 +1403,6 @@
       <field name="uri" type="java.lang.String">
         <desc country="US" lang="en"/>
       </field>
-      <field name="members" type="ManyToMany"/>
     </table>
     <table name="exchangein">
       <field name="descriptionOfMaterial" type="java.lang.String">
@@ -1534,10 +1432,10 @@
       <field name="text2" type="java.lang.String">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="yesNo1" type="java.lang.Boolean">
@@ -1546,8 +1444,6 @@
       <field name="yesNo2" type="java.lang.Boolean">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="agentReceivedFrom" type="ManyToOne"/>
-      <field name="agentCatalogedBy" type="ManyToOne"/>
     </table>
     <table name="exchangeout">
       <field name="descriptionOfMaterial" type="java.lang.String">
@@ -1577,10 +1473,10 @@
       <field name="text2" type="java.lang.String">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="yesNo1" type="java.lang.Boolean">
@@ -1589,9 +1485,6 @@
       <field name="yesNo2" type="java.lang.Boolean">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="shipments" type="ManyToMany"/>
-      <field name="agentCatalogedBy" type="ManyToOne"/>
-      <field name="agentSentTo" type="ManyToOne"/>
     </table>
     <table name="geography">
       <field name="abbrev" type="java.lang.String">
@@ -1651,17 +1544,15 @@
       <field name="text2" type="java.lang.String">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="timestampVersion" type="java.util.Date">
         <desc country="US" lang="en"/>
       </field>
-      <field name="definitionItem" type="ManyToOne"/>
-      <field name="definition" type="ManyToOne"/>
     </table>
     <table name="geographytreedef">
       <field name="fullNameDirection" type="java.lang.Integer">
@@ -1676,10 +1567,10 @@
       <field name="remarks" type="text">
         <desc country="US" lang="en">Additional Comments</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
     </table>
@@ -1711,13 +1602,12 @@
       <field name="textBefore" type="java.lang.String">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="treeDef" type="ManyToOne"/>
     </table>
     <table name="geologictimeperiod">
       <field name="endPeriod" type="java.lang.Float">
@@ -1762,14 +1652,12 @@
       <field name="startUncertainty" type="java.lang.Float">
         <desc country="US" lang="en"/>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="definitionItem" type="ManyToOne"/>
-      <field name="definition" type="ManyToOne"/>
     </table>
     <table name="geologictimeperiodtreedef">
       <field name="fullNameDirection" type="java.lang.Integer">
@@ -1784,10 +1672,10 @@
       <field name="remarks" type="text">
         <desc country="US" lang="en">Additional Comments</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
     </table>
@@ -1819,13 +1707,12 @@
       <field name="textBefore" type="java.lang.String">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="treeDef" type="ManyToOne"/>
     </table>
     <table name="groupperson">
       <field name="lastEditedBy" type="java.lang.String">
@@ -1837,14 +1724,12 @@
       <field name="remarks" type="text">
         <desc country="US" lang="en">Additional Comments</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="member" type="ManyToOne"/>
-      <field name="group" type="ManyToOne"/>
     </table>
     <table name="habitatattributes">
       <field name="airTempC" type="java.lang.Float">
@@ -1931,10 +1816,10 @@
       <field name="text9" type="java.lang.String">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="turbidity" type="java.lang.String">
@@ -1993,14 +1878,12 @@
       <field name="requestDate" type="java.util.Calendar">
         <desc country="US" lang="en"/>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="recordSet" type="ManyToOne"/>
-      <field name="agent" type="ManyToOne"/>
     </table>
     <table name="institution">
       <field name="abbrev" type="java.lang.String">
@@ -2030,10 +1913,10 @@
       <field name="termsOfUse" type="text">
         <desc country="US" lang="en"/>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="title" type="java.lang.String">
@@ -2043,26 +1926,7 @@
         <desc country="US" lang="en"/>
       </field>
     </table>
-    <table name="journal">
-      <field name="journalAbbreviation" type="java.lang.String">
-        <desc country="US" lang="en"/>
-      </field>
-      <field name="journalName" type="java.lang.String">
-        <desc country="US" lang="en">Full name of the journal</desc>
-      </field>
-      <field name="lastEditedBy" type="java.lang.String">
-        <desc country="US" lang="en">The user who last saved the record.</desc>
-      </field>
-      <field name="remarks" type="text">
-        <desc country="US" lang="en">Additional Comments</desc>
-      </field>
-      <field name="timestampCreated" type="java.util.Date">
-        <desc country="US" lang="en">The timestamp the record was created.</desc>
-      </field>
-      <field name="timestampModified" type="java.util.Date">
-        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
-      </field>
-    </table>
+    <table name="journal"/>
     <table name="lithostrat">
       <field name="fullName" type="java.lang.String">
         <desc country="US" lang="en"/>
@@ -2091,14 +1955,12 @@
       <field name="remarks" type="text">
         <desc country="US" lang="en">Additional Comments</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="definitionItem" type="ManyToOne"/>
-      <field name="definition" type="ManyToOne"/>
     </table>
     <table name="lithostrattreedef">
       <field name="fullNameDirection" type="java.lang.Integer">
@@ -2113,10 +1975,10 @@
       <field name="remarks" type="text">
         <desc country="US" lang="en">Additional Comments</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
     </table>
@@ -2148,13 +2010,12 @@
       <field name="textBefore" type="java.lang.String">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="treeDef" type="ManyToOne"/>
     </table>
     <table name="loan">
       <field name="currentDueDate" type="java.util.Calendar">
@@ -2196,10 +2057,10 @@
       <field name="text2" type="java.lang.String">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="yesNo1" type="java.lang.Boolean">
@@ -2208,7 +2069,6 @@
       <field name="yesNo2" type="java.lang.Boolean">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="shipments" type="ManyToMany"/>
     </table>
     <table name="loanagent">
       <field name="lastEditedBy" type="java.lang.String">
@@ -2220,14 +2080,12 @@
       <field name="role" type="java.lang.String">
         <desc country="US" lang="en">Role the agent played in the loan</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="loan" type="ManyToOne"/>
-      <field name="agent" type="ManyToOne"/>
     </table>
     <table name="loanphysicalobject">
       <field name="descriptionOfMaterial" type="java.lang.String">
@@ -2254,14 +2112,12 @@
       <field name="quantityReturned" type="java.lang.Integer">
         <desc country="US" lang="en">Number of specimens returned. (necessary for Lots)</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="preparation" type="ManyToOne"/>
-      <field name="loan" type="ManyToOne"/>
     </table>
     <table name="loanreturnphysicalobject">
       <field name="lastEditedBy" type="java.lang.String">
@@ -2276,15 +2132,12 @@
       <field name="returnedDate" type="java.util.Calendar">
         <desc country="US" lang="en"/>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="receivedBy" type="ManyToOne"/>
-      <field name="deaccessionPreparation" type="ManyToOne"/>
-      <field name="loanPhysicalObject" type="ManyToOne"/>
     </table>
     <table name="locality">
       <field name="baseMeridian" type="java.lang.String">
@@ -2422,10 +2275,10 @@
       <field name="text2" type="java.lang.String">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="township" type="java.lang.String">
@@ -2452,9 +2305,6 @@
       <field name="yesNo2" type="java.lang.Boolean">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="collectionTypes" type="ManyToMany"/>
-      <field name="geography" type="ManyToOne"/>
-      <field name="geoRefDetBy" type="ManyToOne"/>
     </table>
     <table name="localitycitation">
       <field name="lastEditedBy" type="java.lang.String">
@@ -2463,14 +2313,12 @@
       <field name="remarks" type="text">
         <desc country="US" lang="en">Additional Comments</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="locality" type="ManyToOne"/>
-      <field name="referenceWork" type="ManyToOne"/>
     </table>
     <table name="location">
       <field name="abbrev" type="java.lang.String">
@@ -2512,17 +2360,15 @@
       <field name="text2" type="java.lang.String">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="timestampVersion" type="java.util.Date">
         <desc country="US" lang="en"/>
       </field>
-      <field name="definition" type="ManyToOne"/>
-      <field name="definitionItem" type="ManyToOne"/>
     </table>
     <table name="locationtreedef">
       <field name="fullNameDirection" type="java.lang.Integer">
@@ -2537,10 +2383,10 @@
       <field name="remarks" type="text">
         <desc country="US" lang="en">Additional Comments</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
     </table>
@@ -2572,13 +2418,12 @@
       <field name="textBefore" type="java.lang.String">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="treeDef" type="ManyToOne"/>
     </table>
     <table name="otheridentifier">
       <field name="identifier" type="java.lang.String">
@@ -2593,13 +2438,12 @@
       <field name="remarks" type="text">
         <desc country="US" lang="en">Additional Comments</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="collectionObject" type="ManyToOne"/>
     </table>
     <table name="paleocontext">
       <field name="direction" type="java.lang.String">
@@ -2617,15 +2461,12 @@
       <field name="positionState" type="java.lang.String">
         <desc country="US" lang="en"/>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="bioStrat" type="ManyToOne"/>
-      <field name="lithoStrat" type="ManyToOne"/>
-      <field name="chronosStrat" type="ManyToOne"/>
     </table>
     <table name="permit">
       <field name="endDate" type="java.util.Calendar">
@@ -2661,10 +2502,10 @@
       <field name="text2" type="java.lang.String">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="type" type="java.lang.String">
@@ -2676,41 +2517,8 @@
       <field name="yesNo2" type="java.lang.Boolean">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="issuedBy" type="ManyToOne"/>
-      <field name="issuedTo" type="ManyToOne"/>
     </table>
-    <table name="picklist">
-      <field name="fieldName" type="java.lang.String">
-        <desc country="US" lang="en"/>
-      </field>
-      <field name="formatter" type="java.lang.String">
-        <desc country="US" lang="en"/>
-      </field>
-      <field name="lastEditedBy" type="java.lang.String">
-        <desc country="US" lang="en">The user who last saved the record.</desc>
-      </field>
-      <field name="name" type="java.lang.String">
-        <desc country="US" lang="en"/>
-      </field>
-      <field name="readOnly" type="java.lang.Boolean">
-        <desc country="US" lang="en"/>
-      </field>
-      <field name="sizeLimit" type="java.lang.Integer">
-        <desc country="US" lang="en"/>
-      </field>
-      <field name="tableName" type="java.lang.String">
-        <desc country="US" lang="en"/>
-      </field>
-      <field name="timestampCreated" type="java.util.Date">
-        <desc country="US" lang="en">The timestamp the record was created.</desc>
-      </field>
-      <field name="timestampModified" type="java.util.Date">
-        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
-      </field>
-      <field name="type" type="java.lang.Integer">
-        <desc country="US" lang="en"/>
-      </field>
-    </table>
+    <table name="picklist"/>
     <table name="preparation">
       <field name="count" type="java.lang.Integer">
         <desc country="US" lang="en"/>
@@ -2733,17 +2541,12 @@
       <field name="text2" type="java.lang.String">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="location" type="ManyToOne"/>
-      <field name="preparedByAgent" type="ManyToOne"/>
-      <field name="collectionObject" type="ManyToOne"/>
-      <field name="prepType" type="ManyToOne"/>
-      <field name="preparationAttributes" type="ManyToOne"/>
     </table>
     <table name="preparationattr">
       <field name="dblValue" type="java.lang.Double">
@@ -2755,14 +2558,12 @@
       <field name="strValue" type="java.lang.String">
         <desc country="US" lang="en"/>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="preparation" type="ManyToOne"/>
-      <field name="definition" type="ManyToOne"/>
     </table>
     <table name="preparationattributes">
       <field name="attrDate" type="java.util.Date">
@@ -2879,10 +2680,10 @@
       <field name="text9" type="java.lang.String">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="yesNo1" type="java.lang.Boolean">
@@ -2902,10 +2703,10 @@
       <field name="name" type="java.lang.String">
         <desc country="US" lang="en"/>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
     </table>
@@ -2940,10 +2741,10 @@
       <field name="text2" type="java.lang.String">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="url" type="java.lang.String">
@@ -2955,7 +2756,6 @@
       <field name="yesNo2" type="java.lang.Boolean">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="agent" type="ManyToOne"/>
     </table>
     <table name="projectcollectionobjects">
       <field name="lastEditedBy" type="java.lang.String">
@@ -2964,14 +2764,12 @@
       <field name="remarks" type="text">
         <desc country="US" lang="en">Additional Comments</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="collectionObject" type="ManyToOne"/>
-      <field name="project" type="ManyToOne"/>
     </table>
     <table name="referencework">
       <field name="containingReferenceWorkId" type="java.lang.Integer">
@@ -3016,10 +2814,10 @@
       <field name="text2" type="java.lang.String">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="title" type="java.lang.String">
@@ -3040,7 +2838,6 @@
       <field name="yesNo2" type="java.lang.Boolean">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="journal" type="ManyToOne"/>
     </table>
     <table name="repositoryagreement">
       <field name="dateReceived" type="java.util.Calendar">
@@ -3079,10 +2876,10 @@
       <field name="text3" type="java.lang.String">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="yesNo1" type="java.lang.Boolean">
@@ -3091,7 +2888,6 @@
       <field name="yesNo2" type="java.lang.Boolean">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="originator" type="ManyToOne"/>
     </table>
     <table name="shipment">
       <field name="insuredForAmount" type="java.lang.String">
@@ -3127,10 +2923,10 @@
       <field name="text2" type="java.lang.String">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="weight" type="java.lang.String">
@@ -3142,12 +2938,6 @@
       <field name="yesNo2" type="java.lang.Boolean">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="borrows" type="ManyToMany"/>
-      <field name="exchangeOuts" type="ManyToMany"/>
-      <field name="shippedBy" type="ManyToOne"/>
-      <field name="shippedTo" type="ManyToOne"/>
-      <field name="loans" type="ManyToMany"/>
-      <field name="shipper" type="ManyToOne"/>
     </table>
     <table name="specifyuser">
       <field name="email" type="java.lang.String">
@@ -3162,17 +2952,15 @@
       <field name="privLevel" type="java.lang.Short">
         <desc country="US" lang="en"/>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="userType" type="java.lang.String">
         <desc country="US" lang="en"/>
       </field>
-      <field name="agent" type="ManyToOne"/>
-      <field name="userGroup" type="ManyToMany"/>
     </table>
     <table name="taxon">
       <field name="author" type="java.lang.String">
@@ -3223,10 +3011,10 @@
       <field name="taxonomicSerialNumber" type="java.lang.String">
         <desc country="US" lang="en">If the record has been imported from an Authority File then this field stores a unique ID assigned by the provider, else it is null</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="unitInd1" type="java.lang.String">
@@ -3259,8 +3047,6 @@
       <field name="visibilitySetBy" type="java.lang.String">
         <desc country="US" lang="en"/>
       </field>
-      <field name="definition" type="ManyToOne"/>
-      <field name="definitionItem" type="ManyToOne"/>
     </table>
     <table name="taxoncitation">
       <field name="lastEditedBy" type="java.lang.String">
@@ -3281,10 +3067,10 @@
       <field name="text2" type="java.lang.String">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="yesNo1" type="java.lang.Boolean">
@@ -3293,8 +3079,6 @@
       <field name="yesNo2" type="java.lang.Boolean">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="taxon" type="ManyToOne"/>
-      <field name="referenceWork" type="ManyToOne"/>
     </table>
     <table name="taxontreedef">
       <field name="fullNameDirection" type="java.lang.Integer">
@@ -3309,10 +3093,10 @@
       <field name="remarks" type="java.lang.String">
         <desc country="US" lang="en">Additional Comments</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
     </table>
@@ -3347,13 +3131,12 @@
       <field name="textBefore" type="java.lang.String">
         <desc country="US" lang="en">User definable</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="treeDef" type="ManyToOne"/>
     </table>
     <table name="usergroup">
       <field name="lastEditedBy" type="java.lang.String">
@@ -3365,13 +3148,12 @@
       <field name="remarks" type="text">
         <desc country="US" lang="en">Additional Comments</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="specifyUsers" type="ManyToMany"/>
     </table>
     <table name="sp_userpermission">
       <field name="adminPrivilege" type="java.lang.Boolean">
@@ -3383,14 +3165,12 @@
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="specifyUser" type="ManyToOne"/>
-      <field name="collectionType" type="ManyToOne"/>
     </table>
     <table name="viewsetobj">
       <field name="description" type="java.lang.String">
@@ -3408,13 +3188,12 @@
       <field name="name" type="java.lang.String">
         <desc country="US" lang="en"/>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="appResourceDefaults" type="ManyToMany"/>
     </table>
     <table name="workbench">
       <field name="allPermissionLevel" type="java.lang.Integer">
@@ -3447,15 +3226,12 @@
       <field name="srcFilePath" type="java.lang.String">
         <desc country="US" lang="en"/>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="specifyUser" type="ManyToOne"/>
-      <field name="group" type="ManyToOne"/>
-      <field name="workbenchTemplate" type="ManyToOne"/>
     </table>
     <table name="workbenchdataitem">
       <field name="cellData" type="java.lang.String">
@@ -3467,8 +3243,6 @@
       <field name="validationStatus" type="java.lang.Short">
         <desc country="US" lang="en"/>
       </field>
-      <field name="workbenchTemplateMappingItem" type="ManyToOne"/>
-      <field name="workbenchRow" type="ManyToOne"/>
     </table>
     <table name="workbenchtemplate">
       <field name="lastEditedBy" type="java.lang.String">
@@ -3483,13 +3257,12 @@
       <field name="srcFilePath" type="java.lang.String">
         <desc country="US" lang="en"/>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
-      <field name="specifyUser" type="ManyToOne"/>
     </table>
     <table name="workbenchtemplatemappingitem">
       <field name="caption" type="java.lang.String">
@@ -3534,10 +3307,10 @@
       <field name="tableName" type="java.lang.String">
         <desc country="US" lang="en"/>
       </field>
-      <field name="timestampCreated" type="java.util.Date">
+      <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
       </field>
-      <field name="timestampModified" type="java.util.Date">
+      <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="viewOrder" type="java.lang.Short">
@@ -3549,7 +3322,6 @@
       <field name="yCoord" type="java.lang.Short">
         <desc country="US" lang="en"/>
       </field>
-      <field name="workbenchTemplate" type="ManyToOne"/>
     </table>
     <table name="workbenchrow">
       <field name="bioGeomancerResults" type="text">
@@ -3564,7 +3336,6 @@
       <field name="rowNumber" type="java.lang.Short">
         <desc country="US" lang="en"/>
       </field>
-      <field name="workbench" type="ManyToOne"/>
     </table>
     <table name="workbenchrowimage">
       <field name="cardImageData" type="text">
@@ -3576,6 +3347,5 @@
       <field name="imageOrder" type="java.lang.Integer">
         <desc country="US" lang="en"/>
       </field>
-      <field name="workbenchRow" type="ManyToOne"/>
     </table>
   </database>

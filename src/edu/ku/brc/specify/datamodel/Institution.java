@@ -27,6 +27,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Index;
+
 
 
 /**
@@ -36,12 +38,15 @@ import javax.persistence.Transient;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "institution")
+@org.hibernate.annotations.Table(appliesTo="institution", indexes =
+    {   @Index (name="InstNameIDX", columnNames={"Name"})
+    })
 public class Institution extends DataModelObjBase implements java.io.Serializable 
 {
 
     // Fields    
 
-     protected Integer       institutionId;
+     protected Integer    institutionId;
      protected String     name;
      protected String     title;
      protected String     abbrev;

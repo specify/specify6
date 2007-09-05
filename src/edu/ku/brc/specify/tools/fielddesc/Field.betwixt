@@ -3,8 +3,6 @@
 	<element name="field">
 		<attribute name="name" property="name"/>
 		<attribute name="type" property="type"/>
-		<attribute name="type" property="type"/>
-		<attribute name="type" property="type"/>
 		<addDefaults/>
 	</element>
 </info>

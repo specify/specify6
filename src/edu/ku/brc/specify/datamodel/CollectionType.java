@@ -47,6 +47,7 @@ import javax.persistence.Transient;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
 
 /**
 
@@ -55,6 +56,10 @@ import org.hibernate.annotations.CascadeType;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name="collectiontype")
+@org.hibernate.annotations.Table(appliesTo="collectiontype", indexes =
+    {   @Index (name="ColTypeNameIDX", columnNames={"Name"}),
+        @Index (name="DisciplineIDX", columnNames={"Discipline"})
+    })
 public class CollectionType extends DataModelObjBase implements java.io.Serializable, Comparable<CollectionType>
 {
 

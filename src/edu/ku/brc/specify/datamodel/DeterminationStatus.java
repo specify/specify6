@@ -34,6 +34,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Index;
+
 /**
  * 
  * @code_status Beta
@@ -43,9 +45,12 @@ import javax.persistence.Transient;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "determinationstatus")
+@org.hibernate.annotations.Table(appliesTo="determinationstatus", indexes =
+    {   @Index (name="DeterStatusNameIDX", columnNames={"Name"})
+    })
 public class DeterminationStatus extends DataModelObjBase implements Serializable
 {
-    protected Integer               determinationStatusId;
+    protected Integer            determinationStatusId;
     protected Boolean            isCurrent;
     protected String             name;
     protected String             remarks;

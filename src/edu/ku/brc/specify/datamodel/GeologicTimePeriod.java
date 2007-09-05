@@ -49,6 +49,7 @@ import javax.persistence.Transient;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
 
 import edu.ku.brc.specify.treeutils.GeologicTimePeriodComparator;
 
@@ -57,6 +58,10 @@ import edu.ku.brc.specify.treeutils.GeologicTimePeriodComparator;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "geologictimeperiod")
+@org.hibernate.annotations.Table(appliesTo="geologictimeperiod", indexes =
+    {   @Index (name="GTPNameIDX", columnNames={"Name"}),
+        @Index (name="GTPFullNameIDX", columnNames={"FullName"})
+    })
 public class GeologicTimePeriod extends DataModelObjBase implements java.io.Serializable, Treeable<GeologicTimePeriod,GeologicTimePeriodTreeDef,GeologicTimePeriodTreeDefItem>{
 
     /**
@@ -65,7 +70,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
      */
     protected static final Logger log = Logger.getLogger(GeologicTimePeriod.class);
 
-	protected Integer						    geologicTimePeriodId;
+	protected Integer						geologicTimePeriodId;
 	protected Integer						rankId;
 	protected String						name;
 	protected String						fullName;

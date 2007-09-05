@@ -18,6 +18,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Index;
+
 /**
  * @author rods
  *
@@ -30,6 +32,10 @@ import javax.persistence.Transient;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "commonname")
+@org.hibernate.annotations.Table(appliesTo="commonname", indexes =
+    {   @Index (name="CommonNameNameIDX", columnNames={"Name"}),
+        @Index (name="CommonNameCountryIDX", columnNames={"Country"})
+    })
 public class CommonName extends DataModelObjBase implements Serializable
 {
     protected Integer            commonNameId;

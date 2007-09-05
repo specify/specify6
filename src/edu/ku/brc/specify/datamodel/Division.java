@@ -32,6 +32,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
 
 
 
@@ -47,6 +48,9 @@ import org.hibernate.annotations.CascadeType;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "division")
+@org.hibernate.annotations.Table(appliesTo="division", indexes =
+    {   @Index (name="DivisionNameIDX", columnNames={"Name"})
+    })
 public class Division extends DataModelObjBase implements java.io.Serializable 
 {
 

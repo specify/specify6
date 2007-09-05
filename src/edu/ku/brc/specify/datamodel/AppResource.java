@@ -72,7 +72,7 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     
     // Fields    
 
-     protected Integer                    appResourceId;
+     protected Integer                 appResourceId;
      protected Short                   level;
      protected String                  name;
      protected String                  description;

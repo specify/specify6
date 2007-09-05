@@ -52,6 +52,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
 
 import edu.ku.brc.dbsupport.DBConnection;
 
@@ -62,6 +63,11 @@ import edu.ku.brc.dbsupport.DBConnection;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "loan")
+@org.hibernate.annotations.Table(appliesTo="loan", indexes =
+    {   @Index (name="LoanNumberIDX", columnNames={"LoanNumber"}),
+        @Index (name="LoanDateIDX", columnNames={"LoanDate"}),
+        @Index (name="CurrentDueDateIDX", columnNames={"CurrentDueDate"})
+    })
 public class Loan extends DataModelObjBase implements java.io.Serializable {
 
     // options for the 'category' field
@@ -73,26 +79,26 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     public static final Boolean OPEN   = false;
     
     // Fields    
-     protected Integer loanId;
-     protected String loanNumber;
-     protected Calendar loanDate;
-     protected Calendar currentDueDate;
-     protected Calendar originalDueDate;
-     protected Calendar dateClosed;
-     protected Boolean isGift;
-     protected String remarks;
-     protected String text1;
-     protected String text2;
-     protected Float number1;
-     protected Float number2;
-     protected Boolean isClosed;
-     protected Boolean yesNo1;
-     protected Boolean yesNo2;
-     protected Set<LoanAgent> loanAgents;
-     protected Set<LoanPhysicalObject> loanPhysicalObjects;
-     //protected Shipment shipment;
-     protected Set<Shipment> shipments;
-     protected Set<Attachment> attachments;
+    protected Integer                 loanId;
+    protected String                  loanNumber;
+    protected Calendar                loanDate;
+    protected Calendar                currentDueDate;
+    protected Calendar                originalDueDate;
+    protected Calendar                dateClosed;
+    protected Boolean                 isGift;
+    protected String                  remarks;
+    protected String                  text1;
+    protected String                  text2;
+    protected Float                   number1;
+    protected Float                   number2;
+    protected Boolean                 isClosed;
+    protected Boolean                 yesNo1;
+    protected Boolean                 yesNo2;
+    protected Set<LoanAgent>          loanAgents;
+    protected Set<LoanPhysicalObject> loanPhysicalObjects;
+    //protected Shipment shipment;
+    protected Set<Shipment>           shipments;
+    protected Set<Attachment>         attachments;
 
 
     // Constructors
