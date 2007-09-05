@@ -132,24 +132,6 @@ public interface TreeDataService <T extends Treeable<T,D,I>,
     public String createNodeLink(T source, T destination);
     
     /**
-     * Adds a new {@link TreeDefItemIface} as a child of the given
-     * {@link TreeDefItemIface}.
-     * 
-     * @param newDefItem the new child item
-     * @param parentDefItem the parent item
-     * @return true on success, false on failure
-     */
-    public boolean addNewTreeDefItem(I newDefItem, I parentDefItem);
-    
-    /**
-     * Deletes the given {@link TreeDefItemIface}.
-     * 
-     * @param defItem the {@link TreeDefItemIface} to delete
-     * @return true on success, false on failure
-     */
-    public boolean deleteTreeDefItem(I defItem);
-    
-    /**
      * Initializes any data associated with the given node.
      * 
      * @param node any tree node

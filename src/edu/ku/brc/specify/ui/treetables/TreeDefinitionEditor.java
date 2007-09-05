@@ -9,9 +9,9 @@ package edu.ku.brc.specify.ui.treetables;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -22,24 +22,37 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.StaleObjectException;
+import edu.ku.brc.dbsupport.DBTableIdMgr.TableInfo;
+import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.treeutils.TreeFactory;
-import edu.ku.brc.specify.ui.treetables.EditFormDialog.EditDialogCallback;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
+import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
+import edu.ku.brc.ui.forms.BusinessRulesIFace;
+import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -60,6 +73,8 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 	//////////////////
 	
 	protected D displayedDef;
+    
+    protected BusinessRulesIFace businessRules;
 
 	//////////////
 	// GUI widgets
@@ -68,8 +83,6 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 	// panels
 	protected JPanel northPanel;
 	protected JPanel southPanel;
-	
-	protected JLabel messageLabel;
 	
 	// main user interaction widget
 	protected JTable defItemsTable;
@@ -85,8 +98,6 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 	protected JButton deleteItemButton;
 	protected JButton newItemButton;
     protected JButton editItemButton;
-	
-	protected Color errorColor;
 	
 	/**
 	 *
@@ -105,15 +116,16 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         }
         
 		displayedDef = treeDef;
+        businessRules = DBTableIdMgr.getInstance().getBusinessRule(treeDef.getNodeClass());
         
+        UIRegistry.writeGlassPaneMsg(getResourceString("TTV_Loading"), 24);
 		initUI();
         
-		messageLabel.setText("Please wait while the tree is prepared");
-		messageLabel.setIcon(null);
-		add(messageLabel);
 		repaint();
 		
 		initTreeDefEditorComponent(displayedDef);
+        
+        UIRegistry.clearGlassPaneMsg();
         
         selectionValueChanged();
 	}
@@ -143,10 +155,6 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 		
 		statusBar = UIRegistry.getStatusBar();
 		
-		errorColor = Color.RED;
-		
-		messageLabel = new JLabel();
-
 		// create north panel
 		northPanel = new JPanel();
 		northPanel.setLayout(new BoxLayout(northPanel,BoxLayout.LINE_AXIS));
@@ -158,7 +166,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 		{
 			public void actionPerformed(ActionEvent ae)
 			{
-				showDefEditDialog(displayedDef,false);	
+				showDefEditDialog(displayedDef);	
 			}
 		});
 
@@ -237,7 +245,6 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 		defNameLabel.setFont(boldF);
 
 		// put everything in the main panel
-		this.remove(messageLabel);
 		this.add(new JScrollPane(defItemsTable),BorderLayout.CENTER);
 		this.add(northPanel,BorderLayout.NORTH);
 		this.add(southPanel,BorderLayout.SOUTH);
@@ -245,7 +252,8 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 		repaint();
 	}
 	
-    protected void editTreeDefItem(int index)
+    @SuppressWarnings("unchecked")
+    protected void editTreeDefItem(final int index)
     {
         if (index==-1)
         {
@@ -253,24 +261,154 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         }
         
         log.info("Edit row " + index);
-        I defItem = tableModel.get(index);
         
-        showItemEditDialog(defItem, "Edit Tree Level", null, false);
+        // load a fresh copy of the item from the DB
+        I uiDefItem = tableModel.get(index);
+        DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
+        final I defItem = (I)tmpSession.load(uiDefItem.getClass(), uiDefItem.getTreeDefItemId());
+        if (defItem == null)
+        {
+            statusBar.setErrorMessage("The tree def has been changed by another user.  The def editor must be reloaded.");
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                public void run()
+                {
+                    UIRegistry.writeGlassPaneMsg(getResourceString("TTV_Loading"), 24);
+                    
+                    initTreeDefEditorComponent(displayedDef);
+                    repaint();
+                    
+                    UIRegistry.clearGlassPaneMsg();
+                    
+                    selectionValueChanged();
+                }
+            });
+            tmpSession.close();
+            return;
+        }
+        tmpSession.close();
         
-        tableModel.fireTableRowsUpdated(index, index);
+        // TODO: double check these choices
+        // gather all the info needed to create a form in a dialog
+        Pair<String,String> formsNames = TreeFactory.getAppropriateFormsetAndViewNames(defItem);
+        Frame parentFrame = (Frame)UIRegistry.get(UIRegistry.FRAME);
+        String viewSetName = formsNames.first;
+        String viewName = formsNames.second;
+        String displayName = "NODE_EDIT_DISPLAY_NAME";
+        boolean isEdit = true;
+        String closeBtnText = (isEdit) ? getResourceString("Save") : getResourceString("Close");
+        String className = defItem.getClass().getName();
+        TableInfo nodeTableInfo = DBTableIdMgr.getInstance().getInfoById(((DataModelObjBase)defItem).getTableId());
+        String idFieldName = nodeTableInfo.getIdFieldName();
+        int options = MultiView.HIDE_SAVE_BTN;
+        
+        // create the form dialog
+        String title = getResourceString("TreeDefEditDialogTitle");
+        ViewBasedDisplayDialog dialog = new ViewBasedDisplayDialog(parentFrame,viewSetName,viewName,displayName,title,closeBtnText,className,idFieldName,isEdit,options);
+        dialog.setModal(true);
+        dialog.setData(defItem);
+        dialog.preCreateUI();
+        dialog.setVisible(true);
+        
+        // the dialog has been dismissed by the user
+        if (dialog.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
+        {
+            UIRegistry.writeGlassPaneMsg(getResourceString("TTV_Saving"), 24);
+            
+            SwingWorker bgThread = new SwingWorker()
+            {
+                boolean success;
+                I mergedItem;
+                
+                @SuppressWarnings({ "unchecked", "synthetic-access" })
+                @Override
+                public Object construct()
+                {
+                    // save the node and update the tree viewer appropriately
+                    DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                    try
+                    {
+                        mergedItem = (I)session.merge(defItem);
+                    }
+                    catch (StaleObjectException e1)
+                    {
+                        // another user or process has changed the data "underneath" us
+                        JOptionPane.showMessageDialog(null, getResourceString("UPDATE_DATA_STALE"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); 
+                        if (session != null)
+                        {
+                            session.close();
+                        }
+                        session = DataProviderFactory.getInstance().createSession();
+                        mergedItem = (I)session.load(defItem.getClass(), defItem.getTreeDefItemId());
+                        success = false;
+                        return success;
+                    }
+                    success = true;
+                    
+                    if (businessRules != null)
+                    {
+                        businessRules.beforeSave(mergedItem,session);
+                    }
+                    
+                    try
+                    {
+                        session.beginTransaction();
+                        session.saveOrUpdate(mergedItem);
+                        if (businessRules != null)
+                        {
+                            businessRules.beforeSaveCommit(mergedItem, session);
+                        }
+                        session.commit();
+                        log.info("Successfully saved changes to " + mergedItem.getName());
+                        
+                    }
+                    catch (Exception e)
+                    {
+                        success = false;
+                        JOptionPane.showMessageDialog(null, getResourceString("UNRECOVERABLE_DB_ERROR"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); 
+
+                        log.error("Error while saving node changes.  Rolling back transaction.", e);
+                        session.rollback();
+                    }
+                    finally
+                    {
+                        session.close();
+                    }
+                    
+                    // at this point, the new node is in the DB (if success == true)
+
+                    session = DataProviderFactory.getInstance().createSession();
+                    session.close();
+
+                    if (businessRules != null && success == true)
+                    {
+                        businessRules.afterSaveCommit(defItem);
+                    }
+                    
+                    return success;
+                }
+
+                @Override
+                public void finished()
+                {
+                    // now refresh the tree viewer
+                    if (success)
+                    {
+                        tableModel.set(index, mergedItem);
+                    }
+                    
+                    UIRegistry.clearGlassPaneMsg();
+                }
+            };
+            
+            bgThread.start();
+        }
+        else
+        {
+            // the user didn't save any edits (if there were any)
+        }
     }
 
-    protected void showItemEditDialog(I defItem, String title, EditDialogCallback<I> callback, boolean isNewItem )
-    {
-        log.debug("showing item edit dialog");
-        
-        Pair<String,String> formsNames = TreeFactory.getAppropriateFormsetAndViewNames(defItem);
-        EditFormDialog<I> editDialog = new EditFormDialog<I>(formsNames.first,formsNames.second,title,callback,isNewItem);
-        editDialog.setModal(true);
-        editDialog.setData(defItem);
-        editDialog.setVisible(true);
-    }
-    
 	protected void addSelectionListener()
 	{
 		ListSelectionListener sl = new ListSelectionListener()
@@ -296,13 +434,13 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         }
         else
         {
-            if (tableModel.isDeletable(selectionIndex))
+            if (businessRules.okToDelete(tableModel.get(selectionIndex)))
             {
                 deleteItemButton.setEnabled(true);
             }
             else
             {
-                deleteItemButton.setEnabled(false);
+                deleteItemButton.setEnabled(true);
             }
             newItemButton.setEnabled(true);
             editItemButton.setEnabled(true);
@@ -330,14 +468,39 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 	/////////////////////////////////////////////////////////////////////////////////////////
 	
 	@SuppressWarnings("unchecked")
-	protected void newItem(int index)
+	protected void newItem(final int index)
 	{
 		if(index==-1)
 		{
 			return;
 		}
 		
-		final I parent = tableModel.get(index);
+        // load a fresh copy of the parent from the DB
+        I uiParent = tableModel.get(index);
+        DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
+        final I parent = (I)tmpSession.load(uiParent.getClass(), uiParent.getTreeDefItemId());
+        if (parent == null)
+        {
+            statusBar.setErrorMessage("The tree def has been changed by another user.  The def editor must be reloaded.");
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                public void run()
+                {
+                    UIRegistry.writeGlassPaneMsg(getResourceString("TTV_Loading"), 24);
+                    
+                    initTreeDefEditorComponent(displayedDef);
+                    repaint();
+                    
+                    UIRegistry.clearGlassPaneMsg();
+                    
+                    selectionValueChanged();
+                }
+            });
+            tmpSession.close();
+            return;
+        }
+        tmpSession.close();
+        
         final I origChild = parent.getChild();
 		final I newItem = (I)TreeFactory.createNewTreeDefItem(parent.getClass(),null,"New Level");
 
@@ -345,39 +508,144 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         // otherwise, if the user cancels, we end up with 'dirty' collections in the other objects
         newItem.setTreeDef(displayedDef);
 		newItem.setParent(parent);
-        if (origChild!=null)
+        if (origChild != null)
         {
             newItem.setChild(origChild);
             newItem.setRankId( (int)(.5 * (origChild.getRankId() + parent.getRankId())));
+            origChild.setParent(newItem);
         }
         else
         {
-            newItem.setRankId( parent.getRankId() + 20);
+            newItem.setRankId(parent.getRankId() + 10);
         }
+ 
+        // TODO: double check these choices
+        // gather all the info needed to create a form in a dialog
+        Pair<String,String> formsNames = TreeFactory.getAppropriateFormsetAndViewNames(newItem);
+        Frame parentFrame = (Frame)UIRegistry.get(UIRegistry.FRAME);
+        String viewSetName = formsNames.first;
+        String viewName = formsNames.second;
+        String displayName = "NODE_EDIT_DISPLAY_NAME";
+        boolean isEdit = true;
+        String closeBtnText = (isEdit) ? getResourceString("Save") : getResourceString("Close");
+        String className = newItem.getClass().getName();
+        TableInfo nodeTableInfo = DBTableIdMgr.getInstance().getInfoById(((DataModelObjBase)newItem).getTableId());
+        String idFieldName = nodeTableInfo.getIdFieldName();
+        int options = MultiView.HIDE_SAVE_BTN | MultiView.IS_NEW_OBJECT;
         
-        EditDialogCallback<I> callback = new EditDialogCallback<I>()
-        {
-            public void editCancelled(I dataObj)
-            {
-                // undo the parent/child changes that we made
-                newItem.setTreeDef(null);
-                newItem.setParent(null);
-                newItem.setChild(null);
-            }
+        // create the form dialog
+        String title = getResourceString("TreeDefEditDialogTitle");
+        ViewBasedDisplayDialog dialog = new ViewBasedDisplayDialog(parentFrame,viewSetName,viewName,displayName,title,closeBtnText,className,idFieldName,isEdit,options);
+        dialog.setModal(true);
+        dialog.setData(newItem);
+        dialog.preCreateUI();
+        dialog.setVisible(true);
 
-            public void editCompleted(I dataObj)
+        // the dialog has been dismissed by the user
+        if (dialog.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
+        {
+            UIRegistry.writeGlassPaneMsg(getResourceString("TTV_Saving"), 24);
+            
+            SwingWorker bgThread = new SwingWorker()
             {
-                int addedIndex = tableModel.add(newItem,parent);
+                boolean success;
                 
-                if (addedIndex != -1)
+                @SuppressWarnings({ "unchecked", "synthetic-access" })
+                @Override
+                public Object construct()
                 {
-                    showMessage("New tree level added");
-                    defItemsTable.getSelectionModel().setSelectionInterval(addedIndex,addedIndex);
+                    // save the node and update the tree viewer appropriately
+                    DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                    success = true;
+                    
+                    if (businessRules != null)
+                    {
+                        businessRules.beforeSave(newItem,session);
+                        if (origChild != null)
+                        {
+                            businessRules.beforeSave(origChild, session);
+                        }
+                    }
+                    
+                    try
+                    {
+                        session.beginTransaction();
+                        session.saveOrUpdate(newItem);
+                        if (businessRules != null)
+                        {
+                            businessRules.beforeSaveCommit(newItem, session);
+                            if (origChild != null)
+                            {
+                                businessRules.beforeSaveCommit(origChild, session);
+                            }
+                        }
+                        session.commit();
+                        log.info("Successfully saved changes to " + newItem.getName());
+                        
+                    }
+                    catch (Exception e)
+                    {
+                        success = false;
+                        JOptionPane.showMessageDialog(null, getResourceString("UNRECOVERABLE_DB_ERROR"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); 
+
+                        log.error("Error while saving node changes.  Rolling back transaction.", e);
+                        session.rollback();
+                    }
+                    finally
+                    {
+                        session.close();
+                    }
+                    
+                    // at this point, the new node is in the DB (if success == true)
+
+                    session = DataProviderFactory.getInstance().createSession();
+                    session.refresh(newItem);
+                    session.refresh(parent);
+                    if (origChild != null)
+                    {
+                        session.refresh(origChild);
+                    }
+                    session.close();
+
+                    if (businessRules != null && success == true)
+                    {
+                        businessRules.afterSaveCommit(newItem);
+                        if (origChild != null)
+                        {
+                            businessRules.afterSaveCommit(origChild);
+                        }
+                    }
+                    
+                    return success;
                 }
-            }
-        };
-        
-        showItemEditDialog(newItem,"Edit Tree Level",callback,true);
+
+                @Override
+                public void finished()
+                {
+                    // now refresh table row
+                    if (success)
+                    {
+                        tableModel.set(index, parent);
+                        tableModel.add(newItem, parent);
+                        if (origChild != null)
+                        {
+                            tableModel.set(index+2, origChild);
+                        }
+                    }
+                    
+                    UIRegistry.clearGlassPaneMsg();
+                }
+            };
+            
+            bgThread.start();
+        }
+        else
+        {
+            // the user didn't save any edits (if there were any)
+            newItem.setTreeDef(null);
+            newItem.setParent(null);
+            newItem.setChild(null);
+        }
 	}
 	
 	/////////////////////////////////////////////////////////////////////////////////////////
@@ -389,52 +657,314 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 	 *
 	 * @param treeDef the tree definition being edited
 	 */
-	protected void showDefEditDialog(D treeDef, boolean isNewObject)
+	@SuppressWarnings("unchecked")
+    protected void showDefEditDialog(final D treeDef)
 	{
-		EditDialogCallback<D> callback = new EditDialogCallback<D>()
-		{
-			public void editCompleted(D dataObj)
-			{
-				defNameLabel.setText(dataObj.getName());
-			}
-			public void editCancelled(D dataObj)
-			{
-				// nothing to do here
-			}
-		};
-		Pair<String,String> formsNames = TreeFactory.getAppropriateFormsetAndViewNames(treeDef);
-		if(formsNames==null)
-		{
-			log.error("Unable to locate appropriate forms for editing");
-			showError("Cannot locate forms for editing object");
-			return;
-		}
-		String defEditDialogTitle = getResourceString("TreeDefEditDialogTitle");
-		EditFormDialog<D> editDialog = new EditFormDialog<D>(formsNames.first,formsNames.second,defEditDialogTitle,callback,isNewObject);
-		editDialog.setModal(true);
-		editDialog.setData(treeDef);
-		editDialog.setVisible(true);
-	}
-	
+        // load a fresh copy of the parent from the DB
+        DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
+        final D def = (D)tmpSession.load(treeDef.getClass(), treeDef.getTreeDefId());
+        if (def == null)
+        {
+            statusBar.setErrorMessage("The tree currently being displayed has been deleted by another user.  It must now be closed.");
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                public void run()
+                {
+                    SubPaneMgr.getInstance().removePane(TreeDefinitionEditor.this);
+                }
+            });
+            tmpSession.close();
+            return;
+        }
+        tmpSession.close();
+
+        // TODO: double check these choices
+        // gather all the info needed to create a form in a dialog
+        Pair<String,String> formsNames = TreeFactory.getAppropriateFormsetAndViewNames(treeDef);
+        Frame parentFrame = (Frame)UIRegistry.get(UIRegistry.FRAME);
+        String viewSetName = formsNames.first;
+        String viewName = formsNames.second;
+        String displayName = "NODE_EDIT_DISPLAY_NAME";
+        boolean isEdit = true;
+        String closeBtnText = (isEdit) ? getResourceString("Save") : getResourceString("Close");
+        String className = def.getClass().getName();
+        TableInfo nodeTableInfo = DBTableIdMgr.getInstance().getInfoById(((DataModelObjBase)def).getTableId());
+        String idFieldName = nodeTableInfo.getIdFieldName();
+        int options = MultiView.HIDE_SAVE_BTN;
+        
+        // create the form dialog
+        String title = getResourceString("TreeDefEditDialogTitle");
+        ViewBasedDisplayDialog dialog = new ViewBasedDisplayDialog(parentFrame,viewSetName,viewName,displayName,title,closeBtnText,className,idFieldName,isEdit,options);
+        dialog.setModal(true);
+        dialog.setData(def);
+        dialog.preCreateUI();
+        dialog.setVisible(true);
+        
+        // the dialog has been dismissed by the user
+        if (dialog.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
+        {
+            UIRegistry.writeGlassPaneMsg(getResourceString("TTV_Saving"), 24);
+            
+            SwingWorker bgThread = new SwingWorker()
+            {
+                boolean success;
+                D mergedDef;
+                
+                @SuppressWarnings({ "unchecked", "synthetic-access" })
+                @Override
+                public Object construct()
+                {
+                    // save the node and update the tree viewer appropriately
+                    DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                    try
+                    {
+                        mergedDef = (D)session.merge(def);
+                    }
+                    catch (StaleObjectException e1)
+                    {
+                        // another user or process has changed the data "underneath" us
+                        JOptionPane.showMessageDialog(null, getResourceString("UPDATE_DATA_STALE"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); 
+                        if (session != null)
+                        {
+                            session.close();
+                        }
+                        session = DataProviderFactory.getInstance().createSession();
+                        mergedDef = (D)session.load(def.getClass(), def.getTreeDefId());
+                        success = false;
+                        return success;
+                    }
+                    success = true;
+                    
+                    if (businessRules != null)
+                    {
+                        businessRules.beforeSave(mergedDef,session);
+                    }
+                    
+                    try
+                    {
+                        session.beginTransaction();
+                        session.saveOrUpdate(mergedDef);
+                        if (businessRules != null)
+                        {
+                            businessRules.beforeSaveCommit(mergedDef, session);
+                        }
+                        session.commit();
+                        log.info("Successfully saved changes to " + mergedDef.getName());
+                        
+                    }
+                    catch (Exception e)
+                    {
+                        success = false;
+                        JOptionPane.showMessageDialog(null, getResourceString("UNRECOVERABLE_DB_ERROR"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); 
+
+                        log.error("Error while saving node changes.  Rolling back transaction.", e);
+                        session.rollback();
+                    }
+                    finally
+                    {
+                        session.close();
+                    }
+                    
+                    // at this point, the new node is in the DB (if success == true)
+
+                    session = DataProviderFactory.getInstance().createSession();
+                    session.refresh(def);
+                    session.close();
+
+                    if (businessRules != null && success == true)
+                    {
+                        businessRules.afterSaveCommit(def);
+                    }
+                    
+                    return success;
+                }
+
+                @Override
+                public void finished()
+                {
+                    // now refresh the tree viewer
+                    if (success)
+                    {
+                        defNameLabel.setText(def.getName());
+                    }
+                    
+                    UIRegistry.clearGlassPaneMsg();
+                }
+            };
+            
+            bgThread.start();
+        }
+        else
+        {
+            // the user didn't save any edits (if there were any)
+        }
+    }
+
 	/////////////////////////////////////////////////////////////////////////////////////////
 	// Methods to handle the deletion of an existing TreeDefinitionItemIface object.
 	/////////////////////////////////////////////////////////////////////////////////////////
 	
-	protected void deleteItem(int index)
+	@SuppressWarnings("unchecked")
+    protected void deleteItem(int index)
 	{
-		if(index==-1)
-		{
-			return;
-		}
+        if(index==-1)
+        {
+            return;
+        }
+
+        // load this item from the DB
+        I uiItem = tableModel.get(index);
+        DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
+        final I itemToDelete = (I)tmpSession.load(uiItem.getClass(), uiItem.getTreeDefItemId());
+        if (itemToDelete == null)
+        {
+            statusBar.setErrorMessage("The tree def has been changed by another user.  The def editor must be reloaded.");
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                public void run()
+                {
+                    UIRegistry.writeGlassPaneMsg(getResourceString("TTV_Loading"), 24);
+                    
+                    initTreeDefEditorComponent(displayedDef);
+                    repaint();
+                    
+                    UIRegistry.clearGlassPaneMsg();
+                    
+                    selectionValueChanged();
+                }
+            });
+            tmpSession.close();
+            return;
+        }
+        tmpSession.close();
         
-        boolean removed = tableModel.remove(index);
-		if (removed)
+        // remove the corresponding item from the table model
+        tableModel.remove(index);
+        
+        UIRegistry.writeGlassPaneMsg(getResourceString("TTV_Deleting"), 24);
+        
+        SwingWorker bgThread = new SwingWorker()
         {
-		    showMessage("Tree level deleted");
-        }
-        else
-        {
-            showMessage("Unable to delete selected tree level");
-        }
+            boolean success;
+            I mergedItem;
+            
+            @SuppressWarnings({ "unchecked", "synthetic-access" })
+            @Override
+            public Object construct()
+            {
+                // save the node and update the tree viewer appropriately
+                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                try
+                {
+                    mergedItem = (I)session.merge(itemToDelete);
+                }
+                catch (StaleObjectException e1)
+                {
+                    // another user or process has changed the data "underneath" us
+                    JOptionPane.showMessageDialog(null, getResourceString("UPDATE_DATA_STALE"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); 
+                    if (session != null)
+                    {
+                        session.close();
+                    }
+                    session = DataProviderFactory.getInstance().createSession();
+                    mergedItem = (I)session.load(itemToDelete.getClass(), itemToDelete.getTreeDefItemId());
+                    success = false;
+                    return success;
+                }
+                success = true;
+
+                // remove the item from it's relationships
+                I parent = mergedItem.getParent();
+                I child = mergedItem.getChild();
+                mergedItem.setParent(null);
+                mergedItem.setChild(null);
+                
+                parent.setChild(child);
+                if (child!=null)
+                {
+                    child.setParent(parent);
+                }
+                
+                mergedItem.getTreeDef().getTreeDefItems().remove(mergedItem);
+                mergedItem.setTreeDef(null);
+
+                if (businessRules != null)
+                {
+                    businessRules.beforeDelete(mergedItem,session);
+                    businessRules.beforeSave(parent, session);
+                    if (child != null)
+                    {
+                        businessRules.beforeSave(child, session);
+                    }
+                }
+                
+                try
+                {
+                    session.beginTransaction();
+                    
+                    session.delete(mergedItem);
+                    session.saveOrUpdate(parent);
+                    if (child != null)
+                    {
+                        session.saveOrUpdate(child);
+                    }
+                    
+                    if (businessRules != null)
+                    {
+                        businessRules.beforeDeleteCommit(mergedItem, session);
+                        businessRules.beforeSaveCommit(parent, session);
+                        if (child != null)
+                        {
+                            businessRules.beforeSaveCommit(child, session);
+                        }
+                    }
+                    session.commit();
+                    log.info("Successfully deleted " + mergedItem.getName());
+                    
+                }
+                catch (Exception e)
+                {
+                    success = false;
+                    JOptionPane.showMessageDialog(null, getResourceString("UNRECOVERABLE_DB_ERROR"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); 
+
+                    log.error("Error while saving node changes.  Rolling back transaction.", e);
+                    session.rollback();
+                }
+                finally
+                {
+                    session.close();
+                }
+                
+                // at this point, the new node is in the DB (if success == true)
+
+                session = DataProviderFactory.getInstance().createSession();
+                session.refresh(parent);
+                if (child != null)
+                {
+                    session.refresh(child);
+                }
+                session.close();
+
+                if (businessRules != null && success == true)
+                {
+                    businessRules.afterDeleteCommit(mergedItem);
+                    businessRules.afterSaveCommit(parent);
+                    if (child != null)
+                    {
+                        businessRules.afterSaveCommit(child);
+                    }
+                }
+                
+                return success;
+            }
+
+            @Override
+            public void finished()
+            {
+                UIRegistry.clearGlassPaneMsg();
+            }
+        };
+        
+        bgThread.start();
 	}
 }

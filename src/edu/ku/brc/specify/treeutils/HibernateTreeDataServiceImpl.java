@@ -209,39 +209,6 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.treeutils.TreeDataService#addNewTreeDefItem(edu.ku.brc.specify.datamodel.TreeDefItemIface, edu.ku.brc.specify.datamodel.TreeDefItemIface)
-     */
-    public synchronized boolean addNewTreeDefItem(I newDefItem, I parent)
-    {
-        log.trace("enter");
-        
-        I origChild = parent.getChild();
-        D treeDef = parent.getTreeDef();
-        
-        Session session = getNewSession(newDefItem,treeDef,parent,origChild);
-        Transaction tx = session.beginTransaction();
-        
-        parent.setChild(newDefItem);
-        if (origChild!=null)
-        {
-            origChild.setParent(newDefItem);
-        }
-        treeDef.getTreeDefItems().add(newDefItem);
-
-        session.saveOrUpdate(newDefItem);
-        session.save(treeDef);
-        if (origChild!=null)
-        {
-        	session.saveOrUpdate(origChild);
-        }
-        session.saveOrUpdate(newDefItem.getParent());
-
-        boolean success = commitTransaction(session, tx);
-        log.trace("exit");
-        return success;
-    }
-    
-    /* (non-Javadoc)
      * @see edu.ku.brc.specify.treeutils.TreeDataService#canDelete(java.lang.Object)
      */
     public synchronized boolean canDelete(Object o)
@@ -264,43 +231,6 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         session.close();
         
         return okToDelete;
-    }
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.treeutils.TreeDataService#deleteTreeDefItem(edu.ku.brc.specify.datamodel.TreeDefItemIface)
-     */
-    public synchronized boolean deleteTreeDefItem(I defItem)
-    {
-        log.trace("enter");
-        if (!canDelete(defItem))
-        {
-            log.trace("exit");
-            return false;
-        }
-        
-        Session session = getNewSession(defItem);
-        Transaction tx = session.beginTransaction();
-        
-        I parent = defItem.getParent();
-        I child = defItem.getChild();
-        defItem.setParent(null);
-        defItem.setChild(null);
-        
-        parent.setChild(child);
-        if (child!=null)
-        {
-            child.setParent(parent);
-        }
-        
-        defItem.getTreeDef().getTreeDefItems().remove(defItem);
-        defItem.setTreeDef(null);
-        session.delete(defItem);
-        session.saveOrUpdate(parent);
-        session.saveOrUpdate(child);
-        
-        boolean success = commitTransaction(session, tx);
-        log.trace("exit");
-        return success;
     }
     
 	/* (non-Javadoc)

@@ -19,8 +19,6 @@ import javax.swing.table.TableModel;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
-import edu.ku.brc.specify.treeutils.TreeDataService;
-import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.util.RankBasedComparator;
 
 /**
@@ -46,8 +44,6 @@ public class TreeDefEditorTableModel <T extends Treeable<T,D,I>,
 	
 	/** A Vector of TreeDefItemIface objects holding the table data. */
 	protected Vector<I> tableData;
-    
-    protected TreeDataService<T,D,I> dataService;
 	
 	/**
      * Creates a new TreeDefEditorTableModel from the given set of def items.
@@ -56,7 +52,6 @@ public class TreeDefEditorTableModel <T extends Treeable<T,D,I>,
 	 */
 	public TreeDefEditorTableModel(Set<? extends I> defItems)
 	{
-        dataService = TreeDataServiceFactory.createService();
 		tableData = new Vector<I>(defItems);
 		Collections.sort(tableData,new RankBasedComparator());
 	}
@@ -245,18 +240,35 @@ public class TreeDefEditorTableModel <T extends Treeable<T,D,I>,
      * @param index the location of the new row
 	 * @param element the new row data
 	 */
-	public int add(I newDefItem, I parentDefItem)
+	public synchronized void add(I newDefItem, I parentDefItem)
 	{
-        boolean success = dataService.addNewTreeDefItem(newDefItem, parentDefItem);
-	    if (success)
+        int parentIndex = indexOf(parentDefItem);
+        if (parentIndex == -1)
         {
-            int addedIndex = tableData.indexOf(parentDefItem) + 1;
-            tableData.add(addedIndex,newDefItem);
-            fireTableRowsInserted(addedIndex,addedIndex);
-            return addedIndex;
+            throw new IllegalArgumentException("parent item must already be in the table");
+        }
+        
+        tableData.add(parentIndex+1, newDefItem);
+        fireTableRowsInserted(parentIndex+1,parentIndex+1);
+	}
+    
+    protected int indexOf(I defItem)
+    {
+        if (defItem == null || defItem.getTreeDefItemId() == null)
+        {
+            return -1;
+        }
+
+        for (int i = 0; i < tableData.size(); ++i)
+        {
+            I item = tableData.get(i);
+            if (defItem.getTreeDefItemId().equals(item.getTreeDefItemId()))
+            {
+                return i;
+            }
         }
         return -1;
-	}
+    }
 
 	/**
      * Returns the index-th row of the table model as a TreeDefItemIface instance.
@@ -269,20 +281,15 @@ public class TreeDefEditorTableModel <T extends Treeable<T,D,I>,
 	{
 		return tableData.get(index);
 	}
+    
+	public I set(int index, I element)
+    {
+        I oldItem = tableData.set(index, element);
+        fireTableRowsUpdated(index, index);
+        return oldItem;
+    }
 
-	/**
-     * Returns the index of the given Object as a row in the table model.
-     * 
-     * @see java.util.Vector#indexOf(Object)
-	 * @param elem the row data object
-	 * @return the index of the object in the table model
-	 */
-	public int indexOf(Object elem)
-	{
-		return tableData.indexOf(elem);
-	}
-
-	/**
+    /**
      * Removes the given row from the table model.
      * 
      * @throws ArrayIndexOutOfBoundsException if the index is out of range ( index < 0 || index >= size())
@@ -290,29 +297,9 @@ public class TreeDefEditorTableModel <T extends Treeable<T,D,I>,
 	 * @param index the row index
 	 * @return the removed row
 	 */
-	public boolean remove(int index)
+	public synchronized void remove(int index)
 	{
-		I deleted = tableData.get(index);
-        boolean removed = dataService.deleteTreeDefItem(deleted);
-        
-        if (removed)
-        {
-            tableData.remove(index);
-            fireTableRowsDeleted(index,index);
-            return true;
-        }
-        
-        return false;
+	    tableData.remove(index);
+        fireTableRowsDeleted(index,index);
 	}
-    
-    public boolean isDeletable(int index)
-    {
-        if (index<0 || index>tableData.size()-1)
-        {
-            return false;
-        }
-        
-        I defItem = tableData.get(index);
-        return dataService.canDelete(defItem);
-    }
 }
