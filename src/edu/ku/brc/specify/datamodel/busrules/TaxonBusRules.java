@@ -187,27 +187,4 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
 
         //super.beforeSaveTreeDefItem(defItem);
     }
-    
-    /**
-     * Converts a null string into an empty string.  If the provided String is not
-     * null, it is returned unchanged.
-     * 
-     * @param s a string
-     * @return the string or " ", if null
-     */
-    private String makeNotNull(String s)
-    {
-        return (s == null) ? "" : s;
-    }
-    
-    /**
-     * Returns the provided {@link Boolean}, or <code>false</code> if null
-     * 
-     * @param b the {@link Boolean} to convert to non-null
-     * @returnthe provided {@link Boolean}, or <code>false</code> if null
-     */
-    private boolean makeNotNull(Boolean b)
-    {
-        return (b == null) ? false : b.booleanValue();
-    }
 }

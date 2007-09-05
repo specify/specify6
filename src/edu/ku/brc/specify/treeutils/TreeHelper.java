@@ -354,26 +354,17 @@ public class TreeHelper
                              I extends TreeDefItemIface<T,D,I>>
                              String createNodeRelationship(T source, T destination)
     {
-        if (source instanceof Taxon)
-        {
-            return createSynonym((Taxon)source,(Taxon)destination);
-        }
-        return null;
-    }
-    
-    protected static String createSynonym(Taxon oldName, Taxon newName)
-    {
-        oldName.setIsAccepted(false);
-        oldName.setAcceptedTaxon(newName);
+        source.setIsAccepted(false);
+        source.setAcceptedParent(destination);
         
         // update all of the even older names to point at the latest name
-        for (Taxon evenOlderName: oldName.getAcceptedChildren())
+        for (T evenOlderName: source.getAcceptedChildren())
         {
             evenOlderName.setIsAccepted(false);
-            evenOlderName.setAcceptedTaxon(newName);
+            evenOlderName.setAcceptedParent(destination);
         }
         
-        return String.format(getResourceString("TaxonTreeRelationshipMsg"),oldName.getFullName(),newName.getFullName());
+        return String.format(getResourceString("TreeRelationshipCreatedMsg"),source.getFullName(),destination.getFullName());
     }
     
     /**
