@@ -43,8 +43,10 @@ import org.dom4j.io.SAXReader;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.dbsupport.AttributeIFace;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.tools.fielddesc.FieldDescApp;
 import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.util.DatamodelHelper;
 
@@ -66,6 +68,8 @@ public class DatamodelGenerator
 
     protected Hashtable<String, TableMetaData> tblMetaDataHash = new Hashtable<String, TableMetaData>();
     
+    protected Vector<edu.ku.brc.specify.tools.fielddesc.Table> descTableList = new Vector<edu.ku.brc.specify.tools.fielddesc.Table>();
+    
     protected File    srcCodeDir = null;
     protected String  packageName = null;
     protected int     missing = 0;
@@ -76,7 +80,50 @@ public class DatamodelGenerator
      */
     public DatamodelGenerator()
     {
-        // no op
+        readDescriptions();
+    }
+    
+    protected void readDescriptions()
+    {
+        descTableList = FieldDescApp.readTableList();
+    }
+    
+    /**
+     * @param tableName
+     * @param fieldName
+     * @return
+     */
+    protected List<Desc> getDescList(final String tableName, final String fieldName)
+    {
+        edu.ku.brc.specify.tools.fielddesc.Table table = null;
+        for (edu.ku.brc.specify.tools.fielddesc.Table tbl : descTableList)
+        {
+            if (tbl.getName().equals(tableName))
+            {
+                table = tbl;
+                break;
+            }
+        }
+        
+        if (table != null)
+        {
+            for (edu.ku.brc.specify.tools.fielddesc.Field f : table.getFields())
+            {
+                if (f.getName().equals(fieldName))
+                {
+                    List<Desc> descList = new Vector<Desc>();
+                    for (edu.ku.brc.specify.tools.fielddesc.Desc d : f.getDescs())
+                    {
+                        descList.add(new Desc(d.getText(), d.getCountry(), d.getLang(), d.getVariant()));
+                    }
+                    return descList;
+                }
+            }
+        } else
+        {
+            log.error("Couldn't find table ["+tableName+"]");
+        }
+        return null;
     }
     
     /**
@@ -593,7 +640,16 @@ public class DatamodelGenerator
                             table.addId(createId(method, (javax.persistence.Column)method.getAnnotation(javax.persistence.Column.class)));
                         } else
                         {
-                            table.addField(createField(method, (javax.persistence.Column)method.getAnnotation(javax.persistence.Column.class), isLob));
+                            Field field = createField(method, (javax.persistence.Column)method.getAnnotation(javax.persistence.Column.class), isLob);
+                            List<Desc> descList = getDescList(tableName, field.getName());
+                            if (descList != null)
+                            {
+                                field.setDescs(descList);
+                            } else
+                            {
+                                log.error("***** No Descriptions for field ["+tableName+"]["+field.getName()+"]");
+                            }
+                            table.addField(field);
                         }
                         
                     } else if (method.isAnnotationPresent(javax.persistence.ManyToOne.class))
@@ -1104,9 +1160,9 @@ public class DatamodelGenerator
                     {
                         busRule = brElement.getTextTrim();
                     }
-                    log.debug("Creating TableMetaData and putting in tblMetaDataHashtable for name: " + tablename + " id: " + id + " defaultview: " + defaultView);
+                    //log.debug("Creating TableMetaData and putting in tblMetaDataHashtable for name: " + tablename + " id: " + id + " defaultview: " + defaultView);
                     
-                     tblMetaDataHash.put(tablename, new TableMetaData(id, defaultView, createDisplay(element), isQuery, busRule));
+                    tblMetaDataHash.put(tablename, new TableMetaData(id, defaultView, createDisplay(element), isQuery, busRule));
                     
                 }
                 
@@ -1156,5 +1212,6 @@ public class DatamodelGenerator
         log.info("Done.");
         System.out.println("Done.");
     }
-
+    
+    
 }

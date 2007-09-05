@@ -62,7 +62,6 @@ public class ERDVisualizer extends JFrame
     protected int HGAP    = 60;
     protected int VGAP    = 30;
     
-    //protected Vector<ERDTable>            list;
     protected TableTracker              tblTracker;
     protected ERDPanel                  mainPanel;
     
@@ -74,14 +73,32 @@ public class ERDVisualizer extends JFrame
     // For Trees
     
         
-    public ERDVisualizer(final TableTracker tblOrg, final File schemaDir)
+    public ERDVisualizer()
     {
-        this.tblTracker = tblOrg;
-        this.schemaDir  = schemaDir;
+        
+        tblTracker = new TableTracker(ERDTable.DisplayType.All);
+        
+        final File schemaDir = new File("schema");
+        if (!schemaDir.exists())
+        {
+            schemaDir.mkdir();
+        } else
+        {
+            try
+            {
+                FileUtils.cleanDirectory(schemaDir);
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+
+        this.schemaDir = schemaDir;
         
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        p.add(mainPanel = new ERDPanel(tblOrg), BorderLayout.CENTER);
+        p.add(mainPanel = new ERDPanel(tblTracker), BorderLayout.CENTER);
         setContentPane(new JScrollPane(p));
         p.setBackground(Color.WHITE);
         mainPanel.setBackground(Color.WHITE);
@@ -128,7 +145,8 @@ public class ERDVisualizer extends JFrame
             int delay  = isDoShadow() ? 5000 : 1000;
             timer = new Timer();
             
-            if (false)
+            if (true)
+
             {
                 timer.scheduleAtFixedRate(new TimerTask() {
                         public void run() 
@@ -139,106 +157,106 @@ public class ERDVisualizer extends JFrame
             }
         } else
         {
-            //this.tblOrg.setFont(this.tblOrg.getFont().deriveFont((float)10.0));
+            //this.tblTracker.setFont(this.tblTracker.getFont().deriveFont((float)10.0));
             
-            ERDTable root = tblOrg.getTable("CollectionType");
+            ERDTable root = tblTracker.getTable("CollectionType");
             
             
             //                                skip,  processKids, alwaysAKid, processAnyRel, okWhenParent
-            tblOrg.addNodeInfo("Agent",              false, true,        true,       false,         null);
-            tblOrg.addNodeInfo("Determination",      false, true,        true,       true,          null);
-            tblOrg.addNodeInfo("Attachment",         true,  true,        true,       false,         null);
-            tblOrg.addNodeInfo("AttributeDef",       true,  true,        true,       false,         null);
-            tblOrg.addNodeInfo("UserPermission",     true,  true,        true,       false,         null);
-            tblOrg.addNodeInfo("AppResourceDefault", true,  true,        true,       false,         null);
-            tblOrg.addNodeInfo("DeaccessionPreparation",  true,  true,    true,       false,         null);
-            tblOrg.addNodeInfo("OtherIdentifier",         true,  true,    true,       false,         null);
-            tblOrg.addNodeInfo("CollectionRelationship",  true,  true,    true,       false,         null);
-            tblOrg.addNodeInfo("ProjectCollectionObject", true,  true,    true,       false,         null);
+            tblTracker.addNodeInfo("Agent",              false, true,        true,       false,         null);
+            tblTracker.addNodeInfo("Determination",      false, true,        true,       true,          null);
+            tblTracker.addNodeInfo("Attachment",         true,  true,        true,       false,         null);
+            tblTracker.addNodeInfo("AttributeDef",       true,  true,        true,       false,         null);
+            tblTracker.addNodeInfo("UserPermission",     true,  true,        true,       false,         null);
+            tblTracker.addNodeInfo("AppResourceDefault", true,  true,        true,       false,         null);
+            tblTracker.addNodeInfo("DeaccessionPreparation",  true,  true,    true,       false,         null);
+            tblTracker.addNodeInfo("OtherIdentifier",         true,  true,    true,       false,         null);
+            tblTracker.addNodeInfo("CollectionRelationship",  true,  true,    true,       false,         null);
+            tblTracker.addNodeInfo("ProjectCollectionObject", true,  true,    true,       false,         null);
             
             // No Kids
-            tblOrg.addNodeInfo("Taxon",                  false, false, true,  false, null);
-            tblOrg.addNodeInfo("TaxonCitation",          false, false, true,  false, null);
-            tblOrg.addNodeInfo("DeterminationStatus",    false, false, true,  false, null);
-            tblOrg.addNodeInfo("DeterminationCitation",  false, false, true,  false, null);
-            tblOrg.addNodeInfo("ReferenceWork",          false, false, true,  false, null);
-            tblOrg.addNodeInfo("Journal",                false, false, true,  false, null);
-            tblOrg.addNodeInfo("CollectingEvent",        false, false, true,  false, null);
-            tblOrg.addNodeInfo("Locality",               false, false, true,  false, null);
-            tblOrg.addNodeInfo("Geography",              false, false, true,  false, null);
-            tblOrg.addNodeInfo("PaleoContext",           false, false, true,  false, null);
-            tblOrg.addNodeInfo("LithoStrat",             false, false, true,  false, null);
-            tblOrg.addNodeInfo("GeologicTimePeriod",     false, false, true,  false, null);
-            tblOrg.addNodeInfo("CollectionObjectCitation", false, false, true,  false, null);
-            tblOrg.addNodeInfo("Accession",              false, false, true,  false, null);
-            tblOrg.addNodeInfo("AccessionAuthorization", false, false, true,  false, null);
-            tblOrg.addNodeInfo("AccessionAgent",         false, false, true,  false, null);
-            tblOrg.addNodeInfo("Agent",                  false, false, true,  false, null);
-            tblOrg.addNodeInfo("Preparation",            false, false, true,  false, null);
-            tblOrg.addNodeInfo("PrepType",               false, false, true,  false, null);
-            tblOrg.addNodeInfo("RepositoryAgreement",    false, false, true,  false, null);
+            tblTracker.addNodeInfo("Taxon",                  false, false, true,  false, null);
+            tblTracker.addNodeInfo("TaxonCitation",          false, false, true,  false, null);
+            tblTracker.addNodeInfo("DeterminationStatus",    false, false, true,  false, null);
+            tblTracker.addNodeInfo("DeterminationCitation",  false, false, true,  false, null);
+            tblTracker.addNodeInfo("ReferenceWork",          false, false, true,  false, null);
+            tblTracker.addNodeInfo("Journal",                false, false, true,  false, null);
+            tblTracker.addNodeInfo("CollectingEvent",        false, false, true,  false, null);
+            tblTracker.addNodeInfo("Locality",               false, false, true,  false, null);
+            tblTracker.addNodeInfo("Geography",              false, false, true,  false, null);
+            tblTracker.addNodeInfo("PaleoContext",           false, false, true,  false, null);
+            tblTracker.addNodeInfo("LithoStrat",             false, false, true,  false, null);
+            tblTracker.addNodeInfo("GeologicTimePeriod",     false, false, true,  false, null);
+            tblTracker.addNodeInfo("CollectionObjectCitation", false, false, true,  false, null);
+            tblTracker.addNodeInfo("Accession",              false, false, true,  false, null);
+            tblTracker.addNodeInfo("AccessionAuthorization", false, false, true,  false, null);
+            tblTracker.addNodeInfo("AccessionAgent",         false, false, true,  false, null);
+            tblTracker.addNodeInfo("Agent",                  false, false, true,  false, null);
+            tblTracker.addNodeInfo("Preparation",            false, false, true,  false, null);
+            tblTracker.addNodeInfo("PrepType",               false, false, true,  false, null);
+            tblTracker.addNodeInfo("RepositoryAgreement",    false, false, true,  false, null);
             
-            NodeInfo det = tblOrg.getNodeInfo("Determination");
-            det.addKid(tblOrg.getTable("Taxon"));
-            det.addKid(tblOrg.getTable("DeterminationStatus"));
+            NodeInfo det = tblTracker.getNodeInfo("Determination");
+            det.addKid(tblTracker.getTable("Taxon"));
+            det.addKid(tblTracker.getTable("DeterminationStatus"));
             
-            NodeInfo ni = tblOrg.getNodeInfo("Taxon");
-            ni.addKid(tblOrg.getTable("TaxonCitation"));
+            NodeInfo ni = tblTracker.getNodeInfo("Taxon");
+            ni.addKid(tblTracker.getTable("TaxonCitation"));
             
-            ni = tblOrg.getNodeInfo("CollectionObjectCitation");
-            ni.addKid(tblOrg.getTable("ReferenceWork"));
+            ni = tblTracker.getNodeInfo("CollectionObjectCitation");
+            ni.addKid(tblTracker.getTable("ReferenceWork"));
             
-            ni = tblOrg.getNodeInfo("TaxonCitation");
-            ni.addKid(tblOrg.getTable("ReferenceWork"));
+            ni = tblTracker.getNodeInfo("TaxonCitation");
+            ni.addKid(tblTracker.getTable("ReferenceWork"));
             
-            ni = tblOrg.getNodeInfo("ReferenceWork");
+            ni = tblTracker.getNodeInfo("ReferenceWork");
             ni.setOkToDuplicate(true);
-            ni.addKid(tblOrg.getTable("Journal"));
+            ni.addKid(tblTracker.getTable("Journal"));
 
-            ni = tblOrg.getNodeInfo("GeologicTimePeriod");
+            ni = tblTracker.getNodeInfo("GeologicTimePeriod");
             ni.setOkToDuplicate(true);
             
-            ni = tblOrg.getNodeInfo("Journal");
+            ni = tblTracker.getNodeInfo("Journal");
             ni.setOkToDuplicate(true);
             
-            ni = tblOrg.getNodeInfo("CollectingEvent");
-            ni.addKid(tblOrg.getTable("Locality"));
+            ni = tblTracker.getNodeInfo("CollectingEvent");
+            ni.addKid(tblTracker.getTable("Locality"));
             
-            ni = tblOrg.getNodeInfo("CollectionObject");
-            ni.addKid(tblOrg.getTable("CollectingEvent"));
-            ni.addKid(tblOrg.getTable("PaleoContext"));
-            ni.addKid(tblOrg.getTable("Accession"));
+            ni = tblTracker.getNodeInfo("CollectionObject");
+            ni.addKid(tblTracker.getTable("CollectingEvent"));
+            ni.addKid(tblTracker.getTable("PaleoContext"));
+            ni.addKid(tblTracker.getTable("Accession"));
             
-            ni = tblOrg.getNodeInfo("Locality");
-            ni.addKid(tblOrg.getTable("Geography"));
+            ni = tblTracker.getNodeInfo("Locality");
+            ni.addKid(tblTracker.getTable("Geography"));
             
-            ni = tblOrg.getNodeInfo("PaleoContext");
-            ni.addKid(tblOrg.getTable("LithoStrat"));
-            ni.addKid(tblOrg.getTable("GeologicTimePeriod"));
+            ni = tblTracker.getNodeInfo("PaleoContext");
+            ni.addKid(tblTracker.getTable("LithoStrat"));
+            ni.addKid(tblTracker.getTable("GeologicTimePeriod"));
             
-            ni = tblOrg.getNodeInfo("DeterminationCitation");
-            ni.addKid(tblOrg.getTable("ReferenceWork"));
+            ni = tblTracker.getNodeInfo("DeterminationCitation");
+            ni.addKid(tblTracker.getTable("ReferenceWork"));
             
-            ni = tblOrg.getNodeInfo("Preparation");
-            ni.addKid(tblOrg.getTable("PrepType"));
+            ni = tblTracker.getNodeInfo("Preparation");
+            ni.addKid(tblTracker.getTable("PrepType"));
             
-            ni = tblOrg.getNodeInfo("Accession");
-            ni.addKid(tblOrg.getTable("AccessionAuthorization"));
-            ni.addKid(tblOrg.getTable("AccessionAgent"));
-            ni.addKid(tblOrg.getTable("RepositoryAgreement"));
-            //ni.addKid(tblOrg.getTable("Attachment"));
+            ni = tblTracker.getNodeInfo("Accession");
+            ni.addKid(tblTracker.getTable("AccessionAuthorization"));
+            ni.addKid(tblTracker.getTable("AccessionAgent"));
+            ni.addKid(tblTracker.getTable("RepositoryAgreement"));
+            //ni.addKid(tblTracker.getTable("Attachment"));
             //protected RepositoryAgreement repositoryAgreement;
 
             if (false)
             {
-                ni = tblOrg.getNodeInfo("Agent");
+                ni = tblTracker.getNodeInfo("Agent");
                 ni.setOkToDuplicate(true);
                 
                 String[] toAddAgent = {"CollectionObject", "Accession", "Determination", "Preparation", };
                 for (String name : toAddAgent)
                 {
-                    ni = tblOrg.getNodeInfo(name);
-                    ni.addKid(tblOrg.getTable("Agent"));
+                    ni = tblTracker.getNodeInfo(name);
+                    ni.addKid(tblTracker.getTable("Agent"));
                 }
             }
             
@@ -647,24 +665,7 @@ public class ERDVisualizer extends JFrame
     public static void main(String[] args)
     {
 
-        TableTracker tableTracker = new TableTracker();
-        
-        final File schemaDir = new File("schema");
-        if (!schemaDir.exists())
-        {
-            schemaDir.mkdir();
-        } else
-        {
-            try
-            {
-                //FileUtils.cleanDirectory(schemaDir);
-            } catch (Exception ex)
-            {
-                ex.printStackTrace();
-            }
-        }
-
-        final ERDVisualizer frame = new ERDVisualizer(tableTracker, schemaDir);
+        final ERDVisualizer frame = new ERDVisualizer();
 
         
         SwingUtilities.invokeLater(new Runnable()
@@ -672,16 +673,8 @@ public class ERDVisualizer extends JFrame
             public void run()
             {
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                frame.setBounds(0, 0, 2000, 2000);
+                frame.setBounds(0, 0, 800, 2000);
                 frame.setVisible(true);
-                
-                SwingUtilities.invokeLater(new Runnable()
-                {
-                    public void run()
-                    {
-                        //frame.generate();
-                    }
-                });
             }
         });
     }

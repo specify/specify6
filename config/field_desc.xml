@@ -1,0 +1,3581 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <database>
+    <table name="accession">
+      <field name="dateAccessioned" type="java.util.Calendar">
+        <desc country="US" lang="en">Date of Accession</desc>
+      </field>
+      <field name="dateReceived" type="java.util.Calendar">
+        <desc country="US" lang="en">Date material was received</desc>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="number" type="java.lang.String">
+        <desc country="US" lang="en">A user-visible identifier of the Accession. Typically an integer, but may include alphanumeric characters as prefix, suffix, and separators</desc>
+      </field>
+      <field name="number1" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number2" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="status" type="java.lang.String">
+        <desc country="US" lang="en">Status of Accession, e.g. 'In process', 'Complete' ...</desc>
+      </field>
+      <field name="text1" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text2" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text3" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="type" type="java.lang.String">
+        <desc country="US" lang="en">Source of Accession, e.g. 'Collecting', 'Gift', 'Bequest' ...</desc>
+      </field>
+      <field name="verbatimDate" type="java.lang.String">
+        <desc country="US" lang="en">accomodates historical accessions.</desc>
+      </field>
+      <field name="yesNo1" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="yesNo2" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="repositoryAgreement" type="ManyToOne"/>
+    </table>
+    <table name="accessionagent">
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="role" type="java.lang.String">
+        <desc country="US" lang="en">Role the agent played in the accession process</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="agent" type="ManyToOne"/>
+      <field name="repositoryAgreement" type="ManyToOne"/>
+      <field name="accession" type="ManyToOne"/>
+    </table>
+    <table name="accessionauthorization">
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="repositoryAgreement" type="ManyToOne"/>
+      <field name="permit" type="ManyToOne"/>
+      <field name="accession" type="ManyToOne"/>
+    </table>
+    <table name="address">
+      <field name="address" type="java.lang.String">
+        <desc country="US" lang="en">Address as it should appear on mailing labels</desc>
+      </field>
+      <field name="address2" type="java.lang.String">
+        <desc country="US" lang="en">Second line of address (optional)</desc>
+      </field>
+      <field name="city" type="java.lang.String">
+        <desc country="US" lang="en">The City</desc>
+      </field>
+      <field name="country" type="java.lang.String">
+        <desc country="US" lang="en">The Country</desc>
+      </field>
+      <field name="endDate" type="java.util.Calendar">
+        <desc country="US" lang="en">The last date the agent was at the address</desc>
+      </field>
+      <field name="fax" type="java.lang.String">
+        <desc country="US" lang="en">The fax number</desc>
+      </field>
+      <field name="isPrimary" type="java.lang.Boolean">
+        <desc country="US" lang="en">Indicates whether this is the primary address</desc>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="phone1" type="java.lang.String">
+        <desc country="US" lang="en">The primary phone number</desc>
+      </field>
+      <field name="phone2" type="java.lang.String">
+        <desc country="US" lang="en">The secondary phone number</desc>
+      </field>
+      <field name="positionHeld" type="java.lang.String">
+        <desc country="US" lang="en">The position held by the agent while at this address</desc>
+      </field>
+      <field name="postalCode" type="java.lang.String">
+        <desc country="US" lang="en">Postal code (Zip Code)</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="roomOrBuilding" type="java.lang.String">
+        <desc country="US" lang="en">The room or building of the agent</desc>
+      </field>
+      <field name="startDate" type="java.util.Calendar">
+        <desc country="US" lang="en">The first date the the agent was at this address</desc>
+      </field>
+      <field name="state" type="java.lang.String">
+        <desc country="US" lang="en">The state within the country</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="agent" type="ManyToOne"/>
+    </table>
+    <table name="agent">
+      <field name="abbreviation" type="java.lang.String">
+        <desc country="US" lang="en">of organization</desc>
+      </field>
+      <field name="agentType" type="java.lang.Byte">
+        <desc country="US" lang="en">Discriminator between Organization(0), Person(1),Other(2), and Group(3)</desc>
+      </field>
+      <field name="authorName" type="java.lang.String">
+        <desc country="US" lang="en">The named used when authoring publications</desc>
+      </field>
+      <field name="collectorName" type="java.lang.String">
+        <desc country="US" lang="en">The name used as a collector</desc>
+      </field>
+      <field name="email" type="java.lang.String">
+        <desc country="US" lang="en">Email address</desc>
+      </field>
+      <field name="firstName" type="java.lang.String">
+        <desc country="US" lang="en">of Person</desc>
+      </field>
+      <field name="guid" type="java.lang.String">
+        <desc country="US" lang="en">Global Unique Identifier</desc>
+      </field>
+      <field name="interests" type="java.lang.String">
+        <desc country="US" lang="en">of Person or Organization</desc>
+      </field>
+      <field name="jobTitle" type="java.lang.String">
+        <desc country="US" lang="en">Agent's (person) job title at specified address and organization</desc>
+      </field>
+      <field name="labelName" type="java.lang.String">
+        <desc country="US" lang="en">The name used on labels</desc>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="lastName" type="java.lang.String">
+        <desc country="US" lang="en">of Person</desc>
+      </field>
+      <field name="middleInitial" type="java.lang.String">
+        <desc country="US" lang="en">of Person</desc>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en">of organization/group/Folks (and maybe persons)</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="title" type="java.lang.String">
+        <desc country="US" lang="en">of Person</desc>
+      </field>
+      <field name="url" type="java.lang.String">
+        <desc country="US" lang="en">An URL for their website</desc>
+      </field>
+      <field name="visibility" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="visibilitySetBy" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="instContentContact" type="ManyToOne"/>
+      <field name="divisions" type="ManyToMany"/>
+      <field name="instTechContact" type="ManyToOne"/>
+    </table>
+    <table name="agentvariant">
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en">THe full name used as a variant or vernacular name</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="varType" type="java.lang.Byte">
+        <desc country="US" lang="en">Indicates whether the record is a variant (0) or a vernacular name (1)</desc>
+      </field>
+      <field name="agent" type="ManyToOne"/>
+    </table>
+    <table name="appresource">
+      <field name="allPermissionLevel" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="description" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="groupPermissionLevel" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="level" type="java.lang.Short">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="metaData" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="mimeType" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="ownerPermissionLevel" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="group" type="ManyToOne"/>
+      <field name="appResourceDefaults" type="ManyToMany"/>
+      <field name="specifyUser" type="ManyToOne"/>
+    </table>
+    <table name="appresourcedata">
+      <field name="data" type="text">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="viewSetObj" type="ManyToOne"/>
+      <field name="appResource" type="ManyToOne"/>
+    </table>
+    <table name="appresourcedefault">
+      <field name="disciplineType" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="userType" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="specifyUser" type="ManyToOne"/>
+      <field name="persistedViewSets" type="ManyToMany"/>
+      <field name="collectionType" type="ManyToOne"/>
+      <field name="collection" type="ManyToOne"/>
+      <field name="persistedAppResources" type="ManyToMany"/>
+    </table>
+    <table name="attachments">
+      <field name="attachmentLocation" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="fileCreatedDate" type="java.util.Calendar">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="mimeType" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="ordinal" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="origFilename" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="visibility" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="visibilitySetBy" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="accession" type="ManyToOne"/>
+      <field name="collectionObject" type="ManyToOne"/>
+      <field name="taxon" type="ManyToOne"/>
+      <field name="loan" type="ManyToOne"/>
+      <field name="conservDescription" type="ManyToOne"/>
+      <field name="conservEvent" type="ManyToOne"/>
+      <field name="collectingEvent" type="ManyToOne"/>
+      <field name="permit" type="ManyToOne"/>
+      <field name="agent" type="ManyToOne"/>
+      <field name="repositoryAgreement" type="ManyToOne"/>
+      <field name="locality" type="ManyToOne"/>
+      <field name="preparation" type="ManyToOne"/>
+    </table>
+    <table name="attachmentmetadata">
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="value" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="attachment" type="ManyToOne"/>
+    </table>
+    <table name="attributedef">
+      <field name="dataType" type="java.lang.Short">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="fieldName" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="tableType" type="java.lang.Short">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="collectionType" type="ManyToOne"/>
+      <field name="prepType" type="ManyToOne"/>
+    </table>
+    <table name="author">
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="orderNumber" type="java.lang.Short">
+        <desc country="US" lang="en">Their position in a list of authors</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="agent" type="ManyToOne"/>
+      <field name="referenceWork" type="ManyToOne"/>
+    </table>
+    <table name="borrow">
+      <field name="currentDueDate" type="java.util.Calendar">
+        <desc country="US" lang="en">Date loan is currently due. (Same as OrignalDueDate unless loan period has been extended)</desc>
+      </field>
+      <field name="dateClosed" type="java.util.Calendar">
+        <desc country="US" lang="en">Date loan was closed</desc>
+      </field>
+      <field name="invoiceNumber" type="java.lang.String">
+        <desc country="US" lang="en">Lender's loan number</desc>
+      </field>
+      <field name="isClosed" type="java.lang.Boolean">
+        <desc country="US" lang="en">Indicates whether the borrow was closed (returned)</desc>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="number1" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number2" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="originalDueDate" type="java.util.Calendar">
+        <desc country="US" lang="en">Original Due date for loan</desc>
+      </field>
+      <field name="receivedDate" type="java.util.Calendar">
+        <desc country="US" lang="en">Date material was received</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="text1" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text2" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="yesNo1" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="yesNo2" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="shipments" type="ManyToMany"/>
+    </table>
+    <table name="borrowagent">
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="role" type="java.lang.String">
+        <desc country="US" lang="en">Role played by agent in borrow</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="agent" type="ManyToOne"/>
+      <field name="borrow" type="ManyToOne"/>
+    </table>
+    <table name="borrowmaterial">
+      <field name="description" type="java.lang.String">
+        <desc country="US" lang="en">Description of the material. 'e.g. Bufo bufo skull'</desc>
+      </field>
+      <field name="inComments" type="text">
+        <desc country="US" lang="en">Notes concerning the receipt of the material</desc>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="materialNumber" type="java.lang.String">
+        <desc country="US" lang="en">e.g. 'FMNH 223456'</desc>
+      </field>
+      <field name="outComments" type="text">
+        <desc country="US" lang="en">Notes concerning the return of the material</desc>
+      </field>
+      <field name="quantity" type="java.lang.Short">
+        <desc country="US" lang="en">Number of specimens (for lots)</desc>
+      </field>
+      <field name="quantityResolved" type="java.lang.Short">
+        <desc country="US" lang="en">Quantity resolved (Returned, Accessioned, Lost, Discarded, Destroyed ...)</desc>
+      </field>
+      <field name="quantityReturned" type="java.lang.Short">
+        <desc country="US" lang="en">Quantity returned</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="borrow" type="ManyToOne"/>
+    </table>
+    <table name="borrowreturnmaterial">
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="quantity" type="java.lang.Short">
+        <desc country="US" lang="en">Quantity of preparations returned</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="returnedDate" type="java.util.Calendar">
+        <desc country="US" lang="en">The date the material was returned</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="borrowMaterial" type="ManyToOne"/>
+      <field name="agent" type="ManyToOne"/>
+    </table>
+    <table name="recordset">
+      <field name="allPermissionLevel" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="dbTableId" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="groupPermissionLevel" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="ownerPermissionLevel" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="specifyUser" type="ManyToOne"/>
+      <field name="group" type="ManyToOne"/>
+    </table>
+    <table name="catalognumberingscheme">
+      <field name="isNumericOnly" type="java.lang.Boolean">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="schemeClassName" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="schemeName" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+    </table>
+    <table name="collectingevent">
+      <field name="endDate" type="java.util.Calendar">
+        <desc country="US" lang="en">The date collecting event ended</desc>
+      </field>
+      <field name="endDatePrecision" type="java.lang.Short">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="endDateVerbatim" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="endTime" type="java.lang.Short">
+        <desc country="US" lang="en">End time in military format</desc>
+      </field>
+      <field name="groupPermittedToView" type="java.lang.Integer">
+        <desc country="US" lang="en">The name of the group that this record is visible to.</desc>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="method" type="java.lang.String">
+        <desc country="US" lang="en">The method used to obtain the biological object</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="startDate" type="java.util.Calendar">
+        <desc country="US" lang="en">The date collecting event began</desc>
+      </field>
+      <field name="startDatePrecision" type="java.lang.Short">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="startDateVerbatim" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="startTime" type="java.lang.Short">
+        <desc country="US" lang="en">Start time in military format</desc>
+      </field>
+      <field name="stationFieldNumber" type="java.lang.String">
+        <desc country="US" lang="en">Station number or field number of the site where collecting event took place, A number or code recorded in field notes and/or written on field tags that identifies ALL material collected in a CollectingEvent.</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="verbatimDate" type="java.lang.String">
+        <desc country="US" lang="en">Date which collector recorded in field book, exactly as reported by the collector. Should indicate whether reported as range, season, month, etc.</desc>
+      </field>
+      <field name="verbatimLocality" type="text">
+        <desc country="US" lang="en">Original statement (literal quotation) of the location of the CollectingEvent as given by the Collector.</desc>
+      </field>
+      <field name="visibility" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="visibilitySetBy" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="locality" type="ManyToOne"/>
+      <field name="collectingTrip" type="ManyToOne"/>
+      <field name="habitatAttributes" type="ManyToOne"/>
+    </table>
+    <table name="collectingeventattr">
+      <field name="dblValue" type="java.lang.Double">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="strValue" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="definition" type="ManyToOne"/>
+      <field name="collectingEvent" type="ManyToOne"/>
+    </table>
+    <table name="collectingtrip">
+      <field name="endDate" type="java.util.Calendar">
+        <desc country="US" lang="en">The ending date of the collecting trip</desc>
+      </field>
+      <field name="endDatePrecision" type="java.lang.Short">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="endDateVerbatim" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="endTime" type="java.lang.Short">
+        <desc country="US" lang="en">The ending time of the collecting trip</desc>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en"></desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="startDate" type="java.util.Calendar">
+        <desc country="US" lang="en">The start date of the collecting trip</desc>
+      </field>
+      <field name="startDatePrecision" type="java.lang.Short">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="startDateVerbatim" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="startTime" type="java.lang.Short">
+        <desc country="US" lang="en">The start time of the collecting trip</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+    </table>
+    <table name="collection">
+      <field name="collectionName" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="collectionPrefix" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="collectionType" type="ManyToOne"/>
+      <field name="catalogNumberingScheme" type="ManyToOne"/>
+    </table>
+    <table name="collectionobject">
+      <field name="catalogNumber" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="catalogedDate" type="java.util.Calendar">
+        <desc country="US" lang="en">Date the object was cataloged</desc>
+      </field>
+      <field name="catalogedDateVerbatim" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="countAmt" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="deaccessioned" type="java.lang.Boolean">
+        <desc country="US" lang="en">True if the object has been deaccessioned</desc>
+      </field>
+      <field name="description" type="java.lang.String">
+        <desc country="US" lang="en">Image, Sound, Preparation, Container(Container Label?)</desc>
+      </field>
+      <field name="fieldNumber" type="java.lang.String">
+        <desc country="US" lang="en">BiologicalObject (Bird, Fish, etc)</desc>
+      </field>
+      <field name="groupPermittedToView" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="guid" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="modifier" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="number1" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number2" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="text1" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text2" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="visibility" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="visibilitySetBy" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="yesNo1" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="yesNo2" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="container" type="ManyToOne"/>
+      <field name="paleoContext" type="ManyToOne"/>
+      <field name="collection" type="ManyToOne"/>
+      <field name="collectingEvent" type="ManyToOne"/>
+      <field name="accession" type="ManyToOne"/>
+      <field name="containerOwner" type="ManyToOne"/>
+      <field name="cataloger" type="ManyToOne"/>
+      <field name="colObjAttributes" type="ManyToOne"/>
+    </table>
+    <table name="collectionobjectattr">
+      <field name="dblValue" type="java.lang.Double">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="strValue" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="definition" type="ManyToOne"/>
+      <field name="collectionObject" type="ManyToOne"/>
+    </table>
+    <table name="colobjattributes">
+      <field name="age" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="height" type="java.lang.Float">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="length" type="java.lang.Float">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="maxLength" type="java.lang.Float">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="minLength" type="java.lang.Float">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="number1" type="java.lang.Float">
+        <desc country="US" lang="en">user definable</desc>
+      </field>
+      <field name="number10" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number11" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number12" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number13" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number14" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number15" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number16" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number17" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number18" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number19" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number2" type="java.lang.Float">
+        <desc country="US" lang="en">user definable</desc>
+      </field>
+      <field name="number20" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number21" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number22" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number23" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number24" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number25" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number26" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number27" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number28" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number29" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number3" type="java.lang.Float">
+        <desc country="US" lang="en">user definable</desc>
+      </field>
+      <field name="number30" type="java.lang.Short">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number31" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number32" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number33" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number34" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number35" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number36" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number4" type="java.lang.Float">
+        <desc country="US" lang="en">user definable</desc>
+      </field>
+      <field name="number5" type="java.lang.Float">
+        <desc country="US" lang="en">user definable</desc>
+      </field>
+      <field name="number6" type="java.lang.Float">
+        <desc country="US" lang="en">user definable</desc>
+      </field>
+      <field name="number7" type="java.lang.Float">
+        <desc country="US" lang="en">user definable</desc>
+      </field>
+      <field name="number8" type="java.lang.Byte">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number9" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="objCondition" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="reproductiveCondition" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="sex" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="stage" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="text1" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text2" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text3" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text4" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text5" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text6" type="java.lang.String">
+        <desc country="US" lang="en">user definable</desc>
+      </field>
+      <field name="text7" type="java.lang.String">
+        <desc country="US" lang="en">user definable</desc>
+      </field>
+      <field name="text8" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text9" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="weight" type="java.lang.Float">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="width" type="java.lang.Float">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="yesNo1" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="yesNo2" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="yesNo3" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="yesNo4" type="java.lang.Boolean">
+        <desc country="US" lang="en">user definable</desc>
+      </field>
+      <field name="yesNo5" type="java.lang.Boolean">
+        <desc country="US" lang="en">user definable</desc>
+      </field>
+      <field name="yesNo6" type="java.lang.Boolean">
+        <desc country="US" lang="en">user definable</desc>
+      </field>
+      <field name="yesNo7" type="java.lang.Boolean">
+        <desc country="US" lang="en">user definable</desc>
+      </field>
+    </table>
+    <table name="collectionobjectcitation">
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="referenceWork" type="ManyToOne"/>
+      <field name="collectionObject" type="ManyToOne"/>
+    </table>
+    <table name="collectionrelationship">
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="leftSide" type="ManyToOne"/>
+      <field name="collectionRelType" type="ManyToOne"/>
+      <field name="rightSide" type="ManyToOne"/>
+    </table>
+    <table name="collectionreltype">
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en">The name of the Collection Relationship</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+    </table>
+    <table name="collectiontype">
+      <field name="discipline" type="java.lang.String">
+        <desc country="US" lang="en">The Discipline of all the Collections that reference this</desc>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en">The name of the Collection Type, often the same as the discipline</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="localities" type="ManyToMany"/>
+      <field name="geographyTreeDef" type="ManyToOne"/>
+      <field name="dataType" type="ManyToOne"/>
+      <field name="lithoStratTreeDef" type="ManyToOne"/>
+      <field name="specifyUser" type="ManyToOne"/>
+      <field name="locationTreeDef" type="ManyToOne"/>
+      <field name="geologicTimePeriodTreeDef" type="ManyToOne"/>
+    </table>
+    <table name="collector">
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="orderNumber" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="agent" type="ManyToOne"/>
+      <field name="collectingEvent" type="ManyToOne"/>
+    </table>
+    <table name="commonname">
+      <field name="country" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="language" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="variant" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="taxon" type="ManyToOne"/>
+    </table>
+    <table name="conservdescription">
+      <field name="backgroundInfo" type="text">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="composition" type="text">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="curatorApprovalDate" type="java.util.Calendar">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="description" type="text">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="height" type="java.lang.Float">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="objLength" type="java.lang.Float">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="shortDesc" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="source" type="text">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="units" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="width" type="java.lang.Float">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="accession" type="ManyToOne"/>
+      <field name="division" type="ManyToOne"/>
+      <field name="collectionObject" type="ManyToOne"/>
+      <field name="curator" type="ManyToOne"/>
+    </table>
+    <table name="conservevent">
+      <field name="advTestingExam" type="text">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="advTestingExamResults" type="text">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="conditionReport" type="text">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="examDate" type="java.util.Calendar">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="photoDocs" type="text">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="treatmentCompDate" type="java.util.Calendar">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="treatmentReport" type="text">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="examinedByAgent" type="ManyToOne"/>
+      <field name="treatedByAgent" type="ManyToOne"/>
+      <field name="conservDescription" type="ManyToOne"/>
+    </table>
+    <table name="conservrecommendation">
+      <field name="completedComments" type="text">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="completedDate" type="java.util.Calendar">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="conservRecmdType" type="ManyToOne"/>
+      <field name="displayRecommendationConservEvent" type="ManyToOne"/>
+      <field name="lightRecommendationConservEvent" type="ManyToOne"/>
+      <field name="otherRecommendationConservEvent" type="ManyToOne"/>
+    </table>
+    <table name="conservrecmdtype">
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="rcmdType" type="java.lang.Byte">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="title" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+    </table>
+    <table name="container">
+      <field name="description" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="number" type="java.lang.Integer">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="type" type="java.lang.Short">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="location" type="ManyToOne"/>
+    </table>
+    <table name="datatype">
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+    </table>
+    <table name="deaccession">
+      <field name="deaccessionDate" type="java.util.Calendar">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="deaccessionNumber" type="java.lang.String">
+        <desc country="US" lang="en">Name institution assigns to the deacession</desc>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="number1" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number2" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="text1" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text2" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="type" type="java.lang.String">
+        <desc country="US" lang="en">Description of the Type of deaccession; i.e. Gift, disposal, lost</desc>
+      </field>
+      <field name="yesNo1" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="yesNo2" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+    </table>
+    <table name="deaccessionagent">
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="role" type="java.lang.String">
+        <desc country="US" lang="en">Role agent played in deaccession</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="agent" type="ManyToOne"/>
+      <field name="deaccession" type="ManyToOne"/>
+    </table>
+    <table name="deaccessionpreparation">
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="quantity" type="java.lang.Short">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="preparation" type="ManyToOne"/>
+      <field name="deaccession" type="ManyToOne"/>
+    </table>
+    <table name="determination">
+      <field name="confidence" type="java.lang.String">
+        <desc country="US" lang="en">Confidence of determination</desc>
+      </field>
+      <field name="determinedDate" type="java.util.Calendar">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="featureOrBasis" type="java.lang.String">
+        <desc country="US" lang="en">Body part, or characteristic used as the basis of a determination.</desc>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="method" type="java.lang.String">
+        <desc country="US" lang="en">Method of determination</desc>
+      </field>
+      <field name="number1" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number2" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="text1" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text2" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="typeStatusName" type="java.lang.String">
+        <desc country="US" lang="en">e.g. 'Holotype', 'Paratype'...</desc>
+      </field>
+      <field name="yesNo1" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="yesNo2" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="status" type="ManyToOne"/>
+      <field name="taxon" type="ManyToOne"/>
+      <field name="collectionObject" type="ManyToOne"/>
+      <field name="determiner" type="ManyToOne"/>
+    </table>
+    <table name="determinationcitation">
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="determination" type="ManyToOne"/>
+      <field name="referenceWork" type="ManyToOne"/>
+    </table>
+    <table name="determinationstatus">
+      <field name="isCurrent" type="java.lang.Boolean">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+    </table>
+    <table name="division">
+      <field name="abbrev" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="discipline" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="iconURI" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="title" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="uri" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="members" type="ManyToMany"/>
+    </table>
+    <table name="exchangein">
+      <field name="descriptionOfMaterial" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="exchangeDate" type="java.util.Calendar">
+        <desc country="US" lang="en">Date exchange was received</desc>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="number1" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number2" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="quantityExchanged" type="java.lang.Short">
+        <desc country="US" lang="en">Number of items received</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="text1" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text2" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="yesNo1" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="yesNo2" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="agentReceivedFrom" type="ManyToOne"/>
+      <field name="agentCatalogedBy" type="ManyToOne"/>
+    </table>
+    <table name="exchangeout">
+      <field name="descriptionOfMaterial" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="exchangeDate" type="java.util.Calendar">
+        <desc country="US" lang="en">Date exchange was sent</desc>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="number1" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number2" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="quantityExchanged" type="java.lang.Short">
+        <desc country="US" lang="en">Number of items sent</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="text1" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text2" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="yesNo1" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="yesNo2" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="shipments" type="ManyToMany"/>
+      <field name="agentCatalogedBy" type="ManyToOne"/>
+      <field name="agentSentTo" type="ManyToOne"/>
+    </table>
+    <table name="geography">
+      <field name="abbrev" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="centroidLat" type="java.math.BigDecimal">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="centroidLon" type="java.math.BigDecimal">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="commonName" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="fullName" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="geographyCode" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="gml" type="text">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="highestChildNodeNumber" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="isAccepted" type="java.lang.Boolean">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="isCurrent" type="java.lang.Boolean">
+        <desc country="US" lang="en">'Yes' if the Name and/or Geographic/Political entity is currently valid</desc>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="nodeNumber" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="number1" type="java.lang.Integer">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number2" type="java.lang.Integer">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="rankId" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="text1" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text2" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="timestampVersion" type="java.util.Date">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="definitionItem" type="ManyToOne"/>
+      <field name="definition" type="ManyToOne"/>
+    </table>
+    <table name="geographytreedef">
+      <field name="fullNameDirection" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+    </table>
+    <table name="geographytreedefitem">
+      <field name="fullNameSeparator" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="isEnforced" type="java.lang.Boolean">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="isInFullName" type="java.lang.Boolean">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="rankId" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="textAfter" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="textBefore" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="treeDef" type="ManyToOne"/>
+    </table>
+    <table name="geologictimeperiod">
+      <field name="endPeriod" type="java.lang.Float">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="endUncertainty" type="java.lang.Float">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="fullName" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="guid" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="highestChildNodeNumber" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="isAccepted" type="java.lang.Boolean">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="nodeNumber" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="rankId" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="standard" type="java.lang.String">
+        <desc country="US" lang="en">The system of stratigraphy the record is included in</desc>
+      </field>
+      <field name="startPeriod" type="java.lang.Float">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="startUncertainty" type="java.lang.Float">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="definitionItem" type="ManyToOne"/>
+      <field name="definition" type="ManyToOne"/>
+    </table>
+    <table name="geologictimeperiodtreedef">
+      <field name="fullNameDirection" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+    </table>
+    <table name="geologictimeperiodtreedefitem">
+      <field name="fullNameSeparator" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="isEnforced" type="java.lang.Boolean">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="isInFullName" type="java.lang.Boolean">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="rankId" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="textAfter" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="textBefore" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="treeDef" type="ManyToOne"/>
+    </table>
+    <table name="groupperson">
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="orderNumber" type="java.lang.Short">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="member" type="ManyToOne"/>
+      <field name="group" type="ManyToOne"/>
+    </table>
+    <table name="habitatattributes">
+      <field name="airTempC" type="java.lang.Float">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="clarity" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="habitatType" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="maxDepth" type="java.lang.Float">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="minDepth" type="java.lang.Float">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="number1" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number2" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number3" type="java.lang.Float">
+        <desc country="US" lang="en">user definable</desc>
+      </field>
+      <field name="number4" type="java.lang.Float">
+        <desc country="US" lang="en">user definable</desc>
+      </field>
+      <field name="number5" type="java.lang.Float">
+        <desc country="US" lang="en">user definable</desc>
+      </field>
+      <field name="number6" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number7" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number8" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="salinity" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="slope" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="text1" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text10" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text11" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text2" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text3" type="java.lang.String">
+        <desc country="US" lang="en">user definable</desc>
+      </field>
+      <field name="text4" type="java.lang.String">
+        <desc country="US" lang="en">user definable</desc>
+      </field>
+      <field name="text5" type="java.lang.String">
+        <desc country="US" lang="en">user definable</desc>
+      </field>
+      <field name="text6" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text7" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text8" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text9" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="turbidity" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="vegetation" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="waterPH" type="java.lang.Float">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="waterTempC" type="java.lang.Float">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="yesNo1" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="yesNo2" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="yesNo3" type="java.lang.Boolean">
+        <desc country="US" lang="en">user definable</desc>
+      </field>
+      <field name="yesNo4" type="java.lang.Boolean">
+        <desc country="US" lang="en">user definable</desc>
+      </field>
+      <field name="yesNo5" type="java.lang.Boolean">
+        <desc country="US" lang="en">user definable</desc>
+      </field>
+    </table>
+    <table name="inforequest">
+      <field name="email" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="firstName" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="institution" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="lastName" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="number" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="replyDate" type="java.util.Calendar">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="requestDate" type="java.util.Calendar">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="recordSet" type="ManyToOne"/>
+      <field name="agent" type="ManyToOne"/>
+    </table>
+    <table name="institution">
+      <field name="abbrev" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="copyright" type="text">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="disclaimer" type="text">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="iconURI" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="ipr" type="text">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="termsOfUse" type="text">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="title" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="uri" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+    </table>
+    <table name="journal">
+      <field name="journalAbbreviation" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="journalName" type="java.lang.String">
+        <desc country="US" lang="en">Full name of the journal</desc>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+    </table>
+    <table name="lithostrat">
+      <field name="fullName" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="guid" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="highestChildNodeNumber" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="isAccepted" type="java.lang.Boolean">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="nodeNumber" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="rankId" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="definitionItem" type="ManyToOne"/>
+      <field name="definition" type="ManyToOne"/>
+    </table>
+    <table name="lithostrattreedef">
+      <field name="fullNameDirection" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+    </table>
+    <table name="lithostrattreedefitem">
+      <field name="fullNameSeparator" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="isEnforced" type="java.lang.Boolean">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="isInFullName" type="java.lang.Boolean">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="rankId" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="textAfter" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="textBefore" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="treeDef" type="ManyToOne"/>
+    </table>
+    <table name="loan">
+      <field name="currentDueDate" type="java.util.Calendar">
+        <desc country="US" lang="en">Date the loan is due for return (Same as original Due date unless loan period has been extended)</desc>
+      </field>
+      <field name="dateClosed" type="java.util.Calendar">
+        <desc country="US" lang="en">Date loan was closed.</desc>
+      </field>
+      <field name="isClosed" type="java.lang.Boolean">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="isGift" type="java.lang.Boolean">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="loanDate" type="java.util.Calendar">
+        <desc country="US" lang="en">Date the Loan was created.</desc>
+      </field>
+      <field name="loanNumber" type="java.lang.String">
+        <desc country="US" lang="en">Invoice number</desc>
+      </field>
+      <field name="number1" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number2" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="originalDueDate" type="java.util.Calendar">
+        <desc country="US" lang="en">Date the loan was originally due.</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="text1" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text2" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="yesNo1" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="yesNo2" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="shipments" type="ManyToMany"/>
+    </table>
+    <table name="loanagent">
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="role" type="java.lang.String">
+        <desc country="US" lang="en">Role the agent played in the loan</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="loan" type="ManyToOne"/>
+      <field name="agent" type="ManyToOne"/>
+    </table>
+    <table name="loanphysicalobject">
+      <field name="descriptionOfMaterial" type="java.lang.String">
+        <desc country="US" lang="en">Description of loaned material (intended to be used for non-cataloged items, i.e. when PreparationID is null)</desc>
+      </field>
+      <field name="inComments" type="text">
+        <desc country="US" lang="en">Comments on item when returned</desc>
+      </field>
+      <field name="isResolved" type="java.lang.Boolean">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="outComments" type="text">
+        <desc country="US" lang="en">Comments on item when loaned</desc>
+      </field>
+      <field name="quantity" type="java.lang.Integer">
+        <desc country="US" lang="en">The total number of specimens loaned (necessary for lots)</desc>
+      </field>
+      <field name="quantityResolved" type="java.lang.Integer">
+        <desc country="US" lang="en">Number of specimens returned, deaccessioned or otherwise accounted for. (necessary for Lots)</desc>
+      </field>
+      <field name="quantityReturned" type="java.lang.Integer">
+        <desc country="US" lang="en">Number of specimens returned. (necessary for Lots)</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="preparation" type="ManyToOne"/>
+      <field name="loan" type="ManyToOne"/>
+    </table>
+    <table name="loanreturnphysicalobject">
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="quantity" type="java.lang.Integer">
+        <desc country="US" lang="en">Quantity of items returned (necessary for lots)</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="returnedDate" type="java.util.Calendar">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="receivedBy" type="ManyToOne"/>
+      <field name="deaccessionPreparation" type="ManyToOne"/>
+      <field name="loanPhysicalObject" type="ManyToOne"/>
+    </table>
+    <table name="locality">
+      <field name="baseMeridian" type="java.lang.String">
+        <desc country="US" lang="en">BaseMeridian for the Range/Township/Section data</desc>
+      </field>
+      <field name="datum" type="java.lang.String">
+        <desc country="US" lang="en">GPSDatum</desc>
+      </field>
+      <field name="drainage" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="elevationAccuracy" type="java.lang.Double">
+        <desc country="US" lang="en">plus or minus -- in meters</desc>
+      </field>
+      <field name="elevationMethod" type="java.lang.String">
+        <desc country="US" lang="en">The method used to determine the elevation</desc>
+      </field>
+      <field name="geoRefAccuracyUnits" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="geoRefDetDate" type="java.util.Calendar">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="geoRefDetRef" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="geoRefRemarks" type="text">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="geoRefVerificationStatus" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="gml" type="text">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="groupPermittedToView" type="java.lang.Integer">
+        <desc country="US" lang="en">The name of the group that this record is visible to. (Default to public)</desc>
+      </field>
+      <field name="island" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="islandGroup" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="lat1text" type="java.lang.String">
+        <desc country="US" lang="en">User entry for Latitude1</desc>
+      </field>
+      <field name="lat2text" type="java.lang.String">
+        <desc country="US" lang="en">User entry for Latitude2</desc>
+      </field>
+      <field name="latLongAccuracy" type="java.lang.Double">
+        <desc country="US" lang="en">radius -- in decimal degrees</desc>
+      </field>
+      <field name="latLongMethod" type="java.lang.String">
+        <desc country="US" lang="en">the method used to determine the LatitudeLongitude</desc>
+      </field>
+      <field name="latLongType" type="java.lang.String">
+        <desc country="US" lang="en">The type of area described by the lat long data (Point,Line,Rectangle)</desc>
+      </field>
+      <field name="latitude1" type="java.math.BigDecimal">
+        <desc country="US" lang="en">Latitude of first point</desc>
+      </field>
+      <field name="latitude2" type="java.math.BigDecimal">
+        <desc country="US" lang="en">Latitude of second point</desc>
+      </field>
+      <field name="localityName" type="java.lang.String">
+        <desc country="US" lang="en">The full name of the locality.</desc>
+      </field>
+      <field name="long1text" type="java.lang.String">
+        <desc country="US" lang="en">User entry for Longitude1</desc>
+      </field>
+      <field name="long2text" type="java.lang.String">
+        <desc country="US" lang="en">User entry for Longitude2</desc>
+      </field>
+      <field name="longitude1" type="java.math.BigDecimal">
+        <desc country="US" lang="en">Longitude of first point</desc>
+      </field>
+      <field name="longitude2" type="java.math.BigDecimal">
+        <desc country="US" lang="en">Longitude of second point</desc>
+      </field>
+      <field name="maxElevation" type="java.lang.Double">
+        <desc country="US" lang="en">The maximum elevation in Meters</desc>
+      </field>
+      <field name="minElevation" type="java.lang.Double">
+        <desc country="US" lang="en">The minimum elevation in Meters</desc>
+      </field>
+      <field name="namedPlace" type="java.lang.String">
+        <desc country="US" lang="en">The named place the locality is closest to</desc>
+      </field>
+      <field name="namedPlaceExtent" type="java.lang.Float">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="nationalParkName" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="noGeoRefBecause" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="number1" type="java.lang.Double">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number2" type="java.lang.Double">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="originalElevationUnit" type="java.lang.String">
+        <desc country="US" lang="en">i.e. Meters, Feet, ...</desc>
+      </field>
+      <field name="originalLatLongUnit" type="java.lang.Integer">
+        <desc country="US" lang="en">i.e. Decimal, Deg/Min/Sec, ...</desc>
+      </field>
+      <field name="range" type="java.lang.String">
+        <desc country="US" lang="en">The Range of a legal description</desc>
+      </field>
+      <field name="rangeDirection" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="relationToNamedPlace" type="java.lang.String">
+        <desc country="US" lang="en">Relation of the locality to the named place</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="section" type="java.lang.String">
+        <desc country="US" lang="en">The Section of a legal description</desc>
+      </field>
+      <field name="sectionPart" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="text1" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text2" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="township" type="java.lang.String">
+        <desc country="US" lang="en">The Township of a legal description</desc>
+      </field>
+      <field name="townshipDirection" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="verbatimElevation" type="java.lang.String">
+        <desc country="US" lang="en">The verbatim elevation including units as given in the field notes</desc>
+      </field>
+      <field name="visibility" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="visibilitySetBy" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="waterBody" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="yesNo1" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="yesNo2" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="collectionTypes" type="ManyToMany"/>
+      <field name="geography" type="ManyToOne"/>
+      <field name="geoRefDetBy" type="ManyToOne"/>
+    </table>
+    <table name="localitycitation">
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="locality" type="ManyToOne"/>
+      <field name="referenceWork" type="ManyToOne"/>
+    </table>
+    <table name="location">
+      <field name="abbrev" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="fullName" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="highestChildNodeNumber" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="isAccepted" type="java.lang.Boolean">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="nodeNumber" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="number1" type="java.lang.Integer">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number2" type="java.lang.Integer">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="rankId" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="text1" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text2" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="timestampVersion" type="java.util.Date">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="definition" type="ManyToOne"/>
+      <field name="definitionItem" type="ManyToOne"/>
+    </table>
+    <table name="locationtreedef">
+      <field name="fullNameDirection" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+    </table>
+    <table name="locationtreedefitem">
+      <field name="fullNameSeparator" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="isEnforced" type="java.lang.Boolean">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="isInFullName" type="java.lang.Boolean">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="rankId" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="textAfter" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="textBefore" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="treeDef" type="ManyToOne"/>
+    </table>
+    <table name="otheridentifier">
+      <field name="identifier" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="institution" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="collectionObject" type="ManyToOne"/>
+    </table>
+    <table name="paleocontext">
+      <field name="direction" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="distance" type="java.lang.Float">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="distanceUnits" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="positionState" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="bioStrat" type="ManyToOne"/>
+      <field name="lithoStrat" type="ManyToOne"/>
+      <field name="chronosStrat" type="ManyToOne"/>
+    </table>
+    <table name="permit">
+      <field name="endDate" type="java.util.Calendar">
+        <desc country="US" lang="en">Date permit expires</desc>
+      </field>
+      <field name="issuedDate" type="java.util.Calendar">
+        <desc country="US" lang="en">Date permit was issued</desc>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="number1" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number2" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="permitNumber" type="java.lang.String">
+        <desc country="US" lang="en">Identifier for the permit</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="renewalDate" type="java.util.Calendar">
+        <desc country="US" lang="en">Date of renewal</desc>
+      </field>
+      <field name="startDate" type="java.util.Calendar">
+        <desc country="US" lang="en">Date permit becomes effective</desc>
+      </field>
+      <field name="text1" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text2" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="type" type="java.lang.String">
+        <desc country="US" lang="en">Permit category - 'CITES', 'Migratory Bird Treaty Act', ...</desc>
+      </field>
+      <field name="yesNo1" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="yesNo2" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="issuedBy" type="ManyToOne"/>
+      <field name="issuedTo" type="ManyToOne"/>
+    </table>
+    <table name="picklist">
+      <field name="fieldName" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="formatter" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="readOnly" type="java.lang.Boolean">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="sizeLimit" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="tableName" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="type" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+    </table>
+    <table name="preparation">
+      <field name="count" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="preparedDate" type="java.util.Calendar">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="storageLocation" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="text1" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text2" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="location" type="ManyToOne"/>
+      <field name="preparedByAgent" type="ManyToOne"/>
+      <field name="collectionObject" type="ManyToOne"/>
+      <field name="prepType" type="ManyToOne"/>
+      <field name="preparationAttributes" type="ManyToOne"/>
+    </table>
+    <table name="preparationattr">
+      <field name="dblValue" type="java.lang.Double">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="strValue" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="preparation" type="ManyToOne"/>
+      <field name="definition" type="ManyToOne"/>
+    </table>
+    <table name="preparationattributes">
+      <field name="attrDate" type="java.util.Date">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="containerType" type="java.lang.String">
+        <desc country="US" lang="en">TissueOrExtract</desc>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="medium" type="java.lang.String">
+        <desc country="US" lang="en">The medium in which the preparation is stored or embedded</desc>
+      </field>
+      <field name="number1" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number2" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number3" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number4" type="java.lang.Integer">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number5" type="java.lang.Integer">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number6" type="java.lang.Integer">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number7" type="java.lang.Integer">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number8" type="java.lang.Integer">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number9" type="java.lang.Short">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="preparationType" type="java.lang.String">
+        <desc country="US" lang="en">TissueOrExtract</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="size" type="java.lang.String">
+        <desc country="US" lang="en">ImagePrint, ?</desc>
+      </field>
+      <field name="storageInfo" type="java.lang.String">
+        <desc country="US" lang="en">Spectrogram</desc>
+      </field>
+      <field name="text1" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text10" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text11" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text12" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text13" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text14" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text15" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text16" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text17" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text18" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text19" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text2" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text20" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text21" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text3" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text4" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text5" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text6" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text7" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text8" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text9" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="yesNo1" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="yesNo2" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+    </table>
+    <table name="preptype">
+      <field name="isLoanable" type="java.lang.Boolean">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+    </table>
+    <table name="project">
+      <field name="endDate" type="java.util.Calendar">
+        <desc country="US" lang="en">Date project ended</desc>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="number1" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number2" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="projectDescription" type="java.lang.String">
+        <desc country="US" lang="en">Description of project</desc>
+      </field>
+      <field name="projectName" type="java.lang.String">
+        <desc country="US" lang="en">Name of the project</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="startDate" type="java.util.Calendar">
+        <desc country="US" lang="en">Date project began</desc>
+      </field>
+      <field name="text1" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text2" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="url" type="java.lang.String">
+        <desc country="US" lang="en">URL for project</desc>
+      </field>
+      <field name="yesNo1" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="yesNo2" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="agent" type="ManyToOne"/>
+    </table>
+    <table name="projectcollectionobjects">
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="collectionObject" type="ManyToOne"/>
+      <field name="project" type="ManyToOne"/>
+    </table>
+    <table name="referencework">
+      <field name="containingReferenceWorkId" type="java.lang.Integer">
+        <desc country="US" lang="en">Link to Reference containing (if Section)</desc>
+      </field>
+      <field name="guid" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="isPublished" type="java.lang.Boolean">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="libraryNumber" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="number1" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number2" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="pages" type="java.lang.String">
+        <desc country="US" lang="en">Number of pages or Page range for Journal articles</desc>
+      </field>
+      <field name="placeOfPublication" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="publisher" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="referenceWorkType" type="java.lang.Byte">
+        <desc country="US" lang="en">Type of Reference (Book(0), Electronic Media(1), Paper(2), Technical Report(3), Thesis(4), Section in book(5))</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="text1" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text2" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="title" type="java.lang.String">
+        <desc country="US" lang="en">Title of reference</desc>
+      </field>
+      <field name="url" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="volume" type="java.lang.String">
+        <desc country="US" lang="en">Volume/Issue for Journal articles</desc>
+      </field>
+      <field name="workDate" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="yesNo1" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="yesNo2" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="journal" type="ManyToOne"/>
+    </table>
+    <table name="repositoryagreement">
+      <field name="dateReceived" type="java.util.Calendar">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="endDate" type="java.util.Calendar">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="number" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number1" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number2" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="startDate" type="java.util.Calendar">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="status" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="text1" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text2" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text3" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="yesNo1" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="yesNo2" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="originator" type="ManyToOne"/>
+    </table>
+    <table name="shipment">
+      <field name="insuredForAmount" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="number1" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number2" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="numberOfPackages" type="java.lang.Short">
+        <desc country="US" lang="en">Number of packages shipped</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="shipmentDate" type="java.util.Calendar">
+        <desc country="US" lang="en">Date of shipment</desc>
+      </field>
+      <field name="shipmentMethod" type="java.lang.String">
+        <desc country="US" lang="en">Description of shipment. E.g. 'Hand-carried', 'Overnight', 'Air', 'Land', 'Sea', ...</desc>
+      </field>
+      <field name="shipmentNumber" type="java.lang.String">
+        <desc country="US" lang="en">Shipper's tracking number</desc>
+      </field>
+      <field name="text1" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text2" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="weight" type="java.lang.String">
+        <desc country="US" lang="en">The weight of the shipment</desc>
+      </field>
+      <field name="yesNo1" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="yesNo2" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="borrows" type="ManyToMany"/>
+      <field name="exchangeOuts" type="ManyToMany"/>
+      <field name="shippedBy" type="ManyToOne"/>
+      <field name="shippedTo" type="ManyToOne"/>
+      <field name="loans" type="ManyToMany"/>
+      <field name="shipper" type="ManyToOne"/>
+    </table>
+    <table name="specifyuser">
+      <field name="email" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="privLevel" type="java.lang.Short">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="userType" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="agent" type="ManyToOne"/>
+      <field name="userGroup" type="ManyToMany"/>
+    </table>
+    <table name="taxon">
+      <field name="author" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="commonName" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="environmentalProtectionStatus" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="fullName" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="groupNumber" type="java.lang.String">
+        <desc country="US" lang="en">Taxonomic group number</desc>
+      </field>
+      <field name="guid" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="highestChildNodeNumber" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="isAccepted" type="java.lang.Boolean">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="isHybrid" type="java.lang.Boolean">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="nodeNumber" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="rankId" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="source" type="java.lang.String">
+        <desc country="US" lang="en">If the record has been imported then this field holds information about the authority file it was obtained from, else it is user-editable.</desc>
+      </field>
+      <field name="taxonomicSerialNumber" type="java.lang.String">
+        <desc country="US" lang="en">If the record has been imported from an Authority File then this field stores a unique ID assigned by the provider, else it is null</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="unitInd1" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="unitInd2" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="unitInd3" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="unitInd4" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="unitName1" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="unitName2" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="unitName3" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="unitName4" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="visibility" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="visibilitySetBy" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="definition" type="ManyToOne"/>
+      <field name="definitionItem" type="ManyToOne"/>
+    </table>
+    <table name="taxoncitation">
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="number1" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="number2" type="java.lang.Float">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="text1" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="text2" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="yesNo1" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="yesNo2" type="java.lang.Boolean">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="taxon" type="ManyToOne"/>
+      <field name="referenceWork" type="ManyToOne"/>
+    </table>
+    <table name="taxontreedef">
+      <field name="fullNameDirection" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="remarks" type="java.lang.String">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+    </table>
+    <table name="taxontreedefitem">
+      <field name="formatToken" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="fullNameSeparator" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="isEnforced" type="java.lang.Boolean">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="isInFullName" type="java.lang.Boolean">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="rankId" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="textAfter" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="textBefore" type="java.lang.String">
+        <desc country="US" lang="en">User definable</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="treeDef" type="ManyToOne"/>
+    </table>
+    <table name="usergroup">
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="specifyUsers" type="ManyToMany"/>
+    </table>
+    <table name="sp_userpermission">
+      <field name="adminPrivilege" type="java.lang.Boolean">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="dataAccessPrivilege" type="java.lang.Boolean">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="specifyUser" type="ManyToOne"/>
+      <field name="collectionType" type="ManyToOne"/>
+    </table>
+    <table name="viewsetobj">
+      <field name="description" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="level" type="java.lang.Short">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="metaData" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="appResourceDefaults" type="ManyToMany"/>
+    </table>
+    <table name="workbench">
+      <field name="allPermissionLevel" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="dbTableId" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="exportInstitutionName" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="formId" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="groupPermissionLevel" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="ownerPermissionLevel" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="srcFilePath" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="specifyUser" type="ManyToOne"/>
+      <field name="group" type="ManyToOne"/>
+      <field name="workbenchTemplate" type="ManyToOne"/>
+    </table>
+    <table name="workbenchdataitem">
+      <field name="cellData" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="rowNumber" type="java.lang.Short">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="validationStatus" type="java.lang.Short">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="workbenchTemplateMappingItem" type="ManyToOne"/>
+      <field name="workbenchRow" type="ManyToOne"/>
+    </table>
+    <table name="workbenchtemplate">
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en">Additional Comments</desc>
+      </field>
+      <field name="srcFilePath" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="specifyUser" type="ManyToOne"/>
+    </table>
+    <table name="workbenchtemplatemappingitem">
+      <field name="caption" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="carryForward" type="java.lang.Boolean">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="dataFieldLength" type="java.lang.Short">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="fieldName" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="fieldType" type="java.lang.Short">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="importedColName" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="isExportableToContent" type="java.lang.Boolean">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="isIncludedInTitle" type="java.lang.Boolean">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="isRequired" type="java.lang.Boolean">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en">The user who last saved the record.</desc>
+      </field>
+      <field name="metaData" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="origImportColumnIndex" type="java.lang.Short">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="srcTableId" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="tableName" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="timestampCreated" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was created.</desc>
+      </field>
+      <field name="timestampModified" type="java.util.Date">
+        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
+      </field>
+      <field name="viewOrder" type="java.lang.Short">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="xCoord" type="java.lang.Short">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="yCoord" type="java.lang.Short">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="workbenchTemplate" type="ManyToOne"/>
+    </table>
+    <table name="workbenchrow">
+      <field name="bioGeomancerResults" type="text">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="cardImageData" type="text">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="cardImageFullPath" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="rowNumber" type="java.lang.Short">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="workbench" type="ManyToOne"/>
+    </table>
+    <table name="workbenchrowimage">
+      <field name="cardImageData" type="text">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="cardImageFullPath" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="imageOrder" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="workbenchRow" type="ManyToOne"/>
+    </table>
+  </database>

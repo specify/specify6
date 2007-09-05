@@ -1,5 +1,8 @@
 package edu.ku.brc.specify.tools.datamodelgenerator;
 
+import java.util.List;
+import java.util.Vector;
+
 import org.apache.commons.lang.StringUtils;
 
 
@@ -21,6 +24,8 @@ public class Field implements Comparable<Field>
     protected boolean isRequired;
     protected boolean isUpdatable;
     protected boolean isUnique;
+    
+    protected List<Desc> descs = new Vector<Desc>();
     
     /**
      * @param name the name of the field	
@@ -190,6 +195,22 @@ public class Field implements Comparable<Field>
     public void setUnique(boolean isUnique)
     {
         this.isUnique = isUnique;
+    }
+
+    /**
+     * @return the descs
+     */
+    public List<Desc> getDescs()
+    {
+        return descs;
+    }
+
+    /**
+     * @param descs the descs to set
+     */
+    public void setDescs(List<Desc> descs)
+    {
+        this.descs = descs;
     }
     
 }

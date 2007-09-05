@@ -48,7 +48,7 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
 {
     protected static int BRD_GAP = 6;
     
-    public enum DisplayType { All, Title, TitleAndRel }
+    public enum DisplayType { All, MainFields, Title, TitleAndRel }
     
     protected DisplayType displayType = DisplayType.All;
     
@@ -100,7 +100,7 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
         return relUIHash;
     }
 
-    public void build(final PanelBuilder p, final DBTableIdMgr.FieldInfo f, final Font font, final int y)
+    public void build(final PanelBuilder p, final DBTableIdMgr.FieldInfo f, final Font font, final int y, boolean all)
     {
         String typ = StringUtils.substringAfterLast(f.getType(), ".");
         if (StringUtils.isEmpty(typ))
@@ -112,11 +112,18 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
         
         CellConstraints cc = new CellConstraints();
         p.add(ERDVisualizer.mkLabel(font, f.getColumn(), SwingConstants.LEFT),   cc.xy(1,y));
-        p.add(ERDVisualizer.mkLabel(font, typ, SwingConstants.LEFT),             cc.xy(3,y));
-        p.add(ERDVisualizer.mkLabel(font, lenStr, SwingConstants.CENTER), cc.xy(5,y));
+        p.add(ERDVisualizer.mkLabel(font, typ, SwingConstants.CENTER),           cc.xy(3,y));
+        p.add(ERDVisualizer.mkLabel(font, lenStr, SwingConstants.CENTER),        cc.xy(5,y));
+        
+        if (all)
+        {
+            p.add(ERDVisualizer.mkLabel(font, f.isRequired() ? "Yes" : "", SwingConstants.CENTER), cc.xy(7,y));
+            p.add(ERDVisualizer.mkLabel(font, f.isRequired() ? "Yes" : "",  SwingConstants.CENTER), cc.xy(9,y));
+        }
+
     }
     
-    public void build(final PanelBuilder p, final DBTableIdMgr.TableInfo tbl, final Font font, final int y)
+    public void build(final PanelBuilder p, final DBTableIdMgr.TableInfo tbl, final Font font, final int y, boolean all)
     {
         String typ = StringUtils.substringAfterLast(tbl.getIdType(), ".");
         if (StringUtils.isEmpty(typ))
@@ -125,17 +132,28 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
         }
         CellConstraints cc = new CellConstraints();
         p.add(ERDVisualizer.mkLabel(font, tbl.getIdColumnName(), SwingConstants.LEFT),   cc.xy(1,y));
-        p.add(ERDVisualizer.mkLabel(font, typ, SwingConstants.LEFT),             cc.xy(3,y));
-        p.add(ERDVisualizer.mkLabel(font, "", SwingConstants.CENTER), cc.xy(5,y));
+        p.add(ERDVisualizer.mkLabel(font, typ, SwingConstants.CENTER),                   cc.xy(3,y));
+        p.add(ERDVisualizer.mkLabel(font, "", SwingConstants.CENTER),                    cc.xy(5,y));
+        if (all)
+        {
+            p.add(ERDVisualizer.mkLabel(font, "Yes", SwingConstants.CENTER), cc.xy(7,y));
+            p.add(ERDVisualizer.mkLabel(font, "Yes", SwingConstants.CENTER), cc.xy(9,y));
+        }
+
     }
     
-    public JComponent build(final PanelBuilder p, final DBTableIdMgr.TableRelationship r, final Font font, final int y)
+    public JComponent build(final PanelBuilder p, final DBTableIdMgr.TableRelationship r, final Font font, final int y, boolean all)
     {
         CellConstraints cc = new CellConstraints();
         p.add(ERDVisualizer.mkLabel(font, StringUtils.substringAfterLast(r.getClassName(), "."), SwingConstants.LEFT), cc.xy(1,y));
         p.add(ERDVisualizer.mkLabel(font, StringUtils.capitalize(r.getName()), SwingConstants.LEFT), cc.xy(3,y));
         JComponent comp = ERDVisualizer.mkLabel(font, r.getType().toString(), SwingConstants.CENTER);
         p.add(comp, cc.xy(5,y));
+        if (all)
+        {
+            comp = ERDVisualizer.mkLabel(font, r.isRequired() ? "Yes" : "", SwingConstants.CENTER);
+            p.add(comp, cc.xy(7,y));
+        }
         return comp;
     }
     
@@ -145,33 +163,48 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
         switch (displayType)
         {
             case All         : numRows = 7; break;
+            case MainFields  : numRows = 7; break;
             case Title       : numRows = 1; break;
             case TitleAndRel : numRows = 4; break;
             
         }
-        Font            bold = new Font(font.getFamily(), Font.BOLD, font.getSize());
-        PanelBuilder    pb   = new PanelBuilder(new FormLayout("f:p:g", UIHelper.createDuplicateJGoodiesDef("p", "2px", numRows)));
-        CellConstraints cc   = new CellConstraints();
+        Font            bold   = new Font(font.getFamily(), Font.BOLD, font.getSize());
+        Font            italic = new Font(font.getFamily(), Font.ITALIC, font.getSize());
+        PanelBuilder    pb     = new PanelBuilder(new FormLayout("f:p:g", UIHelper.createDuplicateJGoodiesDef("p", "2px", numRows)));
+        CellConstraints cc     = new CellConstraints();
         
         String tblName = UIHelper.makeNamePretty(StringUtils.substringAfterLast(table.getClassName(), "."));
         int y = 1;
         pb.add(ERDVisualizer.mkLabel(bold, tblName, SwingConstants.CENTER), cc.xy(1,y)); y += 2;
         
-        if (displayType == DisplayType.All)
+        boolean doingAll = displayType == DisplayType.All;
+        if (displayType == DisplayType.All || displayType == DisplayType.MainFields)
         {
             pb.addSeparator("", cc.xy(1,y)); y += 2;
             
-            pb.add(ERDVisualizer.mkLabel(font, "Fields", SwingConstants.CENTER), cc.xy(1,y)); y += 2;
+            pb.add(ERDVisualizer.mkLabel(italic, "Fields", SwingConstants.CENTER), cc.xy(1,y)); y += 2;
             
-            PanelBuilder fieldsPB = new PanelBuilder(new FormLayout("p:g,4px,p:g,4px,f:p:g", 
-                    UIHelper.createDuplicateJGoodiesDef("p", "2px", table.getFields().size()+1)));
+            String       colsDef = "p:g,4px,p:g,4px" + (doingAll ? ",p:g,4px,p:g,4px" : "") + ",f:p:g";
+            PanelBuilder fieldsPB = new PanelBuilder(new FormLayout(colsDef, 
+                                                     UIHelper.createDuplicateJGoodiesDef("p", "2px", table.getFields().size()+2)));
             int yy = 1;
     
-            build(fieldsPB, table, font, yy); // does ID
+            fieldsPB.add(ERDVisualizer.mkLabel(italic, "Field", SwingConstants.LEFT), cc.xy(1,yy));
+            fieldsPB.add(ERDVisualizer.mkLabel(italic, "Type",  SwingConstants.CENTER), cc.xy(3,yy));
+            fieldsPB.add(ERDVisualizer.mkLabel(italic, "Length", SwingConstants.CENTER), cc.xy(5,yy));
+            if (doingAll)
+            {
+                fieldsPB.add(ERDVisualizer.mkLabel(italic, "Required", SwingConstants.CENTER), cc.xy(7,yy));
+                fieldsPB.add(ERDVisualizer.mkLabel(italic, "Unique",  SwingConstants.CENTER), cc.xy(9,yy));
+            }
             yy += 2;
+            
+            build(fieldsPB, table, font, yy, doingAll); // does ID
+            yy += 2;
+            
             for (DBTableIdMgr.FieldInfo f : table.getFields())
             {
-                build(fieldsPB, f, font, yy);
+                build(fieldsPB, f, font, yy, doingAll);
                 yy += 2;
             }
             pb.add(fieldsPB.getPanel(), cc.xy(1,y)); y += 2;
@@ -182,10 +215,21 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
         {
             pb.addSeparator("", cc.xy(1,y)); y += 2;
             
-            pb.add(ERDVisualizer.mkLabel(font, "Relationships", SwingConstants.CENTER), cc.xy(1,y)); y += 2;
+            pb.add(ERDVisualizer.mkLabel(italic, "Relationships", SwingConstants.CENTER), cc.xy(1,y)); y += 2;
             
-            PanelBuilder relsPB = new PanelBuilder(new FormLayout("p:g,4px,p:g,4px,f:p:g", UIHelper.createDuplicateJGoodiesDef("p", "2px", table.getRelationships().size())));
+            String       colsDef = "p:g,4px,p:g,4px" + (doingAll ? ",p:g,4px," : "") + ",f:p:g";
+            PanelBuilder relsPB = new PanelBuilder(new FormLayout(colsDef, UIHelper.createDuplicateJGoodiesDef("p", "2px", table.getRelationships().size()+1)));
             int yy = 1;
+            
+            relsPB.add(ERDVisualizer.mkLabel(italic, "Table", SwingConstants.LEFT), cc.xy(1,yy));
+            relsPB.add(ERDVisualizer.mkLabel(italic, "Name",  SwingConstants.CENTER), cc.xy(3,yy));
+            relsPB.add(ERDVisualizer.mkLabel(italic, "Type", SwingConstants.CENTER), cc.xy(5,yy));
+            if (doingAll)
+            {
+                relsPB.add(ERDVisualizer.mkLabel(italic, "Required", SwingConstants.CENTER), cc.xy(7,yy));
+            }
+            yy += 2;
+            
             Vector<DBTableIdMgr.TableRelationship> orderedList = new Vector<DBTableIdMgr.TableRelationship>(table.getRelationships());
             Collections.sort(orderedList);
             for (DBTableIdMgr.TableRelationship r : orderedList)
@@ -193,7 +237,7 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
                 //System.out.println(r.getName()+" "+r.getType());
                 if (!r.getName().toLowerCase().endsWith("iface"))
                 {
-                    JComponent p = build(relsPB, r, font, yy);
+                    JComponent p = build(relsPB, r, font, yy, doingAll);
                     relUIHash.put(r, p);
                     yy += 2;
                 }

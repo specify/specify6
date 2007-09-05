@@ -9,6 +9,8 @@
 		<attribute name="updatable" property="updatable"/>
 		<attribute name="required" property="required"/>
 		<attribute name="unique" property="unique"/>
+		<attribute name="indexed" property="indexed"/>
+		<addDefaults/>
 	</element>
 </info>
 

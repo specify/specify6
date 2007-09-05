@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<info primitiveTypes="element">
+	<element name="field">
+		<attribute name="name" property="name"/>
+		<attribute name="type" property="type"/>
+		<attribute name="type" property="type"/>
+		<attribute name="type" property="type"/>
+		<addDefaults/>
+	</element>
+</info>
+
+    

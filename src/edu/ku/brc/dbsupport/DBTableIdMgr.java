@@ -906,6 +906,23 @@ public class DBTableIdMgr
         {
             return otherSide;
         }
+
+        /**
+         * @return the isRequired
+         */
+        public boolean isRequired()
+        {
+            return isRequired;
+        }
+
+        /**
+         * @return the isUpdatable
+         */
+        public boolean isUpdatable()
+        {
+            return isUpdatable;
+        }
+        
     }
     
     public class FieldInfo implements Comparable<FieldInfo>
