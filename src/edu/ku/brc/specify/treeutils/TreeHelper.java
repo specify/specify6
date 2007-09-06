@@ -364,7 +364,7 @@ public class TreeHelper
             evenOlderName.setAcceptedParent(destination);
         }
         
-        return String.format(getResourceString("TreeRelationshipCreatedMsg"),source.getFullName(),destination.getFullName());
+        return String.format(getResourceString("TTV_TreeRelationshipCreatedMsg"),source.getFullName(),destination.getFullName());
     }
     
     /**
