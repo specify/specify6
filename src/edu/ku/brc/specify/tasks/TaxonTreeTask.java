@@ -18,6 +18,9 @@ import javax.swing.JCheckBox;
 import javax.swing.JMenuItem;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Taxon;
@@ -63,61 +66,81 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
 	 * @see edu.ku.brc.specify.tasks.BaseTreeTask#showTree(edu.ku.brc.specify.datamodel.TreeDefIface)
 	 */
 	@Override
-	protected TreeTableViewer<Taxon, TaxonTreeDef, TaxonTreeDefItem> showTree(TaxonTreeDef treeDef)
+	protected void showTree(final TaxonTreeDef treeDef)
 	{
-		final TreeTableViewer<Taxon, TaxonTreeDef, TaxonTreeDefItem> ttv =  super.showTree(treeDef);
-		
-		if(ttv != null)
-		{
-			final TreeNodePopupMenu popup = ttv.getPopupMenu();
-			// install custom popup menu items
-//			JMenuItem getITIS = new JMenuItem("Get ITIS Info");
-//			getITIS.addActionListener(new ActionListener()
-//			{
-//				public void actionPerformed(ActionEvent e)
-//				{
-//					Taxon taxon = ttv.getSelectedNode(popup.getList());
-//					System.out.println("Get ITIS info for " + taxon.getFullName());
-//				}
-//			});
-//			popup.add(getITIS);
-			
-			JMenuItem getDeters = new JMenuItem("Associated Determinations");
-            getDeters.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(ActionEvent e)
-				{
-					Taxon taxon = ttv.getSelectedNode(popup.getList());
-					
-                    // this call initializes all of the linked objects
-                    // it only initializes the immediate links, not objects that are multiple hops away
-                    ttv.initializeNodeAssociations(taxon);
+        SwingWorker bgWork = new SwingWorker()
+        {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Object construct()
+            {
+                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                TaxonTreeDef def = session.load(TaxonTreeDef.class, treeDef.getTreeDefId());
+                session.close();
+                return def;
+            }
 
-                    Set<Determination> deters = taxon.getDeterminations();
+            @SuppressWarnings({ "unchecked", "synthetic-access" })
+            @Override
+            public void finished()
+            {
+                super.finished();
+                TaxonTreeDef def = (TaxonTreeDef)getValue();
+                final TreeTableViewer<Taxon, TaxonTreeDef, TaxonTreeDefItem> ttv = showTreeInternal(def);
+                
+                if(ttv != null)
+                {
+                    final TreeNodePopupMenu popup = ttv.getPopupMenu();
+                    // install custom popup menu items
+//                  JMenuItem getITIS = new JMenuItem("Get ITIS Info");
+//                  getITIS.addActionListener(new ActionListener()
+//                  {
+//                      public void actionPerformed(ActionEvent e)
+//                      {
+//                          Taxon taxon = ttv.getSelectedNode(popup.getList());
+//                          System.out.println("Get ITIS info for " + taxon.getFullName());
+//                      }
+//                  });
+//                  popup.add(getITIS);
                     
-                    if (deters.size() == 0)
+                    JMenuItem getDeters = new JMenuItem("Associated Determinations");
+                    getDeters.addActionListener(new ActionListener()
                     {
-                        UIRegistry.getStatusBar().setText("No determinations refer to this taxon node");
-                        return;
-                    }
-                    
-                    int deterTblId = DBTableIdMgr.getInstance().getIdByClassName(Determination.class.getName());
-                    RecordSet rs = new RecordSet("TTV.showDeterminations", deterTblId);
-					for(Determination deter : deters)
-					{
-                        rs.addItem(deter.getDeterminationId());
-					}
-                    
-                    UIRegistry.getStatusBar().setText("Opening determinations in a form");
-                    CommandAction cmd = new CommandAction(DataEntryTask.DATA_ENTRY,DataEntryTask.EDIT_DATA,rs);
-                    CommandDispatcher.dispatch(cmd);
-				}
-			});
-			popup.add(getDeters);
-		}
+                        public void actionPerformed(ActionEvent e)
+                        {
+                            Taxon taxon = ttv.getSelectedNode(popup.getList());
+                            
+                            // this call initializes all of the linked objects
+                            // it only initializes the immediate links, not objects that are multiple hops away
+                            ttv.initializeNodeAssociations(taxon);
 
-		return ttv;
-	}
+                            Set<Determination> deters = taxon.getDeterminations();
+                            
+                            if (deters.size() == 0)
+                            {
+                                UIRegistry.getStatusBar().setText("No determinations refer to this taxon node");
+                                return;
+                            }
+                            
+                            int deterTblId = DBTableIdMgr.getInstance().getIdByClassName(Determination.class.getName());
+                            RecordSet rs = new RecordSet("TTV.showDeterminations", deterTblId);
+                            for(Determination deter : deters)
+                            {
+                                rs.addItem(deter.getDeterminationId());
+                            }
+                            
+                            UIRegistry.getStatusBar().setText("Opening determinations in a form");
+                            CommandAction cmd = new CommandAction(DataEntryTask.DATA_ENTRY,DataEntryTask.EDIT_DATA,rs);
+                            CommandDispatcher.dispatch(cmd);
+                        }
+                    });
+                    popup.add(getDeters);
+                }
+            }
+        };
+        
+        bgWork.start();
+    }
 	
 	@Override
     protected void adjustNodeForm(final FormViewObj form)

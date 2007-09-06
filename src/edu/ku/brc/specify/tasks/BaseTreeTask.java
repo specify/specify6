@@ -39,6 +39,9 @@ import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
@@ -224,12 +227,39 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
 	 * @param treeDef the {@link TreeDefIface} corresponding to the tree to be displayed
 	 * @return a {@link SubPaneIFace} for displaying the tree
 	 */
-	protected TreeTableViewer<T,D,I> showTree(D treeDef)
+	protected void showTree(final D treeDef)
 	{
-		ContextMgr.requestContext(this);
-		String tabName = getResourceString(name) + ": " + treeDef.getName();
-    	TreeTableViewer<T,D,I> ttv = new TreeTableViewer<T,D,I>(treeDef,tabName,this);
-    	addSubPaneToMgr(ttv);
+        SwingWorker bgWork = new SwingWorker()
+        {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Object construct()
+            {
+                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                D def = (D)session.load(treeDef.getClass(), treeDef.getTreeDefId());
+                session.close();
+                return def;
+            }
+
+            @SuppressWarnings({ "unchecked", "synthetic-access" })
+            @Override
+            public void finished()
+            {
+                super.finished();
+                D def = (D)getValue();
+                showTreeInternal(def);
+            }
+        };
+        
+        bgWork.start();
+	}
+    
+    protected TreeTableViewer<T,D,I> showTreeInternal(final D treeDef)
+    {
+        ContextMgr.requestContext(this);
+        String tabName = getResourceString(name) + ": " + treeDef.getName();
+        TreeTableViewer<T,D,I> ttv = new TreeTableViewer<T,D,I>(treeDef,tabName,this);
+        addSubPaneToMgr(ttv);
         
         NavBoxItemIFace button = defToButtonMap.get(treeDef);
         if (button != null)
@@ -242,8 +272,8 @@ public class BaseTreeTask <T extends Treeable<T,D,I>,
             updateActionButtonStates();
         }
         
-    	return ttv;
-	}
+        return ttv;
+    }
     
     /**
      * Opens a {@link SubPaneIFace} for viewing/editing a {@link TreeDefIface} object.

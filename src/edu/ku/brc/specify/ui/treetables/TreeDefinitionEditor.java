@@ -16,7 +16,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -255,7 +254,65 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 		
 		repaint();
 	}
+
+    protected void addSelectionListener()
+    {
+        ListSelectionListener sl = new ListSelectionListener()
+        {
+            public void valueChanged(ListSelectionEvent e)
+            {
+                clearStatus();
+                selectionValueChanged();
+            }
+        };
+        defItemsTable.getSelectionModel().addListSelectionListener(sl);
+    }
+    
+    protected void selectionValueChanged()
+    {
+        int selectionIndex = defItemsTable.getSelectedRow();
+        
+        if (selectionIndex==-1)
+        {
+            deleteItemButton.setEnabled(false);
+            newItemButton.setEnabled(false);
+            editItemButton.setEnabled(false);
+        }
+        else
+        {
+            if (businessRules.okToDelete(tableModel.get(selectionIndex)))
+            {
+                deleteItemButton.setEnabled(true);
+            }
+            else
+            {
+                deleteItemButton.setEnabled(false);
+            }
+            newItemButton.setEnabled(true);
+            editItemButton.setEnabled(true);
+        }
+            
+    }
+    
+    public void clearStatus()
+    {
+        statusBar.setText(null);
+    }
+    
+    public void showError(String error)
+    {
+        statusBar.setErrorMessage(error, null);
+    }
+    
+    public void showMessage(String message)
+    {
+        statusBar.setText(message);
+    }
 	
+    /////////////////////////////////////////////////////////////////////////////////////////
+    // Methods to handle the editing of an existing TreeDefinitionItemIface object.
+    /////////////////////////////////////////////////////////////////////////////////////////
+    
     @SuppressWarnings("unchecked")
     protected void editTreeDefItem(final int index)
     {
@@ -475,60 +532,6 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         
         return problematicNodes;
     }
-
-	protected void addSelectionListener()
-	{
-		ListSelectionListener sl = new ListSelectionListener()
-		{
-			public void valueChanged(ListSelectionEvent e)
-			{
-				clearStatus();
-				selectionValueChanged();
-			}
-		};
-		defItemsTable.getSelectionModel().addListSelectionListener(sl);
-	}
-	
-	protected void selectionValueChanged()
-	{
-        int selectionIndex = defItemsTable.getSelectedRow();
-        
-        if (selectionIndex==-1)
-        {
-            deleteItemButton.setEnabled(false);
-            newItemButton.setEnabled(false);
-            editItemButton.setEnabled(false);
-        }
-        else
-        {
-            if (businessRules.okToDelete(tableModel.get(selectionIndex)))
-            {
-                deleteItemButton.setEnabled(true);
-            }
-            else
-            {
-                deleteItemButton.setEnabled(true);
-            }
-            newItemButton.setEnabled(true);
-            editItemButton.setEnabled(true);
-        }
-            
-	}
-	
-	public void clearStatus()
-	{
-		statusBar.setText(null);
-	}
-	
-	public void showError(String error)
-	{
-		statusBar.setErrorMessage(error, null);
-	}
-	
-	public void showMessage(String message)
-	{
-		statusBar.setText(message);
-	}
 	
 	/////////////////////////////////////////////////////////////////////////////////////////
 	// Methods to handle the creation and editing of a new TreeDefinitionItemIface object.
@@ -748,17 +751,185 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
     }
 	
 	/////////////////////////////////////////////////////////////////////////////////////////
-	// Methods to handle the editing of a TreeDefinitionIface object.
+	// Methods to handle the deletion of an existing TreeDefinitionItemIface object.
 	/////////////////////////////////////////////////////////////////////////////////////////
-
-	/**
-	 * Display the form for editing the given tree definition. 
-	 *
-	 * @param treeDef the tree definition being edited
-	 */
+	
 	@SuppressWarnings("unchecked")
-    protected void showDefEditDialog(final D treeDef)
+    protected void deleteItem(final int index)
 	{
+        if(index==-1)
+        {
+            return;
+        }
+
+        // load this item from the DB
+        I uiItem = tableModel.get(index);
+        DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
+        final I itemToDelete = (I)tmpSession.load(uiItem.getClass(), uiItem.getTreeDefItemId());
+        if (itemToDelete == null)
+        {
+            statusBar.setErrorMessage("The tree def has been changed by another user.  The def editor must be reloaded.");
+            SwingUtilities.invokeLater(new Runnable()
+            {
+                public void run()
+                {
+                    UIRegistry.writeGlassPaneMsg(getResourceString("TTV_Loading"), 24);
+                    
+                    initTreeDefEditorComponent(displayedDef);
+                    repaint();
+                    
+                    UIRegistry.clearGlassPaneMsg();
+                    
+                    selectionValueChanged();
+                }
+            });
+            tmpSession.close();
+            return;
+        }
+        tmpSession.close();
+        
+        UIRegistry.writeGlassPaneMsg(getResourceString("TTV_Deleting"), 24);
+        
+        SwingWorker bgThread = new SwingWorker()
+        {
+            boolean success;
+            I mergedItem;
+            
+            @SuppressWarnings({ "unchecked", "synthetic-access" })
+            @Override
+            public Object construct()
+            {
+                // save the node and update the tree viewer appropriately
+                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                try
+                {
+                    mergedItem = (I)session.merge(itemToDelete);
+                }
+                catch (StaleObjectException e1)
+                {
+                    // another user or process has changed the data "underneath" us
+                    JOptionPane.showMessageDialog(null, getResourceString("UPDATE_DATA_STALE"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); 
+                    if (session != null)
+                    {
+                        session.close();
+                    }
+                    session = DataProviderFactory.getInstance().createSession();
+                    mergedItem = (I)session.load(itemToDelete.getClass(), itemToDelete.getTreeDefItemId());
+                    success = false;
+                    return success;
+                }
+                success = true;
+
+                // remove the item from it's relationships
+                I parent = mergedItem.getParent();
+                I child = mergedItem.getChild();
+                mergedItem.setParent(null);
+                mergedItem.setChild(null);
+                
+                parent.setChild(child);
+                if (child!=null)
+                {
+                    child.setParent(parent);
+                }
+                
+                mergedItem.getTreeDef().getTreeDefItems().remove(mergedItem);
+                mergedItem.setTreeDef(null);
+
+                if (businessRules != null)
+                {
+                    businessRules.beforeDelete(mergedItem,session);
+                    businessRules.beforeSave(parent, session);
+                    if (child != null)
+                    {
+                        businessRules.beforeSave(child, session);
+                    }
+                }
+                
+                try
+                {
+                    session.beginTransaction();
+                    
+                    session.saveOrUpdate(parent);
+                    if (child != null)
+                    {
+                        session.saveOrUpdate(child);
+                    }
+                    session.delete(mergedItem);
+                    
+                    if (businessRules != null)
+                    {
+                        businessRules.beforeDeleteCommit(mergedItem, session);
+                        businessRules.beforeSaveCommit(parent, session);
+                        if (child != null)
+                        {
+                            businessRules.beforeSaveCommit(child, session);
+                        }
+                    }
+                    session.commit();
+                    log.info("Successfully deleted " + mergedItem.getName());
+                    
+                }
+                catch (Exception e)
+                {
+                    success = false;
+                    JOptionPane.showMessageDialog(null, getResourceString("UNRECOVERABLE_DB_ERROR"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); 
+
+                    log.error("Error while saving node changes.  Rolling back transaction.", e);
+                    session.rollback();
+                }
+                finally
+                {
+                    session.close();
+                }
+                
+                // at this point, the new node is in the DB (if success == true)
+
+                session = DataProviderFactory.getInstance().createSession();
+                session.refresh(parent);
+                if (child != null)
+                {
+                    session.refresh(child);
+                }
+                session.close();
+
+                if (businessRules != null && success == true)
+                {
+                    businessRules.afterDeleteCommit(mergedItem);
+                    businessRules.afterSaveCommit(parent);
+                    if (child != null)
+                    {
+                        businessRules.afterSaveCommit(child);
+                    }
+                }
+                
+                return success;
+            }
+
+            @Override
+            public void finished()
+            {
+                // remove the corresponding item from the table model
+                tableModel.remove(index);
+                
+                UIRegistry.clearGlassPaneMsg();
+            }
+        };
+        
+        bgThread.start();
+	}
+    
+    /////////////////////////////////////////////////////////////////////////////////////////
+    // Methods to handle the editing of a TreeDefinitionIface object.
+    /////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Display the form for editing the given tree definition. 
+     *
+     * @param treeDef the tree definition being edited
+     */
+    @SuppressWarnings("unchecked")
+    protected void showDefEditDialog(final D treeDef)
+    {
         // load a fresh copy of the parent from the DB
         DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
         final D def = (D)tmpSession.load(treeDef.getClass(), treeDef.getTreeDefId());
@@ -899,174 +1070,10 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         }
     }
 
-	/////////////////////////////////////////////////////////////////////////////////////////
-	// Methods to handle the deletion of an existing TreeDefinitionItemIface object.
-	/////////////////////////////////////////////////////////////////////////////////////////
-	
-	@SuppressWarnings("unchecked")
-    protected void deleteItem(int index)
-	{
-        if(index==-1)
-        {
-            return;
-        }
+    /////////////////////////////////////////////////////////////////////////////////////////
+    // Utility methods
+    /////////////////////////////////////////////////////////////////////////////////////////
 
-        // load this item from the DB
-        I uiItem = tableModel.get(index);
-        DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
-        final I itemToDelete = (I)tmpSession.load(uiItem.getClass(), uiItem.getTreeDefItemId());
-        if (itemToDelete == null)
-        {
-            statusBar.setErrorMessage("The tree def has been changed by another user.  The def editor must be reloaded.");
-            SwingUtilities.invokeLater(new Runnable()
-            {
-                public void run()
-                {
-                    UIRegistry.writeGlassPaneMsg(getResourceString("TTV_Loading"), 24);
-                    
-                    initTreeDefEditorComponent(displayedDef);
-                    repaint();
-                    
-                    UIRegistry.clearGlassPaneMsg();
-                    
-                    selectionValueChanged();
-                }
-            });
-            tmpSession.close();
-            return;
-        }
-        tmpSession.close();
-        
-        // remove the corresponding item from the table model
-        tableModel.remove(index);
-        
-        UIRegistry.writeGlassPaneMsg(getResourceString("TTV_Deleting"), 24);
-        
-        SwingWorker bgThread = new SwingWorker()
-        {
-            boolean success;
-            I mergedItem;
-            
-            @SuppressWarnings({ "unchecked", "synthetic-access" })
-            @Override
-            public Object construct()
-            {
-                // save the node and update the tree viewer appropriately
-                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                try
-                {
-                    mergedItem = (I)session.merge(itemToDelete);
-                }
-                catch (StaleObjectException e1)
-                {
-                    // another user or process has changed the data "underneath" us
-                    JOptionPane.showMessageDialog(null, getResourceString("UPDATE_DATA_STALE"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); 
-                    if (session != null)
-                    {
-                        session.close();
-                    }
-                    session = DataProviderFactory.getInstance().createSession();
-                    mergedItem = (I)session.load(itemToDelete.getClass(), itemToDelete.getTreeDefItemId());
-                    success = false;
-                    return success;
-                }
-                success = true;
-
-                // remove the item from it's relationships
-                I parent = mergedItem.getParent();
-                I child = mergedItem.getChild();
-                mergedItem.setParent(null);
-                mergedItem.setChild(null);
-                
-                parent.setChild(child);
-                if (child!=null)
-                {
-                    child.setParent(parent);
-                }
-                
-                mergedItem.getTreeDef().getTreeDefItems().remove(mergedItem);
-                mergedItem.setTreeDef(null);
-
-                if (businessRules != null)
-                {
-                    businessRules.beforeDelete(mergedItem,session);
-                    businessRules.beforeSave(parent, session);
-                    if (child != null)
-                    {
-                        businessRules.beforeSave(child, session);
-                    }
-                }
-                
-                try
-                {
-                    session.beginTransaction();
-                    
-                    session.delete(mergedItem);
-                    session.saveOrUpdate(parent);
-                    if (child != null)
-                    {
-                        session.saveOrUpdate(child);
-                    }
-                    
-                    if (businessRules != null)
-                    {
-                        businessRules.beforeDeleteCommit(mergedItem, session);
-                        businessRules.beforeSaveCommit(parent, session);
-                        if (child != null)
-                        {
-                            businessRules.beforeSaveCommit(child, session);
-                        }
-                    }
-                    session.commit();
-                    log.info("Successfully deleted " + mergedItem.getName());
-                    
-                }
-                catch (Exception e)
-                {
-                    success = false;
-                    JOptionPane.showMessageDialog(null, getResourceString("UNRECOVERABLE_DB_ERROR"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); 
-
-                    log.error("Error while saving node changes.  Rolling back transaction.", e);
-                    session.rollback();
-                }
-                finally
-                {
-                    session.close();
-                }
-                
-                // at this point, the new node is in the DB (if success == true)
-
-                session = DataProviderFactory.getInstance().createSession();
-                session.refresh(parent);
-                if (child != null)
-                {
-                    session.refresh(child);
-                }
-                session.close();
-
-                if (businessRules != null && success == true)
-                {
-                    businessRules.afterDeleteCommit(mergedItem);
-                    businessRules.afterSaveCommit(parent);
-                    if (child != null)
-                    {
-                        businessRules.afterSaveCommit(child);
-                    }
-                }
-                
-                return success;
-            }
-
-            @Override
-            public void finished()
-            {
-                UIRegistry.clearGlassPaneMsg();
-            }
-        };
-        
-        bgThread.start();
-	}
-    
     private boolean boolVal(Boolean b, boolean defaultVal)
     {
         return (b != null) ? b.booleanValue() : defaultVal;

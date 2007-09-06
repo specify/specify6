@@ -8,8 +8,6 @@ package edu.ku.brc.specify.datamodel.busrules;
 
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 
-import org.apache.log4j.Logger;
-
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Taxon;
@@ -26,8 +24,6 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
  */
 public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTreeDefItem>
 {
-    private static final Logger log = Logger.getLogger(TaxonBusRules.class);
-    
     /**
      * Constructor.
      */
@@ -55,10 +51,38 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
         {
             return super.okToDeleteNode((Taxon)dataObj);
         }
+        else if (dataObj instanceof TaxonTreeDefItem)
+        {
+            return okToDeleteDefItem((TaxonTreeDefItem)dataObj);
+        }
         
         return false;
     }
     
+    /**
+     * Handles the {@link #okToDelete(Object)} method in the case that the passed in
+     * {@link Object} is an instance of {@link TaxonTreeDefItem}.
+     * 
+     * @param defItem the {@link TaxonTreeDefItem} being inspected
+     * @return true if the passed in item is deletable
+     */
+    public boolean okToDeleteDefItem(TaxonTreeDefItem defItem)
+    {
+        // never let the root level be deleted
+        if (defItem.getRankId() == 0)
+        {
+            return false;
+        }
+        
+        // don't let 'used' levels be deleted
+        if (!okToDelete("taxon", "TaxonTreeDefItemID", defItem.getId()))
+        {
+            return false;
+        }
+        
+        return true;
+    }
+
     @Override
     public boolean hasNoConnections(Taxon taxon)
     {
@@ -136,12 +160,6 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
             
             return;
         }
-        
-        if (dataObj instanceof TaxonTreeDefItem)
-        {
-            beforeSaveTaxonTreeDefItem((TaxonTreeDefItem)dataObj);
-            return;
-        }
     }
     
     /**
@@ -166,25 +184,5 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
             taxon.setHybridParent1(null);
             taxon.setHybridParent2(null);
         }
-    }
-    
-    /**
-     * Handles the {@link #beforeSave(Object)} method if the passed in {@link Object}
-     * is an instance of {@link TaxonTreeDefItem}.  The real work of this method is to
-     * update the 'fullname' field of all {@link Taxon} objects effected by the changes
-     * to the passed in {@link TaxonTreeDefItem}.
-     *
-     * @param defItem the {@link TaxonTreeDefItem} being saved
-     */
-    protected void beforeSaveTaxonTreeDefItem(TaxonTreeDefItem defItem)
-    {
-        // This is a LONG process for some trees.  I wouldn't recommend doing it.  Can
-        // we set these options before shipping the DB, then not let them change it ever again?
-        // Or perhaps they can't change it if there are records at this level.
-        
-        log.warn("TODO: need to make a decision here");
-        return;
-
-        //super.beforeSaveTreeDefItem(defItem);
     }
 }

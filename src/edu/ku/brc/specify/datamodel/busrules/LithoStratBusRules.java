@@ -1,7 +1,5 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
-import org.apache.log4j.Logger;
-
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.LithoStrat;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
@@ -9,8 +7,6 @@ import edu.ku.brc.specify.datamodel.LithoStratTreeDefItem;
 
 public class LithoStratBusRules extends BaseTreeBusRules<LithoStrat, LithoStratTreeDef, LithoStratTreeDefItem>
 {
-    private static final Logger log = Logger.getLogger("edu.ku.brc.specify.datamodel.busrules");
-    
     public LithoStratBusRules()
     {
         super(LithoStrat.class,LithoStratTreeDefItem.class);
@@ -43,17 +39,44 @@ public class LithoStratBusRules extends BaseTreeBusRules<LithoStrat, LithoStratT
         {
             return super.okToDeleteNode((LithoStrat)dataObj);
         }
+        else if (dataObj instanceof LithoStratTreeDefItem)
+        {
+            return okToDeleteDefItem((LithoStratTreeDefItem)dataObj);
+        }
         
         return false;
     }
     
+    /**
+     * Handles the {@link #okToDelete(Object)} method in the case that the passed in
+     * {@link Object} is an instance of {@link LithoStratTreeDefItem}.
+     * 
+     * @param defItem the {@link LithoStratTreeDefItem} being inspected
+     * @return true if the passed in item is deletable
+     */
+    public boolean okToDeleteDefItem(LithoStratTreeDefItem defItem)
+    {
+        // never let the root level be deleted
+        if (defItem.getRankId() == 0)
+        {
+            return false;
+        }
+        
+        // don't let 'used' levels be deleted
+        if (!okToDelete("lithostrat", "LithoStratTreeDefItemID", defItem.getId()))
+        {
+            return false;
+        }
+        
+        return true;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#beforeSave(java.lang.Object)
      */
     @Override
     public void beforeSave(Object dataObj, DataProviderSessionIFace session)
     {
-        log.debug("enter");
         super.beforeSave(dataObj, session);
         
         if (dataObj instanceof LithoStrat)
@@ -64,17 +87,8 @@ public class LithoStratBusRules extends BaseTreeBusRules<LithoStrat, LithoStratT
             // this might not do anything (if no names need to be changed)
             super.updateFullNamesIfNecessary(ls, session);
 
-            log.debug("exit");
             return;
         }
-        
-        if (dataObj instanceof LithoStratTreeDefItem)
-        {
-            beforeSaveLithoStratTreeDefItem((LithoStratTreeDefItem)dataObj);
-            log.debug("exit");
-            return;
-        }
-        log.debug("exit");
     }
 
     /**
@@ -85,28 +99,8 @@ public class LithoStratBusRules extends BaseTreeBusRules<LithoStrat, LithoStratT
      * 
      * @param geo the {@link LithoStrat} being saved
      */
-    protected void beforeSaveLithoStrat(LithoStrat geo)
+    protected void beforeSaveLithoStrat(@SuppressWarnings("unused") LithoStrat geo)
     {
         // nothing specific to LithoStrat
-    }
-
-    /**
-     * Handles the {@link #beforeSave(Object)} method if the passed in {@link Object}
-     * is an instance of {@link LithoStratTreeDefItem}.  The real work of this method is to
-     * update the 'fullname' field of all {@link LithoStrat} objects effected by the changes
-     * to the passed in {@link LithoStratTreeDefItem}.
-     *
-     * @param defItem the {@link LithoStratTreeDefItem} being saved
-     */
-    protected void beforeSaveLithoStratTreeDefItem(LithoStratTreeDefItem defItem)
-    {
-        // This is a LONG process for some trees.  I wouldn't recommend doing it.  Can
-        // we set these options before shipping the DB, then not let them change it ever again?
-        // Or perhaps they can't change it if there are records at this level.
-        
-        log.warn("TODO: need to make a decision here");
-        return;
-
-        //super.beforeSaveTreeDefItem(defItem);
     }
 }

@@ -8,8 +8,6 @@ package edu.ku.brc.specify.datamodel.busrules;
 
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 
-import org.apache.log4j.Logger;
-
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
@@ -24,8 +22,6 @@ import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
  */
 public class GeographyBusRules extends BaseTreeBusRules<Geography, GeographyTreeDef, GeographyTreeDefItem>
 {
-    private static final Logger log = Logger.getLogger("edu.ku.brc.specify.datamodel.busrules");
-    
     /**
      * Constructor.
      */
@@ -70,8 +66,36 @@ public class GeographyBusRules extends BaseTreeBusRules<Geography, GeographyTree
         {
             return super.okToDeleteNode((Geography)dataObj);
         }
+        if (dataObj instanceof GeographyTreeDefItem)
+        {
+            return okToDeleteDefItem((GeographyTreeDefItem)dataObj);
+        }
         
         return false;
+    }
+
+    /**
+     * Handles the {@link #okToDelete(Object)} method in the case that the passed in
+     * {@link Object} is an instance of {@link GeographyTreeDefItem}.
+     * 
+     * @param defItem the {@link GeographyTreeDefItem} being inspected
+     * @return true if the passed in item is deletable
+     */
+    public boolean okToDeleteDefItem(GeographyTreeDefItem defItem)
+    {
+        // never let the root level be deleted
+        if (defItem.getRankId() == 0)
+        {
+            return false;
+        }
+        
+        // don't let 'used' levels be deleted
+        if (!okToDelete("geography", "GeographyTreeDefItemID", defItem.getId()))
+        {
+            return false;
+        }
+        
+        return true;
     }
 
     /* (non-Javadoc)
@@ -80,7 +104,6 @@ public class GeographyBusRules extends BaseTreeBusRules<Geography, GeographyTree
     @Override
     public void beforeSave(Object dataObj, DataProviderSessionIFace session)
     {
-        log.debug("enter");
         super.beforeSave(dataObj, session);
         
         if (dataObj instanceof Geography)
@@ -91,17 +114,8 @@ public class GeographyBusRules extends BaseTreeBusRules<Geography, GeographyTree
             // this might not do anything (if no names need to be changed)
             super.updateFullNamesIfNecessary(geo, session);
 
-            log.debug("exit");
             return;
         }
-        
-        if (dataObj instanceof GeographyTreeDefItem)
-        {
-            beforeSaveGeographyTreeDefItem((GeographyTreeDefItem)dataObj);
-            log.debug("exit");
-            return;
-        }
-        log.debug("exit");
     }
     
     /**
@@ -112,28 +126,8 @@ public class GeographyBusRules extends BaseTreeBusRules<Geography, GeographyTree
      * 
      * @param geo the {@link Geography} being saved
      */
-    protected void beforeSaveGeography(Geography geo)
+    protected void beforeSaveGeography(@SuppressWarnings("unused") Geography geo)
     {
         // nothing specific to Geography
-    }
-    
-    /**
-     * Handles the {@link #beforeSave(Object)} method if the passed in {@link Object}
-     * is an instance of {@link GeographyTreeDefItem}.  The real work of this method is to
-     * update the 'fullname' field of all {@link Geography} objects effected by the changes
-     * to the passed in {@link GeographyTreeDefItem}.
-     *
-     * @param defItem the {@link GeographyTreeDefItem} being saved
-     */
-    protected void beforeSaveGeographyTreeDefItem(GeographyTreeDefItem defItem)
-    {
-        // This is a LONG process for some trees.  I wouldn't recommend doing it.  Can
-        // we set these options before shipping the DB, then not let them change it ever again?
-        // Or perhaps they can't change it if there are records at this level.
-        
-        log.warn("TODO: need to make a decision here");
-        return;
-
-        //super.beforeSaveTreeDefItem(defItem);
     }
 }
