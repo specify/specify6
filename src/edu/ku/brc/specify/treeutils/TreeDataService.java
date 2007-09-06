@@ -82,22 +82,6 @@ public interface TreeDataService <T extends Treeable<T,D,I>,
     public int getDescendantCount(T node);
     
     /**
-     * Checks the business rules for the given object to see if it can be deleted.
-     * 
-     * @param o the object to check
-     * @return true if the object can be deleted w/o violating any business rules
-     */
-    public boolean canDelete(Object o);
-    
-    /**
-     * Determines if a child node can be added to this node.
-     * 
-     * @param node the node to check
-     * @return true if a child can be added to the given node
-     */
-    public boolean canAddChildToNode(T node);
-    
-    /**
      * Deletes the given node from the DB.
      * 
      * @param node the node to be deleted

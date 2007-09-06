@@ -208,31 +208,6 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         return record;
     }
     
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.treeutils.TreeDataService#canDelete(java.lang.Object)
-     */
-    public synchronized boolean canDelete(Object o)
-    {
-        if (o==null)
-        {
-            return false;
-        }
-        
-        BusinessRulesIFace busRule = DBTableIdMgr.getInstance().getBusinessRule(o);
-        
-        // we assume that no business rules = no complaints about deleting the object
-        if (busRule==null)
-        {
-            return true;
-        }
-        
-        Session session = getNewSession(o);
-        boolean okToDelete = busRule.okToDelete(o);
-        session.close();
-        
-        return okToDelete;
-    }
-    
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.treeutils.TreeDataService#getAllTreeDefs(java.lang.Class)
 	 */
@@ -283,28 +258,6 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 		return def;
 	}
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.treeutils.TreeDataService#canAddChildToNode(edu.ku.brc.specify.datamodel.Treeable)
-     */
-    public synchronized boolean canAddChildToNode(T node)
-    {
-        log.trace("enter");
-        
-        if (node == null)
-        {
-            log.trace("exit");
-            return false;
-        }
-        
-        if (node.getDefinitionItem().getChild() != null)
-        {
-            log.trace("exit");
-            return true;
-        }
-        log.trace("exit");
-        return false;
-    }
-    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.treeutils.TreeDataService#getDescendantCount(edu.ku.brc.specify.datamodel.Treeable)
      */
