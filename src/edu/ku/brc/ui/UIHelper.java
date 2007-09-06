@@ -1132,6 +1132,7 @@ public final class UIHelper
         {
             JDialog.setDefaultLookAndFeelDecorated(false); 
             DatabaseLoginDlg dlg = new DatabaseLoginDlg((Frame)UIRegistry.getTopWindow(), listener);
+            dlg.setAlwaysOnTop(true);
             JDialog.setDefaultLookAndFeelDecorated(true); 
             dlg.setDoAutoLogin(doAutoLoginNow);
             dlg.setDoAutoClose(doAutoClose);
@@ -1173,6 +1174,7 @@ public final class UIHelper
 
         JFrame frame = new JFrame(getResourceString("logintitle"));
         DatabaseLoginPanel panel = new DatabaseLoginPanel(new DBListener(frame, listener, doAutoClose), false);
+        frame.setAlwaysOnTop(true);
         panel.setAutoClose(doAutoClose);
         panel.setWindow(frame);
         frame.setContentPane(panel);
