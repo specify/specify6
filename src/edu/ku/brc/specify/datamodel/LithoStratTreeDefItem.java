@@ -298,7 +298,6 @@ public class LithoStratTreeDefItem extends DataModelObjBase implements Serializa
 	 * 
 	 */
     @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.EAGER, mappedBy = "parent")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
 	public Set<LithoStratTreeDefItem> getChildren()
 	{
 		return this.children;

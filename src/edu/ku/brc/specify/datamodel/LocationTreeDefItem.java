@@ -260,7 +260,6 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
 	}
 
     @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.EAGER, mappedBy = "parent")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
 	public Set<LocationTreeDefItem> getChildren()
 	{
 		return this.children;

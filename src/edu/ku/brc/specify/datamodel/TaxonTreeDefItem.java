@@ -249,7 +249,6 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 	}
 
     @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.EAGER, mappedBy = "parent")
-    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
 	public Set<TaxonTreeDefItem> getChildren()
 	{
 		return this.children;
