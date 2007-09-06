@@ -16,6 +16,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import javax.swing.Box;
@@ -46,6 +48,8 @@ import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.treeutils.TreeDataService;
+import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIRegistry;
@@ -288,6 +292,14 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         }
         tmpSession.close();
         
+        // keep track of what these values are before the edits happen
+        final I beforeItem = (I)TreeFactory.createNewTreeDefItem(defItem.getClass(),null,null);
+        beforeItem.setIsInFullName(boolVal(defItem.getIsInFullName(), false));
+        beforeItem.setTextBefore(defItem.getTextBefore());
+        beforeItem.setTextAfter(defItem.getTextAfter());
+        beforeItem.setFullNameSeparator(defItem.getFullNameSeparator());
+        beforeItem.setIsEnforced(boolVal(defItem.getIsEnforced(), false));
+        
         // TODO: double check these choices
         // gather all the info needed to create a form in a dialog
         Pair<String,String> formsNames = TreeFactory.getAppropriateFormsetAndViewNames(defItem);
@@ -324,6 +336,20 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                 @Override
                 public Object construct()
                 {
+                    // determine if the change can be made without requiring tree node changes
+                    List<String> nodesToChange = getNodesThatMustBeFixedBeforeEdit(beforeItem, defItem);
+                    if (nodesToChange != null && nodesToChange.size() > 0)
+                    {
+                        StringBuilder message = new StringBuilder(getResourceString("TDE_CantMakeChange"));
+                        for (String node: nodesToChange)
+                        {
+                            message.append("\n" + node);
+                        }
+                        JOptionPane.showMessageDialog(null, message.toString());
+                        success = false;
+                        return success;
+                    }
+                        
                     // save the node and update the tree viewer appropriately
                     DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
                     try
@@ -377,9 +403,6 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                     
                     // at this point, the new node is in the DB (if success == true)
 
-                    session = DataProviderFactory.getInstance().createSession();
-                    session.close();
-
                     if (businessRules != null && success == true)
                     {
                         businessRules.afterSaveCommit(defItem);
@@ -407,6 +430,50 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         {
             // the user didn't save any edits (if there were any)
         }
+    }
+    
+    protected List<String> getNodesThatMustBeFixedBeforeEdit(I itemBeforeEdits, I itemAfterEdits)
+    {
+        boolean fullnameBefore  = boolVal(itemBeforeEdits.getIsInFullName(), false);
+        boolean enforcedBefore  = boolVal(itemBeforeEdits.getIsEnforced(), false);
+        String textBeforeBefore = stringVal(itemBeforeEdits.getTextBefore(), "");
+        String textAfterBefore  = stringVal(itemBeforeEdits.getTextAfter(), "");
+        String separatorBefore  = stringVal(itemBeforeEdits.getFullNameSeparator(), "");
+        
+        boolean fullname  = boolVal(itemAfterEdits.getIsInFullName(), false);
+        boolean enforced  = boolVal(itemAfterEdits.getIsEnforced(), false);
+        String textBefore = stringVal(itemAfterEdits.getTextBefore(), "");
+        String textAfter  = stringVal(itemAfterEdits.getTextAfter(), "");
+        String separator  = stringVal(itemAfterEdits.getFullNameSeparator(), "");
+
+        boolean fullnameChanged = (fullnameBefore != fullname);
+        boolean enforcedChanged = (enforcedBefore != enforced);
+        boolean textBeforeChanged = !textBeforeBefore.equals(textBefore);
+        boolean textAfterChanged  = !textAfterBefore.equals(textAfter);
+        boolean separatorChanged = !separatorBefore.equals(separator);
+        
+        List<String> problematicNodes = null;
+        
+        TreeDataService<T,D,I> treeDataServ = TreeDataServiceFactory.createService();
+
+        if (fullnameChanged || textBeforeChanged || textAfterChanged || separatorChanged)
+        {
+            problematicNodes = treeDataServ.nodeNamesAtLevel(itemAfterEdits.getRankId(), itemAfterEdits.getTreeDef());
+        }
+        
+        if (enforcedChanged && enforced == true)
+        {
+            try
+            {
+                problematicNodes = treeDataServ.nodesSkippingOverLevel(itemAfterEdits.getRankId(), itemAfterEdits.getTreeDef());
+            }
+            catch (Exception e)
+            {
+                System.err.println(e);
+            }
+        }
+        
+        return problematicNodes;
     }
 
 	protected void addSelectionListener()
@@ -554,6 +621,23 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                 @Override
                 public Object construct()
                 {
+                    // determine if the change can be made without requiring tree node changes
+                    if (newItem.getIsEnforced() != null && newItem.getIsEnforced().booleanValue() == true)
+                    {
+                        List<String> nodesToChange = getNodesThatMustBeFixedToEnforceNewLevel(newItem);
+                        if (nodesToChange != null && nodesToChange.size() > 0)
+                        {
+                            StringBuilder message = new StringBuilder(getResourceString("TDE_CantEnforceNewLevel"));
+                            for (String node: nodesToChange)
+                            {
+                                message.append("\n" + node);
+                            }
+                            JOptionPane.showMessageDialog(null, message.toString());
+                            
+                            newItem.setIsEnforced(false);
+                        }
+                    }
+
                     // save the node and update the tree viewer appropriately
                     DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
                     success = true;
@@ -647,9 +731,24 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
             newItem.setChild(null);
         }
 	}
+    
+    protected List<String> getNodesThatMustBeFixedToEnforceNewLevel(I newItem)
+    {
+        boolean enforced  = boolVal(newItem.getIsEnforced(), false);
+
+        List<String> problematicNodes = null;
+
+        if (enforced)
+        {
+            TreeDataService<T,D,I> treeDataServ = TreeDataServiceFactory.createService();
+            problematicNodes = treeDataServ.nodesSkippingOverLevel(newItem.getRankId(), newItem.getTreeDef());
+        }
+        
+        return problematicNodes;
+    }
 	
 	/////////////////////////////////////////////////////////////////////////////////////////
-	// Methods to handle the editing of a new TreeDefinitionIface object.
+	// Methods to handle the editing of a TreeDefinitionIface object.
 	/////////////////////////////////////////////////////////////////////////////////////////
 
 	/**
@@ -967,4 +1066,19 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         
         bgThread.start();
 	}
+    
+    private boolean boolVal(Boolean b, boolean defaultVal)
+    {
+        return (b != null) ? b.booleanValue() : defaultVal;
+    }
+    
+    private String stringVal(String s, String defaultVal)
+    {
+        return (s != null) ? s : defaultVal;
+    }
+    
+//    private <X> X objectVal(X x, X defaultVal)
+//    {
+//        return (x != null) ? x : defaultVal;
+//    }
 }
