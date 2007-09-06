@@ -106,6 +106,12 @@ public interface TreeDataService <T extends Treeable<T,D,I>,
 
     public void refresh(Object ... objects);
     
+    public int countNodesAtLevel(int rankID, D treeDef);
+    
+    public List<String> nodesSkippingOverLevel(int levelSkippedRank, D treeDef);
+    
+    public List<String> nodeNamesAtLevel(int rankID, D treeDef);
+    
     public boolean updateNodeNumbersAfterNodeAddition(T newNode);
     
     public boolean updateNodeNumbersAfterNodeDeletion(T deletedNode);

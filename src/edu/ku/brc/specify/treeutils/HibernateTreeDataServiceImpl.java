@@ -390,6 +390,56 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         log.trace("exit");
     }
     
+    public List<String> nodesSkippingOverLevel(int levelSkippedRank, D treeDef)
+    {
+        Session session = getNewSession();
+        Class<T> nodeClass = treeDef.getNodeClass();
+        
+        Query nodeSkippingLevelQuery = session.createQuery("select n.fullName from " + nodeClass.getName() + " n where rankId>:rankID AND parent.rankId<:rankID AND definition=:treeDef");
+        nodeSkippingLevelQuery.setParameter("rankID", levelSkippedRank);
+//        nodeSkippingLevelQuery.setParameter("rankID2", levelSkippedRank);
+        nodeSkippingLevelQuery.setParameter("treeDef", treeDef);
+        List<?> results = nodeSkippingLevelQuery.list();
+        Vector<String> nodeNames = new Vector<String>(results.size());
+        for (Object o: results)
+        {
+            nodeNames.add((String)o);
+        }
+        session.close();
+        return nodeNames;
+    }
+    
+    public List<String> nodeNamesAtLevel(int rankID, D treeDef)
+    {
+        Session session = getNewSession();
+        Class<T> nodeClass = treeDef.getNodeClass();
+        
+        Query nodeNamesQuery = session.createQuery("select n.fullName from " + nodeClass.getName() + " n where rankId=:rankID AND definition=:treeDef");
+        nodeNamesQuery.setParameter("rankID", rankID);
+        nodeNamesQuery.setParameter("treeDef", treeDef);
+        List<?> results = nodeNamesQuery.list();
+        Vector<String> nodeNames = new Vector<String>(results.size());
+        for (Object o: results)
+        {
+            nodeNames.add((String)o);
+        }
+        session.close();
+        return nodeNames;
+    }
+    
+    public int countNodesAtLevel(int rankID, D treeDef)
+    {
+        Session session = getNewSession();
+        Class<T> nodeClass = treeDef.getNodeClass();
+        
+        Query nodeCountQuery = session.createQuery("select count(n) from " + nodeClass.getName() + " n where rankID=:rankID AND definition=:treeDef");
+        nodeCountQuery.setParameter("rankID", rankID);
+        nodeCountQuery.setParameter("treeDef", treeDef);
+        Integer count = (Integer)nodeCountQuery.uniqueResult();
+        session.close();
+        return count;
+    }
+    
     @SuppressWarnings({ "unchecked", "null" })
     public synchronized boolean updateNodeNumbersAfterNodeAddition(T newNode)
     {
