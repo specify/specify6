@@ -303,12 +303,12 @@ public class TreeViewerListModel extends AbstractListModel
         return;
     }
     
-    public boolean showingChildrenOf(TreeNode node)
+    public synchronized boolean showingChildrenOf(TreeNode node)
     {
         return idsShowingChildren.contains(node.getId());
     }
     
-    protected void nodeValuesChanged(TreeNode node)
+    protected synchronized void nodeValuesChanged(TreeNode node)
     {
         // make sure to correct for the fact that we might be viewing just a subtree right now
         int indexOfNode = nodes.indexOf(node) - nodes.indexOf(visibleRoot);
