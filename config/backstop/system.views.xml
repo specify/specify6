@@ -352,7 +352,7 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1" label="Name"/>
-                    <cell type="field" id="1" name="name" uitype="text" cols="16"/> 
+                    <cell type="field" id="1" name="name" uitype="text" cols="16" isrequired="true"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="2" label="Remarks"/>
@@ -395,7 +395,7 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1" label="Name"/>
-                    <cell type="field" id="1" name="name" uitype="text" cols="16"/> 
+                    <cell type="field" id="1" name="name" uitype="text" cols="16" isrequired="true"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="2" label="Remarks"/>
@@ -422,7 +422,7 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1" label="Name"/>
-                    <cell type="field" id="1" name="name" uitype="text" cols="16"/> 
+                    <cell type="field" id="1" name="name" uitype="text" cols="16" isrequired="true"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="2" label="Remarks"/>
@@ -465,7 +465,7 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1" label="Name"/>
-                    <cell type="field" id="1" name="name" uitype="text" cols="16"/> 
+                    <cell type="field" id="1" name="name" uitype="text" cols="16" isrequired="true"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="2" label="Remarks"/>
@@ -492,7 +492,7 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1" label="Name"/>
-                    <cell type="field" id="1" name="name" uitype="text" cols="16"/> 
+                    <cell type="field" id="1" name="name" uitype="text" cols="16" isrequired="true"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="2" label="Remarks"/>
@@ -535,7 +535,7 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1" label="Name"/>
-                    <cell type="field" id="1" name="name" uitype="text" cols="16"/> 
+                    <cell type="field" id="1" name="name" uitype="text" cols="16" isrequired="true"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="2" label="Remarks"/>
@@ -562,7 +562,7 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1" label="Name"/>
-                    <cell type="field" id="1" name="name" uitype="text" cols="16"/> 
+                    <cell type="field" id="1" name="name" uitype="text" cols="16" isrequired="true"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="2" label="Remarks"/>
@@ -605,7 +605,7 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1" label="Name"/>
-                    <cell type="field" id="1" name="name" uitype="text" cols="16"/> 
+                    <cell type="field" id="1" name="name" uitype="text" cols="16" isrequired="true"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="2" label="Remarks"/>
@@ -632,7 +632,7 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1" label="Name"/>
-                    <cell type="field" id="1" name="name" uitype="text" cols="16"/> 
+                    <cell type="field" id="1" name="name" uitype="text" cols="16" isrequired="true"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="2" label="Remarks"/>
@@ -877,7 +877,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="name" label="Name"/>
-                    <cell type="field" id="name" uitype="text" cols="16" name="name"/> 
+                    <cell type="field" id="name" uitype="text" cols="16" name="name" isrequired="true"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="remarks" label="Remarks"/>
@@ -917,7 +917,7 @@
                 </row>
                 <row>
                 	<cell type="label" labelfor="isAccepted" label="Is Accepted?"/>
-                	<cell type="field" id="isAccepted" uitype="checkbox" name="isAccepted" default="true"/>
+                	<cell type="field" id="isAccepted" uitype="checkbox" name="isAccepted" default="true" isrequired="true"/>
                 </row>
                 <row>
                 	<cell type="label" labelfor="acceptedParent" label="Accepted Taxon"/>
@@ -925,7 +925,7 @@
                 </row>
                 <row>
                 	<cell type="label" labelfor="isHybrid" label="Is Hybrid?"/>
-                	<cell type="field" id="isHybrid" uitype="checkbox" name="isHybrid" default="false"/>
+                	<cell type="field" id="isHybrid" uitype="checkbox" name="isHybrid" default="false" isrequired="true"/>
                 </row>
                 <row>
                 	<cell type="label" labelfor="hybridParent1" label="Hybrid Parent 1"/>
@@ -971,7 +971,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="name" label="Name"/>
-                    <cell type="field" id="name" uitype="text" cols="16" name="name"/> 
+                    <cell type="field" id="name" uitype="text" cols="16" name="name" isrequired="true"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="remarks" label="Remarks"/>
@@ -987,7 +987,7 @@
                 </row>
                 <row>
                 	<cell type="label" labelfor="isAccepted" label="Is Accepted?"/>
-                	<cell type="field" id="isAccepted" uitype="checkbox" name="isAccepted" default="true"/>
+                	<cell type="field" id="isAccepted" uitype="checkbox" name="isAccepted" default="true" isrequired="true"/>
                 </row>
                 <row>
                 	<cell type="label" labelfor="acceptedParent" label="Accepted Geography"/>
@@ -1022,7 +1022,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="name" label="Name"/>
-                    <cell type="field" id="name" uitype="text" cols="16" name="name"/> 
+                    <cell type="field" id="name" uitype="text" cols="16" name="name" isrequired="true"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="remarks" label="Remarks"/>
@@ -1065,7 +1065,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="name" label="Name"/>
-                    <cell type="field" id="name" uitype="text" cols="16" name="name" colspan="5"/> 
+                    <cell type="field" id="name" uitype="text" cols="16" name="name" colspan="5" isrequired="true"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="remarks" label="Remarks"/>
