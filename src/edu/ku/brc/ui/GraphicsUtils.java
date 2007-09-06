@@ -332,6 +332,12 @@ public class GraphicsUtils
     public static String clipString(FontMetrics fm, String text, int availableWidth)
     {
         // first see if the string needs clipping at all
+        
+        if (text == null)
+        {
+            return "";
+        }
+        
         if (fm.stringWidth(text) < availableWidth)
         {
             return text;
