@@ -155,6 +155,14 @@ public final class UIHelper
     }
     
     /**
+     * @return whether the OS is Mac.
+     */
+    public static boolean isMacOS()
+    {
+        return oSType == OSTYPE.MacOSX;
+    }
+    
+    /**
      * Center and make the window visible
      * @param window the window to center
      */

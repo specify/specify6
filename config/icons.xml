@@ -214,6 +214,11 @@
     <icon name="ConvertGeoRef"	  file="LatLong20x20.png" sizes="NonStd"/>
     <icon name="GoogleEarth"      file="GoogleEarth20x20.png" sizes="NonStd"/>
     
+    <icon name="SearchBoxMac"      file="SearchBoxMac.gif"  sizes="NonStd"/>
+    <icon name="SearchBoxLinux"    file="queryIt.gif"        sizes="NonStd"/>
+    <icon name="SearchTriangle"    file="SearchTriangle.gif" sizes="NonStd"/>
+    
+    
     <!-- Preferences -->
     <icon name="Browse" file="browse.gif" sizes="all"/>
     
