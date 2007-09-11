@@ -12,6 +12,7 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.io.File;
 import java.io.FileWriter;
+import java.util.Hashtable;
 import java.util.Locale;
 import java.util.Vector;
 
@@ -94,6 +95,7 @@ public class FieldDescApp extends JFrame
     public static Vector<Table> readTables(final File file)
     {
         Vector<Table> list = new Vector<Table>();
+        Hashtable<String, Boolean> hash = new Hashtable<String, Boolean>();
         
         try
         {
@@ -102,11 +104,13 @@ public class FieldDescApp extends JFrame
             {
                 Element tbl = (Element)obj;
                 Table table = new Table(XMLHelper.getAttr(tbl, "name", null));
-                list.add(table);
                 
                 DBTableIdMgr.TableInfo ti = DBTableIdMgr.getInstance().getInfoByTableName(table.getName());
                 if (ti != null)
                 {
+                    list.add(table);
+                    hash.put(table.getName(), true);
+                    
                     for (Object fobj : tbl.selectNodes("field"))
                     {
                         Element fld = (Element)fobj;
@@ -154,8 +158,28 @@ public class FieldDescApp extends JFrame
                             table.getFields().add(new Field(rel.getName(), rel.getType().toString()));
                         }
                     }*/
+                } else
+                {
+                 // Discarding old table.
+                    log.warn("Discarding Old Table ["+table.getName()+"]");
                 }
             }
+            
+            // Add New Tables
+            for (DBTableIdMgr.TableInfo ti : DBTableIdMgr.getInstance().getList())
+            {
+                if (hash.get(ti.getTableName()) == null)
+                {
+                    Table table = new Table(ti.getTableName());
+                    list.add(table);
+                    for (DBTableIdMgr.FieldInfo fi : ti.getFields())
+                    {
+                        Field field = new Field(fi.getName(), fi.getType());
+                        table.getFields().add(field);
+                    }
+                }
+            }
+            
         } catch (Exception ex)
         {
             ex.printStackTrace();
