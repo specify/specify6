@@ -93,6 +93,15 @@ public class RepresentativeIconFactory implements ObjectIconMapper
         {
             return subMapper.getIcon(o);
         }
+
+        // try one more thing in case the submapper handles an interface or superclass
+        for (Class<?> clazz: subMappers.keySet())
+        {
+            if (clazz.isAssignableFrom(o.getClass()))
+            {
+                return subMappers.get(clazz).getIcon(o);
+            }
+        }
         
         // then see if there is a single Icon representing this class of object
         ImageIcon icon = classToIconMap.get(o.getClass());

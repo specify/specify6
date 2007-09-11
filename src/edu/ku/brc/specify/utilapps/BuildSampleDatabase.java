@@ -93,8 +93,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
-import org.hibernate.event.PostInsertEvent;
-import org.hibernate.event.PreInsertEvent;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.ButtonBarFactory;
@@ -114,6 +112,7 @@ import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.AgentAttachment;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.AttributeDef;
 import edu.ku.brc.specify.datamodel.CatalogNumberingScheme;
@@ -132,7 +131,6 @@ import edu.ku.brc.specify.datamodel.ConservRecommendation;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
-import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
@@ -176,7 +174,6 @@ import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.PickListDBAdapterIFace;
-import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.FileStoreAttachmentManager;
@@ -1339,16 +1336,15 @@ public class BuildSampleDatabase
         ////////////////////////////////
         // attachments (attachment metadata)
         ////////////////////////////////
-        /*
-        if (false)
-        {
+        
             log.info("Creating attachments and attachment metadata");
             try
             {
                 String attachmentFilesLoc = "demo_files" + File.separator;
-                String bigEyeFilePath = attachmentFilesLoc + "bigeye.jpg";
-                Attachment bigEye = createAttachment(bigEyeFilePath, "image/jpeg", 0);
-                bigEye.setLoan(closedLoan);
+
+//                String bigEyeFilePath = attachmentFilesLoc + "bigeye.jpg";
+//                Attachment bigEye = createAttachment(bigEyeFilePath, "image/jpeg", 0);
+//                bigEye.setLoan(closedLoan);
                 
                 String[] names  = {"Beach",     "Stewart",  "Spears",  "Kumin",   "Bentley"};
                 String[] photos = {"beach.jpg", "josh.jpg", "rod.jpg", "meg.jpg", "andy.jpg"};
@@ -1359,45 +1355,49 @@ public class BuildSampleDatabase
                         if (agent.getLastName() != null && agent.getLastName().startsWith(names[i]))
                         {
                             String photoPath = attachmentFilesLoc + photos[i];
-                            Attachment photoAttachment = createAttachment(photoPath, "image/jpeg", 0);
-                            photoAttachment.setAgent(agent);
+                            Attachment photoAttachment = createAttachment(photoPath, "image/jpeg");
+                            AgentAttachment agentAttach = new AgentAttachment();
+                            agentAttach.initialize();
+                            agentAttach.setAgent(agent);
+                            agentAttach.setAttachment(photoAttachment);
+                            agentAttach.setOrderIndex(0);
                             dataObjects.add(photoAttachment);
+                            dataObjects.add(agentAttach);
                         }
                     }
                 }
                     
-                String giftPdfPath = attachmentFilesLoc + "2004-18.pdf";
-                Attachment giftPDF = createAttachment(giftPdfPath, "application/pdf", 0);
-                giftPDF.setLoan(closedLoan);
-                
-                String accessionPdfPath = attachmentFilesLoc + "Seychelles.pdf";
-                Attachment accPDF = createAttachment(accessionPdfPath, "application/pdf", 0);
-                // TODO: change this to setAccession()
-                accPDF.setPermit(permit);
-                
-                String sharkVideoPath = attachmentFilesLoc + "shark5.mpg";
-                Attachment sharkVideo = createAttachment(sharkVideoPath, "video/mpeg4", 0);
-                sharkVideo.setLoan(closedLoan);
-    
-                Attachment sharkVideo2 = createAttachment(sharkVideoPath, "video/mpeg4", 0);
-                sharkVideo2.setCollectingEvent(ce1);
-    
+//                String giftPdfPath = attachmentFilesLoc + "2004-18.pdf";
+//                Attachment giftPDF = createAttachment(giftPdfPath, "application/pdf", 0);
+//                giftPDF.setLoan(closedLoan);
+//                
+//                String accessionPdfPath = attachmentFilesLoc + "Seychelles.pdf";
+//                Attachment accPDF = createAttachment(accessionPdfPath, "application/pdf", 0);
+//                // TODO: change this to setAccession()
+//                accPDF.setPermit(permit);
+//                
+//                String sharkVideoPath = attachmentFilesLoc + "shark5.mpg";
+//                Attachment sharkVideo = createAttachment(sharkVideoPath, "video/mpeg4", 0);
+//                sharkVideo.setLoan(closedLoan);
+//    
+//                Attachment sharkVideo2 = createAttachment(sharkVideoPath, "video/mpeg4", 0);
+//                sharkVideo2.setCollectingEvent(ce1);
+//    
 //                String beakerPath = attachmentFilesLoc + "beaker.jpg";
 //                Attachment beakerAsBeach = createAttachment(beakerPath, "image/jpg", 1);
 //                beakerAsBeach.setAgent(agents.get(1));
-                
-                dataObjects.add(bigEye);
-                dataObjects.add(giftPDF);
-                dataObjects.add(accPDF);
-                dataObjects.add(sharkVideo);
-                dataObjects.add(sharkVideo2);
-                //dataObjects.add(beakerAsBeach);
+//                
+//                dataObjects.add(bigEye);
+//                dataObjects.add(giftPDF);
+//                dataObjects.add(accPDF);
+//                dataObjects.add(sharkVideo);
+//                dataObjects.add(sharkVideo2);
+//                dataObjects.add(beakerAsBeach);
             }
             catch (Exception e)
             {
                 log.error("Could not create attachments", e);
             }
-        }*/
         
         addConservatorData(userAgent, agents, collObjs);
         
@@ -1747,10 +1747,9 @@ public class BuildSampleDatabase
         }
     }
 
-
-    public void persist(Object[] oArray)
+    public void persist(Object...objects)
     {
-        for (Object o: oArray)
+        for (Object o: objects)
         {
             persist(o);
         }

@@ -340,7 +340,7 @@ public class TreeHelper
     
     public static void initializeRelatedObjects(Taxon taxon)
     {
-        taxon.getAttachments().size();
+        taxon.getTaxonAttachments().size();
         taxon.getDeterminations().size();
         taxon.getTaxonCitations().size();
         taxon.getAcceptedChildren().size();

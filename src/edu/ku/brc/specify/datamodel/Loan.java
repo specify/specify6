@@ -98,7 +98,7 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     protected Set<LoanPhysicalObject> loanPhysicalObjects;
     //protected Shipment shipment;
     protected Set<Shipment>           shipments;
-    protected Set<Attachment>         attachments;
+    private Set<LoanAttachment> loanAttachments;
 
 
     // Constructors
@@ -140,8 +140,6 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
 
         loanPhysicalObjects = new HashSet<LoanPhysicalObject>();
         shipments           = new HashSet<Shipment>();
-        attachments         = new HashSet<Attachment>();
-
         
         if (true)
         {
@@ -426,16 +424,15 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
         this.shipments = shipments;
     }
     
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "loan")
-    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<Attachment> getAttachments()
+    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "loan")
+    public Set<LoanAttachment> getLoanAttachments()
     {
-        return attachments;
+        return loanAttachments;
     }
 
-    public void setAttachments(Set<Attachment> attachments)
+    public void setLoanAttachments(Set<LoanAttachment> loanAttachments)
     {
-        this.attachments = attachments;
+        this.loanAttachments = loanAttachments;
     }
 
     public void addLoanAgent(final LoanAgent loanAgent)

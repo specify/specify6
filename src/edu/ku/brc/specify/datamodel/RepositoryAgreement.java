@@ -83,8 +83,8 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
     protected Set<AccessionAuthorization> repositoryAgreementAuthorizations;
     protected Set<AccessionAgent>         repositoryAgreementAgents;
     protected Set<Accession>              accessions;
-    protected Set<Attachment>             attachments;
     protected Agent                       originator;
+    private Set<RepositoryAgreementAttachment> repositoryAgreementAttachments;
 
 
     // Constructors
@@ -350,18 +350,18 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
     public void setRepositoryAgreementAgents(Set<AccessionAgent> repositoryAgreementAgents) {
         this.repositoryAgreementAgents = repositoryAgreementAgents;
     }
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "repositoryAgreement")
-    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<Attachment> getAttachments()
+
+    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "repositoryAgreement")
+    public Set<RepositoryAgreementAttachment> getRepositoryAgreementAttachments()
     {
-        return attachments;
+        return repositoryAgreementAttachments;
     }
 
-    public void setAttachments(Set<Attachment> attachments)
+    public void setRepositoryAgreementAttachments(Set<RepositoryAgreementAttachment> repositoryAgreementAttachments)
     {
-        this.attachments = attachments;
+        this.repositoryAgreementAttachments = repositoryAgreementAttachments;
     }
-    
+
     /**
      *
      */

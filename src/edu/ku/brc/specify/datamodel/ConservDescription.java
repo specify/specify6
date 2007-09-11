@@ -74,8 +74,8 @@ public class ConservDescription extends DataModelObjBase implements java.io.Seri
     protected Division           division;
     protected Agent              curator;
 
-    protected Set<Attachment>    attachments;
     protected Set<ConservEvent>  events;
+    private Set<ConservDescriptionAttachment> conservDescriptionAttachments;
 
     // Constructors
 
@@ -108,7 +108,6 @@ public class ConservDescription extends DataModelObjBase implements java.io.Seri
         remarks              = null;
         source               = null;
         curatorApprovalDate  = null;
-        attachments          = new HashSet<Attachment>();
         collectionObject     = null;
         accession            = null;
         division             = null;
@@ -299,21 +298,6 @@ public class ConservDescription extends DataModelObjBase implements java.io.Seri
     /**
      *
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "conservDescription")
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    public Set<Attachment> getAttachments()
-    {
-        return this.attachments;
-    }
-
-    public void setAttachments(final Set<Attachment> attachments)
-    {
-        this.attachments = attachments;
-    }
-
-    /**
-     *
-     */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "CollectionObjectID", unique = false, nullable = true, insertable = true, updatable = true)
     public CollectionObject getCollectionObject()
@@ -386,7 +370,18 @@ public class ConservDescription extends DataModelObjBase implements java.io.Seri
        this.events = events;
    }
 
-    
+   @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "conservDescription")
+   public Set<ConservDescriptionAttachment> getConservDescriptionAttachments()
+   {
+       return conservDescriptionAttachments;
+   }
+
+   public void setConservDescriptionAttachments(Set<ConservDescriptionAttachment> conservDescriptionAttachments)
+   {
+       this.conservDescriptionAttachments = conservDescriptionAttachments;
+   }
+
+   
     /**
      * Generic Getter for the ID Property.
      * @returns ID Property.

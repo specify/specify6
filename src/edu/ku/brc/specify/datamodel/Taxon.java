@@ -102,7 +102,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
     // relationships with other tables
 	protected Set<Determination>   determinations;
 	protected Set<TaxonCitation>   taxonCitations;
-	protected Set<Attachment>      attachments;
     protected Set<CommonName>      commonNames;
 
     // non-user fields
@@ -112,6 +111,8 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
     protected String               groupNumber;
     protected Integer              visibility;
     protected String               visibilitySetBy;
+
+    private Set<TaxonAttachment> taxonAttachments;
     
 	/** default constructor */
 	public Taxon()
@@ -179,7 +180,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		definition = null;
 		definitionItem = null;
 		parent = null;
-		attachments = new HashSet<Attachment>();
 		children = new HashSet<Taxon>();
 	}
 
@@ -722,18 +722,17 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
         this.taxonId = id;
 	}
 
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "taxon")
-    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
-    public Set<Attachment> getAttachments()
+    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "taxon")
+    public Set<TaxonAttachment> getTaxonAttachments()
     {
-        return attachments;
+        return taxonAttachments;
     }
 
-    public void setAttachments(Set<Attachment> attachments)
+    public void setTaxonAttachments(Set<TaxonAttachment> taxonAttachments)
     {
-        this.attachments = attachments;
+        this.taxonAttachments = taxonAttachments;
     }
-    
+
     public void addChild(Taxon child)
 	{
 		Taxon oldParent = child.getParent();
@@ -788,18 +787,6 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
 		taxonCitation.setTaxon(null);
 	}
     
-    public void addAttachment(Attachment attachment)
-    {
-        this.attachments.add(attachment);
-        attachment.setTaxon(this);
-    }
-    
-    public void removeAttachment(Attachment attachment)
-    {
-        this.attachments.remove(attachment);
-        attachment.setTaxon(null);
-    }
-
     @Override
     public String toString()
     {

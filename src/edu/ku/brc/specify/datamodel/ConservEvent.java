@@ -69,11 +69,10 @@ public class ConservEvent extends DataModelObjBase implements java.io.Serializab
     protected Agent                      treatedByAgent;
     protected ConservDescription         conservDescription;
     
-    protected Set<Attachment>            attachments;
-    
     protected Set<ConservRecommendation> lightRecommendations;
     protected Set<ConservRecommendation> displayRecommendations;
     protected Set<ConservRecommendation> otherRecommendations;
+    private Set<ConservEventAttachment> conservEventAttachments;
 
     // Constructors
 
@@ -103,7 +102,6 @@ public class ConservEvent extends DataModelObjBase implements java.io.Serializab
         photoDocs               = null;
         examinedByAgent         = null;
         treatedByAgent          = null;
-        attachments             = new HashSet<Attachment>();
         lightRecommendations    = new HashSet<ConservRecommendation>();
         displayRecommendations  = new HashSet<ConservRecommendation>();
         otherRecommendations    = new HashSet<ConservRecommendation>();
@@ -269,21 +267,6 @@ public class ConservEvent extends DataModelObjBase implements java.io.Serializab
     /**
      *
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "conservEvent")
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    public Set<Attachment> getAttachments()
-    {
-        return this.attachments;
-    }
-
-    public void setAttachments(final Set<Attachment> attachments)
-    {
-        this.attachments = attachments;
-    }
-
-    /**
-     *
-     */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "lightRecommendationConservEvent")
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     public Set<ConservRecommendation> getLightRecommendations()
@@ -341,7 +324,18 @@ public class ConservEvent extends DataModelObjBase implements java.io.Serializab
         this.conservDescription = conservDescription;
     }
     
-    /**
+    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "conservEvent")
+    public Set<ConservEventAttachment> getConservEventAttachments()
+    {
+        return conservEventAttachments;
+    }
+
+    public void setConservEventAttachments(Set<ConservEventAttachment> conservEventAttachments)
+    {
+        this.conservEventAttachments = conservEventAttachments;
+    }
+
+   /**
      * Generic Getter for the ID Property.
      * @returns ID Property.
      */

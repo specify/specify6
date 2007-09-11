@@ -109,7 +109,6 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     protected Collection                    collection;
     protected Accession                     accession;
     protected Agent                         cataloger;
-    protected Set<Attachment>               attachments;
     protected Container                     container;
     protected Container                     containerOwner;
     protected ColObjAttributes              colObjAttributes;      // Specify 5 Attributes table
@@ -119,6 +118,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
     protected PaleoContext                  paleoContext;
     
     protected Set<ConservDescription>       conservDescriptions;
+    private Set<CollectionObjectAttachment> collectionObjectAttachments;
 
     // Constructors
 
@@ -174,7 +174,6 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
         collection            = null;
         accession             = null;
         cataloger             = null;
-        attachments           = new HashSet<Attachment>();
         container             = null;
         containerOwner         = null;
         
@@ -690,21 +689,6 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
         this.cataloger = cataloger;
     }
 
-
-    //@OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectionObject")
-    //@Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "collectionObject")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<Attachment> getAttachments()
-    {
-        return attachments;
-    }
-
-    public void setAttachments(Set<Attachment> attachments)
-    {
-        this.attachments = attachments;
-    }
-
     /**
      *      * Preparation, Container
      */
@@ -774,7 +758,18 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
         this.conservDescriptions = conservDescriptions;
     }
 
-    //---------------------------------------------------------------------------
+    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "collectionObject")
+    public Set<CollectionObjectAttachment> getCollectionObjectAttachments()
+    {
+        return collectionObjectAttachments;
+    }
+
+    public void setCollectionObjectAttachments(Set<CollectionObjectAttachment> collectionObjectAttachments)
+    {
+        this.collectionObjectAttachments = collectionObjectAttachments;
+    }
+
+   //---------------------------------------------------------------------------
     // Overrides DataModelObjBase
     //---------------------------------------------------------------------------
     

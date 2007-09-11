@@ -67,9 +67,9 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
      */
     protected void init()
     {
-        Timestamp now = new Timestamp(System.currentTimeMillis());
+        Timestamp now     = new Timestamp(System.currentTimeMillis());
         timestampCreated  = now;
-        timestampModified = now;
+        timestampModified = null;
         lastEditedBy      = null;
     }
     

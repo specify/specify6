@@ -138,14 +138,12 @@ public class DataBuilder
         return agent;
     }
     public static Attachment createAttachment(final String filename,
-                                              final String mimeType,
-                                              final Integer ordinal)
+                                              final String mimeType)
     {
         Attachment attachment = new Attachment();
         attachment.initialize();
         attachment.setOrigFilename(filename);
         attachment.setMimeType(mimeType);
-        attachment.setOrdinal(ordinal);
         persist(attachment);
         return attachment;
     }

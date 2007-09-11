@@ -92,10 +92,10 @@ public class CollectingEvent extends DataModelObjBase implements AttributeProvid
     protected Set<Collector>        collectors;
     protected Locality              locality;
     protected CollectingTrip        collectingTrip;
-    protected Set<Attachment>       attachments;
     
     protected HabitatAttributes         habitatAttributes;      // Specify 5 Attributes table
     protected Set<CollectingEventAttr>  collectingEventAttrs; // Generic Expandable Attributes
+    protected Set<CollectingEventAttachment> collectingEventAttachments;
 
 
 
@@ -136,7 +136,6 @@ public class CollectingEvent extends DataModelObjBase implements AttributeProvid
         collectionObjects = new HashSet<CollectionObject>();
         collectors = new HashSet<Collector>();
         locality = null;
-        attachments         = new HashSet<Attachment>();
         
         habitatAttributes    = null;
         collectingEventAttrs = new HashSet<CollectingEventAttr>();
@@ -351,6 +350,9 @@ public class CollectingEvent extends DataModelObjBase implements AttributeProvid
     public void setRemarks(String remarks) {
         this.remarks = remarks;
     }
+    
+    
+    
     /**
      *      * Indicates whether this record can be viewed - by owner, by instituion, or by all
      */
@@ -473,19 +475,6 @@ public class CollectingEvent extends DataModelObjBase implements AttributeProvid
         this.collectingTrip = collectingTrip;
     }
 
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectingEvent")
-    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<Attachment> getAttachments()
-	{
-		return attachments;
-	}
-
-	public void setAttachments(Set<Attachment> attachments)
-	{
-		this.attachments = attachments;
-	}
-
-    
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "HabitatAttributesID", unique = false, nullable = true, insertable = true, updatable = true)
     public HabitatAttributes getHabitatAttributes()
@@ -498,6 +487,17 @@ public class CollectingEvent extends DataModelObjBase implements AttributeProvid
         this.habitatAttributes = habitatAttributes;
     }
     
+    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "collectingEvent")
+    public Set<CollectingEventAttachment> getCollectingEventAttachments()
+    {
+        return collectingEventAttachments;
+    }
+
+    public void setCollectingEventAttachments(Set<CollectingEventAttachment> collectingEventAttachments)
+    {
+        this.collectingEventAttachments = collectingEventAttachments;
+    }
+
     // Comparable
     public int compareTo(CollectingEvent obj)
     {

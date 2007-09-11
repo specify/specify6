@@ -84,11 +84,11 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
      protected String remarks;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
+     protected RepositoryAgreement         repositoryAgreement;
      protected Set<CollectionObject>       collectionObjects;
      protected Set<AccessionAuthorization> accessionAuthorizations;
      protected Set<AccessionAgent>         accessionAgents;
-     protected RepositoryAgreement         repositoryAgreement;
-     protected Set<Attachment>             attachments;
+     protected Set<AccessionAttachment>    accessionAttachments;
      protected Set<ConservDescription>     conservDescriptions;
 
 
@@ -130,6 +130,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
         accessionAuthorizations = new HashSet<AccessionAuthorization>();
         accessionAgents         = new HashSet<AccessionAgent>();
         repositoryAgreement     = null;
+        accessionAttachments    = new HashSet<AccessionAttachment>();
         conservDescriptions     = new HashSet<ConservDescription>();
     }
     // End Initializer
@@ -342,6 +343,17 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
     public void setYesNo2(Boolean yesNo2) {
         this.yesNo2 = yesNo2;
     }
+    
+    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "accession")
+    public Set<AccessionAttachment> getAccessionAttachments()
+    {
+        return accessionAttachments;
+    }
+
+    public void setAccessionAttachments(Set<AccessionAttachment> accessionAttachments)
+    {
+        this.accessionAttachments = accessionAttachments;
+    }
 
     /**
      *
@@ -395,21 +407,6 @@ public class Accession extends DataModelObjBase implements java.io.Serializable 
     public void setRepositoryAgreement(RepositoryAgreement repositoryAgreement) {
         this.repositoryAgreement = repositoryAgreement;
     }
-
-    //@OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "accession")
-    //@Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "accession")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<Attachment> getAttachments()
-    {
-        return attachments;
-    }
-
-    public void setAttachments(Set<Attachment> attachments)
-    {
-        this.attachments = attachments;
-    }
-    
 
     /**
      *

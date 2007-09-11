@@ -82,11 +82,11 @@ public class Preparation extends DataModelObjBase implements AttributeProviderIF
     protected CollectionObject            collectionObject;
     protected Agent                       preparedByAgent;
     protected Location                    location;
-    protected Set<Attachment>             attachments;
     protected Set<DeaccessionPreparation> deaccessionPreparations;
 
     protected PreparationAttributes       preparationAttributes;   // Specify 5 Attributes table
     protected Set<PreparationAttr>        preparationAttrs;        // Generic Expandable Attributes
+    private Set<PreparationAttachment> preparationAttachments;
     
     // Constructors
 
@@ -121,7 +121,6 @@ public class Preparation extends DataModelObjBase implements AttributeProviderIF
         collectionObject = null;
         preparedByAgent = null;
         location = null;
-        attachments = new HashSet<Attachment>();
         deaccessionPreparations = new HashSet<DeaccessionPreparation>();
         
         preparationAttributes = null;
@@ -354,16 +353,15 @@ public class Preparation extends DataModelObjBase implements AttributeProviderIF
         this.preparedByAgent = preparedByAgent;
     }
 
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "preparation")
-    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<Attachment> getAttachments()
+    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "preparation")
+    public Set<PreparationAttachment> getPreparationAttachments()
     {
-        return attachments;
+        return preparationAttachments;
     }
 
-    public void setAttachments(Set<Attachment> attachments)
+    public void setPreparationAttachments(Set<PreparationAttachment> preparationAttachments)
     {
-        this.attachments = attachments;
+        this.preparationAttachments = preparationAttachments;
     }
 
     /**

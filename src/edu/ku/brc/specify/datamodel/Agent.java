@@ -109,7 +109,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     protected Set<Shipment>                 shipments;
     protected Set<Collector>                collectors;
     protected Set<ExchangeOut>              exchangeOutCatalogedBys;
-    protected Set<Attachment>               attachments;
     protected Set<RepositoryAgreement>      repositoryAgreements;
     protected Set<Locality>                 localities;
     protected Set<CollectionObject>         catalogers;
@@ -143,6 +142,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     protected Set<ConservDescription>       conservDescriptions;
     
     protected Set<AgentVariant>             variants;
+    protected Set<AgentAttachment> agentAttachments;
 
     
     protected static Agent                  currentUserAgent = null;
@@ -194,7 +194,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
         shipments = new HashSet<Shipment>();
         collectors = new HashSet<Collector>();
         exchangeOutCatalogedBys = new HashSet<ExchangeOut>();
-        attachments = new HashSet<Attachment>();
         repositoryAgreements = new HashSet<RepositoryAgreement>();
         localities = new HashSet<Locality>();
         catalogers = new HashSet<CollectionObject>();
@@ -269,18 +268,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
         this.agentId = agentId;
     }
 
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
-    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<Attachment> getAttachments()
-    {
-        return attachments;
-    }
-
-    public void setAttachments(Set<Attachment> attachments)
-    {
-        this.attachments = attachments;
-    }
-    
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "cataloger")
     @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<CollectionObject> getCatalogers()
@@ -293,38 +280,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
         this.catalogers = catalogers;
     }
     
-//    @Transient
-//    public String getImageURL()
-//    {
-//        for (Attachment a: attachments)
-//        {
-//            if (a.getMimeType().startsWith("image"))
-//            {
-//                File thumb = AttachmentUtils.getAttachmentManager().getThumbnail(a);
-//                try
-//                {
-//                    URL imageURL = thumb.toURI().toURL();
-//                    return imageURL.toString();
-//                }
-//                catch (MalformedURLException e)
-//                {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
-//        return null;
-//    }
-//    
-//    public void setImageURL(String url)
-//    {
-//        Attachment newImage = new Attachment();
-//        newImage.initialize();
-//        newImage.setOrigFilename(url);
-//        newImage.setAgent(this);
-//        this.attachments.add(newImage);
-//        return;
-//    }
-
     /**
      *
      */
@@ -1029,6 +984,17 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
     public void setConservDescriptions(final Set<ConservDescription> conservDescriptions)
     {
         this.conservDescriptions = conservDescriptions;
+    }
+
+    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "agent")
+    public Set<AgentAttachment> getAgentAttachments()
+    {
+        return agentAttachments;
+    }
+
+    public void setAgentAttachments(Set<AgentAttachment> agentAttachments)
+    {
+        this.agentAttachments = agentAttachments;
     }
 
     /**

@@ -27,6 +27,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.AgentAttachment;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.BorrowAgent;
 import edu.ku.brc.specify.datamodel.Collector;
@@ -143,8 +144,9 @@ public class AgentIconTextMapper implements ObjectTextMapper, ObjectIconMapper
             try
             {
                 tmpSession.attach(agent);
-                for (Attachment attach: agent.getAttachments())
+                for (AgentAttachment agentAttach: agent.getAgentAttachments())
                 {
+                    Attachment attach = agentAttach.getAttachment();
                     String mimeType = attach.getMimeType();
                     if (mimeType==null)
                     {

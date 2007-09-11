@@ -70,6 +70,13 @@
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
     </table>
+    <table name="accessionattachment">
+      <field name="lastEditedBy" type="java.lang.String"/>
+      <field name="ordinal" type="java.lang.Integer"/>
+      <field name="remarks" type="text"/>
+      <field name="timestampCreated" type="java.sql.Timestamp"/>
+      <field name="timestampModified" type="java.sql.Timestamp"/>
+    </table>
     <table name="accessionauthorization">
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
@@ -205,6 +212,13 @@
         <desc country="US" lang="en"/>
       </field>
     </table>
+    <table name="agentattachment">
+      <field name="lastEditedBy" type="java.lang.String"/>
+      <field name="ordinal" type="java.lang.Integer"/>
+      <field name="remarks" type="text"/>
+      <field name="timestampCreated" type="java.sql.Timestamp"/>
+      <field name="timestampModified" type="java.sql.Timestamp"/>
+    </table>
     <table name="agentvariant">
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
@@ -288,6 +302,18 @@
         <desc country="US" lang="en"/>
       </field>
     </table>
+    <table name="attachment">
+      <field name="attachmentLocation" type="java.lang.String"/>
+      <field name="fileCreatedDate" type="java.util.Calendar"/>
+      <field name="lastEditedBy" type="java.lang.String"/>
+      <field name="mimeType" type="java.lang.String"/>
+      <field name="origFilename" type="java.lang.String"/>
+      <field name="remarks" type="text"/>
+      <field name="timestampCreated" type="java.sql.Timestamp"/>
+      <field name="timestampModified" type="java.sql.Timestamp"/>
+      <field name="visibility" type="java.lang.Integer"/>
+      <field name="visibilitySetBy" type="java.lang.String"/>
+    </table>
     <table name="attachmentmetadata">
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
@@ -302,41 +328,6 @@
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="value" type="java.lang.String">
-        <desc country="US" lang="en"/>
-      </field>
-    </table>
-    <table name="attachments">
-      <field name="attachmentLocation" type="java.lang.String">
-        <desc country="US" lang="en"/>
-      </field>
-      <field name="fileCreatedDate" type="java.util.Calendar">
-        <desc country="US" lang="en"/>
-      </field>
-      <field name="lastEditedBy" type="java.lang.String">
-        <desc country="US" lang="en">The user who last saved the record.</desc>
-      </field>
-      <field name="mimeType" type="java.lang.String">
-        <desc country="US" lang="en"/>
-      </field>
-      <field name="ordinal" type="java.lang.Integer">
-        <desc country="US" lang="en"/>
-      </field>
-      <field name="origFilename" type="java.lang.String">
-        <desc country="US" lang="en"/>
-      </field>
-      <field name="remarks" type="text">
-        <desc country="US" lang="en">Additional Comments</desc>
-      </field>
-      <field name="timestampCreated" type="java.sql.Timestamp">
-        <desc country="US" lang="en">The timestamp the record was created.</desc>
-      </field>
-      <field name="timestampModified" type="java.sql.Timestamp">
-        <desc country="US" lang="en">The timestamp the record was last modified.</desc>
-      </field>
-      <field name="visibility" type="java.lang.Integer">
-        <desc country="US" lang="en"/>
-      </field>
-      <field name="visibilitySetBy" type="java.lang.String">
         <desc country="US" lang="en"/>
       </field>
     </table>
@@ -575,6 +566,13 @@
         <desc country="US" lang="en"/>
       </field>
     </table>
+    <table name="collectingeventattachment">
+      <field name="lastEditedBy" type="java.lang.String"/>
+      <field name="ordinal" type="java.lang.Integer"/>
+      <field name="remarks" type="text"/>
+      <field name="timestampCreated" type="java.sql.Timestamp"/>
+      <field name="timestampModified" type="java.sql.Timestamp"/>
+    </table>
     <table name="collectingeventattr">
       <field name="dblValue" type="java.lang.Double">
         <desc country="US" lang="en"/>
@@ -720,6 +718,13 @@
       <field name="yesNo2" type="java.lang.Boolean">
         <desc country="US" lang="en">User definable</desc>
       </field>
+    </table>
+    <table name="collectionobjectattachment">
+      <field name="lastEditedBy" type="java.lang.String"/>
+      <field name="ordinal" type="java.lang.Integer"/>
+      <field name="remarks" type="text"/>
+      <field name="timestampCreated" type="java.sql.Timestamp"/>
+      <field name="timestampModified" type="java.sql.Timestamp"/>
     </table>
     <table name="collectionobjectattr">
       <field name="dblValue" type="java.lang.Double">
@@ -1081,6 +1086,13 @@
         <desc country="US" lang="en"/>
       </field>
     </table>
+    <table name="conservdescriptionattachment">
+      <field name="lastEditedBy" type="java.lang.String"/>
+      <field name="ordinal" type="java.lang.Integer"/>
+      <field name="remarks" type="text"/>
+      <field name="timestampCreated" type="java.sql.Timestamp"/>
+      <field name="timestampModified" type="java.sql.Timestamp"/>
+    </table>
     <table name="conservevent">
       <field name="advTestingExam" type="text">
         <desc country="US" lang="en"/>
@@ -1112,6 +1124,13 @@
       <field name="treatmentReport" type="text">
         <desc country="US" lang="en"/>
       </field>
+    </table>
+    <table name="conserveventattachment">
+      <field name="lastEditedBy" type="java.lang.String"/>
+      <field name="ordinal" type="java.lang.Integer"/>
+      <field name="remarks" type="text"/>
+      <field name="timestampCreated" type="java.sql.Timestamp"/>
+      <field name="timestampModified" type="java.sql.Timestamp"/>
     </table>
     <table name="conservrecmdtype">
       <field name="lastEditedBy" type="java.lang.String">
@@ -2065,6 +2084,13 @@
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
     </table>
+    <table name="loanattachment">
+      <field name="lastEditedBy" type="java.lang.String"/>
+      <field name="ordinal" type="java.lang.Integer"/>
+      <field name="remarks" type="text"/>
+      <field name="timestampCreated" type="java.sql.Timestamp"/>
+      <field name="timestampModified" type="java.sql.Timestamp"/>
+    </table>
     <table name="loanphysicalobject">
       <field name="descriptionOfMaterial" type="java.lang.String">
         <desc country="US" lang="en">Description of loaned material (intended to be used for non-cataloged items, i.e. when PreparationID is null)</desc>
@@ -2284,6 +2310,13 @@
         <desc country="US" lang="en">User definable</desc>
       </field>
     </table>
+    <table name="localityattachment">
+      <field name="lastEditedBy" type="java.lang.String"/>
+      <field name="ordinal" type="java.lang.Integer"/>
+      <field name="remarks" type="text"/>
+      <field name="timestampCreated" type="java.sql.Timestamp"/>
+      <field name="timestampModified" type="java.sql.Timestamp"/>
+    </table>
     <table name="localitycitation">
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
@@ -2496,6 +2529,13 @@
         <desc country="US" lang="en">User definable</desc>
       </field>
     </table>
+    <table name="permitattachment">
+      <field name="lastEditedBy" type="java.lang.String"/>
+      <field name="ordinal" type="java.lang.Integer"/>
+      <field name="remarks" type="text"/>
+      <field name="timestampCreated" type="java.sql.Timestamp"/>
+      <field name="timestampModified" type="java.sql.Timestamp"/>
+    </table>
     <table name="picklist">
       <field name="fieldName" type="java.lang.String"/>
       <field name="formatter" type="java.lang.String"/>
@@ -2536,6 +2576,13 @@
       <field name="timestampModified" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
+    </table>
+    <table name="preparationattachment">
+      <field name="lastEditedBy" type="java.lang.String"/>
+      <field name="ordinal" type="java.lang.Integer"/>
+      <field name="remarks" type="text"/>
+      <field name="timestampCreated" type="java.sql.Timestamp"/>
+      <field name="timestampModified" type="java.sql.Timestamp"/>
     </table>
     <table name="preparationattr">
       <field name="dblValue" type="java.lang.Double">
@@ -2907,6 +2954,13 @@
         <desc country="US" lang="en">User definable</desc>
       </field>
     </table>
+    <table name="repositoryagreementattachment">
+      <field name="lastEditedBy" type="java.lang.String"/>
+      <field name="ordinal" type="java.lang.Integer"/>
+      <field name="remarks" type="text"/>
+      <field name="timestampCreated" type="java.sql.Timestamp"/>
+      <field name="timestampModified" type="java.sql.Timestamp"/>
+    </table>
     <table name="shipment">
       <field name="insuredForAmount" type="java.lang.String">
         <desc country="US" lang="en"/>
@@ -3082,6 +3136,13 @@
       <field name="visibilitySetBy" type="java.lang.String">
         <desc country="US" lang="en"/>
       </field>
+    </table>
+    <table name="taxonattachment">
+      <field name="lastEditedBy" type="java.lang.String"/>
+      <field name="ordinal" type="java.lang.Integer"/>
+      <field name="remarks" type="text"/>
+      <field name="timestampCreated" type="java.sql.Timestamp"/>
+      <field name="timestampModified" type="java.sql.Timestamp"/>
     </table>
     <table name="taxoncitation">
       <field name="lastEditedBy" type="java.lang.String">

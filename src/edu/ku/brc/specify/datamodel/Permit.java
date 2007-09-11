@@ -82,7 +82,7 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
     protected Set<AccessionAuthorization> accessionAuthorizations;
     protected Agent                       issuedTo;
     protected Agent                       issuedBy;
-    protected Set<Attachment>             attachments;
+    protected Set<PermitAttachment>       permitAttachments;
 
 
     // Constructors
@@ -97,9 +97,6 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
     public Permit(Integer permitId) {
         this.permitId = permitId;
     }
-
-
-
 
     // Initializer
     @Override
@@ -123,7 +120,7 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
         accessionAuthorizations = new HashSet<AccessionAuthorization>();
         issuedTo = null;
         issuedBy = null;
-        attachments = new HashSet<Attachment>();
+        permitAttachments = new HashSet<PermitAttachment>();
     }
     // End Initializer
 
@@ -365,22 +362,21 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
         this.issuedBy = agentByIssuer;
     }
 
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "permit")
-    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<Attachment> getAttachments()
+    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "permit")
+    public Set<PermitAttachment> getPermitAttachments()
     {
-        return attachments;
+        return permitAttachments;
     }
 
-    public void setAttachments(Set<Attachment> attachments)
+    public void setPermitAttachments(Set<PermitAttachment> permitAttachments)
     {
-        this.attachments = attachments;
+        this.permitAttachments = permitAttachments;
     }
 
     //---------------------------------------------------------------------------
     // Overrides DataModelObjBase
     //---------------------------------------------------------------------------
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
      */

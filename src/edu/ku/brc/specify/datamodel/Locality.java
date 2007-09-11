@@ -128,7 +128,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable, 
     protected Geography             geography;
     protected Set<LocalityCitation> localityCitations;
     protected Set<CollectingEvent>  collectingEvents;
-    protected Set<Attachment>       attachments;
+    protected Set<LocalityAttachment> localityAttachments;
 
 
     // Constructors
@@ -209,7 +209,6 @@ public class Locality extends DataModelObjBase implements java.io.Serializable, 
         geography = null;
         localityCitations = new HashSet<LocalityCitation>();
         collectingEvents = new HashSet<CollectingEvent>();
-        attachments = new HashSet<Attachment>();
     }
     // End Initializer
 
@@ -975,16 +974,15 @@ public class Locality extends DataModelObjBase implements java.io.Serializable, 
         this.localityCitations = localityCitations;
     }
 
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "locality")
-    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<Attachment> getAttachments()
+    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "locality")
+    public Set<LocalityAttachment> getLocalityAttachments()
     {
-        return attachments;
+        return localityAttachments;
     }
 
-    public void setAttachments(Set<Attachment> attachments)
+    public void setLocalityAttachments(Set<LocalityAttachment> localityAttachments)
     {
-        this.attachments = attachments;
+        this.localityAttachments = localityAttachments;
     }
 
     /**

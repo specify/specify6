@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last Used Id is 107 or 502
+    Last Used Id is 119 or 502
     
     PLEASE Keep this file in alphabetical order! 
 
@@ -201,6 +201,45 @@
         <table name="edu.ku.brc.specify.datamodel.WorkbenchRowImage" id="95"/>
         <table name="edu.ku.brc.specify.datamodel.WorkbenchTemplate" id="81"/>
         <table name="edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem" id="82"/>
+        
+        
+        <table name="edu.ku.brc.specify.datamodel.AccessionAttachment" id="108">
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.BaseObjectAttachmentBusRules</businessrule>          
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.AgentAttachment" id="109">
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.BaseObjectAttachmentBusRules</businessrule>          
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.CollectingEventAttachment" id="110">
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.BaseObjectAttachmentBusRules</businessrule>          
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.CollectionObjectAttachment" id="111">
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.BaseObjectAttachmentBusRules</businessrule>          
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.ConservDescriptionAttachment" id="112">
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.BaseObjectAttachmentBusRules</businessrule>          
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.ConservEventAttachment" id="113">
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.BaseObjectAttachmentBusRules</businessrule>          
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.LoanAttachment" id="114">
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.BaseObjectAttachmentBusRules</businessrule>          
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.LocalityAttachment" id="115">
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.BaseObjectAttachmentBusRules</businessrule>          
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.PermitAttachment" id="116">
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.BaseObjectAttachmentBusRules</businessrule>          
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.PreparationAttachment" id="117">
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.BaseObjectAttachmentBusRules</businessrule>          
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment" id="118">
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.BaseObjectAttachmentBusRules</businessrule>          
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.TaxonAttachment" id="119">
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.BaseObjectAttachmentBusRules</businessrule>          
+        </table>
+        
     </database>
 
 </tableIdMapping>

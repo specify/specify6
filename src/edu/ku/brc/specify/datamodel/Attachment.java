@@ -7,62 +7,54 @@
 package edu.ku.brc.specify.datamodel;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-
-import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
-import edu.ku.brc.util.Orderable;
-import edu.ku.brc.util.thumbnails.Thumbnailer;
 
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "attachments")
-public class Attachment extends DataModelObjBase implements Serializable, Orderable
+@Table(name = "attachment")
+public class Attachment extends DataModelObjBase implements Serializable
 {
-    private Integer                 attachmentId;
-    private String                  mimeType;
-    private String                  origFilename;
-    private Calendar                fileCreatedDate;
-    private Integer                 ordinal;
-    private String                  remarks;
-    private String                  attachmentLocation;
-    protected Integer               visibility;
-    protected String                visibilitySetBy;
-    private Set<AttachmentMetadata> metadata;
-    private Agent                   agent;
-    private CollectionObject        collectionObject;
-    private CollectingEvent         collectingEvent;
-    private Loan                    loan;
-    private Locality                locality;
-    private Permit                  permit;
-    private Preparation             preparation;
-    private Taxon                   taxon;
-    private Accession accession;
-    private RepositoryAgreement     repositoryAgreement;
-    protected ConservEvent          conservEvent;
-    protected ConservDescription    conservDescription;
+    protected Integer                 attachmentId;
+    protected String                  mimeType;
+    protected String                  origFilename;
+    protected Calendar                fileCreatedDate;
+    protected String                  remarks;
+    protected String                  attachmentLocation;
+    protected Integer                 visibility;
+    protected String                  visibilitySetBy;
+    protected Set<AttachmentMetadata> metadata;
+    
+    // data model classes that can have Attachments
+    protected Set<AccessionAttachment>               accessionAttachments;
+    protected Set<AgentAttachment>                   agentAttachments;
+    protected Set<CollectingEventAttachment>         collectingEventAttachments;
+    protected Set<CollectionObjectAttachment>        collectionObjectAttachments;
+    protected Set<ConservDescriptionAttachment>      conservDescriptionAttachments;
+    protected Set<ConservEventAttachment>            conservEventAttachments;
+    protected Set<LoanAttachment>                    loanAttachments;
+    protected Set<LocalityAttachment>                localityAttachments;
+    protected Set<PermitAttachment>                  permitAttachments;
+    protected Set<PreparationAttachment>             preparationAttachments;
+    protected Set<RepositoryAgreementAttachment>     repositoryAgreementAttachments;
+    protected Set<TaxonAttachment>                   taxonAttachments;
     
     /** default constructor */
     public Attachment()
@@ -83,30 +75,31 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
     public void initialize()
     {
         super.init();
-        attachmentId = null;
-        mimeType = null;
-        origFilename = null;
-        fileCreatedDate = null;
-        ordinal = null;
-        remarks = null;
+        attachmentId       = null;
+        mimeType           = null;
+        origFilename       = null;
+        fileCreatedDate    = null;
+        remarks            = null;
         attachmentLocation = null;
-        metadata = new HashSet<AttachmentMetadata>();
-        agent = null;
-        collectionObject = null;
-        collectingEvent = null;
-        loan = null;
-        locality = null;
-        permit = null;
-        preparation = null;
-        taxon = null;
-        conservEvent = null;
-        conservDescription = null;
-
+        metadata           = new HashSet<AttachmentMetadata>();
+        
+        accessionAttachments           = new HashSet<AccessionAttachment>();
+        agentAttachments               = new HashSet<AgentAttachment>();
+        collectionObjectAttachments    = new HashSet<CollectionObjectAttachment>();
+        collectingEventAttachments     = new HashSet<CollectingEventAttachment>();
+        conservDescriptionAttachments  = new HashSet<ConservDescriptionAttachment>();
+        conservEventAttachments        = new HashSet<ConservEventAttachment>();
+        loanAttachments                = new HashSet<LoanAttachment>();
+        localityAttachments            = new HashSet<LocalityAttachment>();
+        permitAttachments              = new HashSet<PermitAttachment>();
+        preparationAttachments         = new HashSet<PreparationAttachment>();
+        repositoryAgreementAttachments = new HashSet<RepositoryAgreementAttachment>();
+        taxonAttachments               = new HashSet<TaxonAttachment>();
     }
 
     @Id
     @GeneratedValue
-    @Column(name = "AttachmentID", unique = false, nullable = false, insertable = true, updatable = true)
+    @Column(name = "AttachmentID")
     public Integer getAttachmentId()
     {
         return this.attachmentId;
@@ -134,7 +127,7 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
         return Attachment.class;
     }
 
-    @Column(name = "MimeType", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    @Column(name = "MimeType", length = 32)
     public String getMimeType()
     {
         return this.mimeType;
@@ -145,7 +138,7 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
         this.mimeType = mimeType;
     }
 
-    @Column(name = "OrigFilename", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Column(name = "OrigFilename", length = 128)
     public String getOrigFilename()
     {
         return this.origFilename;
@@ -171,7 +164,7 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
     }
 
     @Temporal(TemporalType.DATE)
-    @Column(name = "FileCreatedDate", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "FileCreatedDate")
     public Calendar getFileCreatedDate()
     {
         return this.fileCreatedDate;
@@ -182,19 +175,8 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
         this.fileCreatedDate = fileCreatedDate;
     }
 
-    @Column(name = "Ordinal", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getOrdinal()
-    {
-        return ordinal;
-    }
-
-    public void setOrdinal(Integer ordinal)
-    {
-        this.ordinal = ordinal;
-    }
-
     @Lob
-    @Column(name="Remarks", unique=false, nullable=true, updatable=true, insertable=true)
+    @Column(name="Remarks")
     public String getRemarks()
     {
         return this.remarks;
@@ -205,7 +187,7 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
         this.remarks = remarks;
     }
 
-    @Column(name = "AttachmentLocation", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "AttachmentLocation", length = 128)
     public String getAttachmentLocation()
     {
         return this.attachmentLocation;
@@ -216,8 +198,27 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
         this.attachmentLocation = attachmentLocation;
     }
 
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "attachment")
-    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    @Column(name = "Visibility")
+    public Integer getVisibility() 
+    {
+        return this.visibility;
+    }
+    
+    public void setVisibility(Integer visibility) 
+    {
+        this.visibility = visibility;
+    }   
+
+    @Column(name = "VisibilitySetBy", length = 50)
+    public String getVisibilitySetBy() {
+        return this.visibilitySetBy;
+    }
+    
+    public void setVisibilitySetBy(String visibilitySetBy) {
+        this.visibilitySetBy = visibilitySetBy;
+    }
+
+    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "attachment")
     public Set<AttachmentMetadata> getMetadata()
     {
         return this.metadata;
@@ -228,178 +229,139 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
         this.metadata = metadata;
     }
     
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "AgentID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Agent getAgent()
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "attachment")
+    public Set<AccessionAttachment> getAccessionAttachments()
     {
-        return agent;
+        return accessionAttachments;
     }
 
-    public void setAgent(Agent agent)
+    public void setAccessionAttachments(Set<AccessionAttachment> accessionAttachments)
     {
-        this.agent = agent;
+        this.accessionAttachments = accessionAttachments;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "CollectingEventID", unique = false, nullable = true, insertable = true, updatable = true)
-    public CollectingEvent getCollectingEvent()
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "attachment")
+    public Set<AgentAttachment> getAgentAttachments()
     {
-        return collectingEvent;
+        return agentAttachments;
     }
 
-    public void setCollectingEvent(CollectingEvent collectingEvent)
+    public void setAgentAttachments(Set<AgentAttachment> agentAttachments)
     {
-        this.collectingEvent = collectingEvent;
+        this.agentAttachments = agentAttachments;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "CollectionObjectID", unique = false, nullable = true, insertable = true, updatable = true)
-    public CollectionObject getCollectionObject()
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "attachment")
+    public Set<CollectingEventAttachment> getCollectingEventAttachments()
     {
-        return collectionObject;
+        return collectingEventAttachments;
     }
 
-    public void setCollectionObject(CollectionObject collectionObject)
+    public void setCollectingEventAttachments(Set<CollectingEventAttachment> collectingEventAttachments)
     {
-        this.collectionObject = collectionObject;
+        this.collectingEventAttachments = collectingEventAttachments;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "LoanID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Loan getLoan()
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "attachment")
+    public Set<CollectionObjectAttachment> getCollectionObjectAttachments()
     {
-        return loan;
+        return collectionObjectAttachments;
     }
 
-    public void setLoan(Loan loan)
+    public void setCollectionObjectAttachments(Set<CollectionObjectAttachment> collectionObjectAttachments)
     {
-        this.loan = loan;
+        this.collectionObjectAttachments = collectionObjectAttachments;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "LocalityID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Locality getLocality()
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "attachment")
+    public Set<ConservDescriptionAttachment> getConservDescriptionAttachments()
     {
-        return locality;
+        return conservDescriptionAttachments;
     }
 
-    public void setLocality(Locality locality)
+    public void setConservDescriptionAttachments(Set<ConservDescriptionAttachment> conservDescriptionAttachments)
     {
-        this.locality = locality;
+        this.conservDescriptionAttachments = conservDescriptionAttachments;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "PermitID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Permit getPermit()
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "attachment")
+    public Set<ConservEventAttachment> getConservEventAttachments()
     {
-        return permit;
+        return conservEventAttachments;
     }
 
-    public void setPermit(Permit permit)
+    public void setConservEventAttachments(Set<ConservEventAttachment> conservEventAttachments)
     {
-        this.permit = permit;
+        this.conservEventAttachments = conservEventAttachments;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "PreparationID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Preparation getPreparation()
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "attachment")
+    public Set<LoanAttachment> getLoanAttachments()
     {
-        return preparation;
+        return loanAttachments;
     }
 
-    public void setPreparation(Preparation preparation)
+    public void setLoanAttachments(Set<LoanAttachment> loanAttachments)
     {
-        this.preparation = preparation;
+        this.loanAttachments = loanAttachments;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "TaxonID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Taxon getTaxon()
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "attachment")
+    public Set<LocalityAttachment> getLocalityAttachments()
     {
-        return taxon;
+        return localityAttachments;
     }
 
-    public void setTaxon(Taxon taxon)
+    public void setLocalityAttachments(Set<LocalityAttachment> localityAttachments)
     {
-        this.taxon = taxon;
-    }
-    
-    /**
-     *
-     */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "ConservEventID", unique = false, nullable = true, insertable = true, updatable = true)
-    public ConservEvent getConservEvent()
-    {
-        return this.conservEvent;
+        this.localityAttachments = localityAttachments;
     }
 
-    public void setConservEvent(final ConservEvent conservEvent)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "attachment")
+    public Set<PreparationAttachment> getPreparationAttachments()
     {
-        this.conservEvent = conservEvent;
+        return preparationAttachments;
     }
 
-    /**
-     *
-     */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "ConservDescriptionID", unique = false, nullable = true, insertable = true, updatable = true)
-    public ConservDescription getConservDescription()
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "attachment")
+    public Set<PermitAttachment> getPermitAttachments()
     {
-        return this.conservDescription;
+        return permitAttachments;
     }
 
-    public void setConservDescription(final ConservDescription conservDescription)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "attachment")
+    public void setPermitAttachments(Set<PermitAttachment> permitAttachments)
     {
-        this.conservDescription = conservDescription;
-    }
-    
-    /**
-     *      * Indicates whether this record can be viewed - by owner, by instituion, or by all
-     */
-    @Column(name = "Visibility", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
-    public Integer getVisibility() 
-    {
-        return this.visibility;
-    }
-    
-    public void setVisibility(Integer visibility) 
-    {
-        this.visibility = visibility;
-    }   
-    
-    /**
-     * 
-     */
-    @Column(name = "VisibilitySetBy", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
-    public String getVisibilitySetBy() 
-    {
-        return this.visibilitySetBy;
-    }
-    
-    public void setVisibilitySetBy(String visibilitySetBy) 
-    {
-        this.visibilitySetBy = visibilitySetBy;
-    }   
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.OrderableFormDataObj#getOrderIndex()
-     */
-    @Transient
-    public int getOrderIndex()
-    {
-        if (ordinal != null) { return this.ordinal; }
-        return 0;
+        this.permitAttachments = permitAttachments;
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.OrderableFormDataObj#setOrderIndex(int)
-     */
-    public void setOrderIndex(int ordinal)
+    public void setPreparationAttachments(Set<PreparationAttachment> preparationAttachments)
     {
-        this.ordinal = ordinal;
+        this.preparationAttachments = preparationAttachments;
     }
-    
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "attachment")
+    public Set<RepositoryAgreementAttachment> getRepositoryAgreementAttachments()
+    {
+        return repositoryAgreementAttachments;
+    }
+
+    public void setRepositoryAgreementAttachments(Set<RepositoryAgreementAttachment> repositoryAgreementAttachments)
+    {
+        this.repositoryAgreementAttachments = repositoryAgreementAttachments;
+    }
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "attachment")
+    public Set<TaxonAttachment> getTaxonAttachments()
+    {
+        return taxonAttachments;
+    }
+
+    public void setTaxonAttachments(Set<TaxonAttachment> taxonAttachments)
+    {
+        this.taxonAttachments = taxonAttachments;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
@@ -439,73 +401,38 @@ public class Attachment extends DataModelObjBase implements Serializable, Ordera
         // TODO Delete the attachment file from the file storage system
     }
 
-    @Override
-    public void onSave()
-    {
-        // Copy the attachment file to the file storage system
-        Thumbnailer thumbnailGen = AttachmentUtils.getThumbnailer();
-        AttachmentManagerIface attachmentMgr = AttachmentUtils.getAttachmentManager();
-        File origFile = new File(origFilename);
-        File thumbFile = null;
-        
-        try
-        {
-            thumbFile = File.createTempFile("sp6_thumb_", null);
-            thumbFile.deleteOnExit();
-            thumbnailGen.generateThumbnail(origFilename, thumbFile.getAbsolutePath());
-        }
-        catch (IOException e)
-        {
-            // unable to create thumbnail
-            thumbFile = null;
-        }
-        
-        try
-        {
-            attachmentMgr.storeAttachmentFile(this, origFile, thumbFile);
-        }
-        catch (IOException e)
-        {
-            // exception while saving copying attachments to storage system
-            e.printStackTrace();
-        }
-    }
+//    @Override
+//    public void onSave()
+//    {
+//        // Copy the attachment file to the file storage system
+//        Thumbnailer thumbnailGen = AttachmentUtils.getThumbnailer();
+//        AttachmentManagerIface attachmentMgr = AttachmentUtils.getAttachmentManager();
+//        File origFile = new File(origFilename);
+//        File thumbFile = null;
+//        
+//        try
+//        {
+//            thumbFile = File.createTempFile("sp6_thumb_", null);
+//            thumbFile.deleteOnExit();
+//            thumbnailGen.generateThumbnail(origFilename, thumbFile.getAbsolutePath());
+//        }
+//        catch (IOException e)
+//        {
+//            // unable to create thumbnail
+//            thumbFile = null;
+//        }
+//        
+//        try
+//        {
+//            attachmentMgr.storeAttachmentFile(this, origFile, thumbFile);
+//        }
+//        catch (IOException e)
+//        {
+//            // exception while saving copying attachments to storage system
+//            e.printStackTrace();
+//        }
+//    }
 
-    /**
-     * @return the accession
-     */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "AccessionID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Accession getAccession()
-    {
-        return this.accession;
-    }
-
-    /**
-     * @param accession the accession to set
-     */
-    public void setAccession(Accession accession)
-    {
-        this.accession = accession;
-    }
-
-    /**
-     * @return the repositoryAgreement
-     */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "RepositoryAgreementID", unique = false, nullable = true, insertable = true, updatable = true)
-    public RepositoryAgreement getRepositoryAgreement()
-    {
-        return this.repositoryAgreement;
-    }
-
-    /**
-     * @param repositoryAgreement the repositoryAgreement to set
-     */
-    public void setRepositoryAgreement(RepositoryAgreement repositoryAgreement)
-    {
-        this.repositoryAgreement = repositoryAgreement;
-    }
     @Override
     public void onUpdate()
     {
