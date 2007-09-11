@@ -172,6 +172,7 @@ public class FieldDescApp extends JFrame
                 {
                     Table table = new Table(ti.getTableName());
                     list.add(table);
+                    log.warn("Adding New Table ["+table.getName()+"]");
                     for (DBTableIdMgr.FieldInfo fi : ti.getFields())
                     {
                         Field field = new Field(fi.getName(), fi.getType());
