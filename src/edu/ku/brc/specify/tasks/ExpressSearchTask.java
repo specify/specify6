@@ -37,7 +37,9 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -82,6 +84,8 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.SearchBox;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.JAutoCompTextField;
 import edu.ku.brc.ui.db.PickListDBAdapterFactory;
@@ -109,6 +113,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
     // Data Members
     protected Analyzer                     analyzer       = new StandardAnalyzer();
     protected File                         lucenePath     = null;
+    protected SearchBox                    searchBox;
     protected JAutoCompTextField           searchText;
     protected JButton                      searchBtn;
     protected Color                        textBGColor    = null;
@@ -384,7 +389,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
         String searchTerm = searchText.getText();
         if (isNotEmpty(searchTerm))
         {
-            ExpressSearchResultsPane expressSearchPane = new ExpressSearchResultsPane(searchTerm, this);
+            ExpressSearchResultsPane expressSearchPane = new ExpressSearchResultsPane(searchTerm, this, true);
             if (doQuery(lucenePath, analyzer, searchText, badSearchColor, expressSearchPane))
             {
                 addSubPaneToMgr(expressSearchPane);
@@ -833,7 +838,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
             {
                 // This needs to be fixed in that it might not return any results
                 // and we are always adding the pane.
-                ExpressSearchResultsPane     expressSearchPane = new ExpressSearchResultsPane(erti.getTitle(), this);
+                ExpressSearchResultsPane     expressSearchPane = new ExpressSearchResultsPane(erti.getTitle(), this, true);
                 ExpressSearchResults         esr               = new ExpressSearchResults(erti.getTitle(), null, erti);
                 @SuppressWarnings("unused")
                 ExpressTableResultsFromQuery esrfq             = new ExpressTableResultsFromQuery(expressSearchPane, esr, true);
@@ -891,7 +896,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
         GridBagConstraints c = new GridBagConstraints();
 
         JPanel     searchPanel = new JPanel(gridbag);
-        JLabel     spacer      = new JLabel(" ");
+        JLabel     spacer      = new JLabel("  ");
 
         searchBtn = new JButton(getResourceString("Search"));
         searchBtn.setToolTipText(getResourceString("ExpressSearchTT"));
@@ -908,7 +913,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
         searchText.setText(localPrefs.get(LAST_SEARCH, ""));
         textBGColor = searchText.getBackground();
 
-        searchText.setMinimumSize(new Dimension(50, searchText.getPreferredSize().height));
+        //searchText.setMinimumSize(new Dimension(50, searchText.getPreferredSize().height));
 
         ActionListener doQuery = new ActionListener() {
             public void actionPerformed(ActionEvent e)
@@ -936,12 +941,26 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
 
         c.weightx = 0.0;
         gridbag.setConstraints(searchText, c);
-        searchPanel.add(searchText);
+        
+        searchBox = new SearchBox(searchText, new SearchBox.MenuCreator() {
+            public List<JComponent> createPopupMenus()
+            {
+                List<JComponent> list = new ArrayList<JComponent>();
+                list.add (new JMenuItem("All", SearchBox.getSearchIcon()));
+                list.add (new JMenuItem("Agent", IconManager.getIcon("Agent", IconManager.IconSize.Std16)));
+                list.add (new JMenuItem("Collection Object", IconManager.getIcon("CollectionObject", IconManager.IconSize.Std16)));
+                return list;
+            }
+        });
+        searchPanel.add(searchBox);
 
         searchPanel.add(spacer);
-
-        gridbag.setConstraints(searchBtn, c);
-        searchPanel.add(searchBtn);
+        
+        if (!UIHelper.isMacOS())
+        {
+            gridbag.setConstraints(searchBtn, c);
+            searchPanel.add(searchBtn);
+        }
 
         list.add(new ToolBarItemDesc(searchPanel, ToolBarItemDesc.Position.AdjustRightLastComp));
 
@@ -996,7 +1015,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
             } else if (cmdAction.isAction("ExpressSearch"))
             {
                 String searchTerm = cmdAction.getData().toString();
-                ExpressSearchResultsPane expressSearchPane = new ExpressSearchResultsPane(searchTerm, this);
+                ExpressSearchResultsPane expressSearchPane = new ExpressSearchResultsPane(searchTerm, this, true);
                 if (doQuery(lucenePath, analyzer, null, searchTerm, badSearchColor, expressSearchPane))
                 {
                     addSubPaneToMgr(expressSearchPane);

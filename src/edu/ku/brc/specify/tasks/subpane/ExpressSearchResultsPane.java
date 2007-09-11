@@ -16,6 +16,7 @@
 package edu.ku.brc.specify.tasks.subpane;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.util.Collections;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -35,6 +37,9 @@ import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxLayoutManager;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
+import edu.ku.brc.specify.ui.HelpMgr;
+import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * This pane contains all the Express Search Result table panes. 
@@ -70,6 +75,8 @@ public class ExpressSearchResultsPane extends BaseSubPane implements ExpressSear
     
     // Tables are added here waiting for their first results to come back.
     protected Vector<ExpressTableResultsBase> expTblResultsCache = new Vector<ExpressTableResultsBase>();
+    
+    protected JPanel      explainPanel = null;
 
     /**
      * Default Constructor.
@@ -77,7 +84,8 @@ public class ExpressSearchResultsPane extends BaseSubPane implements ExpressSear
      * @param task the owning task
      */
     public ExpressSearchResultsPane(final String name,
-                                    final Taskable task)
+                                    final Taskable task,
+                                    final boolean includeExplainPane)
     {
         super(name, task, false);
 
@@ -89,6 +97,17 @@ public class ExpressSearchResultsPane extends BaseSubPane implements ExpressSear
         scrollPane = new JScrollPane(contentPanel);
         add(scrollPane, BorderLayout.CENTER);
         
+        if (includeExplainPane)
+        {
+            explainPanel = new JPanel(new BorderLayout());
+            explainPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+            JButton btn = new JButton(UIRegistry.getResourceString("EXPRESSSEARCH_TELL_ME_MORE"), IconManager.getIcon("InfoIcon"));
+            btn.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+            btn.setFocusable(false);
+            btn.setForeground(Color.GRAY);
+            explainPanel.add(btn, BorderLayout.WEST);
+            HelpMgr.registerComponent(btn, "ExpressSearchTellMeMore");
+        }
     }
 
     /**
@@ -212,11 +231,17 @@ public class ExpressSearchResultsPane extends BaseSubPane implements ExpressSear
             Collections.sort(expTblResults);
         }
         
-        List<Component> comps   = layoutMgr.getComponentList();
+        List<Component> comps = layoutMgr.getComponentList();
         comps.clear();
         comps.addAll(expTblResultsIndexed);
         comps.addAll(expTblResults);
         
+        if (explainPanel != null)
+        {
+            comps.add(explainPanel);
+            contentPanel.add(explainPanel);
+        }
+
         /*
         // Now reach into the LayoutManager and clear the list of its items
         // and then put back all the sorted ones.

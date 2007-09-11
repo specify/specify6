@@ -20,6 +20,9 @@
 
 	-->
 	
+	<mapID target="ExpressSearchTellMeMore" url="SpecifyHelp/Express_Search/TellMeMore.html"/>
+	
+	
 	<mapID target="Workbench"                  url="SpecifyHelp/Workbench/Overview.html"/>
 	<mapID target="WorkbenchOverview"          url="SpecifyHelp/Workbench/Overview.html"/>
 	
