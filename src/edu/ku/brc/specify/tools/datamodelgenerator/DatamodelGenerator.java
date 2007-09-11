@@ -121,7 +121,7 @@ public class DatamodelGenerator
             }
         } else
         {
-            log.error("Couldn't find table ["+tableName+"]");
+            log.warn("Couldn't find table ["+tableName+"]");
         }
         return null;
     }
@@ -647,7 +647,7 @@ public class DatamodelGenerator
                                 field.setDescs(descList);
                             } else
                             {
-                                log.error("***** No Descriptions for field ["+tableName+"]["+field.getName()+"]");
+                                log.warn("***** No Descriptions for field ["+tableName+"]["+field.getName()+"]");
                             }
                             table.addField(field);
                         }
