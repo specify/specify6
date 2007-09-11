@@ -1029,7 +1029,7 @@ public class DatamodelGenerator
                         packageName = line.substring(PACKAGE.length(), line.length()-1);
                     }
                     
-                    if (line.startsWith(CLASS))
+                    if (StringUtils.contains(line, CLASS))
                     {
                         int eInx = line.substring(CLASS.length()).indexOf(' ') + CLASS.length();
                         if (eInx > -1)
@@ -1048,6 +1048,15 @@ public class DatamodelGenerator
                     // Eventually these can be removed along with the methods.
                     //processCascade(className, tableList);
                     //processCascadeAddCascade(className, tableList);
+                } else
+                {
+                    String fileName = file.getName();
+                    if (!StringUtils.contains(fileName, "DataModelObjBase") && 
+                            !StringUtils.contains(fileName, "Treeable") && 
+                            !StringUtils.contains(fileName.toLowerCase(), "iface"))
+                    {
+                        throw new RuntimeException("Couldn't locate class name for "+file.getAbsolutePath());
+                    }
                 }
             }
             System.out.println(missing);

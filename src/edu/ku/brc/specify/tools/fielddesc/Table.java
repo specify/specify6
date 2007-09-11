@@ -20,7 +20,7 @@ import java.util.Vector;
  * Sep 4, 2007
  *
  */
-public class Table
+public class Table implements Comparable<Table>
 {
     protected String      name;
     protected List<Field> fields = new Vector<Field>();
@@ -66,4 +66,14 @@ public class Table
     {
         return name;
     }
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(Table o)
+    {
+        return name.compareTo(o.name);
+    }
+    
+    
 }

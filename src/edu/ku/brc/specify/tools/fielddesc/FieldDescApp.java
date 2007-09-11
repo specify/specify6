@@ -12,6 +12,7 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.io.File;
 import java.io.FileWriter;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Locale;
 import java.util.Vector;
@@ -180,6 +181,7 @@ public class FieldDescApp extends JFrame
                     }
                 }
             }
+            Collections.sort(list);
             
         } catch (Exception ex)
         {
@@ -331,13 +333,19 @@ public class FieldDescApp extends JFrame
     
     protected int getNextEmptyIndex(final int inx)
     {
-        for (int i=inx;i<fieldsModel.size();i++)
+        if (inx > -1 && inx < fieldsModel.size())
         {
-            Field f = (Field)fieldsModel.get(i);
-            Desc  desc = getDescForCurrLocale(f);
-            if (desc != null && StringUtils.isEmpty(desc.getText()))
+            for (int i=inx;i<fieldsModel.size();i++)
             {
-                return i;
+                Field f = (Field)fieldsModel.get(i);
+                if (f != null)
+                {
+                    Desc  desc = getDescForCurrLocale(f);
+                    if (desc != null && StringUtils.isEmpty(desc.getText()))
+                    {
+                        return i;
+                    }
+                }
             }
         }
         return -1;

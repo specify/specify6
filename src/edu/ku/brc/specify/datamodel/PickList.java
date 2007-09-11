@@ -64,7 +64,8 @@ import edu.ku.brc.ui.db.PickListItemIFace;
 @Table(name = "picklist")
 @org.hibernate.annotations.Table(appliesTo="picklist", indexes =
     {   @Index (name="PickListNameIDX", columnNames={"Name"})
-    })public class PickList extends DataModelObjBase implements PickListIFace, java.io.Serializable
+    })
+public class PickList extends DataModelObjBase implements PickListIFace, java.io.Serializable
 {
     // Fields    
 

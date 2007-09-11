@@ -54,7 +54,9 @@ import org.hibernate.annotations.Index;
 @Table(name = "journal")
 @org.hibernate.annotations.Table(appliesTo="journal", indexes =
     {   @Index (name="JournalNameIDX", columnNames={"JournalName"})
-    })public class Journal extends DataModelObjBase implements java.io.Serializable {
+    })
+public class Journal extends DataModelObjBase implements java.io.Serializable 
+{
 
     // Fields    
 
