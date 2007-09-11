@@ -327,9 +327,9 @@ public class IconViewObj implements Viewable
                 }
                 
                 iconTray.removeItem(selection);
-                session.deleteOnSaveOrUpdate(selection);
                 if (mvParent != null)
                 {
+                    mvParent.addDeletedItem(selection);
                     MultiView root = mvParent;
                     while (root.getMultiViewParent() != null)
                     {
