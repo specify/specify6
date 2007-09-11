@@ -131,7 +131,7 @@ public abstract class BaseBusRules implements BusinessRulesIFace
      * @param id the Record ID to check
      * @return true means it can be deleted, false means it found something
      */
-    protected boolean okToDelete(final Connection connection, 
+    protected boolean okToDelete(@SuppressWarnings("unused") final Connection connection, 
                                  final Statement  stmt,
                                  final String tableName, 
                                  final String columnName, final long id)
