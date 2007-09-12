@@ -327,6 +327,7 @@ public class IconViewObj implements Viewable
                 }
                 
                 iconTray.removeItem(selection);
+                parentDataObj.removeReference(selection, IconViewObj.this.cellName);
                 if (mvParent != null)
                 {
                     mvParent.addDeletedItem(selection);
