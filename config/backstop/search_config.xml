@@ -552,7 +552,7 @@ where collectingevent.CollectingEventID in (%s) order by StartDate]]>
             </outofdate>
             <index>
                 <sql>
-                    <![CDATA[SELECT ColFieldsDef FROM attachments]]>
+                    <![CDATA[SELECT ColFieldsDef FROM attachment]]>
                 </sql>
                 <cols>
                     <col pos="1" id="true">AttachmentID</col>
@@ -561,7 +561,7 @@ where collectingevent.CollectingEventID in (%s) order by StartDate]]>
             </index>
             <detailView icon="Attachment">
                 <sql>
-                    <![CDATA[SELECT AttachmentID, OrigFilename FROM attachments WHERE AttachmentID IN (%s)]]>
+                    <![CDATA[SELECT AttachmentID, OrigFilename FROM attachment WHERE AttachmentID IN (%s)]]>
                 </sql>
                 <captions>
                     <caption col="AttachmentID" text="AttachmentID" visible="false"/>
