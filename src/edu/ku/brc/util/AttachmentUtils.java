@@ -16,6 +16,7 @@ import java.net.URI;
 import javax.activation.FileTypeMap;
 
 import edu.ku.brc.specify.datamodel.Attachment;
+import edu.ku.brc.specify.datamodel.ObjectAttachmentIFace;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
 
 /**
@@ -55,11 +56,13 @@ public class AttachmentUtils
             public void actionPerformed(ActionEvent e)
             {
                 Object source = e.getSource();
-                if (!(source instanceof Attachment))
+                if (!(source instanceof Attachment) && !(source instanceof ObjectAttachmentIFace))
                 {
-                    throw new IllegalArgumentException("Passed object must be an Attachment");
+                    throw new IllegalArgumentException("Passed object must be an Attachment or ObjectAttachmentIFace");
                 }
-                Attachment attachment = (Attachment)source;
+                
+                
+                Attachment attachment = (source instanceof Attachment) ? (Attachment)source : ((ObjectAttachmentIFace)source).getAttachment();
                 File original = null;
                 if (attachment.getId()!=null)
                 {
