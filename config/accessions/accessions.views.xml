@@ -516,10 +516,12 @@
                     <cell type="label" labelfor="8" label="Remarks"/>
                     <cell type="field" id="8" name="remarks" uitype="textarea" colspan="1"/>
                 </row>
+                <!--
                 <row>
                 	<cell type="label" labelfor="9" label="Attachments"/>
                     <cell type="subview" viewname="AttachmentsIconView" id="9" name="attachments" colspan="1"/>
                 </row>
+                -->
             </rows>
         </viewdef>
         

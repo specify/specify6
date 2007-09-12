@@ -1084,10 +1084,12 @@
                 <row>
                      <cell type="subview" viewname="LoanItems" id="10" name="loanPhysicalObjects" colspan="12"/>
                 </row>
+                <!--
                 <row>
                     <cell type="label" labelfor="9" label="Attachments"/>
                     <cell type="subview" viewname="AttachmentsIconView" id="9" name="attachments" colspan="10"/>
                 </row>
+                -->
                 <row>
                     <cell type="panel" id="16" name="outerPanel" coldef="p,5px,p" rowdef="p" colspan="12">
                         <rows>
@@ -1384,10 +1386,12 @@
                     <cell type="label" labelfor="9" label="Remarks"/>
                     <cell type="field" id="9" name="remarks" uitype="textarea" colspan="10" valtype="Changed"/>
                 </row>
+                <!--
                 <row>
                     <cell type="label" labelfor="10" label="Attachments"/>
                     <cell type="subview" viewname="AttachmentsIconView" id="10" name="attachments" colspan="10"/>
                 </row>
+                -->
             </rows>
         </viewdef>
 
