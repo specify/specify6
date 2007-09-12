@@ -86,11 +86,23 @@ import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.LoggerDialog;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.datamodel.AccessionAttachment;
 import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.AgentAttachment;
 import edu.ku.brc.specify.datamodel.Attachment;
+import edu.ku.brc.specify.datamodel.CollectingEventAttachment;
 import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.CollectionObjectAttachment;
 import edu.ku.brc.specify.datamodel.Collector;
+import edu.ku.brc.specify.datamodel.ConservDescriptionAttachment;
+import edu.ku.brc.specify.datamodel.ConservEventAttachment;
+import edu.ku.brc.specify.datamodel.LoanAttachment;
+import edu.ku.brc.specify.datamodel.LocalityAttachment;
+import edu.ku.brc.specify.datamodel.PermitAttachment;
+import edu.ku.brc.specify.datamodel.PreparationAttachment;
+import edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.datamodel.TaxonAttachment;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.specify.tests.SpecifyAppPrefs;
@@ -252,7 +264,20 @@ public class Specify extends JPanel implements DatabaseLoginListener
         AttachmentUtils.setAttachmentManager(attachMgr);
         AttachmentUtils.setThumbnailer(thumb);
         ActionListener attachmentDisplayer = AttachmentUtils.getAttachmentDisplayer();
+        
         DefaultClassActionHandler.getInstance().registerActionHandler(Attachment.class, attachmentDisplayer);
+        DefaultClassActionHandler.getInstance().registerActionHandler(AccessionAttachment.class, attachmentDisplayer);
+        DefaultClassActionHandler.getInstance().registerActionHandler(AgentAttachment.class, attachmentDisplayer);
+        DefaultClassActionHandler.getInstance().registerActionHandler(CollectingEventAttachment.class, attachmentDisplayer);
+        DefaultClassActionHandler.getInstance().registerActionHandler(CollectionObjectAttachment.class, attachmentDisplayer);
+        DefaultClassActionHandler.getInstance().registerActionHandler(ConservDescriptionAttachment.class, attachmentDisplayer);
+        DefaultClassActionHandler.getInstance().registerActionHandler(ConservEventAttachment.class, attachmentDisplayer);
+        DefaultClassActionHandler.getInstance().registerActionHandler(LoanAttachment.class, attachmentDisplayer);
+        DefaultClassActionHandler.getInstance().registerActionHandler(LocalityAttachment.class, attachmentDisplayer);
+        DefaultClassActionHandler.getInstance().registerActionHandler(PermitAttachment.class, attachmentDisplayer);
+        DefaultClassActionHandler.getInstance().registerActionHandler(PreparationAttachment.class, attachmentDisplayer);
+        DefaultClassActionHandler.getInstance().registerActionHandler(RepositoryAgreementAttachment.class, attachmentDisplayer);
+        DefaultClassActionHandler.getInstance().registerActionHandler(TaxonAttachment.class, attachmentDisplayer);
         DefaultClassActionHandler.getInstance().registerActionHandler(Collector.class, new CollectorActionListener());
         
         
@@ -544,6 +569,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
             
             
             menu.addMouseListener(new MouseAdapter() {
+                @SuppressWarnings("synthetic-access")
+                @Override
                 public void mousePressed(MouseEvent e) {
                     changeCatSeriesBtn.setEnabled(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getNumOfCollectionsForUser() > 1);
                 }
