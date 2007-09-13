@@ -123,9 +123,9 @@ public class Preparation extends DataModelObjBase implements AttributeProviderIF
         location = null;
         deaccessionPreparations = new HashSet<DeaccessionPreparation>();
         
-        preparationAttributes = null;
-        preparationAttrs      = new HashSet<PreparationAttr>();
-
+        preparationAttributes  = null;
+        preparationAttrs       = new HashSet<PreparationAttr>();
+        preparationAttachments = new HashSet<PreparationAttachment>();
     }
     // End Initializer
 

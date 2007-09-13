@@ -106,7 +106,7 @@ public class ConservEvent extends DataModelObjBase implements java.io.Serializab
         displayRecommendations  = new HashSet<ConservRecommendation>();
         otherRecommendations    = new HashSet<ConservRecommendation>();
         conservDescription      = null;
-
+        conservEventAttachments = new HashSet<ConservEventAttachment>();
     }
 
     // End Initializer

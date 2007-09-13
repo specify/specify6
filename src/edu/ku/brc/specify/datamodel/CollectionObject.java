@@ -181,7 +181,7 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
         rightSideRels         = new HashSet<CollectionRelationship>();
         
         conservDescriptions   = new HashSet<ConservDescription>();
-
+        collectionObjectAttachments = new HashSet<CollectionObjectAttachment>();
     }
     // End Initializer
     

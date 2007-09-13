@@ -210,6 +210,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable, 
         localityCitations  = new HashSet<LocalityCitation>();
         collectingEvents   = new HashSet<CollectingEvent>();
         localityNameAliass = new HashSet<LocalityNameAlias>();
+        localityAttachments = new HashSet<LocalityAttachment>();
     }
     // End Initializer
 

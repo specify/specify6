@@ -141,6 +141,8 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
         loanPhysicalObjects = new HashSet<LoanPhysicalObject>();
         shipments           = new HashSet<Shipment>();
         
+        loanAttachments = new HashSet<LoanAttachment>();
+        
         if (true)
         {
             // XXX For Demo

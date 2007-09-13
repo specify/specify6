@@ -124,6 +124,7 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
         repositoryAgreementAuthorizations = new HashSet<AccessionAuthorization>();
         repositoryAgreementAgents         = new HashSet<AccessionAgent>();
         accessions                        = new HashSet<Accession>();
+        repositoryAgreementAttachments    = new HashSet<RepositoryAgreementAttachment>();
         originator = null;
     }
     // End Initializer

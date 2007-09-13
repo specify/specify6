@@ -113,6 +113,7 @@ public class ConservDescription extends DataModelObjBase implements java.io.Seri
         division             = null;
         curator              = null;
         events               = new HashSet<ConservEvent>();
+        conservDescriptionAttachments = new HashSet<ConservDescriptionAttachment>();
     }
 
     // End Initializer

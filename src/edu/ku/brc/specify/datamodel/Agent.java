@@ -227,7 +227,8 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
         conservDescriptions           = new HashSet<ConservDescription>();
         
         variants                      = new HashSet<AgentVariant>();
-
+        
+        agentAttachments              = new HashSet<AgentAttachment>();
     }
     // End Initializer
 
@@ -986,7 +987,8 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
         this.conservDescriptions = conservDescriptions;
     }
 
-    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "agent")
+    @OneToMany(mappedBy = "agent")
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK, CascadeType.DELETE} )
     public Set<AgentAttachment> getAgentAttachments()
     {
         return agentAttachments;

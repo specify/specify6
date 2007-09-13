@@ -139,6 +139,7 @@ public class CollectingEvent extends DataModelObjBase implements AttributeProvid
         
         habitatAttributes    = null;
         collectingEventAttrs = new HashSet<CollectingEventAttr>();
+        collectingEventAttachments = new HashSet<CollectingEventAttachment>();
     }
     // End Initializer
 
