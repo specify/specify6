@@ -2357,6 +2357,9 @@
       <field name="name" type="java.lang.String">
         <desc country="US" lang="en">The alias for the locality name.</desc>
       </field>
+      <field name="source" type="java.lang.String">
+        <desc country="US" lang="en">The source of the alias.</desc>
+      </field>
       <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en"/>
       </field>

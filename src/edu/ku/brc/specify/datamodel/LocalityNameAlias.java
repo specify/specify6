@@ -41,6 +41,7 @@ public class LocalityNameAlias extends DataModelObjBase
     
     protected Integer  localityNameAliasId;
     protected String   name;
+    protected String   source;
     protected Locality locality;
 
     /**
@@ -61,6 +62,7 @@ public class LocalityNameAlias extends DataModelObjBase
         
         localityNameAliasId = null;
         name                = null;
+        source              = null;
     }
     
     /**
@@ -98,8 +100,24 @@ public class LocalityNameAlias extends DataModelObjBase
     {
         this.name = name;
     }
-
     
+    /**
+     * @return the source
+     */
+    @Column(name = "Source", unique = false, nullable = false, insertable = true, updatable = true, length = 64)
+    public String getSource()
+    {
+        return source;
+    }
+
+    /**
+     * @param source the source to set
+     */
+    public void setSource(String source)
+    {
+        this.source = source;
+    }
+
     /**
      * @return the locality
      */
