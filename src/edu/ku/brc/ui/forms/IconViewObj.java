@@ -286,6 +286,11 @@ public class IconViewObj implements Viewable
                 
                 // get an edit dialog for the object
                 ViewBasedDisplayIFace dialog = UIHelper.createDataObjectDialog(altView, mainComp, newObject, true, true);
+                if (dialog == null)
+                {
+                    log.error("Unable to create a dialog for data entry.  [" + newObject.getClass().getName() + "]");
+                    return;
+                }
                 if (mvParent != null)
                 {
                     mvParent.registerDisplayFrame(dialog);
