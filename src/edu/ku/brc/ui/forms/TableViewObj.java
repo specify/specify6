@@ -465,8 +465,11 @@ public class TableViewObj implements Viewable,
             }
         });
             
-        table.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent e) {
+        table.addMouseListener(new java.awt.event.MouseAdapter()
+        {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e)
+            {
                 if ( e.getClickCount() == 2 )
                 {
                     int index = table.getSelectedRow();
@@ -1691,6 +1694,8 @@ public class TableViewObj implements Viewable,
             return columnList.size();
         }
 
+        @SuppressWarnings("synthetic-access")
+        @Override
         public String getColumnName(int column)
         {
             if (columnList != null)
@@ -1778,11 +1783,13 @@ public class TableViewObj implements Viewable,
             return null;
         }
 
+        @Override
         public boolean isCellEditable(int row, int column)
         {
             return false;
         }
 
+        @Override
         public Class<?> getColumnClass(int columnIndex)
         {
             Object obj = getValueAt(0, columnIndex);
@@ -1794,16 +1801,19 @@ public class TableViewObj implements Viewable,
             return String.class;
         }
 
+        @Override
         public void setValueAt(Object aValue, int rowIndex, int columnIndex)
         {
             return;
         }
 
+        @Override
         public void addTableModelListener(TableModelListener l)
         {
             listeners.add(l);
         }
 
+        @Override
         public void removeTableModelListener(TableModelListener l)
         {
             listeners.remove(l);
@@ -1845,6 +1855,7 @@ public class TableViewObj implements Viewable,
          * Forwards the message from the <code>CellEditor</code> to
          * the <code>delegate</code>.
          */
+        @Override
         public boolean isCellEditable(EventObject anEvent) 
         { 
             return true; 
