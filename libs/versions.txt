@@ -55,6 +55,9 @@ javacsv									2.0
 jh										2.0_02
 swingx									0.8.0
 
+xpp3_minO.jar                           1.1.3.4  (xpp3_min-1.1.3.4.O.jar)
+xstream.jar                             1.2.2    (xstream-1.2.2.jar)
+
 mssqlserver.jar 						2.2.0040
 	msbase.jar							dist w/ ms driver
 	msutil.jar 							dist w/ ms driver
