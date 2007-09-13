@@ -6,6 +6,7 @@
  */
 package edu.ku.brc.specify.tools.fielddesc;
 
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
@@ -66,19 +67,21 @@ public class FieldDescApp extends JFrame
     protected JList            tablesList;
     protected JList            fieldsList;
     protected JTextArea        descText    = new JTextArea();
+    protected JTextArea        tblDescText = new JTextArea();
     protected JLabel           fieldLabel  = new JLabel("            ");
     protected DefaultListModel fieldsModel = new DefaultListModel();
     protected JButton          nxtBtn;
     protected JButton          nxtEmptyBtn;
     
     protected int              lastIndex = -1;
+    protected Table            prevTable = null;
     
     
     public FieldDescApp()
     {
         tables = readTableList();
         
-        buildUI();
+         buildUI();
     }
     
     /**
@@ -93,77 +96,103 @@ public class FieldDescApp extends JFrame
      * @param file
      * @return
      */
+    @SuppressWarnings({ "unchecked", "unchecked" })
     public static Vector<Table> readTables(final File file)
     {
-        Vector<Table> list = new Vector<Table>();
+        Vector<Table> list = null;
         Hashtable<String, Boolean> hash = new Hashtable<String, Boolean>();
         
         try
         {
-            Element root = XMLHelper.readFileToDOM4J(file);
-            for (Object obj : root.selectNodes("/database/table"))
+            if (true)
             {
-                Element tbl = (Element)obj;
-                Table table = new Table(XMLHelper.getAttr(tbl, "name", null));
-                
-                DBTableIdMgr.TableInfo ti = DBTableIdMgr.getInstance().getInfoByTableName(table.getName());
-                if (ti != null)
+                list = new Vector<Table>();
+                Element root = XMLHelper.readFileToDOM4J(file);
+                for (Object obj : root.selectNodes("/database/table"))
                 {
-                    list.add(table);
-                    hash.put(table.getName(), true);
+                    Element tbl = (Element)obj;
+                    Table table = new Table(XMLHelper.getAttr(tbl, "name", null));
                     
-                    for (Object fobj : tbl.selectNodes("field"))
+                    DBTableIdMgr.TableInfo ti = DBTableIdMgr.getInstance().getInfoByTableName(table.getName());
+                    if (ti != null)
                     {
-                        Element fld = (Element)fobj;
+                        list.add(table);
+                        hash.put(table.getName(), true);
                         
-                        String name = XMLHelper.getAttr(fld, "name", null);
-                        String type = XMLHelper.getAttr(fld, "type", null); 
-                        
-                        Field field = new Field(name, type);
-                        table.getFields().add(field);
-                        
-                        DBTableIdMgr.FieldInfo fldInfo = null;
-                        for (DBTableIdMgr.FieldInfo fi : ti.getFields())
+                        Element de = (Element)tbl.selectSingleNode("desc");
+                        if (de != null)
                         {
-                            if (fi.getName().equals(field.getName()))
-                            {
-                                field.setName(fi.getName()); 
-                                field.setType(fi.getType()); 
-                                fldInfo = fi;
-                                break;
-                            }
-                        }
-                        if (fldInfo == null)
-                        {
-                            log.error("Can't find field by name ["+field.getName()+"]");
-                        }
-                        
-                        for (Object dobj : fld.selectNodes("desc"))
-                        {
-                            Element de = (Element)dobj;
-                            
                             String country = XMLHelper.getAttr(de, "country", null);
                             Desc desc = new Desc(de.getTextTrim(),
                                     country,
                                     XMLHelper.getAttr(de, "lang", null),
                                     XMLHelper.getAttr(de, "variant", ""));
-                            field.getDescs().add(desc);
+                            table.setDesc(desc);
                         }
-                    }
-                    
-                    /*
-                    for (DBTableIdMgr.TableRelationship rel : ti.getRelationships())
-                    {
-                        if (rel.getType() == DBTableIdMgr.RelationshipType.ManyToMany || rel.getType() == DBTableIdMgr.RelationshipType.ManyToOne)
+                        
+                        for (Object fobj : tbl.selectNodes("field"))
                         {
-                            table.getFields().add(new Field(rel.getName(), rel.getType().toString()));
+                            Element fld = (Element)fobj;
+                            
+                            String name = XMLHelper.getAttr(fld, "name", null);
+                            String type = XMLHelper.getAttr(fld, "type", null); 
+                            
+                            Field field = new Field(name, type);
+                            table.getFields().add(field);
+                            
+                            DBTableIdMgr.FieldInfo fldInfo = null;
+                            for (DBTableIdMgr.FieldInfo fi : ti.getFields())
+                            {
+                                if (fi.getName().equals(field.getName()))
+                                {
+                                    field.setName(fi.getName()); 
+                                    field.setType(fi.getType()); 
+                                    fldInfo = fi;
+                                    break;
+                                }
+                            }
+                            if (fldInfo == null)
+                            {
+                                log.error("Can't find field by name ["+field.getName()+"]");
+                            }
+                            
+                            for (Object dobj : fld.selectNodes("desc"))
+                            {
+                                de = (Element)dobj;
+                                
+                                String country = XMLHelper.getAttr(de, "country", null);
+                                Desc desc = new Desc(de.getTextTrim(),
+                                        country,
+                                        XMLHelper.getAttr(de, "lang", null),
+                                        XMLHelper.getAttr(de, "variant", ""));
+                                field.getDescs().add(desc);
+                            }
                         }
-                    }*/
-                } else
-                {
-                 // Discarding old table.
-                    log.warn("Discarding Old Table ["+table.getName()+"]");
+                        
+                        /*
+                        for (DBTableIdMgr.TableRelationship rel : ti.getRelationships())
+                        {
+                            if (rel.getType() == DBTableIdMgr.RelationshipType.ManyToMany || rel.getType() == DBTableIdMgr.RelationshipType.ManyToOne)
+                            {
+                                table.getFields().add(new Field(rel.getName(), rel.getType().toString()));
+                            }
+                        }*/
+                    } else
+                    {
+                     // Discarding old table.
+                        log.warn("Discarding Old Table ["+table.getName()+"]");
+                    }
                 }
+            } else
+            {
+                /*XStream xstream = new XStream();
+                xstream.alias("table", Table.class);
+                xstream.alias("desc", Desc.class);
+                xstream.alias("field", Field.class);
+                xstream.alias("database", Database.class);
+                Database database = (Database)xstream.fromXML(new FileReader(file));
+                list = database.getTables();
+                */
             }
             
             // Add New Tables
@@ -198,7 +227,8 @@ public class FieldDescApp extends JFrame
         fieldsList = new JList(fieldsModel);
         
         tablesList.setVisibleRowCount(10);
-        tablesList.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+        tablesList.getSelectionModel().addListSelectionListener(new ListSelectionListener()
+        {
 
             /* (non-Javadoc)
              * @see javax.swing.event.ListSelectionListener#valueChanged(javax.swing.event.ListSelectionEvent)
@@ -208,6 +238,15 @@ public class FieldDescApp extends JFrame
                 if (!e.getValueIsAdjusting())
                 {
                     fillFieldList();
+                    Table tbl = (Table)tablesList.getSelectedValue();
+                    Desc desc = tbl.getDesc();
+                    if (desc == null)
+                    {
+                        desc = new Desc("", currLocale.getCountry(), currLocale.getLanguage(), currLocale.getVariant());
+                        tbl.setDesc(desc);
+                    }
+                    tblDescText.setText(desc.getText());
+                    prevTable = tbl;
                 }
             }
             
@@ -221,7 +260,7 @@ public class FieldDescApp extends JFrame
             {
                 if (!e.getValueIsAdjusting())
                 {
-                    System.out.println("selected");
+                    //System.out.println("selected");
                     fieldSelected();
                 }
             }
@@ -237,15 +276,32 @@ public class FieldDescApp extends JFrame
         descText.setRows(5);
         descText.setLineWrap(true);
         
-        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g", "p,4px,f:p:g,4px,p,4px,p"));
+        PanelBuilder pb = new PanelBuilder(new FormLayout("max(200px;p),4px,f:p:g", "t:p,4px,f:p:g,4px,p,4px,p"));
         CellConstraints cc = new CellConstraints();
         
-        pb.add(new JScrollPane(tablesList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER), cc.xy(1, 1));
+        JPanel topInner = new JPanel(new BorderLayout());
+        JScrollPane sp = new JScrollPane(tblDescText, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        topInner.add(new JLabel("Table Description"), BorderLayout.NORTH);
+        topInner.add(sp, BorderLayout.CENTER);
+        tblDescText.setRows(8);
+        tblDescText.setLineWrap(true);
+        tblDescText.setWrapStyleWord(true);
+        
+        sp = new JScrollPane(tablesList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        pb.add(sp, cc.xy(1, 1));
+        pb.add(topInner, cc.xy(3, 1));
+         
+        sp = new JScrollPane(fieldsList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         
         PanelBuilder inner = new PanelBuilder(new FormLayout("max(200px;p),4px,f:p:g", "p,2px,p,2px,p,2px,f:p:g"));
-        inner.add(new JScrollPane(fieldsList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER), cc.xywh(1, 1, 1, 7));
+        inner.add(sp, cc.xywh(1, 1, 1, 7));
         inner.add(fieldLabel, cc.xy(3, 1));
-        inner.add(descText,   cc.xy(3, 3));
+        
+        sp = new JScrollPane(descText, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        inner.add(sp,   cc.xy(3, 3));
+        descText.setLineWrap(true);
+        descText.setRows(8);
+        descText.setWrapStyleWord(true);
         
         nxtBtn = new JButton("Next");
         nxtEmptyBtn = new JButton("Next Empty");
@@ -253,13 +309,13 @@ public class FieldDescApp extends JFrame
         JPanel bbp = ButtonBarFactory.buildCenteredBar(new JButton[] {nxtEmptyBtn, nxtBtn});
         inner.add(bbp,   cc.xy(3, 5));
         
-        pb.add(inner.getPanel(), cc.xy(1, 3));
+        pb.add(inner.getPanel(), cc.xywh(1, 3, 3, 1));
         
         JButton saveBtn = new JButton("Save");
         JButton exitBtn = new JButton("Exit");
         
         bbp = ButtonBarFactory.buildCenteredBar(new JButton[] {exitBtn, saveBtn});
-        pb.add(bbp,   cc.xy(1, 7));
+        pb.add(bbp,   cc.xywh(1, 7, 3, 1));
 
         setContentPane(pb.getPanel());
         
@@ -290,6 +346,18 @@ public class FieldDescApp extends JFrame
             }
         });
         
+        tblDescText.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e)
+            {
+                //System.out.println("focuslost");
+                super.focusLost(e);
+                if (prevTable != null)
+                {
+                    prevTable.getDesc().setText(tblDescText.getText());
+                }
+            }
+        });
         descText.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e)
@@ -364,6 +432,9 @@ public class FieldDescApp extends JFrame
                 if (desc != null)
                 {
                     desc.setText(descText.getText());
+                } else
+                {
+                    log.error("No Description node!");
                 }
             }
         }
@@ -418,7 +489,7 @@ public class FieldDescApp extends JFrame
     
     protected void fieldSelected()
     {
-        System.out.println("fieldSelected: "+fieldsList.getSelectedIndex());
+        //System.out.println("fieldSelected: "+fieldsList.getSelectedIndex());
         Field fld  = (Field)fieldsList.getSelectedValue();
         if (fld != null)
         {
@@ -428,6 +499,7 @@ public class FieldDescApp extends JFrame
             } else
             {
                 desc = new Desc("", currLocale.getCountry(), currLocale.getLanguage(), currLocale.getVariant());
+                fld.getDescs().add(desc);
             }
             fieldLabel.setText(fld.getName());
             descText.setText(desc.getText());

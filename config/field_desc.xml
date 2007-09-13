@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
   <database>
     <table name="accession">
+      <desc country="US" lang="en">Tracks accessions and be be part of a Repository Agreement.</desc>
       <field name="dateAccessioned" type="java.util.Calendar">
         <desc country="US" lang="en">Date of Accession</desc>
       </field>
@@ -54,6 +55,7 @@
       </field>
     </table>
     <table name="accessionagent">
+      <desc country="US" lang="en">The person(s) requesting the Accession. This references an Agent.</desc>
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
       </field>
@@ -71,13 +73,17 @@
       </field>
     </table>
     <table name="accessionattachment">
-      <field name="lastEditedBy" type="java.lang.String"/>
+      <desc country="US" lang="en">An attachment for the Accession. This may be one or more PDF files of paperwork or a photo of the Accession.</desc>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
       <field name="ordinal" type="java.lang.Integer"/>
       <field name="remarks" type="text"/>
       <field name="timestampCreated" type="java.sql.Timestamp"/>
       <field name="timestampModified" type="java.sql.Timestamp"/>
     </table>
     <table name="accessionauthorization">
+      <desc country="US" lang="en">This represents the person authorizing the Accession. It references and existing Agent.</desc>
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
       </field>
@@ -92,6 +98,7 @@
       </field>
     </table>
     <table name="address">
+      <desc country="US" lang="en">The address of a Agent. This also captures a start and end date for the address and the position held while at the address.</desc>
       <field name="address" type="java.lang.String">
         <desc country="US" lang="en">Address as it should appear on mailing labels</desc>
       </field>
@@ -148,11 +155,12 @@
       </field>
     </table>
     <table name="agent">
+      <desc country="US" lang="en">This represents a Person, Organization, Group or Other. For example, an Agent can be a Cataloger, Determiner, Shipper, etc.</desc>
       <field name="abbreviation" type="java.lang.String">
         <desc country="US" lang="en">of organization</desc>
       </field>
       <field name="agentType" type="java.lang.Byte">
-        <desc country="US" lang="en">Discriminator between Organization(0), Person(1),Other(2), and Group(3)</desc>
+        <desc country="US" lang="en">Discriminator between Organization(0), Person(1), Other(2), and Group(3)</desc>
       </field>
       <field name="authorName" type="java.lang.String">
         <desc country="US" lang="en">The named used when authoring publications</desc>
@@ -213,13 +221,17 @@
       </field>
     </table>
     <table name="agentattachment">
-      <field name="lastEditedBy" type="java.lang.String"/>
+      <desc country="US" lang="en">An attachment for the Agent. This often contains an image.</desc>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
       <field name="ordinal" type="java.lang.Integer"/>
       <field name="remarks" type="text"/>
       <field name="timestampCreated" type="java.sql.Timestamp"/>
       <field name="timestampModified" type="java.sql.Timestamp"/>
     </table>
     <table name="agentvariant">
+      <desc country="US" lang="en">This is primarily used by Botanists for capturing Variant and Vernacular names. This table is searchable by does not have any specific business rules assiciated with it.</desc>
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
       </field>
@@ -237,6 +249,7 @@
       </field>
     </table>
     <table name="appresource">
+      <desc country="US" lang="en">Internal to Specify, this represents a resource, typically XML, that the application uses durng runtime.</desc>
       <field name="allPermissionLevel" type="java.lang.Integer">
         <desc country="US" lang="en"/>
       </field>
@@ -272,6 +285,7 @@
       </field>
     </table>
     <table name="appresourcedata">
+      <desc country="US" lang="en">The data associated with an application resource.</desc>
       <field name="data" type="text">
         <desc country="US" lang="en"/>
       </field>
@@ -286,6 +300,7 @@
       </field>
     </table>
     <table name="appresourcedefault">
+      <desc country="US" lang="en"/>
       <field name="disciplineType" type="java.lang.String">
         <desc country="US" lang="en"/>
       </field>
@@ -303,7 +318,10 @@
       </field>
     </table>
     <table name="attachment">
-      <field name="attachmentLocation" type="java.lang.String"/>
+      <desc country="US" lang="en">This represents the actual attachment. The attachment itself is not sotred in the database. The information in this record identifies everything the application will need to load and display the attachment. The attacjment location is an absolute path to the attachment file.</desc>
+      <field name="attachmentLocation" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
       <field name="fileCreatedDate" type="java.util.Calendar"/>
       <field name="lastEditedBy" type="java.lang.String"/>
       <field name="mimeType" type="java.lang.String"/>
@@ -315,11 +333,12 @@
       <field name="visibilitySetBy" type="java.lang.String"/>
     </table>
     <table name="attachmentmetadata">
+      <desc country="US" lang="en">This hold meta data about the attachment. It is a set of named value pairs.</desc>
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
       </field>
       <field name="name" type="java.lang.String">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">The name of the meta data field</desc>
       </field>
       <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
@@ -328,7 +347,7 @@
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="value" type="java.lang.String">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">The value of the meta data field.</desc>
       </field>
     </table>
     <table name="attributedef">
@@ -2331,6 +2350,18 @@
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
     </table>
+    <table name="localitynamealias">
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="name" type="java.lang.String">
+        <desc country="US" lang="en">The alias for the locality name.</desc>
+      </field>
+      <field name="timestampCreated" type="java.sql.Timestamp">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="timestampModified" type="java.sql.Timestamp"/>
+    </table>
     <table name="location">
       <field name="abbrev" type="java.lang.String">
         <desc country="US" lang="en"/>
@@ -2457,20 +2488,24 @@
       </field>
     </table>
     <table name="paleocontext">
+      <desc country="US" lang="en"/>
       <field name="direction" type="java.lang.String">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">The direction of the measurement of the distance: up or down.</desc>
       </field>
-      <field name="distance" type="java.lang.Float">
-        <desc country="US" lang="en"/>
+      <field name="topDistance" type="java.lang.Float">
+        <desc country="US" lang="en">The distance to the top of the position.</desc>
+      </field>
+      <field name="bottomDistance" type="java.lang.Float">
+        <desc country="US" lang="en">The distance to the bottom of the position.</desc>
       </field>
       <field name="distanceUnits" type="java.lang.String">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">The units for the distances, feet or meters</desc>
       </field>
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
       </field>
       <field name="positionState" type="java.lang.String">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">How it was found: float or in-situ</desc>
       </field>
       <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>

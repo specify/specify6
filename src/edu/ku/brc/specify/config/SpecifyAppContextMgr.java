@@ -336,7 +336,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     protected AppResourceDefault createAppResourceDefFromDir(final File dir)
     {
-        log.debug("Creating AppResourceDef from Dir");
+        log.debug("Creating AppResourceDef from Dir ["+dir.getAbsolutePath()+"]");
         AppResourceDefault appResDef = new AppResourceDefault();
         appResDef.initialize();
 

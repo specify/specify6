@@ -35,7 +35,6 @@
    
 <!-- Extract the string which comes after the first occurence -->
 <xsl:variable name="temp" select="substring-after($input,$substr)"/>
-   
 <xsl:choose>
      <!-- If it still contains the search string the recursively process -->
      <xsl:when test="$substr and contains($temp,$substr)">
@@ -140,6 +139,9 @@
      <xsl:with-param name="input" select="@classname"/>
      <xsl:with-param name="substr">.</xsl:with-param>
 </xsl:call-template>
+
+<xsl:apply-templates select="desc"/>
+
        </td></tr>
        
         <tr>
@@ -168,6 +170,15 @@
 
     </table><br/><br/>
 
+  </xsl:template>
+		
+  <xsl:template match="desc">
+  		<xsl:choose>
+          <xsl:when test=". != $empty_string">
+             <br/><div class="desc"><xsl:value-of select="."/></div>
+          </xsl:when>  
+          <xsl:otherwise></xsl:otherwise>
+        </xsl:choose>
   </xsl:template>
 
   <xsl:template match="field">

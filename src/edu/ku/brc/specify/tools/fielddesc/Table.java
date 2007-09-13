@@ -23,6 +23,7 @@ import java.util.Vector;
 public class Table implements Comparable<Table>
 {
     protected String      name;
+    protected Desc        desc;
     protected List<Field> fields = new Vector<Field>();
     
     public Table(final String name)
@@ -65,6 +66,22 @@ public class Table implements Comparable<Table>
     public String toString()
     {
         return name;
+    }
+
+    /**
+     * @return the desc
+     */
+    public Desc getDesc()
+    {
+        return desc;
+    }
+
+    /**
+     * @param desc the desc to set
+     */
+    public void setDesc(Desc desc)
+    {
+        this.desc = desc;
     }
 
     /* (non-Javadoc)

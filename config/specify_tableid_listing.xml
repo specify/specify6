@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last Used Id is 119 or 502
+    Last Used Id is 120 or 502
     
     PLEASE Keep this file in alphabetical order! 
 
@@ -164,6 +164,7 @@
             <businessrule>edu.ku.brc.specify.datamodel.busrules.BaseObjectAttachmentBusRules</businessrule>          
         </table>
         <table name="edu.ku.brc.specify.datamodel.LocalityCitation" id="57" query="true"/>
+        <table name="edu.ku.brc.specify.datamodel.LocalityNameAlias" id="120" query="true"/>
         <table name="edu.ku.brc.specify.datamodel.Location" id="58" query="true">
             <display objtitle="Location" view="Location" dataobjformatter="Location" searchdlg="LocationSearch" newobjdlg="LocationDisplay"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.LocationBusRules</businessrule>            

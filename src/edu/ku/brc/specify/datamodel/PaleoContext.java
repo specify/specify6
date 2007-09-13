@@ -49,7 +49,8 @@ import org.hibernate.annotations.CascadeType;
 public class PaleoContext extends DataModelObjBase
 {
     protected Integer paleoContextId;
-    protected Float   distance;
+    protected Float   topDistance;
+    protected Float   bottomDistance;
     protected String  distanceUnits; // "ft" or "m"
     protected String  direction;     // "up" or "down"
     protected String  positionState; // float or in-situ
@@ -97,7 +98,8 @@ public class PaleoContext extends DataModelObjBase
         super.init();
         
         paleoContextId = null;
-        distance       = null;
+        topDistance    = null;
+        bottomDistance = null;
         distanceUnits  = null;
         direction      = null;
         positionState  = null;
@@ -141,20 +143,37 @@ public class PaleoContext extends DataModelObjBase
     }
 
     /**
-     * @return the distance
+     * @return the topDistance
      */
-    @Column(name="Distance", unique=false, nullable=true, insertable=true, updatable=true)
-    public Float getDistance()
+    @Column(name="TopDistance", unique=false, nullable=true, insertable=true, updatable=true)
+    public Float getTopDistance()
     {
-        return distance;
+        return topDistance;
     }
 
     /**
-     * @param distance the distance to set
+     * @param topDistance the topDistance to set
      */
-    public void setDistance(Float distance)
+    public void setTopDistance(Float topDistance)
     {
-        this.distance = distance;
+        this.topDistance = topDistance;
+    }
+
+    /**
+     * @return the bottomDistance
+     */
+    @Column(name="BottomDistance", unique=false, nullable=true, insertable=true, updatable=true)
+    public Float getBottomDistance()
+    {
+        return bottomDistance;
+    }
+
+    /**
+     * @param bottomDistance the bottomDistance to set
+     */
+    public void setBottomDistance(Float bottomDistance)
+    {
+        this.bottomDistance = bottomDistance;
     }
 
     /**

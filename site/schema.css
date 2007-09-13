@@ -142,6 +142,7 @@ td.brdreven {
  td.hdbig    { text-align:center; font-weight: bold; font-size: 12pt;}
  td.subhead  { padding-top: 4px; background-color: white; text-align:center; font-style: italic;}
  span.footer { font-size: 9pt; font-style: italic;}
+ div.desc    { margin: 4px; font-size: 9pt; font-weight: normal; }
 
  table.banner     { border: none; }
  table.banner td  { border: none; }	

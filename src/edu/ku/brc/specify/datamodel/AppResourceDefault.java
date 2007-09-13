@@ -67,7 +67,7 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
      protected String           disciplineType;
      
      // Transient Data Member
-     protected Set<AppResource> appResources;
+     protected Set<AppResource> appResources = null;
      protected Set<ViewSetObj>  viewSets;
 
     // Constructors
@@ -98,7 +98,7 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
         userType              = null;
         disciplineType        = null;
         
-        appResources          = new HashSet<AppResource>();
+        appResources          = null;//new HashSet<AppResource>();
         viewSets              = new HashSet<ViewSetObj>();
 
     }

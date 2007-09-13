@@ -119,6 +119,7 @@
 		<mapping class="edu.ku.brc.specify.datamodel.LocalityCitation"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Locality"/>
 		<mapping class="edu.ku.brc.specify.datamodel.LocalityAttachment"/>
+		<mapping class="edu.ku.brc.specify.datamodel.LocalityNameAlias"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Location"/>
 		<mapping class="edu.ku.brc.specify.datamodel.LocationTreeDef"/>
 		<mapping class="edu.ku.brc.specify.datamodel.LocationTreeDefItem"/>

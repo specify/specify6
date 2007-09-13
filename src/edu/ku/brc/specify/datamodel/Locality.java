@@ -129,6 +129,7 @@ public class Locality extends DataModelObjBase implements java.io.Serializable, 
     protected Set<LocalityCitation> localityCitations;
     protected Set<CollectingEvent>  collectingEvents;
     protected Set<LocalityAttachment> localityAttachments;
+    protected Set<LocalityNameAlias> localityNameAliass;
 
 
     // Constructors
@@ -203,12 +204,12 @@ public class Locality extends DataModelObjBase implements java.io.Serializable, 
         noGeoRefBecause = null;
         geoRefRemarks = null;
         geoRefVerificationStatus = null; 
-
         
-        collectionTypes = new HashSet<CollectionType>();
-        geography = null;
-        localityCitations = new HashSet<LocalityCitation>();
-        collectingEvents = new HashSet<CollectingEvent>();
+        collectionTypes    = new HashSet<CollectionType>();
+        geography          = null;
+        localityCitations  = new HashSet<LocalityCitation>();
+        collectingEvents   = new HashSet<CollectingEvent>();
+        localityNameAliass = new HashSet<LocalityNameAlias>();
     }
     // End Initializer
 
@@ -220,7 +221,8 @@ public class Locality extends DataModelObjBase implements java.io.Serializable, 
     @Id
     @GeneratedValue
     @Column(name = "LocalityID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Integer getLocalityId() {
+    public Integer getLocalityId() 
+    {
         return this.localityId;
     }
 
@@ -983,6 +985,17 @@ public class Locality extends DataModelObjBase implements java.io.Serializable, 
     public void setLocalityAttachments(Set<LocalityAttachment> localityAttachments)
     {
         this.localityAttachments = localityAttachments;
+    }
+
+    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "locality")
+    public Set<LocalityNameAlias> getLocalityNameAliass()
+    {
+        return localityNameAliass;
+    }
+
+    public void setLocalityNameAliass(Set<LocalityNameAlias> localityNameAliass)
+    {
+        this.localityNameAliass = localityNameAliass;
     }
 
     /**

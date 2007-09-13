@@ -127,6 +127,38 @@ public class DatamodelGenerator
     }
     
     /**
+     * @param tableName
+     * @return
+     */
+    protected Desc getTableDesc(final String tableName)
+    {
+        edu.ku.brc.specify.tools.fielddesc.Table table = null;
+        for (edu.ku.brc.specify.tools.fielddesc.Table tbl : descTableList)
+        {
+            if (tbl.getName().equals(tableName))
+            {
+                table = tbl;
+                break;
+            }
+        }
+        
+        if (table != null)
+        {
+            edu.ku.brc.specify.tools.fielddesc.Desc d = table.getDesc();
+            if (d != null)
+            {
+                Desc desc = new Desc(d.getText(), d.getCountry(), d.getLang(), d.getVariant());
+                return desc;
+            }
+            
+        } else
+        {
+            log.warn("Couldn't find table ["+tableName+"]");
+        }
+        return null;
+    }
+    
+    /**
      * Looks for a child node "display" and creates the appropriate object or returns null.
      * @param element the "table".
      * @return null or a Display object
@@ -583,6 +615,7 @@ public class DatamodelGenerator
                 }
                 
                 table = createTable(packageName + "." + className, tableName);
+                table.setDesc(getTableDesc(tableName));
                 table.setIndexes(indexes);
                 tableList.add(table);
             }

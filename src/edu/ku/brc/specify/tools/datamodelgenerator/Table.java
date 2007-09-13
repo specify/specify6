@@ -26,6 +26,7 @@ public class Table implements Comparable<Table>
 	private List<Id>                 ids           = new ArrayList<Id>();
 	private List<Relationship>       relationships = new ArrayList<Relationship>();
     private Display                  display;
+    private Desc                     desc;
     
     // Transient
     private Vector<TableIndex>       indexes = new Vector<TableIndex>();
@@ -231,6 +232,22 @@ public class Table implements Comparable<Table>
         this.indexes = indexes;
     }
     
+    /**
+     * @return the desc
+     */
+    public Desc getDesc()
+    {
+        return desc;
+    }
+
+    /**
+     * @param desc the desc to set
+     */
+    public void setDesc(Desc desc)
+    {
+        this.desc = desc;
+    }
+
     public void updateIndexFields()
     {
         Collections.sort(fields);
