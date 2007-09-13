@@ -335,14 +335,10 @@ public class IconViewObj implements Viewable
                 parentDataObj.removeReference(selection, IconViewObj.this.cellName);
                 if (mvParent != null)
                 {
-                    mvParent.addDeletedItem(selection);
-                    MultiView root = mvParent;
-                    while (root.getMultiViewParent() != null)
-                    {
-                        root = root.getMultiViewParent();
-                    }
+                    MultiView topLvl = mvParent.getTopLevel();
+                    topLvl.addDeletedItem(selection);
                     validator.setHasChanged(true);
-                    root.dataChanged(null, null, null);
+                    topLvl.dataChanged(null, null, null);
                 }
             }
         });

@@ -140,14 +140,15 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#deleteOnSaveOrUpdate(java.lang.Object)
      */
-    public Object merge(Object dataObj) throws StaleObjectException
+    @SuppressWarnings("unchecked")
+    public <T> T merge(T dataObj) throws StaleObjectException
     {
         if (session != null)
         {
-            Object mergedObj = null;
+            T mergedObj = null;
             try
             {
-                mergedObj = session.merge(dataObj);
+                mergedObj = (T)session.merge(dataObj);
             }
             catch (StaleStateException sse)
             {

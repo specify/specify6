@@ -334,7 +334,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
      */
     public void removeReference(FormDataObjIFace ref, String fieldName)
     {
-        DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(ref.getTableId());
+        DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(getTableId());
         if (tblInfo != null)
         {
             DBTableIdMgr.TableRelationship rel = tblInfo.getRelationshipByName(fieldName);
@@ -366,14 +366,16 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
                     if (isACollection)
                     {
                         removeFromCollection(this, fieldName, ref);
-                        DataObjectSettable setter = DataObjectSettableFactory.get(ref.getClass().getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
-                        setter.setFieldValue(ref, otherSide, null);
+//                        DataObjectSettable setter = DataObjectSettableFactory.get(ref.getClass().getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
+//                        setter.setFieldValue(ref, otherSide, null);
         
                     } else
                     {
                         DataObjectSettable setter = DataObjectSettableFactory.get(ref.getClass().getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
                         setter.setFieldValue(this, fieldName, null);
-                        removeFromCollection(ref, otherSide, this);
+                        // in this case, most likely, the Collection isn't even loaded since the parent object probably isn't visible in a form
+                        // calling removeFromCollection() would trigger a LazyInstantiationException
+//                        removeFromCollection(ref, otherSide, this);
                     }
                 }
             }
