@@ -19,6 +19,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
 import edu.ku.brc.util.Orderable;
 
 /**
@@ -56,7 +59,8 @@ public class ConservDescriptionAttachment extends DataModelObjBase implements Ob
         super.init();
         conservDescriptionAttachmentId = null;
         conservDescription             = null;
-        attachment         = null;
+        attachment         = new Attachment();
+        attachment.initialize();
         ordinal            = null;
     }
 
@@ -85,7 +89,8 @@ public class ConservDescriptionAttachment extends DataModelObjBase implements Ob
         this.conservDescription = conservDescription;
     }
 
-    @ManyToOne
+    @ManyToOne()
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     @JoinColumn(name = "AttachmentID", nullable = false)
     public Attachment getAttachment()
     {
@@ -176,5 +181,13 @@ public class ConservDescriptionAttachment extends DataModelObjBase implements Ob
     public void setObject(ConservDescription object)
     {
         setConservDescription(object);
+    }
+    
+    @Override
+    public String toString()
+    {
+        String aString = (attachment != null) ? attachment.getIdentityTitle() : "NULL Attachment";
+        String oString = (getObject() != null) ? getObject().getIdentityTitle() : "NULL Object Reference";
+        return aString + " : " + oString;
     }
 }
