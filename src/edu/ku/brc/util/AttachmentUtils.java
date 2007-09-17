@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.net.URI;
 
 import javax.activation.FileTypeMap;
+import javax.activation.MimetypesFileTypeMap;
 
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.ObjectAttachmentIFace;
@@ -95,7 +96,11 @@ public class AttachmentUtils
             return null;
         }
         
-        return FileTypeMap.getDefaultFileTypeMap().getContentType(filename);
+        MimetypesFileTypeMap mimeMap = (MimetypesFileTypeMap)FileTypeMap.getDefaultFileTypeMap();
+        mimeMap.addMimeTypes("image/png    png");
+        mimeMap.addMimeTypes("application/vnd.google-earth.kml+xml kml");
+
+        return mimeMap.getContentType(filename);
     }
     
     public static void main(String[] args)

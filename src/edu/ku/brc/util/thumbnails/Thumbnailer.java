@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
+import javax.activation.FileTypeMap;
 import javax.activation.MimetypesFileTypeMap;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -116,7 +117,9 @@ public class Thumbnailer
 	public void generateThumbnail(String originalFile, String outputFile) throws IOException
 	{
         // get the system MIME type mapper
-        MimetypesFileTypeMap mimeMap = new MimetypesFileTypeMap();
+        MimetypesFileTypeMap mimeMap = (MimetypesFileTypeMap)FileTypeMap.getDefaultFileTypeMap();
+        mimeMap.addMimeTypes("image/png    png");
+        mimeMap.addMimeTypes("application/vnd.google-earth.kml+xml kml");
         
         // get the MIME type of the given original file
 		String mimeType = mimeMap.getContentType(originalFile);
