@@ -65,7 +65,7 @@ import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 @org.hibernate.annotations.Table(appliesTo="preparation", indexes =
     {   @Index (name="PreparedDateIDX", columnNames={"preparedDate"})
     })
-public class Preparation extends DataModelObjBase implements AttributeProviderIFace, java.io.Serializable, Comparable<Preparation>
+public class Preparation extends DataModelObjBase implements AttachmentOwnerIFace<PreparationAttachment>, AttributeProviderIFace, java.io.Serializable, Comparable<Preparation>
 {
 
     // Fields    
@@ -441,6 +441,11 @@ public class Preparation extends DataModelObjBase implements AttributeProviderIF
         return DataObjFieldFormatMgr.format(this, getClass());
     }
     
+    @Transient
+    public Set<PreparationAttachment> getAttachmentReferences()
+    {
+        return preparationAttachments;
+    }
 
     //----------------------------------------------------------------------
     //-- Comparable Interface
@@ -458,5 +463,6 @@ public class Preparation extends DataModelObjBase implements AttributeProviderIF
         // else
         return timestampCreated.compareTo(obj.timestampCreated);
     }
+
 
 }

@@ -68,7 +68,7 @@ import edu.ku.brc.dbsupport.DBConnection;
         @Index (name="LoanDateIDX", columnNames={"LoanDate"}),
         @Index (name="CurrentDueDateIDX", columnNames={"CurrentDueDate"})
     })
-public class Loan extends DataModelObjBase implements java.io.Serializable {
+public class Loan extends DataModelObjBase implements AttachmentOwnerIFace<LoanAttachment>, java.io.Serializable {
 
     // options for the 'category' field
     public static final Boolean LOAN = false;
@@ -507,6 +507,12 @@ public class Loan extends DataModelObjBase implements java.io.Serializable {
     public String getIdentityTitle()
     {
         return loanNumber != null ? loanNumber : super.getIdentityTitle();
+    }
+
+    @Transient
+    public Set<LoanAttachment> getAttachmentReferences()
+    {
+        return loanAttachments;
     }
 
 }

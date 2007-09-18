@@ -44,7 +44,7 @@ import edu.ku.brc.ui.forms.Viewable;
  * @author rods
  *
  */
-public class LoanBusRules extends BaseBusRules
+public class LoanBusRules extends AttachmentOwnerBaseBusRules
 {  
     /**
      * Constructor.

@@ -24,12 +24,23 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
  */
 public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTreeDefItem>
 {
+    AttachmentOwnerBaseBusRules attachRules;
+    
     /**
      * Constructor.
      */
     public TaxonBusRules()
     {
         super(Taxon.class,TaxonTreeDefItem.class);
+        
+        attachRules = new AttachmentOwnerBaseBusRules()
+        {
+            @Override
+            public boolean okToDelete(Object dataObj)
+            {
+                return false;
+            }
+        };
     }
     
     /* (non-Javadoc)
@@ -148,6 +159,9 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
     @Override
     public void beforeSave(Object dataObj, DataProviderSessionIFace session)
     {
+        // make sure to handle all of the attachment stuff
+        attachRules.beforeSave(dataObj, session);
+        
         super.beforeSave(dataObj, session);
         
         if (dataObj instanceof Taxon)
@@ -184,5 +198,23 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
             taxon.setHybridParent1(null);
             taxon.setHybridParent2(null);
         }
+    }
+
+    @Override
+    public void beforeDeleteCommit(Object dataObj, DataProviderSessionIFace session)
+    {
+        // make sure to handle all of the attachment stuff
+        attachRules.beforeDeleteCommit(dataObj, session);
+        
+        super.beforeDeleteCommit(dataObj, session);
+    }
+
+    @Override
+    public void beforeSaveCommit(Object dataObj, DataProviderSessionIFace session)
+    {
+        // make sure to handle all of the attachment stuff
+        attachRules.beforeSaveCommit(dataObj, session);
+        
+        super.beforeSaveCommit(dataObj, session);
     }
 }

@@ -61,7 +61,7 @@ import org.hibernate.annotations.Index;
     {   @Index (name="RefWrkNumberIDX", columnNames={"number"}),
         @Index (name="RefWrkStartDate", columnNames={"StartDate"})
     })
-public class RepositoryAgreement extends DataModelObjBase implements java.io.Serializable 
+public class RepositoryAgreement extends DataModelObjBase implements AttachmentOwnerIFace<RepositoryAgreementAttachment>, java.io.Serializable 
 {
 
     // Fields
@@ -405,6 +405,12 @@ public class RepositoryAgreement extends DataModelObjBase implements java.io.Ser
     public static int getClassTableId()
     {
         return 70;
+    }
+
+    @Transient
+    public Set<RepositoryAgreementAttachment> getAttachmentReferences()
+    {
+        return repositoryAgreementAttachments;
     }
 
 }

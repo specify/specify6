@@ -53,7 +53,7 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Table(appliesTo="conservdescription", indexes =
     {   @Index (name="ConservDescShortDescIDX", columnNames={"ShortDesc"})
     })
-public class ConservDescription extends DataModelObjBase implements java.io.Serializable
+public class ConservDescription extends DataModelObjBase implements AttachmentOwnerIFace<ConservDescriptionAttachment>, java.io.Serializable
 {
     // Fields    
     protected Integer          conservDescriptionId;
@@ -420,6 +420,12 @@ public class ConservDescription extends DataModelObjBase implements java.io.Seri
     public static int getClassTableId()
     {
         return 103;
+    }
+
+    @Transient
+    public Set<ConservDescriptionAttachment> getAttachmentReferences()
+    {
+        return conservDescriptionAttachments;
     }
 
 }

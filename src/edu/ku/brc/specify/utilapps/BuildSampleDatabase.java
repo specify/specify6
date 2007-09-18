@@ -153,6 +153,7 @@ import edu.ku.brc.specify.datamodel.Permit;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.ReferenceWork;
+import edu.ku.brc.specify.datamodel.RepositoryAgreement;
 import edu.ku.brc.specify.datamodel.Shipment;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Taxon;
@@ -673,7 +674,7 @@ public class BuildSampleDatabase
         agents.get(1).setOrganization(ku);
         agents.get(2).setOrganization(ku);
         agents.get(3).setOrganization(ku);
-
+        
         List<Address> addrs = new Vector<Address>();
         // Josh
         addrs.add(createAddress(agents.get(0), "11911 S Redbud Ln", null, "Olathe", "KS", "USA", "66061"));
@@ -765,6 +766,19 @@ public class BuildSampleDatabase
         permit.setIssuedTo(ku);
         permit.setIssuedBy(agents.get(4));
         dataObjects.add(permit);
+        
+        log.info("Creating a repository agreement");
+        RepositoryAgreement repoAg = new RepositoryAgreement();
+        repoAg.initialize();
+        repoAg.setNumber("KU-1992-01");
+        repoAg.setOriginator(ku);
+        Calendar received = Calendar.getInstance();
+        received.set(1992, 2, 10);
+        repoAg.setDateReceived(received);
+        Calendar repoEndDate = Calendar.getInstance();
+        received.set(2010, 2, 9);
+        repoAg.setEndDate(repoEndDate);
+        dataObjects.add(repoAg);
         
         //startTx();
         persist(dataObjects);
@@ -936,6 +950,7 @@ public class BuildSampleDatabase
         calendar.set(2006, 10, 27, 23, 59, 59);
         Accession acc1 = createAccession("Gift", "Complete", "2006-IC-001", DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
         acc1.setText1("Ichthyology");
+        acc1.setRepositoryAgreement(repoAg);
         
         Agent donor =    agents.get(4);
         Agent receiver = agents.get(1);
@@ -1363,6 +1378,8 @@ public class BuildSampleDatabase
                             agentAttach.setOrderIndex(0);
                             dataObjects.add(photoAttachment);
                             dataObjects.add(agentAttach);
+                            AttachmentUtils.getAttachmentManager().setStorageLocationIntoAttachment(photoAttachment);
+                            photoAttachment.storeFile();
                         }
                     }
                 }

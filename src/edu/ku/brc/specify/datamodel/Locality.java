@@ -63,7 +63,7 @@ import edu.ku.brc.services.mapping.LocalityMapper.MapLocationIFace;
 @org.hibernate.annotations.Table(appliesTo="locality", indexes =
     {   @Index (name="localityNameIDX", columnNames={"LocalityName"})
     })
-public class Locality extends DataModelObjBase implements java.io.Serializable, MapLocationIFace {
+public class Locality extends DataModelObjBase implements AttachmentOwnerIFace<LocalityAttachment>, java.io.Serializable, MapLocationIFace {
 
     // Fields    
 
@@ -1112,6 +1112,12 @@ public class Locality extends DataModelObjBase implements java.io.Serializable, 
     public Double getLong2()
     {
         return (longitude2 != null) ? longitude2.doubleValue() : null;
+    }
+
+    @Transient
+    public Set<LocalityAttachment> getAttachmentReferences()
+    {
+        return localityAttachments;
     }
 
 }

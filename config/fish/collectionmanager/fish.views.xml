@@ -89,16 +89,6 @@
             </altviews>
         </view>
 
-        <view name="AgentAttachmentsIconView"
-              class="edu.ku.brc.specify.datamodel.AgentAttachment"
-              resourcelabels="false">
-            <desc><![CDATA[The AgentAttachments Icon View.]]></desc>
-            <altviews>
-                <altview name="AgentAttachments Icon View" viewdef="AgentAttachmentsIconView" label="IconView" mode="view" default="true"/>                
-                <altview name="AgentAttachments Icon Edit" viewdef="AgentAttachmentsIconView" label="IconEdit" mode="edit"/>                
-            </altviews>
-        </view>
-
        <view name="CollectingEvent"
             class="edu.ku.brc.specify.datamodel.CollectingEvent"
             resourcelabels="false">
@@ -288,6 +278,176 @@
                 <altview name="Shipment Edit" viewdef="Shipment" label="Edit" mode="edit" default="true"/>
             </altviews>
         </view>
+
+        <view name="AccessionAttachment"
+              class="edu.ku.brc.specify.datamodel.AccessionAttachment"
+              resourcelabels="false">
+            <desc><![CDATA[The AccessionAttachment Icon View.]]></desc>
+            <altviews>
+                <altview name="AccessionAttachment Icon View"  viewdef="AccessionAttachment IconView" label="Icon View"  mode="view"/>                
+                <altview name="AccessionAttachment Icon Edit"  viewdef="AccessionAttachment IconView" label="Icon Edit"  mode="edit"/>                
+                <altview name="AccessionAttachment Table View" viewdef="AccessionAttachment Table"    label="Table View" mode="view" />                
+                <altview name="AccessionAttachment Table Edit" viewdef="AccessionAttachment Table"    label="Table Edit" mode="edit"/>                
+                <altview name="AccessionAttachment Form View"  viewdef="AccessionAttachment Form"     label="Form View"  mode="view" default="true"/>                
+                <altview name="AccessionAttachment Form Edit"  viewdef="AccessionAttachment Form"     label="Form Edit"  mode="edit"/>                
+            </altviews>
+        </view>
+
+        <view name="AgentAttachment"
+              class="edu.ku.brc.specify.datamodel.AgentAttachment"
+              resourcelabels="false">
+            <desc><![CDATA[The AgentAttachments Icon View.]]></desc>
+            <altviews>
+                <altview name="AgentAttachments Icon View"  viewdef="AgentAttachment IconView" label="Icon View"  mode="view"/>                
+                <altview name="AgentAttachments Icon Edit"  viewdef="AgentAttachment IconView" label="Icon Edit"  mode="edit"/>                
+                <altview name="AgentAttachments Table View" viewdef="AgentAttachment Table"    label="Table View" mode="view" />                
+                <altview name="AgentAttachments Table Edit" viewdef="AgentAttachment Table"    label="Table Edit" mode="edit"/>                
+                <altview name="AgentAttachments Form View"  viewdef="AgentAttachment Form"     label="Form View"  mode="view" default="true"/>                
+                <altview name="AgentAttachments Form Edit"  viewdef="AgentAttachment Form"     label="Form Edit"  mode="edit"/>                
+            </altviews>
+        </view>
+
+        <view name="CollectingEventAttachment"
+              class="edu.ku.brc.specify.datamodel.CollectingEventAttachment"
+              resourcelabels="false">
+            <desc><![CDATA[The CollectingEventAttachment Icon View.]]></desc>
+            <altviews>
+                <altview name="CollectingEventAttachment Icon View"  viewdef="CollectingEventAttachment IconView" label="Icon View"  mode="view"/>                
+                <altview name="CollectingEventAttachment Icon Edit"  viewdef="CollectingEventAttachment IconView" label="Icon Edit"  mode="edit"/>                
+                <altview name="CollectingEventAttachment Table View" viewdef="CollectingEventAttachment Table"    label="Table View" mode="view" />                
+                <altview name="CollectingEventAttachment Table Edit" viewdef="CollectingEventAttachment Table"    label="Table Edit" mode="edit"/>                
+                <altview name="CollectingEventAttachment Form View"  viewdef="CollectingEventAttachment Form"     label="Form View"  mode="view" default="true"/>                
+                <altview name="CollectingEventAttachment Form Edit"  viewdef="CollectingEventAttachment Form"     label="Form Edit"  mode="edit"/>                
+            </altviews>
+        </view>
+
+        <view name="CollectionObjectAttachment"
+              class="edu.ku.brc.specify.datamodel.CollectionObjectAttachment"
+              resourcelabels="false">
+            <desc><![CDATA[The CollectionObjectAttachment Icon View.]]></desc>
+            <altviews>
+                <altview name="CollectionObjectAttachment Icon View"  viewdef="CollectionObjectAttachment IconView" label="Icon View"  mode="view"/>                
+                <altview name="CollectionObjectAttachment Icon Edit"  viewdef="CollectionObjectAttachment IconView" label="Icon Edit"  mode="edit"/>                
+                <altview name="CollectionObjectAttachment Table View" viewdef="CollectionObjectAttachment Table"    label="Table View" mode="view" />                
+                <altview name="CollectionObjectAttachment Table Edit" viewdef="CollectionObjectAttachment Table"    label="Table Edit" mode="edit"/>                
+                <altview name="CollectionObjectAttachment Form View"  viewdef="CollectionObjectAttachment Form"     label="Form View"  mode="view" default="true"/>                
+                <altview name="CollectionObjectAttachment Form Edit"  viewdef="CollectionObjectAttachment Form"     label="Form Edit"  mode="edit"/>                
+            </altviews>
+        </view>
+
+        <view name="ConservDescriptionAttachment"
+              class="edu.ku.brc.specify.datamodel.ConservDescriptionAttachment"
+              resourcelabels="false">
+            <desc><![CDATA[The ConservDescriptionAttachment Icon View.]]></desc>
+            <altviews>
+                <altview name="ConservDescriptionAttachment Icon View"  viewdef="ConservDescriptionAttachment IconView" label="Icon View"  mode="view"/>                
+                <altview name="ConservDescriptionAttachment Icon Edit"  viewdef="ConservDescriptionAttachment IconView" label="Icon Edit"  mode="edit"/>                
+                <altview name="ConservDescriptionAttachment Table View" viewdef="ConservDescriptionAttachment Table"    label="Table View" mode="view" />                
+                <altview name="ConservDescriptionAttachment Table Edit" viewdef="ConservDescriptionAttachment Table"    label="Table Edit" mode="edit"/>                
+                <altview name="ConservDescriptionAttachment Form View"  viewdef="ConservDescriptionAttachment Form"     label="Form View"  mode="view" default="true"/>                
+                <altview name="ConservDescriptionAttachment Form Edit"  viewdef="ConservDescriptionAttachment Form"     label="Form Edit"  mode="edit"/>                
+            </altviews>
+        </view>
+
+        <view name="ConservEventAttachment"
+              class="edu.ku.brc.specify.datamodel.ConservEventAttachment"
+              resourcelabels="false">
+            <desc><![CDATA[The ConservEventAttachment Icon View.]]></desc>
+            <altviews>
+                <altview name="ConservEventAttachment Icon View"  viewdef="ConservEventAttachment IconView" label="Icon View"  mode="view"/>                
+                <altview name="ConservEventAttachment Icon Edit"  viewdef="ConservEventAttachment IconView" label="Icon Edit"  mode="edit"/>                
+                <altview name="ConservEventAttachment Table View" viewdef="ConservEventAttachment Table"    label="Table View" mode="view" />                
+                <altview name="ConservEventAttachment Table Edit" viewdef="ConservEventAttachment Table"    label="Table Edit" mode="edit"/>                
+                <altview name="ConservEventAttachment Form View"  viewdef="ConservEventAttachment Form"     label="Form View"  mode="view" default="true"/>                
+                <altview name="ConservEventAttachment Form Edit"  viewdef="ConservEventAttachment Form"     label="Form Edit"  mode="edit"/>                
+            </altviews>
+        </view>
+
+        <view name="LoanAttachment"
+              class="edu.ku.brc.specify.datamodel.LoanAttachment"
+              resourcelabels="false">
+            <desc><![CDATA[The LoanAttachment Icon View.]]></desc>
+            <altviews>
+                <altview name="LoanAttachment Icon View"  viewdef="LoanAttachment IconView" label="Icon View"  mode="view"/>                
+                <altview name="LoanAttachment Icon Edit"  viewdef="LoanAttachment IconView" label="Icon Edit"  mode="edit"/>                
+                <altview name="LoanAttachment Table View" viewdef="LoanAttachment Table"    label="Table View" mode="view" />                
+                <altview name="LoanAttachment Table Edit" viewdef="LoanAttachment Table"    label="Table Edit" mode="edit"/>                
+                <altview name="LoanAttachment Form View"  viewdef="LoanAttachment Form"     label="Form View"  mode="view" default="true"/>                
+                <altview name="LoanAttachment Form Edit"  viewdef="LoanAttachment Form"     label="Form Edit"  mode="edit"/>                
+            </altviews>
+        </view>
+        
+        <view name="LocalityAttachment"
+              class="edu.ku.brc.specify.datamodel.LocalityAttachment"
+              resourcelabels="false">
+            <desc><![CDATA[The LocalityAttachment Icon View.]]></desc>
+            <altviews>
+                <altview name="LocalityAttachment Icon View"  viewdef="LocalityAttachment IconView" label="Icon View"  mode="view"/>                
+                <altview name="LocalityAttachment Icon Edit"  viewdef="LocalityAttachment IconView" label="Icon Edit"  mode="edit"/>                
+                <altview name="LocalityAttachment Table View" viewdef="LocalityAttachment Table"    label="Table View" mode="view" />                
+                <altview name="LocalityAttachment Table Edit" viewdef="LocalityAttachment Table"    label="Table Edit" mode="edit"/>                
+                <altview name="LocalityAttachment Form View"  viewdef="LocalityAttachment Form"     label="Form View"  mode="view" default="true"/>                
+                <altview name="LocalityAttachment Form Edit"  viewdef="LocalityAttachment Form"     label="Form Edit"  mode="edit"/>                
+            </altviews>
+        </view>
+
+        <view name="PermitAttachment"
+              class="edu.ku.brc.specify.datamodel.PermitAttachment"
+              resourcelabels="false">
+            <desc><![CDATA[The PermitAttachment Icon View.]]></desc>
+            <altviews>
+                <altview name="PermitAttachment Icon View"  viewdef="PermitAttachment IconView" label="Icon View"  mode="view"/>                
+                <altview name="PermitAttachment Icon Edit"  viewdef="PermitAttachment IconView" label="Icon Edit"  mode="edit"/>                
+                <altview name="PermitAttachment Table View" viewdef="PermitAttachment Table"    label="Table View" mode="view" />                
+                <altview name="PermitAttachment Table Edit" viewdef="PermitAttachment Table"    label="Table Edit" mode="edit"/>                
+                <altview name="PermitAttachment Form View"  viewdef="PermitAttachment Form"     label="Form View"  mode="view" default="true"/>                
+                <altview name="PermitAttachment Form Edit"  viewdef="PermitAttachment Form"     label="Form Edit"  mode="edit"/>                
+            </altviews>
+        </view>
+
+        <view name="PreparationAttachment"
+              class="edu.ku.brc.specify.datamodel.PreparationAttachment"
+              resourcelabels="false">
+            <desc><![CDATA[The PreparationAttachment Icon View.]]></desc>
+            <altviews>
+                <altview name="PreparationAttachment Icon View"  viewdef="PreparationAttachment IconView" label="Icon View"  mode="view"/>                
+                <altview name="PreparationAttachment Icon Edit"  viewdef="PreparationAttachment IconView" label="Icon Edit"  mode="edit"/>                
+                <altview name="PreparationAttachment Table View" viewdef="PreparationAttachment Table"    label="Table View" mode="view" />                
+                <altview name="PreparationAttachment Table Edit" viewdef="PreparationAttachment Table"    label="Table Edit" mode="edit"/>                
+                <altview name="PreparationAttachment Form View"  viewdef="PreparationAttachment Form"     label="Form View"  mode="view" default="true"/>                
+                <altview name="PreparationAttachment Form Edit"  viewdef="PreparationAttachment Form"     label="Form Edit"  mode="edit"/>                
+            </altviews>
+        </view>
+
+        <view name="RepositoryAgreementAttachment"
+              class="edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment"
+              resourcelabels="false">
+            <desc><![CDATA[The RepositoryAgreementAttachment Icon View.]]></desc>
+            <altviews>
+                <altview name="RepositoryAgreementAttachment Icon View"  viewdef="RepositoryAgreementAttachment IconView" label="Icon View"  mode="view"/>                
+                <altview name="RepositoryAgreementAttachment Icon Edit"  viewdef="RepositoryAgreementAttachment IconView" label="Icon Edit"  mode="edit"/>                
+                <altview name="RepositoryAgreementAttachment Table View" viewdef="RepositoryAgreementAttachment Table"    label="Table View" mode="view" />                
+                <altview name="RepositoryAgreementAttachment Table Edit" viewdef="RepositoryAgreementAttachment Table"    label="Table Edit" mode="edit"/>                
+                <altview name="RepositoryAgreementAttachment Form View"  viewdef="RepositoryAgreementAttachment Form"     label="Form View"  mode="view" default="true"/>                
+                <altview name="RepositoryAgreementAttachment Form Edit"  viewdef="RepositoryAgreementAttachment Form"     label="Form Edit"  mode="edit"/>                
+            </altviews>
+        </view>
+
+        <view name="TaxonAttachment"
+              class="edu.ku.brc.specify.datamodel.TaxonAttachment"
+              resourcelabels="false">
+            <desc><![CDATA[The TaxonAttachment Icon View.]]></desc>
+            <altviews>
+                <altview name="TaxonAttachment Icon View"  viewdef="TaxonAttachment IconView" label="Icon View"  mode="view"/>                
+                <altview name="TaxonAttachment Icon Edit"  viewdef="TaxonAttachment IconView" label="Icon Edit"  mode="edit"/>                
+                <altview name="TaxonAttachment Table View" viewdef="TaxonAttachment Table"    label="Table View" mode="view" />                
+                <altview name="TaxonAttachment Table Edit" viewdef="TaxonAttachment Table"    label="Table Edit" mode="edit"/>                
+                <altview name="TaxonAttachment Form View"  viewdef="TaxonAttachment Form"     label="Form View"  mode="view" default="true"/>                
+                <altview name="TaxonAttachment Form Edit"  viewdef="TaxonAttachment Form"     label="Form Edit"  mode="edit"/>                
+            </altviews>
+        </view>
+
+
         
     </views>
 
@@ -334,6 +494,10 @@
 
                     <cell type="label" labelfor="2" label="Status"/>
                     <cell type="field" id="2" name="status"  uitype="combobox" picklist="AccessionStatus" isrequired="true" valtype="Changed"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="attachments" label="Attachments"/>
+                    <cell type="subview" id="attachments" viewname="AccessionAttachment" name="accessionAttachments" colspan="10"/>
                 </row>
 
             </rows>
@@ -509,7 +673,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="attachments" label="Attachments"/>
-                    <cell type="subview" id="attachments" viewname="AgentAttachmentsIconView" name="agentAttachments" colspan="5"/>
+                    <cell type="subview" id="attachments" viewname="AgentAttachment" name="agentAttachments" colspan="5"/>
                 </row>
                 
             </rows>
@@ -601,15 +765,6 @@
         </viewdef>
 
         <viewdef
-            type="iconview"
-            name="AgentAttachmentsIconView"
-            class="edu.ku.brc.specify.datamodel.AgentAttachment"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
-            <desc><![CDATA[The AgentAttachments Icon Viewer]]></desc>
-        </viewdef>
-
-        <viewdef
             type="form"
             name="CollectingEvent"
             class="edu.ku.brc.specify.datamodel.CollectingEvent"
@@ -645,8 +800,8 @@
                     <cell type="subview" viewname="Collectors" id="8" name="collectors" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="7" label="Attachments"/>
-                    <cell type="subview" viewname="AttachmentForm" id="7" name="collectingEventAttachments" colspan="10"/>
+                    <cell type="label" labelfor="attachments" label="Attachments"/>
+                    <cell type="subview" id="attachments" viewname="CollectingEventAttachment" name="collectingEventAttachments" colspan="10"/>
                 </row>
                 <!--
                 <row>
@@ -768,6 +923,11 @@
     			<row>
     			    <cell type="subview" viewname="Preparation" id="8" name="preparations" defaulttype="table" colspan="12"/>
     			</row>
+
+                <row>
+                    <cell type="label" labelfor="attachments" label="Attachments"/>
+                    <cell type="subview" id="attachments" viewname="CollectionObjectAttachment" name="collectionObjectAttachments" colspan="10"/>
+                </row>
 
     			<row>
     				<cell type="separator" label="" colspan="12"/>
@@ -1018,12 +1178,10 @@
                 <row>
                      <cell type="subview" viewname="LoanItems" id="10" name="loanPhysicalObjects" colspan="12"/>
                 </row>
-                <!--
                 <row>
-                    <cell type="label" labelfor="9" label="Attachments"/>
-                    <cell type="subview" viewname="AttachmentsIconView" id="9" name="attachments" colspan="10"/>
+                    <cell type="label" labelfor="attachments" label="Attachments"/>
+                    <cell type="subview" id="attachments" viewname="LoanAttachment" name="loanAttachments" colspan="12"/>
                 </row>
-                -->
                 <row>
                     <cell type="panel" id="16" name="outerPanel" coldef="p,5px,p" rowdef="p" colspan="12">
                         <rows>
@@ -1155,6 +1313,10 @@
                     <cell type="field" id="7" name="maxElevation" uitype="text" cols="20"/>
                     <cell type="label" labelfor="8" label="Method"/>
                     <cell type="field" id="8" name="elevationMethod" uitype="text" cols="1"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="attachments" label="Attachments"/>
+                    <cell type="subview" id="attachments" viewname="LoanAttachment" name="loanAttachments" colspan="10"/>
                 </row>
             </rows>
         </viewdef>
@@ -1320,12 +1482,10 @@
                     <cell type="label" labelfor="9" label="Remarks"/>
                     <cell type="field" id="9" name="remarks" uitype="textarea" colspan="10" valtype="Changed"/>
                 </row>
-                <!--
                 <row>
                     <cell type="label" labelfor="10" label="Attachments"/>
-                    <cell type="subview" viewname="AttachmentsIconView" id="10" name="attachments" colspan="10"/>
+                    <cell type="subview" viewname="PermitAttachment" id="10" name="permitAttachments" colspan="10"/>
                 </row>
-                -->
             </rows>
         </viewdef>
 
@@ -1455,6 +1615,11 @@
     				<cell type="attrs" id="200" name="attrs" subtypeattr="subNumber" class="edu.ku.brc.specify.datamodel.AttributeDef"/>
     			</row>
     			-->
+
+                <row>
+                    <cell type="label" labelfor="attachments" label="Attachments"/>
+                    <cell type="subview" id="attachments" viewname="PreparationAttachment" name="preparationAttachments" colspan="10"/>
+                </row>
 
     			<!--
     			<row>
@@ -1645,5 +1810,560 @@
                 </row>
             </rows>
         </viewdef>
+        
+        <viewdef
+            type="formtable"
+            name="AccessionAttachment Table"
+            class="edu.ku.brc.specify.datamodel.AccessionAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[AccessionAttachment grid view.]]></desc>
+            <definition>AccessionAttachment Form</definition>
+        </viewdef>
+        
+        <viewdef
+            type="formtable"
+            name="AgentAttachment Table"
+            class="edu.ku.brc.specify.datamodel.AgentAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[AgentAttachment grid view.]]></desc>
+            <definition>AgentAttachment Form</definition>
+        </viewdef>
+        
+        <viewdef
+            type="formtable"
+            name="CollectingEventAttachment Table"
+            class="edu.ku.brc.specify.datamodel.CollectingEventAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[CollectingEventAttachment grid view.]]></desc>
+            <definition>CollectingEventAttachment Form</definition>
+        </viewdef>
+        
+        <viewdef
+            type="formtable"
+            name="CollectionObjectAttachment Table"
+            class="edu.ku.brc.specify.datamodel.CollectionObjectAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[CollectionObjectAttachment grid view.]]></desc>
+            <definition>CollectionObjectAttachment Form</definition>
+        </viewdef>
+        
+        <viewdef
+            type="formtable"
+            name="ConservDescriptionAttachment Table"
+            class="edu.ku.brc.specify.datamodel.ConservDescriptionAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[ConservDescriptionAttachment grid view.]]></desc>
+            <definition>ConservDescriptionAttachment Form</definition>
+        </viewdef>
+        
+        <viewdef
+            type="formtable"
+            name="ConservEventAttachment Table"
+            class="edu.ku.brc.specify.datamodel.ConservEventAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[ConservEventAttachment grid view.]]></desc>
+            <definition>ConservEventAttachment Form</definition>
+        </viewdef>
+        
+        <viewdef
+            type="formtable"
+            name="LoanAttachment Table"
+            class="edu.ku.brc.specify.datamodel.LoanAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[LoanAttachment grid view.]]></desc>
+            <definition>LoanAttachment Form</definition>
+        </viewdef>
+        
+        <viewdef
+            type="formtable"
+            name="LocalityAttachment Table"
+            class="edu.ku.brc.specify.datamodel.LocalityAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[LocalityAttachment grid view.]]></desc>
+            <definition>LocalityAttachment Form</definition>
+        </viewdef>
+        
+        <viewdef
+            type="formtable"
+            name="PermitAttachment Table"
+            class="edu.ku.brc.specify.datamodel.PermitAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[PermitAttachment grid view.]]></desc>
+            <definition>PermitAttachment Form</definition>
+        </viewdef>
+        
+        <viewdef
+            type="formtable"
+            name="PreparationAttachment Table"
+            class="edu.ku.brc.specify.datamodel.PreparationAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[PreparationAttachment grid view.]]></desc>
+            <definition>PreparationAttachment Form</definition>
+        </viewdef>
+        
+        <viewdef
+            type="formtable"
+            name="RepositoryAgreementAttachment Table"
+            class="edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[RepositoryAgreementAttachment grid view.]]></desc>
+            <definition>RepositoryAgreementAttachment Form</definition>
+        </viewdef>
+        
+        <viewdef
+            type="formtable"
+            name="TaxonAttachment Table"
+            class="edu.ku.brc.specify.datamodel.TaxonAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[TaxonAttachment grid view.]]></desc>
+            <definition>TaxonAttachment Form</definition>
+        </viewdef>
+        
+        <viewdef
+            type="iconview"
+            name="AccessionAttachment IconView"
+            class="edu.ku.brc.specify.datamodel.AccessionAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The AccessionAttachment Icon Viewer]]></desc>
+        </viewdef>
+
+        <viewdef
+            type="iconview"
+            name="AgentAttachment IconView"
+            class="edu.ku.brc.specify.datamodel.AgentAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The AgentAttachments Icon Viewer]]></desc>
+        </viewdef>
+
+        <viewdef
+            type="iconview"
+            name="CollectingEventAttachment IconView"
+            class="edu.ku.brc.specify.datamodel.CollectingEventAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The CollectingEventAttachment Icon Viewer]]></desc>
+        </viewdef>
+
+        <viewdef
+            type="iconview"
+            name="CollectionObjectAttachment IconView"
+            class="edu.ku.brc.specify.datamodel.CollectionObjectAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The CollectionObjectAttachment Icon Viewer]]></desc>
+        </viewdef>
+
+        <viewdef
+            type="iconview"
+            name="ConservDescriptionAttachment IconView"
+            class="edu.ku.brc.specify.datamodel.ConservDescriptionAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The ConservDescriptionAttachment Icon Viewer]]></desc>
+        </viewdef>
+
+        <viewdef
+            type="iconview"
+            name="ConservEventAttachment IconView"
+            class="edu.ku.brc.specify.datamodel.ConservEventAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The ConservEventAttachment Icon Viewer]]></desc>
+        </viewdef>
+
+        <viewdef
+            type="iconview"
+            name="LoanAttachment IconView"
+            class="edu.ku.brc.specify.datamodel.LoanAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The LoanAttachment Icon Viewer]]></desc>
+        </viewdef>
+
+        <viewdef
+            type="iconview"
+            name="LocalityAttachment IconView"
+            class="edu.ku.brc.specify.datamodel.LocalityAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The LocalityAttachment Icon Viewer]]></desc>
+        </viewdef>
+
+        <viewdef
+            type="iconview"
+            name="PermitAttachment IconView"
+            class="edu.ku.brc.specify.datamodel.PermitAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The PermitAttachment Icon Viewer]]></desc>
+        </viewdef>
+
+        <viewdef
+            type="iconview"
+            name="PreparationAttachment IconView"
+            class="edu.ku.brc.specify.datamodel.PreparationAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The PreparationAttachment Icon Viewer]]></desc>
+        </viewdef>
+
+        <viewdef
+            type="iconview"
+            name="RepositoryAgreementAttachment IconView"
+            class="edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The RepositoryAgreementAttachment Icon Viewer]]></desc>
+        </viewdef>
+
+        <viewdef
+            type="iconview"
+            name="TaxonAttachment IconView"
+            class="edu.ku.brc.specify.datamodel.TaxonAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The TaxonAttachment Icon Viewer]]></desc>
+        </viewdef>
+
+        <viewdef
+            type="form"
+            name="AccessionAttachment Form"
+            class="edu.ku.brc.specify.datamodel.AccessionAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+
+            <desc><![CDATA[The AccessionAttachment form.]]></desc>
+
+            <columnDef>p,5dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+    		<rows>
+    		    <row>
+    		        <cell type="label" label="Attachments" icon="Attachment" recordobj="true" colspan="3"/>
+    		    </row>
+                <row>
+                    <cell type="label" labelfor="origFilename" label="Filename"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" uitype="browse"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="mimeType" label="MIME Type"/>
+                    <cell type="field" id="mimeType" name="attachment.mimeType" uitype="text"/>
+                </row>
+			</rows>
+		</viewdef>
+		
+        <viewdef
+            type="form"
+            name="AgentAttachment Form"
+            class="edu.ku.brc.specify.datamodel.AgentAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+
+            <desc><![CDATA[The AgentAttachment form.]]></desc>
+
+            <columnDef>p,5dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+    		<rows>
+    		    <row>
+    		        <cell type="label" label="Attachments" icon="Attachment" recordobj="true" colspan="3"/>
+    		    </row>
+                <row>
+                    <cell type="label" labelfor="origFilename" label="Filename"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" uitype="browse"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="mimeType" label="MIME Type"/>
+                    <cell type="field" id="mimeType" name="attachment.mimeType" uitype="text"/>
+                </row>
+			</rows>
+		</viewdef>
+		
+        <viewdef
+            type="form"
+            name="CollectingEventAttachment Form"
+            class="edu.ku.brc.specify.datamodel.CollectingEventAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+
+            <desc><![CDATA[The CollectingEventAttachment form.]]></desc>
+
+            <columnDef>p,5dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+    		<rows>
+    		    <row>
+    		        <cell type="label" label="Attachments" icon="Attachment" recordobj="true" colspan="3"/>
+    		    </row>
+                <row>
+                    <cell type="label" labelfor="origFilename" label="Filename"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" uitype="browse"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="mimeType" label="MIME Type"/>
+                    <cell type="field" id="mimeType" name="attachment.mimeType" uitype="text"/>
+                </row>
+			</rows>
+		</viewdef>
+		
+        <viewdef
+            type="form"
+            name="CollectionObjectAttachment Form"
+            class="edu.ku.brc.specify.datamodel.CollectionObjectAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+
+            <desc><![CDATA[The CollectionObjectAttachment form.]]></desc>
+
+            <columnDef>p,5dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+    		<rows>
+    		    <row>
+    		        <cell type="label" label="Attachments" icon="Attachment" recordobj="true" colspan="3"/>
+    		    </row>
+                <row>
+                    <cell type="label" labelfor="origFilename" label="Filename"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" uitype="browse"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="mimeType" label="MIME Type"/>
+                    <cell type="field" id="mimeType" name="attachment.mimeType" uitype="text"/>
+                </row>
+			</rows>
+		</viewdef>
+		
+        <viewdef
+            type="form"
+            name="ConservDescriptionAttachment Form"
+            class="edu.ku.brc.specify.datamodel.ConservDescriptionAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+
+            <desc><![CDATA[The ConservDescriptionAttachment form.]]></desc>
+
+            <columnDef>p,5dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+    		<rows>
+    		    <row>
+    		        <cell type="label" label="Attachments" icon="Attachment" recordobj="true" colspan="3"/>
+    		    </row>
+                <row>
+                    <cell type="label" labelfor="origFilename" label="Filename"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" uitype="browse"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="mimeType" label="MIME Type"/>
+                    <cell type="field" id="mimeType" name="attachment.mimeType" uitype="text"/>
+                </row>
+			</rows>
+		</viewdef>
+		
+        <viewdef
+            type="form"
+            name="ConservEventAttachment Form"
+            class="edu.ku.brc.specify.datamodel.ConservEventAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+
+            <desc><![CDATA[The ConservEventAttachment form.]]></desc>
+
+            <columnDef>p,5dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+    		<rows>
+    		    <row>
+    		        <cell type="label" label="Attachments" icon="Attachment" recordobj="true" colspan="3"/>
+    		    </row>
+                <row>
+                    <cell type="label" labelfor="origFilename" label="Filename"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" uitype="browse"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="mimeType" label="MIME Type"/>
+                    <cell type="field" id="mimeType" name="attachment.mimeType" uitype="text"/>
+                </row>
+			</rows>
+		</viewdef>
+		
+        <viewdef
+            type="form"
+            name="LoanAttachment Form"
+            class="edu.ku.brc.specify.datamodel.LoanAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+
+            <desc><![CDATA[The LoanAttachment form.]]></desc>
+
+            <columnDef>p,5dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+    		<rows>
+    		    <row>
+    		        <cell type="label" label="Attachments" icon="Attachment" recordobj="true" colspan="3"/>
+    		    </row>
+                <row>
+                    <cell type="label" labelfor="origFilename" label="Filename"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" uitype="browse"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="mimeType" label="MIME Type"/>
+                    <cell type="field" id="mimeType" name="attachment.mimeType" uitype="text"/>
+                </row>
+			</rows>
+		</viewdef>
+		
+        <viewdef
+            type="form"
+            name="LocalityAttachment Form"
+            class="edu.ku.brc.specify.datamodel.LocalityAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+
+            <desc><![CDATA[The LocalityAttachment form.]]></desc>
+
+            <columnDef>p,5dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+    		<rows>
+    		    <row>
+    		        <cell type="label" label="Attachments" icon="Attachment" recordobj="true" colspan="3"/>
+    		    </row>
+                <row>
+                    <cell type="label" labelfor="origFilename" label="Filename"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" uitype="browse"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="mimeType" label="MIME Type"/>
+                    <cell type="field" id="mimeType" name="attachment.mimeType" uitype="text"/>
+                </row>
+			</rows>
+		</viewdef>
+		
+        <viewdef
+            type="form"
+            name="PermitAttachment Form"
+            class="edu.ku.brc.specify.datamodel.PermitAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+
+            <desc><![CDATA[The PermitAttachment form.]]></desc>
+
+            <columnDef>p,5dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+    		<rows>
+    		    <row>
+    		        <cell type="label" label="Attachments" icon="Attachment" recordobj="true" colspan="3"/>
+    		    </row>
+                <row>
+                    <cell type="label" labelfor="origFilename" label="Filename"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" uitype="browse"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="mimeType" label="MIME Type"/>
+                    <cell type="field" id="mimeType" name="attachment.mimeType" uitype="text"/>
+                </row>
+			</rows>
+		</viewdef>
+		
+        <viewdef
+            type="form"
+            name="PreparationAttachment Form"
+            class="edu.ku.brc.specify.datamodel.PreparationAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+
+            <desc><![CDATA[The PreparationAttachment form.]]></desc>
+
+            <columnDef>p,5dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+    		<rows>
+    		    <row>
+    		        <cell type="label" label="Attachments" icon="Attachment" recordobj="true" colspan="3"/>
+    		    </row>
+                <row>
+                    <cell type="label" labelfor="origFilename" label="Filename"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" uitype="browse"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="mimeType" label="MIME Type"/>
+                    <cell type="field" id="mimeType" name="attachment.mimeType" uitype="text"/>
+                </row>
+			</rows>
+		</viewdef>
+		
+        <viewdef
+            type="form"
+            name="RepositoryAgreementAttachment Form"
+            class="edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+
+            <desc><![CDATA[The RepositoryAgreementAttachment form.]]></desc>
+
+            <columnDef>p,5dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+    		<rows>
+    		    <row>
+    		        <cell type="label" label="Attachments" icon="Attachment" recordobj="true" colspan="3"/>
+    		    </row>
+                <row>
+                    <cell type="label" labelfor="origFilename" label="Filename"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" uitype="browse"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="mimeType" label="MIME Type"/>
+                    <cell type="field" id="mimeType" name="attachment.mimeType" uitype="text"/>
+                </row>
+			</rows>
+		</viewdef>
+		
+        <viewdef
+            type="form"
+            name="TaxonAttachment Form"
+            class="edu.ku.brc.specify.datamodel.TaxonAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+
+            <desc><![CDATA[The TaxonAttachment form.]]></desc>
+
+            <columnDef>p,5dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+    		<rows>
+    		    <row>
+    		        <cell type="label" label="Attachments" icon="Attachment" recordobj="true" colspan="3"/>
+    		    </row>
+                <row>
+                    <cell type="label" labelfor="origFilename" label="Filename"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" uitype="browse"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="mimeType" label="MIME Type"/>
+                    <cell type="field" id="mimeType" name="attachment.mimeType" uitype="text"/>
+                </row>
+			</rows>
+		</viewdef>
+		
+        
+        
     </viewdefs>
 </viewset>

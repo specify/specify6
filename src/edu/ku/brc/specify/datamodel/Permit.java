@@ -61,7 +61,7 @@ import org.hibernate.annotations.Index;
     {   @Index (name="PermitNumberIDX", columnNames={"PermitNumber"}),
         @Index (name="IssuedDateIDX", columnNames={"IssuedDate"})
     })
-public class Permit extends DataModelObjBase implements java.io.Serializable {
+public class Permit extends DataModelObjBase implements AttachmentOwnerIFace<PermitAttachment>, java.io.Serializable {
 
     // Fields
 
@@ -403,6 +403,12 @@ public class Permit extends DataModelObjBase implements java.io.Serializable {
     public static int getClassTableId()
     {
         return 6;
+    }
+
+    @Transient
+    public Set<PermitAttachment> getAttachmentReferences()
+    {
+        return permitAttachments;
     }
 
 }

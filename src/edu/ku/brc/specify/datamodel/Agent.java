@@ -41,6 +41,7 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -64,7 +65,7 @@ import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
         @Index (name="AuthorNameIDX", columnNames={"AuthorName"}), 
         @Index (name="CollectorNameIDX", columnNames={"CollectorName"})  
     })
-public class Agent extends DataModelObjBase implements java.io.Serializable {
+public class Agent extends DataModelObjBase implements java.io.Serializable, AttachmentOwnerIFace<AgentAttachment> {
 
     // Fields
     
@@ -989,6 +990,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
 
     @OneToMany(mappedBy = "agent")
     @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK, CascadeType.DELETE} )
+    @OrderBy("ordinal ASC")
     public Set<AgentAttachment> getAgentAttachments()
     {
         return agentAttachments;
@@ -1067,6 +1069,12 @@ public class Agent extends DataModelObjBase implements java.io.Serializable {
             return super.toString();
         }
         return DataObjFieldFormatMgr.format(this, getClass());
+    }
+
+    @Transient
+    public Set<AgentAttachment> getAttachmentReferences()
+    {
+        return agentAttachments;
     }
 
 }

@@ -16,6 +16,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -92,6 +93,7 @@ public class CollectingEventAttachment extends DataModelObjBase implements Objec
     @ManyToOne()
     @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     @JoinColumn(name = "AttachmentID", nullable = false)
+    @OrderBy("ordinal ASC")
     public Attachment getAttachment()
     {
         return attachment;

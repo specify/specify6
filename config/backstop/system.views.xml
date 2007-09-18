@@ -250,6 +250,20 @@
             </altviews>
         </view>
         
+        <view name="TaxonAttachment"
+              class="edu.ku.brc.specify.datamodel.TaxonAttachment"
+              resourcelabels="false">
+            <desc><![CDATA[The TaxonAttachment Icon View.]]></desc>
+            <altviews>
+                <altview name="TaxonAttachment Icon View"  viewdef="TaxonAttachment IconView" label="Icon View"  mode="view"/>                
+                <altview name="TaxonAttachment Icon Edit"  viewdef="TaxonAttachment IconView" label="Icon Edit"  mode="edit"/>                
+                <altview name="TaxonAttachment Table View" viewdef="TaxonAttachment Table"    label="Table View" mode="view" />                
+                <altview name="TaxonAttachment Table Edit" viewdef="TaxonAttachment Table"    label="Table Edit" mode="edit"/>                
+                <altview name="TaxonAttachment Form View"  viewdef="TaxonAttachment Form"     label="Form View"  mode="view" default="true"/>                
+                <altview name="TaxonAttachment Form Edit"  viewdef="TaxonAttachment Form"     label="Form Edit"  mode="edit"/>                
+            </altviews>
+        </view>
+
     </views>
   
 	<!--  *************************************************************************************************************************** -->
@@ -936,6 +950,10 @@
                 	<cell type="field" id="hybridParent2" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="hybridParent2"/>
                 </row>
                 <row>
+                    <cell type="label" labelfor="attachments" label="Attachments"/>
+                    <cell type="subview" id="attachments" viewname="TaxonAttachment" name="taxonAttachments"/>
+                </row>
+                <row>
                     <cell type="separator" label="Children" colspan="3"/>
                 </row>
                 <row>
@@ -1232,6 +1250,52 @@
             <definition>GeologicTimePeriodSubform</definition>
         </viewdef>
 
+        <viewdef
+            type="formtable"
+            name="TaxonAttachment Table"
+            class="edu.ku.brc.specify.datamodel.TaxonAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[TaxonAttachment grid view.]]></desc>
+            <definition>TaxonAttachment Form</definition>
+        </viewdef>
+        
+        <viewdef
+            type="iconview"
+            name="TaxonAttachment IconView"
+            class="edu.ku.brc.specify.datamodel.TaxonAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The TaxonAttachment Icon Viewer]]></desc>
+        </viewdef>
+
+        <viewdef
+            type="form"
+            name="TaxonAttachment Form"
+            class="edu.ku.brc.specify.datamodel.TaxonAttachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+
+            <desc><![CDATA[The TaxonAttachment form.]]></desc>
+
+            <columnDef>p,5dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+    		<rows>
+    		    <row>
+    		        <cell type="label" label="Attachments" icon="Attachment" recordobj="true" colspan="3"/>
+    		    </row>
+                <row>
+                    <cell type="label" labelfor="origFilename" label="Filename"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" uitype="browse"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="mimeType" label="MIME Type"/>
+                    <cell type="field" id="mimeType" name="attachment.mimeType" uitype="text"/>
+                </row>
+			</rows>
+		</viewdef>
+		
     </viewdefs>
         
 </viewset>

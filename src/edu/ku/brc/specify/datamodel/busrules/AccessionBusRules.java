@@ -46,7 +46,7 @@ import edu.ku.brc.ui.forms.Viewable;
  * @author rods
  *
  */
-public class AccessionBusRules extends BaseBusRules
+public class AccessionBusRules extends AttachmentOwnerBaseBusRules
 {
     private static final Logger  log      = Logger.getLogger(AccessionBusRules.class);
    

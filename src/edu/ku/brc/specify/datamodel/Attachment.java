@@ -7,6 +7,7 @@
 package edu.ku.brc.specify.datamodel;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.HashSet;
@@ -24,7 +25,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
+import edu.ku.brc.util.thumbnails.Thumbnailer;
 
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
@@ -146,21 +149,26 @@ public class Attachment extends DataModelObjBase implements Serializable
 
     public void setOrigFilename(String origFilename)
     {
-        if ((origFilename != null && origFilename.equals(this.origFilename)) || (origFilename == null && this.origFilename == null))
-        {
-            // nothing is being changed
-            return;
-        }
+//        if ((origFilename != null && origFilename.equals(this.origFilename)) || (origFilename == null && this.origFilename == null))
+//        {
+//            // nothing is being changed
+//            return;
+//        }
         
-        this.origFilename = origFilename;
+        this.origFilename = origFilename.trim();
 
-        // for newly created attachments, setup the attachmentLocation field
-        if (this.attachmentId == null && origFilename != null)
-        {
-            // set the attachmentLocation field
-            AttachmentUtils.getAttachmentManager().setStorageLocationIntoAttachment(this);
-            this.mimeType = AttachmentUtils.getMimeType(origFilename);
-        }
+//        // if there isn't a set location yet, set one
+//        if (origFilename != null && this.attachmentLocation == null)
+//        {
+//            // set the attachmentLocation field
+//            AttachmentUtils.getAttachmentManager().setStorageLocationIntoAttachment(this);
+//        }
+//        
+//        // if a MIME type isn't already set, try to determine it
+//        if (this.mimeType == null)
+//        {
+//            this.mimeType = AttachmentUtils.getMimeType(origFilename);
+//        }
     }
 
     @Temporal(TemporalType.DATE)
@@ -395,47 +403,24 @@ public class Attachment extends DataModelObjBase implements Serializable
         return super.getIdentityTitle();
     }
 
-    @Override
-    public void onDelete()
+    public void storeFile() throws IOException
     {
-        // TODO Delete the attachment file from the file storage system
-    }
-
-//    @Override
-//    public void onSave()
-//    {
-//        // Copy the attachment file to the file storage system
-//        Thumbnailer thumbnailGen = AttachmentUtils.getThumbnailer();
-//        AttachmentManagerIface attachmentMgr = AttachmentUtils.getAttachmentManager();
-//        File origFile = new File(origFilename);
-//        File thumbFile = null;
-//        
-//        try
-//        {
-//            thumbFile = File.createTempFile("sp6_thumb_", null);
-//            thumbFile.deleteOnExit();
-//            thumbnailGen.generateThumbnail(origFilename, thumbFile.getAbsolutePath());
-//        }
-//        catch (IOException e)
-//        {
-//            // unable to create thumbnail
-//            thumbFile = null;
-//        }
-//        
-//        try
-//        {
-//            attachmentMgr.storeAttachmentFile(this, origFile, thumbFile);
-//        }
-//        catch (IOException e)
-//        {
-//            // exception while saving copying attachments to storage system
-//            e.printStackTrace();
-//        }
-//    }
-
-    @Override
-    public void onUpdate()
-    {
-        // TODO Possibly update the attachment file in the file storage system
+        // Copy the attachment file to the file storage system
+        Thumbnailer thumbnailGen = AttachmentUtils.getThumbnailer();
+        AttachmentManagerIface attachmentMgr = AttachmentUtils.getAttachmentManager();
+        File origFile = new File(origFilename);
+        File thumbFile = null;
+        
+        try
+        {
+            thumbFile = File.createTempFile("sp6_thumb_", null);
+            thumbFile.deleteOnExit();
+            thumbnailGen.generateThumbnail(origFilename, thumbFile.getAbsolutePath());
+        }
+        catch (IOException e)
+        {
+            thumbFile = null;
+        }
+        attachmentMgr.storeAttachmentFile(this, origFile, thumbFile);
     }
 }

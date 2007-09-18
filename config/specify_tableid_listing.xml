@@ -18,7 +18,7 @@
             <display objtitle="Accession Agent" view="AccessionAgent" dataobjformatter="AccessionAgent" searchdlg="AccessionAgentSearch" newobjdlg="AccessionAgentDisplay"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.AccessionAttachment" id="108">
-            <businessrule>edu.ku.brc.specify.datamodel.busrules.BaseObjectAttachmentBusRules</businessrule>          
+        	<display view="AccessionAttachment" newobjdlg="AccessionAttachmentDisplay"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.AccessionAuthorization" id="13">
             <display objtitle="Accession Authorization" dataobjformatter="AccessionAuthorization"/>
@@ -28,10 +28,10 @@
         </table>
         <table name="edu.ku.brc.specify.datamodel.Agent" id="5" workbench="true">
             <display objtitle="Agent" view="Agent" dataobjformatter="Agent" searchdlg="AgentSearch" newobjdlg="AgentDisplay"/>
-            <businessrule>edu.ku.brc.specify.datamodel.busrules.AgentBusRules</businessrule>        
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.AgentBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.AgentAttachment" id="109">
-            <businessrule>edu.ku.brc.specify.datamodel.busrules.BaseObjectAttachmentBusRules</businessrule>          
+            <display objtitle="AgentAttachment" view="AgentAttachment" newobjdlg="AgentAttachmentDisplay"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.AgentVariant" id="107" workbench="false"/>
         <table name="edu.ku.brc.specify.datamodel.AppResource" id="83"/>
@@ -55,9 +55,10 @@
         </table>
         <table name="edu.ku.brc.specify.datamodel.CollectingEvent" id="10" workbench="true" query="true">
             <display view="CollectingEvent" objtitle="Collecting Event" />
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.CollectingEventBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.CollectingEventAttachment" id="110">
-            <businessrule>edu.ku.brc.specify.datamodel.busrules.BaseObjectAttachmentBusRules</businessrule>          
+        	<display view="CollectingEventAttachment" newobjdlg="CollectingEventAttachmentDisplay"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.CollectingEventAttr" id="25"/>
         <table name="edu.ku.brc.specify.datamodel.CollectingTrip" id="87" workbench="true" query="true">
@@ -72,7 +73,7 @@
             <businessrule>edu.ku.brc.specify.datamodel.busrules.CollectionObjectBusRules</businessrule>          
         </table>
         <table name="edu.ku.brc.specify.datamodel.CollectionObjectAttachment" id="111">
-            <businessrule>edu.ku.brc.specify.datamodel.busrules.BaseObjectAttachmentBusRules</businessrule>          
+        	<display view="CollectionObjectAttachment" newobjdlg="CollectionObjectAttachmentDisplay"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.CollectionObjectAttr" id="28"/>
         <table name="edu.ku.brc.specify.datamodel.ColObjAttributes" id="93"/>
@@ -83,13 +84,17 @@
         <table name="edu.ku.brc.specify.datamodel.CollectionRelationship" id="99"/>
         <table name="edu.ku.brc.specify.datamodel.Collector" id="30"/>
         <table name="edu.ku.brc.specify.datamodel.CommonName" id="106"/>
-        <table name="edu.ku.brc.specify.datamodel.ConservDescription" id="103"/>
-        <table name="edu.ku.brc.specify.datamodel.ConservDescriptionAttachment" id="112">
-            <businessrule>edu.ku.brc.specify.datamodel.busrules.BaseObjectAttachmentBusRules</businessrule>          
+        <table name="edu.ku.brc.specify.datamodel.ConservDescription" id="103">
+        	<businessrule>edu.ku.brc.specify.datamodel.busrules.ConservDescriptionBusRules</businessrule>
         </table>
-        <table name="edu.ku.brc.specify.datamodel.ConservEvent" id="73"/>
+        <table name="edu.ku.brc.specify.datamodel.ConservDescriptionAttachment" id="112">
+        	<display view="ConservDescriptionAttachment" newobjdlg="ConservDescriptionAttachmentDisplay"/>
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.ConservEvent" id="73">
+        	<businessrule>edu.ku.brc.specify.datamodel.busrules.ConservEventBusRules</businessrule>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.ConservEventAttachment" id="113">
-            <businessrule>edu.ku.brc.specify.datamodel.busrules.BaseObjectAttachmentBusRules</businessrule>          
+        	<display view="ConservEventAttachment" newobjdlg="ConservEventAttachmentDisplay"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.ConservRecmdType" id="105"/>
         <table name="edu.ku.brc.specify.datamodel.ConservRecommendation" id="104"/>
@@ -151,17 +156,18 @@
         </table>
         <table name="edu.ku.brc.specify.datamodel.LoanAgent" id="53"/>
         <table name="edu.ku.brc.specify.datamodel.LoanAttachment" id="114">
-            <businessrule>edu.ku.brc.specify.datamodel.busrules.BaseObjectAttachmentBusRules</businessrule>          
+        	<display view="LoanAttachment" newobjdlg="LoanAttachmentDisplay"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.LoanPhysicalObject" id="54"/>
         <table name="edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject" id="55">
             <businessrule>edu.ku.brc.specify.datamodel.busrules.LoanPreparationBusRules</businessrule>          
         </table>
         <table name="edu.ku.brc.specify.datamodel.Locality" id="2" workbench="true" query="true">
+        	<businessrule>edu.ku.brc.specify.datamodel.busrules.LocalityBusRules</businessrule>
             <display objtitle="Locality" view="Locality" dataobjformatter="Locality" searchdlg="LocalitySearch" newobjdlg="LocalityDisplay"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.LocalityAttachment" id="115">
-            <businessrule>edu.ku.brc.specify.datamodel.busrules.BaseObjectAttachmentBusRules</businessrule>          
+        	<display view="LocalityAttachment" newobjdlg="LocalityAttachmentDisplay"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.LocalityCitation" id="57" query="true"/>
         <table name="edu.ku.brc.specify.datamodel.LocalityNameAlias" id="120" query="true"/>
@@ -182,17 +188,18 @@
             <businessrule>edu.ku.brc.specify.datamodel.busrules.PermitBusRules</businessrule>            
         </table>
         <table name="edu.ku.brc.specify.datamodel.PermitAttachment" id="116">
-            <businessrule>edu.ku.brc.specify.datamodel.busrules.BaseObjectAttachmentBusRules</businessrule>          
+        	<display view="PermitAttachment" newobjdlg="PermitAttachmentDisplay"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.PickList" id="500">
             <display view="PickList"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.PickListItem" id="501"/>
         <table name="edu.ku.brc.specify.datamodel.Preparation" id="63" workbench="true" query="true">
+        	<businessrule>edu.ku.brc.specify.datamodel.busrules.PreparationBusRules</businessrule>
             <display objtitle="Preparation" view="Preparation" newobjdlg="PreparationDisplay"/>
 		</table>
         <table name="edu.ku.brc.specify.datamodel.PreparationAttachment" id="117">
-            <businessrule>edu.ku.brc.specify.datamodel.busrules.BaseObjectAttachmentBusRules</businessrule>          
+        	<display view="PreparationAttachment" newobjdlg="PreparationAttachmentDisplay"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.PreparationAttr" id="64"/>
         <table name="edu.ku.brc.specify.datamodel.PreparationAttributes" id="91"/>
@@ -208,9 +215,11 @@
         <table name="edu.ku.brc.specify.datamodel.ReferenceWork" id="69" query="true">
             <display view="ReferenceWork"/>
         </table>
-        <table name="edu.ku.brc.specify.datamodel.RepositoryAgreement" id="70" query="true"/>
+        <table name="edu.ku.brc.specify.datamodel.RepositoryAgreement" id="70" query="true">
+        	<businessrule>edu.ku.brc.specify.datamodel.busrules.RepositoryAgreementBusRules</businessrule>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment" id="118">
-            <businessrule>edu.ku.brc.specify.datamodel.busrules.BaseObjectAttachmentBusRules</businessrule>          
+        	<display view="RepositoryAgreementAttachment" newobjdlg="RepositoryAgreementAttachmentDisplay"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.Shipment" id="71">
             <businessrule>edu.ku.brc.specify.datamodel.busrules.ShipmentBusRules</businessrule>                                    
@@ -221,7 +230,7 @@
             <businessrule>edu.ku.brc.specify.datamodel.busrules.TaxonBusRules</businessrule>                                                
         </table>
         <table name="edu.ku.brc.specify.datamodel.TaxonAttachment" id="119">
-            <businessrule>edu.ku.brc.specify.datamodel.busrules.BaseObjectAttachmentBusRules</businessrule>          
+        	<display view="TaxonAttachment" newobjdlg="TaxonAttachmentDisplay"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.TaxonCitation" id="75"/>
         <table name="edu.ku.brc.specify.datamodel.TaxonTreeDef" id="76"/>

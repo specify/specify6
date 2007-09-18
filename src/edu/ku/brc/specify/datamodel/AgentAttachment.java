@@ -35,7 +35,7 @@ import edu.ku.brc.util.Orderable;
 public class AgentAttachment extends DataModelObjBase implements ObjectAttachmentIFace<Agent>, Orderable, Serializable
 {
     protected Integer    agentAttachmentId;
-    protected Agent     agent;
+    protected Agent      agent;
     protected Attachment attachment;
     protected Integer    ordinal;
     protected String     remarks;
@@ -184,9 +184,16 @@ public class AgentAttachment extends DataModelObjBase implements ObjectAttachmen
     }
     
     @Override
+    @Transient
+    public String getIdentityTitle()
+    {
+        return toString();
+    }
+
+    @Override
     public String toString()
     {
-        String aString = (attachment != null) ? attachment.getIdentityTitle() : "NULL Attachment";
+        String aString = (attachment != null) ? attachment.getIdentityTitle() + "  " + attachment.getAttachmentLocation() : "NULL Attachment";
         String oString = (getObject() != null) ? getObject().getIdentityTitle() : "NULL Object Reference";
         return aString + " : " + oString;
     }

@@ -72,7 +72,7 @@ import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
         @Index (name="CatalogedDateIDX", columnNames={"CatalogedDate"}),
         @Index (name="CatalogNumberIDX", columnNames={"CatalogNumber"})
     })
-public class CollectionObject extends DataModelObjBase implements java.io.Serializable, AttributeProviderIFace, Comparable<CollectionObject>
+public class CollectionObject extends DataModelObjBase implements AttachmentOwnerIFace<CollectionObjectAttachment>, java.io.Serializable, AttributeProviderIFace, Comparable<CollectionObject>
 {
 
     // Fields
@@ -809,6 +809,12 @@ public class CollectionObject extends DataModelObjBase implements java.io.Serial
         return 1;
     }
     
+    @Transient
+    public Set<CollectionObjectAttachment> getAttachmentReferences()
+    {
+        return collectionObjectAttachments;
+    }
+
 
     //----------------------------------------------------------------------
     //-- Comparable Interface

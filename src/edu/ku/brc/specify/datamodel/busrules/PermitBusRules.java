@@ -37,7 +37,7 @@ import edu.ku.brc.specify.datamodel.Permit;
  * @author rods
  *
  */
-public class PermitBusRules extends BaseBusRules
+public class PermitBusRules extends AttachmentOwnerBaseBusRules
 {  
     /**
      * Constructor.

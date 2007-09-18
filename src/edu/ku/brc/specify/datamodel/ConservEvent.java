@@ -53,7 +53,7 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Table(appliesTo="conservevent", indexes =
     {   @Index (name="ConservExamDateIDX", columnNames={"ExamDate"})
     })
-public class ConservEvent extends DataModelObjBase implements java.io.Serializable
+public class ConservEvent extends DataModelObjBase implements AttachmentOwnerIFace<ConservEventAttachment>, java.io.Serializable
 {
     // Fields    
     protected Integer                    conservEventId;
@@ -374,4 +374,9 @@ public class ConservEvent extends DataModelObjBase implements java.io.Serializab
         return 73;
     }
 
+    @Transient
+    public Set<ConservEventAttachment> getAttachmentReferences()
+    {
+        return conservEventAttachments;
+    }
 }

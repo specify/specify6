@@ -44,7 +44,7 @@ import edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator;
         @Index (name="TaxonNameIDX", columnNames={"Name"}),
         @Index (name="TaxonFullNameIDX", columnNames={"FullName"})
     })
-public class Taxon extends DataModelObjBase implements Serializable, Treeable<Taxon,TaxonTreeDef,TaxonTreeDefItem>
+public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<TaxonAttachment>, Serializable, Treeable<Taxon,TaxonTreeDef,TaxonTreeDefItem>
 {
     /**
      * A <code>Logger</code> object used for all log messages emanating from
@@ -1025,6 +1025,12 @@ public class Taxon extends DataModelObjBase implements Serializable, Treeable<Ta
             return super.equals(obj);
         }
         return false;
+    }
+
+    @Transient
+    public Set<TaxonAttachment> getAttachmentReferences()
+    {
+        return taxonAttachments;
     }
 
 }
