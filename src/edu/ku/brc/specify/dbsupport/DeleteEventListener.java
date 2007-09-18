@@ -36,10 +36,7 @@ public class DeleteEventListener implements org.hibernate.event.DeleteEventListe
      */
     public void onDelete(DeleteEvent event) throws HibernateException
     {
-        if (event.getObject() instanceof FormDataObjIFace)
-        {
-            updateLuceneIndex((FormDataObjIFace)event.getObject());
-        }
+
     }
 
     /* (non-Javadoc)
@@ -47,17 +44,6 @@ public class DeleteEventListener implements org.hibernate.event.DeleteEventListe
      */
     public void onDelete(DeleteEvent event, Set transientEntities) throws HibernateException
     {
-        for (Object o: transientEntities)
-        {
-            if (o instanceof FormDataObjIFace)
-            {
-                updateLuceneIndex((FormDataObjIFace)o);
-            }
-        }
-    }
-    
-    protected void updateLuceneIndex(FormDataObjIFace dataObj)
-    {
-        LuceneUpdater.getInstance().updateIndex(dataObj, LuceneUpdater.IndexAction.Delete);
+
     }
 }

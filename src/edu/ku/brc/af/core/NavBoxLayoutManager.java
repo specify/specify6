@@ -18,7 +18,6 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.LayoutManager2;
-import java.util.List;
 import java.util.Vector;
 
 import edu.ku.brc.ui.dnd.Trash;
@@ -86,6 +85,10 @@ public class NavBoxLayoutManager implements LayoutManager2
      */
     public Dimension preferredLayoutSize(Container arg0)
     {
+        //if (preferredSize.width == 0 || preferredSize.height == 0)
+        //{
+            calcPreferredSize();
+       // }
         return new Dimension(preferredSize);
     }
 
@@ -156,10 +159,11 @@ public class NavBoxLayoutManager implements LayoutManager2
     }
 
     /**
-     * Return the list of all the components that have been added to the alyout manager.
-     * @return the list of all the components that have been added to the alyout manager
+     * Return the list of all the components that have been added to the layout manager.
+     * Returns a vector so other can sort or reposition items.
+     * @return the list of all the components that have been added to the layout manager
      */
-    public List<Component> getComponentList()
+    public Vector<Component> getComponentList()
     {
         return comps;
     }

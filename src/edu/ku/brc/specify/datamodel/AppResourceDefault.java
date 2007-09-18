@@ -89,7 +89,7 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
         super.init();
         appResourceDefaultId  = null;
         collection            = null;
-        collectionType      = null;
+        collectionType        = null;
         specifyUser           = null;
         
         persistedAppResources = new HashSet<AppResource>();

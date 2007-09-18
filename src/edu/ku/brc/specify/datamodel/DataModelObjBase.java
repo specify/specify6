@@ -341,7 +341,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
             if (rel != null)
             {
                 //String fieldName = rel.getName();
-                String otherSide = rel.getOtherSide();
+                //String otherSide = rel.getOtherSide();
                 
                 Field   fld           = null;
                 boolean isACollection = false;
@@ -548,10 +548,12 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
         changes.removePropertyChangeListener(propertyName, listener);
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#clone()
+     */
     @Override
-    protected Object clone() throws CloneNotSupportedException
+    public Object clone() throws CloneNotSupportedException
     {
-        // TODO Auto-generated method stub
         DataModelObjBase obj = (DataModelObjBase)super.clone();
         obj.timestampCreated  = timestampCreated;
         obj.timestampModified = timestampModified;

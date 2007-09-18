@@ -42,13 +42,7 @@ public class PostUpdateEventListener implements org.hibernate.event.PostUpdateEv
     public void onPostUpdate(PostUpdateEvent arg0)
     {
         CommandDispatcher.dispatch(new CommandAction("Database", "Update", arg0.getEntity()));
-        
-        if (arg0.getEntity() instanceof FormDataObjIFace)
-        {
-            FormDataObjIFace dataObj = (FormDataObjIFace)arg0.getEntity();
-            LuceneUpdater.getInstance().updateIndex(dataObj, LuceneUpdater.IndexAction.Update);
-            dataObj.onUpdate();
-        }
+
     }
 
 }

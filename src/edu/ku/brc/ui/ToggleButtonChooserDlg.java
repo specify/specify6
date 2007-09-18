@@ -17,34 +17,11 @@ package edu.ku.brc.ui;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.HeadlessException;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
-import java.util.Vector;
 
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JToggleButton;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.factories.ButtonBarFactory;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 
 /**
  * Choose an object from a list of Objects using their "toString"
@@ -55,27 +32,12 @@ import com.jgoodies.forms.layout.FormLayout;
  *
  */
 @SuppressWarnings("serial")
-public class ToggleButtonChooserDlg<T> extends CustomDialog implements ActionListener
+public class ToggleButtonChooserDlg<T> extends CustomDialog
 {
-    public enum Type {Checkbox, RadioButton}
-    
-    // Data Members
-    protected List<T>               items;
-    protected Vector<JToggleButton> buttons              = new Vector<JToggleButton>();
-    protected JButton               selectAll;
-    protected JButton               delSelectAll;
-    protected ButtonGroup           group                = null;
-    
     // Needed for Delayed Creation
-    protected String                title                = null;
-    protected String                desc                 = null;
-    protected Type                  uiType               = null;
-    protected int                   initialSelectedIndex = -1;
-    protected boolean               addSelectAll         = false;
-    protected List<T>               selectedItems        = null;
+    protected String                      title   = null;
+    protected ToggleButtonChooserPanel<T> panel;
     
-    // This means it should build it as a vertical list with no scrollpane
-    protected boolean               useScrollPane        = false;
 
     /**
      * Constructor.
@@ -104,7 +66,7 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog implements ActionLis
                               final String  desc, 
                               final List<T> listItems) throws HeadlessException
     {
-        this(parentFrame, title, desc, listItems, null, OKCANCEL, Type.Checkbox);
+        this(parentFrame, title, desc, listItems, null, OKCANCEL, ToggleButtonChooserPanel.Type.Checkbox);
     }
 
     /**
@@ -122,17 +84,15 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog implements ActionLis
                                   final List<T>   listItems, 
                                   final ImageIcon icon, 
                                   final int       whichButtons,
-                                  final Type      uiType) throws HeadlessException
+                                  final ToggleButtonChooserPanel.Type uiType) throws HeadlessException
     {
         super(parentFrame, getResourceString(title), true, whichButtons, null);
         
-        this.items  = listItems;
         this.icon   = icon;
         this.title  = title;
-        this.desc   = desc;
-        this.uiType = uiType;
+        
+        panel = new ToggleButtonChooserPanel<T>(listItems, desc, uiType);
 
-        //setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
 
@@ -144,144 +104,20 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog implements ActionLis
     {
         super.createUI();
         
-        StringBuffer rowDef = new StringBuffer();
-        if (desc != null)
-        {
-            rowDef.append("p,2px,");
-        }
+        panel.setOkBtn(okBtn);
+        panel.createUI();
         
-        rowDef.append("f:p:g");
-        
-        if (addSelectAll)
-        {
-            rowDef.append(",2px,p");
-        }
-        rowDef.append(",2px,p");
-        
-        int y    = 1;
-        CellConstraints cc         = new CellConstraints();
-        PanelBuilder    panelBlder = new PanelBuilder(new FormLayout("f:p:g", rowDef.toString()));
-        JPanel          panel      = panelBlder.getPanel();
-        panel.setBorder(BorderFactory.createEmptyBorder(4,4,4,2));
-        if (desc != null)
-        {
-            JLabel lbl = new JLabel(getResourceString(desc), SwingConstants.CENTER);
-            panelBlder.add(lbl, cc.xy(1, y)); y += 2;
-        }
-        
-        PanelBuilder listBldr  = new PanelBuilder(new FormLayout("f:p:g", UIHelper.createDuplicateJGoodiesDef("p", "2px", items.size())));
-        JPanel       listPanel = listBldr.getPanel();
-        listPanel.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
-        if (useScrollPane)
-        {
-            listPanel.setBackground(Color.WHITE);
-            listPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK), listPanel.getBorder()));
-        }
-        
-        group = uiType == Type.Checkbox ? null : new ButtonGroup();
-
-        int yy = 1;
-        for (Object obj : items)
-        {
-            JToggleButton togBtn;
-            if (uiType == Type.Checkbox)
-            {
-                togBtn = new JCheckBox(obj.toString());
-            } else
-            {
-                togBtn = new JRadioButton(obj.toString());
-                group.add(togBtn);
-            }
-            
-            togBtn.addChangeListener(new ChangeListener() {
-                public void stateChanged(ChangeEvent e)
-                {
-                    if (((JToggleButton)e.getSource()).isSelected())
-                    {
-                        okBtn.setEnabled(true);
-                    }
-                }
-            });
-
-            
-            togBtn.setOpaque(false);
-            buttons.add(togBtn);
-            listPanel.add(togBtn, cc.xy(1, yy));
-            yy += 2;
-        }
-        Dimension size = listPanel.getPreferredSize();
-        listPanel.setSize(size);
-        listPanel.setPreferredSize(size);
-
-        // if we are using a JScrollPane, create it and put the listPanel inside it
-        // then add it to the panelBuilder
-        if (useScrollPane)
-        {
-            JScrollPane listScroller = new JScrollPane(listPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-            
-            // if there is at least 1 button, size the scrollpane to be the height of 10 buttons
-            if (buttons.size() > 0)
-            {
-                // get the size of a button
-                Dimension btnPrefSize     = buttons.get(0).getPreferredSize();
-                Dimension scollerPrefSize = listScroller.getPreferredSize();
-                
-                // set the scrollpane to have a pref height the same as the height of 11 buttons
-                // this will actually result in the scrollpane being able to show about 10 buttons, due
-                // to spacing between the buttons
-                scollerPrefSize.height = btnPrefSize.height * 11;
-                listScroller.setPreferredSize(scollerPrefSize);
-            }
-            
-            panelBlder.add(listScroller, cc.xy(1, y)); y += 2;
-            
-        } else
-        {
-            panelBlder.add(listPanel, cc.xy(1, y)); y += 2;
-        }
-        
-        if (addSelectAll && uiType == Type.Checkbox)
-        {
-            selectAll    = new JButton(getResourceString("SelectAll"));
-            delSelectAll = new JButton(getResourceString("DeselectAll"));
-
-            selectAll.addActionListener(this);
-            delSelectAll.addActionListener(this);
-
-            JPanel btnBar = ButtonBarFactory.buildOKCancelBar(selectAll, delSelectAll);
-            btnBar.setBorder(BorderFactory.createEmptyBorder(2,0,0,2));
-            panelBlder.add(btnBar, cc.xy(1, y)); y += 2;
-        }
-        
-        mainPanel.add(panel, BorderLayout.CENTER);
+        mainPanel.add(panel.getUIComponent(), BorderLayout.CENTER);
         
         pack();
         
         okBtn.setEnabled(false);
         
-        if (initialSelectedIndex != -1)
-        {
-            setSelectedIndex(initialSelectedIndex);
-        }
-        
-        setSelectedObjects(selectedItems);
     }
 
     public void setAddSelectAll(boolean addSelectAll)
     {
-        this.addSelectAll = addSelectAll;
-    }
-
-    /* (non-Javadoc)
-     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-     */
-    public void actionPerformed(ActionEvent e)
-    {
-        boolean doSelect = e.getSource() == selectAll;
-        for (JToggleButton tb : buttons)
-        {
-            tb.setSelected(doSelect);
-        }
+        panel.setAddSelectAll(addSelectAll);
     }
 
     /**
@@ -289,7 +125,7 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog implements ActionLis
      */
     public void setUseScrollPane(boolean useScrollPane)
     {
-        this.useScrollPane = useScrollPane;
+        panel.setUseScrollPane(useScrollPane);
     }
 
     /**
@@ -298,16 +134,7 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog implements ActionLis
      */
     public T getSelectedObject()
     {
-        int inx = 0;
-        for (JToggleButton tb : buttons)
-        {
-            if (tb.isSelected())
-            {
-                return items.get(inx);
-            }
-            inx++;
-        }
-        return null;
+        return panel.getSelectedObject();
     }
     
     /**
@@ -316,16 +143,7 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog implements ActionLis
      */
     public void setSelectedIndex(final int index)
     {
-        if (okBtn != null)
-        {
-            if (index > -1 && index < buttons.size())
-            {
-                buttons.get(index).setSelected(true);
-            }
-        } else
-        {
-            initialSelectedIndex = index;
-        }
+        panel.setSelectedIndex(index);
     }
     
     /**
@@ -334,16 +152,7 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog implements ActionLis
      */
     public int getSelectedIndex()
     {
-        int inx = 0;
-        for (JToggleButton tb : buttons)
-        {
-            if (tb.isSelected())
-            {
-                return inx;
-            }
-            inx++;
-        } 
-        return -1;
+        return panel.getSelectedIndex();
     }
 
     /**
@@ -352,26 +161,7 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog implements ActionLis
      */
     public void setSelectedObjects(final List<T> selectedItems)
     {
-        if (okBtn == null)
-        {
-            this.selectedItems = selectedItems;
-            
-        } else if (selectedItems != null)
-        {
-            for (T obj : selectedItems)
-            {
-                int inx = 0;
-                for (JToggleButton tb : buttons)
-                {
-                    if (obj == items.get(inx))
-                    {
-                        tb.setSelected(true);
-                        break;
-                    }
-                    inx++;
-                }
-            }
-        }
+        panel.setSelectedObjects(selectedItems);
     }
 
     /**
@@ -380,17 +170,7 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog implements ActionLis
      */
     public List<T> getSelectedObjects()
     {
-        List<T> list = new Vector<T>();
-        int inx = 0;
-        for (JToggleButton tb : buttons)
-        {
-            if (tb.isSelected())
-            {
-                list.add(items.get(inx));
-            }
-            inx++;
-        }
-        return list;
+        return panel.getSelectedObjects();
     }
 
     /* (non-Javadoc)

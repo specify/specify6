@@ -7,7 +7,7 @@
 /**
  * 
  */
-package edu.ku.brc.specify.tasks.subpane;
+package edu.ku.brc.af.core;
 
 import java.awt.Component;
 
@@ -30,13 +30,23 @@ import edu.ku.brc.ui.IconManager;
 public class TableNameRenderer extends DefaultListCellRenderer 
 {
     protected IconManager.IconSize iconSize;
+    protected ImageIcon            blankIcon;
     
+    public TableNameRenderer() 
+    {
+        // Don't paint behind the component
+        this.setOpaque(false);
+        this.iconSize  = null;
+        this.blankIcon = null;
+    }
+
     public TableNameRenderer(final IconManager.IconSize iconSize) 
     {
         // Don't paint behind the component
-            this.setOpaque(false);
-            this.iconSize = iconSize;
-        }
+        this.setOpaque(false);
+        this.iconSize  = iconSize;
+        this.blankIcon = IconManager.getIcon("Blank", iconSize);
+    }
 
     public Component getListCellRendererComponent(JList list,
                                                   Object value,   // value to display
@@ -46,9 +56,12 @@ public class TableNameRenderer extends DefaultListCellRenderer
     {
         super.getListCellRendererComponent(list, value, index, iss, chf);
 
-        TableNameRendererIFace ti = (TableNameRendererIFace)value;
-        ImageIcon icon = IconManager.getIcon(ti.getIconName(), iconSize);
-        setIcon(icon != null ? icon : IconManager.getIcon("BlankIcon", iconSize));
+        TableNameRendererIFace ti   = (TableNameRendererIFace)value;
+        if (iconSize != null)
+        {
+            ImageIcon              icon = IconManager.getIcon(ti.getIconName(), iconSize);
+            setIcon(icon != null ? icon : blankIcon);
+        }
         
         if (iss) {
             setOpaque(true);
@@ -65,12 +78,12 @@ public class TableNameRenderer extends DefaultListCellRenderer
         setText(ti.getTitle());
         return this;
     }
-    
-    public interface TableNameRendererIFace
+
+    /**
+     * @param useIconName the icon to use instead for blank icons
+     */
+    public void setUseIcon(final String useIconName)
     {
-        public String getIconName();
-        
-        public String getTitle();
-        
+        blankIcon = IconManager.getIcon(useIconName, iconSize);
     }
 }

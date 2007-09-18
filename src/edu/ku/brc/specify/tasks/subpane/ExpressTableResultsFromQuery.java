@@ -17,7 +17,7 @@
  */
 package edu.ku.brc.specify.tasks.subpane;
 
-import edu.ku.brc.af.core.ExpressSearchResults;
+import edu.ku.brc.af.core.QueryForIdResultsSQL;
 import edu.ku.brc.af.core.ExpressSearchSQLAdjuster;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
 
@@ -29,20 +29,23 @@ import edu.ku.brc.dbsupport.SQLExecutionProcessor;
  * Created Date: Aug 20, 2007
  *
  */
-public class ExpressTableResultsFromQuery extends ExpressTableResults//ExpressTableResultsBase implements SQLExecutionListener
+public class ExpressTableResultsFromQuery extends ESResultsTablePanel
 {
 
     public ExpressTableResultsFromQuery(final ExpressSearchResultsPaneIFace esrPane,
-                                        final ExpressSearchResults          results,
+                                        final QueryForIdResultsSQL          results,
                                         final boolean                       installServices)
     {
-        super(esrPane, results, installServices);
+        super(esrPane, results, installServices, true);
         
         String adjustedSQL = ExpressSearchSQLAdjuster.getInstance().adjustSQL(results.getTableInfo().getViewSql());
         
+        throw new RuntimeException("Who called this???");
+        /*
         sqlExecutor = new SQLExecutionProcessor(this, adjustedSQL);
         sqlExecutor.setAutoCloseConnection(false);
         sqlExecutor.start();
+        */
     }
     
 }

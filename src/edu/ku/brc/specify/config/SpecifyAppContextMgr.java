@@ -19,8 +19,10 @@ import static edu.ku.brc.helpers.XMLHelper.getAttr;
 import java.awt.Frame;
 import java.io.File;
 import java.io.FileInputStream;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -52,10 +54,11 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.ToggleButtonChooserDlg.Type;
+import edu.ku.brc.ui.ToggleButtonChooserPanel.Type;
 import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
+import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.ViewSetMgr;
 import edu.ku.brc.ui.forms.persist.View;
 import edu.ku.brc.ui.forms.persist.ViewSet;
@@ -225,6 +228,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 {
                     Collection cs = (Collection)obj;
                     collectionHash.put(cs.getCollectionName(), cs);
+                    log.debug(cs.getCollectionName());
                 }
                 
                 if (collectionHash.size() == 1)
@@ -250,6 +254,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
                             }
                             i++;
                         }
+                    } else
+                    {
+                        log.error("Collection was null!");
                     }
 
                     ToggleButtonChooserDlg<Collection> dlg = new ToggleButtonChooserDlg<Collection>((Frame)UIRegistry.get(UIRegistry.FRAME),
@@ -693,6 +700,17 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     public AppResourceIFace getResource(final String name)
     {
+        return  getResource(name, true);
+    }
+
+    /**
+     * Get A Resource with the option of checking the backstop.
+     * @param name the name of the resource
+     * @param checkBackStop whether to check the backstop
+     * @return the resource
+     */
+    protected AppResourceIFace getResource(final String name, final boolean checkBackStop)
+    {
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
@@ -722,11 +740,16 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
         }
         
-        if (backStopAppResMgr == null)
+        if (checkBackStop)
         {
-            throw new RuntimeException("The backStopAppResMgr is null which means somehow a call was made to this method before the backStopAppResMgr was initialized.");
+            if (backStopAppResMgr == null)
+            {
+                throw new RuntimeException("The backStopAppResMgr is null which means somehow a call was made to this method before the backStopAppResMgr was initialized.");
+            }
+            return backStopAppResMgr.getAppResource(name);
         }
-        return backStopAppResMgr.getAppResource(name);
+        
+        return null;
     }
 
     /* (non-Javadoc)
@@ -734,7 +757,31 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     public Element getResourceAsDOM(final String name)
     {
+        try
+        {
+            String xmlStr = getResourceAsXML(name);
+            if (StringUtils.isNotEmpty(xmlStr))
+            {
+                return XMLHelper.readStrToDOM4J(xmlStr);
+            }
+
+        } catch (Exception ex)
+        {
+            log.error(ex);
+            throw new RuntimeException(ex);
+        }
+
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.AppContextMgr#getResourceAsXML(java.lang.String)
+     */
+    @Override
+    public String getResourceAsXML(String name)
+    {
         AppResourceIFace appResource = getResource(name);
+        
         if (appResource != null && appResource instanceof AppResource)
         {
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
@@ -750,7 +797,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 {
                     try
                     {
-                        return XMLHelper.readStrToDOM4J(appRes.getDataAsString());
+                        return appRes.getDataAsString();
     
                     } catch (Exception ex)
                     {
@@ -775,6 +822,116 @@ public class SpecifyAppContextMgr extends AppContextMgr
             log.debug("Couldn't find ["+name+"]");
         }
         return null;
+    }
+    
+    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.AppContextMgr#putResourceAsXML(java.lang.String, java.lang.String)
+     */
+    @Override
+    public void putResourceAsXML(String name, String xmlStr)
+    {
+        AppResourceDefault appResourceDef = null;
+        AppResource        appRes         = null;
+        
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            // Do Not Check Back implicitly
+            AppResourceIFace appResource = getResource(name, false);
+            if (appResource == null)
+            {
+                appResource = backStopAppResMgr.getAppResource(name);
+                
+                if (session != null)
+                {
+                    List<?> appResDefList = session.getDataList( "From AppResourceDefault where specifyUserId = "+user.getSpecifyUserId());
+                    appResourceDef = find(appResDefList, user, Collection.getCurrentCollection(), CollectionType.getCurrentCollectionType());
+                    if (appResourceDef == null)
+                    {
+                        appResourceDef = new AppResourceDefault();
+                        appResourceDef.initialize();
+                        appResourceDef.setCollection(Collection.getCurrentCollection());
+                        appResourceDef.setCollectionType(CollectionType.getCurrentCollectionType());
+                        appResourceDef.setDisciplineType(CollectionType.getCurrentCollectionType().getDiscipline());
+                        appResourceDef.setSpecifyUser(SpecifyUser.getCurrentUser());
+                        appResourceDef.setUserType(SpecifyUser.getCurrentUser().getUserType());
+                    }
+                    
+                    if (appResource instanceof AppResource)
+                    {
+                        try
+                        {
+                            appRes = (AppResource)((AppResource)appResource).clone();
+                            appRes.getAppResourceDefaults().add(appResourceDef);
+                            appResourceDef.getPersistedAppResources().add(appRes);
+                            
+                        } catch (CloneNotSupportedException ex)
+                        {
+                            ex.printStackTrace();
+                            return;
+                        }
+                        
+                    } else
+                    {
+                        log.error("Can't cast from AppResourceIFace to AppResource for["+appResource.getName()+"]" );
+                        return;
+                    }
+                    
+                } else
+                {
+                    return;
+                }
+            } else
+            {
+                appRes  = (AppResource)appResource;
+            }
+    
+            if (appResource != null && appResource instanceof AppResource)
+            {
+                if (appRes.getAppResourceId() != null)
+                {
+                    session.attach(appRes);
+                }
+                
+                if (appRes.getMimeType() != null && appRes.getMimeType().equals("text/xml"))
+                {
+                    try
+                    {
+                        session.beginTransaction();
+                        if (appResourceDef != null)
+                        {
+                            session.save(appResourceDef);
+                        }
+                        appRes.setTimestampModified(new Timestamp(System.currentTimeMillis()));
+                        appRes.setLastEditedBy(FormHelper.getCurrentUserEditStr());
+                        appRes.setDataAsString(xmlStr);
+                        session.save(appRes);
+                        session.commit();
+                        
+                    } catch (Exception ex)
+                    {
+                        log.error(ex);
+                        throw new RuntimeException(ex);
+                    }
+                }
+                
+            } else
+            {
+                log.debug("Couldn't find ["+name+"]");
+            }
+        } catch (Exception ex)
+        {
+            log.error(ex);
+            
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
+        }
     }
 
     /* (non-Javadoc)

@@ -49,8 +49,8 @@ public class SaveRecordSetDlg extends JDialog
     // Data Members
     protected JTable                srcTable;
     protected JTable                dstTable;
-    protected ResultSetTableModelDM srcModel;
-    protected ResultSetTableModelDM dstModel;
+    protected ResultSetTableModel   srcModel;
+    protected ResultSetTableModel   dstModel;
     
     protected JButton               selectAllBtn;
     protected JButton               deselectAllBtn;
@@ -63,7 +63,7 @@ public class SaveRecordSetDlg extends JDialog
      * 
      *
      */
-    public SaveRecordSetDlg(ResultSetTableModelDM srcModel, final int[] preSelectedRows)
+    public SaveRecordSetDlg(ResultSetTableModel srcModel, final int[] preSelectedRows)
     {
         this.srcModel = srcModel;
         createUI(preSelectedRows);
@@ -91,10 +91,10 @@ public class SaveRecordSetDlg extends JDialog
             srcTable = new JTable(srcModel);
             srcTable.setRowSelectionAllowed(true);
             
-            dstModel = new ResultSetTableModelDM(srcModel.getResultSet());
+            // XXXXXXXXXXXXXXXXXXXXXXXXX dstModel = new ResultSetTableModelDM(srcModel.getResultSet());
             dstTable = new JTable(dstModel);
             dstTable.setRowSelectionAllowed(true);
-            dstModel.initializeDisplayIndexes();
+            //dstModel.initializeDisplayIndexes();
             
             JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JScrollPane(srcTable), new JScrollPane(dstTable));
             splitPane.setDividerLocation(325);
@@ -138,7 +138,7 @@ public class SaveRecordSetDlg extends JDialog
             log.error(ex);
         }
         
-        dstModel.addDisplayIndexes(preSelectedRows);
+        //dstModel.addDisplayIndexes(preSelectedRows);
         setContentPane(panel);
         
     }
@@ -150,7 +150,7 @@ public class SaveRecordSetDlg extends JDialog
     protected void addAll()
     {
         srcTable.selectAll();
-        dstModel.addDisplayIndexes(srcTable.getSelectedRows());
+        //dstModel.addDisplayIndexes(srcTable.getSelectedRows());
         srcTable.clearSelection();
     }
     
@@ -161,7 +161,7 @@ public class SaveRecordSetDlg extends JDialog
      */
     protected void addAddSelected()
     {
-        dstModel.addDisplayIndexes(srcTable.getSelectedRows());
+        //dstModel.addDisplayIndexes(srcTable.getSelectedRows());
         srcTable.clearSelection();
         // XXX need to remove duplicates and sort by index number
     }

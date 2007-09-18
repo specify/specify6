@@ -12,6 +12,7 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JList;
 
+import edu.ku.brc.af.core.TableFieldPair;
 import edu.ku.brc.ui.IconManager;
 
 /**

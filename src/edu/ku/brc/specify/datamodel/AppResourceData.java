@@ -28,6 +28,8 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.sql.Timestamp;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -51,14 +53,15 @@ import javax.persistence.Transient;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "appresourcedata")
-public class AppResourceData extends DataModelObjBase implements java.io.Serializable {
+public class AppResourceData extends DataModelObjBase implements java.io.Serializable, Cloneable
+{
 
     // Fields    
 
-     protected Integer        appResourceDataId;
+     protected Integer     appResourceDataId;
      protected byte[]      data;
-     protected AppResource AppResource;
-     protected ViewSetObj  ViewSetObj;
+     protected AppResource appResource;
+     protected ViewSetObj  viewSetObj;
 
 
     // Constructors
@@ -80,6 +83,8 @@ public class AppResourceData extends DataModelObjBase implements java.io.Seriali
         super.init();
         appResourceDataId = null;
         data = null;
+        appResource = null;
+        viewSetObj = null;
     }
     
 
@@ -159,11 +164,11 @@ public class AppResourceData extends DataModelObjBase implements java.io.Seriali
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "AppResourceID", unique = false, nullable = false, insertable = true, updatable = true)
     public AppResource getAppResource() {
-        return this.AppResource;
+        return this.appResource;
     }
     
     public void setAppResource(AppResource AppResource) {
-        this.AppResource = AppResource;
+        this.appResource = AppResource;
     }
 
     /**
@@ -172,11 +177,11 @@ public class AppResourceData extends DataModelObjBase implements java.io.Seriali
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "ViewSetObjID", unique = false, nullable = true, insertable = true, updatable = true)
     public ViewSetObj getViewSetObj() {
-        return this.ViewSetObj;
+        return this.viewSetObj;
     }
     
     public void setViewSetObj(ViewSetObj ViewSetObj) {
-        this.ViewSetObj = ViewSetObj;
+        this.viewSetObj = ViewSetObj;
     }
 
     /* (non-Javadoc)
@@ -196,4 +201,21 @@ public class AppResourceData extends DataModelObjBase implements java.io.Seriali
     {
         return 84;
     }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        AppResourceData obj  = (AppResourceData)super.clone();
+        obj.appResourceDataId = null;
+        obj.timestampCreated  = new Timestamp(System.currentTimeMillis());
+        obj.timestampModified = timestampCreated;
+        obj.data              = data != null ? data.clone() : null;
+        obj.appResource       = appResource;
+        obj.viewSetObj        = viewSetObj;
+        return obj;
+    }
+
 }

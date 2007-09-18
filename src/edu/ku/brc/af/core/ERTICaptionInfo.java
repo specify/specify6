@@ -37,6 +37,8 @@ public class ERTICaptionInfo
     protected String                  formatter;
     protected int                     posIndex;
     
+    protected Class                   colClass = null;
+    
     public ERTICaptionInfo(final Element element)
     {
         super();
@@ -47,33 +49,113 @@ public class ERTICaptionInfo
         this.formatter = getAttr(element, "formatter", null);
     }
 
+    public ERTICaptionInfo(String  colName, 
+                           String  colLabel, 
+                           boolean isVisible, 
+                           String  formatter,
+                           int     posIndex)
+    {
+        super();
+        this.colName = colName;
+        this.colLabel = colLabel;
+        this.isVisible = isVisible;
+        this.formatter = formatter;
+        this.posIndex = posIndex;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.SearchResultsCaptionIFace#getColName()
+     */
     public String getColName()
     {
         return colName;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.SearchResultsCaptionIFace#getColLabel()
+     */
     public String getColLabel()
     {
         return colLabel;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.SearchResultsCaptionIFace#isVisible()
+     */
     public boolean isVisible()
     {
         return isVisible;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.SearchResultsCaptionIFace#getFormatter()
+     */
     public String getFormatter()
     {
         return formatter;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.SearchResultsCaptionIFace#getPosIndex()
+     */
     public int getPosIndex()
     {
         return posIndex;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.SearchResultsCaptionIFace#setPosIndex(int)
+     */
     public void setPosIndex(int posIndex)
     {
         this.posIndex = posIndex;
+    }
+
+    /**
+     * @return the colClass
+     */
+    public Class<?> getColClass()
+    {
+        return colClass;
+    }
+
+    /**
+     * @param colClass the colClass to set
+     */
+    public void setColClass(Class<?> colClass)
+    {
+        this.colClass = colClass;
+    }
+
+    /**
+     * @param colName the colName to set
+     */
+    public void setColName(String colName)
+    {
+        this.colName = colName;
+    }
+
+    /**
+     * @param colLabel the colLabel to set
+     */
+    public void setColLabel(String colLabel)
+    {
+        this.colLabel = colLabel;
+    }
+
+    /**
+     * @param isVisible the isVisible to set
+     */
+    public void setVisible(boolean isVisible)
+    {
+        this.isVisible = isVisible;
+    }
+
+    /**
+     * @param formatter the formatter to set
+     */
+    public void setFormatter(String formatter)
+    {
+        this.formatter = formatter;
     }
 }

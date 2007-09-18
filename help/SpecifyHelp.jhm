@@ -20,7 +20,11 @@
 
 	-->
 	
+	<!-- Express Search Help -->
 	<mapID target="ExpressSearchTellMeMore" url="SpecifyHelp/Express_Search/TellMeMore.html"/>
+	<mapID target="ESConfigSerachFields"    url="SpecifyHelp/Express_Search/ConfigSearchFields.html"/>
+	<mapID target="ESConfigResultsOrdering" url="SpecifyHelp/Express_Search/ConfigResultsOrdering.html"/>
+	<mapID target="ESConfigRelatedTables"   url="SpecifyHelp/Express_Search/ConfigRelatedTables.html"/>
 	
 	
 	<mapID target="Workbench"                  url="SpecifyHelp/Workbench/Overview.html"/>

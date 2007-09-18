@@ -61,8 +61,8 @@ public class ExpressResultsTableInfo
     protected String                    buildSql;
     protected String                    updateSql;
     
-    protected ERTICaptionInfo[]         captionInfo;         
-    protected ERTICaptionInfo[]         visibleCaptionInfo;  
+    protected List<ERTICaptionInfo>     captionInfo;         
+    protected List<ERTICaptionInfo>     visibleCaptionInfo;  
     
     protected Hashtable<String, String> outOfDate     = new Hashtable<String, String>();
     
@@ -70,7 +70,6 @@ public class ExpressResultsTableInfo
     protected String                    staticValueKey   = null;
     protected String                    staticValueValue = null;
 
-    //protected int                       tableType;
     protected int                       recordSetColumnInx;
     protected int                       priority;
     protected Color                     color;
@@ -116,9 +115,8 @@ public class ExpressResultsTableInfo
         {
             int captionCount = captionItems.size();
             
-            Vector<ERTICaptionInfo> list = new Vector<ERTICaptionInfo>();
-            captionInfo    = new ERTICaptionInfo[captionCount];
-            int i          = 0;
+            captionInfo = new Vector<ERTICaptionInfo>();
+            int i        = 0;
             for (Iterator<?> capIter = captionItems.iterator(); capIter.hasNext(); )
             {
                 Element captionElement = (Element)capIter.next();
@@ -126,24 +124,22 @@ public class ExpressResultsTableInfo
 
                 if (capInfo.isVisible())
                 {
-                    list.add(capInfo);
+                    captionInfo.add(capInfo);
                     capInfo.setPosIndex(i);
                 } else
                 {
                     capInfo.setPosIndex(-1);
                 }
-                captionInfo[i] = capInfo;
                 i++;
             }
             
-            if (list.size() != captionCount)
+            if (captionInfo.size() != captionCount)
             {
                 // Create mappings of visible items
-                visibleCaptionInfo = new ERTICaptionInfo[list.size()];
-                i = 0;
-                for (ERTICaptionInfo c : list)
+                visibleCaptionInfo = new Vector<ERTICaptionInfo>(captionInfo.size());
+                for (ERTICaptionInfo c : captionInfo)
                 {
-                    visibleCaptionInfo[i++] = c;
+                    visibleCaptionInfo.add(c);
                 }
             }
             
@@ -236,7 +232,7 @@ public class ExpressResultsTableInfo
      * Returns an array of ERTIColInfo Objects that describe the indexed Columns.
      * @return an array of the columns that are to be indexes
      */
-    public ERTICaptionInfo[] getVisibleCaptionInfo()
+    public List<ERTICaptionInfo> getVisibleCaptionInfo()
     {
         return visibleCaptionInfo;
     }
@@ -245,7 +241,7 @@ public class ExpressResultsTableInfo
      * Returns an array of ERTIColInfo Objects that describe the indexed Columns.
      * @return an array of the columns that are to be indexes
      */
-    public ERTICaptionInfo[] getCaptionInfo()
+    public List<ERTICaptionInfo> getCaptionInfo()
     {
         return captionInfo;
     }
@@ -374,7 +370,7 @@ public class ExpressResultsTableInfo
 
     public int getVisColCount()
     {
-        return visibleCaptionInfo.length;
+        return visibleCaptionInfo.size();
     }
 
     public int getRecordSetColumnInx()
@@ -421,5 +417,159 @@ public class ExpressResultsTableInfo
         }
         return -1;
     }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(String id)
+    {
+        this.id = id;
+    }
+
+    /**
+     * @param tableId the tableId to set
+     */
+    public void setTableId(String tableId)
+    {
+        this.tableId = tableId;
+    }
+
+    /**
+     * @param title the title to set
+     */
+    public void setTitle(String title)
+    {
+        this.title = title;
+    }
+
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
+    /**
+     * @param isExpressSearch the isExpressSearch to set
+     */
+    public void setExpressSearch(boolean isExpressSearch)
+    {
+        this.isExpressSearch = isExpressSearch;
+    }
+
+    /**
+     * @param isIndexed the isIndexed to set
+     */
+    public void setIndexed(boolean isIndexed)
+    {
+        this.isIndexed = isIndexed;
+    }
+
+    /**
+     * @param iconName the iconName to set
+     */
+    public void setIconName(String iconName)
+    {
+        this.iconName = iconName;
+    }
+
+    /**
+     * @param colInfo the colInfo to set
+     */
+    public void setColInfo(ERTIColInfo[] colInfo)
+    {
+        this.colInfo = colInfo;
+    }
+
+    /**
+     * @param joinCols the joinCols to set
+     */
+    public void setJoinCols(ERTIJoinColInfo[] joinCols)
+    {
+        this.joinCols = joinCols;
+    }
+
+    /**
+     * @param useHitsCache the useHitsCache to set
+     */
+    public void setUseHitsCache(boolean useHitsCache)
+    {
+        this.useHitsCache = useHitsCache;
+    }
+
+    /**
+     * @param patternSql the patternSql to set
+     */
+    public void setPatternSql(String patternSql)
+    {
+        this.patternSql = patternSql;
+    }
+
+    /**
+     * @param buildSql the buildSql to set
+     */
+    public void setBuildSql(String buildSql)
+    {
+        this.buildSql = buildSql;
+    }
+
+    /**
+     * @param updateSql the updateSql to set
+     */
+    public void setUpdateSql(String updateSql)
+    {
+        this.updateSql = updateSql;
+    }
+
+    /**
+     * @param outOfDate the outOfDate to set
+     */
+    public void setOutOfDate(Hashtable<String, String> outOfDate)
+    {
+        this.outOfDate = outOfDate;
+    }
+
+    /**
+     * @param staticValueKey the staticValueKey to set
+     */
+    public void setStaticValueKey(String staticValueKey)
+    {
+        this.staticValueKey = staticValueKey;
+    }
+
+    /**
+     * @param staticValueValue the staticValueValue to set
+     */
+    public void setStaticValueValue(String staticValueValue)
+    {
+        this.staticValueValue = staticValueValue;
+    }
+
+    /**
+     * @param recordSetColumnInx the recordSetColumnInx to set
+     */
+    public void setRecordSetColumnInx(int recordSetColumnInx)
+    {
+        this.recordSetColumnInx = recordSetColumnInx;
+    }
+
+    /**
+     * @param priority the priority to set
+     */
+    public void setPriority(int priority)
+    {
+        this.priority = priority;
+    }
+
+    /**
+     * @param color the color to set
+     */
+    public void setColor(Color color)
+    {
+        this.color = color;
+    }
+    
+    
 }
 

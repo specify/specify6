@@ -124,32 +124,50 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
      * Constructor.
      * @param formatter the formatters
      */
-    public ValFormattedTextField(final UIFieldFormatterIFace formatter, final boolean isViewOnly)
+    public ValFormattedTextField(final UIFieldFormatterIFace formatter, final boolean isViewOnly, final boolean isAllEditable)
     {
         this();
         
         this.isViewOnly = isViewOnly;
         
-        init(formatter);
+        init(formatter, isAllEditable);
+    }
+
+    /**
+     * Constructor.
+     * @param formatter the formatters
+     */
+    public ValFormattedTextField(final UIFieldFormatterIFace formatter, final boolean isViewOnly)
+    {
+        this(formatter, isViewOnly, false);
+    }
+
+    /**
+     * Constructor.
+     * @param formatter the formatters
+     */
+    public ValFormattedTextField(final String formatterName, final boolean isViewOnly)
+    {
+        this(formatterName, isViewOnly, false);
     }
 
     /**
      * Constructor
      * @param formatterName the formatters name
      */
-    public ValFormattedTextField(final String formatterName, final boolean isViewOnly)
+    public ValFormattedTextField(final String formatterName, final boolean isViewOnly, final boolean isAllEditable)
     {
         super();
 
         this.isViewOnly = isViewOnly;
         
-        init(UIFieldFormatterMgr.getFormatter(formatterName));
+        init(UIFieldFormatterMgr.getFormatter(formatterName), isAllEditable);
     }
     
     /**
      * 
      */
-    protected void init(final UIFieldFormatterIFace formatterArg)
+    protected void init(final UIFieldFormatterIFace formatterArg, final boolean isAllEditable)
     {
         setFormatterInternal(formatterArg);
         
@@ -167,7 +185,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
         //    setBackground(viewFieldColor.getColor());
         //}
         
-        if (!isViewOnly && comps != null)
+        if (!isViewOnly && comps != null && !isAllEditable)
         {
             int inx = 0;
             for (UIFieldFormatterField field : fields)

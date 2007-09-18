@@ -22,14 +22,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.SimpleAnalyzer;
-import org.apache.lucene.search.Hits;
 
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -37,18 +33,16 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.ExpressSearchResults;
 import edu.ku.brc.af.core.NavBoxLayoutManager;
+import edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
-import edu.ku.brc.specify.tasks.subpane.ExpressTableResults;
-import edu.ku.brc.specify.tasks.subpane.ExpressTableResultsBase;
-import edu.ku.brc.specify.tasks.subpane.ExpressTableResultsHitsCache;
+import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanel;
 import edu.ku.brc.specify.ui.DBObjSearchDialog;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.ViewFactory;
 import edu.ku.brc.ui.forms.Viewable;
@@ -86,7 +80,7 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
     protected Color          textBGColor    = null;
     protected Color          badSearchColor = new Color(255,235,235);
 
-    protected ExpressTableResultsBase  etrb;
+    protected ESResultsTablePanel  etrb;
 
     protected int            tableId        = -1;
     protected RecordSetIFace      recordSet      = null;
@@ -106,7 +100,6 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
     public AgentSearchDialogES(final Frame parent) throws HeadlessException
     {
         super(parent, getResourceString("AgentSearchTitle"), true);
-        lucenePath = ExpressSearchTask.getIndexDirPath();
         tableId    = DBTableIdMgr.getInstance().getIdByShortName("agent");
 
         String[] mappings = {"lastName", "lastname", "firstName", "firstname"};
@@ -246,15 +239,16 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
         if (isNotEmpty(searchTerm))
         {
             contentPanel.removeAll();
-            ExpressSearchTask.doQuery(lucenePath, analyzer, searchText, badSearchColor, this);
+            ExpressSearchTask.doQuery(searchText, badSearchColor, this);
         }
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace#addSearchResults(edu.ku.brc.specify.tasks.ExpressResultsTableInfo, org.apache.lucene.search.Hits)
      */
-    public void addSearchResults(final ExpressSearchResults results, final Hits hits)
+    public void addSearchResults(final QueryForIdResultsIFace results)
     {
+        /* XYZ
         //System.out.println(tableInfo.getTitle()+"  "+tableInfo.getTableId() + "  " + tableId);
         if (Integer.parseInt(results.getTableInfo().getTableId()) == tableId)
         {
@@ -277,12 +271,6 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
                         if (etrb != null && !e.getValueIsAdjusting())
                         {
                             recordSet = etrb.getRecordSet(false);
-                            /*for (Object obj : recordSet.getItems())
-                            {
-                                RecordSetItem rsi = (RecordSetItem)obj;
-                                System.out.println(rsi.getRecordId());
-                            }*/
-
                         } else
                         {
                             recordSet = null;
@@ -291,13 +279,14 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
                     }});
             repaint();
         }
+        */
     }
 
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace#removeTable(edu.ku.brc.specify.tasks.subpane.ExpressTableResultsBase)
      */
-    public void removeTable(ExpressTableResultsBase expTblRes)
+    public void removeTable(ESResultsTablePanel expTblRes)
     {
         expTblRes.cleanUp();
         
@@ -314,7 +303,7 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace#addTable(edu.ku.brc.specify.tasks.subpane.ExpressTableResultsBase)
      */
-    public void addTable(ExpressTableResultsBase expTblRes)
+    public void addTable(ESResultsTablePanel expTblRes)
     {
         // it has already been added so don't do anything
     }

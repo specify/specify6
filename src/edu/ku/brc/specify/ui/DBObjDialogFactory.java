@@ -27,6 +27,7 @@ import org.dom4j.Element;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.exceptions.ConfigurationException;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.ViewBasedDialogFactoryIFace;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.db.ViewBasedDisplayFrame;
@@ -143,7 +144,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
                         info.getViewSetName(),
                         info.getViewName(),
                         info.getSearchName(),
-                        info.getTitle(),
+                        UIRegistry.getResourceString(info.getTitle()),
                         info.getClassName(),
                         info.getIdFieldName()
                         );
@@ -153,7 +154,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
                     info.getViewSetName(),
                     info.getViewName(),
                     info.getSearchName(),
-                    info.getTitle(),
+                    UIRegistry.getResourceString(info.getTitle()),
                     info.getClassName(),
                     info.getIdFieldName()
                     );                

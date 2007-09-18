@@ -1916,11 +1916,6 @@ public class FormViewObj implements Viewable,
     @SuppressWarnings("unchecked")
     protected void setDataObj(final Object dataObj, final boolean alreadyInTheList)
     {
-        if (dataObj instanceof Locality)
-        {
-            int x = 0;
-            x++;
-        }
         // Convert the Set over to a List so the RecordController can be used
         Object data = dataObj;
         if (!alreadyInTheList)

@@ -16,7 +16,6 @@
 package edu.ku.brc.specify.tasks.subpane;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
-import static edu.ku.brc.ui.UIHelper.centerAndShow;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -29,9 +28,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -42,9 +38,6 @@ import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.dbsupport.SQLExecutionListener;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.specify.ui.db.ResultSetTableModel;
-import edu.ku.brc.specify.ui.db.ResultSetTableModelDM;
-import edu.ku.brc.specify.ui.db.SaveRecordSetDlg;
-import edu.ku.brc.ui.UIRegistry;
 /**
  * A pane with a text field for entring in a query and then the results are displayed in a table.
  * 
@@ -159,10 +152,10 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
             saveToRSBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) 
                 {
-                    ResultSetTableModelDM resultSet = new ResultSetTableModelDM(((ResultSetTableModel)table.getModel()).getResultSet());
-                    SaveRecordSetDlg dlg = new SaveRecordSetDlg(resultSet, table.getSelectedRows());
+                    //ResultSetTableModelDM resultSet = new ResultSetTableModelDM(((ResultSetTableModel)table.getModel()).getResultSet());
+                    //SaveRecordSetDlg dlg = new SaveRecordSetDlg(resultSet, table.getSelectedRows());
                    
-                    centerAndShow(dlg);
+                    //centerAndShow(dlg);
                 }
             });
             enableUI(true);
@@ -268,12 +261,13 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
      */
     public void exectionDone(final SQLExecutionProcessor process, final java.sql.ResultSet resultSet)
     {
+        /*
         if (this.hideSQLField)
         {
             removeAll();
             add(new JScrollPane(table), BorderLayout.CENTER);            
         }
-        table.setModel(new ResultSetTableModel(resultSet));
+        table.setModel(new ResultSetTableModel("", resultSet));
         
         table.setRowSelectionAllowed(true);
         //table.getSelectionModel().addListSelectionListener(this);
@@ -289,7 +283,9 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
         sqlExecutor = null;
         enableUI(true);
         
-        UIRegistry.forceTopFrameRepaint();    
+        UIRegistry.forceTopFrameRepaint(); 
+        
+           */
         
     }
     

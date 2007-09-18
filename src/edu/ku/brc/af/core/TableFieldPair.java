@@ -4,7 +4,7 @@
      * [INSERT KU-APPROVED LICENSE TEXT HERE]
      *
      */
-package edu.ku.brc.specify.tasks.subpane;
+package edu.ku.brc.af.core;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableIdMgr.FieldInfo;

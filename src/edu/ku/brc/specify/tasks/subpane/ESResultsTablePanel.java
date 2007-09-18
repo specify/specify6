@@ -22,6 +22,8 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,12 +43,11 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.ContextMgr;
-import edu.ku.brc.af.core.ExpressResultsTableInfo;
-import edu.ku.brc.af.core.ExpressSearchResults;
 import edu.ku.brc.af.core.ServiceInfo;
+import edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
-import edu.ku.brc.specify.ui.db.ResultSetTableModelDM;
+import edu.ku.brc.specify.ui.db.ResultSetTableModel;
 import edu.ku.brc.ui.CloseButton;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -55,6 +56,7 @@ import edu.ku.brc.ui.GradiantLabel;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.TriangleButton;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * This is a single set of of results and is derived from a query where all the record numbers where
@@ -66,9 +68,9 @@ import edu.ku.brc.ui.UIHelper;
  * @author rods
  *
  */
-public abstract class ExpressTableResultsBase extends JPanel implements Comparable<ExpressTableResultsBase>
+public class ESResultsTablePanel extends JPanel implements Comparable<ESResultsTablePanel>, PropertyChangeListener
 {
-	private static final Logger log = Logger.getLogger(ExpressTableResultsBase.class);
+	private static final Logger log = Logger.getLogger(ESResultsTablePanel.class);
 
     protected static final Cursor handCursor    = new Cursor(Cursor.HAND_CURSOR);
     protected static final Cursor defCursor     = new Cursor(Cursor.DEFAULT_CURSOR);
@@ -85,8 +87,10 @@ public abstract class ExpressTableResultsBase extends JPanel implements Comparab
     protected JPanel                   morePanel      = null;
     protected Color                    bannerColor    = new Color(30, 144, 255);    // XXX PREF
     protected int                      topNumEntries  = 7;
-    protected ExpressSearchResults     results;
-    protected ExpressResultsTableInfo  tableInfo;
+    protected QueryForIdResultsIFace   results;
+    
+    protected GradiantLabel            topTitleBar;
+    protected JButton                  moreBtn;
 
     /**
      * Constructor of a results "table" which is really a panel
@@ -94,25 +98,25 @@ public abstract class ExpressTableResultsBase extends JPanel implements Comparab
      * @param tableInfo the info describing the results
      * @param installServices indicates whether services should be installed
      */
-    public ExpressTableResultsBase(final ExpressSearchResultsPaneIFace esrPane,
-                                   final ExpressSearchResults          results,
-                                   final boolean                       installServices)
+    public ESResultsTablePanel(final ExpressSearchResultsPaneIFace esrPane,
+                                   final QueryForIdResultsIFace    results,
+                                   final boolean                   installServices,
+                                   final boolean                   isExpandedAtStartUp)
     {
         super(new BorderLayout());
 
         this.esrPane     = esrPane;
         this.results     = results;
-        this.tableInfo   = results.getTableInfo();
-        this.bannerColor = tableInfo.getColor();
+        this.bannerColor = results.getBannerColor();
 
         table = new JTable();
         table.setShowVerticalLines(false);
         table.setRowSelectionAllowed(true);
         setBackground(table.getBackground());
 
-        GradiantLabel vl = new GradiantLabel(tableInfo.getTitle(), SwingConstants.LEFT);
-        vl.setForeground(bannerColor);
-        vl.setTextColor(Color.WHITE);
+        topTitleBar = new GradiantLabel(results.getTitle(), SwingConstants.LEFT);
+        topTitleBar.setForeground(bannerColor);
+        topTitleBar.setTextColor(Color.WHITE);
 
         expandBtn = new TriangleButton();
         expandBtn.setToolTipText(getResourceString("CollapseTBL"));
@@ -125,7 +129,7 @@ public abstract class ExpressTableResultsBase extends JPanel implements Comparab
         showTopNumEntriesBtn.setVisible(false);
         showTopNumEntriesBtn.setCursor(handCursor);
 
-        List<ServiceInfo> services = installServices ? ContextMgr.checkForServices(Integer.parseInt(tableInfo.getTableId())) :
+        List<ServiceInfo> services = installServices ? ContextMgr.checkForServices(results.getTableId()) :
                                                        new ArrayList<ServiceInfo>();
 
         //System.out.println("["+tableInfo.getTableId()+"]["+services.size()+"]");
@@ -140,7 +144,7 @@ public abstract class ExpressTableResultsBase extends JPanel implements Comparab
         builder.add(expandBtn, cc.xy(col,1));
         col += 2;
 
-        builder.add(vl, cc.xy(col,1));
+        builder.add(topTitleBar, cc.xy(col,1));
         col += 2;
 
         builder.add(showTopNumEntriesBtn, cc.xy(col,1));
@@ -154,7 +158,7 @@ public abstract class ExpressTableResultsBase extends JPanel implements Comparab
             btn.setForeground(bannerColor);
             builder.add(btn, cc.xy(col,1));
 
-            btn.addActionListener(new ESTableAction(serviceInfo.getCommandAction(), table, tableInfo));
+            btn.addActionListener(new ESTableAction(serviceInfo.getCommandAction(), table));
 
             col += 2;
 
@@ -179,23 +183,15 @@ public abstract class ExpressTableResultsBase extends JPanel implements Comparab
         expandBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
-                boolean isExpanded = !expandBtn.isDown();
-
-                expandBtn.setDown(isExpanded);
-                expandBtn.setToolTipText(isExpanded ? getResourceString("CollapseTBL") : getResourceString("ExpandTBL"));
-
-                tablePane.setVisible(isExpanded);
-
-                if (!showingAllRows && morePanel != null)
-                {
-                    morePanel.setVisible(isExpanded);
-                }
-                invalidate();
-                doLayout();
-                esrPane.revalidateScroll();
+                expandTable(false);
             }
         });
-
+        
+        if (!isExpandedAtStartUp)
+        {
+            expandTable(true);
+        }
+        
         showTopNumEntriesBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
@@ -229,13 +225,75 @@ public abstract class ExpressTableResultsBase extends JPanel implements Comparab
 
             }
         });
-    }
+        
+        //-----------------
+        
+        esrPane.addTable(this);
 
+        ResultSetTableModel rsm = new ResultSetTableModel(results);
+        rsm.setPropertyListener(this);
+
+        table.setRowSelectionAllowed(true);
+        table.setModel(rsm);
+
+        configColumns();
+
+        rowCount = rsm.getRowCount();
+        if (rowCount > topNumEntries + 2)
+        {
+            buildMorePanel();
+            setDisplayRows(rowCount, topNumEntries);
+        } else
+        {
+            setDisplayRows(rowCount, Integer.MAX_VALUE);
+        }
+
+        invalidate();
+        doLayout();
+        UIRegistry.forceTopFrameRepaint();
+        
+
+    }
+    
+    /**
+     * @param isInitial
+     */
+    protected void expandTable(final boolean isInitial)
+    {
+        boolean isExpanded = !expandBtn.isDown();
+
+        expandBtn.setDown(isExpanded);
+        expandBtn.setToolTipText(isExpanded ? getResourceString("CollapseTBL") : getResourceString("ExpandTBL"));
+
+        tablePane.setVisible(isExpanded);
+
+        if (!showingAllRows && morePanel != null)
+        {
+            morePanel.setVisible(isExpanded);
+        }
+        
+        if (!isInitial)
+        {
+            invalidate();
+            doLayout();
+            esrPane.revalidateScroll();
+        }
+    } 
+    
+    protected void setTitleBar()
+    {
+        topTitleBar.setText(rowCount > 0 ? String.format("%s - %d", results.getTitle(), rowCount) : results.getTitle());
+        if (moreBtn != null)
+        {
+            moreBtn.setText(String.format(getResourceString("MoreEntries"), new Object[] {(rowCount - topNumEntries)}));
+        }
+    }
+    
     /**
      * Returns the ExpressSearchResults object.
      * @return the ExpressSearchResults object.
      */
-    public ExpressSearchResults getResults()
+    public QueryForIdResultsIFace getResults()
     {
         return results;
     }
@@ -260,7 +318,6 @@ public abstract class ExpressTableResultsBase extends JPanel implements Comparab
         }
         esrPane   = null;
         results   = null;
-        tableInfo = null;
     }
 
     /**
@@ -291,12 +348,12 @@ public abstract class ExpressTableResultsBase extends JPanel implements Comparab
         PanelBuilder    builder    = new PanelBuilder(formLayout);
         CellConstraints cc         = new CellConstraints();
 
-        JButton btn = new JButton(String.format(getResourceString("MoreEntries"), new Object[] {(rowCount - topNumEntries)}));//(rowCount - topNumEntries)+" more...");
-        btn.setCursor(handCursor);
+        moreBtn = new JButton(String.format(getResourceString("MoreEntries"), new Object[] {(rowCount - topNumEntries)}));//(rowCount - topNumEntries)+" more...");
+        moreBtn.setCursor(handCursor);
 
-        btn.setBorderPainted(false);
+        moreBtn.setBorderPainted(false);
         builder.add(new JLabel(" "), cc.xy(1,1));
-        builder.add(btn, cc.xy(3,1));
+        builder.add(moreBtn, cc.xy(3,1));
 
         morePanel = builder.getPanel();
         Color bgColor = table.getBackground();
@@ -304,11 +361,11 @@ public abstract class ExpressTableResultsBase extends JPanel implements Comparab
 
         Color fgColor = new Color(Math.min(bannerColor.getRed()+10, 255), Math.min(bannerColor.getGreen()+10, 255), Math.min(bannerColor.getBlue()+10, 255));
         morePanel.setBackground(bgColor);
-        btn.setBackground(bgColor);
-        btn.setForeground(fgColor);
+        moreBtn.setBackground(bgColor);
+        moreBtn.setForeground(fgColor);
         add(builder.getPanel(), BorderLayout.SOUTH);
 
-        btn.addActionListener(new ActionListener() {
+        moreBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
                 morePanel.setVisible(false);
@@ -318,7 +375,8 @@ public abstract class ExpressTableResultsBase extends JPanel implements Comparab
                 esrPane.revalidateScroll();
             }
         });
-
+        
+        morePanel.setVisible(false);
     }
 
     /**
@@ -352,10 +410,11 @@ public abstract class ExpressTableResultsBase extends JPanel implements Comparab
      */
     protected void setDisplayRows(final int numRows, final int maxNum)
     {
+        @SuppressWarnings("unused")
         int rows = Math.min(numRows, maxNum);
-        ResultSetTableModelDM rsm = (ResultSetTableModelDM)table.getModel();
-        rsm.initializeDisplayIndexes();
-        rsm.addDisplayIndexes(createIndexesArray(rows));
+        //ResultSetTableModel rsm = (ResultSetTableModel)table.getModel();
+        //rsm.initializeDisplayIndexes();
+        //rsm.addDisplayIndexes(createIndexesArray(rows));
     }
 
     /**
@@ -374,7 +433,7 @@ public abstract class ExpressTableResultsBase extends JPanel implements Comparab
      */
     public RecordSetIFace getRecordSet(final boolean returnAll)
     {
-        log.debug("Indexes: "+table.getSelectedRows().length+" Index["+tableInfo.getTableId()+"]");
+        log.debug("Indexes: "+table.getSelectedRows().length+" Index["+results.getTableId()+"]");
         for (int v : table.getSelectedRows())
         {
         	log.debug("["+v+"]");
@@ -389,7 +448,7 @@ public abstract class ExpressTableResultsBase extends JPanel implements Comparab
             table.clearSelection();
             doReturnAll = true;
         }
-        RecordSetIFace rs = getRecordSet(rows, tableInfo.getRecordSetColumnInx(), doReturnAll);
+        RecordSetIFace rs = getRecordSet(rows, results.getRecordSetColumnInx(), doReturnAll);
 
         if (doReturnAll)
         {
@@ -398,7 +457,7 @@ public abstract class ExpressTableResultsBase extends JPanel implements Comparab
 
         // Now we use the actual Table Id from the table info
         // to set it correctly in the RecordSet
-        rs.setDbTableId(Integer.parseInt(tableInfo.getTableId()));
+        rs.setDbTableId(results.getTableId());
         
         return rs;
     }
@@ -429,22 +488,67 @@ public abstract class ExpressTableResultsBase extends JPanel implements Comparab
      * @param returnAll indicates whether all the records should be returned if nothing was selected
      * @return Returns a RecordSet object from the table
      */
-    public abstract RecordSetIFace getRecordSet(final int[] rows, final int column, final boolean returnAll);
+    public RecordSetIFace getRecordSet(final int[] rows, final int column, final boolean returnAll)
+    {
+        ResultSetTableModel rsm = (ResultSetTableModel)table.getModel();
 
-    
+        return rsm.getRecordSet(rows, column, returnAll);
+        
+        /*
+        RecordSet rs = new RecordSet();
+        rs.initialize();
+        
+        if (returnAll)
+        {
+            for (Integer id : results.getRecIds())
+            {
+                log.error(id);
+                rs.addItem(id);
+            }
+        } else
+        {
+            Vector<Integer> ids = results.getRecIds();
+            for (int inx : rows)
+            {
+                rs.addItem(ids.elementAt(inx));
+            }
+        }
+        return rs;
+        */
+    }
+
+    /**
+     * @return the title
+     */
+    public String getTitle()
+    {
+        return results.getTitle();
+    }
+
     /**
      * Comparable interface method.
      * @param obj the objec to compare to
      * @return 0 if equals
      */
-    public int compareTo(ExpressTableResultsBase obj)
+    public int compareTo(ESResultsTablePanel obj)
     {
-        return results.getTableInfo().getTitle().compareTo(obj.getResults().getTableInfo().getTitle());
+        return results.getDisplayOrder().compareTo(obj.results.getDisplayOrder());
     }
     
     //--------------------------------------------------------------
     // Inner Classes
     //--------------------------------------------------------------
+
+    /* (non-Javadoc)
+     * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
+     */
+    @Override
+    public void propertyChange(PropertyChangeEvent evt)
+    {
+        rowCount = (Integer)evt.getNewValue();
+        setTitleBar();
+    }
+
 
     /**
      * 
@@ -454,15 +558,12 @@ public abstract class ExpressTableResultsBase extends JPanel implements Comparab
         protected CommandAction           cmd;
         protected RecordSetIFace          recordSet;
         protected JTable                  estTable;
-        protected ExpressResultsTableInfo estTableInfo;
 
         public ESTableAction(final CommandAction cmd,
-                             final JTable estTable,
-                             final ExpressResultsTableInfo estTableInfo)
+                             final JTable estTable)
         {
             this.cmd          = cmd;
             this.estTable     = estTable;
-            this.estTableInfo = estTableInfo;
         }
 
         public void actionPerformed(ActionEvent e)

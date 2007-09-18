@@ -143,10 +143,11 @@ import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.ProgressDialog;
 import edu.ku.brc.ui.SearchReplacePanel;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
+import edu.ku.brc.ui.ToggleButtonChooserPanel;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UnhandledExceptionDialog;
-import edu.ku.brc.ui.ToggleButtonChooserDlg.Type;
+import edu.ku.brc.ui.ToggleButtonChooserPanel.Type;
 import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.ResultSetController;
 import edu.ku.brc.ui.forms.ResultSetControllerListener;
@@ -2456,7 +2457,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                                                                         items,
                                                                         null,
                                                                         CustomDialog.OKCANCELHELP,
-                                                                        ToggleButtonChooserDlg.Type.Checkbox);
+                                                                        ToggleButtonChooserPanel.Type.Checkbox);
         
         dlg.setHelpContext(currentPanelType == PanelType.Spreadsheet ? "WorkbenchGridEditingCF" : "WorkbenchFormEditingCF");
         dlg.setAddSelectAll(true);

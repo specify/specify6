@@ -37,7 +37,7 @@ public interface CustomQuery
     public boolean execute();
     
     /**
-     * Aysnchronous execution of a query callback notification is on 
+     * Aysnchronous execution of a query callback notification is on  (It uses SwingWorker)
      * @param cql the listener for the results of the exectute
      * @return
      */

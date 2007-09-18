@@ -75,6 +75,7 @@ import edu.ku.brc.af.core.MainPanel;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.UsageTracker;
+import edu.ku.brc.af.core.expresssearch.ExpressSearchConfigDlg;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsEditor;
 import edu.ku.brc.af.prefs.PreferencesDlg;
@@ -652,8 +653,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
                     {
                         public void actionPerformed(ActionEvent ae)
                         {
-                            ExpressSearchTask expressSearchTask = (ExpressSearchTask)ContextMgr.getTaskByName(ExpressSearchTask.EXPRESSSEARCH);
-                            expressSearchTask.showIndexerPane();
+                            ExpressSearchConfigDlg dlg = new ExpressSearchConfigDlg();
+                            dlg.setVisible(true);
                         }
                     });
             

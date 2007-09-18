@@ -42,6 +42,8 @@ public class SQLExecutionProcessor implements Runnable
     protected Connection           dbConnection          = null;
     protected Statement            dbStatement           = null;
     protected boolean              isAutoCloseConnection = true;
+    
+    protected Object               data                  = null;
 
     /**
      * Constructs a an object to execute an SQL staement and then notify the listener. Sets isAutoCloseConnection to true, override with "setAutoCloseConnection".
@@ -247,4 +249,22 @@ public class SQLExecutionProcessor implements Runnable
     {
         return dbConnection;
     }
+
+    /**
+     * @return the data
+     */
+    public Object getData()
+    {
+        return data;
+    }
+
+    /**
+     * @param data the data to set
+     */
+    public void setData(Object data)
+    {
+        this.data = data;
+    }
+    
+    
 }

@@ -62,6 +62,7 @@
     <icon name="GeologicTimePeriod" file="geologictime.png" sizes="all"/>
     <icon name="Template"      file="template.png" sizes="all"/>
     <icon name="ColObjAttributes" file="newworkbench.gif" sizes="32"/>
+    <icon name="PlaceHolder"   file="specify32faded.png" sizes="32"/>
     
     
     <icon name="Labels16"      file="Label16x16.png" sizes="16"/>
@@ -140,6 +141,7 @@
     
     
     <icon name="CreateObj" alias="PlusSign"/>
+    <icon name="RelatedTable" file="RelatedTable.png"  sizes="16"/>
     
     
     <icon name="WebPage"       file="html.png"          sizes="all"/>

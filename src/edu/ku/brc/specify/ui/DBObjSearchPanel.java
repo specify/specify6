@@ -32,6 +32,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -43,7 +44,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.search.Hits;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -52,14 +52,14 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ERTICaptionInfo;
 import edu.ku.brc.af.core.ExpressResultsTableInfo;
-import edu.ku.brc.af.core.ExpressSearchResults;
 import edu.ku.brc.af.core.NavBoxLayoutManager;
+import edu.ku.brc.af.core.QueryForIdResultsSQL;
+import edu.ku.brc.af.core.expresssearch.ExpressSearchConfigCache;
+import edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.specify.tasks.ExpressSearchTask;
+import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanel;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
-import edu.ku.brc.specify.tasks.subpane.ExpressTableResults;
-import edu.ku.brc.specify.tasks.subpane.ExpressTableResultsBase;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.ViewFactory;
 import edu.ku.brc.ui.forms.Viewable;
@@ -108,7 +108,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
 
     protected Hashtable<String, ExpressResultsTableInfo> tables = new Hashtable<String, ExpressResultsTableInfo>();
     protected ExpressResultsTableInfo  tableInfo;
-    protected ExpressTableResultsBase  etrb = null;
+    protected ESResultsTablePanel  etrb = null;
 
     protected List<Integer>  idList         = null;
     protected String         sqlStr;
@@ -266,63 +266,12 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
         {
             public void actionPerformed(final ActionEvent e)
             {
-                panel.removeAll();
-
-                getDataFromUI();
-
-                StringBuilder strBuf = new StringBuilder(256);
-                int cnt = 0;
-                for (ERTICaptionInfo captionInfo : tableInfo.getVisibleCaptionInfo())
-                {
-                    Object value  = dataMap.get(captionInfo.getColName());
-                    log.debug("Column Name["+captionInfo.getColName()+"] Value["+value+"]");
-                    if (value != null)
-                    {
-                        String valStr = value.toString();
-                        if (valStr.length() > 0)
-                        {
-                            if (cnt > 0)
-                            {
-                                strBuf.append(" OR ");
-                            }
-                            strBuf.append(" lower("+captionInfo.getColName()+") like '#$#"+valStr+"#$#'");
-                            cnt++;
-                        }
-                    } else
-                    {
-                        log.debug("DataMap was null for Column Name["+captionInfo.getColName()+"] make sure there is a field of this name in the form.");
-                    }
-                }
-                
-                String fullSQL = sqlStr.replace("%s", strBuf.toString());
-                log.info(fullSQL);
-                fullSQL = fullSQL.replace("#$#", "%");
-                log.info(fullSQL);
-                tableInfo.setViewSql(fullSQL);
-                setUIEnabled(false);
-                
-                ExpressSearchResults results = new ExpressSearchResults(tableInfo.getId(), null, tableInfo);
-                addSearchResults(results, null);
-                
-                if (e.getSource() instanceof JTextField)
-                {
-                   final JTextField txt = (JTextField)e.getSource();
-                   int len = txt.getText().length();
-                   txt.setSelectionEnd(len);
-                   txt.setSelectionStart(0);
-                   
-                   SwingUtilities.invokeLater(new Runnable() {
-                       public void run()
-                       {
-                           txt.requestFocus();
-                       }
-                   });
-                }
+                doStartQuery((JComponent)e.getSource());
             }
         };
 
         
-        ExpressResultsTableInfo tblInfo = ExpressSearchTask.getTableInfoByName(searchName);
+        ExpressResultsTableInfo tblInfo = ExpressSearchConfigCache.getTableInfoByName(searchName);
         if (tblInfo != null)
         {
            tableInfo = tblInfo;
@@ -415,10 +364,72 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
         searchBtn.setEnabled(enabled);
     }
     
+    protected void doStartQuery(final JComponent comp)
+    {
+        panel.removeAll();
+
+        getDataFromUI();
+
+        StringBuilder strBuf = new StringBuilder(256);
+        int cnt = 0;
+        for (ERTICaptionInfo captionInfo : tableInfo.getVisibleCaptionInfo())
+        {
+            Object value  = dataMap.get(captionInfo.getColName());
+            log.debug("Column Name["+captionInfo.getColName()+"] Value["+value+"]");
+            if (value != null)
+            {
+                String valStr = value.toString();
+                if (valStr.length() > 0)
+                {
+                    if (cnt > 0)
+                    {
+                        strBuf.append(" OR ");
+                    }
+                    strBuf.append(" lower("+captionInfo.getColName()+") like '#$#"+valStr+"#$#'");
+                    cnt++;
+                }
+            } else
+            {
+                log.debug("DataMap was null for Column Name["+captionInfo.getColName()+"] make sure there is a field of this name in the form.");
+            }
+        }
+        
+        String fullStrSql = sqlStr;
+        
+        System.out.println("\n1["+sqlStr+"]");
+        System.out.println("2["+strBuf+"]");
+        
+        String fullSQL = fullStrSql.replace("%s", strBuf.toString());
+        log.info(fullSQL);
+        fullSQL = fullSQL.replace("#$#", "%");
+        log.info(fullSQL);
+        //tableInfo.setViewSql(fullSQL);
+        setUIEnabled(false);
+        
+        QueryForIdResultsSQL results = new QueryForIdResultsSQL(tableInfo.getId(), null, tableInfo, 0, "");
+        results.setSQL(fullSQL);
+        addSearchResults(results);
+        
+        if (comp instanceof JTextField)
+        {
+           final JTextField txt = (JTextField)comp;
+           int len = txt.getText().length();
+           txt.setSelectionEnd(len);
+           txt.setSelectionStart(0);
+           
+           SwingUtilities.invokeLater(new Runnable() {
+               public void run()
+               {
+                   txt.requestFocus();
+               }
+           });
+        }
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace#addSearchResults(edu.ku.brc.af.core.ExpressSearchResults, org.apache.lucene.search.Hits)
      */
-    public void addSearchResults(final ExpressSearchResults results, final Hits hits)
+    public void addSearchResults(final QueryForIdResultsIFace results)
     {
         idList = null;
         
@@ -429,7 +440,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
             panel.remove(etrb);
             etrb.cleanUp();
         }
-        panel.add(etrb = new ExpressTableResults(this, results, false));
+        panel.add(etrb = new ESResultsTablePanel(this, results, false, true));
         
         table = etrb.getTable();
         table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -468,7 +479,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.subpane.ExpressSearchResultsPaneIFace#removeTable(edu.ku.brc.af.tasks.subpane.ExpressTableResultsBase)
      */
-    public void removeTable(final ExpressTableResultsBase etrbTable)
+    public void removeTable(final ESResultsTablePanel etrbTable)
     {
         etrbTable.cleanUp();
         
@@ -485,7 +496,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace#addTable(edu.ku.brc.specify.tasks.subpane.ExpressTableResultsBase)
      */
-    public void addTable(final ExpressTableResultsBase etrBase)
+    public void addTable(final ESResultsTablePanel etrBase)
     {
         // It has already been added so don't do anything
     }
@@ -532,4 +543,5 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
         }
         return null;
     }
+    
 }

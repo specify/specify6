@@ -34,14 +34,19 @@ import edu.ku.brc.helpers.SwingWorker;
  * Created Date: Mar 5, 2007
  *
  */
-public class JPAQuery implements CustomQuery
+public class JPAQuery implements CustomQuery, Runnable
 {
     private static final Logger log = Logger.getLogger(JPAQuery.class);
     
     protected String                    sqlStr;
-    protected List<QueryResultsDataObj> qrdoResults = null;
+    //protected List<QueryResultsDataObj> qrdoResults = null;
     protected boolean                   inError     = false;
     protected List<?>                   resultsList = null;
+    
+    protected CustomQueryListener       cql         = null;
+    protected Thread                    thread      = null;
+    protected Object                    data        = null;
+
     
     /**
      * Constructor.
@@ -52,6 +57,41 @@ public class JPAQuery implements CustomQuery
         this.sqlStr = sqlStr;
     }
     
+    /**
+     * Constructor to be used as a Runnable.
+     * @param sqlStr the query string
+     * @param cql the listener
+     */
+    public JPAQuery(final CustomQueryListener cql, final String sqlStr)
+    {
+        this.sqlStr = sqlStr;
+        this.cql    = cql;
+    }
+    
+    /**
+     * @return the inError
+     */
+    public boolean isInError()
+    {
+        return inError;
+    }
+
+    /**
+     * @return the data
+     */
+    public Object getData()
+    {
+        return data;
+    }
+
+    /**
+     * @param data the data to set
+     */
+    public void setData(final Object data)
+    {
+        this.data = data;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQuery#execute()
      */
@@ -66,6 +106,7 @@ public class JPAQuery implements CustomQuery
         {
             try
             {
+                System.out.println("["+sqlStr+"]");
                 Query query = session.createQuery(sqlStr);
                 resultsList = query.list();
                 
@@ -78,10 +119,10 @@ public class JPAQuery implements CustomQuery
             
             inError = resultsList == null;
             
-            for (Object data : resultsList)
+            /*for (Object data : resultsList)
             {
               log.debug(data);
-            }
+            }*/
             
         } catch (Exception ex)
         {
@@ -103,7 +144,7 @@ public class JPAQuery implements CustomQuery
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQuery#execute(edu.ku.brc.dbsupport.CustomQueryListener)
      */
-    public void execute(final CustomQueryListener cql)
+    public void execute(final CustomQueryListener cqlArg)
     {
         final JPAQuery thisItem = this;
 
@@ -120,11 +161,11 @@ public class JPAQuery implements CustomQuery
             {
                 if (inError)
                 {
-                    cql.executionError(thisItem);
+                    cqlArg.executionError(thisItem);
                     
                 } else
                 {
-                    cql.exectionDone(thisItem);
+                    cqlArg.exectionDone(thisItem);
                 }
             }
         };
@@ -153,7 +194,7 @@ public class JPAQuery implements CustomQuery
      */
     public List<QueryResultsContainerIFace> getQueryDefinition()
     {
-        return null;
+        throw new RuntimeException("Not Implemented");
     }
 
     /* (non-Javadoc)
@@ -161,7 +202,7 @@ public class JPAQuery implements CustomQuery
      */
     public List<QueryResultsDataObj> getResults()
     {
-        return null;
+        throw new RuntimeException("Not Implemented");
     }
 
     /* (non-Javadoc)
@@ -171,5 +212,51 @@ public class JPAQuery implements CustomQuery
     {
         return true;
     }
+    
+    //-------------------------------------------------------------------
+    //-- Runnable Interface
+    //-------------------------------------------------------------------
+    
+    /**
+     * Starts the thread to make the SQL call.
+     *
+     */
+    public void start()
+    {
+        thread = new Thread(this);
+        thread.start();
+    }
 
+    /**
+     * Stops the thread making the call.
+     *
+     */
+    public synchronized void stop()
+    {
+        if (thread != null)
+        {
+            thread.interrupt();
+        }
+        thread = null;
+        notifyAll();
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Runnable#run()
+     */
+    public void run()
+    {
+        inError = !execute();
+       
+        if (cql != null)
+        {
+            if (inError)
+            {
+                cql.executionError(this);
+            } else
+            {
+                cql.exectionDone(this);
+            }                
+        }
+    }
 }

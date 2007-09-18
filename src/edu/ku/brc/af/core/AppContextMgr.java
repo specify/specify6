@@ -81,6 +81,22 @@ public abstract class AppContextMgr
     public abstract Element getResourceAsDOM(final String name);
    
     /**
+     * Returns the XML (String) for an Resource that is an XML Resource. 
+     * It will throw an exception if the MimeType is not of "text"xml"
+     * @param name the name of the resource
+     * @return the root element of the XML DOM
+     */
+    public abstract String getResourceAsXML(final String name);
+   
+    /**
+     * Returns the XML (String) for an Resource that is an XML Resource. 
+     * It will throw an exception if the MimeType is not of "text"xml"
+     * @param name the name of the resource
+     * @param xmlStr the XML String
+     */
+    public abstract void putResourceAsXML(final String name, final String xmlStr);
+   
+    /**
      * Sets the current context.
      * @param databaseName the name of the database 
      * @param userName the user name

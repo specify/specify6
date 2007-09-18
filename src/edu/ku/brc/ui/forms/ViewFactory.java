@@ -292,11 +292,13 @@ public class ViewFactory
      * Creates a ValFormattedTextField.
      * @param validator a validator to hook the control up to (may be null)
      * @param cellField the definition of the cell for this control
+     * @param allEditOK indicates that all the fields should be editable (event the auto-numbered field)
      * @return ValFormattedTextField
      */
     protected JComponent createFormattedTextField(final FormValidator validator,
                                                   final FormCellField cellField,
-                                                  final boolean       isViewOnly)
+                                                  final boolean       isViewOnly,
+                                                  final boolean       allEditOK)
     {
         log.debug(cellField.getName()+"  "+cellField.getUIFieldFormatter());
 
@@ -333,7 +335,7 @@ public class ViewFactory
                 
             }
             
-            ValFormattedTextField textField = new ValFormattedTextField(formatter, isViewOnly);
+            ValFormattedTextField textField = new ValFormattedTextField(formatter, isViewOnly, allEditOK);
             textField.setRequired(cellField.isRequired());
             
             DataChangeNotifier dcn = validator.hookupComponent(textField,
@@ -352,7 +354,7 @@ public class ViewFactory
             return vtfs;
         }
         // else
-        ValFormattedTextField vtf = new ValFormattedTextField(cellField.getUIFieldFormatter(), isViewOnly);
+        ValFormattedTextField vtf = new ValFormattedTextField(cellField.getUIFieldFormatter(), isViewOnly, allEditOK);
         vtf.setEnabled(!cellField.isReadOnly());
         return vtf;
     }
@@ -862,7 +864,7 @@ public class ViewFactory
                             break;
                         
                         case formattedtext:
-                            compToAdd = createFormattedTextField(validator, cellField, mode == AltView.CreationMode.View);
+                            compToAdd = createFormattedTextField(validator, cellField, mode == AltView.CreationMode.View, cellField.getPropertyAsBoolean("alledit", false));
                             addToValidator = validator == null; // might already added to validator
                             break;
                             

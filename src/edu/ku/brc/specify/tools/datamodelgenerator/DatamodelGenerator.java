@@ -608,8 +608,10 @@ public class DatamodelGenerator
                 org.hibernate.annotations.Table hiberTableAnno = (org.hibernate.annotations.Table)classObj.getAnnotation(org.hibernate.annotations.Table.class);
                 if (hiberTableAnno != null)
                 {
+                    System.out.println("Table Indexes: ");
                     for (Index index : hiberTableAnno.indexes())
                     {
+                        System.out.println("  "+index.name() + "  "+ index.columnNames());
                         indexes.add(new TableIndex(index.name(), index.columnNames()));
                     }
                 }

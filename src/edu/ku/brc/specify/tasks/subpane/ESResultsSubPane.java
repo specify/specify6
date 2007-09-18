@@ -29,13 +29,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.search.Hits;
 
-import edu.ku.brc.af.core.ExpressResultsTableInfo;
-import edu.ku.brc.af.core.ExpressSearchResults;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxLayoutManager;
 import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.IconManager;
@@ -57,16 +55,15 @@ import edu.ku.brc.ui.UIRegistry;
  *
  */
 @SuppressWarnings("serial")
-public class ExpressSearchResultsPane extends BaseSubPane implements ExpressSearchResultsPaneIFace
+public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResultsPaneIFace
 {
-    private static final Logger log = Logger.getLogger(ExpressSearchResultsPane.class);
+    private static final Logger log = Logger.getLogger(ESResultsSubPane.class);
 
     protected JPanel               contentPanel;
     protected NavBoxLayoutManager  layoutMgr;
     protected JScrollPane          scrollPane;
     
-    protected List<ExpressTableResultsBase> expTblResultsIndexed = new Vector<ExpressTableResultsBase>();
-    protected List<ExpressTableResultsBase> expTblResults        = new Vector<ExpressTableResultsBase>();
+    protected List<ESResultsTablePanel> expTblResults        = new Vector<ESResultsTablePanel>();
     
     protected NavBox      navBox  = null;
     protected int         positionOfUnIndexed = -1;
@@ -74,16 +71,18 @@ public class ExpressSearchResultsPane extends BaseSubPane implements ExpressSear
     protected boolean     added   = false;
     
     // Tables are added here waiting for their first results to come back.
-    protected Vector<ExpressTableResultsBase> expTblResultsCache = new Vector<ExpressTableResultsBase>();
+    protected Vector<ESResultsTablePanel> expTblResultsCache = new Vector<ESResultsTablePanel>();
     
     protected JPanel      explainPanel = null;
+    
+    //protected TableOrderingService tableOrderingService = new TableOrderingService();
 
     /**
      * Default Constructor.
      * @param name the name of the pane
      * @param task the owning task
      */
-    public ExpressSearchResultsPane(final String name,
+    public ESResultsSubPane(final String name,
                                     final Taskable task,
                                     final boolean includeExplainPane)
     {
@@ -115,59 +114,24 @@ public class ExpressSearchResultsPane extends BaseSubPane implements ExpressSear
      * @param tableInfo the information about the table being added
      * @param hits the "hits" results of the search
      */
-    public void addSearchResults(final ExpressSearchResults results, final Hits hits)
+    public void addSearchResults(final QueryForIdResultsIFace results)
     {
 
-        if (results.getTableInfo().isUseHitsCache())
-        {
-            //addTable(new ExpressTableResultsHitsCache(this, results, true, hits));
-            expTblResultsCache.add(new ExpressTableResultsHitsCache(this, results, true, hits));
-            
-        } else
-        {
-            // This will start itself up and if there are results from the query 
-            // it will add itself to the pane (So it is OK that it isn't referenced)
-            @SuppressWarnings("unused")
-            ExpressTableResults resultsTable = new ExpressTableResults(this, results, true);
-        }
+        // This will start itself up and if there are results from the query 
+        // it will add itself to the pane (So it is OK that it isn't referenced)
+        @SuppressWarnings("unused")
+        ESResultsTablePanel resultsTable = new ESResultsTablePanel(this, results, true, false);
     }
 
-
-    /**
-     * Finds the index for the ExpressTableResultsBase item.
-     * @param list the list to be searched
-     * @param expressTableResultsBase the item to look for
-     * @return the index in the list
-     */
-    /*
-    protected int getIndexFor(final List<ResInfoForSort> list, final ExpressTableResultsBase expressTableResultsBase)
-    {
-        int inx = 0;
-        for (ResInfoForSort rfs : list)
-        {
-            if (rfs.getErb() == expressTableResultsBase)
-            {
-                return inx;
-            }
-            inx++;
-        }
-        throw new RuntimeException("Can't find expressTableResultsBase!");
-    }*/
     
     /**
      * Removes a table from the content pane.
      * @param expressTableResultsBase the table of results to be removed
      */
-    public synchronized void removeTable(final ExpressTableResultsBase expressTableResultsBase)
+    public synchronized void removeTable(final ESResultsTablePanel expressTableResultsBase)
     {
-        if (expressTableResultsBase.getResults().getTableInfo().isIndexed())
-        {
-            expTblResultsIndexed.remove(expressTableResultsBase);
-            
-        } else
-        {
-            expTblResults.remove(expressTableResultsBase);
-        }
+
+        expTblResults.remove(expressTableResultsBase);
         
         expressTableResultsBase.cleanUp();
         
@@ -184,86 +148,39 @@ public class ExpressSearchResultsPane extends BaseSubPane implements ExpressSear
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace#addTable(edu.ku.brc.specify.tasks.subpane.ExpressTableResultsBase)
      */
-    public synchronized void addTable(ExpressTableResultsBase expTblRes)
+    public synchronized void addTable(ESResultsTablePanel expTblRes)
     {
-        
         expTblResultsCache.remove(expTblRes);
         
-        ExpressSearchResults    results = expTblRes.getResults();
-        ExpressResultsTableInfo tblInfo = results.getTableInfo();
+        QueryForIdResultsIFace results = expTblRes.getResults();
         
-        if (tblInfo.getIconName() == null)
+        if (results.getIconName() == null)
         {
-            log.error("Icon name is null for ["+tblInfo.getTitle()+"]");
+            log.error("Icon name is null for ["+results.getTitle()+"]");
         }
         
-        /*
-         * See Bugs 4072 and 4073 - Adding Items to the NavBox just creates a boat load of bugs.
-         * 
-        if (navBox == null)
-        {
-            navBox = new NavBox(getResourceString("ESResults"));
-        }
-        
-        NavBoxItemIFace nbi = NavBox.createBtn(tblInfo.getTitle(), tblInfo.getIconName(), IconManager.IconSize.Std16, null);
-        navBox.add(nbi, true);
-        
-        if (showing && !added)
-        {
-            added = true;
-            NavBoxMgr.getInstance().addBox(navBox);
-        } 
-
-        NavBoxMgr.getInstance().validate();
-        */
-        
-        contentPanel.add(expTblRes);
+        contentPanel.removeAll();
         
         // Add it to the appropriate list to be sorted
-        if (tblInfo.isIndexed())
+
+        expTblResults.add(expTblRes);
+        Collections.sort(expTblResults);
+        for (ESResultsTablePanel etr : expTblResults)
         {
-            expTblResultsIndexed.add(expTblRes);
-            Collections.sort(expTblResultsIndexed);
-            
-        } else
-        {
-            expTblResults.add(expTblRes);
-            Collections.sort(expTblResults);
+            log.debug("Order: "+etr.getResults().getDisplayOrder());
+            contentPanel.add(etr); 
         }
         
         List<Component> comps = layoutMgr.getComponentList();
         comps.clear();
-        comps.addAll(expTblResultsIndexed);
         comps.addAll(expTblResults);
         
         if (explainPanel != null)
         {
-            comps.add(explainPanel);
+            //comps.add(explainPanel);
             contentPanel.add(explainPanel);
         }
 
-        /*
-        // Now reach into the LayoutManager and clear the list of its items
-        // and then put back all the sorted ones.
-        List<Component> comps   = layoutMgr.getComponentList();
-        //List<Component> nbComps = ((NavBoxLayoutManager2)navBox.getLayout()).getComponentList();
-        
-        comps.clear();
-        //nbComps.clear();
-        
-        // these go on top
-        for (ResInfoForSort rfs : expTblResultsIndexed)
-        {
-            comps.add(rfs.getErb());
-            //nbComps.add(rfs.getNbi().getUIComponent());
-        }
-        // These go after
-        for (ResInfoForSort rfs : expTblResults)
-        {
-            comps.add(rfs.getErb());
-            //nbComps.add(rfs.getNbi().getUIComponent());
-        }
-*/
     }
 
     /* (non-Javadoc)
@@ -297,7 +214,7 @@ public class ExpressSearchResultsPane extends BaseSubPane implements ExpressSear
     /**
      * Revalidate the scroll pane.
      */
-    public void revalidateScroll()
+    public synchronized void revalidateScroll()
     {
         contentPanel.invalidate();
         scrollPane.revalidate();
@@ -314,13 +231,12 @@ public class ExpressSearchResultsPane extends BaseSubPane implements ExpressSear
         for (int i=0;i<contentPanel.getComponentCount();i++)
         {
             Component comp = contentPanel.getComponent(i);
-            if (comp instanceof ExpressTableResultsBase)
+            if (comp instanceof ESResultsTablePanel)
             {
-                ((ExpressTableResultsBase)comp).cleanUp();
+                ((ESResultsTablePanel)comp).cleanUp();
             }
         }
         
-        expTblResultsIndexed.clear();
         expTblResults.clear();
         
         return true;

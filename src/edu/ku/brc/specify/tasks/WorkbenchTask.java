@@ -107,21 +107,13 @@ import edu.ku.brc.specify.tasks.subpane.wb.TemplateEditor;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchBackupMgr;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchJRDataSource;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
-import edu.ku.brc.specify.tasks.subpane.wb.graph.DirectedGraph;
 import edu.ku.brc.specify.tasks.subpane.wb.graph.DirectedGraphException;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.DB;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadData;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMappingDef;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMappingDefRel;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMappingDefTree;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploaderException;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.TreeMapElement;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.WorkbenchUploadMapper;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMappingDefRel.ImportMappingRelFld;
-import edu.ku.brc.specify.tasks.subpane.wb.schema.Field;
-import edu.ku.brc.specify.tasks.subpane.wb.schema.Relationship;
-import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -130,6 +122,7 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
+import edu.ku.brc.ui.ToggleButtonChooserPanel;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -2299,7 +2292,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 items, 
                 null, 
                 CustomDialog.OKCANCELHELP,
-                ToggleButtonChooserDlg.Type.RadioButton);
+                ToggleButtonChooserPanel.Type.RadioButton);
         
         dlg.setUseScrollPane(true);
         dlg.setHelpContext("WorkbenchReporting");

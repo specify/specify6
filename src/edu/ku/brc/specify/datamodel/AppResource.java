@@ -60,13 +60,19 @@ import edu.ku.brc.helpers.XMLHelper;
 
 
 /**
-
+ * Clone does NOT clone the appResourceDefaults hashSet, but it DOES clone the appResourceDatas HashSet
+ * 
+ * @author rods
+ *
+ * @code_status Alpha
+ *
+ *
  */
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "appresource")
-public class AppResource extends DataModelObjBase implements java.io.Serializable, AppResourceIFace 
+public class AppResource extends DataModelObjBase implements java.io.Serializable, AppResourceIFace, Cloneable
 {
     //private static final Logger  log       = Logger.getLogger(AppResource.class);
     
@@ -504,5 +510,33 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     {
         return description;
     }
-
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        AppResource obj = (AppResource)super.clone();
+        
+        obj.timestampCreated     = new Timestamp(System.currentTimeMillis());
+        obj.timestampModified    = timestampCreated;
+        
+        obj.appResourceId        = null;
+        obj.level                = level;
+        obj.name                 = name;
+        obj.description          = description;
+        obj.mimeType             = mimeType;
+        obj.metaData             = metaData;
+        obj.ownerPermissionLevel = ownerPermissionLevel;
+        obj.groupPermissionLevel = groupPermissionLevel;
+        obj.allPermissionLevel   = allPermissionLevel;
+        obj.specifyUser          = specifyUser;
+        obj.group                = group;       
+        obj.fileName             = fileName;
+        obj.appResourceDefaults  = new HashSet<AppResourceDefault>();
+        obj.appResourceDatas     = new HashSet<AppResourceData>();
+        
+        return obj;
+    }
 }

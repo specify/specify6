@@ -215,7 +215,8 @@ public class DBTableIdMgr
                                 len,
                                 getAttr(irNode, "required", false),
                                 getAttr(irNode, "updatable", false),
-                                getAttr(irNode, "unique", false));
+                                getAttr(irNode, "unique", false),
+                                getAttr(irNode, "indexed", false));
                         tblInfo.addField(fieldInfo);
                     }
                     //Collections.sort(tblInfo.getFields());
@@ -352,6 +353,16 @@ public class DBTableIdMgr
             }
         }
         throw new RuntimeException("Couldn't find table id for table name[" + shortClassName + "]");
+    }
+
+    /**
+     * Returns the Info Object By Id.
+     * @param tableId the id to look up
+     * @return the table info object
+     */
+    public TableInfo getInfoById(final String tableId)
+    {
+        return getInfoById(Integer.parseInt(tableId));
     }
 
     /**
@@ -935,6 +946,7 @@ public class DBTableIdMgr
         protected boolean   isRequired;
         protected boolean   isUpdatable;
         protected boolean   isUnique;
+        protected boolean   isIndexed;
 
         public FieldInfo(final TableInfo tableInfo, 
                          final String column, 
@@ -943,7 +955,8 @@ public class DBTableIdMgr
                          final int length, 
                          final boolean isRequired, 
                          final boolean isUpdatable, 
-                         final boolean isUnique)
+                         final boolean isUnique, 
+                         final boolean isIndexed)
         {
             super();
             this.tableInfo = tableInfo;
@@ -954,6 +967,7 @@ public class DBTableIdMgr
             this.isRequired = isRequired;
             this.isUpdatable = isUpdatable;
             this.isUnique = isUnique;
+            this.isIndexed = isIndexed;
         }
 
         public String getColumn()
@@ -1008,6 +1022,14 @@ public class DBTableIdMgr
         public boolean isUnique()
         {
             return isUnique;
+        }
+
+        /**
+         * @return the isIndexed
+         */
+        public boolean isIndexed()
+        {
+            return isIndexed;
         }
 
         /* (non-Javadoc)

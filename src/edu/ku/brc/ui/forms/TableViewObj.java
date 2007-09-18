@@ -926,7 +926,13 @@ public class TableViewObj implements Viewable,
                 tmpSession = DataProviderFactory.getInstance().createSession();
                 for (Object dObj : dataObjList)
                 {
-                    tmpSession.attach(dObj);
+                    if (dObj != null)
+                    {
+                        tmpSession.attach(dObj);
+                    } else
+                    {
+                        log.error("Obj in list is null!");
+                    }
                 }
             }
             isLoaded = true;

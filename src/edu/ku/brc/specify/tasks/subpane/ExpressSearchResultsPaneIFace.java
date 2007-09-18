@@ -16,7 +16,8 @@ package edu.ku.brc.specify.tasks.subpane;
 
 import org.apache.lucene.search.Hits;
 
-import edu.ku.brc.af.core.ExpressSearchResults;
+import edu.ku.brc.af.core.QueryForIdResultsSQL;
+import edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace;
 
 
 /**
@@ -34,19 +35,19 @@ public interface ExpressSearchResultsPaneIFace
      * @param tableInfo the information about the table being added
      * @param hits the "hits" results of the search
      */
-    public void addSearchResults(final ExpressSearchResults results, final Hits hits);
+    public void addSearchResults(final QueryForIdResultsIFace results);
 
     /**
      * Removes a table from the content pane
      * @param table the table of results to be removed
      */
-    public void removeTable(ExpressTableResultsBase table);
+    public void removeTable(ESResultsTablePanel table);
 
     /**
      * Adds a table to the content pane.
      * @param table the table of results to be added
      */
-    public void addTable(ExpressTableResultsBase table);
+    public void addTable(ESResultsTablePanel table);
 
     /**
      * Revalidate the scroll pane

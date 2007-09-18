@@ -17,27 +17,14 @@ package edu.ku.brc.specify.dbsupport;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.Hits;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.store.FSDirectory;
 import org.hibernate.Transaction;
 import org.hibernate.type.Type;
 
-import edu.ku.brc.af.core.ERTIJoinColInfo;
 import edu.ku.brc.af.core.ExpressResultsTableInfo;
-import edu.ku.brc.af.core.ExpressSearchIndexer;
-import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 
@@ -55,7 +42,6 @@ public class AuditInterceptor  extends edu.ku.brc.dbsupport.AuditInterceptor
     
     protected enum IndexAction {New, Update, Delete}
     
-    protected ExpressSearchIndexer     indexer        = null;
     protected Vector<FormDataObjIFace> newFormObjsList    = new Vector<FormDataObjIFace>();
     protected Vector<FormDataObjIFace> updateFormObjsList = new Vector<FormDataObjIFace>();
     protected Vector<FormDataObjIFace> removeFormObjsList = new Vector<FormDataObjIFace>();
@@ -247,6 +233,7 @@ public class AuditInterceptor  extends edu.ku.brc.dbsupport.AuditInterceptor
      */
     protected boolean updateIndex(final FormDataObjIFace formObj, final IndexAction action)
     {
+        /* XYZ
         try
         {
             IndexReader   reader   = IndexReader.open(FSDirectory.getDirectory(ExpressSearchTask.getIndexDirPath(), false));
@@ -341,7 +328,7 @@ public class AuditInterceptor  extends edu.ku.brc.dbsupport.AuditInterceptor
         } catch (IOException ex)
         {
             ex.printStackTrace();
-        }
+        }*/
         return false;
     }
     

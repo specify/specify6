@@ -817,6 +817,8 @@ public class GenericDBConversion
            }
            else if (fromTableName.equals("referencework")) 
            {
+               String[] ignoredFields = {"GUID"};
+               BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
                errorsToShow &= ~BasicSQLUtils.SHOW_NULL_FK; // Turn off this error for ContainingReferenceWorkID
            }
            else if (fromTableName.equals("shipment")) 
@@ -925,6 +927,7 @@ public class GenericDBConversion
                 "BiologicalObjectAttributesID",
                 "SexId",
                 "StageId",
+                "Text8",
                 "Number34",
                 "Number35",
                 "Number36",
@@ -1457,6 +1460,7 @@ public class GenericDBConversion
                      Session session = HibernateUtil.getNewSession();
                      CatalogNumberingScheme cns = new CatalogNumberingScheme();
                      cns.initialize();
+                     cns.setIsNumericOnly(true);
                      cns.setSchemeClassName("");
                      cns.setSchemeName(newSeriesName);
                      Transaction trans = session.beginTransaction();
@@ -3157,7 +3161,7 @@ public class GenericDBConversion
                 Integer   catalogSeriesID = rs2.getInt(2);
                 Integer   taxonomyTypeID  = rs2.getInt(3);
                 Integer   newCatSeriesId  = collectionHash.get(catalogSeriesID+"_"+taxonomyTypeID);
-                String prefix          = prefixHash.get(catalogSeriesID+"_"+taxonomyTypeID);
+                String    prefix          = prefixHash.get(catalogSeriesID+"_"+taxonomyTypeID);
                 rs2.close();
                 
                 if (newCatSeriesId == null)
@@ -3231,6 +3235,7 @@ public class GenericDBConversion
                                 newFieldName.equals("ContainerItemID") ||
                                 newFieldName.equals("AltCatalogNumber") ||
                                 newFieldName.equals("GUID") ||
+                                newFieldName.equals("ContainerOwnerID") ||
                                 newFieldName.equals("RepositoryAgreementID") ||
                                 newFieldName.equals("GroupPermittedToView") ||        // this may change when converting Specify 5.x
                                 newFieldName.equals("CollectionObjectID")||
@@ -4263,6 +4268,12 @@ public class GenericDBConversion
                 "Visibility",
                 "VisibilitySetBy",
                 "GeoRefDetByID",
+                
+                "Drainage",
+                "Island",
+                "IslandGroup",
+                "WaterBody",
+               
                 });
         
         if (copyTable(oldDBConn, newDBConn, sql, "locality", "locality", null, null))
@@ -4528,7 +4539,7 @@ public class GenericDBConversion
         // for each old record, convert the record
         do
         {
-            if (counter % 500 == 0)
+            if (counter % 100 == 0)
             {
                 if (hasFrame)
                 {

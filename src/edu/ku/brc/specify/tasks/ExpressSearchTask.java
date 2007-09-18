@@ -18,65 +18,49 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.Hits;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.store.FSDirectory;
-import org.apache.poi.util.LittleEndian;
-import org.apache.poi.util.LittleEndianConsts;
-import org.dom4j.Element;
 
-import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.ERTIJoinColInfo;
 import edu.ku.brc.af.core.ExpressResultsTableInfo;
-import edu.ku.brc.af.core.ExpressSearchResults;
-import edu.ku.brc.af.core.ExpressSearchSQLAdjuster;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBoxIFace;
+import edu.ku.brc.af.core.QueryForIdResultsHQL;
+import edu.ku.brc.af.core.QueryForIdResultsSQL;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
+import edu.ku.brc.af.core.expresssearch.ExpressSearchConfigCache;
+import edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace;
+import edu.ku.brc.af.core.expresssearch.SearchConfig;
+import edu.ku.brc.af.core.expresssearch.SearchConfigService;
+import edu.ku.brc.af.core.expresssearch.SearchTableConfig;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.BaseTask;
-import edu.ku.brc.af.tasks.subpane.ExpressSearchIndexerPane;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
-import edu.ku.brc.helpers.HTTPGetter;
-import edu.ku.brc.specify.config.SpecifyAppContextMgr;
-import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPane;
+import edu.ku.brc.dbsupport.CustomQuery;
+import edu.ku.brc.dbsupport.CustomQueryListener;
+import edu.ku.brc.dbsupport.JPAQuery;
+import edu.ku.brc.dbsupport.SQLExecutionListener;
+import edu.ku.brc.dbsupport.SQLExecutionProcessor;
+import edu.ku.brc.specify.tasks.subpane.ESResultsSubPane;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.specify.tasks.subpane.ExpressTableResultsFromQuery;
 import edu.ku.brc.specify.ui.HelpMgr;
@@ -97,7 +81,7 @@ import edu.ku.brc.ui.db.PickListDBAdapterFactory;
  * @author rods
  *
  */
-public class ExpressSearchTask extends BaseTask implements CommandListener, ExpressSearchIndexerPane.ExpressSearchIndexerListener
+public class ExpressSearchTask extends BaseTask implements CommandListener, SQLExecutionListener, CustomQueryListener
 {
     // Static Data Members
     private static final Logger log = Logger.getLogger(ExpressSearchTask.class);
@@ -106,18 +90,20 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
     public static final String CHECK_INDEXER_PATH = "CheckIndexerPath";
     
     // Static Data Memebers
-    protected static WeakReference<TableInfoWeakRef> tableInfo   = null;
     protected static ExpressSearchTask               instance    = null;
     protected static final String                    LAST_SEARCH = "lastsearch"; 
     
     // Data Members
-    protected Analyzer                     analyzer       = new StandardAnalyzer();
-    protected File                         lucenePath     = null;
     protected SearchBox                    searchBox;
     protected JAutoCompTextField           searchText;
     protected JButton                      searchBtn;
     protected Color                        textBGColor    = null;
     protected Color                        badSearchColor = new Color(255,235,235);
+    
+    protected Vector<ESResultsSubPane> paneCache = new Vector<ESResultsSubPane>();
+    
+    protected Vector<SQLExecutionProcessor> sqlProcessorList = new Vector<SQLExecutionProcessor>();
+    protected boolean                       sqlHasResults    = false;
 
 
     /**
@@ -130,8 +116,6 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
         
         closeOnLastPane = true;
 
-        lucenePath = getIndexDirPath(); // must be initialized here
-        
         CommandDispatcher.register(APP_CMD_TYPE, this);
         CommandDispatcher.register(EXPRESSSEARCH, this);
         
@@ -158,32 +142,6 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
         return instance != null;
     }
 
-    /**
-     * Helper function to return the path to the express search directory.
-     * @return return the path to the express search directory
-     */
-    public static File getIndexDirPath()
-    {
-        File                 path       = null;
-        SpecifyAppContextMgr appContext = (SpecifyAppContextMgr)AppContextMgr.getInstance();
-        if (appContext != null)
-        {
-            String luceneLocPref = AppPreferences.getLocalPrefs().get("ui.misc.luceneLocation", UIRegistry.getAppDataDir());
-            AppPreferences.getLocalPrefs().put("ui.misc.luceneLocation", luceneLocPref);
-            
-            path = new File(luceneLocPref + File.separator + appContext.getDatabaseName() + File.separator + "index-dir");
-            if (!path.exists())
-            {
-                if (!path.mkdirs())
-                {
-                    String msg = "unable to create directory [" + path.getAbsolutePath() + "]";
-                    log.error(msg);
-                    throw new RuntimeException(msg);
-                }
-            }
-        }
-        return path;
-    }
     
     /**
      * Returns whether there are file sin the lucence directory.
@@ -191,169 +149,9 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
      */
     public static boolean doesIndexExist()
     {
-        File path = getIndexDirPath();
-        if (path != null)
-        {
-            try
-            {
-                return IndexReader.indexExists(FSDirectory.getDirectory(getIndexDirPath(), false));
-            } catch (IOException ex)
-            {
-            }
-        }
-        return false;
+        return true; // XYZ
     }
     
-    /**
-     * Returns the HashMap of ExpressResultsTableInfo items mapped By Name.
-     * @return the HashMap of ExpressResultsTableInfo items mapped By Name.
-     */
-    public static TableInfoWeakRef getTableInfoHashMaps()
-    {
-        TableInfoWeakRef tableInfoWR = null;
-     
-        if (instance != null)
-        {
-            if (tableInfo != null)
-            {
-                tableInfoWR = tableInfo.get();
-            }
-            
-            if (tableInfoWR == null)
-            {
-                tableInfoWR = intializeTableInfo();
-                tableInfo = new WeakReference<TableInfoWeakRef>(tableInfoWR);
-            }
-        }
-        return tableInfoWR;
-    }
-    
-    /**
-     * Returns the TableInfo object by Name.
-     * @return the TableInfo object by Name.
-     */
-    public static ExpressResultsTableInfo getTableInfoByName(final String name)
-    {
-        return getTableInfoHashMaps().getTables().get(name);
-    }
-    
-    /**
-     * Returns the HashMap of ExpressResultsTableInfo items mapped By Name.
-     * @return the HashMap of ExpressResultsTableInfo items mapped By Name.
-     */
-    public static Hashtable<String, ExpressResultsTableInfo> getTableInfoHash()
-    {
-        return instance != null ? getTableInfoHashMaps().getTables() : null;
-    }
-    
-    /**
-     * Returns the Hash for Mapping Id to TableInfo.
-     * @return the Hash for Mapping Id to TableInfo.
-     */
-    protected static Hashtable<String, ExpressResultsTableInfo> getIdToTableInfoHash()
-    {
-        return getTableInfoHashMaps().getIdToTableInfoHash();
-    }
-    
-    /**
-     * Returns the Hash for Mapping by Join Id to TableInfo.
-     * @return the Hash for Mapping by Join Id to TableInfo.
-     */
-    protected static Hashtable<String, List<ExpressResultsTableInfo>> getJoinIdToTableInfoHash()
-    {
-        return getTableInfoHashMaps().getJoinIdToTableInfoHash();
-    }
-
-    /**
-     * Collects information about all the tables that will be processed for any search.
-     * @param tableItems the list of Elements to be processed
-     * @param tables the table info hash
-     */
-    protected static void intializeTableInfo(final List<?> tableItems, 
-                                             final Hashtable<String, ExpressResultsTableInfo> tables,
-                                             final Hashtable<String, ExpressResultsTableInfo> byIdHash,
-                                             final Hashtable<String, List<ExpressResultsTableInfo>> joinIdToTableInfoHash,
-                                             final boolean isExpressSearch)
-    {
-        for (Iterator<?> iter = tableItems.iterator(); iter.hasNext(); )
-        {
-            Element                 tableElement = (Element)iter.next();
-            ExpressResultsTableInfo ti           = new ExpressResultsTableInfo(tableElement, isExpressSearch);
-            if (byIdHash.get(ti.getId()) == null)
-            {
-                byIdHash.put(ti.getId(), ti);
-                
-                if (tables.get(ti.getName()) == null)
-                {
-                    tables.put(ti.getName(), ti);
-                    
-                    if (!ti.isIndexed())
-                    {
-                        ERTIJoinColInfo joinCols[] = ti.getJoins();
-                        if (joinCols != null)
-                        {
-                            for (ERTIJoinColInfo jci :  joinCols)
-                            {
-                                List<ExpressResultsTableInfo> list = joinIdToTableInfoHash.get(jci.getJoinTableId());
-                                if (list == null)
-                                {
-                                    list = new ArrayList<ExpressResultsTableInfo>();
-                                    joinIdToTableInfoHash.put(jci.getJoinTableId(), list);
-                                    //log.debug("Adding JOin Table ID["+jci.getJoinTableId()+"]");
-                                }
-                                list.add(ti);
-                            }
-                        }
-                    }
-                    
-                } else
-                {
-                    log.error("Duplicate express Search name["+ti.getName()+"]");
-                }
-
-            } else
-            {
-                log.error("Duplicate Search Id["+ti.getId()+"]");
-            }
-        } 
-    }
-
-    /**
-     * Collects information about all the tables that will be processed for any search.
-     * @return hash of named ExpressResultsTableInfo
-     */
-    protected static TableInfoWeakRef intializeTableInfo()
-    {
-        if (instance != null)
-        {
-            Hashtable<String, ExpressResultsTableInfo>       tables                = new Hashtable<String, ExpressResultsTableInfo>();
-            
-            Hashtable<String, ExpressResultsTableInfo>       idToTableInfoHash     = new Hashtable<String, ExpressResultsTableInfo>();
-            Hashtable<String, List<ExpressResultsTableInfo>> joinIdToTableInfoHash = new Hashtable<String, List<ExpressResultsTableInfo>>();
-            
-            try
-            {
-                Element esDOM = AppContextMgr.getInstance().getResourceAsDOM("SearchConfig"); // Describes the definitions of the full text search
-                
-                intializeTableInfo(esDOM.selectNodes("/searches/express/table"), tables, idToTableInfoHash, joinIdToTableInfoHash, true);
-                
-                intializeTableInfo(esDOM.selectNodes("/searches/generic/table"), tables, idToTableInfoHash, joinIdToTableInfoHash, false);
-    
-                    
-            } catch (Exception ex)
-            {
-                log.error(ex);
-                ex.printStackTrace();
-            }
-            
-            // This is sort of bad because it assumes the Task has already been created
-            // It really shoud be in nearly all cases, but I can't absolutely guareentee it
-            return instance.new TableInfoWeakRef(tables, idToTableInfoHash, joinIdToTableInfoHash);
-        }
-        // else
-        return null;
-    }
-
     /**
      * Check to see of the index has been run and then enables the express search controls.
      *
@@ -371,16 +169,6 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
     }
 
     /**
-     * Displays the config pane for the express search.
-     *
-     */
-    public void showIndexerPane()
-    {
-        ExpressSearchIndexerPane expressSearchIndexerPane = new ExpressSearchIndexerPane(this, this, ExpressSearchTask.getIndexDirPath());
-        addSubPaneToMgr(expressSearchIndexerPane);
-    }
-
-    /**
      * Performs the express search and returns the results.
      */
     protected void doQuery()
@@ -389,8 +177,8 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
         String searchTerm = searchText.getText();
         if (isNotEmpty(searchTerm))
         {
-            ExpressSearchResultsPane expressSearchPane = new ExpressSearchResultsPane(searchTerm, this, true);
-            if (doQuery(lucenePath, analyzer, searchText, badSearchColor, expressSearchPane))
+            ESResultsSubPane expressSearchPane = new ESResultsSubPane(searchTerm, this, true);
+            if (doQuery(searchText, badSearchColor, expressSearchPane))
             {
                 addSubPaneToMgr(expressSearchPane);
             } else
@@ -404,46 +192,79 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
 
     /**
      * Performs the express search and returns the results to the ExpressSearchResultsPaneIFace/
-     * @param lucenePath the path to lucene
-     * @param analyzer the analyzer to use for the indexer
      * @param searchText the Text Control that contains the search string
      * @param badSearchColor the color to set the control if no results
      * @param tables ExpressResultsTableInfo hash
      * @param esrPane the pane that the results will be set into
      * @return true if results were found, false if not results
      */
-    public static boolean doQuery(final File       lucenePath,
-                                  final Analyzer   analyzer,
-                                  final JTextField searchText,
+    public static boolean doQuery(final JTextField searchText,
                                   final Color      badSearchColor,
                                   final ExpressSearchResultsPaneIFace esrPane)
     {
-        return doQuery(lucenePath, analyzer, searchText, null, badSearchColor, esrPane);
+        return doQuery(searchText, null, badSearchColor, esrPane);
     }
 
     /**
      * Performs the express search and returns the results to the ExpressSearchResultsPaneIFace/
-     * @param lucenePath the path to lucene
-     * @param analyzer the analyzer to use for the indexer
      * @param searchTextStr the string to use as the search
      * @param tables ExpressResultsTableInfo hash
      * @param esrPane the pane that the results will be set into
      * @return true if results were found, false if not results
      */
-    public static boolean doQuery(final File       lucenePath,
-                                  final Analyzer   analyzer,
-                                  final String     searchTextStr,
+    public static boolean doQuery(final String     searchTextStr,
                                   final ExpressSearchResultsPaneIFace esrPane)
     {
-        return doQuery(lucenePath, analyzer, null, searchTextStr, null, esrPane);
+        return doQuery(null, searchTextStr, null, esrPane);
+    }
+    
+    /**
+     * @param esrPane
+     * @param searchTableConfig
+     * @param searchTerm
+     * @return
+     */
+    protected static SQLExecutionProcessor startSearch(final ExpressSearchResultsPaneIFace esrPane,
+                                                       final SearchTableConfig searchTableConfig,
+                                                       final String            searchTerm)
+    {
+        SQLExecutionProcessor sqlEP = null;
+        String sqlStr = searchTableConfig.getSQL(searchTerm, true);
+        if (sqlStr != null)
+        {
+            sqlEP = new SQLExecutionProcessor(instance, sqlStr);
+            sqlEP.setData(new Object[] {searchTableConfig, esrPane, searchTerm});
+            instance.sqlProcessorList.add(sqlEP);
+            sqlEP.start();
+        }
+        return sqlEP;
+    }
+    
+    /**
+     * @param esrPane
+     * @param searchTableConfig
+     * @param searchTerm
+     * @return
+     */
+    protected static JPAQuery startSearchJPA(final ExpressSearchResultsPaneIFace esrPane,
+                                             final SearchTableConfig searchTableConfig,
+                                             final String            searchTerm)
+    {
+        JPAQuery jpaQuery = null;
+        String sqlStr = searchTableConfig.getSQL(searchTerm, true);
+        if (sqlStr != null)
+        {
+            jpaQuery = new JPAQuery(instance, sqlStr);
+            jpaQuery.setData(new Object[] {searchTableConfig, esrPane, searchTerm});
+            jpaQuery.start();
+        }
+        return jpaQuery;
     }
 
     /**
      * Performs the express search and returns the results to the ExpressSearchResultsPaneIFace.
      * If the control is null then it will use the string.
      *
-     * @param lucenePath the path to lucene
-     * @param analyzer the analyzer to use for the indexer
      * @param searchText the Text Control that contains the search string (can be null)
      * @param searchTextStr the Text Control that contains the search string (can be null)
      * @param badSearchColor the color to set the control if no results (can be null if searchText is null)
@@ -451,34 +272,27 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
      * @param esrPane the pane that the results will be set into
      * @return true if results were found, false if not results
      */
-    public static boolean doQuery(final File       lucenePath,
-                                  final Analyzer   analyzer,
-                                  final JTextField searchText,
+    public static boolean doQuery(final JTextField searchText,
                                   final String     searchTextStr,
                                   final Color      badSearchColor,
                                   final ExpressSearchResultsPaneIFace esrPane)
     {
-        String searchTerm;
-        if (searchText != null)
-        {
-            searchTerm = searchText.getText();
-        } else
-        {
-            searchTerm = searchTextStr;
-        }
-        
-        searchTerm = ExpressSearchSQLAdjuster.getInstance().adjustExpressSearchText(searchTerm);
+        String searchTerm = searchText != null ? searchTerm = searchText.getText() : searchTextStr;
 
-        boolean hasResults = false;
+        boolean hasResults = true;
         if (searchTerm != null && searchTerm.length() > 0)
         {
-            if (true)
+            instance.sqlHasResults    = false;
+            
+            SearchConfig config = SearchConfigService.getInstance().getSearchConfig();
+           
+            for (SearchTableConfig table : config.getTables())
             {
-                hasResults = exeQueryLocal(lucenePath, analyzer, searchTerm, esrPane);
-            } else
-            {
-                hasResults = exeQueryRemote(lucenePath, analyzer, searchTerm, esrPane);
+                log.debug("**************> " +table.getTableName() );
+                startSearchJPA(esrPane, table, searchTerm);
             }
+            
+            
         }
         
         if (!hasResults)
@@ -498,17 +312,6 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
         return hasResults;
     }
     
-    
-    protected static byte[]      bytes   = new byte[LittleEndianConsts.LONG_SIZE];
-    protected static int         offset  = -1;
-    protected static InputStream iStream = null;
-    
-    protected static long getLong() throws IOException
-    {
-        iStream.read(bytes);
-        return LittleEndian.getLong(bytes, 0);
-    }
-
     /**
      * Traverses the individual result record ifs and maps them into the result tables.
      * @param searchIdStr the ID of the Express Search definition
@@ -518,78 +321,71 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
      * @param resultsMap the primary result tables
      * @param resultsForJoinsMap the related results table
      */
-    public static boolean collectResults(final int    docInx,
-                                         final String searchIdStr,
-                                         final long   recId,
-                                         final Hashtable<String, ExpressResultsTableInfo>       idToTableInfoMap,
-                                         final Hashtable<String, List<ExpressResultsTableInfo>> joinIdToTableInfoMap,
-                                         final Hashtable<String, ExpressSearchResults>          resultsMap,
-                                         final Hashtable<String, ExpressSearchResults>          resultsForJoinsMap)
+    public static void collectResults(final QueryForIdResultsIFace qfir,
+                                      final ResultSet              resultSet,
+                                      final Integer                id,
+                                      final Hashtable<String, List<ExpressResultsTableInfo>> joinIdToTableInfoMap,
+                                      final Hashtable<String, QueryForIdResultsSQL>          resultsForJoinsMap)
     {
-        boolean usingHitsCache = false;
-        
-        ExpressResultsTableInfo tblInfo;
-        ExpressSearchResults    results = resultsMap.get(searchIdStr);
-        if (results != null)
+        try
         {
-            tblInfo = results.getTableInfo();
-            
-        } else
-        {
-            tblInfo = idToTableInfoMap.get(searchIdStr);
-            if (tblInfo == null)
+            Integer recId;
+            if (resultSet != null)
             {
-                throw new RuntimeException("Bad id from search["+searchIdStr+"]");
+                recId = resultSet.getInt(1);
+            } else
+            {
+                recId = id;
             }
-            results = new ExpressSearchResults(searchIdStr, null, tblInfo);
-            resultsMap.put(searchIdStr, results);
-        }
-
-        if (tblInfo.isUseHitsCache())
-        {
-            results.addIndex(docInx);
-            usingHitsCache = true;
-
-        } else
-        {        
-            results.add(recId);
-        }
-        
-        log.debug("Find any Joins for TableID ["+tblInfo.getTableId()+"]");
-        List<ExpressResultsTableInfo> list = joinIdToTableInfoMap.get(tblInfo.getTableId());
-        if (list != null)
-        {
-            for (ExpressResultsTableInfo erti : list)
+            
+            System.out.println("id "+id+"  "+recId);
+            
+            String tableIdAsStr = Integer.toString(qfir.getTableId());
+            
+            //log.debug("Find any Joins for TableID ["+tblInfo.getTableId()+"]");
+            List<ExpressResultsTableInfo> list = joinIdToTableInfoMap.get(tableIdAsStr);
+            if (list != null)
             {
-                log.debug("Checking up["+tblInfo.getTableId()+"]");
-                results = resultsForJoinsMap.get(erti.getId());//tblInfo.getTableId());
-                if (results == null)
+                for (ExpressResultsTableInfo erti : list)
                 {
-                    Integer joinColTableId = null;
-                    ERTIJoinColInfo joinCols[] = erti.getJoins();
-                    if (joinCols != null)
+                    //log.debug("Checking up["+tblInfo.getTableId()+"]");
+                    QueryForIdResultsSQL results = resultsForJoinsMap.get(erti.getId());
+                    if (results == null)
                     {
-                        for (ERTIJoinColInfo jci :  joinCols)
+                        Integer joinColTableId = null;
+                        ERTIJoinColInfo joinCols[] = erti.getJoins();
+                        if (joinCols != null)
                         {
-                            if (tblInfo.getTableId().equals(jci.getJoinTableId()))
+                            for (ERTIJoinColInfo jci :  joinCols)
                             {
-                                joinColTableId = jci.getJoinTableIdAsInt();
-                                break;
+                                if (tableIdAsStr.equals(jci.getJoinTableId()))
+                                {
+                                    joinColTableId = jci.getJoinTableIdAsInt();
+                                    break;
+                                }
                             }
                         }
+                        if (joinColTableId == null)
+                        {
+                            throw new RuntimeException("Shouldn't have got here!");
+                        }
+                        Integer displayOrder = SearchConfigService.getInstance().getSearchConfig().getOrderForRelatedQueryId(erti.getId());
+                        log.debug("ExpressSearchResults erti.getId()["+erti.getId()+"] joinColTableId["+joinColTableId+"] displayOrder["+displayOrder+"]");
+                        if (erti.getId().equals("3"))
+                        {
+                            int x= 0;
+                            x++;
+                        }
+                        results = new QueryForIdResultsSQL(erti.getId(), joinColTableId, erti, displayOrder, qfir.getSearchTerm());
+                        resultsForJoinsMap.put(erti.getId(), results);
                     }
-                    if (joinColTableId == null)
-                    {
-                        throw new RuntimeException("Shouldn't have got here!");
-                    }
-                    log.debug("ExpressSearchResults erti.getId()["+erti.getId()+"] joinColTableId["+joinColTableId+"]");
-                    results = new ExpressSearchResults(erti.getId(), joinColTableId, erti);
-                    resultsForJoinsMap.put(erti.getId(), results);
+                    results.add(recId);
                 }
-                results.add(recId);
             }
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
         }
-        return usingHitsCache;
     }
     
     
@@ -599,41 +395,24 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
      * @param resultsForJoinsMap the related results table
      */
     protected static void displayResults(final ExpressSearchResultsPaneIFace           esrPane,
-                                         final Hashtable<String, ExpressSearchResults> resultsMap,
-                                         final Hashtable<String, ExpressSearchResults> resultsForJoinsMap,
-                                         final Hits                                    hits)
+                                         final QueryForIdResultsIFace                  queryResults,
+                                         final Hashtable<String, QueryForIdResultsSQL> resultsForJoinsMap)
     {
         // For Debug Only
         if (false)
         {
-            for (Enumeration<ExpressSearchResults> e=resultsMap.elements();e.hasMoreElements();)
+            for (Enumeration<QueryForIdResultsSQL> e=resultsForJoinsMap.elements();e.hasMoreElements();)
             {
-                ExpressSearchResults results = e.nextElement();
-                if (results.getRecIds().size() > 0)
+                QueryForIdResultsSQL rs = e.nextElement();
+                if (rs.getRecIds().size() > 0)
                 {
                     log.debug("\n\n------------------------------------");
                     log.debug("------------------------------------");
-                    log.debug("Search Id "+results.getTableInfo().getId()+" Table Id "+results.getTableInfo().getTableId());
+                    log.debug("Search Id "+rs.getTableInfo().getId() + 
+                                       " Table Id "+rs.getTableInfo().getTableId() + 
+                                       " Column Name "+rs.getJoinColTableId());
                     log.debug("------------------------------------");
-                    for (Long l : results.getRecIds())
-                    {
-                        log.debug(l+" ");
-                    }
-                }
-            }
-    
-            for (Enumeration<ExpressSearchResults> e=resultsForJoinsMap.elements();e.hasMoreElements();)
-            {
-                ExpressSearchResults results = e.nextElement();
-                if (results.getRecIds().size() > 0)
-                {
-                    log.debug("\n\n------------------------------------");
-                    log.debug("------------------------------------");
-                    log.debug("Search Id "+results.getTableInfo().getId() + 
-                                       " Table Id "+results.getTableInfo().getTableId() + 
-                                       " Column Name "+results.getJoinColTableId());
-                    log.debug("------------------------------------");
-                    for (Long l : results.getRecIds())
+                    for (Integer l : rs.getRecIds())
                     {
                         log.debug(l+" ");
                     }
@@ -641,183 +420,20 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
             }
         }
         
-        for (Enumeration<ExpressSearchResults> e=resultsMap.elements();e.hasMoreElements();)
+        if (queryResults.getRecIds().size() > 0)//|| tableInfo.getNumIndexes() > 0)
         {
-            ExpressSearchResults results = e.nextElement();
-            if (results.getRecIds().size() > 0)//|| tableInfo.getNumIndexes() > 0)
-            {
-                esrPane.addSearchResults(results, hits);
-                results.getRecIds().clear();
-            }
+            esrPane.addSearchResults(queryResults);
         }
-        resultsMap.clear();
         
-        for (Enumeration<ExpressSearchResults> e=resultsForJoinsMap.elements();e.hasMoreElements();)
+        for (Enumeration<QueryForIdResultsSQL> e=resultsForJoinsMap.elements();e.hasMoreElements();)
         {
-            ExpressSearchResults results = e.nextElement();
-            if (results.getRecIds().size() > 0)//|| tableInfo.getNumIndexes() > 0)
+            QueryForIdResultsSQL rs = e.nextElement();
+            if (rs.getRecIds().size() > 0)
             {
-                esrPane.addSearchResults(results, hits);
-                results.getRecIds().clear();
+                esrPane.addSearchResults(rs);
             }
         }
         resultsForJoinsMap.clear();
-
-    }
-    
-    /**
-     * Executes a Remote query against the Servlet (proof of concept).
-     * @param lucenePath the Path to the Lucene Directory
-     * @param analyzer the analyzer to use
-     * @param searchTextStr the search string to be searched
-     * @param esrPane the desintation panel of the results
-     * @return true if OK
-     */
-    public static boolean exeQueryRemote(final File       lucenePath,
-                                         final Analyzer   analyzer,
-                                         final String     searchTextStr,
-                                         final ExpressSearchResultsPaneIFace esrPane)
-    {
-        
-        HTTPGetter getter = new HTTPGetter();
-        //System.out.println(new String(getter.doHTTPRequest("http://localhost:8080/sample/hello")));
-        try
-        {
-            String encoded = StringEscapeUtils.escapeHtml(searchTextStr);
-            iStream = getter.beginHTTPRequest("http://localhost:8080/sample/hello?q="+encoded+"&db="+SpecifyAppContextMgr.getInstance().getDatabaseName());
-            
-            long hits = getLong();
-            log.debug("Hits: "+hits);
-            
-            if (hits > 0)
-            {
-                Hashtable<String, ExpressResultsTableInfo>       idToTableInfoMap     = getIdToTableInfoHash();
-                Hashtable<String, List<ExpressResultsTableInfo>> joinIdToTableInfoMap = getJoinIdToTableInfoHash();
-                
-                Hashtable<String, ExpressSearchResults>          resultsMap           = new Hashtable<String, ExpressSearchResults>();
-                Hashtable<String, ExpressSearchResults>          resultsForJoinsMap   = new Hashtable<String, ExpressSearchResults>();
-                
-                long numTables = getLong();
-                
-                for (long i=0;i<numTables;i++)
-                {
-                    long   searchId  = getLong();
-                    String searchIdStr = Long.toString(searchId);
-                    @SuppressWarnings("unused")
-                    long   useFloat = getLong();
-                    long   numIds   = getLong();
-                    //System.out.println("Table ["+tableId+"] useFloat["+useFloat+"] Num Ids["+numIds+"]");
-                    
-                   for (long inx=0;inx<numIds;inx++)
-                    {
-                        long recId = getLong();
-                        collectResults(0, searchIdStr, recId, idToTableInfoMap, joinIdToTableInfoMap, resultsMap, resultsForJoinsMap);
-                    }
-                }
-                
-                displayResults(esrPane, resultsMap, resultsForJoinsMap, null);
-                
-                return true;
-            }
-
-            
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-        return false;
-    }
-    
-    /**
-     * Executes a Local query directly against the Lucene index that is locally on disk.
-     * @param lucenePath the Path to the Lucene Directory
-     * @param analyzer the analyzer to use
-     * @param searchTextStr the search string to be searched
-     * @param esrPane the desintation panel of the results
-     * @return true if OK
-     */
-    public static boolean exeQueryLocal(final File       lucenePath,
-                                        final Analyzer   analyzer,
-                                        final String     searchTextStr,
-                                        final ExpressSearchResultsPaneIFace esrPane)
-    {
-        //Hashtable<String, ExpressResultsTableInfo>       tables               = getTableInfoHash();
-        Hashtable<String, ExpressResultsTableInfo>       idToTableInfoMap     = getIdToTableInfoHash();
-        Hashtable<String, List<ExpressResultsTableInfo>> joinIdToTableInfoMap = getJoinIdToTableInfoHash();
-        
-        IndexSearcher searcher = null;
-        
-        try
-        {
-            // XXX sorting didn't work for some reason
-
-            // Sort sort =  new Sort("table");
-            // Sort sort2 =  new Sort(new SortField[] {new SortField("table", SortField.INT, true)});
-
-            searcher = new IndexSearcher(FSDirectory.getDirectory(lucenePath, false));
-
-            Query query;
-
-            // Implicit AND
-            QueryParser parser = new QueryParser("contents", analyzer);
-            //parser.setOperator(QueryParser.DEFAULT_OPERATOR_AND);
-            query = parser.parse(searchTextStr);
-            System.out.println(query.toString());
-
-            Hits hits = searcher.search(query);
-            
-            if (hits.length() == 0)
-            {
-                log.debug("No Hits for ["+searchTextStr+"]["+query.toString()+"]");
-                return false;
-            }
-
-            log.debug(hits.length()+" Hits for ["+searchTextStr+"]["+query.toString()+"]");
-
-            Hashtable<String, ExpressSearchResults> resultsMap         = new Hashtable<String, ExpressSearchResults>();
-            Hashtable<String, ExpressSearchResults> resultsForJoinsMap = new Hashtable<String, ExpressSearchResults>();
-            
-            int cntUseHitsCache = 0;
-            // can be sped up if I figure out how to sort it
-            for (int i=0;i<hits.length();i++)
-            {
-                Document doc = hits.doc(i);
-                if (collectResults(i, doc.get("sid"), Long.parseLong(doc.get("id")), idToTableInfoMap, joinIdToTableInfoMap, resultsMap, resultsForJoinsMap))
-                {
-                    cntUseHitsCache++;
-                } 
-            }
-            
-            displayResults(esrPane, resultsMap, resultsForJoinsMap, hits);
-            
-            searcher.close();
-            
-            return true;
-
-        } catch (ParseException ex)
-        {
-            JOptionPane.showMessageDialog(UIRegistry.get(UIRegistry.FRAME), getResourceString("BadQuery"), getResourceString("BadQueryTitle"), JOptionPane.ERROR_MESSAGE);
-            log.error(ex);
-
-        } catch (IOException ex)
-        {
-            // XXX Change message
-            JOptionPane.showMessageDialog(UIRegistry.get(UIRegistry.FRAME), getResourceString("BadQuery"), getResourceString("BadQueryTitle"), JOptionPane.ERROR_MESSAGE);
-            log.error(ex);
-        }
-        
-        if (searcher != null)
-        {
-            try
-            {
-                searcher.close();
-                
-            } catch (IOException ex)
-            {
-                log.error(ex);
-            }
-        }
-        return false;
     }
 
     /**
@@ -831,15 +447,15 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
     public void doBasicSearch(final String searchName)
     {
         
-        Hashtable<String, ExpressResultsTableInfo> idToTableInfoMap = getIdToTableInfoHash();
+        Hashtable<String, ExpressResultsTableInfo> idToTableInfoMap = ExpressSearchConfigCache.getSearchIdToTableInfoHash();
         for (ExpressResultsTableInfo erti : idToTableInfoMap.values())
         {
             if (erti.getName().equals(searchName))
             {
                 // This needs to be fixed in that it might not return any results
                 // and we are always adding the pane.
-                ExpressSearchResultsPane     expressSearchPane = new ExpressSearchResultsPane(erti.getTitle(), this, true);
-                ExpressSearchResults         esr               = new ExpressSearchResults(erti.getTitle(), null, erti);
+                ESResultsSubPane     expressSearchPane = new ESResultsSubPane(erti.getTitle(), this, true);
+                QueryForIdResultsSQL         esr               = new QueryForIdResultsSQL(erti.getTitle(), null, erti, 0, "");
                 @SuppressWarnings("unused")
                 ExpressTableResultsFromQuery esrfq             = new ExpressTableResultsFromQuery(expressSearchPane, esr, true);
                 addSubPaneToMgr(expressSearchPane);
@@ -909,6 +525,8 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
         searchText.setAskBeforeSave(false);
         HelpMgr.setHelpID(searchText, "Express_Search");
         
+        searchBox = new SearchBox(searchText, null);
+        
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
         searchText.setText(localPrefs.get(LAST_SEARCH, ""));
         textBGColor = searchText.getBackground();
@@ -940,18 +558,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
         searchPanel.add(spacer);
 
         c.weightx = 0.0;
-        gridbag.setConstraints(searchText, c);
-        
-        searchBox = new SearchBox(searchText, new SearchBox.MenuCreator() {
-            public List<JComponent> createPopupMenus()
-            {
-                List<JComponent> list = new ArrayList<JComponent>();
-                list.add (new JMenuItem("All", SearchBox.getSearchIcon()));
-                list.add (new JMenuItem("Agent", IconManager.getIcon("Agent", IconManager.IconSize.Std16)));
-                list.add (new JMenuItem("Collection Object", IconManager.getIcon("CollectionObject", IconManager.IconSize.Std16)));
-                return list;
-            }
-        });
+        gridbag.setConstraints(searchBox, c);
         searchPanel.add(searchBox);
 
         searchPanel.add(spacer);
@@ -1001,7 +608,6 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
         {
             if (cmdAction.isAction(APP_RESTART_ACT))
             {
-                lucenePath = getIndexDirPath(); // must be initialized here (again)
                 checkForIndexer();
             }
             
@@ -1009,14 +615,13 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
         {
             if (cmdAction.isAction(CHECK_INDEXER_PATH))
             {
-                lucenePath = getIndexDirPath(); // must be initialized here (again)
                 checkForIndexer();
                 
             } else if (cmdAction.isAction("ExpressSearch"))
             {
                 String searchTerm = cmdAction.getData().toString();
-                ExpressSearchResultsPane expressSearchPane = new ExpressSearchResultsPane(searchTerm, this, true);
-                if (doQuery(lucenePath, analyzer, null, searchTerm, badSearchColor, expressSearchPane))
+                ESResultsSubPane expressSearchPane = new ESResultsSubPane(searchTerm, this, true);
+                if (doQuery(null, searchTerm, badSearchColor, expressSearchPane))
                 {
                     addSubPaneToMgr(expressSearchPane);
                 } else
@@ -1042,37 +647,124 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, Expr
         checkForIndexer();
     }
     
-    //------------------------------------------------
-    //-- TableInfoWeakRef Inner Class
-    //------------------------------------------------
-    class TableInfoWeakRef
+    //-------------------------------------------------------------
+    // SQLExecutionListener Interface
+    //-------------------------------------------------------------
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.SQLExecutionListener#exectionDone(edu.ku.brc.dbsupport.SQLExecutionProcessor, java.sql.ResultSet)
+     */
+    @Override
+    public void exectionDone(SQLExecutionProcessor process, ResultSet resultSet)
     {
-        Hashtable<String, ExpressResultsTableInfo>       tables                = new Hashtable<String, ExpressResultsTableInfo>();
+        if (!sqlHasResults)
+        {
+            try
+            {
+                sqlHasResults = resultSet.first();
+                
+            } catch (SQLException ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+        sqlProcessorList.remove(process);
         
-        Hashtable<String, ExpressResultsTableInfo>       idToTableInfoHash     = new Hashtable<String, ExpressResultsTableInfo>();
-        Hashtable<String, List<ExpressResultsTableInfo>> joinIdToTableInfoHash = new Hashtable<String, List<ExpressResultsTableInfo>>();
+        Object[]                      data              = (Object[])process.getData();
+        SearchTableConfig             searchTableConfig = (SearchTableConfig)data[0];
+        ExpressSearchResultsPaneIFace esrPane           = (ExpressSearchResultsPaneIFace)data[1];
+        String                        searchTerm        = (String)data[2];
         
-        public TableInfoWeakRef(Hashtable<String, ExpressResultsTableInfo> tables, Hashtable<String, ExpressResultsTableInfo> idToTableInfoHash, Hashtable<String, List<ExpressResultsTableInfo>> joinIdToTableInfoHash)
-        {
-            super();
-            this.tables = tables;
-            this.idToTableInfoHash = idToTableInfoHash;
-            this.joinIdToTableInfoHash = joinIdToTableInfoHash;
-        }
+        Hashtable<String, ExpressResultsTableInfo>       idToTableInfoMap     = ExpressSearchConfigCache.getSearchIdToTableInfoHash();
+        Hashtable<String, List<ExpressResultsTableInfo>> joinIdToTableInfoMap = ExpressSearchConfigCache.getJoinIdToTableInfoHash();
 
-        public Hashtable<String, ExpressResultsTableInfo> getIdToTableInfoHash()
+        Hashtable<String, QueryForIdResultsSQL> resultsForJoinsMap = new Hashtable<String, QueryForIdResultsSQL>();
+        
+        try
         {
-            return idToTableInfoHash;
+            if (resultSet.first())
+            {
+                String                  searchIdStr = Integer.toString(searchTableConfig.getTableInfo().getTableId());
+                ExpressResultsTableInfo tblInfo = idToTableInfoMap.get(searchIdStr);
+                if (tblInfo == null)
+                {
+                    throw new RuntimeException("Bad id from search["+searchIdStr+"]");
+                }
+                QueryForIdResultsSQL queryResults = new QueryForIdResultsSQL(searchIdStr, null, tblInfo, searchTableConfig.getDisplayOrder(), searchTerm);
+                do
+                {
+                    collectResults(queryResults, resultSet, null, joinIdToTableInfoMap, resultsForJoinsMap);
+                    
+                } while(resultSet.next());
+                
+                displayResults(esrPane, queryResults, resultsForJoinsMap);
+            }
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
         }
+    }
 
-        public Hashtable<String, List<ExpressResultsTableInfo>> getJoinIdToTableInfoHash()
-        {
-            return joinIdToTableInfoHash;
-        }
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.SQLExecutionListener#executionError(edu.ku.brc.dbsupport.SQLExecutionProcessor, java.lang.Exception)
+     */
+    @Override
+    public void executionError(SQLExecutionProcessor process, Exception ex)
+    {
+        sqlProcessorList.remove(process);
+        
+    }
+    
+    //-------------------------------------------------------------------------
+    //-- CustomQueryListener Interface
+    //-------------------------------------------------------------------------
 
-        public Hashtable<String, ExpressResultsTableInfo> getTables()
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.CustomQueryListener#exectionDone(edu.ku.brc.dbsupport.CustomQuery)
+     */
+    @Override
+    public void exectionDone(final CustomQuery customQuery)
+    {
+        JPAQuery jpaQuery = (JPAQuery)customQuery;
+        List<?> list      = jpaQuery.getDataObjects();
+        if (!sqlHasResults)
         {
-            return tables;
+            sqlHasResults = !jpaQuery.isInError() && list != null && list.size() > 0;
         }
+        
+        if (list != null)
+        {
+            Object[]                      data              = (Object[])jpaQuery.getData();
+            SearchTableConfig             searchTableConfig = (SearchTableConfig)data[0];
+            ExpressSearchResultsPaneIFace esrPane           = (ExpressSearchResultsPaneIFace)data[1];
+            String                        searchTerm        = (String)data[2];
+    
+            Hashtable<String, List<ExpressResultsTableInfo>> joinIdToTableInfoMap = ExpressSearchConfigCache.getJoinIdToTableInfoHash();
+            
+            Hashtable<String, QueryForIdResultsSQL> resultsForJoinsMap = new Hashtable<String, QueryForIdResultsSQL>();
+            
+            //log.debug("TID["+searchTableConfig.getTableInfo().getTableId() + "] Table Order ["+searchTableConfig.getDisplayOrder()+"] "+list.size());
+            QueryForIdResultsHQL results = new QueryForIdResultsHQL(searchTableConfig, new Color(30, 144, 255), searchTerm, list);
+            
+            for (Object idObj : list)
+            {
+                Integer id = (Integer)idObj;
+                collectResults(results, null, id, joinIdToTableInfoMap, resultsForJoinsMap);
+                    
+            }
+            displayResults(esrPane, results, resultsForJoinsMap);
+            
+        } else
+        {
+            log.error("List was null and cant't be.");
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.CustomQueryListener#executionError(edu.ku.brc.dbsupport.CustomQuery)
+     */
+    @Override
+    public void executionError(final CustomQuery customQuery)
+    {
+        
     }
 }
