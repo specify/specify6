@@ -346,7 +346,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         
         subtree0 = new JButton(icon_subtree);
         subtree0.setSize(20,20);
-        subtree0.setToolTipText("View Subtree");
+        subtree0.setToolTipText("Zoom In");
         subtree0.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
@@ -357,7 +357,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         
         wholeTree0 = new JButton(icon_wholeTree);
         wholeTree0.setSize(20,20);
-        wholeTree0.setToolTipText("View Whole Tree");
+        wholeTree0.setToolTipText("Zoom Out");
         wholeTree0.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
@@ -369,7 +369,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 
         toParent0 = new JButton(icon_toParent);
         toParent0.setSize(20,20);
-        toParent0.setToolTipText("Go To Parent");
+        toParent0.setToolTipText("Select Parent");
         toParent0.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
@@ -388,6 +388,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 syncViewWithOtherView(lists[0]);
             }
         });
+        syncViews0.setEnabled(false);
         
         toggle0 = new JButton(icon_toggle);
         toggle0.setSize(20,20);
