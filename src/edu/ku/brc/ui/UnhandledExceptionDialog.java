@@ -52,7 +52,7 @@ public class UnhandledExceptionDialog extends JDialog
         createUI(message, exception);
         
         setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        setDefaultCloseOperation(HIDE_ON_CLOSE);
         this.setAlwaysOnTop(true);
     }
 
