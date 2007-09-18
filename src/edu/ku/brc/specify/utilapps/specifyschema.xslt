@@ -94,7 +94,16 @@
  </table>
  
 <xsl:template match="/">
+<div><b>Contents</b><br/>
+  <div>
+    <a href="#toc">Table of Contents</a><br/>
+    <a href="#descriptions">Table Descriptions</a><br/>
+    <a href="#indexes">Table Indexes</a><br/>
+    </div>
+    <br/>
+</div>
 <div>
+  <a name="toc"></a>
   <H3>Table of Contents</H3>
   <UL>
   <xsl:for-each select="//table">
@@ -105,7 +114,6 @@
 </xsl:call-template>
 </a></LI>
   </xsl:for-each>
-    <LI><a href="#indexes">Table Indexes</a></LI>
   </UL>
 
      <H3>Table Definitions</H3>
@@ -113,8 +121,16 @@
        <xsl:sort select="@table" />
      </xsl:apply-templates>
 
-       <H3>Table Indexes</H3>
+     <a name="descriptions"></a>
+     <H3>Table Descriptions</H3>
+     <table class="tbl" border="0" cellspacing="0" cellpadding="2" width="75%">
+     <xsl:apply-templates select="database/table" mode="tabledesc">
+       <xsl:sort select="@table" />
+     </xsl:apply-templates>
+	</table>
+
        <a name="indexes"></a>
+       <H3>Table Indexes</H3>
      <table class="tbl" border="0" cellspacing="0" cellpadding="2" width="75%">
      <xsl:apply-templates select="database/table" mode="index">
        <xsl:sort select="@table" />
@@ -124,7 +140,7 @@
     </xsl:template>
     
 <br/>
-<span class="footer">Created: 2007-09-5</span>
+<span class="footer">Created: 2007-09-14</span>
 
      </body></html>
   </xsl:template>
@@ -143,7 +159,6 @@
 <xsl:apply-templates select="desc"/>
 
        </td></tr>
-       
         <tr>
         <td class="hd">Field</td>
         <td class="hd">Type</td>
@@ -171,6 +186,27 @@
     </table><br/><br/>
 
   </xsl:template>
+  
+  <xsl:template match="table" mode="tabledesc">
+  <tr><td>
+    <a href="#{@table}">
+	<xsl:call-template name="substring-after-last">
+	     <xsl:with-param name="input" select="@classname"/>
+	     <xsl:with-param name="substr">.</xsl:with-param>
+	</xsl:call-template>
+	</a>
+  </td>
+  <td>
+  <xsl:if test="count( desc ) > 0">
+	<xsl:apply-templates select="desc" mode="tbl"/>
+  </xsl:if>
+  <xsl:if test="count( desc ) = 0">
+	<xsl:text>&#160;</xsl:text>
+  </xsl:if>
+
+  </td>
+  </tr>
+  </xsl:template>
 		
   <xsl:template match="desc">
   		<xsl:choose>
@@ -178,6 +214,15 @@
              <br/><div class="desc"><xsl:value-of select="."/></div>
           </xsl:when>  
           <xsl:otherwise></xsl:otherwise>
+        </xsl:choose>
+  </xsl:template>
+
+  <xsl:template match="desc" mode="tbl">
+  		<xsl:choose>
+          <xsl:when test=". != $empty_string">
+             <xsl:value-of select="."/>
+          </xsl:when>  
+          <xsl:otherwise><xsl:text>&#160;</xsl:text></xsl:otherwise>
         </xsl:choose>
   </xsl:template>
 
@@ -263,10 +308,10 @@
          <xsl:sort select="@column" />
          <xsl:with-param name="cname" select="@classname"/>
          <xsl:with-param name="tname" select="@table"/>
-       </xsl:apply-templates>
-    </xsl:template>
+    </xsl:apply-templates>
+  </xsl:template>
 
-    <xsl:template match="field" mode="index">
+  <xsl:template match="field" mode="index">
         <xsl:param name="cname" />
         <xsl:param name="tname" />
         <xsl:choose>
@@ -293,6 +338,5 @@
         </xsl:choose>
         
   </xsl:template>
-  
   
 </xsl:stylesheet>

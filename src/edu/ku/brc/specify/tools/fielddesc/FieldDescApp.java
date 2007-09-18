@@ -11,12 +11,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Locale;
 import java.util.Vector;
+import java.util.zip.ZipInputStream;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -42,6 +50,9 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.ButtonBarFactory;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import com.swabunga.spell.engine.SpellDictionary;
+import com.swabunga.spell.engine.SpellDictionaryHashMap;
+import com.swabunga.spell.swing.JTextComponentSpellChecker;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.helpers.XMLHelper;
@@ -76,12 +87,23 @@ public class FieldDescApp extends JFrame
     protected int              lastIndex = -1;
     protected Table            prevTable = null;
     
+    protected SpellDictionary  dictionary         = null;
+    protected String           phoneticFileName   = "phonet.en";
+    protected String           dictionaryFileName = "english.0.zip";
+    protected String           userFileName       = "user.dict";
+    protected JTextComponentSpellChecker checker  = null;
+    protected SpellDictionary  userDict;
     
+    /**
+     * 
+     */
     public FieldDescApp()
     {
         tables = readTableList();
         
-         buildUI();
+        init();
+        
+        buildUI();
     }
     
     /**
@@ -92,6 +114,55 @@ public class FieldDescApp extends JFrame
         return readTables(XMLHelper.getConfigDir(fileName));
     }
     
+    /**
+     * 
+     */
+    public void init()
+    {
+        try
+        {
+            File           phoneticFile = XMLHelper.getConfigDir(phoneticFileName);
+            File           file = XMLHelper.getConfigDir(dictionaryFileName);
+            ZipInputStream zip  = null;
+
+            try
+            {
+                zip = new ZipInputStream(new FileInputStream(file));
+
+            } catch (NullPointerException e)
+            {
+                FileInputStream fin = new FileInputStream(file);
+                zip = new ZipInputStream(fin);
+            }
+
+            zip.getNextEntry();
+            
+            
+            dictionary = new SpellDictionaryHashMap(new BufferedReader(new InputStreamReader(zip)), new FileReader(phoneticFile));
+            File userDictFile = new File(userFileName);
+            if (!userDictFile.exists())
+            {
+                userDictFile.createNewFile();
+            }
+            checker  = new JTextComponentSpellChecker(dictionary);
+            userDict = new SpellDictionaryHashMap(userDictFile, phoneticFile);
+            checker.setUserDictionary(userDict);
+            
+        } catch (MalformedURLException e)
+        {
+            e.printStackTrace();
+
+        } catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        
+    }
+
     /**
      * @param file
      * @return
@@ -246,6 +317,10 @@ public class FieldDescApp extends JFrame
                         tbl.setDesc(desc);
                     }
                     tblDescText.setText(desc.getText());
+                    if (true)
+                    {
+                        checker.spellCheck(tblDescText);
+                    }
                     prevTable = tbl;
                 }
             }
@@ -279,10 +354,12 @@ public class FieldDescApp extends JFrame
         PanelBuilder pb = new PanelBuilder(new FormLayout("max(200px;p),4px,f:p:g", "t:p,4px,f:p:g,4px,p,4px,p"));
         CellConstraints cc = new CellConstraints();
         
+        JButton tblSpellCheckBtn = new JButton("Spell Check");
         JPanel topInner = new JPanel(new BorderLayout());
         JScrollPane sp = new JScrollPane(tblDescText, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         topInner.add(new JLabel("Table Description"), BorderLayout.NORTH);
         topInner.add(sp, BorderLayout.CENTER);
+        topInner.add(tblSpellCheckBtn, BorderLayout.SOUTH);
         tblDescText.setRows(8);
         tblDescText.setLineWrap(true);
         tblDescText.setWrapStyleWord(true);
@@ -305,8 +382,9 @@ public class FieldDescApp extends JFrame
         
         nxtBtn = new JButton("Next");
         nxtEmptyBtn = new JButton("Next Empty");
+        JButton spellCheckBtn = new JButton("Spell Check");
         
-        JPanel bbp = ButtonBarFactory.buildCenteredBar(new JButton[] {nxtEmptyBtn, nxtBtn});
+        JPanel bbp = ButtonBarFactory.buildCenteredBar(new JButton[] {nxtEmptyBtn, nxtBtn, spellCheckBtn});
         inner.add(bbp,   cc.xy(3, 5));
         
         pb.add(inner.getPanel(), cc.xywh(1, 3, 3, 1));
@@ -344,6 +422,22 @@ public class FieldDescApp extends JFrame
             {
                 shutdown();
             }
+        });
+        
+        spellCheckBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                checker.spellCheck(descText);
+            }
+            
+        });
+        
+        tblSpellCheckBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                checker.spellCheck(tblDescText);
+            }
+            
         });
         
         tblDescText.addFocusListener(new FocusAdapter() {
@@ -503,6 +597,11 @@ public class FieldDescApp extends JFrame
             }
             fieldLabel.setText(fld.getName());
             descText.setText(desc.getText());
+            
+            if (true)
+            {
+                checker.spellCheck(descText);
+            }
         }
     }
     

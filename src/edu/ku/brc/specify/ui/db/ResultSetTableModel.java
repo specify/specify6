@@ -373,7 +373,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.SQLExecutionListener#exectionDone(edu.ku.brc.dbsupport.SQLExecutionProcessor, java.sql.ResultSet)
      */
-    @Override
+    //@Override
     public void exectionDone(SQLExecutionProcessor process, ResultSet resultSet)
     {
         List<ERTICaptionInfo> captions = results.getVisibleCaptionInfo();
@@ -439,7 +439,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.SQLExecutionListener#executionError(edu.ku.brc.dbsupport.SQLExecutionProcessor, java.lang.Exception)
      */
-    @Override
+    //@Override
     public void executionError(SQLExecutionProcessor process, Exception ex)
     {
         // TODO Auto-generated method stub
@@ -449,7 +449,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryListener#exectionDone(edu.ku.brc.dbsupport.CustomQuery)
      */
-    @Override
+    //@Override
     public void exectionDone(CustomQuery customQuery)
     {
         JPAQuery jpaQuery = (JPAQuery)customQuery;
@@ -491,7 +491,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryListener#executionError(edu.ku.brc.dbsupport.CustomQuery)
      */
-    @Override
+    //@Override
     public void executionError(CustomQuery customQuery)
     {
         // TODO Auto-generated method stub

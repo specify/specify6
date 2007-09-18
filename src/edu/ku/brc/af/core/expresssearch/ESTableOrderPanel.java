@@ -82,7 +82,7 @@ public class ESTableOrderPanel extends JPanel
         nameRender.setUseIcon("PlaceHolder");
         orderTablesList.setCellRenderer(nameRender);
         orderTablesList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
+            //@Override
             public void valueChanged(ListSelectionEvent e)
             {
                 updateEnabledState();
@@ -274,7 +274,7 @@ public class ESTableOrderPanel extends JPanel
         orderTablesModel.clear();
         
         Collections.sort(tblList, new Comparator<TableNameRendererIFace>() {
-            @Override
+            //@Override
             public int compare(TableNameRendererIFace o1, TableNameRendererIFace o2)
             {
                 return ((DisplayOrderingIFace)o1).getDisplayOrder().compareTo(((DisplayOrderingIFace)o2).getDisplayOrder());

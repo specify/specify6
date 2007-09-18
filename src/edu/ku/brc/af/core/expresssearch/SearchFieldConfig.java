@@ -182,7 +182,7 @@ public class SearchFieldConfig implements edu.ku.brc.af.core.TableNameRendererIF
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.TableNameRendererIFace#getIconName()
      */
-    @Override
+    //@Override
     public String getIconName()
     {
         return fieldInfo.getTableInfo().getClassObj().getSimpleName();
@@ -191,7 +191,7 @@ public class SearchFieldConfig implements edu.ku.brc.af.core.TableNameRendererIF
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.TableNameRendererIFace#getTitle()
      */
-    @Override
+    //@Override
     public String getTitle()
     {
         return toString();
@@ -209,7 +209,7 @@ public class SearchFieldConfig implements edu.ku.brc.af.core.TableNameRendererIF
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    @Override
+    //@Override
     public int compareTo(SearchFieldConfig o)
     {
         return order.compareTo(o.order);

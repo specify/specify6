@@ -542,7 +542,7 @@ public class ESResultsTablePanel extends JPanel implements Comparable<ESResultsT
     /* (non-Javadoc)
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
-    @Override
+    //@Override
     public void propertyChange(PropertyChangeEvent evt)
     {
         rowCount = (Integer)evt.getNewValue();

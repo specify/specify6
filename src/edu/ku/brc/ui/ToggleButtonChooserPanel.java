@@ -321,7 +321,11 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
     {
         if (group != null)
         {
-            group.clearSelection();
+            //group.clearSelection();        // Java 6
+            for (JToggleButton tb : buttons) // Java 5
+            {
+                tb.setSelected(false);
+            }
         }
         
         this.items.clear();

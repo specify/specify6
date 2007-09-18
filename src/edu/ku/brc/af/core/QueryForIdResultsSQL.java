@@ -70,7 +70,7 @@ public class QueryForIdResultsSQL implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace#isHQL()
      */
-    @Override
+    //@Override
     public boolean isHQL()
     {
         return false;
@@ -198,7 +198,7 @@ public class QueryForIdResultsSQL implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.ExpressSearchResultsIFace#getRecordSetColumnInx()
      */
-    @Override
+    //@Override
     public int getRecordSetColumnInx()
     {
         return tableInfo.getRecordSetColumnInx();
@@ -207,7 +207,7 @@ public class QueryForIdResultsSQL implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.ExpressSearchResultsIFace#getTableId()
      */
-    @Override
+    //@Override
     public int getTableId()
     {
         return Integer.parseInt(tableInfo.getTableId());
@@ -216,7 +216,7 @@ public class QueryForIdResultsSQL implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.ExpressSearchResultsIFace#getIconName()
      */
-    @Override
+    //@Override
     public String getIconName()
     {
         return tableInfo.getIconName();
@@ -225,7 +225,7 @@ public class QueryForIdResultsSQL implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace#getVisibleCaptionInfo()
      */
-    @Override
+    //@Override
     public List<ERTICaptionInfo> getVisibleCaptionInfo()
     {
         return tableInfo.getVisibleCaptionInfo();
@@ -234,7 +234,7 @@ public class QueryForIdResultsSQL implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.ExpressSearchResultsIFace#getBannerColor()
      */
-    @Override
+    //@Override
     public Color getBannerColor()
     {
         return tableInfo.getColor();
@@ -243,7 +243,7 @@ public class QueryForIdResultsSQL implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.ExpressSearchResultsIFace#getSQL(java.lang.String, java.util.Vector)
      */
-    @Override
+    //@Override
     public String getSQL(final String searchTermArg, final Vector<Integer> ids)
     {
         if (StringUtils.isNotEmpty(overrideSQL))

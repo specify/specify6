@@ -229,7 +229,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
         
         searchFieldsTable = new JTable(searchFieldsTableModel);
         searchFieldsTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
+            //@Override
             public void valueChanged(ListSelectionEvent e)
             {
                 if (!e.getValueIsAdjusting())
@@ -331,7 +331,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
         builder.add(innerBuilder.getPanel(), cc.xy(1,3));
         
         tableList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
+            //@Override
             public void valueChanged(ListSelectionEvent e)
             {
                 if (!e.getValueIsAdjusting())
@@ -346,7 +346,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
         toBeSearchedList.setModel(new VecModel());
         sp = new JScrollPane(toBeSearchedList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         toBeSearchedList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
+            //@Override
             public void valueChanged(ListSelectionEvent e)
             {
                 toBeSearchedSelected();
@@ -367,7 +367,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
         tabbedPane.add(getResourceString("RELATED_TABLES"), createRelatedTabledPanel());
         
         tabbedPane.addChangeListener(new ChangeListener() {
-            @Override
+            //@Override
             public void stateChanged(ChangeEvent e)
             {
                 tabChanged();
@@ -407,7 +407,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
     public static Comparator<TableNameRendererIFace> getTableFieldNameComparator()
     {
         return new Comparator<TableNameRendererIFace>() {
-            @Override
+            //@Override
             public int compare(TableNameRendererIFace o1, TableNameRendererIFace o2)
             {
                 return makeName(o1).compareTo(makeName(o2));
@@ -474,7 +474,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
         outer.add(sp, cc.xy(1,7));
         
         rtTableList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
+            //@Override
             public void valueChanged(ListSelectionEvent e)
             {
                 if (!e.getValueIsAdjusting())
@@ -734,7 +734,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
         /* (non-Javadoc)
          * @see javax.swing.table.TableModel#getColumnCount()
          */
-        @Override
+        //@Override
         public int getColumnCount()
         {
             return headings.size();
@@ -752,7 +752,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
         /* (non-Javadoc)
          * @see javax.swing.table.TableModel#getRowCount()
          */
-        @Override
+        //@Override
         public int getRowCount()
         {
             return fields.size();
@@ -761,7 +761,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
         /* (non-Javadoc)
          * @see javax.swing.table.TableModel#getValueAt(int, int)
          */
-        @Override
+        //@Override
         public Object getValueAt(int rowIndex, int columnIndex)
         {
             SearchFieldConfig sfc = fields.get(rowIndex);

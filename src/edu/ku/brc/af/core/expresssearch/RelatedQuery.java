@@ -138,7 +138,7 @@ public class RelatedQuery implements DisplayOrderingIFace, TableNameRendererIFac
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.TableNameRendererIFace#getIconName()
      */
-    @Override
+    //@Override
     public String getIconName()
     {
         return "RelatedTable";//tableInfo.getClassObj().getSimpleName();
@@ -147,7 +147,7 @@ public class RelatedQuery implements DisplayOrderingIFace, TableNameRendererIFac
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.TableNameRendererIFace#getTitle()
      */
-    @Override
+    //@Override
     public String getTitle()
     {
         return toString();
