@@ -397,7 +397,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
     }
     
     /**
-     * @return
+     * @return 0, 1, -1
      */
     public static Comparator<TableNameRendererIFace> getTableFieldNameComparator()
     {
@@ -411,8 +411,9 @@ public class ExpressSearchConfigDlg extends CustomDialog
     }
     
     /**
-     * @param sfc
-     * @return
+     * Helper for constructing name of table/field needed for sorting.
+     * @param tnr the renderable
+     * @return the name
      */
     protected static String makeName(final TableNameRendererIFace tnr)
     {
@@ -421,7 +422,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
     }
     
     /**
-     * Update the order up/down btns enabled state
+     * Update the order up/down btns enabled state.
      */
     protected void updateEnabledState()
     {
@@ -452,6 +453,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
     }
     
     /**
+     * Created the Panel that is displayed in the Related Tables Tab.
      * @return the related searches panel
      */
     protected JPanel createRelatedTabledPanel()
@@ -569,11 +571,21 @@ public class ExpressSearchConfigDlg extends CustomDialog
     {
         SearchTableConfig stc = (SearchTableConfig)tableList.getSelectedValue();
         
+        Collections.sort(stc.getDisplayFields());
+        
         displayList.setItems(stc.getDisplayFields());
         
         searchFieldsTableModel.add(stc.getSearchFields());
         searchFieldsTable.getSelectionModel().clearSelection();
         
+        for (SearchFieldConfig sfc : stc.getSearchFields())
+        {
+            if (sfc.isInUse())
+            {
+                autoSelectDisplayListField(sfc, true);
+            }
+        }
+       
         for (DisplayFieldConfig dfc : stc.getDisplayFields())
         {
             if (dfc.isInUse())
@@ -819,11 +831,14 @@ public class ExpressSearchConfigDlg extends CustomDialog
                             Collections.sort(toBeSearchedVect, toBeSearchedComparator);
                             ((VecModel)toBeSearchedList.getModel()).fireChange(null);
                             //toBeSearchedList.repaint();
+                            
+                            autoSelectDisplayListField(sfc, true);
                         } else
                         {
                             toBeSearchedVect.remove(sfc);
                             ((VecModel)toBeSearchedList.getModel()).fireChange(null);
                             //toBeSearchedList.repaint();
+                            autoSelectDisplayListField(sfc, false);
                         }
                         break;
                         
@@ -856,6 +871,31 @@ public class ExpressSearchConfigDlg extends CustomDialog
         }
     }
     
+    /**
+     * Automatically selects/deselects the display field when the searchable field is choosen or unchoosen/
+     * @param sfc the choosen search field
+     * @param wasAdded whether it was added or removed.
+     */
+    protected void autoSelectDisplayListField(final SearchFieldConfig sfc, final boolean wasAdded)
+    {
+        //List<DisplayFieldConfig> displayItems = displayList.getItems();
+        int index = 0;
+        for (DisplayFieldConfig dfc : displayList.getItems())
+        {
+            if (dfc.getFieldInfo() == sfc.getFieldInfo())
+            {
+                JToggleButton tb = displayList.getButtons().get(index);
+                tb.setSelected(wasAdded);
+                tb.setEnabled(!wasAdded);
+               return; 
+            }
+            index++;
+        }
+    }
+    
+    //------------------------------------------------------------------------------
+    //-- Renderer for the Combobox in the table
+    //------------------------------------------------------------------------------
     public class MyComboBoxRenderer extends JComboBox implements TableCellRenderer 
     {
         public MyComboBoxRenderer(String[] items) 

@@ -9,6 +9,8 @@
  */
 package edu.ku.brc.ui;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -19,6 +21,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +33,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 
+import edu.ku.brc.af.core.expresssearch.SearchConfigService;
 import edu.ku.brc.ui.db.JAutoCompTextField;
 
 /**
@@ -39,7 +44,7 @@ import edu.ku.brc.ui.db.JAutoCompTextField;
  * Sep 9, 2007
  *
  */
-public class SearchBox extends JPanel implements ActionListener
+public class SearchBox extends JPanel implements ActionListener, PropertyChangeListener
 {
     protected static ImageIcon   searchIcon   = getSearchIcon();
     
@@ -62,6 +67,9 @@ public class SearchBox extends JPanel implements ActionListener
         super(null);
         
         this.menuCreator = menuCreator;
+        
+        SearchConfigService.getInstance().addPropertyChangeListener(this);
+
         
         // We must be non-opaque since we won't fill all pixels.
         // This will also stop the UI from filling our background.
@@ -102,7 +110,6 @@ public class SearchBox extends JPanel implements ActionListener
                 @Override
                 public void mouseReleased(MouseEvent e)
                 {
-                    // TODO Auto-generated method stub
                     super.mouseReleased(e);
                     
                     if (e.getPoint().x <= popupHitWidth)
@@ -142,7 +149,7 @@ public class SearchBox extends JPanel implements ActionListener
         {
             JMenuItem mi = (JMenuItem)e.getSource();
             
-            if (mi.getIcon() != null)
+            if (mi.getIcon() != null && !mi.getText().equals(getResourceString("ESConfig")))
             {
                 icon = (ImageIcon)mi.getIcon();
                 repaint();
@@ -285,13 +292,39 @@ public class SearchBox extends JPanel implements ActionListener
         super.setSize(width, height);
         resizeSearchText(width, height);
     }
-    
+
+    /* (non-Javadoc)
+     * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
+     */
+    public void propertyChange(PropertyChangeEvent evt)
+    {
+        if (menuCreator != null)
+        {
+            if (evt.getPropertyName().equals("contentsChanged"))
+            {
+                menuCreator.reset();
+                
+            } else if (evt.getPropertyName().equals("noContext"))
+            {
+                icon = searchIcon;
+                repaint();
+            }
+        }
+    }
+
     //------------------------------------------------------
     //-- Interface for Create=ing the menus in the search popup
     //------------------------------------------------------
     public interface MenuCreator 
     {
+        /**
+         * @return the list of menus to be displayed
+         */
         public List<JComponent> createPopupMenus();
+        
+        /**
+         * Tells the creator to reset itself because of changes to the SearchConfig.
+         */
+        public void reset();
     }
-
 }

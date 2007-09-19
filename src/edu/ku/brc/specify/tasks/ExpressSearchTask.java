@@ -32,7 +32,9 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -46,6 +48,7 @@ import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.core.expresssearch.ERTIJoinColInfo;
 import edu.ku.brc.af.core.expresssearch.ExpressResultsTableInfo;
 import edu.ku.brc.af.core.expresssearch.ExpressSearchConfigCache;
+import edu.ku.brc.af.core.expresssearch.ExpressSearchConfigDlg;
 import edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL;
 import edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace;
 import edu.ku.brc.af.core.expresssearch.QueryForIdResultsSQL;
@@ -90,17 +93,17 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     public static final String CHECK_INDEXER_PATH = "CheckIndexerPath";
     
     // Static Data Memebers
-    protected static ExpressSearchTask               instance    = null;
-    protected static final String                    LAST_SEARCH = "lastsearch"; 
+    protected static ExpressSearchTask      instance    = null;
+    protected static final String           LAST_SEARCH = "lastsearch"; 
     
     // Data Members
-    protected SearchBox                    searchBox;
-    protected JAutoCompTextField           searchText;
-    protected JButton                      searchBtn;
-    protected Color                        textBGColor    = null;
-    protected Color                        badSearchColor = new Color(255,235,235);
+    protected SearchBox                     searchBox;
+    protected JAutoCompTextField            searchText;
+    protected JButton                       searchBtn;
+    protected Color                         textBGColor      = null;
+    protected Color                         badSearchColor   = new Color(255,235,235);
     
-    protected Vector<ESResultsSubPane> paneCache = new Vector<ESResultsSubPane>();
+    protected Vector<ESResultsSubPane>      paneCache        = new Vector<ESResultsSubPane>();
     
     protected Vector<SQLExecutionProcessor> sqlProcessorList = new Vector<SQLExecutionProcessor>();
     protected boolean                       sqlHasResults    = false;
@@ -286,13 +289,18 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             
             SearchConfig config = SearchConfigService.getInstance().getSearchConfig();
            
-            for (SearchTableConfig table : config.getTables())
+            SearchTableConfig context = SearchConfigService.getInstance().getSearchContext();
+            if (context == null)
             {
-                log.debug("**************> " +table.getTableName() );
-                startSearchJPA(esrPane, table, searchTerm);
+                for (SearchTableConfig table : config.getTables())
+                {
+                    log.debug("**************> " +table.getTableName() );
+                    startSearchJPA(esrPane, table, searchTerm);
+                }
+            } else
+            {
+                startSearchJPA(esrPane, context, searchTerm);
             }
-            
-            
         }
         
         if (!hasResults)
@@ -525,7 +533,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         searchText.setAskBeforeSave(false);
         HelpMgr.setHelpID(searchText, "Express_Search");
         
-        searchBox = new SearchBox(searchText, null);
+        searchBox = new SearchBox(searchText, new SearchBoxMenuCreator());
         
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
         searchText.setText(localPrefs.get(LAST_SEARCH, ""));
@@ -765,6 +773,87 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     //@Override
     public void executionError(final CustomQuery customQuery)
     {
+        // no op
+    }
+    
+    //-------------------------------------------------------------------------
+    //-- CustomQueryListener Interface
+    //-------------------------------------------------------------------------
+    public class SearchBoxMenuCreator implements SearchBox.MenuCreator
+    {
+        protected List<JComponent>    menus       = null;
+        protected SearchConfigService scService;
+        protected JMenuItem           allMenuItem  = null;
+        protected JMenuItem           configMenuItem  = null;
+        protected ActionListener      action;
         
+        /**
+         * Constructor.
+         */
+        public SearchBoxMenuCreator()
+        {
+            scService = SearchConfigService.getInstance();
+            
+            action = new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    if (e.getSource() == allMenuItem)
+                    {
+                        scService.setSearchContext(null);
+                        
+                    } else if (e.getSource() == configMenuItem)
+                    {
+                        ExpressSearchConfigDlg dlg = new ExpressSearchConfigDlg();
+                        dlg.setVisible(true);
+                        
+                    } else
+                    {
+                        String miTitle = ((JMenuItem)e.getSource()).getText();
+                        for (SearchTableConfig stc : scService.getSearchConfig().getTables())
+                        {
+                            if (stc.getTitle().equals(miTitle))
+                            {
+                                scService.setSearchContext(stc);
+                            }
+                        }
+                    }
+                }
+            };
+        }
+        
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.SearchBox.MenuCreator#createPopupMenus()
+         */
+        public List<JComponent> createPopupMenus()
+        {
+            if (menus == null)
+            {
+                menus = new Vector<JComponent>();
+                allMenuItem = new JMenuItem(getResourceString("All"), IconManager.getIcon("Search", IconManager.IconSize.Std16)); // I18N
+                allMenuItem.addActionListener(action);
+                menus.add(allMenuItem);
+                
+                for (SearchTableConfig stc : scService.getSearchConfig().getTables())
+                {
+                    JMenuItem menu = new JMenuItem(stc.getTitle(), IconManager.getIcon(stc.getIconName(), IconManager.IconSize.Std16));
+                    menu.addActionListener(action);
+                    menus.add(menu);
+                }
+                
+                configMenuItem = new JMenuItem(getResourceString("ESConfig"), IconManager.getIcon("SystemSetup", IconManager.IconSize.Std16)); // I18N
+                configMenuItem.addActionListener(action);
+                menus.add(configMenuItem);
+            }
+            
+            return menus;
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.SearchBox.MenuCreator#reset()
+         */
+        public void reset()
+        {
+            this.menus = null;
+        }
     }
 }

@@ -17,8 +17,12 @@
  */
 package edu.ku.brc.af.core.expresssearch;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.Vector;
 
 import org.apache.commons.io.FileUtils;
 
@@ -27,9 +31,10 @@ import com.thoughtworks.xstream.XStream;
 import edu.ku.brc.af.core.AppContextMgr;
 
 /**
+ * A singleton service that manages the Search Configuration.
  * @author rods
  *
- * @code_status Alpha
+ * @code_status Beta
  *
  * Created Date: Sep 13, 2007
  *
@@ -38,11 +43,12 @@ public class SearchConfigService
 {
     protected static SearchConfigService instance = new SearchConfigService();
     
-    protected SearchConfig searchConfig = null;
-    
+    protected SearchConfig                 searchConfig    = null;
+    protected SearchTableConfig            searchContext   = null;
+    protected List<PropertyChangeListener> changeListeners = new Vector<PropertyChangeListener>();
 
     /**
-     * 
+     * Constructor/
      */
     public SearchConfigService()
     {
@@ -70,6 +76,43 @@ public class SearchConfigService
         return instance;
     }
 
+    /**
+     * @return the searchContext
+     */
+    public SearchTableConfig getSearchContext()
+    {
+        return searchContext;
+    }
+
+    /**
+     * @param searchContext the searchContext to set
+     */
+    public void setSearchContext(SearchTableConfig searchContext)
+    {
+        this.searchContext = searchContext;
+    }
+    
+    /**
+     * Add PropertyChangeListener that are notified when the contents of the service changes.
+     * @param pcl the listener
+     */
+    public void addPropertyChangeListener(final PropertyChangeListener pcl)
+    {
+        changeListeners.add(pcl);
+    }
+
+    /**
+     * Remoaves a PropertyChangeListener that are notified when the contents of the service changes.
+     * @param pcl the listener
+     */
+    public void removePropertyChangeListener(final PropertyChangeListener pcl)
+    {
+        changeListeners.remove(pcl);
+    }
+
+    /**
+     * Loads the changes.
+     */
     protected void loadConfig()
     {
         XStream xstream = new XStream();
@@ -86,9 +129,11 @@ public class SearchConfigService
         {
             searchConfig.initialize();
         }
-
     }
     
+    /**
+     * Saves the changes.
+     */
     public void saveConfig()
     {
         XStream xstream = new XStream();
@@ -105,6 +150,32 @@ public class SearchConfigService
         }
         
         AppContextMgr.getInstance().putResourceAsXML("ExpressSearchConfig", xstream.toXML(searchConfig));
+        
+        PropertyChangeEvent pce = new PropertyChangeEvent(this, "contentsChanged", null, null);
+        for (PropertyChangeListener pcl : changeListeners)
+        {
+            pcl.propertyChange(pce);
+        }
+        
+        boolean foundContext = false;
+        for (SearchTableConfig stc : searchConfig.getTables())
+        {
+            if (stc == searchContext)
+            {
+                foundContext = true;
+                break;
+            }
+        }
+        
+        if (!foundContext)
+        {
+            searchContext = null;
+            pce = new PropertyChangeEvent(this, "noContext", searchContext, null);
+            for (PropertyChangeListener pcl : changeListeners)
+            {
+                pcl.propertyChange(pce);
+            }
+        }
     }
 
 }

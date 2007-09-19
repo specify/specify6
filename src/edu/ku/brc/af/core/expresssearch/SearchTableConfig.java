@@ -66,6 +66,8 @@ public class SearchTableConfig implements DisplayOrderingIFace,
      */
     public void initialize()
     {
+        tableInfo = DBTableIdMgr.getInstance().getInfoByTableName(tableName.toLowerCase()); 
+        
         for (SearchFieldConfig sfc : searchFields)
         {
             sfc.setStc(this);

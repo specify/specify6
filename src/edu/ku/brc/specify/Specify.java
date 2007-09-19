@@ -648,16 +648,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
         if (!isWorkbenchOnly)
         {
             menu = UIHelper.createMenu(mb, "AdvMenu", "AdvMneu");
-            mi = UIHelper.createMenuItem(menu, getResourceString("ESConfig"), getResourceString("ESConfig_Mn"), getResourceString("ESConfig"), true, null);
-            mi.addActionListener(new ActionListener()
-                    {
-                        public void actionPerformed(ActionEvent ae)
-                        {
-                            ExpressSearchConfigDlg dlg = new ExpressSearchConfigDlg();
-                            dlg.setVisible(true);
-                        }
-                    });
-            
             menu.add(UIHelper.createMenu(mb, "SystemMenu", "SystemMneu"));
         }
 

@@ -167,7 +167,11 @@ public class DisplayFieldConfig implements TableNameRendererIFace, Comparable<Di
     //@Override
     public int compareTo(DisplayFieldConfig o)
     {
-        return order.compareTo(o.order);
+        // For now we will order by Name 
+        // and if we implement ordering of display fields
+        // then we should use the order.
+        //return order.compareTo(o.order);
+        return fieldName.compareTo(o.fieldName);
     }
     
     /* (non-Javadoc)

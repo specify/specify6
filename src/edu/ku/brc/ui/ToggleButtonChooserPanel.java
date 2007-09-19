@@ -315,6 +315,14 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
     }
     
     /**
+     * @return the list of buttons
+     */
+    public Vector<JToggleButton> getButtons()
+    {
+        return buttons;
+    }
+
+    /**
      * @param items the items to set
      */
     public void setItems(final List<T> items)
@@ -352,6 +360,14 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
         //listPanel.validate();
         //listPanel.invalidate();
         //listPanel.repaint();
+    }
+
+    /**
+     * @return the items thwere used to create the buttons.
+     */
+    public List<T> getItems()
+    {
+        return items;
     }
 
     /**
