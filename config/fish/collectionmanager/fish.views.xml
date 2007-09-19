@@ -637,7 +637,7 @@
 
             <desc><![CDATA[Agent subform for Acessions.]]></desc>
             <columnDef>p,2px,p,2px,p,2px,p:g</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,10px,p:g,10px,p:g</rowDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,10px,p:g,10px,p</rowDef>
 
             <rows>
                 <row>
@@ -672,7 +672,6 @@
                     <cell type="subview" viewname="Address" id="9" name="addresses" colspan="7" valtype="Changed"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="attachments" label="Attachments"/>
                     <cell type="subview" id="attachments" viewname="AgentAttachment" name="agentAttachments" colspan="5"/>
                 </row>
                 
