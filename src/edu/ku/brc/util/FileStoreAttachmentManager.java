@@ -185,7 +185,20 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
             }
         }
     }
-    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.AttachmentManagerIface#deleteAttachmentFiles(edu.ku.brc.specify.datamodel.Attachment)
+     */
+    public void deleteAttachmentFiles(Attachment attachment) throws IOException
+    {
+        String attachLoc = attachment.getAttachmentLocation();
+        File origFile = new File(baseDirectory + File.separator + "originals" + File.separator + attachLoc);
+        File thumbFile = new File(baseDirectory + File.separator + "thumbnails" + File.separator + attachLoc);
+        
+        origFile.delete();
+        thumbFile.delete();
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.util.AttachmentManagerIface#cleanup()
      */

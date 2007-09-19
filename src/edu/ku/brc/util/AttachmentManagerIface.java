@@ -69,6 +69,14 @@ public interface AttachmentManagerIface
     public void replaceOriginal(Attachment attachment, File newOriginal, File newThumbnail) throws IOException;
     
     /**
+     * Delete the files (original and thumbnail) associated with this attachment record.
+     * 
+     * @param attachment the DB record holding the file info
+     * @throws IOException if an error occurs when deleting the files
+     */
+    public void deleteAttachmentFiles(Attachment attachment) throws IOException;
+    
+    /**
      * Perform any internal cleanup needed before shutdown.
      */
     public void cleanup();
