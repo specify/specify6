@@ -80,95 +80,12 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     protected boolean useColOffset = false;
     
     /**
-     * Construct with a ResultSet.
-     * @param resultSet the recordset
-     */
-    public ResultSetTableModel(final QueryForIdResultsIFace results, 
-                               final ResultSet resultSet)
-    {
-        this.results = results;
-        
-        int count = 0;
-        try
-        {
-            if (resultSet != null)
-            {
-                ResultSetMetaData metaData   = resultSet.getMetaData();
-                numColumns = metaData.getColumnCount();
-                for (int i=1;i<=numColumns;i++)
-                {
-                     classNames.addElement(Class.forName(metaData.getColumnClassName(i)));
-                     colNames.addElement(metaData.getColumnName(i));
-                }
-
-                if (!resultSet.first())
-                {
-                    return;
-                }
-
-                currentRow = 0;
-                
-                do 
-                {
-                    /*for (int i=1;i<=metaData.getColumnCount();i++)
-                    {
-                         System.out.println(cache.size() + " " + i+ " "+resultSet.getObject(i));
-                    }*/
-                    
-                    ids.add(resultSet.getInt(primaryKeyIndex+1));
-                    
-                    if (count < VISIBLE_ROWS)
-                    {
-                        Vector<Object> row = new Vector<Object>();
-                        for (int i=1;i<=metaData.getColumnCount();i++)
-                        {
-                             row.add(resultSet.getObject(i));
-                        }
-                        cache.add(row);
-                    }
-                    count++;
-                } while (resultSet.next());
-                
-                //System.out.println("Total Records Returned: "+ count);
-                
-                captionInfo = results.getVisibleCaptionInfo();
-            }
-            
-        } catch (SQLException ex)
-        {
-            log.error("In constructor of ResultSetTableModel", ex);
-        }
-        catch (Exception ex)
-        {
-            log.error("In constructor of ResultSetTableModel", ex);
-            
-        } finally 
-        {
-            try
-            {
-                if (resultSet != null)
-                {
-                    resultSet.close();
-                }
-            }
-            catch (Exception ex)
-            {
-                log.error("Error closing resultset", ex);
-                
-            }
-        }
-    }
-     
-    /**
-     * Construct with a array of ids.
-     * @param searchId
-     * @param ids
+     * Construct with a QueryForIdResultsIFace
+     * @param results
      */
     public ResultSetTableModel(final QueryForIdResultsIFace results)
     {
         this.results = results;
-        
-        //this.ids = results.getRecIds();
         
         captionInfo = results.getVisibleCaptionInfo();
         
@@ -324,6 +241,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
      */
     public RecordSetIFace getRecordSet(final int[] rows, final int column, final boolean returnAll)
     {
+
         RecordSet rs = new RecordSet();
         rs.initialize();
 
@@ -333,10 +251,21 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
             return rs;
         }
 
-        for (Integer id : ids)
+        if (ids == null)
         {
-            rs.addItem(id);
+            for (Integer id : results.getRecIds())
+            {
+                rs.addItem(id);
+            }
+            
+        } else
+        {
+            for (Integer id : ids)
+            {
+                rs.addItem(id);
+            }  
         }
+
         return rs;
     }
 
