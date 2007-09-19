@@ -61,6 +61,10 @@ xstream.jar                             1.2.2    (xstream-1.2.2.jar)
 mssqlserver.jar 						2.2.0040
 	msbase.jar							dist w/ ms driver
 	msutil.jar 							dist w/ ms driver
+	
+Spell Check
+jazzy-swing                             0.5.2
+jazzy-core                              0.5.2
 
 Missing information:
 --------------------

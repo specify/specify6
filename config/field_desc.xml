@@ -45,7 +45,7 @@
         <desc country="US" lang="en">Source of Accession, e.g. 'Collecting', 'Gift', 'Bequest' ...</desc>
       </field>
       <field name="verbatimDate" type="java.lang.String">
-        <desc country="US" lang="en">accomodates historical accessions.</desc>
+        <desc country="US" lang="en">Accommodates historical accessions.</desc>
       </field>
       <field name="yesNo1" type="java.lang.Boolean">
         <desc country="US" lang="en">User definable</desc>
@@ -77,10 +77,18 @@
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en"/>
       </field>
-      <field name="ordinal" type="java.lang.Integer"/>
-      <field name="remarks" type="text"/>
-      <field name="timestampCreated" type="java.sql.Timestamp"/>
-      <field name="timestampModified" type="java.sql.Timestamp"/>
+      <field name="ordinal" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="timestampCreated" type="java.sql.Timestamp">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="timestampModified" type="java.sql.Timestamp">
+        <desc country="US" lang="en"/>
+      </field>
     </table>
     <table name="accessionauthorization">
       <desc country="US" lang="en">This represents the person authorizing the Accession. It references and existing Agent.</desc>
@@ -211,7 +219,7 @@
         <desc country="US" lang="en">of Person</desc>
       </field>
       <field name="url" type="java.lang.String">
-        <desc country="US" lang="en">An URL for their website</desc>
+        <desc country="US" lang="en">An URL for their web site</desc>
       </field>
       <field name="visibility" type="java.lang.Integer">
         <desc country="US" lang="en"/>
@@ -221,17 +229,25 @@
       </field>
     </table>
     <table name="agentattachment">
-      <desc country="US" lang="en">An attachment for the Agent. This often contains an image.</desc>
+      <desc country="US" lang="en">This is primarily used by Botanists for capturing Variant and Vernacular names. This table is searchable by does not have any specific business rules assiciated with it.</desc>
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en"/>
       </field>
-      <field name="ordinal" type="java.lang.Integer"/>
-      <field name="remarks" type="text"/>
-      <field name="timestampCreated" type="java.sql.Timestamp"/>
-      <field name="timestampModified" type="java.sql.Timestamp"/>
+      <field name="ordinal" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="timestampCreated" type="java.sql.Timestamp">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="timestampModified" type="java.sql.Timestamp">
+        <desc country="US" lang="en"/>
+      </field>
     </table>
     <table name="agentvariant">
-      <desc country="US" lang="en">This is primarily used by Botanists for capturing Variant and Vernacular names. This table is searchable by does not have any specific business rules assiciated with it.</desc>
+      <desc country="US" lang="en">Internal to Specify, this represents a resource, typically XML, that the application uses durng runtime.</desc>
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
       </field>
@@ -249,7 +265,7 @@
       </field>
     </table>
     <table name="appresource">
-      <desc country="US" lang="en">Internal to Specify, this represents a resource, typically XML, that the application uses durng runtime.</desc>
+      <desc country="US" lang="en">Internal to Specify, this represents a resource, typically XML, that the application uses during runtime.</desc>
       <field name="allPermissionLevel" type="java.lang.Integer">
         <desc country="US" lang="en"/>
       </field>
@@ -300,7 +316,7 @@
       </field>
     </table>
     <table name="appresourcedefault">
-      <desc country="US" lang="en"/>
+      <desc country="US" lang="en">This represents the actual attachment. The attachment itself is not sorted in the database. The information in this record identifies everything the application will need to load and display the attachment. The attacjment location is an absolute path to the attachment file.</desc>
       <field name="disciplineType" type="java.lang.String">
         <desc country="US" lang="en"/>
       </field>
@@ -318,19 +334,37 @@
       </field>
     </table>
     <table name="attachment">
-      <desc country="US" lang="en">This represents the actual attachment. The attachment itself is not sotred in the database. The information in this record identifies everything the application will need to load and display the attachment. The attacjment location is an absolute path to the attachment file.</desc>
+      <desc country="US" lang="en">This represents the actual attachment. The attachment itself is not sorted in the database. The information in this record identifies everything the application will need to load and display the attachment. The attachment location is an absolute path to the attachment file.</desc>
       <field name="attachmentLocation" type="java.lang.String">
         <desc country="US" lang="en"/>
       </field>
-      <field name="fileCreatedDate" type="java.util.Calendar"/>
-      <field name="lastEditedBy" type="java.lang.String"/>
-      <field name="mimeType" type="java.lang.String"/>
-      <field name="origFilename" type="java.lang.String"/>
-      <field name="remarks" type="text"/>
-      <field name="timestampCreated" type="java.sql.Timestamp"/>
-      <field name="timestampModified" type="java.sql.Timestamp"/>
-      <field name="visibility" type="java.lang.Integer"/>
-      <field name="visibilitySetBy" type="java.lang.String"/>
+      <field name="fileCreatedDate" type="java.util.Calendar">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="mimeType" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="origFilename" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="timestampCreated" type="java.sql.Timestamp">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="timestampModified" type="java.sql.Timestamp">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="visibility" type="java.lang.Integer">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="visibilitySetBy" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
     </table>
     <table name="attachmentmetadata">
       <desc country="US" lang="en">This hold meta data about the attachment. It is a set of named value pairs.</desc>
@@ -351,17 +385,18 @@
       </field>
     </table>
     <table name="attributedef">
+      <desc country="US" lang="en">The definition of an attribute</desc>
       <field name="dataType" type="java.lang.Short">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">The data type of the attribute</desc>
       </field>
       <field name="fieldName" type="java.lang.String">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">The field name of the attribute</desc>
       </field>
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
       </field>
       <field name="tableType" type="java.lang.Short">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">The type of table it is attached to, this is internal to Specify</desc>
       </field>
       <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
@@ -371,6 +406,7 @@
       </field>
     </table>
     <table name="author">
+      <desc country="US" lang="en">An Author is a reference to an Agent and provides the order for a list of authors of a Reference Work</desc>
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
       </field>
@@ -388,8 +424,9 @@
       </field>
     </table>
     <table name="borrow">
+      <desc country="US" lang="en">A Borrow represents a Loan from another Collection to yours.</desc>
       <field name="currentDueDate" type="java.util.Calendar">
-        <desc country="US" lang="en">Date loan is currently due. (Same as OrignalDueDate unless loan period has been extended)</desc>
+        <desc country="US" lang="en">Date loan is currently due. (Same as Orignal Due Date unless loan period has been extended)</desc>
       </field>
       <field name="dateClosed" type="java.util.Calendar">
         <desc country="US" lang="en">Date loan was closed</desc>
@@ -438,6 +475,7 @@
       </field>
     </table>
     <table name="borrowagent">
+      <desc country="US" lang="en">Refers to an Agent and describes their 'role' in the borrowing process.</desc>
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
       </field>
@@ -455,6 +493,7 @@
       </field>
     </table>
     <table name="borrowmaterial">
+      <desc country="US" lang="en">Describe the material being borrowed</desc>
       <field name="description" type="java.lang.String">
         <desc country="US" lang="en">Description of the material. 'e.g. Bufo bufo skull'</desc>
       </field>
@@ -487,6 +526,7 @@
       </field>
     </table>
     <table name="borrowreturnmaterial">
+      <desc country="US" lang="en">Desribes the material that was returned.</desc>
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
       </field>
@@ -507,17 +547,18 @@
       </field>
     </table>
     <table name="catalognumberingscheme">
+      <desc country="US" lang="en">Internal Specify table for describing numbering schemes. It enables multiple collections to share a numbering scheme.</desc>
       <field name="isNumericOnly" type="java.lang.Boolean">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">Indicates it is a completely numeric catalog number scheme</desc>
       </field>
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
       </field>
       <field name="schemeClassName" type="java.lang.String">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">The Java Class that implements the scheme</desc>
       </field>
       <field name="schemeName" type="java.lang.String">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">The name of the scheme</desc>
       </field>
       <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
@@ -527,6 +568,7 @@
       </field>
     </table>
     <table name="collectingevent">
+      <desc country="US" lang="en">Describes a Collecting Event. For some disciplines, like Botany this hidden and only the start state may be used.</desc>
       <field name="endDate" type="java.util.Calendar">
         <desc country="US" lang="en">The date collecting event ended</desc>
       </field>
@@ -564,7 +606,7 @@
         <desc country="US" lang="en">Start time in military format</desc>
       </field>
       <field name="stationFieldNumber" type="java.lang.String">
-        <desc country="US" lang="en">Station number or field number of the site where collecting event took place, A number or code recorded in field notes and/or written on field tags that identifies ALL material collected in a CollectingEvent.</desc>
+        <desc country="US" lang="en">Station number or field number of the site where collecting event took place, A number or code recorded in field notes and/or written on field tags that identifies ALL material collected in a Collecting Event.</desc>
       </field>
       <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
@@ -576,7 +618,7 @@
         <desc country="US" lang="en">Date which collector recorded in field book, exactly as reported by the collector. Should indicate whether reported as range, season, month, etc.</desc>
       </field>
       <field name="verbatimLocality" type="text">
-        <desc country="US" lang="en">Original statement (literal quotation) of the location of the CollectingEvent as given by the Collector.</desc>
+        <desc country="US" lang="en">Original statement (literal quotation) of the location of the Collecting Event as given by the Collector.</desc>
       </field>
       <field name="visibility" type="java.lang.Integer">
         <desc country="US" lang="en"/>
@@ -586,13 +628,25 @@
       </field>
     </table>
     <table name="collectingeventattachment">
-      <field name="lastEditedBy" type="java.lang.String"/>
-      <field name="ordinal" type="java.lang.Integer"/>
-      <field name="remarks" type="text"/>
-      <field name="timestampCreated" type="java.sql.Timestamp"/>
-      <field name="timestampModified" type="java.sql.Timestamp"/>
+      <desc country="US" lang="en">Refers to an attachment and provides and order.</desc>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="ordinal" type="java.lang.Integer">
+        <desc country="US" lang="en">The order or position</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="timestampCreated" type="java.sql.Timestamp">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="timestampModified" type="java.sql.Timestamp">
+        <desc country="US" lang="en"/>
+      </field>
     </table>
     <table name="collectingeventattr">
+      <desc country="US" lang="en"/>
       <field name="dblValue" type="java.lang.Double">
         <desc country="US" lang="en"/>
       </field>
@@ -610,6 +664,7 @@
       </field>
     </table>
     <table name="collectingtrip">
+      <desc country="US" lang="en">Used to group Collecting Events together.</desc>
       <field name="endDate" type="java.util.Calendar">
         <desc country="US" lang="en">The ending date of the collecting trip</desc>
       </field>
@@ -648,11 +703,12 @@
       </field>
     </table>
     <table name="collection">
+      <desc country="US" lang="en">A collection hold Collecting Object and all are of the same type.</desc>
       <field name="collectionName" type="java.lang.String">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">The name of the collection</desc>
       </field>
       <field name="collectionPrefix" type="java.lang.String">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">A short character prefix or abbreviation.</desc>
       </field>
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
@@ -668,17 +724,18 @@
       </field>
     </table>
     <table name="collectionobject">
+      <desc country="US" lang="en">Represents a specimen in the collection</desc>
       <field name="catalogNumber" type="java.lang.String">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">The catalog number of the specimen</desc>
       </field>
       <field name="catalogedDate" type="java.util.Calendar">
         <desc country="US" lang="en">Date the object was cataloged</desc>
       </field>
       <field name="catalogedDateVerbatim" type="java.lang.String">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">The verbatim date the specimen was collected</desc>
       </field>
       <field name="countAmt" type="java.lang.Integer">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">The number of specimens</desc>
       </field>
       <field name="deaccessioned" type="java.lang.Boolean">
         <desc country="US" lang="en">True if the object has been deaccessioned</desc>
@@ -687,13 +744,13 @@
         <desc country="US" lang="en">Image, Sound, Preparation, Container(Container Label?)</desc>
       </field>
       <field name="fieldNumber" type="java.lang.String">
-        <desc country="US" lang="en">BiologicalObject (Bird, Fish, etc)</desc>
+        <desc country="US" lang="en">The number giving to the specimen in the field.</desc>
       </field>
       <field name="groupPermittedToView" type="java.lang.Integer">
         <desc country="US" lang="en"/>
       </field>
       <field name="guid" type="java.lang.String">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">Global Unique Identifier</desc>
       </field>
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
@@ -739,13 +796,19 @@
       </field>
     </table>
     <table name="collectionobjectattachment">
-      <field name="lastEditedBy" type="java.lang.String"/>
-      <field name="ordinal" type="java.lang.Integer"/>
+      <desc country="US" lang="en">An attachment for a collection object and provides order</desc>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="ordinal" type="java.lang.Integer">
+        <desc country="US" lang="en">The order in the attachment list</desc>
+      </field>
       <field name="remarks" type="text"/>
       <field name="timestampCreated" type="java.sql.Timestamp"/>
       <field name="timestampModified" type="java.sql.Timestamp"/>
     </table>
     <table name="collectionobjectattr">
+      <desc country="US" lang="en"/>
       <field name="dblValue" type="java.lang.Double">
         <desc country="US" lang="en"/>
       </field>
@@ -763,6 +826,7 @@
       </field>
     </table>
     <table name="collectionobjectcitation">
+      <desc country="US" lang="en">Refers to a citation for a collection object</desc>
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
       </field>
@@ -777,6 +841,7 @@
       </field>
     </table>
     <table name="collectionrelationship">
+      <desc country="US" lang="en">Enables two collection objects to refer to each other, for example, voucher and tissue.</desc>
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
       </field>
@@ -788,6 +853,7 @@
       </field>
     </table>
     <table name="collectionreltype">
+      <desc country="US" lang="en">Describes the type of relationship between to collection objects</desc>
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
       </field>
@@ -802,6 +868,7 @@
       </field>
     </table>
     <table name="collectiontype">
+      <desc country="US" lang="en">Describe the type of collection, for example 'fish', 'birds'</desc>
       <field name="discipline" type="java.lang.String">
         <desc country="US" lang="en">The Discipline of all the Collections that reference this</desc>
       </field>
@@ -819,11 +886,12 @@
       </field>
     </table>
     <table name="collector">
+      <desc country="US" lang="en">Refers to an Agent and provides order</desc>
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
       </field>
       <field name="orderNumber" type="java.lang.Integer">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">The position in the list of collectors</desc>
       </field>
       <field name="remarks" type="text">
         <desc country="US" lang="en">Additional Comments</desc>
@@ -836,6 +904,7 @@
       </field>
     </table>
     <table name="colobjattributes">
+      <desc country="US" lang="en"/>
       <field name="age" type="java.lang.String">
         <desc country="US" lang="en"/>
       </field>
@@ -1039,11 +1108,12 @@
       </field>
     </table>
     <table name="commonname">
+      <desc country="US" lang="en">Describes a common name and the localization of the name.</desc>
       <field name="country" type="java.lang.String">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">The country code</desc>
       </field>
       <field name="language" type="java.lang.String">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">The language code</desc>
       </field>
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
@@ -1058,12 +1128,13 @@
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="variant" type="java.lang.String">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">The variant code of the language</desc>
       </field>
     </table>
     <table name="conservdescription">
+      <desc country="US" lang="en">Describes an object that will be part of one or more conservation events.</desc>
       <field name="backgroundInfo" type="text">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">Any background information on the object</desc>
       </field>
       <field name="composition" type="text">
         <desc country="US" lang="en"/>
@@ -1075,19 +1146,19 @@
         <desc country="US" lang="en"/>
       </field>
       <field name="height" type="java.lang.Float">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">The height of the object</desc>
       </field>
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
       </field>
       <field name="objLength" type="java.lang.Float">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">The length of the object</desc>
       </field>
       <field name="remarks" type="text">
         <desc country="US" lang="en">Additional Comments</desc>
       </field>
       <field name="shortDesc" type="java.lang.String">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">A short description of the object</desc>
       </field>
       <field name="source" type="text">
         <desc country="US" lang="en"/>
@@ -1099,37 +1170,45 @@
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="units" type="java.lang.String">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">The units for the measurements ('feet' or 'meters')</desc>
       </field>
       <field name="width" type="java.lang.Float">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">The width of the object</desc>
       </field>
     </table>
     <table name="conservdescriptionattachment">
-      <field name="lastEditedBy" type="java.lang.String"/>
-      <field name="ordinal" type="java.lang.Integer"/>
-      <field name="remarks" type="text"/>
+      <desc country="US" lang="en">Refers to an attachment and provides an order in the attachment list</desc>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="ordinal" type="java.lang.Integer">
+        <desc country="US" lang="en">The order or position</desc>
+      </field>
+      <field name="remarks" type="text">
+        <desc country="US" lang="en"/>
+      </field>
       <field name="timestampCreated" type="java.sql.Timestamp"/>
       <field name="timestampModified" type="java.sql.Timestamp"/>
     </table>
     <table name="conservevent">
+      <desc country="US" lang="en">A conservation event</desc>
       <field name="advTestingExam" type="text">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">The advanced testing that was used to examine the object</desc>
       </field>
       <field name="advTestingExamResults" type="text">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">The results of the advanced testing</desc>
       </field>
       <field name="conditionReport" type="text">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">A report on the condition</desc>
       </field>
       <field name="examDate" type="java.util.Calendar">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">The date the object was examined</desc>
       </field>
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
       </field>
       <field name="photoDocs" type="text">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">Any documentation on the photos that were taken</desc>
       </field>
       <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
@@ -1141,22 +1220,28 @@
         <desc country="US" lang="en"/>
       </field>
       <field name="treatmentReport" type="text">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">A description of the treatment that is needed.</desc>
       </field>
     </table>
     <table name="conserveventattachment">
-      <field name="lastEditedBy" type="java.lang.String"/>
-      <field name="ordinal" type="java.lang.Integer"/>
+      <desc country="US" lang="en">Refers to an attachment and provides order</desc>
+      <field name="lastEditedBy" type="java.lang.String">
+        <desc country="US" lang="en"/>
+      </field>
+      <field name="ordinal" type="java.lang.Integer">
+        <desc country="US" lang="en">The order or position</desc>
+      </field>
       <field name="remarks" type="text"/>
       <field name="timestampCreated" type="java.sql.Timestamp"/>
       <field name="timestampModified" type="java.sql.Timestamp"/>
     </table>
     <table name="conservrecmdtype">
+      <desc country="US" lang="en">The type of recommendation</desc>
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
       </field>
       <field name="rcmdType" type="java.lang.Byte">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">Describe the type</desc>
       </field>
       <field name="timestampCreated" type="java.sql.Timestamp">
         <desc country="US" lang="en">The timestamp the record was created.</desc>
@@ -1165,15 +1250,16 @@
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="title" type="java.lang.String">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">Human readable description of the type.</desc>
       </field>
     </table>
     <table name="conservrecommendation">
+      <desc country="US" lang="en">A recommendation for an object</desc>
       <field name="completedComments" type="text">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">The comments made upon completion</desc>
       </field>
       <field name="completedDate" type="java.util.Calendar">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">The date the recommendation was completed</desc>
       </field>
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
@@ -1189,14 +1275,15 @@
       </field>
     </table>
     <table name="container">
+      <desc country="US" lang="en">A container can optionally be cataloged as a collection object and it contains other collection objects.</desc>
       <field name="description" type="java.lang.String">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">A description of the container</desc>
       </field>
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
       </field>
       <field name="name" type="java.lang.String">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">The name of the container</desc>
       </field>
       <field name="number" type="java.lang.Integer">
         <desc country="US" lang="en">User definable</desc>
@@ -1208,10 +1295,11 @@
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="type" type="java.lang.Short">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">The type of container</desc>
       </field>
     </table>
     <table name="datatype">
+      <desc country="US" lang="en">A data type represents a 'core' type of collection data.</desc>
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
       </field>
@@ -1226,11 +1314,12 @@
       </field>
     </table>
     <table name="deaccession">
+      <desc country="US" lang="en">A deaccession that can contain one or more collection objects</desc>
       <field name="deaccessionDate" type="java.util.Calendar">
         <desc country="US" lang="en"/>
       </field>
       <field name="deaccessionNumber" type="java.lang.String">
-        <desc country="US" lang="en">Name institution assigns to the deacession</desc>
+        <desc country="US" lang="en">Name institution assigns to the deaccession</desc>
       </field>
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
@@ -1267,6 +1356,7 @@
       </field>
     </table>
     <table name="deaccessionagent">
+      <desc country="US" lang="en">Refers to an agent and contains their role in the deaccession</desc>
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
       </field>
@@ -1284,11 +1374,12 @@
       </field>
     </table>
     <table name="deaccessionpreparation">
+      <desc country="US" lang="en">The preparation that was deaccessioned</desc>
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
       </field>
       <field name="quantity" type="java.lang.Short">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">The number of items deaccessioned</desc>
       </field>
       <field name="remarks" type="text">
         <desc country="US" lang="en">Additional Comments</desc>
@@ -1301,11 +1392,12 @@
       </field>
     </table>
     <table name="determination">
+      <desc country="US" lang="en">The determination of the collection object</desc>
       <field name="confidence" type="java.lang.String">
         <desc country="US" lang="en">Confidence of determination</desc>
       </field>
       <field name="determinedDate" type="java.util.Calendar">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">The date it was determined</desc>
       </field>
       <field name="featureOrBasis" type="java.lang.String">
         <desc country="US" lang="en">Body part, or characteristic used as the basis of a determination.</desc>
@@ -1348,6 +1440,7 @@
       </field>
     </table>
     <table name="determinationcitation">
+      <desc country="US" lang="en">Refers to a citation for the determination</desc>
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
       </field>
@@ -1362,14 +1455,15 @@
       </field>
     </table>
     <table name="determinationstatus">
+      <desc country="US" lang="en">The status of the determination, user definable.</desc>
       <field name="isCurrent" type="java.lang.Boolean">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">Indicates whether this determination status is considered to be the one representing it as current.</desc>
       </field>
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
       </field>
       <field name="name" type="java.lang.String">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">The human readable text for the status</desc>
       </field>
       <field name="remarks" type="text">
         <desc country="US" lang="en">Additional Comments</desc>
@@ -1382,20 +1476,21 @@
       </field>
     </table>
     <table name="division">
+      <desc country="US" lang="en">The division (or department) containing agents belonging to it.</desc>
       <field name="abbrev" type="java.lang.String">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">The abbreviation for the division</desc>
       </field>
       <field name="discipline" type="java.lang.String">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">The discipline of the division</desc>
       </field>
       <field name="iconURI" type="java.lang.String">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">The URL to their icon</desc>
       </field>
       <field name="lastEditedBy" type="java.lang.String">
         <desc country="US" lang="en">The user who last saved the record.</desc>
       </field>
       <field name="name" type="java.lang.String">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">The name of the division</desc>
       </field>
       <field name="remarks" type="text">
         <desc country="US" lang="en">Additional Comments</desc>
@@ -1407,10 +1502,10 @@
         <desc country="US" lang="en">The timestamp the record was last modified.</desc>
       </field>
       <field name="title" type="java.lang.String">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">The title of the division</desc>
       </field>
       <field name="uri" type="java.lang.String">
-        <desc country="US" lang="en"/>
+        <desc country="US" lang="en">A URI (web site) address for the department</desc>
       </field>
     </table>
     <table name="exchangein">
