@@ -51,14 +51,17 @@ import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 /*
  * @code_status Unknown (auto-generated)
  **
- * @author Teodor Danciu (teodord@users.sourceforge.net)
- * @version $Id: Scriptlet.java,v 1.7 2005/04/04 15:18:41 teodord Exp $
+ * Example code taken from Teodor Danciu (teodord@users.sourceforge.net)
+ * updated and modified by our project.
  */
 public class Scriptlet extends JRDefaultScriptlet
 {
     private static final Logger log = Logger.getLogger(Scriptlet.class);
+    
+    private static final String STYLE_START = "<style isItalic=\"true\">";
+    
 
-	/**
+    /**
      * beforeReportInit.
      */
     public void beforeReportInit() throws JRScriptletException
@@ -338,12 +341,12 @@ public class Scriptlet extends JRDefaultScriptlet
      */
     public String loanCategory(Boolean isGift)
     {
-    	if(isGift)
-    	{
-    		return "GIFT";
-    	}
-    	// else
-  		return "LOAN";
+        if(isGift)
+        {
+            return "GIFT";
+        }
+        // else
+        return "LOAN";
     }
     
     /**
@@ -354,12 +357,12 @@ public class Scriptlet extends JRDefaultScriptlet
      */
     public String buildNameString(String firstName, String lastName, String middleInitial)
     {
-    	String name = lastName + ", " + firstName;
-    	if (middleInitial != null)
-    	{
-    		name += " " + middleInitial;
-    	}
-    	return name;
+        String name = lastName + ", " + firstName;
+        if (middleInitial != null)
+        {
+            name += " " + middleInitial;
+        }
+        return name;
     }
     
     /**
@@ -369,33 +372,36 @@ public class Scriptlet extends JRDefaultScriptlet
      * @param latitude - latitude
      * @param longitude - longitude
      */
-    public String buildLocalityString(String geoName, String localityName, String latitude, String longitude)
+    public String buildLocalityString(String geoName,
+                                      String localityName,
+                                      String latitude,
+                                      String longitude)
     {
-    	String locality = "";
-    	
-    	if (geoName != null && geoName.length() >= 1)
-    	{
-    		locality += geoName;
-    	}
-    	
-    	if (localityName != null && localityName.length() >= 1)
-    	{
-    		locality += ", " + localityName;
-    	}
+        String locality = "";
 
-    	if (latitude != null && latitude.length() >= 1)
-    	{
-    		String temp1[] = latitude.split("deg");
-    		locality += ", " + temp1[0] + temp1[1];
-    	}
-    	
-    	if (longitude != null && longitude.length() >= 1)
-    	{
-    		String temp2[] = longitude.split("deg");
-    		locality += ", " + temp2[0] + temp2[1];
-    	}
-    	
-    	return locality;
+        if (geoName != null && geoName.length() >= 1)
+        {
+            locality += geoName;
+        }
+
+        if (localityName != null && localityName.length() >= 1)
+        {
+            locality += ", " + localityName;
+        }
+
+        if (latitude != null && latitude.length() >= 1)
+        {
+            String temp1[] = latitude.split("deg");
+            locality += ", " + temp1[0] + temp1[1];
+        }
+
+        if (longitude != null && longitude.length() >= 1)
+        {
+            String temp2[] = longitude.split("deg");
+            locality += ", " + temp2[0] + temp2[1];
+        }
+
+        return locality;
     }
     
     /**
@@ -405,25 +411,25 @@ public class Scriptlet extends JRDefaultScriptlet
      */
     public String dateDifference(java.sql.Date startDate, java.sql.Date endDate)
     {
-    	String loanLength = "N/A";
+        String loanLength = "N/A";
         if (startDate != null && endDate != null)
         {
             Calendar startCal = Calendar.getInstance();
             startCal.setTime(startDate);
-            
+
             Calendar endCal = Calendar.getInstance();
             endCal.setTime(endDate);
-            
+
             int monthCount = 0;
             while (startCal.before(endCal))
             {
                 startCal.add(Calendar.MONTH, 1);
                 monthCount++;
             }
-       		
-       		loanLength = monthCount + " months"; // I18N
+
+            loanLength = monthCount + " months"; // I18N
         }
-    	return loanLength;
+        return loanLength;
     }
     
     /**
@@ -491,126 +497,134 @@ public class Scriptlet extends JRDefaultScriptlet
     * @param dataSource the WorkbenchJRDataSource
     * @return label string value
     */
-   public String formatDetermination(Object dataSource)
-   {
-	   
-	   String label = new String(); 
-	   String data = new String();
-	   String styleInfo = new String();
-	   
-	   if(dataSource instanceof WorkbenchJRDataSource){
-		   WorkbenchJRDataSource rowDataSource = (WorkbenchJRDataSource)dataSource;
-		   String isCurrent1 = rowDataSource.getFieldValue("isCurrent1").toString(); 
-		   String isCurrent2 = rowDataSource.getFieldValue("isCurrent2").toString();
-		
-		   //assume 1 if isCurrent has no value
-		  if((isCurrent1.equals("true")))
-		   {
-			
-			  Vector<String> labelNames = isCurrent1Labels();
-			  
-			  //create label
-              for (Enumeration<?> e = labelNames.elements(); e.hasMoreElements();)
-              {
-            	  data = rowDataSource.getFieldValue( (String)e.nextElement() ).toString();
-            	  
-            	  try{
-            		  
-            		  if(data.length() > 0)
-                      {
-            			 styleInfo = (String)e.nextElement();
-                    	  //if there is specific style info
-                    	  if(styleInfo.startsWith("<style"))
-                    	  	{
-                    		  	label = label.concat(styleInfo + data + " </style>");
-                    		}else//no style
-                    		{
-                    			label = label.concat(styleInfo + data+" ");	
-                    		}
-                      }
-            		  
-            	  }catch(NoSuchElementException ex){
-            		  log.error(ex);
-            		  return label;
-            	  }
-              	
-              }
-              
-		  }else if(isCurrent2.equals("true"))//use isCurrent 2 values
-		  {
-			  
-			  Vector<String> labelNames = isCurrent2Labels();
-			  
-			  //create label
-              for (Enumeration<?> e = labelNames.elements(); e.hasMoreElements();)
-              {
-            	  data = rowDataSource.getFieldValue( (String)e.nextElement() ).toString();
-            	  
-            	  try{
-            		  
-            		  if(data.length() > 0)
-                      {
-            			 styleInfo = (String)e.nextElement();
-                    	  //if there is specific style info
-                    	  if(styleInfo.startsWith("<style"))
-                    	  	{
-                    		  	label = label.concat(styleInfo + data + " </style>");
-                    		}else//no style
-                    		{
-                    			label = label.concat(styleInfo + data+" ");	
-                    		}
-                      }
-            		  
-            	  }catch(NoSuchElementException ex){
-            		  log.error(ex);
-            		  return label;
-            	  }
-              	
-              }
-		  } 
-	   }
-	   //else
-	   return  label;
-   }
+   public String formatDetermination(final Object dataSource)
+    {
+
+        String label     = new String();
+        String data      = new String();
+        String styleInfo = new String();
+
+        if (dataSource instanceof WorkbenchJRDataSource)
+        {
+            WorkbenchJRDataSource rowDataSource = (WorkbenchJRDataSource) dataSource;
+            String isCurrent1 = rowDataSource.getFieldValue("isCurrent1").toString();
+            String isCurrent2 = rowDataSource.getFieldValue("isCurrent2").toString();
+
+            // assume 1 if isCurrent has no value
+            if ((isCurrent1.equals("true")))
+            {
+
+                Vector<String> labelNames = isCurrent1Labels();
+
+                // create label
+                for (Enumeration<?> e = labelNames.elements(); e.hasMoreElements();)
+                {
+                    data = rowDataSource.getFieldValue((String) e.nextElement()).toString();
+
+                    try
+                    {
+                        if (data.length() > 0)
+                        {
+                            styleInfo = (String) e.nextElement();
+                            // if there is specific style info
+                            if (styleInfo.startsWith("<style"))
+                            {
+                                label = label.concat(styleInfo + data + " </style>");
+                            } else
+                            // no style
+                            {
+                                label = label.concat(styleInfo + data + " ");
+                            }
+                        }
+
+                    } catch (NoSuchElementException ex)
+                    {
+                        log.error(ex);
+                        return label;
+                    }
+
+                }
+
+            } else if (isCurrent2.equals("true"))// use isCurrent 2 values
+            {
+
+                Vector<String> labelNames = isCurrent2Labels();
+
+                // create label
+                for (Enumeration<?> e = labelNames.elements(); e.hasMoreElements();)
+                {
+                    data = rowDataSource.getFieldValue((String) e.nextElement()).toString();
+
+                    try
+                    {
+                        if (data.length() > 0)
+                        {
+                            styleInfo = (String) e.nextElement();
+                            // if there is specific style info
+                            if (styleInfo.startsWith("<style"))
+                            {
+                                label = label.concat(styleInfo + data + " </style>");
+                            } else
+                            // no style
+                            {
+                                label = label.concat(styleInfo + data + " ");
+                            }
+                        }
+
+                    } catch (NoSuchElementException ex)
+                    {
+                        log.error(ex);
+                        return label;
+                    }
+
+                }
+            }
+        }
+        // else
+        return label;
+    }
    
-   //create the order and style information of the label.
-   //add the determiner name first, followed by its style information.
-   public Vector<String> isCurrent1Labels()
-   {
-	   Vector<String> labelNames = new Vector<String>(); 
-		  labelNames.add("genus1");					labelNames.add("<style isItalic=\"true\">");
-		  labelNames.add("speciesQualifier1");		labelNames.add("");
-		  labelNames.add("species1");				labelNames.add("<style isItalic=\"true\">");
-		  labelNames.add("speciesAuthorFirstName1");	labelNames.add("");
-		  labelNames.add("speciesAuthorLastName1");	labelNames.add("");
-		  labelNames.add("subspeciesQualifier1");	labelNames.add("");
-		  labelNames.add("subspecies1");				labelNames.add("<style isItalic=\"true\">");
-		  labelNames.add("infraAuthorFirstName1");	labelNames.add("");
-		  labelNames.add("infraAuthorLastName1");	labelNames.add("");
-		  labelNames.add("varietyQualifier1");		labelNames.add("var.");
-		  labelNames.add("variety1");				labelNames.add("<style isItalic=\"true\">");
-		  
-	return labelNames;
-   }
+    /**
+     * Create the order and style information of the label.
+     * Add the determiner name first, followed by its style information.
+     * @return
+     */
+    public Vector<String> isCurrent1Labels()
+    {
+        Vector<String> labelNames = new Vector<String>(); 
+        labelNames.add("genus1");                  labelNames.add(STYLE_START);
+        labelNames.add("speciesQualifier1");       labelNames.add("");
+        labelNames.add("species1");                labelNames.add(STYLE_START);
+        labelNames.add("speciesAuthorFirstName1"); labelNames.add("");
+        labelNames.add("speciesAuthorLastName1");  labelNames.add("");
+        labelNames.add("subspeciesQualifier1");    labelNames.add("");
+        labelNames.add("subspecies1");             labelNames.add(STYLE_START);
+        labelNames.add("infraAuthorFirstName1");   labelNames.add("");
+        labelNames.add("infraAuthorLastName1");    labelNames.add("");
+        labelNames.add("varietyQualifier1");       labelNames.add("var.");
+        labelNames.add("variety1");                labelNames.add(STYLE_START);
+          
+        return labelNames;
+    }
    
-   // create the order and style information of the label.
-   //add the determiner name first, followed by its style information.
-   public Vector<String> isCurrent2Labels()
-   {
-	   Vector<String> labelNames = new Vector<String>(); 
-		  labelNames.add("genus2");					labelNames.add("<style isItalic=\"true\">");
-		  labelNames.add("speciesQualifier2");		labelNames.add("");
-		  labelNames.add("species2");				labelNames.add("<style isItalic=\"true\">");
-		  labelNames.add("speciesAuthorFirstName2");	labelNames.add("");
-		  labelNames.add("speciesAuthorLastName2");	labelNames.add("");
-		  labelNames.add("subspeciesQualifier2");	labelNames.add("");
-		  labelNames.add("subspecies2");				labelNames.add("<style isItalic=\"true\">");
-		  labelNames.add("infraAuthorFirstName2");	labelNames.add("");
-		  labelNames.add("infraAuthorLastName2");	labelNames.add("");
-		  labelNames.add("varietyQualifier2");		labelNames.add("var.");
-		  labelNames.add("variety2");				labelNames.add("<style isItalic=\"true\">");
-		  
-	return labelNames;
+    // create the order and style information of the label.
+    //add the determiner name first, followed by its style information.
+    public Vector<String> isCurrent2Labels()
+    {
+        Vector<String> labelNames = new Vector<String>(); 
+        labelNames.add("genus2");                  labelNames.add(STYLE_START);
+        labelNames.add("speciesQualifier2");       labelNames.add("");
+        labelNames.add("species2");                labelNames.add(STYLE_START);
+        labelNames.add("speciesAuthorFirstName2"); labelNames.add("");
+        labelNames.add("speciesAuthorLastName2");  labelNames.add("");
+        labelNames.add("subspeciesQualifier2");    labelNames.add("");
+        labelNames.add("subspecies2");             labelNames.add(STYLE_START);
+        labelNames.add("infraAuthorFirstName2");   labelNames.add("");
+        labelNames.add("infraAuthorLastName2");    labelNames.add("");
+        labelNames.add("varietyQualifier2");       labelNames.add("var.");
+        labelNames.add("variety2");                labelNames.add(STYLE_START);
+          
+        return labelNames;
    }
    
 }
