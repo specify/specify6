@@ -17,8 +17,6 @@
  */
 package edu.ku.brc.af.core.expresssearch;
 
-import edu.ku.brc.af.core.ExpressResultsTableInfo;
-import edu.ku.brc.af.core.TableNameRendererIFace;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.ui.UIHelper;
 

@@ -13,7 +13,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package edu.ku.brc.af.core;
+package edu.ku.brc.af.core.expresssearch;
 
 import java.awt.Color;
 import java.util.Hashtable;
@@ -22,7 +22,6 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
-import edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace;
 
 /**
  * This class is used for collecting all the record primary keys for a given Express Definition.

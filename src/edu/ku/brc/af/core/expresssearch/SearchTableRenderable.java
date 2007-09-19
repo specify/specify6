@@ -17,7 +17,6 @@
  */
 package edu.ku.brc.af.core.expresssearch;
 
-import edu.ku.brc.af.core.TableInfoRenderable;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 
 /**

@@ -17,8 +17,8 @@
  */
 package edu.ku.brc.specify.tasks.subpane;
 
-import edu.ku.brc.af.core.QueryForIdResultsSQL;
-import edu.ku.brc.af.core.ExpressSearchSQLAdjuster;
+import edu.ku.brc.af.core.expresssearch.ExpressSearchSQLAdjuster;
+import edu.ku.brc.af.core.expresssearch.QueryForIdResultsSQL;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
 
 /**

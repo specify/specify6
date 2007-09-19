@@ -43,6 +43,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
@@ -57,8 +58,8 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.NavBoxLayoutManager;
-import edu.ku.brc.af.core.TableFieldPair;
 import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.af.core.expresssearch.TableFieldPair;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.HibernateUtil;
@@ -151,14 +152,14 @@ public class QueryBldrPane extends BaseSubPane
         QryListRenderer qr = new QryListRenderer(IconManager.IconSize.Std16);
         qr.setDisplayKidIndicator(false);
         tableList.setCellRenderer(qr);
-        JScrollPane spt = new JScrollPane(tableList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        JScrollPane spt = new JScrollPane(tableList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         Dimension   pSize = spt.getPreferredSize();
         pSize.height = 200;
         spt.setPreferredSize(pSize);
         
         JPanel topPanel = new JPanel(new BorderLayout());
         
-        scrollPane = new JScrollPane(listBoxPanel, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scrollPane = new JScrollPane(listBoxPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         
         tableList.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
             public void valueChanged(ListSelectionEvent e)
@@ -196,7 +197,7 @@ public class QueryBldrPane extends BaseSubPane
         
         queryFieldsPanel = new JPanel();
         queryFieldsPanel.setLayout(new NavBoxLayoutManager(0,2));
-        JScrollPane sp = new JScrollPane(queryFieldsPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        JScrollPane sp = new JScrollPane(queryFieldsPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         add(sp, BorderLayout.CENTER);
         
         JButton         searchBtn = new JButton("Search");
@@ -495,7 +496,7 @@ public class QueryBldrPane extends BaseSubPane
                 newList = new JList(model = new DefaultListModel());
                 newList.setCellRenderer(qryRenderer);
                 listBoxList.add(newList);
-                sp = new JScrollPane(newList, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+                sp = new JScrollPane(newList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
                 spList.add(sp);
                 
                 newList.getSelectionModel().addListSelectionListener(new ListSelectionListener(){

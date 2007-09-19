@@ -27,8 +27,6 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.ERTIJoinColInfo;
-import edu.ku.brc.af.core.ExpressResultsTableInfo;
 
 
 /**

@@ -28,7 +28,7 @@ import edu.ku.brc.ui.UIHelper;
  * Created Date: Sep 12, 2007
  *
  */
-public class SearchFieldConfig implements edu.ku.brc.af.core.TableNameRendererIFace, Comparable<SearchFieldConfig>
+public class SearchFieldConfig implements edu.ku.brc.af.core.expresssearch.TableNameRendererIFace, Comparable<SearchFieldConfig>
 {
     protected String         fieldName;
     protected Boolean        isSortable;

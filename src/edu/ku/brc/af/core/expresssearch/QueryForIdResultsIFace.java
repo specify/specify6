@@ -21,7 +21,6 @@ import java.awt.Color;
 import java.util.List;
 import java.util.Vector;
 
-import edu.ku.brc.af.core.ERTICaptionInfo;
 
 /**
  * @author rods

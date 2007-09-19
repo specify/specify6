@@ -24,7 +24,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Transaction;
 import org.hibernate.type.Type;
 
-import edu.ku.brc.af.core.ExpressResultsTableInfo;
+import edu.ku.brc.af.core.expresssearch.ExpressResultsTableInfo;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 

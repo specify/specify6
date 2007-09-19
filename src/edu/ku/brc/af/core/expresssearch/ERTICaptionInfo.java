@@ -15,7 +15,7 @@
 /**
  * 
  */
-package edu.ku.brc.af.core;
+package edu.ku.brc.af.core.expresssearch;
 
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 

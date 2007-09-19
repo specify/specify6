@@ -15,7 +15,7 @@
 /**
  * 
  */
-package edu.ku.brc.af.core;
+package edu.ku.brc.af.core.expresssearch;
 
 import java.awt.Color;
 import java.util.List;
@@ -23,9 +23,6 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
-import edu.ku.brc.af.core.expresssearch.DisplayFieldConfig;
-import edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace;
-import edu.ku.brc.af.core.expresssearch.SearchTableConfig;
 import edu.ku.brc.ui.UIHelper;
 
 /**

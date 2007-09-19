@@ -26,7 +26,6 @@ import java.util.Vector;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.core.TableNameRendererIFace;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.ui.DateWrapper;

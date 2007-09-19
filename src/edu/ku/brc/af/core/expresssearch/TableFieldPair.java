@@ -4,7 +4,7 @@
      * [INSERT KU-APPROVED LICENSE TEXT HERE]
      *
      */
-package edu.ku.brc.af.core;
+package edu.ku.brc.af.core.expresssearch;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableIdMgr.FieldInfo;

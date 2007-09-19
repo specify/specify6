@@ -61,11 +61,6 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.thoughtworks.xstream.XStream;
 
-import edu.ku.brc.af.core.ERTICaptionInfo;
-import edu.ku.brc.af.core.ExpressResultsTableInfo;
-import edu.ku.brc.af.core.TableInfoRenderable;
-import edu.ku.brc.af.core.TableNameRenderer;
-import edu.ku.brc.af.core.TableNameRendererIFace;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CustomDialog;

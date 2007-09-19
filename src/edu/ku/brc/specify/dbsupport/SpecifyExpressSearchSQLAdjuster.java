@@ -11,7 +11,7 @@ package edu.ku.brc.specify.dbsupport;
 
 import org.apache.commons.lang.StringUtils;
 
-import edu.ku.brc.af.core.ExpressSearchSQLAdjuster;
+import edu.ku.brc.af.core.expresssearch.ExpressSearchSQLAdjuster;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 

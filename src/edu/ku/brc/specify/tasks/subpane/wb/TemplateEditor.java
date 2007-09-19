@@ -63,7 +63,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.af.core.TableFieldPair;
+import edu.ku.brc.af.core.expresssearch.TableFieldPair;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
