@@ -43,45 +43,51 @@ public class AttachmentBusRules extends BaseBusRules
             }
             
             // just check the foreign keys
-            boolean noPermits  = super.okToDelete("attachment", "PermitID",              id);
-            boolean noAgents   = super.okToDelete("attachment", "AgentID",               id);
-            boolean noLocales  = super.okToDelete("attachment", "LocalityID",            id);
-            boolean noLoans    = super.okToDelete("attachment", "LoanID",                id);
-            boolean noCollObjs = super.okToDelete("attachment", "CollectionObjectID",    id);
-            boolean noCollEvts = super.okToDelete("attachment", "CollectingEventID",     id);
-            boolean noAccs     = super.okToDelete("attachment", "AccessionID",           id);
-            boolean noPreps    = super.okToDelete("attachment", "PreparationID",         id);
-            boolean noTax      = super.okToDelete("attachment", "TaxonID",               id);
-            boolean noRepos    = super.okToDelete("attachment", "RepositoryAgreementID", id);
+            boolean noAccession = super.okToDelete("accessionattachment",           "AttachmentID", id);
+            boolean noAgent     = super.okToDelete("agentattachment",               "AttachmentID", id);
+            boolean noCollEvt   = super.okToDelete("collectingeventattachment",     "AttachmentID", id);
+            boolean noCollObj   = super.okToDelete("collectionobjectattachment",    "AttachmentID", id);
+            boolean noConsDesc  = super.okToDelete("conservdescriptionattachment",  "AttachmentID", id);
+            boolean noConsEvt   = super.okToDelete("conserveventattachment",        "AttachmentID", id);
+            boolean noLoan      = super.okToDelete("loanattachment",                "AttachmentID", id);
+            boolean noLoc       = super.okToDelete("localityattachment",            "AttachmentID", id);
+            boolean noPermit    = super.okToDelete("permitattachment",              "AttachmentID", id);
+            boolean noPrep      = super.okToDelete("preparationattachment",         "AttachmentID", id);
+            boolean noRepoAg    = super.okToDelete("repositoryagreementattachment", "AttachmentID", id);
+            boolean noTaxon     = super.okToDelete("taxonattachment",               "AttachmentID", id);
 
-            return noPermits &&
-                   noAgents &&
-                   noLocales &&
-                   noLoans &&
-                   noCollObjs &&
-                   noCollEvts &&
-                   noAccs &&
-                   noPreps &&
-                   noTax &&
-                   noRepos;
+            return noAccession &&
+                   noAgent &&
+                   noCollEvt &&
+                   noCollObj &&
+                   noConsDesc &&
+                   noConsEvt &&
+                   noLoan &&
+                   noLoc &&
+                   noPermit &&
+                   noPrep &&
+                   noRepoAg &&
+                   noTaxon;
         }
         
         return true;
     }
-
-
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#beforeSaveCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
     @Override
-    public void beforeSaveCommit(Object dataObj, DataProviderSessionIFace session)
+    public boolean beforeSaveCommit(Object dataObj, DataProviderSessionIFace session) throws Exception
     {
-        // TODO Auto-generated method stub
-        super.beforeSaveCommit(dataObj, session);
+        boolean retVal = super.beforeSaveCommit(dataObj, session);
+        if (retVal == false)
+        {
+            return retVal;
+        }
         
         if (!(dataObj instanceof Attachment))
         {
-            return;
+            return true;
         }
         
         Attachment attachment = (Attachment)dataObj;
@@ -104,25 +110,17 @@ public class AttachmentBusRules extends BaseBusRules
             thumbFile = null;
         }
         
-        try
-        {
-            attachmentMgr.storeAttachmentFile(attachment, origFile, thumbFile);
-        }
-        catch (IOException e)
-        {
-            // exception while saving copying attachments to storage system
-            e.printStackTrace();
-        }
+        attachmentMgr.storeAttachmentFile(attachment, origFile, thumbFile);
+        return true;
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#beforeDeleteCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
     @Override
-    public void beforeDeleteCommit(Object dataObj, DataProviderSessionIFace session)
+    public boolean beforeDeleteCommit(Object dataObj, DataProviderSessionIFace session) throws Exception
     {
-        // TODO Auto-generated method stub
-        super.beforeDeleteCommit(dataObj, session);
+        return super.beforeDeleteCommit(dataObj, session);
         
         // TODO: delete the attachment from the storage system
     }

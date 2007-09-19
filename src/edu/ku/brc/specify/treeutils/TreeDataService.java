@@ -85,8 +85,10 @@ public interface TreeDataService <T extends Treeable<T,D,I>,
      * Deletes the given node from the DB.
      * 
      * @param node the node to be deleted
+     * @throws Exception when anything prevents the transaction from success
+     * @return false if the transaction should be aborted, true otherwise
      */
-    public void deleteTreeNode(T node);
+    public boolean deleteTreeNode(T node);
 
     public void refresh(Object ... objects);
     
@@ -107,6 +109,7 @@ public interface TreeDataService <T extends Treeable<T,D,I>,
      * 
      * @param node the node to be moved
      * @param newParent the new parent node
+     * @throws Exception when anything prevents the transaction from success
      */
     public boolean moveTreeNode(T node, T newParent);
     

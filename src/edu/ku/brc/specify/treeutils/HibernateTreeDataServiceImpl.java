@@ -283,7 +283,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
      * @see edu.ku.brc.specify.treeutils.TreeDataService#deleteTreeNode(edu.ku.brc.specify.datamodel.Treeable)
      */
     @SuppressWarnings("null")
-    public synchronized void deleteTreeNode(T node)
+    public synchronized boolean deleteTreeNode(T node)
     {
         Session session = getNewSession(node);
 
@@ -317,15 +317,27 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         
         if (busRulesObj != null)
         {
-            // TODO: Have to rework this to provide a non-null DataProviderSessionIFace thingy
-            busRulesObj.beforeDeleteCommit(node, sessionWrapper);
+            try
+            {
+                if (!busRulesObj.beforeDeleteCommit(node, sessionWrapper))
+                {
+                    tx.rollback();
+                    return false;
+                }
+            }
+            catch(Exception e)
+            {
+                tx.rollback();
+                return false;
+            }
         }
-        commitTransaction(session, tx);
+        boolean retVal = commitTransaction(session, tx);
         
-        if (busRulesObj != null)
+        if (busRulesObj != null && retVal)
         {
             busRulesObj.afterDeleteCommit(node);
         }
+        return retVal;
     }
     
     public List<String> nodesSkippingOverLevel(int levelSkippedRank, D treeDef)
@@ -663,7 +675,20 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 
         if (busRules != null)
         {
-            busRules.beforeSaveCommit(node, sessionWrapper);
+            try
+            {
+                boolean retVal = busRules.beforeSaveCommit(node, sessionWrapper);
+                if (retVal == false)
+                {
+                    tx.rollback();
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+                tx.rollback();
+                return false;
+            }
         }
         boolean success = commitTransaction(session, tx);
         if (busRules != null)
@@ -684,7 +709,10 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         T mergedDest = (T)mergeIntoSession(session, destination);
         Transaction tx = session.beginTransaction();
         String statusMsg = TreeHelper.createNodeRelationship(source,mergedDest);
-        commitTransaction(session, tx);
+        if (!commitTransaction(session, tx))
+        {
+            statusMsg = "Failed to create node relationship.";
+        }
         return statusMsg;
     }
 

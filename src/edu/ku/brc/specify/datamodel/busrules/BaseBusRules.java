@@ -224,9 +224,10 @@ public abstract class BaseBusRules implements BusinessRulesIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#beforeSave(java.lang.Object)
      */
-    public void beforeSaveCommit(Object dataObj, DataProviderSessionIFace session)
+    public boolean beforeSaveCommit(Object dataObj, DataProviderSessionIFace session) throws Exception
     {
         // do nothing
+        return true;
     }
     
     /* (non-Javadoc)
@@ -248,9 +249,10 @@ public abstract class BaseBusRules implements BusinessRulesIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#beforeDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
-    public void beforeDeleteCommit(Object dataObj, DataProviderSessionIFace session)
+    public boolean beforeDeleteCommit(Object dataObj, DataProviderSessionIFace session) throws Exception
     {
         // do nothing
+        return true;
     }
 
     /* (non-Javadoc)

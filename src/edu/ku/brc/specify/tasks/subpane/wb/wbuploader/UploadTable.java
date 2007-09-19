@@ -1371,7 +1371,11 @@ public class UploadTable implements Comparable<UploadTable>
                 tblSession.save(rec);
                 if (busRule != null)
                 {
-                    busRule.beforeSaveCommit(rec, tblSession);
+                    if (!busRule.beforeSaveCommit(rec, tblSession))
+                    {
+                        tblSession.rollback();
+                        throw new Exception("Business rules processing failed");
+                    }
                 }
                 tblSession.commit();
                 uploadedKeys.add(rec.getId());

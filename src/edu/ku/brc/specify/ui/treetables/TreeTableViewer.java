@@ -226,7 +226,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         {
             if(busy)
             {
-                setStatusBarText("System busy: " + busyReason);
+                setStatusBarText("Tree Viewer busy: " + busyReason);
             }
         }
         return busy;
@@ -801,6 +801,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		{
 			return;
 		}
+        
+        setBusy(true, "Deleting node(s)");
 
         // get the selected TreeNode
 		Object selection = list.getSelectedValue();
@@ -828,16 +830,27 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             UIRegistry.writeGlassPaneMsg(getResourceString("TTV_Deleting"), 24);
             
             TreeNode parent = listModel.getNodeById(node.getParentId());
+            
             // hide the children of the parent node (which will hide the node we're going to delete)
             hideChildren(parent);
+            
             // delete the record from the DB
-            dataService.deleteTreeNode(nodeRecord);
+            if (dataService.deleteTreeNode(nodeRecord))
+            {
+                setStatusBarText(numNodesToDelete + " node(s) deleted");
+            }
+            else
+            {
+                statusBar.setErrorMessage("Unknown error while deleting node");
+            }
+
             // re-show the children of the parent node
             showChildren(parent);
-            setStatusBarText(numNodesToDelete + " node(s) deleted");
             
+            // remove the glasspane overlay text
             UIRegistry.clearGlassPaneMsg();
         }
+        setBusy(false,null);
 	}
     
     public void initializeNodeAssociations(T node)
@@ -1278,7 +1291,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                         session.saveOrUpdate(mergedNode);
                         if (businessRules != null)
                         {
-                            businessRules.beforeSaveCommit(mergedNode, session);
+                            if (!businessRules.beforeSaveCommit(mergedNode, session))
+                            {
+                                throw new Exception("Business rules processing failed");
+                            }
                         }
                         session.commit();
                         log.info("Successfully saved changes to " + mergedNode.getFullName());
@@ -1480,6 +1496,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			
             // do the DB work to reparent the nodes
             boolean changed = dataService.moveTreeNode(child, newParent);
+            if (!changed)
+            {
+                // TODO: i18n
+                statusBar.setErrorMessage("Unknown error occurred while moving tree node");
+            }
             
             // reshow the nodes' children, if the nodes are still in the tree (see comment above in this method)
             oldParentNode = listModel.getNodeById(oldParentNode.getId());

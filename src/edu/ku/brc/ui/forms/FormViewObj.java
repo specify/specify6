@@ -57,7 +57,6 @@ import javax.swing.SwingUtilities;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.hibernate.StaleObjectStateException;
 import org.hibernate.exception.ConstraintViolationException;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -1118,30 +1117,36 @@ public class FormViewObj implements Viewable,
                         session.beginTransaction();
                         for (Object obj : deletedItems)
                         {
+                            BusinessRulesIFace delBusRules = DBTableIdMgr.getInstance().getBusinessRule(obj);
                             // notify the business rules object that a deletion is going to happen
-                            if (businessRules != null)
+                            if (delBusRules != null)
                             {
-                                businessRules.beforeDelete(obj, session);
+                                delBusRules.beforeDelete(obj, session);
                             }
                             session.delete(obj);
                         }
                         for (Object obj : deletedItems)
                         {
+                            BusinessRulesIFace delBusRules = DBTableIdMgr.getInstance().getBusinessRule(obj);
                             // notify the business rules object that a deletion is going to be committed
-                            if (businessRules != null)
+                            if (delBusRules != null)
                             {
-                                businessRules.beforeDeleteCommit(obj, session);
+                                if (!delBusRules.beforeDeleteCommit(obj, session))
+                                {
+                                    throw new Exception("Business rules processing failed");
+                                }
                             }
                         }
                         session.commit();
                         session.flush();
 
                         // notify the business rules object that a deletion has occured
-                        if (businessRules != null)
+                        for (Object obj: deletedItems)
                         {
-                            for (Object obj: deletedItems)
+                            BusinessRulesIFace delBusRules = DBTableIdMgr.getInstance().getBusinessRule(obj);
+                            if (delBusRules != null)
                             {
-                                businessRules.afterDeleteCommit(obj);
+                                delBusRules.afterDeleteCommit(obj);
                             }
                         }
                         
@@ -1168,7 +1173,10 @@ public class FormViewObj implements Viewable,
                 session.saveOrUpdate(dObj);
                 if (businessRules != null)
                 {
-                    businessRules.beforeSaveCommit(dataObjArg,session);
+                    if (!businessRules.beforeSaveCommit(dataObjArg,session))
+                    {
+                        throw new Exception("Business rules processing failed");
+                    }
                 }
                 session.commit();
                 session.flush();
@@ -1425,7 +1433,11 @@ public class FormViewObj implements Viewable,
                     session.delete(dataObj);
                     if (businessRules != null)
                     {
-                        businessRules.beforeDeleteCommit(dataObj, session);
+                        if (!businessRules.beforeDeleteCommit(dataObj, session))
+                        {
+                            session.rollback();
+                            throw new Exception("Business rules processing failed");
+                        }
                     }
                     session.commit();
                     session.flush();
@@ -1441,7 +1453,7 @@ public class FormViewObj implements Viewable,
                 session.rollback();
                 recoverFromStaleObject("DELETE_DATA_STALE");
                 
-            } catch (StaleObjectStateException e)
+            } catch (Exception e)
             {
                 doClearObj = false;
                 session.rollback();

@@ -439,7 +439,10 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                         session.saveOrUpdate(mergedItem);
                         if (businessRules != null)
                         {
-                            businessRules.beforeSaveCommit(mergedItem, session);
+                            if (!businessRules.beforeSaveCommit(mergedItem, session))
+                            {
+                                throw new Exception("Business rules processing failed");
+                            }
                         }
                         session.commit();
                         log.info("Successfully saved changes to " + mergedItem.getName());
@@ -660,10 +663,16 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                         session.saveOrUpdate(newItem);
                         if (businessRules != null)
                         {
-                            businessRules.beforeSaveCommit(newItem, session);
+                            if (!businessRules.beforeSaveCommit(newItem, session))
+                            {
+                                throw new Exception("Business rules processing failed");
+                            }
                             if (origChild != null)
                             {
-                                businessRules.beforeSaveCommit(origChild, session);
+                                if (!businessRules.beforeSaveCommit(origChild, session))
+                                {
+                                    throw new Exception("Business rules processing failed");
+                                }
                             }
                         }
                         session.commit();
@@ -858,11 +867,20 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                     
                     if (businessRules != null)
                     {
-                        businessRules.beforeDeleteCommit(mergedItem, session);
-                        businessRules.beforeSaveCommit(parent, session);
+                        if (!businessRules.beforeDeleteCommit(mergedItem, session))
+                        {
+                            throw new Exception("Business rules processing failed");
+                        }
+                        if (!businessRules.beforeSaveCommit(parent, session))
+                        {
+                            throw new Exception("Business rules processing failed");
+                        }
                         if (child != null)
                         {
-                            businessRules.beforeSaveCommit(child, session);
+                            if (!businessRules.beforeSaveCommit(child, session))
+                            {
+                                throw new Exception("Business rules processing failed");
+                            }
                         }
                     }
                     session.commit();
@@ -1016,7 +1034,10 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                         session.saveOrUpdate(mergedDef);
                         if (businessRules != null)
                         {
-                            businessRules.beforeSaveCommit(mergedDef, session);
+                            if (!businessRules.beforeSaveCommit(mergedDef, session))
+                            {
+                                throw new Exception("Business rules processing failed");
+                            }
                         }
                         session.commit();
                         log.info("Successfully saved changes to " + mergedDef.getName());

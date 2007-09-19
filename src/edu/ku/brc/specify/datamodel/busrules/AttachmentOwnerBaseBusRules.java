@@ -2,12 +2,16 @@ package edu.ku.brc.specify.datamodel.busrules;
 
 import java.io.IOException;
 
+import javax.swing.JOptionPane;
+
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.AttachmentOwnerIFace;
 import edu.ku.brc.specify.datamodel.ObjectAttachmentIFace;
+import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
 
 public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
@@ -20,10 +24,38 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
     }
     
     @Override
-    public void beforeDeleteCommit(Object dataObj, DataProviderSessionIFace session)
+    public boolean beforeDeleteCommit(Object dataObj, DataProviderSessionIFace session) throws Exception
     {
-        // TODO Auto-generated method stub
-        super.beforeDeleteCommit(dataObj, session);
+        boolean retVal = super.beforeDeleteCommit(dataObj, session);
+        if (retVal == false)
+        {
+            return retVal;
+        }
+        
+        if (dataObj instanceof AttachmentOwnerIFace<?>)
+        {
+            AttachmentOwnerIFace<?> owner = (AttachmentOwnerIFace<?>)dataObj;
+            
+            // now check to see if the attachments referenced by this owner have no other
+            // references in the DB
+            
+            AttachmentBusRules attachBusRules = new AttachmentBusRules();
+            for (ObjectAttachmentIFace<?> attachRef: owner.getAttachmentReferences())
+            {
+                Attachment attach = attachRef.getAttachment();
+                boolean canDelete = attachBusRules.okToDelete(attach);
+                
+                int option = JOptionPane.showOptionDialog(UIRegistry.getMostRecentWindow(), "Delete the attachment file from disk?", "Confirm file deletion", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, JOptionPane.NO_OPTION);
+                
+                if (canDelete && option == JOptionPane.YES_OPTION)
+                {
+                    System.out.println("delete the file from disk: " + attach.getAttachmentLocation());
+                    session.delete(attach);
+                }
+            }
+        }
+        
+        return retVal;
     }
 
     @Override
@@ -46,9 +78,13 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
     }
 
     @Override
-    public void beforeSaveCommit(Object dataObj, DataProviderSessionIFace session)
+    public boolean beforeSaveCommit(Object dataObj, DataProviderSessionIFace session) throws Exception
     {
-        super.beforeSaveCommit(dataObj, session);
+        boolean retVal = super.beforeSaveCommit(dataObj, session);
+        if (retVal == false)
+        {
+            return retVal;
+        }
         
         // walk the set of ObjectAttachmentIFace objects, looking for any that have a new Attachment record
         // that needs to be saved into the Attachment storage system
@@ -74,5 +110,7 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
                 }
             }
         }
+        
+        return true;
     }
 }

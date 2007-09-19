@@ -24,7 +24,7 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
  */
 public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTreeDefItem>
 {
-    AttachmentOwnerBaseBusRules attachRules;
+    AttachmentOwnerBaseBusRules attachOwnerRules;
     
     /**
      * Constructor.
@@ -33,7 +33,7 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
     {
         super(Taxon.class,TaxonTreeDefItem.class);
         
-        attachRules = new AttachmentOwnerBaseBusRules()
+        attachOwnerRules = new AttachmentOwnerBaseBusRules()
         {
             @Override
             public boolean okToDelete(Object dataObj)
@@ -160,7 +160,7 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
     public void beforeSave(Object dataObj, DataProviderSessionIFace session)
     {
         // make sure to handle all of the attachment stuff
-        attachRules.beforeSave(dataObj, session);
+        attachOwnerRules.beforeSave(dataObj, session);
         
         super.beforeSave(dataObj, session);
         
@@ -201,20 +201,30 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
     }
 
     @Override
-    public void beforeDeleteCommit(Object dataObj, DataProviderSessionIFace session)
+    public boolean beforeDeleteCommit(Object dataObj, DataProviderSessionIFace session) throws Exception
     {
         // make sure to handle all of the attachment stuff
-        attachRules.beforeDeleteCommit(dataObj, session);
+        boolean retVal = attachOwnerRules.beforeDeleteCommit(dataObj, session);
+        if (retVal == false)
+        {
+            return retVal;
+        }
         
-        super.beforeDeleteCommit(dataObj, session);
+        retVal = super.beforeDeleteCommit(dataObj, session);
+        return retVal;
     }
 
     @Override
-    public void beforeSaveCommit(Object dataObj, DataProviderSessionIFace session)
+    public boolean beforeSaveCommit(Object dataObj, DataProviderSessionIFace session) throws Exception
     {
         // make sure to handle all of the attachment stuff
-        attachRules.beforeSaveCommit(dataObj, session);
+        boolean retVal = attachOwnerRules.beforeSaveCommit(dataObj, session);
+        if (retVal == false)
+        {
+            return retVal;
+        }
         
-        super.beforeSaveCommit(dataObj, session);
+        retVal = super.beforeSaveCommit(dataObj, session);
+        return retVal;
     }
 }

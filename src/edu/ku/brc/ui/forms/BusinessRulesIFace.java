@@ -93,8 +93,10 @@ public interface BusinessRulesIFace
      * 
      * @param dataObj the object that is being saved
      * @param session the data provider session
+     * @throws Exception when any unhandled exception occurs, in which case, the transaction should be aborted
+     * @return true if the transaction should continue, false otherwise
      */
-    public void beforeSaveCommit(Object dataObj, DataProviderSessionIFace session);
+    public boolean beforeSaveCommit(Object dataObj, DataProviderSessionIFace session) throws Exception;
     
     /**
      * Called AFTER committing a transaction in which the passed in data object was
@@ -120,8 +122,10 @@ public interface BusinessRulesIFace
      * 
      * @param dataObj the object being deleted
      * @param session the data provider session
+     * @throws Exception when any unhandled exception occurs, in which case, the transaction should be aborted
+     * @return true if the transaction should continue, false otherwise
      */
-    public void beforeDeleteCommit(Object dataObj, DataProviderSessionIFace session);
+    public boolean beforeDeleteCommit(Object dataObj, DataProviderSessionIFace session) throws Exception;
     
     /**
      * Called AFTER committing a transaction in which the passed in data object was
