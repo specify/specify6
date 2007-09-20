@@ -8,6 +8,8 @@ import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.AccessionAttachment;
 import edu.ku.brc.specify.datamodel.AgentAttachment;
 import edu.ku.brc.specify.datamodel.Attachment;
@@ -70,6 +72,19 @@ public class AttachmentReferenceBaseBusRules extends BaseBusRules
                 try
                 {
                     AttachmentUtils.getAttachmentManager().deleteAttachmentFiles(a);
+                    
+                    DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                    Attachment aFromDisk = session.load(Attachment.class, a.getId());
+                    try
+                    {
+                        session.beginTransaction();
+                        session.delete(aFromDisk);
+                        session.commit();
+                    }
+                    catch (Exception e)
+                    {
+                        log.error("Failed to delete Attachment record from database", e);
+                    }
                 }
                 catch (IOException e)
                 {
