@@ -148,7 +148,7 @@ public abstract class BaseBusRules implements BusinessRulesIFace
             ex.printStackTrace();
             
         }
-        return false; // error on the side of not enabling the delete btn
+        return false; // err on the side of not enabling the delete btn
     }
     
     /**

@@ -651,7 +651,7 @@ public class BuildSampleDatabase
         ////////////////////////////////
         log.info("Creating agents and addresses");
 
-        if (!lastName.equals("Smith")) agents.add(createAgent("Mr.", "David", "D", "Smith", "ds", "ds@net.edu"));
+        if (!lastName.equals("Smith")) agents.add(createAgent("Mr.", "David", "D", "Smith", "ds", "ds@whitehouse.gov"));
         if (!lastName.equals("Burk")) agents.add(createAgent("Mr.", "Robert", "H", "Burk", "rb", "beach@net.edu"));
         if (!lastName.equals("Johnson")) agents.add(createAgent("Mrs.", "Margaret", "H", "Johnson", "jm", "jm@net.edu"));
         if (!lastName.equals("Spencer")) agents.add(createAgent("Mr.", "Kip", "C", "Spencer", "kcs", "rods@ku.edu"));
@@ -659,14 +659,15 @@ public class BuildSampleDatabase
         if (!lastName.equals("Thompson")) agents.add(createAgent("Sir", "Dudley", "X", "Thompson", "dxt", ""));
         if (!lastName.equals("Campbell")) agents.add(createAgent("Mr.", "Joe", "A", "Campbell", "jb", ""));
         if (!lastName.equals("Tester")) agents.add(createAgent("Mr.", "Joe", "A", "Tester", "jb", ""));
+        if (!lastName.equals("Stewart")) agents.add(createAgent("Mr.", "Joshua", "D", "Stewart", "jds", "jds@ku.edu"));
         agents.add(userAgent);
         
         Agent ku = new Agent();
         ku.initialize();
         ku.setAbbreviation("KU");
         ku.setAgentType(Agent.ORG);
-        ku.setName("University of Swaledale");
-        ku.setEmail("webadmin@sd.edu");
+        ku.setName("University of Kansas");
+        ku.setEmail("webadmin@ku.edu");
         ku.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
         //ku.setTimestampModified(ku.getTimestampCreated());
         agents.add(ku);
@@ -674,10 +675,11 @@ public class BuildSampleDatabase
         agents.get(1).setOrganization(ku);
         agents.get(2).setOrganization(ku);
         agents.get(3).setOrganization(ku);
+        agents.get(8).setOrganization(ku);
         
         List<Address> addrs = new Vector<Address>();
-        // Josh
-        addrs.add(createAddress(agents.get(0), "11911 S Redbud Ln", null, "Olathe", "KS", "USA", "66061"));
+        // David Smith
+        addrs.add(createAddress(agents.get(1), "1600 Pennsylvania Avenue NW", null, "Washington", "DC", "USA", "20500"));
         // Jim
         addrs.add(createAddress(agents.get(1), "??? Mississippi", null, "Lawrence", "KS", "USA", "66045"));
         // Meg
@@ -689,6 +691,9 @@ public class BuildSampleDatabase
         // no address for agent 5 (Dudley Simmons)
         // Rod Carew
         addrs.add(createAddress(agents.get(6), "1212 Apple Street", null, "Chicago", "IL", "USA", "01010"));
+        // no address for agent 7 (Joe Tester)
+        // Josh
+        addrs.add(createAddress(agents.get(8), "11911 S Redbud Ln", null, "Olathe", "KS", "USA", "66061"));
         // KU
         addrs.add(createAddress(ku, null, null, "Lawrence", "KS", "USA", "66045"));
         
@@ -705,7 +710,7 @@ public class BuildSampleDatabase
         // collecting events (collectors, collecting trip)
         ////////////////////////////////
         log.info("Creating collecting events, collectors and a collecting trip");
-        Collector collectorJosh = createCollector(agents.get(0), 2);
+        Collector collectorJosh = createCollector(agents.get(8), 2);
         Collector collectorJim = createCollector(agents.get(1), 1);
         CollectingEvent ce1 = createCollectingEvent(forestStream, new Collector[]{collectorJosh,collectorJim});
         calendar.set(1993, 3, 19, 11, 56, 00);
