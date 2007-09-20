@@ -31,22 +31,17 @@ import org.dom4j.Element;
  */
 public class ERTIJoinColInfo
 {
-    protected int    position;
     protected String joinTableId;
     protected int    joinTableIdAsInt;
     protected String colName;
+    protected boolean isPrimary;
     
     public ERTIJoinColInfo(final Element element)
     {
-        position         = getAttr(element, "pos", -1);
         joinTableId      = getAttr(element, "tableid", null);
         joinTableIdAsInt = getAttr(element, "tableid", -1);
         colName          = element.getTextTrim();
-    }
-
-    public int getPosition()
-    {
-        return position;
+        isPrimary        = getAttr(element, "primary", false);
     }
 
     public String getJoinTableId()
@@ -62,5 +57,10 @@ public class ERTIJoinColInfo
     public String getColName()
     {
         return colName;
+    }
+
+    public boolean isPrimary()
+    {
+        return isPrimary;
     }
 }

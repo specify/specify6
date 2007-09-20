@@ -158,6 +158,11 @@ public class SearchBox extends JPanel implements ActionListener, PropertyChangeL
         
     }
 
+    /**
+     * Creates the pop up menu and instals its own listener.
+     * @param l the listern
+     * @return the poop up menu
+     */
     protected JPopupMenu getPopupMenu(final ActionListener l)
     {
         if (menuCreator != null)

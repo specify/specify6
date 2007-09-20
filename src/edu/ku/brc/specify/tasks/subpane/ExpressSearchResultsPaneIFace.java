@@ -14,10 +14,7 @@
  */
 package edu.ku.brc.specify.tasks.subpane;
 
-import org.apache.lucene.search.Hits;
-
 import edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace;
-import edu.ku.brc.af.core.expresssearch.QueryForIdResultsSQL;
 
 
 /**

@@ -243,7 +243,8 @@ public class QueryForIdResultsSQL implements QueryForIdResultsIFace
      * @see edu.ku.brc.af.core.ExpressSearchResultsIFace#getSQL(java.lang.String, java.util.Vector)
      */
     //@Override
-    public String getSQL(final String searchTermArg, final Vector<Integer> ids)
+    public String getSQL(final String searchTermArg, 
+                         final Vector<Integer> ids)
     {
         if (StringUtils.isNotEmpty(overrideSQL))
         {
@@ -252,7 +253,7 @@ public class QueryForIdResultsSQL implements QueryForIdResultsIFace
         
         Vector<Integer> tempIds = ids == null ? recIds : ids;
         // else
-        StringBuffer idsStr = new StringBuffer(recIds.size()*8);
+        StringBuilder idsStr = new StringBuilder(recIds.size()*8);
         for (int i=0;i<tempIds.size();i++)
         {
             if (i > 0) idsStr.append(',');
@@ -262,8 +263,26 @@ public class QueryForIdResultsSQL implements QueryForIdResultsIFace
         String sqlStr;
         if (getJoinColTableId() != null)
         {
-            sqlStr = getTableInfo().getUpdateSql(getJoinColTableId());
-            sqlStr = String.format(sqlStr, new Object[] {idsStr.toString()});
+            String joinIdName     = null;
+            for (ERTIJoinColInfo jci : tableInfo.getJoins())
+            {
+                if (joinColTableId == jci.getJoinTableIdAsInt())
+                {
+                    joinIdName = jci.getColName();
+                }
+            }
+            if (joinIdName == null)
+            {
+                int x = 0;
+                x++;
+            }
+            
+            String critiera = (tableInfo.isFieldNameOnlyForSQL() ? StringUtils.substringAfterLast(joinIdName, ".") : joinIdName)
+                              + " in (" + idsStr.toString() + ")";
+            
+            System.out.println("["+critiera+"]");
+            sqlStr = String.format(tableInfo.getViewSql(), new Object[] {joinIdName, critiera});
+            System.out.println("["+sqlStr+"]");
             sqlStr = ExpressSearchSQLAdjuster.getInstance().adjustSQL(sqlStr);
         } else
         {

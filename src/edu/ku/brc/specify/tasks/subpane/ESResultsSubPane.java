@@ -27,6 +27,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 
@@ -148,7 +149,7 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace#addTable(edu.ku.brc.specify.tasks.subpane.ExpressTableResultsBase)
      */
-    public synchronized void addTable(ESResultsTablePanel expTblRes)
+    public synchronized void addTable(final ESResultsTablePanel expTblRes)
     {
         expTblResultsCache.remove(expTblRes);
         
@@ -171,16 +172,36 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
             contentPanel.add(etr); 
         }
         
-        List<Component> comps = layoutMgr.getComponentList();
-        comps.clear();
-        comps.addAll(expTblResults);
-        
-        if (explainPanel != null)
-        {
-            //comps.add(explainPanel);
-            contentPanel.add(explainPanel);
-        }
+        //synchronized (this)
+        //{
+            List<Component> comps = layoutMgr.getComponentList();
+            comps.clear();
+            comps.addAll(expTblResults);
+            
+            if (explainPanel != null)
+            {
+                //comps.add(explainPanel);
+                contentPanel.add(explainPanel);
+            }            
+        //}
+            
+            
 
+        final JPanel panel = this;
+        SwingUtilities.invokeLater(new Runnable() {
+
+            /* (non-Javadoc)
+             * @see java.lang.Runnable#run()
+             */
+            public void run()
+            {
+                panel.validate();
+                panel.repaint();
+                expTblRes.repaint();
+                //UIRegistry.forceTopFrameRepaint();
+            }
+        });
+        
     }
 
     /* (non-Javadoc)

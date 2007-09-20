@@ -228,7 +228,7 @@ public class ESResultsTablePanel extends JPanel implements Comparable<ESResultsT
         
         //-----------------
         
-        esrPane.addTable(this);
+        //esrPane.addTable(this);
 
         ResultSetTableModel rsm = new ResultSetTableModel(results);
         rsm.setPropertyListener(this);
@@ -493,28 +493,6 @@ public class ESResultsTablePanel extends JPanel implements Comparable<ESResultsT
         ResultSetTableModel rsm = (ResultSetTableModel)table.getModel();
 
         return rsm.getRecordSet(rows, column, returnAll);
-        
-        /*
-        RecordSet rs = new RecordSet();
-        rs.initialize();
-        
-        if (returnAll)
-        {
-            for (Integer id : results.getRecIds())
-            {
-                log.error(id);
-                rs.addItem(id);
-            }
-        } else
-        {
-            Vector<Integer> ids = results.getRecIds();
-            for (int inx : rows)
-            {
-                rs.addItem(ids.elementAt(inx));
-            }
-        }
-        return rs;
-        */
     }
 
     /**
@@ -547,6 +525,11 @@ public class ESResultsTablePanel extends JPanel implements Comparable<ESResultsT
     {
         rowCount = (Integer)evt.getNewValue();
         setTitleBar();
+        
+        if (rowCount > 0)
+        {
+            esrPane.addTable(this);
+        }
     }
 
 

@@ -18,10 +18,8 @@ package edu.ku.brc.af.core.expresssearch;
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 
 import java.awt.Color;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
@@ -44,34 +42,21 @@ public class ExpressResultsTableInfo
     protected String                    tableId;
     protected String                    title;
     protected String                    name;
-    protected boolean                   isExpressSearch = true;
-    protected boolean                   isIndexed       = true;
+    protected boolean                   isExpressSearch       = true;
+    protected boolean                   isIndexed             = true;
+    protected boolean                   isFieldNameOnlyForSQL = false;
 
     // These are used for viewing the results
     protected String                    iconName          = null;
     protected String                    viewSql;
     protected boolean                   viewSQLOverridden = false;
     
-    protected ERTIColInfo[]             colInfo           = null;
     protected ERTIJoinColInfo[]         joinCols          = null;
 
-    // These data members are use for indexing
-    protected boolean                   useHitsCache  = false;
-    protected String                    patternSql;
-    protected String                    buildSql;
-    protected String                    updateSql;
-    
     protected List<ERTICaptionInfo>     captionInfo;         
     protected List<ERTICaptionInfo>     visibleCaptionInfo;  
     
-    protected Hashtable<String, String> outOfDate     = new Hashtable<String, String>();
-    
-    // These enables the XML to set a Static Value for a SecondaryKey
-    protected String                    staticValueKey   = null;
-    protected String                    staticValueValue = null;
-
     protected int                       recordSetColumnInx;
-    protected int                       priority;
     protected Color                     color;
 
     /**
@@ -98,24 +83,22 @@ public class ExpressResultsTableInfo
         tableId         = tableElement.attributeValue("tableid");
         title           = tableElement.attributeValue("title");
         name            = tableElement.attributeValue("name");
-        priority        = getAttr(tableElement, "priority", 1);
         color           = UIHelper.parseRGB(tableElement.attributeValue("color"));
 
         isIndexed    = getAttr(tableElement, "indexed", true);
-        useHitsCache = getAttr(tableElement, "usehitscache", false);
         
-        Element viewElement  = (Element)tableElement.selectSingleNode("detailView");
-
-        viewSql  = StringUtils.strip(viewElement.selectSingleNode("sql").getText());
-        //System.out.println("["+viewSql+"]");
-        iconName = viewElement.attributeValue("icon");
+        Element viewElement   = (Element)tableElement.selectSingleNode("detailView");
+        Element sqlElement    = (Element)viewElement.selectSingleNode("sql");
+        
+        isFieldNameOnlyForSQL = getAttr(sqlElement, "fieldnameonly", false);
+        viewSql               = StringUtils.strip(sqlElement.getText());
+        iconName              = viewElement.attributeValue("icon");
 
         List<?> captionItems = viewElement.selectNodes("captions/caption");
         if (captionItems.size() > 0)
         {
             int captionCount = captionItems.size();
-            
-            captionInfo = new Vector<ERTICaptionInfo>();
+            captionInfo  = new Vector<ERTICaptionInfo>(captionCount);
             int i        = 0;
             for (Iterator<?> capIter = captionItems.iterator(); capIter.hasNext(); )
             {
@@ -147,52 +130,19 @@ public class ExpressResultsTableInfo
         {
             throw new RuntimeException("No Captions!");
         }
+        
         Element rsElement  = (Element)viewElement.selectSingleNode("recordset");
         recordSetColumnInx = Integer.parseInt(rsElement.attributeValue("col"));
 
-        
-        List<?> tables = tableElement.selectNodes("outofdate/table");
-        for ( Iterator<?> iter = tables.iterator(); iter.hasNext(); )
+        List<?> joinColItems = tableElement.selectNodes("joins/join");
+        if (joinColItems != null && joinColItems.size() > 0)
         {
-            Element tblElement = (Element)iter.next();
-            outOfDate.put(tblElement.attributeValue("name"), tblElement.attributeValue("title"));
+            joinCols = new ERTIJoinColInfo[joinColItems.size()];
+            for (int i=0;i<joinColItems.size();i++)
+            {
+                joinCols[i] = new ERTIJoinColInfo((Element)joinColItems.get(i));
+            }
         }
-
-        Element indexElement = (Element)tableElement.selectSingleNode("index");
-
-        Element sqlElement = (Element)indexElement.selectSingleNode("sql");
-        patternSql = sqlElement != null ? sqlElement.getText() : "";
- 
-        StringBuilder strBuf    = new StringBuilder();
-        List<?>       colItems  = indexElement.selectNodes("cols/col");
-    
-        colInfo = new ERTIColInfo[colItems.size()];
-        for (int i=0;i<colItems.size();i++)
-        {
-            ERTIColInfo columnInfo = new ERTIColInfo((Element)colItems.get(i));
-            if (i > 0) strBuf.append(',');
-            strBuf.append(columnInfo.getColName());
-            colInfo[i] = columnInfo;
-        }
-        
-        List<?> joinColItems = indexElement.selectNodes("cols/join");
-        joinCols = new ERTIJoinColInfo[joinColItems.size()];
-        for (int i=0;i<joinColItems.size();i++)
-        {
-            ERTIJoinColInfo joinInfo = new ERTIJoinColInfo((Element)joinColItems.get(i));
-            if (colItems.size() > 0) strBuf.append(',');
-            strBuf.append(joinInfo.getColName());
-            joinCols[i] = joinInfo;
-        }
-        
-        Element staticValueElement  = (Element)indexElement.selectSingleNode("staticvalue");
-        if (staticValueElement != null)
-        {
-            staticValueKey   = getAttr(staticValueElement, "key", null);
-            staticValueValue = staticValueElement.getTextTrim();
-        }
-
-        buildSql = patternSql.replaceFirst("ColFieldsDef", strBuf.toString());
     }
 
     /**
@@ -209,15 +159,9 @@ public class ExpressResultsTableInfo
      */
     public void cleanUp()
     {
-        if (outOfDate != null)
-        {
-            outOfDate.clear();
-        }
         captionInfo = null;
-        colInfo     = null;
         joinCols    = null;
         viewSql     = null;
-        buildSql    = null;
     }
 
     /* (non-Javadoc)
@@ -247,30 +191,12 @@ public class ExpressResultsTableInfo
     }
 
     /**
-     * Returns an array of ERTIColInfo Objects that describe the indexed Columns.
-     * @return an array of the columns that are to be indexes
-     */
-    public ERTIColInfo[] getColInfo()
-    {
-        return colInfo;
-    }
-
-    /**
      * Returns an array of ERTIJoinColInfo Objects that describe the indexed Join Columns.
      * @return an array of the columns that are to be indexes
      */
     public ERTIJoinColInfo[] getJoins()
     {
         return joinCols;
-    }
-    
-    /**
-     * Returns out of date hash.
-     * @return out of date hash.
-     */
-    public Map<String, String> getOutOfDate()
-    {
-        return outOfDate;
     }
 
     public String getName()
@@ -281,11 +207,6 @@ public class ExpressResultsTableInfo
     public String getTitle()
     {
         return title;
-    }
-
-    public boolean isExpressSearch()
-    {
-        return isExpressSearch;
     }
 
     public String getViewSql()
@@ -318,56 +239,6 @@ public class ExpressResultsTableInfo
     {
         return iconName;
     }
-
-    public String getBuildSql()
-    {
-        return buildSql;
-    }
-
-    public String getUpdateSql(final int tableIdArg)
-    {
-        StringBuilder strBuf    = new StringBuilder();
-        
-        boolean doingMainRecord = Integer.parseInt(tableId) == tableIdArg;
-        int     i               = 0;
-        String  idColName       = null;
-        
-        for (ERTIColInfo cInfo : colInfo)
-        {
-            if (i > 0) strBuf.append(',');
-            if (doingMainRecord && cInfo.isIdColumn)
-            {
-                idColName = cInfo.getColName();
-            }
-            strBuf.append(cInfo.getColName());
-            i++;
-        }
-        
-        for (ERTIJoinColInfo joinInfo : joinCols)
-        {
-            if (colInfo.length > 0) strBuf.append(',');
-            strBuf.append(joinInfo.getColName());
-            if (joinInfo.getJoinTableIdAsInt() == tableIdArg)
-            {
-                idColName = joinInfo.getColName();
-            }
-        }
-        
-        String sql = patternSql.replaceFirst("ColFieldsDef", strBuf.toString());
-        if (sql.toLowerCase().indexOf("where") > -1)
-        {
-            return  idColName != null ? sql + " AND " + idColName + " in (%s)" : null;
-        }
-        
-        return  idColName != null ? sql + " where " + idColName + " in (%s)" : null;
-
-    }
-
-    public boolean isUseHitsCache()
-    {
-        return useHitsCache;
-    }
-
     public int getVisColCount()
     {
         return visibleCaptionInfo.size();
@@ -383,193 +254,10 @@ public class ExpressResultsTableInfo
         return color;
     }
 
-    public int getPriority()
+    public boolean isFieldNameOnlyForSQL()
     {
-        return priority;
-    }
-    
-    /**
-     * @return the staticValueKey
-     */
-    public String getStaticValueKey()
-    {
-        return staticValueKey;
+        return isFieldNameOnlyForSQL;
     }
 
-    /**
-     * @return the staticValueValue
-     */
-    public String getStaticValueValue()
-    {
-        return staticValueValue;
-    }
-
-    
-    public int getIdColIndex()
-    {
-        // this will usually return the position from the first array element
-        for (ERTIColInfo ci : colInfo)
-        {
-            if (ci.isIdColumn())
-            {
-                return ci.getPosition();
-            }
-        }
-        return -1;
-    }
-
-    /**
-     * @param id the id to set
-     */
-    public void setId(String id)
-    {
-        this.id = id;
-    }
-
-    /**
-     * @param tableId the tableId to set
-     */
-    public void setTableId(String tableId)
-    {
-        this.tableId = tableId;
-    }
-
-    /**
-     * @param title the title to set
-     */
-    public void setTitle(String title)
-    {
-        this.title = title;
-    }
-
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name)
-    {
-        this.name = name;
-    }
-
-    /**
-     * @param isExpressSearch the isExpressSearch to set
-     */
-    public void setExpressSearch(boolean isExpressSearch)
-    {
-        this.isExpressSearch = isExpressSearch;
-    }
-
-    /**
-     * @param isIndexed the isIndexed to set
-     */
-    public void setIndexed(boolean isIndexed)
-    {
-        this.isIndexed = isIndexed;
-    }
-
-    /**
-     * @param iconName the iconName to set
-     */
-    public void setIconName(String iconName)
-    {
-        this.iconName = iconName;
-    }
-
-    /**
-     * @param colInfo the colInfo to set
-     */
-    public void setColInfo(ERTIColInfo[] colInfo)
-    {
-        this.colInfo = colInfo;
-    }
-
-    /**
-     * @param joinCols the joinCols to set
-     */
-    public void setJoinCols(ERTIJoinColInfo[] joinCols)
-    {
-        this.joinCols = joinCols;
-    }
-
-    /**
-     * @param useHitsCache the useHitsCache to set
-     */
-    public void setUseHitsCache(boolean useHitsCache)
-    {
-        this.useHitsCache = useHitsCache;
-    }
-
-    /**
-     * @param patternSql the patternSql to set
-     */
-    public void setPatternSql(String patternSql)
-    {
-        this.patternSql = patternSql;
-    }
-
-    /**
-     * @param buildSql the buildSql to set
-     */
-    public void setBuildSql(String buildSql)
-    {
-        this.buildSql = buildSql;
-    }
-
-    /**
-     * @param updateSql the updateSql to set
-     */
-    public void setUpdateSql(String updateSql)
-    {
-        this.updateSql = updateSql;
-    }
-
-    /**
-     * @param outOfDate the outOfDate to set
-     */
-    public void setOutOfDate(Hashtable<String, String> outOfDate)
-    {
-        this.outOfDate = outOfDate;
-    }
-
-    /**
-     * @param staticValueKey the staticValueKey to set
-     */
-    public void setStaticValueKey(String staticValueKey)
-    {
-        this.staticValueKey = staticValueKey;
-    }
-
-    /**
-     * @param staticValueValue the staticValueValue to set
-     */
-    public void setStaticValueValue(String staticValueValue)
-    {
-        this.staticValueValue = staticValueValue;
-    }
-
-    /**
-     * @param recordSetColumnInx the recordSetColumnInx to set
-     */
-    public void setRecordSetColumnInx(int recordSetColumnInx)
-    {
-        this.recordSetColumnInx = recordSetColumnInx;
-    }
-
-    /**
-     * @param priority the priority to set
-     */
-    public void setPriority(int priority)
-    {
-        this.priority = priority;
-    }
-
-    /**
-     * @param color the color to set
-     */
-    public void setColor(Color color)
-    {
-        this.color = color;
-    }
-    
-    
 }
 
