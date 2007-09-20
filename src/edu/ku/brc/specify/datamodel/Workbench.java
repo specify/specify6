@@ -47,6 +47,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
@@ -298,6 +299,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
      * 
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( {org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.LOCK} )
     @JoinColumn(name = "WorkbenchTemplateID", unique = false, nullable = false, insertable = true, updatable = true)
     public WorkbenchTemplate getWorkbenchTemplate() {
         return this.workbenchTemplate;
