@@ -195,7 +195,8 @@ public class IconTray extends JPanel
         {
             height = (int)d.getHeight();
         }
-        return new Dimension(this.getWidth(),height);
+        d.height = height;
+        return d;
     }
     
     public FormDataObjIFace getSelection()
