@@ -2067,7 +2067,7 @@
     		    </row>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
-                    <cell type="field" id="origFilename" name="attachment.origFilename" uitype="browse"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" cols="30" uitype="browse"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="mimeType" label="MIME Type"/>
@@ -2093,7 +2093,7 @@
     		    </row>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
-                    <cell type="field" id="origFilename" name="attachment.origFilename" uitype="browse"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" cols="30" uitype="browse"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="mimeType" label="MIME Type"/>
@@ -2119,7 +2119,7 @@
     		    </row>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
-                    <cell type="field" id="origFilename" name="attachment.origFilename" uitype="browse"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" cols="30" uitype="browse"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="mimeType" label="MIME Type"/>
@@ -2145,7 +2145,7 @@
     		    </row>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
-                    <cell type="field" id="origFilename" name="attachment.origFilename" uitype="browse"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" cols="30" uitype="browse"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="mimeType" label="MIME Type"/>
@@ -2171,7 +2171,7 @@
     		    </row>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
-                    <cell type="field" id="origFilename" name="attachment.origFilename" uitype="browse"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" cols="30" uitype="browse"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="mimeType" label="MIME Type"/>
@@ -2197,7 +2197,7 @@
     		    </row>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
-                    <cell type="field" id="origFilename" name="attachment.origFilename" uitype="browse"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" cols="30" uitype="browse"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="mimeType" label="MIME Type"/>
@@ -2223,7 +2223,7 @@
     		    </row>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
-                    <cell type="field" id="origFilename" name="attachment.origFilename" uitype="browse"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" cols="30" uitype="browse"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="mimeType" label="MIME Type"/>
@@ -2249,7 +2249,7 @@
     		    </row>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
-                    <cell type="field" id="origFilename" name="attachment.origFilename" uitype="browse"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" cols="30" uitype="browse"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="mimeType" label="MIME Type"/>
@@ -2275,7 +2275,7 @@
     		    </row>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
-                    <cell type="field" id="origFilename" name="attachment.origFilename" uitype="browse"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" cols="30" uitype="browse"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="mimeType" label="MIME Type"/>
@@ -2301,7 +2301,7 @@
     		    </row>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
-                    <cell type="field" id="origFilename" name="attachment.origFilename" uitype="browse"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" cols="30" uitype="browse"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="mimeType" label="MIME Type"/>
@@ -2327,7 +2327,7 @@
     		    </row>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
-                    <cell type="field" id="origFilename" name="attachment.origFilename" uitype="browse"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" cols="30" uitype="browse"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="mimeType" label="MIME Type"/>
@@ -2353,7 +2353,7 @@
     		    </row>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
-                    <cell type="field" id="origFilename" name="attachment.origFilename" uitype="browse"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" cols="30" uitype="browse"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="mimeType" label="MIME Type"/>
