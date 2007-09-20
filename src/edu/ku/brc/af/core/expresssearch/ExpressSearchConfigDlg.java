@@ -887,6 +887,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
                 JToggleButton tb = displayList.getButtons().get(index);
                 tb.setSelected(wasAdded);
                 tb.setEnabled(!wasAdded);
+                dfc.setInUse(wasAdded);
                return; 
             }
             index++;
