@@ -447,6 +447,17 @@
             </altviews>
         </view>
 
+		<view name="AttachmentMetadata"
+			class="edu.ku.brc.specify.datamodel.AttachmentMetadata"
+			resourecelabels="false">
+			<desc><![CDATA[The AttachmentMetadata Form.]]></desc>
+			<altviews>
+				<altview name="AttachmentMetadata Form View"  viewdef="AttachmentMetadata Form"  label="Form View"  mode="view" default="true"/>
+				<altview name="AttachmentMetadata Table View" viewdef="AttachmentMetadata Table" label="Table View" mode="view"/>
+				<altview name="AttachmentMetadata Form View"  viewdef="AttachmentMetadata Form"  label="Form Edit"  mode="edit"/>
+				<altview name="AttachmentMetadata Table View" viewdef="AttachmentMetadata Table" label="Table Edit" mode="edit"/>
+			</altviews>
+		</view>
 
         
     </views>
@@ -2085,7 +2096,7 @@
 
             <desc><![CDATA[The AgentAttachment form.]]></desc>
 
-            <columnDef>p,5dlu,p:g</columnDef>
+            <columnDef>80px,2dlu,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
     		<rows>
     		    <row>
@@ -2096,9 +2107,14 @@
                     <cell type="field" id="origFilename" name="attachment.origFilename" cols="30" uitype="browse"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="mimeType" label="MIME Type"/>
-                    <cell type="field" id="mimeType" name="attachment.mimeType" uitype="text"/>
+                    <cell type="label" labelfor="remarks" label="Remarks"/>
+                    <cell type="field" id="remarks" name="attachment.remarks" uitype="textarea"/>
                 </row>
+                <!--
+                <row>
+                	<cell type="subview" viewname="AttachmentMetadata" name="attachment.metadata" colspan="3"/>
+                </row>
+                -->
 			</rows>
 		</viewdef>
 		
@@ -2278,8 +2294,8 @@
                     <cell type="field" id="origFilename" name="attachment.origFilename" cols="30" uitype="browse"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="mimeType" label="MIME Type"/>
-                    <cell type="field" id="mimeType" name="attachment.mimeType" uitype="text"/>
+                    <cell type="label" labelfor="remarks" label="Remarks"/>
+                    <cell type="field" id="remarks" name="attachment.remarks" uitype="textarea"/>
                 </row>
 			</rows>
 		</viewdef>
@@ -2362,7 +2378,40 @@
 			</rows>
 		</viewdef>
 		
+        <viewdef
+        	type="form"
+        	name="AttachmentMetadata Form"
+        	class="edu.ku.brc.specify.datamodel.AttachmentMetadata"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[The AttachmentMetadata Form.]]></desc>     	
         
-        
+            <columnDef>80px,2dlu,p:g,5dlu,80px,2dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+    		<rows>
+    		    <row>
+    		        <cell type="label" label="Attachment Metadata" colspan="7"/>
+    		    </row>
+                <row>
+                    <cell type="label" labelfor="name" label="Name"/>
+                    <cell type="field" id="name" name="name" cols="16" uitype="text"/>
+                    <cell type="label" labelfor="value" label="Value"/>
+                    <cell type="field" id="value" name="value" cols="16" uitype="text"/>
+                </row>
+			</rows>
+		</viewdef>
+		
+        <viewdef
+            type="formtable"
+            name="AttachmentMetadata Table"
+            class="edu.ku.brc.specify.datamodel.AttachmentMetadata"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[AttachmentMetadata Grid View.]]></desc>
+            <definition>AttachmentMetadata Form</definition>
+        </viewdef>
+		
     </viewdefs>
 </viewset>
