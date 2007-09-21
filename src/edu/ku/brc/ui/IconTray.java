@@ -74,6 +74,8 @@ public class IconTray extends JPanel
         }
         iconListWidget.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         
+        //iconListWidget.setFixedCellWidth(150);
+        
         JPanel listPanel = new JPanel();
         listPanel.setBackground(iconListWidget.getBackground());
         listPanel.setLayout(new BoxLayout(listPanel,BoxLayout.LINE_AXIS));
@@ -189,13 +191,8 @@ public class IconTray extends JPanel
         // need to set the min height to something other than 0 so
         // that empty trays don't get flattened by containers that
         // use preferred size
-        int height = minHeight;
         Dimension d = super.getPreferredSize();        
-        if ((int)d.getHeight() > height)
-        {
-            height = (int)d.getHeight();
-        }
-        d.height = height;
+        d.height = Math.max(minHeight, d.height);
         return d;
     }
     
