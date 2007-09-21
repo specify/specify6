@@ -193,8 +193,6 @@ public class AgentAttachment extends DataModelObjBase implements ObjectAttachmen
     @Override
     public String toString()
     {
-        String aString = (attachment != null) ? attachment.getIdentityTitle() + "  " + attachment.getAttachmentLocation() : "NULL Attachment";
-        String oString = (getObject() != null) ? getObject().getIdentityTitle() : "NULL Object Reference";
-        return aString + " : " + oString;
+        return (attachment != null) ? attachment.getIdentityTitle() : super.toString();
     }
 }
