@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
+import java.io.File;
 import java.io.IOException;
 
 import javax.swing.ImageIcon;
@@ -25,7 +26,9 @@ import edu.ku.brc.specify.datamodel.PreparationAttachment;
 import edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
+import edu.ku.brc.util.thumbnails.Thumbnailer;
 
 public class AttachmentReferenceBaseBusRules extends BaseBusRules
 {
@@ -98,10 +101,16 @@ public class AttachmentReferenceBaseBusRules extends BaseBusRules
     
     protected boolean askUserToApproveDelete(Attachment attachment)
     {
-        JOptionPane pane = new JOptionPane("Delete the associated files from the attachment storage system?");
+        JOptionPane pane = new JOptionPane("Delete the associated files from the attachment storage system?  " + attachment.getOrigFilename());
         pane.setOptionType(JOptionPane.YES_NO_OPTION);
-        ImageIcon icon = new ImageIcon(AttachmentUtils.getAttachmentManager().getThumbnail(attachment).getAbsolutePath());
-        pane.setIcon(icon);
+        AttachmentManagerIface attachMgr = AttachmentUtils.getAttachmentManager();
+        File thumbnail = attachMgr.getThumbnail(attachment);
+        
+        if (thumbnail != null)
+        {
+            ImageIcon icon = new ImageIcon(thumbnail.getAbsolutePath());
+            pane.setIcon(icon);
+        }
         
         JDialog paneDialog = pane.createDialog(UIRegistry.getMostRecentWindow(), "Confirm Deletion");
         paneDialog.setVisible(true);
