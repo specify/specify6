@@ -19,7 +19,15 @@ package edu.ku.brc.af.core.expresssearch;
 
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 
+import java.util.Vector;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.dom4j.Element;
+
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
+import edu.ku.brc.ui.forms.formatters.DataObjSwitchFormatter;
 
 /**
  * @author rods
@@ -31,14 +39,31 @@ import org.dom4j.Element;
  */
 public class ERTICaptionInfo
 {
+    private static final Logger log = Logger.getLogger(ERTICaptionInfo.class);
+    
     protected String                  colName;
     protected String                  colLabel;
     protected boolean                 isVisible;
     protected String                  formatter;
     protected int                     posIndex;
     
-    protected Class                   colClass = null;
+    protected String                  aggregatorName;
+    protected String                  orderCol;
+    protected Vector<ColInfo>         colInfoList   = null;
+    protected Class<?>                aggClass      = null;
     
+    protected Class<?>                subClass      = null;
+    protected String                  subClassFieldName = null;  // The name of the field if the subClass in the agg class
+    
+    // Transient 
+    protected Class<?>                colClass      = null;
+    protected int                     orderColIndex = -1;
+    
+    
+    /**
+     * Constructor. Position Index is set after object is created.
+     * @param element
+     */
     public ERTICaptionInfo(final Element element)
     {
         super();
@@ -46,7 +71,110 @@ public class ERTICaptionInfo
         this.colName   = element.attributeValue("col");
         this.colLabel  = element.attributeValue("text");
         this.isVisible = getAttr(element, "visible", true);
-        this.formatter = getAttr(element, "formatter", null);
+        
+        String dataObjFormatterName = getAttr(element, "dataobjformatter", null);
+        this.formatter              = getAttr(element, "formatter", dataObjFormatterName);
+        
+        String aggTableClassName = null;
+        
+        Element subElement = (Element)element.selectSingleNode("subobject");
+
+        Element aggElement = (Element)element.selectSingleNode("agg");
+        if (aggElement != null)
+        {
+            String aggClassName = getAttr(aggElement, "class", null);
+            if (StringUtils.isNotEmpty(aggClassName))
+            {
+                aggTableClassName = aggClassName;
+                try
+                {
+                    aggClass       = Class.forName(aggClassName);
+                    aggregatorName = getAttr(aggElement, "aggregator", null);
+                    orderCol       = getAttr(aggElement, "ordercol", null);
+                    
+                } catch (ClassNotFoundException ex)
+                {
+                    ex.printStackTrace();
+                }
+            }
+        }
+        
+        if (subElement != null)
+        {
+            String subClassName = getAttr(subElement, "class", null);
+            if (StringUtils.isNotEmpty(subClassName))
+            {
+                try
+                {
+                    subClass          = Class.forName(subClassName);
+                    subClassFieldName = getAttr(subElement, "fieldname", null);
+                    aggTableClassName = subClassName;
+                    
+                } catch (ClassNotFoundException ex)
+                {
+                    ex.printStackTrace();
+                }
+            }
+        }
+        
+        
+        
+        String compositeClassName = null;
+        if (StringUtils.isNotEmpty(aggTableClassName))
+        {
+            compositeClassName = aggTableClassName;
+            
+        } else if (StringUtils.isNotEmpty(dataObjFormatterName))
+        {
+            DataObjSwitchFormatter formatterObj = DataObjFieldFormatMgr.getFormatter(dataObjFormatterName);
+            if (formatterObj != null)
+            {
+                compositeClassName = formatterObj.getDataClass().getName();
+                try
+                {
+                    aggClass = Class.forName(compositeClassName);
+                    
+                } catch (ClassNotFoundException ex)
+                {
+                    ex.printStackTrace();
+                }
+            } else
+            {
+                log.error("Couldn't find formatter["+formatter+"]");
+            }
+        }
+        
+        
+        if (StringUtils.isNotEmpty(compositeClassName))
+        {
+            colInfoList = new Vector<ColInfo>();
+            for (Object colObj : element.selectNodes("col"))
+            {
+                Element colInfoObj = (Element)colObj;
+                ColInfo columnInfo = new ColInfo(getAttr(colInfoObj, "name", null), getAttr(colInfoObj, "field", null));
+                colInfoList.add(columnInfo);
+            }
+
+            DBTableIdMgr.TableInfo ti = DBTableIdMgr.getInstance().getByClassName(compositeClassName);
+            if (ti != null)
+            {
+                for (ColInfo columnInfo : colInfoList)
+                {
+                    DBTableIdMgr.FieldInfo fi = ti.getFieldByName(columnInfo.getFieldName());
+                    if (fi != null)
+                    {
+                        columnInfo.setFieldClass(fi.getDataClass());
+                    } else
+                    {
+                        log.error("Field Name is Aggregate Sub Class doesn't exist Class is not a Data Table["+compositeClassName+"] Field["+columnInfo.getFieldName()+"]");
+                    }
+                }
+                
+            } else
+            {
+                log.error("Aggregate Sub Class is not a Data Table["+compositeClassName+"]");
+            }
+        }
     }
 
     public ERTICaptionInfo(String  colName, 
@@ -112,22 +240,6 @@ public class ERTICaptionInfo
     }
 
     /**
-     * @return the colClass
-     */
-    public Class<?> getColClass()
-    {
-        return colClass;
-    }
-
-    /**
-     * @param colClass the colClass to set
-     */
-    public void setColClass(Class<?> colClass)
-    {
-        this.colClass = colClass;
-    }
-
-    /**
      * @param colName the colName to set
      */
     public void setColName(String colName)
@@ -158,4 +270,160 @@ public class ERTICaptionInfo
     {
         this.formatter = formatter;
     }
+
+    /**
+     * @return the colClass
+     */
+    public Class<?> getColClass()
+    {
+        return colClass;
+    }
+
+    /**
+     * @param colClass the colClass to set
+     */
+    public void setColClass(Class<?> colClass)
+    {
+        this.colClass = colClass;
+    }
+
+    /**
+     * @return the aggregator
+     */
+    public String getAggregatorName()
+    {
+        return aggregatorName;
+    }
+
+    /**
+     * @return the colInfo
+     */
+    public Vector<ColInfo> getColInfoList()
+    {
+        return colInfoList;
+    }
+
+    /**
+     * @return the aggClass
+     */
+    public Class<?> getAggClass()
+    {
+        return aggClass;
+    }
+
+    /**
+     * @return the subClass
+     */
+    public Class<?> getSubClass()
+    {
+        return subClass;
+    }
+
+    /**
+     * @return the orderCol
+     */
+    public String getOrderCol()
+    {
+        return orderCol;
+    }
+    
+    /**
+     * @param aggClass the aggClass to set
+     */
+    public void setAggClass(Class<?> aggClass)
+    {
+        this.aggClass = aggClass;
+    }
+
+    /**
+     * @return the orderColIndex
+     */
+    public int getOrderColIndex()
+    {
+        return orderColIndex;
+    }
+
+    /**
+     * @param orderColIndex the orderColIndex to set
+     */
+    public void setOrderColIndex(int orderColIndex)
+    {
+        this.orderColIndex = orderColIndex;
+    }
+
+    /**
+     * @return the subClassFieldName
+     */
+    public String getSubClassFieldName()
+    {
+        return subClassFieldName;
+    }
+    
+    //-------------------------------------------------------------------
+    // Inner Class
+    //-------------------------------------------------------------------
+    public class ColInfo
+    {
+        protected String   columnName;    // name of column in the query (not of the original table schema)
+        protected String   fieldName;  // field name in Class
+        protected int      position;
+        protected Class<?> fieldClass;
+        
+        public ColInfo(String columnName, String fieldName)
+        {
+            super();
+            this.columnName = columnName;
+            this.fieldName  = fieldName;
+        }
+
+        /**
+         * @return the colName
+         */
+        public String getColumnName()
+        {
+            return columnName;
+        }
+
+        /**
+         * @return the fieldName
+         */
+        public String getFieldName()
+        {
+            return fieldName;
+        }
+
+        /**
+         * @return the position
+         */
+        public int getPosition()
+        {
+            return position;
+        }
+
+        /**
+         * @param position the position to set
+         */
+        public void setPosition(int position)
+        {
+            this.position = position;
+        }
+
+        /**
+         * @return the fieldClass
+         */
+        public Class<?> getFieldClass()
+        {
+            return fieldClass;
+        }
+
+        /**
+         * @param fieldClass the fieldClass to set
+         */
+        public void setFieldClass(Class<?> fieldClass)
+        {
+            this.fieldClass = fieldClass;
+        }
+        
+    }
+
 }

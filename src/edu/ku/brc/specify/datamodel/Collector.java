@@ -66,28 +66,27 @@ public class Collector extends DataModelObjBase implements java.io.Serializable,
     // Constructors
 
     /** default constructor */
-    public Collector() {
+    public Collector() 
+    {
         //
     }
     
     /** constructor with id */
-    public Collector(Integer collectorId) {
+    public Collector(Integer collectorId) 
+    {
         this.collectorId = collectorId;
     }
-   
-    
-    
 
     // Initializer
     @Override
     public void initialize()
     {
         super.init();
-        collectorId = null;
-        orderNumber = null;
-        remarks = null;
+        collectorId     = null;
+        orderNumber     = null;
+        remarks         = null;
         collectingEvent = null;
-        agent = null;
+        agent           = null;
     }
     // End Initializer
 
@@ -99,7 +98,8 @@ public class Collector extends DataModelObjBase implements java.io.Serializable,
     @Id
     @GeneratedValue
     @Column(name = "CollectorID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Integer getCollectorId() {
+    public Integer getCollectorId() 
+    {
         return this.collectorId;
     }
 

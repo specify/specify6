@@ -110,16 +110,24 @@ public class SearchBox extends JPanel implements ActionListener, PropertyChangeL
                 @Override
                 public void mouseReleased(MouseEvent e)
                 {
-                    super.mouseReleased(e);
-                    
-                    if (e.getPoint().x <= popupHitWidth)
+                    if (searchText.isEnabled())
                     {
-                        JPopupMenu popup = getPopupMenu(p);
-                        popup.show(p, 0, p.getHeight());
+                        super.mouseReleased(e);
+                        
+                        if (e.getPoint().x <= popupHitWidth)
+                        {
+                            JPopupMenu popup = getPopupMenu(p);
+                            popup.show(p, 0, p.getHeight());
+                        }
                     }
                 }
             });
         }
+    }
+    
+    public void setEnabled(final boolean enabled)
+    {
+        searchText.setEditable(false);
     }
     
     /**

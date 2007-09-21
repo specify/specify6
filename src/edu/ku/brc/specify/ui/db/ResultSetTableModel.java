@@ -23,10 +23,12 @@ import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Stack;
 import java.util.Vector;
 
 import javax.swing.table.AbstractTableModel;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.expresssearch.ERTICaptionInfo;
@@ -40,6 +42,11 @@ import edu.ku.brc.dbsupport.SQLExecutionListener;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.ui.DateWrapper;
+import edu.ku.brc.ui.forms.DataObjectSettable;
+import edu.ku.brc.ui.forms.DataObjectSettableFactory;
+import edu.ku.brc.ui.forms.formatters.DataObjAggregator;
+import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
+import edu.ku.brc.ui.forms.formatters.DataObjSwitchFormatter;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 
@@ -298,14 +305,56 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     {
         this.propertyListener = propertyListener;
     }
+    
+    protected void setField(final DataObjectSettable setter, 
+                            final Object             parent, 
+                            final String             fieldName, 
+                            final Class<?>           fieldClass,
+                            final ResultSet          resultSet, 
+                            final int                colIndex) throws SQLException
+    {
+        Object fieldDataObj = resultSet.getObject(colIndex + 1);
+        if (fieldDataObj != null)
+        {
+            if (fieldClass == String.class)
+            {
+                setter.setFieldValue(parent, fieldName, fieldDataObj);    
+                
+            } else if (fieldClass == Byte.class)
+            {
+                setter.setFieldValue(parent, fieldName, resultSet.getByte(colIndex + 1));
+                
+            } else if (fieldClass == Short.class)
+            {
+                setter.setFieldValue(parent, fieldName, resultSet.getShort(colIndex + 1));
+                
+            } else
+            {
+                setter.setFieldValue(parent, fieldName, fieldDataObj);
+            }
+        } 
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.SQLExecutionListener#exectionDone(edu.ku.brc.dbsupport.SQLExecutionProcessor, java.sql.ResultSet)
      */
     //@Override
-    public void exectionDone(SQLExecutionProcessor process, ResultSet resultSet)
+    //@SuppressWarnings("null")
+    public void exectionDone(final SQLExecutionProcessor process, final ResultSet resultSet)
     {
         List<ERTICaptionInfo> captions = results.getVisibleCaptionInfo();
+        
+        // This can do one of two things:
+        // 1) Take multiple columns and create an object and use a DataObjectFormatter to format the object.
+        // 2) Table multiple objects that were derived from the columns and roll those up into a single column's value.
+        //    This happens when you get back rows of info where part of the columns are duplicated because you really
+        //    want those value to be put into a single column.
+        //
+        // Step One - Is to figure out what type of object needs to be created and what the Columns are 
+        //            that need to be set into the object so the dataObjFormatter can do its job.
+        //
+        // Step Two - If the objects are being aggregated then the object created from the columns are added to a List
+        //            and then last formatted as an "aggregation"
         
         try
         {
@@ -313,10 +362,24 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
             {
                 ResultSetMetaData metaData = resultSet.getMetaData();
                 
+                // Composite
+                boolean                hasCompositeObj = false;
+                DataObjSwitchFormatter formatterObj    = null;
+                Object                 compObj         = null;
+                
+                // Aggregates
+                ERTICaptionInfo        aggCaption = null;
+                Vector<Object>         aggList    = null;
+                DataObjectSettable     aggSetter  = null;
+                Stack<Object>          aggListRecycler = null;
+                
+                DataObjectSettable     dataSetter     = null;  // data getter for Aggregate or the Subclass
+                            
+                // Loop through the caption to figure out what columns will be displayed.
+                // Watch for Captions with an Aggregator or Composite 
                 numColumns = captions.size();
                 for (ERTICaptionInfo caption : captions)
                 {
-                     //classNames.addElement(caption.getColClass());
                      colNames.addElement(caption.getColLabel());
                      
                      int      inx = caption.getPosIndex() + 1;
@@ -327,28 +390,227 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                      }
                      classNames.addElement(cls);
                      caption.setColClass(cls);
+                     
+                     if (caption.getAggregatorName() != null)
+                     {
+                         // Alright we have an aggregator
+                         aggList         = new Vector<Object>();
+                         aggListRecycler = new Stack<Object>();
+                         aggCaption      = caption;
+                         aggSetter       = DataObjectSettableFactory.get(aggCaption.getAggClass().getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
+                         
+                         // Now check to see if we are aggregating the this type of object or a child object of this object
+                         // For example Collectors use an Agent as part of the aggregation
+                         if (aggCaption.getSubClass() != null)
+                         {
+                             dataSetter = DataObjectSettableFactory.get(aggCaption.getSubClass().getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
+                         } else
+                         {
+                             dataSetter = aggSetter;
+                         }
+                         
+                     } else if (caption.getColInfoList() != null)
+                     {
+                         // OK, now aggregation but we will be rolling up mulitple columns into a singel object for formatting
+                         // We need to get the formatter to see what the Class is of the object
+                         hasCompositeObj = true;
+                         aggCaption      = caption;
+                         formatterObj    = DataObjFieldFormatMgr.getFormatter(caption.getFormatter());
+                         if (formatterObj != null)
+                         {
+                             if (formatterObj.getDataClass() != null)
+                             {
+                                 aggSetter = DataObjectSettableFactory.get(formatterObj.getDataClass().getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
+                             } else
+                             {
+                                 log.error("formatterObj.getDataClass() was null for "+caption.getFormatter());
+                             }
+                         } else
+                         {
+                             log.error("formatterObj was null for "+caption.getFormatter());
+                         }
+                         
+                     }
                      //colNames.addElement(metaData.getColumnName(i));
                      //System.out.println("**************** " + caption.getColLabel()+ " "+inx+ " " + caption.getColClass().getSimpleName());
                 }
                 
+                // aggCaption will be non-null for both a Aggregate AND a Composite
+                if (aggCaption != null)
+                {
+                    // Here we need to dynamically discover what the column indexes are that we to grab
+                    // in ordert to set them into the created data object
+                    for (ERTICaptionInfo.ColInfo colInfo : aggCaption.getColInfoList())
+                    {
+                        for (int i=0;i<metaData.getColumnCount();i++)
+                        {
+                            String colName = StringUtils.substringAfterLast(colInfo.getColumnName(), ".");
+                            if (colName.equals(metaData.getColumnName(i+1)))
+                            {
+                                colInfo.setPosition(i);
+                                break;
+                            }
+                        }
+                    }
+                    
+                    // Now check to see if there is an Order Column because the Aggregator might need it for sorting the Aggregation
+                    String ordColName = aggCaption.getOrderCol();
+                    if (StringUtils.isNotEmpty(ordColName))
+                    {
+                        String colName = StringUtils.substringAfterLast(ordColName, ".");
+                        for (int i=0;i<metaData.getColumnCount();i++)
+                        {
+                            if (colName.equals(metaData.getColumnName(i+1)))
+                            {
+                                aggCaption.setOrderColIndex(i);
+                                break;
+                            }
+                        }
+                        if (aggCaption.getOrderColIndex() == -1)
+                        {
+                            log.error("Agg Order Column Index wasn't found ["+ordColName+"]");
+                        }
+                    }
+                }
+                
                 ids = new Vector<Integer>();
                 
+                // Here is the tricky part.
+                // When we are doing a Composite we are just taking multiple columns and 
+                // essentially replace them with a single vale from the DataObjFormatter
+                //
+                // But when doing an Aggregation we taking several rows and rolling them up into a single value.
+                // so this code knows when it is doing an aggregation so it knows to only add a new row to the displable
+                // results when primary id changes.
+                
+                Vector<Object> row       = null;
+                boolean        firstTime = true;
+                int            prevId    = Integer.MAX_VALUE;  // really can't assume any value but will choose Max
                 do 
                 {
-                    Vector<Object> row = new Vector<Object>();
-                    
-                    row.add(resultSet.getInt(1));
+                    int id = resultSet.getInt(1);
+                    // Remember aggCaption is used by both a Aggregation and a Composite
+                    if (aggCaption != null && !hasCompositeObj)
+                    {
+                        if (firstTime)
+                        {
+                            prevId    = id;
+                            row       = new Vector<Object>();
+                            firstTime = false;
+                            cache.add(row);
+                            row.add(id);
+                            
+                        } else if (id != prevId)
+                        {
+                            int aggInx = captions.indexOf(aggCaption);
+                            if (row != null && aggList != null)
+                            {
+                                row.add(id);
+                                row.remove(aggInx);
+                                row.insertElementAt(DataObjFieldFormatMgr.aggregate(aggList, aggCaption.getAggClass()), aggInx);
+                                if (aggListRecycler != null)
+                                {
+                                    aggListRecycler.addAll(aggList);
+                                }
+                                aggList.clear();
+                                row = null;
+                            }
+                            
+                        } else if (row == null)
+                        {
+                            row = new Vector<Object>();
+                            cache.add(row);
+                            row.add(id);
+                        }
+                    } else
+                    {
+                        row = new Vector<Object>();
+                        cache.add(row);
+                        row.add(id);
+                    }
                     
                     ids.add(resultSet.getInt(primaryKeyIndex+1));
                     
+                    // Now for each Caption column get a value
                     for (ERTICaptionInfo caption :  captions)
                     {
-                        int    inx = caption.getPosIndex() + 1;
-                        Object obj = resultSet.getObject(inx);
-                        row.add(obj);
+                        int posIndex = caption.getPosIndex();
+                        if (caption == aggCaption) // Checks to see if we need to take multipler columns and make one column
+                        {
+                            if (hasCompositeObj) // just doing a Composite
+                            {
+                                if (aggSetter != null && row != null && formatterObj != null)
+                                {
+                                    if (compObj == null)
+                                    {
+                                        compObj = aggCaption.getAggClass().newInstance();
+                                    }
+                                    
+                                    for (ERTICaptionInfo.ColInfo colInfo : aggCaption.getColInfoList())
+                                    {
+                                        setField(aggSetter, compObj, colInfo.getFieldName(), colInfo.getFieldClass(), resultSet, colInfo.getPosition());
+                                    }
+                                    row.add(DataObjFieldFormatMgr.format(compObj, compObj.getClass()));
+                                    
+                                } else
+                                {
+                                    log.error("Aggregator is null! ["+aggCaption.getAggregatorName()+"] or row or aggList");
+                                }
+                            } else if (aggSetter != null && row != null && aggList != null) // Doing an Aggregation
+                            {
+                                Object aggObj;
+                                if (aggListRecycler.size() == 0)
+                                {
+                                    aggObj = aggCaption.getAggClass().newInstance();
+                                } else
+                                {
+                                    aggObj = aggListRecycler.pop();
+                                }
+                                Object aggSubObj = aggCaption.getSubClass() != null ? aggCaption.getSubClass().newInstance() : null;
+                                aggList.add(aggObj);
+
+                                DataObjAggregator aggregator = DataObjFieldFormatMgr.getAggregator(aggCaption.getAggregatorName());
+                                aggSetter.setFieldValue(aggObj, aggregator.getOrderFieldName(), resultSet.getObject(aggCaption.getOrderColIndex() + 1));
+                                
+                                Object dataObj;
+                                if (aggSubObj != null)
+                                {
+                                    aggSetter.setFieldValue(aggObj, aggCaption.getSubClassFieldName(), aggSubObj);
+                                    dataObj = aggSubObj;
+                                } else
+                                {
+                                    dataObj = aggObj;
+                                }
+                                
+                                for (ERTICaptionInfo.ColInfo colInfo : aggCaption.getColInfoList())
+                                {
+                                    setField(dataSetter, dataObj, colInfo.getFieldName(), colInfo.getFieldClass(), resultSet, colInfo.getPosition());
+                                }
+                                row.add("PlaceHolder");
+                                
+                            } else
+                            {
+                                log.error("Aggregator is null! ["+aggCaption.getAggregatorName()+"] or row or aggList");
+                            }
+                            
+                        } else if (row != null)
+                        {
+                            Object obj = resultSet.getObject(posIndex + 1);
+                            row.add(obj);
+                        }
                     }
-                    cache.add(row);
+                    
                 } while (resultSet.next());
+                
+                if (aggCaption != null && aggList != null && aggList.size() > 0 && row != null)
+                {
+                    int aggInx = captions.indexOf(aggCaption);
+                    row.remove(aggInx+1);
+                    String colStr = DataObjFieldFormatMgr.aggregate(aggList, aggCaption.getAggClass());
+                    row.insertElementAt(colStr, aggInx+1);
+                    aggList.clear();
+                    aggListRecycler.clear();
+                }
                 
                 fireTableStructureChanged();
                 fireTableDataChanged();

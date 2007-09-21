@@ -21,6 +21,8 @@
  taxon.CommonName,
  agent.LastName,
  agent.FirstName,
+ agent.Name,
+ agent.AgentType,
  %s
  FROM
  collectionobject
@@ -34,8 +36,13 @@
                     <caption col="CollectionObjectCatalogID" text="ID" visible="false"/>
                     <caption col="TaxonName"  text="Taxon Name"/>
                     <caption col="CommonName" text="Common Name"/>
-                    <caption col="LastName"   text="Last Name"/>
-                    <caption col="FirstName"  text="First Name"/>
+                    <caption text="Determiner" dataobjformatter="Agent">
+                        <col name="agent.LastName"  field="lastName"/>
+                        <col name="agent.FirstName" field="firstName"/>
+                        <col name="agent.Name"      field="name"/>                        
+                        <col name="agent.AgentType" field="agentType"/>                        
+                    </caption>
+                    
                </captions>
                <recordset tabletype="7" col="1"/>
             </detailView>
@@ -162,6 +169,7 @@
  agent.LastName,
  agent.FirstName,
  agent.Name,
+ agent.AgentType,
  collector.OrderNumber,
  %s
  FROM collectionobject INNER JOIN determination ON collectionobject.CollectionObjectID = determination.CollectionObjectID
@@ -177,10 +185,15 @@
                     <caption col="CatalogedDate"   text="Cataloged Date"/>
                     <caption col="StartDate"       text="Collected Date"/>
                     <caption col="taxon.FullName"  text="Taxon Name"/>
-                    <caption col="agent.LastName"  text="Last Name"/>
-                    <caption col="agent.FirstName" text="First Name"/>
-                    <caption col="agent.Name"      text="Name"/>
-                </captions>
+                    <caption text="Collectors">
+                        <agg class="edu.ku.brc.specify.datamodel.Collector" aggregator="Collector" ordercol="collector.OrderNumber"/>
+                        <subobject class="edu.ku.brc.specify.datamodel.Agent" fieldname="agent"/>
+                        <col name="agent.LastName"  field="lastName"/>
+                        <col name="agent.FirstName" field="firstName"/>
+                        <col name="agent.Name"      field="name"/>                        
+                        <col name="agent.AgentType" field="agentType"/>                        
+                    </caption>
+               </captions>
                 <recordset tabletype="1" col="1"/>
             </detailView>
         </table>

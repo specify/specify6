@@ -34,23 +34,26 @@ public class DataObjAggregator
     protected Integer         count      = null;
     protected String          ending;
     protected String          formatName;
+    protected String          orderFieldName;
     
-    public DataObjAggregator(final String name, 
+    public DataObjAggregator(final String   name, 
                              final Class<?> dataClass,
-                             final boolean isDefault, 
-                             final String separator, 
-                             final Integer count, 
-                             final String ending, 
-                             final String formatName)
+                             final boolean  isDefault, 
+                             final String   separator, 
+                             final Integer  count, 
+                             final String   ending, 
+                             final String   formatName,
+                             final String   orderFieldName)
     {
         super();
-        this.name = name;
-        this.isDefault = isDefault;
-        this.dataClass = dataClass;
-        this.separator = separator;
-        this.count = count;
-        this.ending = ending;
-        this.formatName = formatName;
+        this.name           = name;
+        this.isDefault      = isDefault;
+        this.dataClass      = dataClass;
+        this.separator      = separator;
+        this.count          = count;
+        this.ending         = ending;
+        this.formatName     = formatName;
+        this.orderFieldName = orderFieldName;
     }
 
     public boolean isDefault()
@@ -86,5 +89,13 @@ public class DataObjAggregator
     public String getSeparator()
     {
         return separator;
+    }
+
+    /**
+     * @return the orderFieldName
+     */
+    public String getOrderFieldName()
+    {
+        return orderFieldName;
     }
 }

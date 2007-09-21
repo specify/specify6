@@ -168,37 +168,26 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
         Collections.sort(expTblResults);
         for (ESResultsTablePanel etr : expTblResults)
         {
-            log.debug("Order: "+etr.getResults().getDisplayOrder());
+            //log.debug("Order: "+etr.getResults().getDisplayOrder());
             contentPanel.add(etr); 
         }
         
-        //synchronized (this)
-        //{
-            List<Component> comps = layoutMgr.getComponentList();
-            comps.clear();
-            comps.addAll(expTblResults);
+        List<Component> comps = layoutMgr.getComponentList();
+        comps.clear();
+        comps.addAll(expTblResults);
+        
+        if (explainPanel != null)
+        {
+            contentPanel.add(explainPanel);
+        }            
             
-            if (explainPanel != null)
-            {
-                //comps.add(explainPanel);
-                contentPanel.add(explainPanel);
-            }            
-        //}
-            
-            
-
         final JPanel panel = this;
         SwingUtilities.invokeLater(new Runnable() {
-
-            /* (non-Javadoc)
-             * @see java.lang.Runnable#run()
-             */
             public void run()
             {
                 panel.validate();
                 panel.repaint();
                 expTblRes.repaint();
-                //UIRegistry.forceTopFrameRepaint();
             }
         });
         

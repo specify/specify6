@@ -240,6 +240,7 @@ public class DataObjFieldFormatMgr
                     String countStr   = aggElement.attributeValue("count");
                     String ending     = aggElement.attributeValue("ending");
                     String format     = aggElement.attributeValue("format");
+                    String ordFldName = XMLHelper.getAttr(aggElement, "orderfieldname", null);
                     boolean isDefault = XMLHelper.getAttr(aggElement, "default", true);
                     
                     Integer count = StringUtils.isNotEmpty(countStr) && StringUtils.isNumeric(countStr) ? Integer.parseInt(countStr) : null;
@@ -261,7 +262,7 @@ public class DataObjFieldFormatMgr
                     }
                     
                     // TODO check for duplicates!
-                    aggHash.put(name, new DataObjAggregator(name, dataClass, isDefault, separator, count, ending, format));
+                    aggHash.put(name, new DataObjAggregator(name, dataClass, isDefault, separator, count, ending, format, ordFldName));
                 }
                     
             } else
@@ -273,6 +274,16 @@ public class DataObjFieldFormatMgr
             ex.printStackTrace();
             log.error(ex);
         }
+    }
+    
+    /**
+     * Returns a data formatter.
+     * @param formatName the name
+     * @return the formatter
+     */
+    public static DataObjSwitchFormatter getFormatter(final String formatName)
+    {
+        return getInstance().formatHash.get(formatName);
     }
 
     /**
@@ -573,6 +584,11 @@ public class DataObjFieldFormatMgr
     {
         throw new RuntimeException("OK, I am used, so come and fix me up!");
         //return instance.formatInternal(dataObjs, formatName);
+    }
+    
+    public static DataObjAggregator getAggregator(final String aggName)
+    {
+        return getInstance().aggHash.get(aggName);
     }
     
     /**
