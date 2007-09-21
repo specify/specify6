@@ -54,6 +54,7 @@ public class TrayListCellRenderer extends DefaultListCellRenderer
             // ask for the text representation of the object
             String text = RepresentativeTextFactory.getInstance().getString(value);
             l.setText(text);
+            l.setToolTipText(text);
             // ask for the icon representation of the object
             ImageIcon icon = RepresentativeIconFactory.getInstance().getIcon(value);
             l.setIcon(icon);
