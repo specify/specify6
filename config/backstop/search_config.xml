@@ -32,10 +32,10 @@
                 </sql>
                 <captions>
                     <caption col="CollectionObjectCatalogID" text="ID" visible="false"/>
-                    <caption col="TaxonName" text="Taxon Name"/>
+                    <caption col="TaxonName"  text="Taxon Name"/>
                     <caption col="CommonName" text="Common Name"/>
-                    <caption col="LastName" text="Last Name"/>
-                    <caption col="FirstName" text="First Name"/>
+                    <caption col="LastName"   text="Last Name"/>
+                    <caption col="FirstName"  text="First Name"/>
                </captions>
                <recordset tabletype="7" col="1"/>
             </detailView>
@@ -48,18 +48,26 @@
             </joins>
             <detailView icon="ColEvent">
                 <sql>
-                    <![CDATA[SELECT collectingevent.CollectingEventID, locality.LocalityName, collectingevent.StartDate, collectingevent.EndDate, locality.Latitude1,
- locality.Longitude1, %s From collectingevent
+                    <![CDATA[SELECT 
+ collectingevent.CollectingEventID, 
+ locality.LocalityName, 
+ collectingevent.StartDate, 
+ collectingevent.EndDate, 
+ locality.Latitude1,
+ locality.Longitude1, 
+ %s 
+ From 
+ collectingevent
  Inner Join locality ON collectingevent.LocalityID = locality.LocalityID
  where %s order by StartDate]]>
                 </sql>
                 <captions>
                     <caption col="CollectingEventID" text="CollectingEventID" visible="false"/>
                     <caption col="LocalityName" text="Locality Name"/>
-                    <caption col="StartDate" text="Start Date"/>
-                    <caption col="EndDate" text="End Date"/>
-                    <caption col="Latitude1" text="Latitude1"/>
-                    <caption col="Longitude1" text="Longitude1"/>
+                    <caption col="StartDate"    text="Start Date"/>
+                    <caption col="EndDate"      text="End Date"/>
+                    <caption col="Latitude1"    text="Latitude1"/>
+                    <caption col="Longitude1"   text="Longitude1"/>
                 </captions>
                 <recordset tabletype="8" col="6"/>
             </detailView>
@@ -75,9 +83,9 @@
                     <![CDATA[
  SELECT distinct 
  collectionobject.CollectionObjectID, 
- collectionobject.CatalogNumber, 
- collectionobject.CatalogedDate, 
- taxon.FullName, 
+ CatalogNumber, 
+ CatalogedDate, 
+ FullName, 
  %s 
  From collectionobject 
  Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID 
@@ -86,9 +94,9 @@
                 </sql>
                 <captions>
                     <caption col="collectionobject.CollectionObjectID" text="CollectionObjectID" visible="false"/>
-                    <caption col="collectionobject.CatalogNumber" text="Catalog Number" formatter="CatalogNumber"/>
-                    <caption col="collectionobject.CatalogedDate" text="Cataloged Date"/>
-                    <caption col="taxon.FullName" text="Taxon Name"/>
+                    <caption col="CatalogNumber" text="Catalog Number" formatter="CatalogNumber"/>
+                    <caption col="CatalogedDate" text="Cataloged Date"/>
+                    <caption col="FullName"      text="Taxon Name"/>
                 </captions>
                 <recordset tabletype="1" col="1"/>
             </detailView>
@@ -108,9 +116,9 @@
  taxon.TaxonID,
  geography.FullName,
  locality.LocalityName,
- collectionobject.CatalogNumber,
- collectionobject.CatalogedDate,
- collectingevent.StartDate,
+ CatalogNumber,
+ CatalogedDate,
+ StartDate,
  taxon.FullName,
  %s
  FROM geography INNER JOIN locality ON geography.GeographyID = locality.GeographyID
@@ -122,12 +130,12 @@
  WHERE determinationstatus.IsCurrent = true AND %s]]>
                 </sql>
                 <captions>
-                    <caption col="taxon.TaxonID" text="taxon.TaxonID" visible="false"/>
-                    <caption col="geography.FullName" text="Geography" formatter="CatalogNumber"/>
+                    <caption col="taxon.TaxonID"         text="taxon.TaxonID" visible="false"/>
+                    <caption col="geography.FullName"    text="Geography"/>
                     <caption col="locality.LocalityName" text="Locality Name"/>
-                    <caption col="collectionobject.CatalogNumber" text="Cataloged Number"/>
-                    <caption col="collectionobject.CatalogedDate" text="Cataloged Date"/>
-                    <caption col="collectingevent.StartDate" text="Collected Date"/>
+                    <caption col="CatalogNumber"  text="Cataloged Number" formatter="CatalogNumber"/>
+                    <caption col="CatalogedDate"  text="Cataloged Date"/>
+                    <caption col="StartDate"      text="Collected Date"/>
                     <caption col="taxon.FullName" text="Taxon Name"/>
                 </captions>
                 <recordset tabletype="4" col="1"/>
@@ -141,16 +149,15 @@
                 <join tableid="2">collectingevent.CollectingEventID</join>
                 <join tableid="88">determinationstatus.DeterminationStatusID</join>
                 <join tableid="5">agent.AgentID</join>
-                <join tableid="5">agent.AgentID</join>
             </joins>
             <detailView icon="ColectionObject">
                 <sql>
                     <![CDATA[
  SELECT 
  collectionobject.CollectionObjectID,
- collectionobject.CatalogNumber,
- collectionobject.CatalogedDate,
- collectingevent.StartDate,
+ CatalogNumber,
+ CatalogedDate,
+ StartDate,
  taxon.FullName,
  agent.LastName,
  agent.FirstName,
@@ -166,13 +173,13 @@
                 </sql>
                 <captions>
                     <caption col="collectionobject.CollectionObjectID" text="collectionobject.CollectionObjectID" visible="false"/>
-                    <caption col="collectionobject.CatalogNumber" text="Cataloged Number"/>
-                    <caption col="collectionobject.CatalogedDate" text="Cataloged Date"/>
-                    <caption col="collectingevent.StartDate" text="Collected Date"/>
-                    <caption col="taxon.FullName" text="Taxon Name"/>
-                    <caption col="agent.LastName" text="Last Name"/>
+                    <caption col="CatalogNumber"   text="Cataloged Number" formatter="CatalogNumber"/>
+                    <caption col="CatalogedDate"   text="Cataloged Date"/>
+                    <caption col="StartDate"       text="Collected Date"/>
+                    <caption col="taxon.FullName"  text="Taxon Name"/>
+                    <caption col="agent.LastName"  text="Last Name"/>
                     <caption col="agent.FirstName" text="First Name"/>
-                    <caption col="agent.Name" text="Name"/>
+                    <caption col="agent.Name"      text="Name"/>
                 </captions>
                 <recordset tabletype="1" col="1"/>
             </detailView>

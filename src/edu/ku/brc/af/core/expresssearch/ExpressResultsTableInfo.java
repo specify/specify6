@@ -173,7 +173,7 @@ public class ExpressResultsTableInfo
     }
 
     /**
-     * Returns an array of ERTIColInfo Objects that describe the indexed Columns.
+     * Returns an array of ERTICaptionInfo Objects that describe the indexed Columns.
      * @return an array of the columns that are to be indexes
      */
     public List<ERTICaptionInfo> getVisibleCaptionInfo()
@@ -182,7 +182,7 @@ public class ExpressResultsTableInfo
     }
 
     /**
-     * Returns an array of ERTIColInfo Objects that describe the indexed Columns.
+     * Returns an array of ERTICaptionInfo Objects that describe the indexed Columns.
      * @return an array of the columns that are to be indexes
      */
     public List<ERTICaptionInfo> getCaptionInfo()
