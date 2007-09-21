@@ -9,7 +9,7 @@
             <altviews>
                 <altview name="Accession View" viewdef="Accession" label="View" mode="view" default="true"/>
                 <altview name="Accession Edit" viewdef="Accession" label="Edit" mode="edit"/>
-                <altview name="Accession Icon" viewdef="AccessionIconView" label="IconView" mode="view"/>                
+                <altview name="Accession Icon" viewdef="AccessionIconView" label="IconView" mode="view"/>
             </altviews>
         </view>
 
@@ -74,8 +74,8 @@
               resourcelabels="false">
             <desc><![CDATA[The Attachments Form.]]></desc>
             <altviews>
-                <altview name="Attachment View" viewdef="Attachment" label="View" mode="view" default="true"/>                
-                <altview name="Attachment Edit" viewdef="Attachment" label="Edit" mode="edit" valtype="Changed"/>                
+                <altview name="Attachment View" viewdef="Attachment" label="View" mode="view" default="true"/>
+                <altview name="Attachment Edit" viewdef="Attachment" label="Edit" mode="edit" valtype="Changed"/>
             </altviews>
         </view>
 
@@ -84,8 +84,8 @@
               resourcelabels="false">
             <desc><![CDATA[The Attachments Icon View.]]></desc>
             <altviews>
-                <altview name="Attachments Icon View" viewdef="AttachmentsIconView" label="IconView" mode="view" default="true"/>                
-                <altview name="Attachments Icon Edit" viewdef="AttachmentsIconView" label="IconEdit" mode="edit"/>                
+                <altview name="Attachments Icon View" viewdef="AttachmentsIconView" label="IconView" mode="view" default="true"/>
+                <altview name="Attachments Icon Edit" viewdef="AttachmentsIconView" label="IconEdit" mode="edit"/>
             </altviews>
         </view>
 
@@ -104,7 +104,7 @@
         	resourcelabels="false">
             <desc><![CDATA[The Collectors Subform.]]></desc>
             <altviews>
-                <altview name="Collectors Icon View"  viewdef="CollectorsIconView" label="Icon View" mode="view"/>                
+                <altview name="Collectors Icon View"  viewdef="CollectorsIconView" label="Icon View" mode="view"/>
                 <altview name="Collectors Icon Edit"  viewdef="CollectorsIconView" label="Icon Edit" mode="edit"/>
     	        <altview name="Collectors View"       viewdef="Collectors"         label="Form View" mode="view"/>
     	        <altview name="Collectors Edit"       viewdef="Collectors"         label="Form Edit" mode="edit"/>
@@ -284,12 +284,12 @@
               resourcelabels="false">
             <desc><![CDATA[The AccessionAttachment Icon View.]]></desc>
             <altviews>
-                <altview name="AccessionAttachment Icon View"  viewdef="AccessionAttachment IconView" label="Icon View"  mode="view"/>                
-                <altview name="AccessionAttachment Icon Edit"  viewdef="AccessionAttachment IconView" label="Icon Edit"  mode="edit"/>                
-                <altview name="AccessionAttachment Table View" viewdef="AccessionAttachment Table"    label="Table View" mode="view" />                
-                <altview name="AccessionAttachment Table Edit" viewdef="AccessionAttachment Table"    label="Table Edit" mode="edit"/>                
-                <altview name="AccessionAttachment Form View"  viewdef="AccessionAttachment Form"     label="Form View"  mode="view" default="true"/>                
-                <altview name="AccessionAttachment Form Edit"  viewdef="AccessionAttachment Form"     label="Form Edit"  mode="edit"/>                
+                <altview name="AccessionAttachment Icon View"  viewdef="AccessionAttachment IconView" label="Icon View"  mode="view"/>
+                <altview name="AccessionAttachment Icon Edit"  viewdef="AccessionAttachment IconView" label="Icon Edit"  mode="edit"/>
+                <altview name="AccessionAttachment Table View" viewdef="AccessionAttachment Table"    label="Table View" mode="view" />
+                <altview name="AccessionAttachment Table Edit" viewdef="AccessionAttachment Table"    label="Table Edit" mode="edit"/>
+                <altview name="AccessionAttachment Form View"  viewdef="AccessionAttachment Form"     label="Form View"  mode="view" default="true"/>
+                <altview name="AccessionAttachment Form Edit"  viewdef="AccessionAttachment Form"     label="Form Edit"  mode="edit"/>
             </altviews>
         </view>
 
@@ -298,12 +298,12 @@
               resourcelabels="false">
             <desc><![CDATA[The AgentAttachments Icon View.]]></desc>
             <altviews>
-                <altview name="AgentAttachments Icon View"  viewdef="AgentAttachment IconView" label="Icon View"  mode="view"/>                
-                <altview name="AgentAttachments Icon Edit"  viewdef="AgentAttachment IconView" label="Icon Edit"  mode="edit"/>                
-                <altview name="AgentAttachments Table View" viewdef="AgentAttachment Table"    label="Table View" mode="view" />                
-                <altview name="AgentAttachments Table Edit" viewdef="AgentAttachment Table"    label="Table Edit" mode="edit"/>                
-                <altview name="AgentAttachments Form View"  viewdef="AgentAttachment Form"     label="Form View"  mode="view" default="true"/>                
-                <altview name="AgentAttachments Form Edit"  viewdef="AgentAttachment Form"     label="Form Edit"  mode="edit"/>                
+                <altview name="AgentAttachments Icon View"  viewdef="AgentAttachment IconView" label="Icon View"  mode="view"/>
+                <altview name="AgentAttachments Icon Edit"  viewdef="AgentAttachment IconView" label="Icon Edit"  mode="edit"/>
+                <altview name="AgentAttachments Table View" viewdef="AgentAttachment Table"    label="Table View" mode="view" />
+                <altview name="AgentAttachments Table Edit" viewdef="AgentAttachment Table"    label="Table Edit" mode="edit"/>
+                <altview name="AgentAttachments Form View"  viewdef="AgentAttachment Form"     label="Form View"  mode="view" default="true"/>
+                <altview name="AgentAttachments Form Edit"  viewdef="AgentAttachment Form"     label="Form Edit"  mode="edit"/>
             </altviews>
         </view>
 
@@ -312,12 +312,12 @@
               resourcelabels="false">
             <desc><![CDATA[The CollectingEventAttachment Icon View.]]></desc>
             <altviews>
-                <altview name="CollectingEventAttachment Icon View"  viewdef="CollectingEventAttachment IconView" label="Icon View"  mode="view"/>                
-                <altview name="CollectingEventAttachment Icon Edit"  viewdef="CollectingEventAttachment IconView" label="Icon Edit"  mode="edit"/>                
-                <altview name="CollectingEventAttachment Table View" viewdef="CollectingEventAttachment Table"    label="Table View" mode="view" />                
-                <altview name="CollectingEventAttachment Table Edit" viewdef="CollectingEventAttachment Table"    label="Table Edit" mode="edit"/>                
-                <altview name="CollectingEventAttachment Form View"  viewdef="CollectingEventAttachment Form"     label="Form View"  mode="view" default="true"/>                
-                <altview name="CollectingEventAttachment Form Edit"  viewdef="CollectingEventAttachment Form"     label="Form Edit"  mode="edit"/>                
+                <altview name="CollectingEventAttachment Icon View"  viewdef="CollectingEventAttachment IconView" label="Icon View"  mode="view"/>
+                <altview name="CollectingEventAttachment Icon Edit"  viewdef="CollectingEventAttachment IconView" label="Icon Edit"  mode="edit"/>
+                <altview name="CollectingEventAttachment Table View" viewdef="CollectingEventAttachment Table"    label="Table View" mode="view" />
+                <altview name="CollectingEventAttachment Table Edit" viewdef="CollectingEventAttachment Table"    label="Table Edit" mode="edit"/>
+                <altview name="CollectingEventAttachment Form View"  viewdef="CollectingEventAttachment Form"     label="Form View"  mode="view" default="true"/>
+                <altview name="CollectingEventAttachment Form Edit"  viewdef="CollectingEventAttachment Form"     label="Form Edit"  mode="edit"/>
             </altviews>
         </view>
 
@@ -326,12 +326,12 @@
               resourcelabels="false">
             <desc><![CDATA[The CollectionObjectAttachment Icon View.]]></desc>
             <altviews>
-                <altview name="CollectionObjectAttachment Icon View"  viewdef="CollectionObjectAttachment IconView" label="Icon View"  mode="view"/>                
-                <altview name="CollectionObjectAttachment Icon Edit"  viewdef="CollectionObjectAttachment IconView" label="Icon Edit"  mode="edit"/>                
-                <altview name="CollectionObjectAttachment Table View" viewdef="CollectionObjectAttachment Table"    label="Table View" mode="view" />                
-                <altview name="CollectionObjectAttachment Table Edit" viewdef="CollectionObjectAttachment Table"    label="Table Edit" mode="edit"/>                
-                <altview name="CollectionObjectAttachment Form View"  viewdef="CollectionObjectAttachment Form"     label="Form View"  mode="view" default="true"/>                
-                <altview name="CollectionObjectAttachment Form Edit"  viewdef="CollectionObjectAttachment Form"     label="Form Edit"  mode="edit"/>                
+                <altview name="CollectionObjectAttachment Icon View"  viewdef="CollectionObjectAttachment IconView" label="Icon View"  mode="view"/>
+                <altview name="CollectionObjectAttachment Icon Edit"  viewdef="CollectionObjectAttachment IconView" label="Icon Edit"  mode="edit"/>
+                <altview name="CollectionObjectAttachment Table View" viewdef="CollectionObjectAttachment Table"    label="Table View" mode="view" />
+                <altview name="CollectionObjectAttachment Table Edit" viewdef="CollectionObjectAttachment Table"    label="Table Edit" mode="edit"/>
+                <altview name="CollectionObjectAttachment Form View"  viewdef="CollectionObjectAttachment Form"     label="Form View"  mode="view" default="true"/>
+                <altview name="CollectionObjectAttachment Form Edit"  viewdef="CollectionObjectAttachment Form"     label="Form Edit"  mode="edit"/>
             </altviews>
         </view>
 
@@ -340,12 +340,12 @@
               resourcelabels="false">
             <desc><![CDATA[The ConservDescriptionAttachment Icon View.]]></desc>
             <altviews>
-                <altview name="ConservDescriptionAttachment Icon View"  viewdef="ConservDescriptionAttachment IconView" label="Icon View"  mode="view"/>                
-                <altview name="ConservDescriptionAttachment Icon Edit"  viewdef="ConservDescriptionAttachment IconView" label="Icon Edit"  mode="edit"/>                
-                <altview name="ConservDescriptionAttachment Table View" viewdef="ConservDescriptionAttachment Table"    label="Table View" mode="view" />                
-                <altview name="ConservDescriptionAttachment Table Edit" viewdef="ConservDescriptionAttachment Table"    label="Table Edit" mode="edit"/>                
-                <altview name="ConservDescriptionAttachment Form View"  viewdef="ConservDescriptionAttachment Form"     label="Form View"  mode="view" default="true"/>                
-                <altview name="ConservDescriptionAttachment Form Edit"  viewdef="ConservDescriptionAttachment Form"     label="Form Edit"  mode="edit"/>                
+                <altview name="ConservDescriptionAttachment Icon View"  viewdef="ConservDescriptionAttachment IconView" label="Icon View"  mode="view"/>
+                <altview name="ConservDescriptionAttachment Icon Edit"  viewdef="ConservDescriptionAttachment IconView" label="Icon Edit"  mode="edit"/>
+                <altview name="ConservDescriptionAttachment Table View" viewdef="ConservDescriptionAttachment Table"    label="Table View" mode="view" />
+                <altview name="ConservDescriptionAttachment Table Edit" viewdef="ConservDescriptionAttachment Table"    label="Table Edit" mode="edit"/>
+                <altview name="ConservDescriptionAttachment Form View"  viewdef="ConservDescriptionAttachment Form"     label="Form View"  mode="view" default="true"/>
+                <altview name="ConservDescriptionAttachment Form Edit"  viewdef="ConservDescriptionAttachment Form"     label="Form Edit"  mode="edit"/>
             </altviews>
         </view>
 
@@ -354,12 +354,12 @@
               resourcelabels="false">
             <desc><![CDATA[The ConservEventAttachment Icon View.]]></desc>
             <altviews>
-                <altview name="ConservEventAttachment Icon View"  viewdef="ConservEventAttachment IconView" label="Icon View"  mode="view"/>                
-                <altview name="ConservEventAttachment Icon Edit"  viewdef="ConservEventAttachment IconView" label="Icon Edit"  mode="edit"/>                
-                <altview name="ConservEventAttachment Table View" viewdef="ConservEventAttachment Table"    label="Table View" mode="view" />                
-                <altview name="ConservEventAttachment Table Edit" viewdef="ConservEventAttachment Table"    label="Table Edit" mode="edit"/>                
-                <altview name="ConservEventAttachment Form View"  viewdef="ConservEventAttachment Form"     label="Form View"  mode="view" default="true"/>                
-                <altview name="ConservEventAttachment Form Edit"  viewdef="ConservEventAttachment Form"     label="Form Edit"  mode="edit"/>                
+                <altview name="ConservEventAttachment Icon View"  viewdef="ConservEventAttachment IconView" label="Icon View"  mode="view"/>
+                <altview name="ConservEventAttachment Icon Edit"  viewdef="ConservEventAttachment IconView" label="Icon Edit"  mode="edit"/>
+                <altview name="ConservEventAttachment Table View" viewdef="ConservEventAttachment Table"    label="Table View" mode="view" />
+                <altview name="ConservEventAttachment Table Edit" viewdef="ConservEventAttachment Table"    label="Table Edit" mode="edit"/>
+                <altview name="ConservEventAttachment Form View"  viewdef="ConservEventAttachment Form"     label="Form View"  mode="view" default="true"/>
+                <altview name="ConservEventAttachment Form Edit"  viewdef="ConservEventAttachment Form"     label="Form Edit"  mode="edit"/>
             </altviews>
         </view>
 
@@ -368,12 +368,12 @@
               resourcelabels="false">
             <desc><![CDATA[The LoanAttachment Icon View.]]></desc>
             <altviews>
-                <altview name="LoanAttachment Icon View"  viewdef="LoanAttachment IconView" label="Icon View"  mode="view"/>                
-                <altview name="LoanAttachment Icon Edit"  viewdef="LoanAttachment IconView" label="Icon Edit"  mode="edit"/>                
-                <altview name="LoanAttachment Table View" viewdef="LoanAttachment Table"    label="Table View" mode="view" />                
-                <altview name="LoanAttachment Table Edit" viewdef="LoanAttachment Table"    label="Table Edit" mode="edit"/>                
-                <altview name="LoanAttachment Form View"  viewdef="LoanAttachment Form"     label="Form View"  mode="view" default="true"/>                
-                <altview name="LoanAttachment Form Edit"  viewdef="LoanAttachment Form"     label="Form Edit"  mode="edit"/>                
+                <altview name="LoanAttachment Icon View"  viewdef="LoanAttachment IconView" label="Icon View"  mode="view"/>
+                <altview name="LoanAttachment Icon Edit"  viewdef="LoanAttachment IconView" label="Icon Edit"  mode="edit"/>
+                <altview name="LoanAttachment Table View" viewdef="LoanAttachment Table"    label="Table View" mode="view" />
+                <altview name="LoanAttachment Table Edit" viewdef="LoanAttachment Table"    label="Table Edit" mode="edit"/>
+                <altview name="LoanAttachment Form View"  viewdef="LoanAttachment Form"     label="Form View"  mode="view" default="true"/>
+                <altview name="LoanAttachment Form Edit"  viewdef="LoanAttachment Form"     label="Form Edit"  mode="edit"/>
             </altviews>
         </view>
         
@@ -382,12 +382,12 @@
               resourcelabels="false">
             <desc><![CDATA[The LocalityAttachment Icon View.]]></desc>
             <altviews>
-                <altview name="LocalityAttachment Icon View"  viewdef="LocalityAttachment IconView" label="Icon View"  mode="view"/>                
-                <altview name="LocalityAttachment Icon Edit"  viewdef="LocalityAttachment IconView" label="Icon Edit"  mode="edit"/>                
-                <altview name="LocalityAttachment Table View" viewdef="LocalityAttachment Table"    label="Table View" mode="view" />                
-                <altview name="LocalityAttachment Table Edit" viewdef="LocalityAttachment Table"    label="Table Edit" mode="edit"/>                
-                <altview name="LocalityAttachment Form View"  viewdef="LocalityAttachment Form"     label="Form View"  mode="view" default="true"/>                
-                <altview name="LocalityAttachment Form Edit"  viewdef="LocalityAttachment Form"     label="Form Edit"  mode="edit"/>                
+                <altview name="LocalityAttachment Icon View"  viewdef="LocalityAttachment IconView" label="Icon View"  mode="view"/>
+                <altview name="LocalityAttachment Icon Edit"  viewdef="LocalityAttachment IconView" label="Icon Edit"  mode="edit"/>
+                <altview name="LocalityAttachment Table View" viewdef="LocalityAttachment Table"    label="Table View" mode="view" />
+                <altview name="LocalityAttachment Table Edit" viewdef="LocalityAttachment Table"    label="Table Edit" mode="edit"/>
+                <altview name="LocalityAttachment Form View"  viewdef="LocalityAttachment Form"     label="Form View"  mode="view" default="true"/>
+                <altview name="LocalityAttachment Form Edit"  viewdef="LocalityAttachment Form"     label="Form Edit"  mode="edit"/>
             </altviews>
         </view>
 
@@ -396,12 +396,12 @@
               resourcelabels="false">
             <desc><![CDATA[The PermitAttachment Icon View.]]></desc>
             <altviews>
-                <altview name="PermitAttachment Icon View"  viewdef="PermitAttachment IconView" label="Icon View"  mode="view"/>                
-                <altview name="PermitAttachment Icon Edit"  viewdef="PermitAttachment IconView" label="Icon Edit"  mode="edit"/>                
-                <altview name="PermitAttachment Table View" viewdef="PermitAttachment Table"    label="Table View" mode="view" />                
-                <altview name="PermitAttachment Table Edit" viewdef="PermitAttachment Table"    label="Table Edit" mode="edit"/>                
-                <altview name="PermitAttachment Form View"  viewdef="PermitAttachment Form"     label="Form View"  mode="view" default="true"/>                
-                <altview name="PermitAttachment Form Edit"  viewdef="PermitAttachment Form"     label="Form Edit"  mode="edit"/>                
+                <altview name="PermitAttachment Icon View"  viewdef="PermitAttachment IconView" label="Icon View"  mode="view"/>
+                <altview name="PermitAttachment Icon Edit"  viewdef="PermitAttachment IconView" label="Icon Edit"  mode="edit"/>
+                <altview name="PermitAttachment Table View" viewdef="PermitAttachment Table"    label="Table View" mode="view" />
+                <altview name="PermitAttachment Table Edit" viewdef="PermitAttachment Table"    label="Table Edit" mode="edit"/>
+                <altview name="PermitAttachment Form View"  viewdef="PermitAttachment Form"     label="Form View"  mode="view" default="true"/>
+                <altview name="PermitAttachment Form Edit"  viewdef="PermitAttachment Form"     label="Form Edit"  mode="edit"/>
             </altviews>
         </view>
 
@@ -410,12 +410,12 @@
               resourcelabels="false">
             <desc><![CDATA[The PreparationAttachment Icon View.]]></desc>
             <altviews>
-                <altview name="PreparationAttachment Icon View"  viewdef="PreparationAttachment IconView" label="Icon View"  mode="view"/>                
-                <altview name="PreparationAttachment Icon Edit"  viewdef="PreparationAttachment IconView" label="Icon Edit"  mode="edit"/>                
-                <altview name="PreparationAttachment Table View" viewdef="PreparationAttachment Table"    label="Table View" mode="view" />                
-                <altview name="PreparationAttachment Table Edit" viewdef="PreparationAttachment Table"    label="Table Edit" mode="edit"/>                
-                <altview name="PreparationAttachment Form View"  viewdef="PreparationAttachment Form"     label="Form View"  mode="view" default="true"/>                
-                <altview name="PreparationAttachment Form Edit"  viewdef="PreparationAttachment Form"     label="Form Edit"  mode="edit"/>                
+                <altview name="PreparationAttachment Icon View"  viewdef="PreparationAttachment IconView" label="Icon View"  mode="view"/>
+                <altview name="PreparationAttachment Icon Edit"  viewdef="PreparationAttachment IconView" label="Icon Edit"  mode="edit"/>
+                <altview name="PreparationAttachment Table View" viewdef="PreparationAttachment Table"    label="Table View" mode="view" />
+                <altview name="PreparationAttachment Table Edit" viewdef="PreparationAttachment Table"    label="Table Edit" mode="edit"/>
+                <altview name="PreparationAttachment Form View"  viewdef="PreparationAttachment Form"     label="Form View"  mode="view" default="true"/>
+                <altview name="PreparationAttachment Form Edit"  viewdef="PreparationAttachment Form"     label="Form Edit"  mode="edit"/>
             </altviews>
         </view>
 
@@ -424,12 +424,12 @@
               resourcelabels="false">
             <desc><![CDATA[The RepositoryAgreementAttachment Icon View.]]></desc>
             <altviews>
-                <altview name="RepositoryAgreementAttachment Icon View"  viewdef="RepositoryAgreementAttachment IconView" label="Icon View"  mode="view"/>                
-                <altview name="RepositoryAgreementAttachment Icon Edit"  viewdef="RepositoryAgreementAttachment IconView" label="Icon Edit"  mode="edit"/>                
-                <altview name="RepositoryAgreementAttachment Table View" viewdef="RepositoryAgreementAttachment Table"    label="Table View" mode="view" />                
-                <altview name="RepositoryAgreementAttachment Table Edit" viewdef="RepositoryAgreementAttachment Table"    label="Table Edit" mode="edit"/>                
-                <altview name="RepositoryAgreementAttachment Form View"  viewdef="RepositoryAgreementAttachment Form"     label="Form View"  mode="view" default="true"/>                
-                <altview name="RepositoryAgreementAttachment Form Edit"  viewdef="RepositoryAgreementAttachment Form"     label="Form Edit"  mode="edit"/>                
+                <altview name="RepositoryAgreementAttachment Icon View"  viewdef="RepositoryAgreementAttachment IconView" label="Icon View"  mode="view"/>
+                <altview name="RepositoryAgreementAttachment Icon Edit"  viewdef="RepositoryAgreementAttachment IconView" label="Icon Edit"  mode="edit"/>
+                <altview name="RepositoryAgreementAttachment Table View" viewdef="RepositoryAgreementAttachment Table"    label="Table View" mode="view" />
+                <altview name="RepositoryAgreementAttachment Table Edit" viewdef="RepositoryAgreementAttachment Table"    label="Table Edit" mode="edit"/>
+                <altview name="RepositoryAgreementAttachment Form View"  viewdef="RepositoryAgreementAttachment Form"     label="Form View"  mode="view" default="true"/>
+                <altview name="RepositoryAgreementAttachment Form Edit"  viewdef="RepositoryAgreementAttachment Form"     label="Form Edit"  mode="edit"/>
             </altviews>
         </view>
 
@@ -438,12 +438,12 @@
               resourcelabels="false">
             <desc><![CDATA[The TaxonAttachment Icon View.]]></desc>
             <altviews>
-                <altview name="TaxonAttachment Icon View"  viewdef="TaxonAttachment IconView" label="Icon View"  mode="view"/>                
-                <altview name="TaxonAttachment Icon Edit"  viewdef="TaxonAttachment IconView" label="Icon Edit"  mode="edit"/>                
-                <altview name="TaxonAttachment Table View" viewdef="TaxonAttachment Table"    label="Table View" mode="view" />                
-                <altview name="TaxonAttachment Table Edit" viewdef="TaxonAttachment Table"    label="Table Edit" mode="edit"/>                
-                <altview name="TaxonAttachment Form View"  viewdef="TaxonAttachment Form"     label="Form View"  mode="view" default="true"/>                
-                <altview name="TaxonAttachment Form Edit"  viewdef="TaxonAttachment Form"     label="Form Edit"  mode="edit"/>                
+                <altview name="TaxonAttachment Icon View"  viewdef="TaxonAttachment IconView" label="Icon View"  mode="view"/>
+                <altview name="TaxonAttachment Icon Edit"  viewdef="TaxonAttachment IconView" label="Icon Edit"  mode="edit"/>
+                <altview name="TaxonAttachment Table View" viewdef="TaxonAttachment Table"    label="Table View" mode="view" />
+                <altview name="TaxonAttachment Table Edit" viewdef="TaxonAttachment Table"    label="Table Edit" mode="edit"/>
+                <altview name="TaxonAttachment Form View"  viewdef="TaxonAttachment Form"     label="Form View"  mode="view" default="true"/>
+                <altview name="TaxonAttachment Form Edit"  viewdef="TaxonAttachment Form"     label="Form Edit"  mode="edit"/>
             </altviews>
         </view>
 
@@ -818,7 +818,7 @@
                     <cell type="label" labelfor="7" label="Geography"/>
                     <cell type="field" id="7" name="geography" uitype="querycbx" initialize="name=Geography;title=Geography" isrequired="true"/>
                 </row>
-                -->                
+                -->
             </rows>
         </viewdef>
         
@@ -840,7 +840,7 @@
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             <desc><![CDATA[The Collectors Icon Viewer]]></desc>
-        </viewdef>        
+        </viewdef>
 
         <viewdef
             type="form"
@@ -888,7 +888,7 @@
     		<rows>
     		    <row>
     		        <cell type="label" label="Fish" icon="CollectionObject" recordobj="true" colspan="12"/>
-    		    </row>    		    
+    		    </row>
     			<row>
     			    <cell type="label" labelfor="1" label="Catalog Number" uitype="text"/>
     			    <cell type="field" id="1" name="catalogNumber" uitype="formattedtext" uifieldformatter="CatalogNumber"/>
@@ -907,7 +907,7 @@
     			    <cell type="field" id="4" name="cataloger" uitype="querycbx" initialize="name=Agent;title=Catalog Agent" isrequired="true"/>
 
                     <cell type="label" labelfor="5" label="Date"/>
-    			    <cell type="field" id="5" name="catalogedDate" uitype="formattedtext" uifieldformatter="Date" default="today"/> 
+    			    <cell type="field" id="5" name="catalogedDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
     			    <!-- <cell type="field" id="5" name="this" uitype="plugin" initialize="class=edu.ku.brc.specify.plugins.PartialDateUI;dateField=catalogedDate;dateTypeField=text1" default="today"/> -->
     			</row>
      			<row>
@@ -1179,7 +1179,7 @@
                     <cell type="separator" label="Shipment" collapse="shipment" colspan="12"/>
                 </row>
                 
-                <row>                   
+                <row>
                     <cell type="subview" viewname="Shipment" id="11" name="shipments" colspan="12"/>
                 </row>
                 <row>
@@ -1241,7 +1241,7 @@
                     
                     <cell type="label" labelfor="6" label="Storage"/>
                     <cell type="field" id="6" name="preparation.storageLocation" uitype="dsptextfield" colpsan="2"/>
-                </row>              
+                </row>
             </rows>
         </viewdef>
         
@@ -1311,7 +1311,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="5" label="Lat/Lon"/>
-                    <cell type="field" id="5" name="this" uitype="plugin" initialize="class=edu.ku.brc.specify.plugins.latlon.LatLonUI" colspan="10"/>                    
+                    <cell type="field" id="5" name="this" uitype="plugin" initialize="class=edu.ku.brc.specify.plugins.latlon.LatLonUI" colspan="10"/>
                 </row>
                 <row>
                     <cell type="separator" label="Elevation" colspan="12"/>
@@ -1349,7 +1349,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="4" label="Lat/Lon"/>
-                    <cell type="field" id="4" name="this" uitype="plugin" initialize="class=edu.ku.brc.specify.plugins.latlon.LatLonUI" colspan="4"/>                    
+                    <cell type="field" id="4" name="this" uitype="plugin" initialize="class=edu.ku.brc.specify.plugins.latlon.LatLonUI" colspan="4"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="1" label="Datum"/>
@@ -1455,7 +1455,7 @@
             
             <rows>
                 <row>
-                    <cell type="label" label="Permit" icon="Permit" recordobj="true" colspan="12"/>                    
+                    <cell type="label" label="Permit" icon="Permit" recordobj="true" colspan="12"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="1" label="Number"/>
@@ -1673,7 +1673,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="6" label="Requester"/>
-                    <cell type="field" id="6" name="agent" uitype="querycbx" initialize="name=Agent;title=Requester" isrequired="true"/>                
+                    <cell type="field" id="6" name="agent" uitype="querycbx" initialize="name=Agent;title=Requester" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="3" label="Remarks"/>
@@ -1738,7 +1738,7 @@
                     -->
                     
                     <cell type="label" labelfor="5" label="Determination"/>
-                    <cell type="field" id="5" name="determinations" uitype="text"/>                  
+                    <cell type="field" id="5" name="determinations" uitype="text"/>
                     
                     <cell type="label" labelfor="6" label="Locality"/>
                     <cell type="field" id="6" name="collectingEvent.locality.localityName" uitype="text"/>
@@ -1750,10 +1750,10 @@
                     <cell type="field" id="8" name="collectingEvent.locality.longitude1" uitype="text"/>
                     
                     <cell type="label" labelfor="9" label="Preparations"/>
-                    <cell type="field" id="9" name="preparations" uitype="text"/>                  
+                    <cell type="field" id="9" name="preparations" uitype="text"/>
                 </row>
             </rows>
-        </viewdef>   
+        </viewdef>
 
         <viewdef
             type="iconview"
@@ -2385,7 +2385,7 @@
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             
-            <desc><![CDATA[The AttachmentMetadata Form.]]></desc>     	
+            <desc><![CDATA[The AttachmentMetadata Form.]]></desc>
         
             <columnDef>80px,2dlu,p:g,5dlu,80px,2dlu,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
