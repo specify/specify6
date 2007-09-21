@@ -47,6 +47,7 @@ public class IconTray extends JPanel
     public static final int MULTIPLE_ROWS = 2;
     
     protected int minHeight = 64;
+    protected int maxWidth = 750;
 
     /** A JList used to display the icons representing the items. */
     protected JList iconListWidget;
@@ -73,8 +74,6 @@ public class IconTray extends JPanel
             iconListWidget.setVisibleRowCount(1);
         }
         iconListWidget.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        
-        //iconListWidget.setFixedCellWidth(150);
         
         JPanel listPanel = new JPanel();
         listPanel.setBackground(iconListWidget.getBackground());
@@ -191,8 +190,10 @@ public class IconTray extends JPanel
         // need to set the min height to something other than 0 so
         // that empty trays don't get flattened by containers that
         // use preferred size
-        Dimension d = super.getPreferredSize();        
+        
+        Dimension d = super.getPreferredSize();
         d.height = Math.max(minHeight, d.height);
+        d.width = Math.min(maxWidth, d.width);
         return d;
     }
     
