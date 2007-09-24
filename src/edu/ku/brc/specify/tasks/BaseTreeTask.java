@@ -156,7 +156,6 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                 {
                     requestContext();
                     showTree(currentDef);
-                    menuItem.setEnabled(false);
                 }
                 else
                 {
@@ -309,7 +308,6 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         }
         currentDefInUse = false;
         visibleSubPane = null;
-        menuItem.setEnabled(true);
 	}
 
     /* (non-Javadoc)
