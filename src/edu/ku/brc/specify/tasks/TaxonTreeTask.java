@@ -112,7 +112,7 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
 //                  });
 //                  popup.add(getITIS);
                     
-                    JMenuItem getDeters = new JMenuItem("Associated Determinations");
+                    JMenuItem getDeters = new JMenuItem(getResourceString("TTV_TAXON_ASSOC_DETERS"));
                     getDeters.addActionListener(new ActionListener()
                     {
                         public void actionPerformed(ActionEvent e)
@@ -127,7 +127,7 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
                             
                             if (deters.size() == 0)
                             {
-                                UIRegistry.getStatusBar().setText("No determinations refer to this taxon node");
+                                UIRegistry.getStatusBar().setText(getResourceString("TTV_TAXON_NO_DETERS_FOR_NODE"));
                                 return;
                             }
                             
@@ -138,7 +138,7 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
                                 rs.addItem(deter.getDeterminationId());
                             }
                             
-                            UIRegistry.getStatusBar().setText("Opening determinations in a form");
+                            UIRegistry.getStatusBar().setText(getResourceString("TTV_OPENING_DETERS_FORM"));
                             CommandAction cmd = new CommandAction(DataEntryTask.DATA_ENTRY,DataEntryTask.EDIT_DATA,rs);
                             CommandDispatcher.dispatch(cmd);
                         }
