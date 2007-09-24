@@ -14,7 +14,6 @@ import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
-import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.forms.FormViewObj;
 

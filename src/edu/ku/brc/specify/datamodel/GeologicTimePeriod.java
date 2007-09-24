@@ -36,7 +36,6 @@ import java.util.Vector;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -179,7 +178,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	/**
 	 * 
 	 */
-    @Column(name = "RankID", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
+    @Column(name = "RankID")
 	public Integer getRankId()
 	{
 		return this.rankId;
@@ -193,7 +192,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	/**
 	 * 
 	 */
-    @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    @Column(name = "Name", length = 64)
 	public String getName()
 	{
 		return this.name;
@@ -207,7 +206,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	/**
 	 * @return the fullName
 	 */
-    @Column(name = "FullName", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "FullName")
 	public String getFullName()
 	{
 		return fullName;
@@ -224,7 +223,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	/**
 	 * 
 	 */
-    @Column(name = "NodeNumber", unique = false, nullable = true, insertable = true, updatable = false, length = 10)
+    @Column(name = "NodeNumber", updatable = false)
 	public Integer getNodeNumber()
 	{
 		return this.nodeNumber;
@@ -238,7 +237,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	/**
 	 * 
 	 */
-    @Column(name = "HighestChildNodeNumber", unique = false, nullable = true, insertable = true, updatable = false, length = 10)
+    @Column(name = "HighestChildNodeNumber", updatable = false)
 	public Integer getHighestChildNodeNumber()
 	{
 		return this.highestChildNodeNumber;
@@ -252,7 +251,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	/**
 	 * 
 	 */
-    @Column(name = "Standard", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    @Column(name = "Standard", length = 64)
 	public String getStandard()
 	{
 		return this.standard;
@@ -263,7 +262,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 		this.standard = standard;
 	}
 
-    @Column(name = "EndPeriod", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "EndPeriod")
 	public Float getEndPeriod()
 	{
 		return endPeriod;
@@ -274,7 +273,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 		this.endPeriod = end;
 	}
 
-    @Column(name = "EndUncertainty", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "EndUncertainty")
 	public Float getEndUncertainty()
 	{
 		return endUncertainty;
@@ -285,7 +284,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 		this.endUncertainty = endUncertainty;
 	}
 
-    @Column(name = "StartPeriod", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "StartPeriod")
 	public Float getStartPeriod()
 	{
 		return startPeriod;
@@ -296,7 +295,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 		this.startPeriod = start;
 	}
 
-    @Column(name = "StartUncertainty", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "StartUncertainty")
 	public Float getStartUncertainty()
 	{
 		return startUncertainty;
@@ -311,7 +310,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	 * 
 	 */
     @Lob
-    @Column(name="Remarks", unique=false, nullable=true, updatable=true, insertable=true)
+    @Column(name="Remarks")
 	public String getRemarks()
 	{
 		return this.remarks;
@@ -325,7 +324,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
     /**
      *
      */
-    @Column(name = "GUID", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Column(name = "GUID", length = 128)
     public String getGuid() {
         return this.guid;
     }
@@ -334,7 +333,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
         this.guid = guid;
     }
 
-    @Column(name="IsAccepted", unique=false, nullable=true, insertable=true, updatable=true)
+    @Column(name="IsAccepted")
     public Boolean getIsAccepted()
     {
         return this.isAccepted;
@@ -345,7 +344,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
         this.isAccepted = accepted;
     }
 
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "acceptedGeologicTimePeriod")
+    @OneToMany(mappedBy = "acceptedGeologicTimePeriod")
     @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public Set<GeologicTimePeriod> getAcceptedChildren()
     {
@@ -357,7 +356,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
         this.acceptedChildren = acceptedChildren;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "AcceptedID")
     public GeologicTimePeriod getAcceptedGeologicTimePeriod()
     {
@@ -383,8 +382,8 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	/**
 	 * 
 	 */
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @JoinColumn(name = "GeologicTimePeriodTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
+    @ManyToOne
+    @JoinColumn(name = "GeologicTimePeriodTreeDefID", nullable = false)
 	public GeologicTimePeriodTreeDef getDefinition()
 	{
 		return this.definition;
@@ -398,8 +397,8 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	/**
 	 * 
 	 */
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @JoinColumn(name = "GeologicTimePeriodTreeDefItemID", unique = false, nullable = false, insertable = true, updatable = true)
+    @ManyToOne
+    @JoinColumn(name = "GeologicTimePeriodTreeDefItemID", nullable = false)
 	public GeologicTimePeriodTreeDefItem getDefinitionItem()
 	{
 		return this.definitionItem;
@@ -417,8 +416,8 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	/**
 	 * 
 	 */
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @JoinColumn(name = "ParentID", unique = false, nullable = true, insertable = true, updatable = true)
+    @ManyToOne
+    @JoinColumn(name = "ParentID")
 	public GeologicTimePeriod getParent()
 	{
 		return this.parent;
@@ -432,8 +431,8 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 	/**
 	 * 
 	 */
-    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "parent")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OneToMany(mappedBy = "parent")
+    @Cascade( {CascadeType.ALL} )
 	public Set<GeologicTimePeriod> getChildren()
 	{
 		return this.children;
@@ -447,8 +446,8 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
     /**
      * @return the bioStratsPaleoContext
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "bioStrat")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OneToMany(mappedBy = "bioStrat")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<PaleoContext> getBioStratsPaleoContext()
     {
         return bioStratsPaleoContext;
@@ -468,8 +467,8 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
     /**
      * @return the chronosStratsPaleoContext
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "chronosStrat")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OneToMany(mappedBy = "chronosStrat")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<PaleoContext> getChronosStratsPaleoContext()
     {
         return chronosStratsPaleoContext;

@@ -108,9 +108,6 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 	protected BaseTreeTask(final String name, final String title)
 	{
 		super(name,title);
-        toolBarItems = new Vector<ToolBarItemDesc>();
-        menuItems = new Vector<MenuItemDesc>();
-        
         CommandDispatcher.register(DataEntryTask.DATA_ENTRY, this);
 	}
 
@@ -120,19 +117,20 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 	@Override
 	public synchronized void initialize()
 	{
-		if(!isInitialized)
-		{
-			isInitialized = true;
-            TreeDataService<T,D,I> dataService = TreeDataServiceFactory.createService();
-			currentDef = getCurrentTreeDef();
-			createMenus();
+        if (!isInitialized)
+        {
+            isInitialized = true;
+
+            currentDef = getCurrentTreeDef();
             navBoxes = Collections.emptyList();
-            
+            toolBarItems = Collections.emptyList();
+            menuItems = createMenus();
+
             if (commandTypeString != null)
             {
                 CommandDispatcher.register(commandTypeString,this);
             }
-		}
+        }
 	}
     
     protected abstract D getCurrentTreeDef();
@@ -142,12 +140,13 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
      * 
 	 * @param defs a list of tree definitions handled by this task
 	 */
-	protected void createMenus()
+	protected List<MenuItemDesc> createMenus()
 	{
+        Vector<MenuItemDesc> menus = new Vector<MenuItemDesc>();
         menuItem = new JMenuItem(menuItemText);
         menuItem.setMnemonic(menuItemMnemonic.charAt(0));
         MenuItemDesc miDesc = new MenuItemDesc(menuItem, "AdvMenu");
-        menuItems.add(miDesc);
+        menus.add(miDesc);
         
         menuItem.addActionListener(new ActionListener()
         {
@@ -165,6 +164,8 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                 }
             }
         });
+        
+        return menus;
 	}
     
 	/**
