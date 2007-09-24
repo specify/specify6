@@ -30,7 +30,7 @@
  INNER JOIN agent ON determination.DeterminerID = agent.AgentID
  INNER JOIN taxon ON determination.TaxonID = taxon.TaxonID
  INNER JOIN determinationstatus ON determination.DeterminationStatusID = determinationstatus.DeterminationStatusID
- WHERE  determinationstatus.IsCurrent = true and %s]]>
+ WHERE  determinationstatus.IsCurrent = 1 and %s]]>
                 </sql>
                 <captions>
                     <caption col="CollectionObjectCatalogID" text="ID" visible="false"/>
@@ -134,7 +134,7 @@
  INNER JOIN determination ON collectionobject.CollectionObjectID = determination.CollectionObjectID
  INNER JOIN taxon ON determination.TaxonID = taxon.TaxonID
  INNER JOIN determinationstatus ON determination.DeterminationStatusID = determinationstatus.DeterminationStatusID
- WHERE determinationstatus.IsCurrent = true AND %s]]>
+ WHERE determinationstatus.IsCurrent = 1 AND %s]]>
                 </sql>
                 <captions>
                     <caption col="taxon.TaxonID"         text="taxon.TaxonID" visible="false"/>
@@ -177,7 +177,7 @@
  INNER JOIN collector ON collectingevent.CollectingEventID = collector.CollectingEventID
  INNER JOIN agent ON collector.AgentID = agent.AgentID
  INNER JOIN taxon ON determination.TaxonID = taxon.TaxonID
- INNER JOIN determinationstatus ON determination.DeterminationStatusID = determinationstatus.DeterminationStatusID where determinationstatus.IsCurrent = true AND %s ORDER BY collectionobject.CollectionObjectID, collector.OrderNumber]]>
+ INNER JOIN determinationstatus ON determination.DeterminationStatusID = determinationstatus.DeterminationStatusID where determinationstatus.IsCurrent = 1 AND %s ORDER BY collectionobject.CollectionObjectID, collector.OrderNumber]]>
                 </sql>
                 <captions>
                     <caption col="collectionobject.CollectionObjectID" text="collectionobject.CollectionObjectID" visible="false"/>

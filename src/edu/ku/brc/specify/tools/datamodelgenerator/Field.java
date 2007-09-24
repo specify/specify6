@@ -25,7 +25,8 @@ public class Field implements Comparable<Field>
     protected boolean isUpdatable;
     protected boolean isUnique;
     
-    protected List<Desc> descs = new Vector<Desc>();
+    protected Desc    desc;
+    protected Name    nameDesc;
     
     /**
      * @param name the name of the field	
@@ -198,19 +199,36 @@ public class Field implements Comparable<Field>
     }
 
     /**
-     * @return the descs
+     * @return the desc
      */
-    public List<Desc> getDescs()
+    public Desc getDesc()
     {
-        return descs;
+        return desc;
     }
 
     /**
-     * @param descs the descs to set
+     * @param desc the desc to set
      */
-    public void setDescs(List<Desc> descs)
+    public void setDesc(Desc desc)
     {
-        this.descs = descs;
+        this.desc = desc;
     }
+
+    /**
+     * @return the nameDesc
+     */
+    public Name getNameDesc()
+    {
+        return nameDesc;
+    }
+
+    /**
+     * @param nameDesc the nameDesc to set
+     */
+    public void setNameDesc(Name nameDesc)
+    {
+        this.nameDesc = nameDesc;
+    }
+
     
 }

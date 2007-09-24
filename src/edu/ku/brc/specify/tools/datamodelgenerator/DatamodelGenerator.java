@@ -43,7 +43,6 @@ import org.dom4j.io.SAXReader;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.dbsupport.AttributeIFace;
-import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.tools.fielddesc.FieldDescApp;
@@ -70,9 +69,14 @@ public class DatamodelGenerator
     
     protected Vector<edu.ku.brc.specify.tools.fielddesc.Table> descTableList = new Vector<edu.ku.brc.specify.tools.fielddesc.Table>();
     
-    protected File    srcCodeDir = null;
-    protected String  packageName = null;
-    protected int     missing = 0;
+    protected File         srcCodeDir   = null;
+    protected String       packageName  = null;
+    protected int          missing      = 0;
+    
+    protected FieldDescApp fda          = null;
+    
+    protected Hashtable<String, String> abbrvHash = new Hashtable<String, String>();
+    protected boolean      includeDesc = false;
     
 
     /**
@@ -85,45 +89,11 @@ public class DatamodelGenerator
     
     protected void readDescriptions()
     {
-        descTableList = FieldDescApp.readTableList();
-    }
-    
-    /**
-     * @param tableName
-     * @param fieldName
-     * @return
-     */
-    protected List<Desc> getDescList(final String tableName, final String fieldName)
-    {
-        edu.ku.brc.specify.tools.fielddesc.Table table = null;
-        for (edu.ku.brc.specify.tools.fielddesc.Table tbl : descTableList)
+        if (includeDesc)
         {
-            if (tbl.getName().equals(tableName))
-            {
-                table = tbl;
-                break;
-            }
+            fda = new FieldDescApp();
+            descTableList = fda.getTables();
         }
-        
-        if (table != null)
-        {
-            for (edu.ku.brc.specify.tools.fielddesc.Field f : table.getFields())
-            {
-                if (f.getName().equals(fieldName))
-                {
-                    List<Desc> descList = new Vector<Desc>();
-                    for (edu.ku.brc.specify.tools.fielddesc.Desc d : f.getDescs())
-                    {
-                        descList.add(new Desc(d.getText(), d.getCountry(), d.getLang(), d.getVariant()));
-                    }
-                    return descList;
-                }
-            }
-        } else
-        {
-            log.warn("Couldn't find table ["+tableName+"]");
-        }
-        return null;
     }
     
     /**
@@ -132,32 +102,77 @@ public class DatamodelGenerator
      */
     protected Desc getTableDesc(final String tableName)
     {
-        edu.ku.brc.specify.tools.fielddesc.Table table = null;
-        for (edu.ku.brc.specify.tools.fielddesc.Table tbl : descTableList)
+        edu.ku.brc.specify.tools.fielddesc.Desc d = fda.getTableDesc(tableName);
+        if (d != null)
         {
-            if (tbl.getName().equals(tableName))
-            {
-                table = tbl;
-                break;
-            }
-        }
-        
-        if (table != null)
-        {
-            edu.ku.brc.specify.tools.fielddesc.Desc d = table.getDesc();
-            if (d != null)
-            {
-                Desc desc = new Desc(d.getText(), d.getCountry(), d.getLang(), d.getVariant());
-                return desc;
-            }
-            
+            Desc desc = new Desc(d.getText(), d.getCountry(), d.getLang(), d.getVariant());
+            return desc;
         } else
         {
-            log.warn("Couldn't find table ["+tableName+"]");
+            log.error("No Desc for Table["+tableName+"]");
         }
+            
         return null;
     }
     
+    /**
+     * @param tableName
+     * @return
+     */
+    protected Name getTableNameDesc(final String tableName)
+    {
+        edu.ku.brc.specify.tools.fielddesc.Name d = fda.getTableNameDesc(tableName);
+        if (d != null)
+        {
+            Name nm = new Name(d.getText(), d.getCountry(), d.getLang(), d.getVariant());
+            return nm;
+        } else
+        {
+            log.error("No Desc for Table["+tableName+"]");
+        }
+            
+        return null;
+    }
+    
+    
+    /**
+     * @param tableName
+     * @return
+     */
+    protected Desc getFieldDesc(final String tableName, final String fieldName)
+    {
+        edu.ku.brc.specify.tools.fielddesc.Desc d = fda.getFieldDesc(tableName, fieldName);
+        if (d != null)
+        {
+            Desc desc = new Desc(d.getText(), d.getCountry(), d.getLang(), d.getVariant());
+            return desc;
+        } else
+        {
+            log.error("No Desc for Table["+tableName+"] Field["+fieldName+"]");
+        }
+            
+        return null;
+    }
+    
+    /**
+     * @param tableName
+     * @return
+     */
+    protected Name getFieldNameDesc(final String tableName, final String fieldName)
+    {
+        edu.ku.brc.specify.tools.fielddesc.Name d = fda.getFieldNameDesc(tableName, fieldName);
+        if (d != null)
+        {
+            Name nm = new Name(d.getText(), d.getCountry(), d.getLang(), d.getVariant());
+            return nm;
+        } else
+        {
+            log.error("No Desc for Table["+tableName+"] Field["+fieldName+"]");
+        }
+            
+        return null;
+    }
+
     /**
      * Looks for a child node "display" and creates the appropriate object or returns null.
      * @param element the "table".
@@ -179,6 +194,53 @@ public class DatamodelGenerator
             }
         }
         return null;
+    }
+    
+    /**
+     * Creates a 'n' number letter abbreviation for a table.
+     * @param tableName
+     * @return
+     */
+    protected String makeTableAbbrv(final String tableName)
+    {
+        String firstChar = tableName.substring(0,1);
+        
+        boolean appendAlpha = false;
+        
+        int inx    = 1;
+        int ltrInx = 1;
+        String abbrv = "";
+        do
+        {
+            if (appendAlpha)
+            {
+                abbrv = firstChar + (char)ltrInx;
+                ltrInx++;
+                
+            } else
+            {
+                abbrv = firstChar + tableName.substring(inx, inx+1);
+                inx++;
+                if (inx >= tableName.length())
+                {
+                    firstChar += tableName.substring(ltrInx, ltrInx+1);
+                    ltrInx++;
+                    if (ltrInx >= tableName.length())
+                    {
+                        firstChar = tableName.substring(0,1);
+                        appendAlpha = true;
+                        ltrInx = (int)'a';
+                    }
+                    else
+                    {
+                        inx = ltrInx;
+                    }
+                }
+            }
+        } while (abbrvHash.get(abbrv) != null);
+        
+        abbrvHash.put(abbrv, abbrv);
+        return abbrv;
     }
 
     /**
@@ -209,7 +271,8 @@ public class DatamodelGenerator
                          tableMetaData.getId(), 
                          tableMetaData.getDisplay(), 
                          tableMetaData.isForQuery(), 
-                         tableMetaData.getBusinessRule());
+                         tableMetaData.getBusinessRule(),
+                         makeTableAbbrv(tableName));
 
     }
 
@@ -608,16 +671,20 @@ public class DatamodelGenerator
                 org.hibernate.annotations.Table hiberTableAnno = (org.hibernate.annotations.Table)classObj.getAnnotation(org.hibernate.annotations.Table.class);
                 if (hiberTableAnno != null)
                 {
-                    System.out.println("Table Indexes: ");
+                    /*System.out.println("Table Indexes: ");
                     for (Index index : hiberTableAnno.indexes())
                     {
                         System.out.println("  "+index.name() + "  "+ index.columnNames());
                         indexes.add(new TableIndex(index.name(), index.columnNames()));
-                    }
+                    }*/
                 }
                 
                 table = createTable(packageName + "." + className, tableName);
-                table.setDesc(getTableDesc(tableName));
+                if (includeDesc)
+                {
+                    table.setDesc(getTableDesc(tableName));
+                    table.setNameDesc(getTableNameDesc(tableName));
+                }
                 table.setIndexes(indexes);
                 tableList.add(table);
             }
@@ -676,13 +743,10 @@ public class DatamodelGenerator
                         } else
                         {
                             Field field = createField(method, (javax.persistence.Column)method.getAnnotation(javax.persistence.Column.class), isLob);
-                            List<Desc> descList = getDescList(tableName, field.getName());
-                            if (descList != null)
+                            if (includeDesc)
                             {
-                                field.setDescs(descList);
-                            } else
-                            {
-                                log.warn("***** No Descriptions for field ["+tableName+"]["+field.getName()+"]");
+                                field.setDesc(getFieldDesc(tableName, field.getName()));
+                                field.setNameDesc(getFieldNameDesc(tableName, field.getName()));
                             }
                             table.addField(field);
                         }

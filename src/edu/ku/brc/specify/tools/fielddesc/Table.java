@@ -10,6 +10,7 @@
 package edu.ku.brc.specify.tools.fielddesc;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Vector;
 
 /**
@@ -20,12 +21,14 @@ import java.util.Vector;
  * Sep 4, 2007
  *
  */
-public class Table implements Comparable<Table>
+public class Table implements LocalizableNameDescIFace, Comparable<Table>, Cloneable
 {
     protected String      name;
-    protected Desc        desc;
-    protected List<Field> fields = new Vector<Field>();
+    protected List<Name>  names = new Vector<Name>();
+    protected List<Desc>  descs = new Vector<Desc>();
     
+    protected List<Field> fields = new Vector<Field>();
+
     public Table(final String name)
     {
         this.name = name;
@@ -69,19 +72,35 @@ public class Table implements Comparable<Table>
     }
 
     /**
-     * @return the desc
+     * @return the descs
      */
-    public Desc getDesc()
+    public List<Desc> getDescs()
     {
-        return desc;
+        return descs;
     }
 
     /**
-     * @param desc the desc to set
+     * @param descs the descs to set
      */
-    public void setDesc(Desc desc)
+    public void setDescs(List<Desc> descs)
     {
-        this.desc = desc;
+        this.descs = descs;
+    }
+
+    /**
+     * @return the names
+     */
+    public List<Name> getNames()
+    {
+        return names;
+    }
+
+    /**
+     * @param names the names to set
+     */
+    public void setNames(List<Name> names)
+    {
+        this.names = names;
     }
 
     /* (non-Javadoc)
@@ -92,5 +111,93 @@ public class Table implements Comparable<Table>
         return name.compareTo(o.name);
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableNameDescIFace#setLocale(java.util.Locale)
+     */
+    public void setLocale(Locale locale)
+    {
+        for (Name nm : names)
+        {
+            nm.setLang(locale.getLanguage());
+            nm.setCountry(locale.getCountry());
+            nm.setVariant(locale.getVariant());
+        }
+
+        for (Desc d : descs)
+        {
+            d.setLang(locale.getLanguage());
+            d.setCountry(locale.getCountry());
+            d.setVariant(locale.getVariant());
+        }
+        
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableNameDescIFace#setLocale(java.util.Locale)
+     */
+    public void copyLocale(final Locale srcLocale, final Locale dstLocale)
+    {
+        Name srcName = null;
+        for (Name nm : names)
+        {
+            if (nm.isLocale(srcLocale))
+            {
+                srcName = nm;
+                break;
+            }
+        }
+        
+        if (srcName != null)
+        {
+            Name name = new Name(srcName.getText(), dstLocale);
+            names.add(name);
+        }
+
+        Desc srcDesc = null;
+        for (Desc d : descs)
+        {
+            if (d.isLocale(srcLocale))
+            {
+                srcDesc = d;
+                break;
+            }
+        }
+        
+        if (srcDesc != null)
+        {
+            Desc desc = new Desc(srcDesc.getText(), dstLocale);
+            descs.add(desc);
+        }       
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        Table table = (Table)super.clone();
+        table.name = name;
+        
+        table.fields = new Vector<Field>();
+        table.names  = new Vector<Name>();
+        table.descs  = new Vector<Desc>();
+        
+        for (Field f : fields)
+        {
+            table.fields.add((Field)f.clone());
+        }
+
+        for (Name nm : names)
+        {
+            table.names.add((Name)nm.clone());
+        }
+
+        for (Desc d : descs)
+        {
+            table.descs.add((Desc)d.clone());
+        }
+        return table;
+    }
     
 }

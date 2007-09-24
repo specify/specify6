@@ -22,6 +22,8 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -44,6 +46,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.ServiceInfo;
+import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
@@ -117,6 +120,16 @@ public class ESResultsTablePanel extends JPanel implements Comparable<ESResultsT
         topTitleBar = new GradiantLabel(results.getTitle(), SwingConstants.LEFT);
         topTitleBar.setForeground(bannerColor);
         topTitleBar.setTextColor(Color.WHITE);
+        topTitleBar.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e)
+            {
+                if (e.getClickCount() == 2)
+                {
+                    expandBtn.doClick();
+                }
+            }
+        });
 
         expandBtn = new TriangleButton();
         expandBtn.setToolTipText(getResourceString("CollapseTBL"));
@@ -161,7 +174,6 @@ public class ESResultsTablePanel extends JPanel implements Comparable<ESResultsT
             btn.addActionListener(new ESTableAction(serviceInfo.getCommandAction(), table));
 
             col += 2;
-
         }
 
         CloseButton closeBtn = new CloseButton();

@@ -9,7 +9,6 @@
  */
 package edu.ku.brc.specify.tools.fielddesc;
 
-import java.util.List;
 import java.util.Vector;
 
 /**
@@ -20,47 +19,15 @@ import java.util.Vector;
  * Sep 4, 2007
  *
  */
-public class Field
+public class Field extends Table implements Cloneable
 {
-    protected String  name;
     protected String  type;
-    /*protected String  column;
-    protected int  length;
-    protected String  indexName = null;
-    protected boolean isRequired;
-    protected boolean isUpdatable;
-    protected boolean isUnique;*/
-    
-    protected List<Desc> descs = new Vector<Desc>();
-    
-    /*public Field(String name, String type, String column, int length, String indexName,
-                 boolean isRequired, boolean isUpdatable, boolean isUnique)
-     {
-         super();
-         this.name = name;
-         this.type = type;
-         this.column = column;
-         this.length = length;
-         this.indexName = indexName;
-         this.isRequired = isRequired;
-         this.isUpdatable = isUpdatable;
-         this.isUnique = isUnique;
-     }*/
 
     public Field(String name, String type)
      {
-         super();
-         this.name = name;
+         super(name);
          this.type = type;
      }
-
-    /**
-     * @return the name
-     */
-    public String getName()
-    {
-        return name;
-    }
 
     /**
      * @return the type
@@ -71,22 +38,6 @@ public class Field
     }
 
     /**
-     * @return the descs
-     */
-    public List<Desc> getDescs()
-    {
-        return descs;
-    }
-
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name)
-    {
-        this.name = name;
-    }
-
-    /**
      * @param type the type to set
      */
     public void setType(String type)
@@ -94,17 +45,28 @@ public class Field
         this.type = type;
     }
 
-    /**
-     * @param descs the descs to set
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
      */
-    public void setDescs(List<Desc> descs)
+    @Override
+    public Object clone() throws CloneNotSupportedException
     {
-        this.descs = descs;
+        Field field = (Field)super.clone();
+        field.name = name;
+        field.type = type;
+        
+        field.names = new Vector<Name>();
+        field.descs = new Vector<Desc>();
+        
+        for (Name nm : names)
+        {
+            field.names.add((Name)nm.clone());
+        }
+
+        for (Desc d : descs)
+        {
+            field.descs.add((Desc)d.clone());
+        }
+        return field;
     }
-    
-    public String toString()
-    {
-        return name;
-    }
-    
 }

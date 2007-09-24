@@ -21,6 +21,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
@@ -51,6 +52,8 @@ import javax.swing.event.ListSelectionListener;
 
 import org.apache.commons.betwixt.XMLIntrospector;
 import org.apache.commons.betwixt.io.BeanWriter;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
@@ -78,7 +81,7 @@ import edu.ku.brc.ui.UIHelper;
  * Sep 4, 2007
  *
  */
-public class FieldDescApp extends LocalizableBaseApp
+public class LocalizerApp extends LocalizableBaseApp
 {
     private static final Logger log = Logger.getLogger(FieldDescApp.class);
  
@@ -111,11 +114,14 @@ public class FieldDescApp extends LocalizableBaseApp
     protected JButton          tblSpellChkBtn = null;
     protected JButton          fldSpellChkBtn = null;
     
+    protected Hashtable<String, String>         resHash     = new Hashtable<String, String>();
+    protected Hashtable<String, PackageTracker> packageHash = new Hashtable<String, PackageTracker>();
+    protected Hashtable<String, Boolean>        nameHash    = new Hashtable<String, Boolean>();
     
     /**
      * 
      */
-    public FieldDescApp()
+    public LocalizerApp()
     {
         tables = readTableList();
         
@@ -128,9 +134,6 @@ public class FieldDescApp extends LocalizableBaseApp
         setTitle(appName + " " + appVersion);// + "  -  "+ appBuildVersion);
     }
     
-    /**
-     * 
-     */
     public void createDisplay()
     {
         init();
@@ -241,10 +244,6 @@ public class FieldDescApp extends LocalizableBaseApp
                     Table table = new Table(XMLHelper.getAttr(tbl, "name", null));
                     
                     DBTableIdMgr.TableInfo ti = DBTableIdMgr.getInstance().getInfoByTableName(table.getName());
-                    if (ti == null)
-                    {
-                        throw new RuntimeException("Table is null for ["+table.getName()+"]");
-                    }
                     tableHash.put(ti.getTableName(), table);
                     
                     if (ti != null)
@@ -534,7 +533,6 @@ public class FieldDescApp extends LocalizableBaseApp
                         if (localeToCopy != null)
                         {
                             copy(localeToCopy, currLocale);
-                            setHasChanged(true);
                         }
                     }
                 }
@@ -1062,11 +1060,355 @@ public class FieldDescApp extends LocalizableBaseApp
         }
     }
     
+    
+    protected String findLineWith(final List<String> lines, final String key)
+    {
+        for (String line : lines)
+        {
+            if (line.indexOf(key) > -1)
+            {
+                return line;
+            }
+        }
+        return null;
+    }
+    
+    protected boolean isAllCaps(final String key)
+    {
+        for (int i=0;i<key.length();i++)
+        {
+            char c = key.charAt(i);
+            if (Character.isLowerCase(c))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    protected void extractQuotedValues(final String line, Vector<String> keyNamesList)
+    {
+        String[] toks = StringUtils.split(line, "\"");
+        int cnt = 1;
+        for (String t : toks)
+        {
+            //System.err.println("T["+t+"]");
+            if (cnt % 2 == 0)
+            {
+                keyNamesList.add(t);
+            }
+            cnt++;
+        }
+    }
+    
+    protected int parseForNames(final String line, 
+                                final int sinx, 
+                                final char termChar,
+                                final Vector<String> keyNamesList,
+                                final List<String> lines,
+                                final int lineNum)
+    {
+        int einx = line.indexOf(termChar, sinx);
+        if (einx == -1)
+        {
+            log.error("Couldn't closing '"+termChar+"' ["+line+"]");
+            return -1;
+            
+        } else if (einx == sinx+1)
+        {
+            return -1;
+        }
+        
+        if (line.charAt(sinx) == '\"') // Has Quotes
+        {
+            if (line.charAt(einx-1) == '\"')
+            {
+                einx--;
+            } else
+            {
+                System.err.println("No Quote at end! ["+line+"] "+lineNum);
+            }
+            keyNamesList.add(line.substring(sinx+1, einx));
+            
+        } else
+        {
+            String key = line.substring(sinx, einx);
+            int inx = key.indexOf('[');
+            if (inx > -1) // Is an array
+            {
+                String srcLine = findLineWith(lines, key);
+                if (srcLine != null)
+                {
+                    Vector<String> keys = new Vector<String>();
+                    extractQuotedValues(key, keys);
+                    if (keys.size() > 0)
+                    {
+                        keyNamesList.addAll(keys);
+                    } else
+                    {
+                        System.err.println("1 - Source line for Key["+key+"]  src["+srcLine+"]");
+                    }
+                    //for (String nm : keyNamesList)
+                    //{
+                    //    System.err.println("Fnd["+nm+"]");
+                    //}
+                } else
+                {
+                    System.err.println("Couldn't find source line for ["+key+"] "+lineNum);
+                }
+            } else
+            {
+                inx = key.indexOf('\"');
+                if (inx > -1) // Has one or more quote's
+                {
+                    Vector<String> keys = new Vector<String>();
+                    extractQuotedValues(key, keys);
+                    if (keys.size() > 0)
+                    {
+                        keyNamesList.addAll(keys);
+                    } else
+                    {
+                        System.err.println("2 - Source line for Key["+key+"]  src["+key+"]");
+                    }
+                } else
+                {
+                    if (isAllCaps(key))
+                    {
+                        String srcLine = findLineWith(lines, key);
+                        if (srcLine != null)
+                        {
+                            Vector<String> keys = new Vector<String>();
+                            extractQuotedValues(srcLine, keys);
+                            if (keys.size() > 0)
+                            {
+                                keyNamesList.addAll(keys);
+                            } else
+                            {
+                                System.err.println("3 - Source line for Key["+key+"]  src["+srcLine+"]");
+                            }
+                        } else
+                        {
+                            System.err.println("Couldn't find source line for ["+key+"] "+lineNum);
+                        }
+                    } else
+                    {
+                        System.err.println("Not Sure what to do with ["+key+"] ["+line+"]"+lineNum);    
+                    }
+                }
+            }
+            
+            //System.out.println(key);
+            //keyNamesList.add(key);
+        }
+        return einx;
+    }
+    
+    /**
+     * 
+     */
+    protected boolean grep(final String term)
+    {
+        File dir = new File(".");
+        try
+        {
+            Collection<?> files = FileUtils.listFiles(dir, new String[] {"java", "xml"  }, true);
+            for (Object obj : files)
+            {
+                String contents = FileUtils.readFileToString((File)obj);
+                if (contents.indexOf(term) > -1)
+                {
+                    return true;
+                }
+            }
+        } catch (IOException ex)
+        {
+            ex.printStackTrace();
+        }
+        return false;
+    }
+    
+    /**
+     * 
+     */
+    @SuppressWarnings("unchecked")
+    protected void collectResources()
+    {
+        String[] reskeys = {"getResourceString(", "getLocalizedMessage("};
+        char[]   termChar = {')', ','};
+        
+        Vector<String> keyNamesList = new Vector<String>();
+        
+        String[] filesToSkip = {"PrefsToolbar",};
+        Hashtable<String, Boolean> skipNameHash = new Hashtable<String, Boolean>();
+        for (String nm : filesToSkip)
+        {
+            skipNameHash.put(nm, true);
+        }
+        
+        File dir = new File("src");
+        try
+        {
+            Collection<?> files = FileUtils.listFiles(dir, new String[] {"java"}, true);
+            for (Object obj : files)
+            {
+                File file = (File)obj;
+                
+                //System.out.println(file.getAbsolutePath());
+                if (file.getAbsolutePath().indexOf("/tools/") > -1)
+                {
+                    continue;
+                }
+                
+                if (skipNameHash.get(FilenameUtils.getBaseName(file.getName())) != null)
+                {
+                    continue;
+                }
+
+                boolean firstTime = true;
+                
+                String         packName = getPackageName(file);
+                PackageTracker pt       = packageHash.get(packName);
+                if (pt == null)
+                {
+                    pt = new PackageTracker(packName);
+                    packageHash.put(packName, pt);
+                }
+                
+                FileTracker ft = pt.getFileHash().get(file);
+                if (ft == null)
+                {
+                    ft = new FileTracker(file);
+                    pt.getFileHash().put(file, ft);
+                }
+                
+                int lineNum = 1;
+                List<?> lines = FileUtils.readLines(file);
+                for (String line : (List<String>)lines)
+                {
+                    //System.out.println(lineNum);
+                    int  inx     = -1;
+                    int  len     = 0;
+                    char endChar = ' ';
+                    for (int i=0;i<reskeys.length;i++)
+                    {
+                        inx = line.indexOf(reskeys[i]);
+                        if (inx > -1)
+                        {
+                            len     = reskeys[i].length();
+                            endChar = termChar[i];
+                            break;
+                        }
+                    }
+                    
+                    while (inx > -1)
+                    {
+                        keyNamesList.clear();
+                        int einx = parseForNames(line, inx + len, endChar, keyNamesList, (List<String>)lines, lineNum);
+                        if (einx == -1)
+                        {
+                            break;
+                        }
+                        
+                        if (keyNamesList.size() > 0 && firstTime)
+                        {
+                            System.out.println(file.getAbsolutePath());
+                            firstTime = false;
+                        }
+                        for (String nm : keyNamesList)
+                        {
+                            if (nameHash.get(nm) == null)
+                            {
+                                nameHash.put(nm, true);
+                                ft.getMapping().put(nm, nm);
+                            } else
+                            {
+                                //log.warn("["+nm+"] name was found.");
+                            }
+                        }
+                        
+                        for (int i=0;i<reskeys.length;i++)
+                        {
+                            inx = line.indexOf(reskeys[i], einx);
+                            if (inx > -1)
+                            {
+                                len     = reskeys[i].length();
+                                endChar = termChar[i];
+                                break;
+                            }
+                        }
+                        if (inx > -1)
+                        {
+                            int x = 0;
+                        }
+                    } // while
+                    lineNum++;
+                }
+            }
+            
+            File resFile = new File("src/resources_"+currLocale.getLanguage()+".properties");
+            List<?> lines = FileUtils.readLines(resFile);
+            for (String line : (List<String>)lines)
+            {
+                if (!line.startsWith("#"))
+                {
+                    int inx = line.indexOf("=");
+                    if (inx > -1)
+                    {
+                        String[] toks = StringUtils.split(line, "=");
+                        resHash.put(toks[0], toks[1]);
+                    }
+                }
+            }
+            
+            System.out.println("nameHash ("+nameHash.size()+") resHash ("+resHash.size()+")");
+            System.out.println("In Resource not in Source Code :");
+            int cnt = 0;
+            for (String key : resHash.keySet())
+            {
+                if (nameHash.get(key) == null)
+                {
+                    if (!grep(key))
+                    {
+                        System.out.println(key);
+                        cnt++;
+                    }
+                }
+            }
+            System.out.println("Missing: "+cnt);
+            System.out.println("In Source not in Resource:");
+            for (String key : nameHash.keySet())
+            {
+                if (resHash.get(key) == null)
+                {
+                    System.out.println(key);
+                }
+            }
+            
+        } catch (IOException ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+    
+    /**
+     * 
+     */
+    protected String getPackageName(final File f)
+    {
+        String name = f.getAbsolutePath();
+        int    sinx = name.indexOf("src/") + 4;
+        int    einx = StringUtils.lastIndexOf(name, "/");
+        name = name.substring(sinx, einx);
+        name = StringUtils.replaceChars(name, "/", ".");
+        return name;
+    }
+    
     /**
      * 
      */
     protected void createResourceFiles()
     {
+        
         Hashtable<String, String> localeHash = new Hashtable<String, String>();
         for (Table table : getTables())
         {
@@ -1076,31 +1418,22 @@ public class FieldDescApp extends LocalizableBaseApp
                 checkForLocales(f, localeHash);
             }
         }
-
         
         for (String key : localeHash.keySet())
         {
+            System.out.println(key);
+            
             String[] toks = StringUtils.split(key, '_');
-            
-            String lang    = toks[0];
-            String country = toks.length > 1 && StringUtils.isNotEmpty(toks[1]) ? toks[1] : "";
-            
-            //System.out.println("["+key+"] "+lang+" "+country);
-            
-            File resFile = new File("db_resources" +
-                    (StringUtils.isNotEmpty(lang) ? ("_"+lang)  : "") +
-                    (StringUtils.isNotEmpty(country) ? ("_"+country)  : "") + 
-                    ".properties");
-            
+            File resFile = new File("res_"+toks[0]+"_"+toks[1]+".properties");
             try
             {
                 PrintWriter pw = new PrintWriter(resFile);
                 for (Table table : getTables())
                 {
-                    printLocales(pw, null, table, lang, country);
+                    printLocales(pw, null, table, toks[0], toks[1]);
                     for (Field f : table.getFields())
                     {
-                        printLocales(pw, table, f, lang, country);
+                        printLocales(pw, table, f, toks[0], toks[1]);
                     }
                 }
                 pw.close();
@@ -1109,17 +1442,75 @@ public class FieldDescApp extends LocalizableBaseApp
             {
                 ex.printStackTrace();
             }
+            
         }
-        statusBar.setText("Done writing resource file(s)");
+    }
+    
+    class PackageTracker 
+    {
+        protected String packageName;
+        protected Hashtable<File, FileTracker> fileHash = new Hashtable<File, FileTracker>();
+        /**
+         * @param packageName
+         */
+        public PackageTracker(String packageName)
+        {
+            super();
+            this.packageName = packageName;
+        }
+        /**
+         * @return the packageName
+         */
+        public String getPackageName()
+        {
+            return packageName;
+        }
+        /**
+         * @return the fileHash
+         */
+        public Hashtable<File, FileTracker> getFileHash()
+        {
+            return fileHash;
+        }
+        
+        
+    }
+
+    class FileTracker 
+    {
+        protected File file;
+        protected Hashtable<String, String> mapping = new Hashtable<String, String>();
+        /**
+         * @param file
+         */
+        public FileTracker(File file)
+        {
+            super();
+            this.file = file;
+        }
+        /**
+         * @return the file
+         */
+        public File getFile()
+        {
+            return file;
+        }
+        /**
+         * @return the mapping
+         */
+        public Hashtable<String, String> getMapping()
+        {
+            return mapping;
+        }
     }
 
     public class MacOSAppHandler extends Application
     {
-        protected WeakReference<FieldDescApp> app;
+        protected WeakReference<LocalizerApp> app;
 
-        public MacOSAppHandler(final FieldDescApp app)
+        public MacOSAppHandler(final LocalizerApp app)
         {
-            this.app = new WeakReference<FieldDescApp>(app);
+            this.app = new WeakReference<LocalizerApp>(app);
 
             addApplicationListener(new AppHandler());
 
@@ -1136,13 +1527,11 @@ public class FieldDescApp extends LocalizableBaseApp
 
             public void handleAppPrefsMgr(ApplicationEvent event)
             {
-                //app.get().preferences();
                 event.setHandled(true);
             }
             
             public void handlePreferences(ApplicationEvent event) 
             {
-                //app.get().preferences();
                 event.setHandled(true);
             }
 
@@ -1165,10 +1554,12 @@ public class FieldDescApp extends LocalizableBaseApp
         {
             public void run()
             {
-                FieldDescApp fd = new FieldDescApp();
-                fd.createDisplay();
+                LocalizerApp fd = new LocalizerApp();
                 
-                UIHelper.centerAndShow(fd);
+                fd.collectResources();
+                
+                //fd.createDisplay();
+                //UIHelper.centerAndShow(fd);
             }
         });
 

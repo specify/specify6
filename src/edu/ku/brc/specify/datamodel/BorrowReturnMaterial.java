@@ -53,7 +53,7 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "borrowreturnmaterial")
 @org.hibernate.annotations.Table(appliesTo="borrowreturnmaterial", indexes =
-    {   @Index (name="ReturnedDateIDX", columnNames={"ReturnedDate"})
+    {   @Index (name="BorrowReturnedDateIDX", columnNames={"ReturnedDate"})
     })
 public class BorrowReturnMaterial extends DataModelObjBase implements java.io.Serializable {
 

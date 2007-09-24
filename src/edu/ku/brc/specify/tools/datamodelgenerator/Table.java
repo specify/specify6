@@ -22,11 +22,13 @@ public class Table implements Comparable<Table>
 	private String                   tableId;
     private boolean                  query;
     private String                   businessRule;
+    private String                   abbrv;
 	private List<Field>              fields        = new ArrayList<Field>();
 	private List<Id>                 ids           = new ArrayList<Id>();
 	private List<Relationship>       relationships = new ArrayList<Relationship>();
     private Display                  display;
     private Desc                     desc;
+    private Name                     nameDesc;
     
     // Transient
     private Vector<TableIndex>       indexes = new Vector<TableIndex>();
@@ -44,7 +46,8 @@ public class Table implements Comparable<Table>
                  String tableId, 
                  Display display,
                  boolean query, 
-                 String businessRule)
+                 String businessRule,
+                 String abbrv)
 	{
 		this.name      = name;
 		this.table     = table;
@@ -53,6 +56,7 @@ public class Table implements Comparable<Table>
         this.display   = display;
         this.query     = query;
         this.businessRule = businessRule;
+        this.abbrv     = abbrv;
 	}
 
 	/**
@@ -268,7 +272,38 @@ public class Table implements Comparable<Table>
         }
     }
     
-    
+    /**
+     * @return the abbrv
+     */
+    public String getAbbrv()
+    {
+        return abbrv;
+    }
+
+    /**
+     * @param abbrv the abbrv to set
+     */
+    public void setAbbrv(String abbrv)
+    {
+        this.abbrv = abbrv;
+    }
+
+    /**
+     * @param nameDesc the nameDesc to set
+     */
+    public void setNameDesc(Name nameDesc)
+    {
+        this.nameDesc = nameDesc;
+    }
+
+    /**
+     * @return the nameDesc
+     */
+    public Name getNameDesc()
+    {
+        return nameDesc;
+    }
+
     // Comparable
     public int compareTo(Table obj)
     {

@@ -9,6 +9,9 @@
  */
 package edu.ku.brc.specify.tools.fielddesc;
 
+import java.util.Locale;
+
+
 /**
  * @author rod
  *
@@ -17,7 +20,7 @@ package edu.ku.brc.specify.tools.fielddesc;
  * Sep 4, 2007
  *
  */
-public class Desc
+public class Desc implements Cloneable
 {
     protected String text;
     protected String country;
@@ -27,11 +30,21 @@ public class Desc
     public Desc(String text, String country, String lang, String variant)
     {
         super();
-        this.text = text;
+        this.text    = text;
         this.country = country;
-        this.lang = lang;
+        this.lang    = lang;
         this.variant = variant;
     }
+    
+    public Desc(final String text, final Locale locale)
+    {
+        super();
+        this.text    = text;
+        this.country = locale.getCountry();
+        this.lang    = locale.getLanguage();
+        this.variant = locale.getVariant();
+    }
+    
     /**
      * @return the text
      */
@@ -90,4 +103,26 @@ public class Desc
         this.variant = variant;
     }
     
+    public boolean isLocale(final Locale locale)
+    {
+        //System.out.println(lang.equals(locale.getLanguage()) +" "+
+        //        country.equals(locale.getCountry()) +" "+ 
+        //        (variant == null || variant.equals(locale.getVariant())));
+        return lang.equals(locale.getLanguage()) &&
+               (country == null || country.equals(locale.getCountry())) && 
+               (variant == null || variant.equals(locale.getVariant()));
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        Desc d = (Desc)super.clone();
+        d.country = country;
+        d.lang    = lang;
+        d.text    = text;
+        return d;
+    }
 }

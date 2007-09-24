@@ -511,7 +511,7 @@ public class Scriptlet extends JRDefaultScriptlet
             String isCurrent2 = rowDataSource.getFieldValue("isCurrent2").toString();
 
             // assume 1 if isCurrent has no value
-            if ((isCurrent1.equals("true")))
+            if ((isCurrent1.equals("true")) || ( (isCurrent1.equals("")) && (isCurrent2.equals("")) ))
             {
 
                 Vector<String> labelNames = isCurrent1Labels();

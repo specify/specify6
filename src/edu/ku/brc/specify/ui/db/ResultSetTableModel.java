@@ -314,6 +314,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                             final int                colIndex) throws SQLException
     {
         Object fieldDataObj = resultSet.getObject(colIndex + 1);
+        log.error("fieldName ["+fieldName+"] fieldClass ["+fieldClass.getSimpleName()+"] colIndex [" +  colIndex + "] fieldDataObj [" + fieldDataObj+"]");
         if (fieldDataObj != null)
         {
             if (fieldClass == String.class)
@@ -439,13 +440,13 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                 if (aggCaption != null)
                 {
                     // Here we need to dynamically discover what the column indexes are that we to grab
-                    // in ordert to set them into the created data object
+                    // in order to set them into the created data object
                     for (ERTICaptionInfo.ColInfo colInfo : aggCaption.getColInfoList())
                     {
                         for (int i=0;i<metaData.getColumnCount();i++)
                         {
                             String colName = StringUtils.substringAfterLast(colInfo.getColumnName(), ".");
-                            if (colName.equals(metaData.getColumnName(i+1)))
+                            if (colName.equalsIgnoreCase(metaData.getColumnName(i+1)))
                             {
                                 colInfo.setPosition(i);
                                 break;
@@ -458,9 +459,11 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                     if (StringUtils.isNotEmpty(ordColName))
                     {
                         String colName = StringUtils.substringAfterLast(ordColName, ".");
+                        System.out.println("colName ["+colName+"]");
                         for (int i=0;i<metaData.getColumnCount();i++)
                         {
-                            if (colName.equals(metaData.getColumnName(i+1)))
+                            System.out.println("["+colName+"]["+metaData.getColumnName(i+1)+"]");
+                            if (colName.equalsIgnoreCase(metaData.getColumnName(i+1)))
                             {
                                 aggCaption.setOrderColIndex(i);
                                 break;
@@ -570,7 +573,9 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                                 aggList.add(aggObj);
 
                                 DataObjAggregator aggregator = DataObjFieldFormatMgr.getAggregator(aggCaption.getAggregatorName());
-                                aggSetter.setFieldValue(aggObj, aggregator.getOrderFieldName(), resultSet.getObject(aggCaption.getOrderColIndex() + 1));
+                                System.out.println(" aggCaption.getOrderColIndex() "+ aggCaption.getOrderColIndex());
+                                
+                                //aggSetter.setFieldValue(aggObj, aggregator.getOrderFieldName(), resultSet.getObject(aggCaption.getOrderColIndex() + 1));
                                 
                                 Object dataObj;
                                 if (aggSubObj != null)

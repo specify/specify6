@@ -929,9 +929,9 @@ public class Specify extends JPanel implements DatabaseLoginListener
      */
     public void showApp()
     {
-        // put PPApp in a frame and show it
         JFrame f = getFrame();
-        f.setTitle("Specify 6.0");
+        String title = appName + " " + appVersion + "  - " + appBuildVersion;
+        f.setTitle(title);
         f.getContentPane().add(this, BorderLayout.CENTER);
         f.pack();
 

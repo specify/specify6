@@ -445,7 +445,18 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         }
         log.error("Can't find a search definition for name ["+searchName+"]");
     }
-
+    
+    /**
+     * Executes and displays an HQL Query.
+     * 
+     * @param hqlStr the HQL query string
+     */
+    protected void doHQLQuery(final QueryForIdResultsIFace  results)
+    {
+        ESResultsSubPane expressSearchPane = new ESResultsSubPane("XX", this, true);
+        addSubPaneToMgr(expressSearchPane);
+        expressSearchPane.addSearchResults(results);
+    }
 
     //-------------------------------------------------------
     // Taskable
@@ -598,6 +609,10 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             {
                 checkForIndexer();
                 
+            } else if (cmdAction.isAction("HQL"))
+            {
+                doHQLQuery((QueryForIdResultsIFace)cmdAction.getData());
+                
             } else if (cmdAction.isAction("ExpressSearch"))
             {
                 String searchTerm = cmdAction.getData().toString();
@@ -644,38 +659,45 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         }
         sqlProcessorList.remove(process);
         
-        Object[]                      data              = (Object[])process.getData();
-        SearchTableConfig             searchTableConfig = (SearchTableConfig)data[0];
-        ExpressSearchResultsPaneIFace esrPane           = (ExpressSearchResultsPaneIFace)data[1];
-        String                        searchTerm        = (String)data[2];
-        
-        Hashtable<String, ExpressResultsTableInfo>       idToTableInfoMap     = ExpressSearchConfigCache.getSearchIdToTableInfoHash();
-        Hashtable<String, List<ExpressResultsTableInfo>> joinIdToTableInfoMap = ExpressSearchConfigCache.getJoinIdToTableInfoHash();
-
-        Hashtable<String, QueryForIdResultsSQL> resultsForJoinsMap = new Hashtable<String, QueryForIdResultsSQL>();
-        
-        try
+        Object[] data = (Object[])process.getData();
+        if (data != null)
         {
-            if (resultSet.first())
+            if (data.length == 3)
             {
-                String                  searchIdStr = Integer.toString(searchTableConfig.getTableInfo().getTableId());
-                ExpressResultsTableInfo tblInfo = idToTableInfoMap.get(searchIdStr);
-                if (tblInfo == null)
-                {
-                    throw new RuntimeException("Bad id from search["+searchIdStr+"]");
-                }
-                QueryForIdResultsSQL queryResults = new QueryForIdResultsSQL(searchIdStr, null, tblInfo, searchTableConfig.getDisplayOrder(), searchTerm);
-                do
-                {
-                    collectResults(queryResults, resultSet, null, joinIdToTableInfoMap, resultsForJoinsMap);
-                    
-                } while(resultSet.next());
+                SearchTableConfig             searchTableConfig = (SearchTableConfig)data[0];
+                ExpressSearchResultsPaneIFace esrPane           = (ExpressSearchResultsPaneIFace)data[1];
+                String                        searchTerm        = (String)data[2];
                 
-                displayResults(esrPane, queryResults, resultsForJoinsMap);
+                Hashtable<String, ExpressResultsTableInfo>       idToTableInfoMap     = ExpressSearchConfigCache.getSearchIdToTableInfoHash();
+                Hashtable<String, List<ExpressResultsTableInfo>> joinIdToTableInfoMap = ExpressSearchConfigCache.getJoinIdToTableInfoHash();
+
+                Hashtable<String, QueryForIdResultsSQL> resultsForJoinsMap = new Hashtable<String, QueryForIdResultsSQL>();
+                
+                try
+                {
+                    if (resultSet.first())
+                    {
+                        String                  searchIdStr = Integer.toString(searchTableConfig.getTableInfo().getTableId());
+                        ExpressResultsTableInfo tblInfo = idToTableInfoMap.get(searchIdStr);
+                        if (tblInfo == null)
+                        {
+                            throw new RuntimeException("Bad id from search["+searchIdStr+"]");
+                        }
+                        QueryForIdResultsSQL queryResults = new QueryForIdResultsSQL(searchIdStr, null, tblInfo, searchTableConfig.getDisplayOrder(), searchTerm);
+                        do
+                        {
+                            collectResults(queryResults, resultSet, null, joinIdToTableInfoMap, resultsForJoinsMap);
+                            
+                        } while(resultSet.next());
+                        
+                        displayResults(esrPane, queryResults, resultsForJoinsMap);
+                    }
+                } catch (SQLException ex)
+                {
+                    ex.printStackTrace();
+                }
+
             }
-        } catch (SQLException ex)
-        {
-            ex.printStackTrace();
         }
     }
 

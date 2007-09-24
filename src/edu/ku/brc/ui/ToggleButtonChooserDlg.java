@@ -56,6 +56,22 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog
 
     /**
      * Constructor.
+     * @param parentFrame the parent Frame
+     * @param title dialog title
+     * @param desc description label above list (optional)
+     * @param items the list to be selected from
+     * @throws HeadlessException
+     */
+    public ToggleButtonChooserDlg(final Frame   parentFrame, 
+                                  final String  title, 
+                                  final List<T> listItems,
+                                  final ToggleButtonChooserPanel.Type uiType) throws HeadlessException
+    {
+        this(parentFrame, title, null, listItems, null, OKCANCEL, uiType);
+    }
+
+    /**
+     * Constructor.
      * @param title dialog title
      * @param desc description label above list (optional)
      * @param items the list to be selected from

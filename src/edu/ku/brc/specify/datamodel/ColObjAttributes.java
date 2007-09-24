@@ -21,7 +21,6 @@ import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -37,7 +36,7 @@ import org.hibernate.annotations.CascadeType;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "colobjattributes", uniqueConstraints = { @UniqueConstraint(columnNames = { "ColObjAttributesID" }) })
+@Table(name = "colobjattributes")
 public class ColObjAttributes extends DataModelObjBase
 {
     protected Integer colObjAttributesId;

@@ -6,6 +6,8 @@
  */
 package edu.ku.brc.specify.tools.fielddesc;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
@@ -19,10 +21,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
@@ -31,13 +34,11 @@ import java.util.zip.ZipInputStream;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -51,23 +52,22 @@ import javax.swing.event.ListSelectionListener;
 
 import org.apache.commons.betwixt.XMLIntrospector;
 import org.apache.commons.betwixt.io.BeanWriter;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
-import com.apple.eawt.Application;
-import com.apple.eawt.ApplicationAdapter;
-import com.apple.eawt.ApplicationEvent;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.ButtonBarFactory;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import com.swabunga.spell.engine.SpellDictionary;
 import com.swabunga.spell.engine.SpellDictionaryHashMap;
 import com.swabunga.spell.swing.JTextComponentSpellChecker;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -78,59 +78,54 @@ import edu.ku.brc.ui.UIHelper;
  * Sep 4, 2007
  *
  */
-public class FieldDescApp extends LocalizableBaseApp
+public class LocalizeAppOld extends JFrame
 {
-    private static final Logger log = Logger.getLogger(FieldDescApp.class);
+    private static final Logger log = Logger.getLogger(LocalizeAppOld.class);
  
     protected static String    fileName   = "field_desc.xml";
     
     protected Vector<Table>    tables     = new Vector<Table>();
     protected Hashtable<String, Table> tableHash  = new Hashtable<String, Table>();
+    protected Locale           currLocale = Locale.getDefault();
     
     // Table Fields
     protected JList            tablesList;
     protected JTextArea        tblDescText   = new JTextArea();
     protected JTextField       tblNameText   = new JTextField();
-    protected JLabel           tblDescLbl;
-    protected JLabel           tblNameLbl;
     
     // Field Fields
     protected JList            fieldsList;
     protected JTextArea        fieldDescText = new JTextArea();
     protected JTextField       fieldNameText = new JTextField();
-    protected JLabel           fieldDescLbl;
-    protected JLabel           fieldNameLbl;
     protected DefaultListModel fieldsModel   = new DefaultListModel();
     protected JButton          nxtBtn;
     protected JButton          nxtEmptyBtn;
     
-    protected Table            prevTable     = null;
-    protected Field            prevField     = null;
+    protected Table            prevTable = null;
+    protected Field            prevField = null;
     
-    protected JStatusBar       statusBar     = new JStatusBar(new int[] {5});
-    protected JButton          tblSpellChkBtn = null;
-    protected JButton          fldSpellChkBtn = null;
+    protected boolean          doAutoSpellCheck   = true;
     
+    protected SpellDictionary  dictionary         = null;
+    protected String           phoneticFileName   = "phonet.en";
+    protected String           dictionaryFileName = "english.0.zip";
+    protected String           userFileName       = "user.dict";
+    protected JTextComponentSpellChecker checker  = null;
+    protected SpellDictionary  userDict;
+    
+    protected Hashtable<String, String>         resHash     = new Hashtable<String, String>();
+    protected Hashtable<String, PackageTracker> packageHash = new Hashtable<String, PackageTracker>();
+    protected Hashtable<String, Boolean>        nameHash    = new Hashtable<String, Boolean>();
     
     /**
      * 
      */
-    public FieldDescApp()
+    public LocalizeAppOld()
     {
         tables = readTableList();
-        
-        new MacOSAppHandler(this);
-        
-        appName             = "Schema Localizer";
-        appVersion          = "6.0";
-        appBuildVersion     = "200706111309 (SVN: 2291)";
-        
-        setTitle(appName + " " + appVersion);// + "  -  "+ appBuildVersion);
+
     }
     
-    /**
-     * 
-     */
     public void createDisplay()
     {
         init();
@@ -155,23 +150,6 @@ public class FieldDescApp extends LocalizableBaseApp
     }
     
     /**
-     * @param srcLocale
-     * @param dstLocale
-     */
-    protected void copy(final Locale srcLocale, final Locale dstLocale)
-    {
-        for (Table table : tables)
-        {
-            table.copyLocale(srcLocale, dstLocale);
-            
-            for (Field field : table.getFields())
-            {
-                field.copyLocale(srcLocale, dstLocale);
-            }
-        }
-    }
-    
-    /**
      * 
      */
     public void init()
@@ -179,8 +157,8 @@ public class FieldDescApp extends LocalizableBaseApp
         try
         {
             File           phoneticFile = XMLHelper.getConfigDir(phoneticFileName);
-            File           file         = XMLHelper.getConfigDir(dictionaryFileName);
-            ZipInputStream zip          = null;
+            File           file = XMLHelper.getConfigDir(dictionaryFileName);
+            ZipInputStream zip  = null;
 
             try
             {
@@ -241,10 +219,6 @@ public class FieldDescApp extends LocalizableBaseApp
                     Table table = new Table(XMLHelper.getAttr(tbl, "name", null));
                     
                     DBTableIdMgr.TableInfo ti = DBTableIdMgr.getInstance().getInfoByTableName(table.getName());
-                    if (ti == null)
-                    {
-                        throw new RuntimeException("Table is null for ["+table.getName()+"]");
-                    }
                     tableHash.put(ti.getTableName(), table);
                     
                     if (ti != null)
@@ -445,11 +419,11 @@ public class FieldDescApp extends LocalizableBaseApp
             {
                 Element de = (Element)dobj;
                 
-                String country = XMLHelper.getAttr(de, "country", "");
+                String country = XMLHelper.getAttr(de, "country", null);
                 Desc desc = new Desc(de.getTextTrim(),
-                                        country,
-                                        XMLHelper.getAttr(de, "lang", ""),
-                                        XMLHelper.getAttr(de, "variant", ""));
+                        country,
+                        XMLHelper.getAttr(de, "lang", null),
+                        XMLHelper.getAttr(de, "variant", ""));
                 lndi.getDescs().add(desc);
             }
         }
@@ -457,14 +431,14 @@ public class FieldDescApp extends LocalizableBaseApp
         list = parent.selectNodes("name");
         if (list != null)
         {
-            for (Object nobj : list)
+            for (Object dobj : list)
             {
-                Element nm = (Element)nobj;
+                Element nm = (Element)dobj;
                 
-                String country = XMLHelper.getAttr(nm, "country", "");
+                String country = XMLHelper.getAttr(nm, "country", null);
                 Name nameDesc = new Name(nm.getTextTrim(),
                         country,
-                        XMLHelper.getAttr(nm, "lang", ""),
+                        XMLHelper.getAttr(nm, "lang", null),
                         XMLHelper.getAttr(nm, "variant", ""));
                 lndi.getNames().add(nameDesc);
             }
@@ -476,23 +450,13 @@ public class FieldDescApp extends LocalizableBaseApp
      */
     protected void buildUI()
     {
+        
         JMenuBar menuBar = new JMenuBar();
         setJMenuBar(menuBar);
         
-        JMenu fileMenu = UIHelper.createMenu(menuBar, "File", "F");
-        saveMenuItem = UIHelper.createMenuItem(fileMenu, "Save", "S", "", false, new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                write();
-            }
-        });
-        //saveMenuItem.setEnabled(false);
-        
         if (!UIHelper.isMacOS())
         {
-            fileMenu.addSeparator();
-            
+            JMenu fileMenu = UIHelper.createMenu(menuBar, "File", "F");
             UIHelper.createMenuItem(fileMenu, "Exit", "x", "", true, new ActionListener()
             {
                 public void actionPerformed(ActionEvent e)
@@ -501,62 +465,16 @@ public class FieldDescApp extends LocalizableBaseApp
                 }
             });
         }
-        JMenu toolMenu = UIHelper.createMenu(menuBar, "Tools", "T");
-        UIHelper.createMenuItem(toolMenu, "Create Resource Files", "C", "", true, new ActionListener()
+        JMenu fileMenu = UIHelper.createMenu(menuBar, "Tools", "T");
+        UIHelper.createMenuItem(fileMenu, "Create Resource Files", "C", "", true, new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
             {
                 createResourceFiles();
             }
         });
-        
-        final JFrame thisFrame = this;
-        menuBar.add(getLocaleMenu(new ActionListener() {
-            public void actionPerformed(ActionEvent e)
-            {
-                int tableInx = tablesList.getSelectedIndex();
-                int fieldInx = fieldsList.getSelectedIndex();
-                
-                tablesList.getSelectionModel().clearSelection();
-                
-                currLocale = getLocaleByName(((JCheckBoxMenuItem)e.getSource()).getText());
-                checkLocaleMenu(currLocale);
-                
-                //System.out.println("New Locale: "+currLocale.getDisplayName());
-                
-                if (!isLocaleInUse(currLocale))
-                {
-                    int rv = JOptionPane.showConfirmDialog(thisFrame,
-                            "Do you wish to copy a Locale?", "Locale is Empty", JOptionPane.YES_NO_OPTION);
-                    if (rv == JOptionPane.YES_OPTION)
-                    {
-                        Locale localeToCopy = chooseNewLocale(getLocalesInUse());
-                        if (localeToCopy != null)
-                        {
-                            copy(localeToCopy, currLocale);
-                            setHasChanged(true);
-                        }
-                    }
-                }
-                
-                if (tableInx != -1)
-                {
-                    tablesList.setSelectedIndex(tableInx);
-                }
-                if (fieldInx != -1)
-                {
-                    fieldsList.setSelectedIndex(fieldInx);
-                }
-                
-                statusBar.setSectionText(0, currLocale.getDisplayName());
-                boolean ok = currLocale.getLanguage().equals("en");
-                tblSpellChkBtn.setEnabled(ok);
-                fldSpellChkBtn.setEnabled(ok);
-            }
-        }));
-        
-        checkLocaleMenu(currLocale);
  
+        
         tablesList = new JList(tables);
         fieldsList = new JList(fieldsModel);
         
@@ -572,32 +490,19 @@ public class FieldDescApp extends LocalizableBaseApp
                 if (!e.getValueIsAdjusting())
                 {
                     fillFieldList();
+                    
                     getAllDataFromUI();
                     
                     Table tbl  = (Table)tablesList.getSelectedValue();
-                    if (tbl != null)
-                    {
-                        tblDescText.setText(getDescStrForCurrLocale(tbl));
-                        tblNameText.setText(getNameDescStrForCurrLocale(tbl));
-    
-                        if (doAutoSpellCheck)
-                        {
-                            checker.spellCheck(tblNameText);
-                            checker.spellCheck(tblDescText);
-                        }
-                    } else
-                    {
-                        tblDescText.setText("");
-                        tblNameText.setText("");
-                        fieldsList.setSelectedIndex(-1);
-                    }
-                    
-                    boolean ok = tbl != null;
-                    tblDescText.setEnabled(ok);
-                    tblNameText.setEnabled(ok);
-                    tblNameLbl.setEnabled(ok);
-                    tblDescLbl.setEnabled(ok);
 
+                    tblDescText.setText(getDescStrForCurrLocale(tbl));
+                    tblNameText.setText(getNameDescStrForCurrLocale(tbl));
+
+                    if (doAutoSpellCheck)
+                    {
+                        checker.spellCheck(tblNameText);
+                        checker.spellCheck(tblDescText);
+                    }
                     prevTable = tbl;
                 }
             }
@@ -639,17 +544,17 @@ public class FieldDescApp extends LocalizableBaseApp
         CellConstraints cc = new CellConstraints();
         
         // Table Section Layout
-        tblSpellChkBtn               = new JButton("Spell Check");
-        JPanel      tpbbp            = ButtonBarFactory.buildCenteredBar(new JButton[] {tblSpellChkBtn});
+        JButton     tblSpellCheckBtn = new JButton("Spell Check");
+        JPanel      tpbbp            = ButtonBarFactory.buildCenteredBar(new JButton[] {tblSpellCheckBtn});
         JScrollPane sp               = new JScrollPane(tblDescText, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         tblDescText.setRows(8);
         tblDescText.setLineWrap(true);
         tblDescText.setWrapStyleWord(true);
 
         PanelBuilder topInner   = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p,4px,p,4px,p"));
-        topInner.add(tblDescLbl = new JLabel("Name:", SwingConstants.RIGHT), cc.xy(1, 1));
+        topInner.add(new JLabel("Name:", SwingConstants.RIGHT), cc.xy(1, 1));
         topInner.add(tblNameText,        cc.xy(3, 1));
-        topInner.add(tblNameLbl = new JLabel("Desc:", SwingConstants.RIGHT), cc.xy(1, 3));
+        topInner.add(new JLabel("Desc:", SwingConstants.RIGHT), cc.xy(1, 3));
         topInner.add(sp,                 cc.xy(3, 3));
         topInner.add(tpbbp,              cc.xywh(1, 5, 3, 1));
 
@@ -661,25 +566,28 @@ public class FieldDescApp extends LocalizableBaseApp
         PanelBuilder inner = new PanelBuilder(new FormLayout("max(200px;p),4px,p,2px,f:p:g", 
                                                              "p,2px,p,2px,p,2px,f:p:g"));
         inner.add(fldsp, cc.xywh(1, 1, 1, 7));
-        inner.add(fieldNameLbl = new JLabel("Label:", SwingConstants.RIGHT), cc.xy(3, 1));
+        inner.add(new JLabel("Label:", SwingConstants.RIGHT), cc.xy(3, 1));
         inner.add(fieldNameText, cc.xy(5, 1));
         
-        inner.add(fieldDescLbl = new JLabel("Desc:", SwingConstants.RIGHT), cc.xy(3, 3));
+        inner.add(new JLabel("Desc:", SwingConstants.RIGHT), cc.xy(3, 3));
         sp = new JScrollPane(fieldDescText, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         inner.add(sp,   cc.xy(5, 3));
         fieldDescText.setLineWrap(true);
         fieldDescText.setRows(8);
         fieldDescText.setWrapStyleWord(true);
         
-        nxtBtn         = new JButton("Next");
-        nxtEmptyBtn    = new JButton("Next Empty");
-        fldSpellChkBtn = new JButton("Spell Check");
+        nxtBtn      = new JButton("Next");
+        nxtEmptyBtn = new JButton("Next Empty");
+        JButton spellCheckBtn = new JButton("Spell Check");
         
-        JPanel bbp = ButtonBarFactory.buildCenteredBar(new JButton[] {nxtEmptyBtn, nxtBtn, fldSpellChkBtn});
+        JPanel bbp = ButtonBarFactory.buildCenteredBar(new JButton[] {nxtEmptyBtn, nxtBtn, spellCheckBtn});
         inner.add(bbp,   cc.xywh(3, 5, 3, 1));
-
         
-        //bbp = ButtonBarFactory.buildCenteredBar(new JButton[] {exitBtn, saveBtn});
+        
+        JButton saveBtn = new JButton("Save");
+        JButton exitBtn = new JButton("Exit");
+        
+        bbp = ButtonBarFactory.buildCenteredBar(new JButton[] {exitBtn, saveBtn});
         
         
         PanelBuilder pb = new PanelBuilder(new FormLayout("max(200px;p),4px,f:p:g", "p,4px,t:p,4px,p,4px,f:p:g,4px,p,4px,p"));
@@ -688,7 +596,7 @@ public class FieldDescApp extends LocalizableBaseApp
         pb.add(topInner.getPanel(), cc.xy  (3, 3));
         pb.addSeparator("Fields",   cc.xywh(1, 5, 3, 1));
         pb.add(inner.getPanel(),    cc.xywh(1, 7, 3, 1));
-        pb.add(statusBar,           cc.xywh(1, 11, 3, 1));
+        pb.add(bbp,                 cc.xywh(1, 11, 3, 1));
 
         pb.getPanel().setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         setContentPane(pb.getPanel());
@@ -706,7 +614,21 @@ public class FieldDescApp extends LocalizableBaseApp
             }
         });
         
-        fldSpellChkBtn.addActionListener(new ActionListener() {
+        saveBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                write();
+            }
+        });
+        
+        exitBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                shutdown();
+            }
+        });
+        
+        spellCheckBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
                 checker.spellCheck(fieldDescText);
@@ -714,7 +636,7 @@ public class FieldDescApp extends LocalizableBaseApp
             
         });
         
-        tblSpellChkBtn.addActionListener(new ActionListener() {
+        tblSpellCheckBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
                 checker.spellCheck(tblDescText);
@@ -722,19 +644,59 @@ public class FieldDescApp extends LocalizableBaseApp
             
         });
         
-        statusBar.setSectionText(0, currLocale.getDisplayName());
+        /*
+        tblDescText.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e)
+            {
+                //System.out.println("focuslost");
+                super.focusLost(e);
+                
+                if (prevTable != null)
+                {
+                    //setNameDescStrForCurrLocale(prevTable, tblNameText.getText());
+                    //setDescStrForCurrLocale(prevTable, tblDescText.getText());
+                }
+            }
+        });
         
-        fieldDescText.setEnabled(false);
-        fieldNameText.setEnabled(false);
         
-        tblDescText.setEnabled(false);
-        tblNameText.setEnabled(false);
+        fieldDescText.addFocusListener(new FocusAdapter() 
+        {
+            @Override
+            public void focusLost(FocusEvent e)
+            {
+                //System.out.println("focuslost");
+                super.focusLost(e);
+                getDataFromUI();
+            }
+
+            @Override
+            public void focusGained(FocusEvent arg0)
+            {
+                super.focusGained(arg0);
+                //lastIndex = fieldsList.getSelectedIndex();
+            }
+            
+        });
         
-        fieldNameLbl.setEnabled(false);
-        fieldDescLbl.setEnabled(false);
-        
-        tblNameLbl.setEnabled(false);
-        tblDescLbl.setEnabled(false);
+        fieldNameText.addFocusListener(new FocusAdapter() 
+        {
+            @Override
+            public void focusLost(FocusEvent e)
+            {
+                super.focusLost(e);
+                getDataFromUI();
+            }
+
+            @Override
+            public void focusGained(FocusEvent arg0)
+            {
+                super.focusGained(arg0);
+                //lastIndex = fieldsList.getSelectedIndex();
+            }
+            
+        });*/
     }
     
     /**
@@ -742,14 +704,7 @@ public class FieldDescApp extends LocalizableBaseApp
      */
     protected void shutdown()
     {
-        if (hasChanged)
-        {
-            int rv = JOptionPane.showConfirmDialog(this, "Save changes?", "Save Changes", JOptionPane.YES_NO_OPTION);
-            if (rv == JOptionPane.YES_OPTION)
-            {
-                write();
-            }
-        }
+        write();
         
         setVisible(false);
         System.exit(0);
@@ -760,7 +715,7 @@ public class FieldDescApp extends LocalizableBaseApp
      */
     protected void updateBtns()
     {
-        int     inx     = fieldsList.getSelectedIndex();
+        int inx = fieldsList.getSelectedIndex();
         boolean enabled = inx < fieldsModel.size() -1;
         nxtBtn.setEnabled(enabled);
         checkForMoreEmpties();
@@ -828,6 +783,104 @@ public class FieldDescApp extends LocalizableBaseApp
     }
     
     /**
+     * @param lndi
+     * @param text
+     */
+    protected void setDescStrForCurrLocale(final LocalizableNameDescIFace lndi, final String text)
+    {
+        Desc  desc = getDescForCurrLocale(lndi);
+        if (desc == null)
+        {
+            desc = new Desc(text, currLocale);
+            lndi.getDescs().add(desc);
+        } else
+        {
+            desc.setText(text);
+        }
+    }
+    
+    /**
+     * @param lndi
+     * @return
+     */
+    protected String getDescStrForCurrLocale(final LocalizableNameDescIFace lndi)
+    {
+        Desc  desc = getDescForCurrLocale(lndi);
+        if (desc == null)
+        {
+            desc = new Desc("", currLocale.getCountry(), currLocale.getLanguage(), currLocale.getVariant());
+            lndi.getDescs().add(desc);
+        }
+        return desc.getText();
+    }
+    
+    /**
+     * @param lndi
+     * @return
+     */
+    protected Desc getDescForCurrLocale(final LocalizableNameDescIFace lndi)
+    {
+        for (Desc d : lndi.getDescs())
+        {
+            if (d.getCountry().equals(currLocale.getCountry()) && d.getLang().equals(currLocale.getLanguage()))
+            {
+                return d;
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * @param lndi
+     * @param text
+     */
+    protected void setNameDescStrForCurrLocale(final LocalizableNameDescIFace lndi, final String text)
+    {
+        Name nameDesc = getNameDescForCurrLocale(lndi);
+        if (nameDesc == null)
+        {
+            nameDesc = new Name(text, currLocale.getCountry(), currLocale.getLanguage(), currLocale.getVariant());
+            lndi.getNames().add(nameDesc);
+        }  else
+        {
+            nameDesc.setText(text);
+        }
+    }
+    
+    /**
+     * @param lndi
+     * @return
+     */
+    protected String getNameDescStrForCurrLocale(final LocalizableNameDescIFace lndi)
+    {
+        Name nameDesc = getNameDescForCurrLocale(lndi);
+        if (nameDesc == null)
+        {
+            nameDesc = new Name("", currLocale.getCountry(), currLocale.getLanguage(), currLocale.getVariant());
+            lndi.getNames().add(nameDesc);
+        }
+        return nameDesc.getText();
+    }
+    
+    /**
+     * @param lndi
+     * @return
+     */
+    protected Name getNameDescForCurrLocale(final LocalizableNameDescIFace lndi)
+    {
+        for (Name n : lndi.getNames())
+        {
+            //System.out.println(d.getCountry()+"  "+currLocale.getCountry()+"  "+d.getLang()+"  "+currLocale.getLanguage());
+            if (n.getCountry().equals(currLocale.getCountry()) && 
+                n.getLang().equals(currLocale.getLanguage()))
+            {
+                return n;
+            }
+        }
+        return null;
+    }
+    
+    /**
      * 
      */
     protected void next()
@@ -862,25 +915,21 @@ public class FieldDescApp extends LocalizableBaseApp
      */
     protected void fillFieldList()
     {
-        fieldsModel.clear();
-        
         Table tbl = (Table)tablesList.getSelectedValue();
-        if (tbl != null)
+        fieldsModel.clear();
+        for (Field f : tbl.getFields())
         {
-            for (Field f : tbl.getFields())
-            {
-                fieldsModel.addElement(f);
-            }
-            fieldsList.setSelectedIndex(0);
+            fieldsModel.addElement(f);
         }
+        fieldsList.setSelectedIndex(0);
         updateBtns();
     }
     
-    /**
-     * 
-     */
+    
+    
     protected void fieldSelected()
     {
+        //System.out.println("fieldSelected: "+fieldsList.getSelectedIndex());
         Field fld  = (Field)fieldsList.getSelectedValue();
         if (fld != null)
         {
@@ -892,34 +941,13 @@ public class FieldDescApp extends LocalizableBaseApp
                 checker.spellCheck(fieldDescText);
                 checker.spellCheck(fieldNameText);
             }
-        } else
-        {
-            fieldDescText.setText("");
-            fieldNameText.setText(""); 
         }
-        
-        boolean ok = fld != null;
-        fieldDescText.setEnabled(ok);
-        fieldNameText.setEnabled(ok);
-        fieldNameLbl.setEnabled(ok);
-        fieldDescLbl.setEnabled(ok);
-
         prevField = fld;
-        
-        updateBtns();
     }
     
-    /**
-     * @return
-     */
     protected boolean write()
     {
-        statusBar.setText("Saving...");
-        statusBar.paintImmediately(statusBar.getBounds());
-        
         getAllDataFromUI();
-        
-        setHasChanged(false);
         
         try
         {
@@ -963,70 +991,21 @@ public class FieldDescApp extends LocalizableBaseApp
         {
             log.error("error writing writeTree", ex);
             return false;
-        } finally
-        {
-            statusBar.setText("Saved.");
-            statusBar.paintImmediately(statusBar.getBounds());
         }
     }
-
     
     protected void checkForLocales(final LocalizableNameDescIFace lndi, final Hashtable<String, String> localeHash)
     {
         for (Name nm : lndi.getNames())
         {
-            localeHash.put(makeLocaleKey(nm.getLang(), nm.getCountry(), nm.getVariant()), "X");
+            String key = nm.getLang() + '_' + nm.getCountry();
+            localeHash.put(key, key);
         }
         for (Desc d : lndi.getDescs())
         {
-            localeHash.put(makeLocaleKey(d.getLang(), d.getCountry(), d.getVariant()), "X");
+            String key = d.getLang() + '_' + d.getCountry();
+            localeHash.put(key, key);
         }
-    }
-    
-    /**
-     * @param locale
-     * @return
-     */
-    public Vector<Locale> getLocalesInUse()
-    {
-        Hashtable<String, String> localeHash = new Hashtable<String, String>();
-        for (Table table : getTables())
-        {
-            checkForLocales(table, localeHash);
-            for (Field f : table.getFields())
-            {
-                checkForLocales(f, localeHash);
-            }
-        }
-        Vector<Locale> inUseLocales = new Vector<Locale>(localeHash.keySet().size()+10);
-        for (String key : localeHash.keySet())
-        {
-            String[] toks = StringUtils.split(key, "_");
-            inUseLocales.add(new Locale(toks[0], "", ""));
-        }
-        return inUseLocales;
-    }
-    
-    /**
-     * @param locale
-     * @return
-     */
-    public boolean isLocaleInUse(final Locale locale)
-    {
-        Hashtable<String, String> localeHash = new Hashtable<String, String>();
-        for (Table table : getTables())
-        {
-            checkForLocales(table, localeHash);
-            for (Field f : table.getFields())
-            {
-                checkForLocales(f, localeHash);
-            }
-        }
-        //for (String key : localeHash.keySet())
-        //{
-        //    System.out.println("In Use: "+key);
-        //}
-        return localeHash.get(makeLocaleKey(locale)) != null;
     }
     
     protected void printLocales(final PrintWriter pw,
@@ -1062,11 +1041,281 @@ public class FieldDescApp extends LocalizableBaseApp
         }
     }
     
+    protected String findLineWith(final List<String> lines, final String key)
+    {
+        for (String line : lines)
+        {
+            if (line.indexOf(key) > -1)
+            {
+                return line;
+            }
+        }
+        return null;
+    }
+    
+    protected boolean isAllCaps(final String key)
+    {
+        for (int i=0;i<key.length();i++)
+        {
+            char c = key.charAt(i);
+            if (Character.isLowerCase(c))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    protected void extractQuotedValues(final String line, Vector<String> keyNamesList)
+    {
+        String[] toks = StringUtils.split(line, "\"");
+        int cnt = 1;
+        for (String t : toks)
+        {
+            //System.err.println("T["+t+"]");
+            if (cnt % 2 == 0)
+            {
+                keyNamesList.add(t);
+            }
+            cnt++;
+        }
+    }
+    
+    protected void parseForNames(final String line, 
+                                 final int sinx, 
+                                 final Vector<String> keyNamesList,
+                                 final List<String> lines,
+                                 final int lineNum)
+    {
+        int einx = line.indexOf(")", sinx+1);
+        
+        if (line.indexOf("isNewObject ?") > -1)
+        {
+            int x = 0;
+        }
+        
+        if (line.charAt(sinx) == '\"') // Has Quotes
+        {
+            if (line.charAt(einx-1) == '\"')
+            {
+                einx--;
+            } else
+            {
+                System.err.println("No Quote at end! ["+line+"] "+lineNum);
+            }
+            //System.out.println(line.substring(sinx+1, einx));
+            keyNamesList.add(line.substring(sinx+1, einx));
+            
+        } else
+        {
+            String key = line.substring(sinx, einx);
+            int inx = key.indexOf('[');
+            if (inx > -1) // Is an array
+            {
+                String srcLine = findLineWith(lines, key);
+                if (srcLine != null)
+                {
+                    Vector<String> keys = new Vector<String>();
+                    extractQuotedValues(key, keys);
+                    if (keys.size() > 0)
+                    {
+                        keyNamesList.addAll(keys);
+                    } else
+                    {
+                        System.err.println("1 - Source line for Key["+key+"]  src["+srcLine+"]");
+                    }
+                    //for (String nm : keyNamesList)
+                    //{
+                    //    System.err.println("Fnd["+nm+"]");
+                    //}
+                } else
+                {
+                    System.err.println("Couldn't find source line for ["+key+"] "+lineNum);
+                }
+            } else
+            {
+                inx = key.indexOf('\"');
+                if (inx > -1) // Has one or more quote's
+                {
+                    Vector<String> keys = new Vector<String>();
+                    extractQuotedValues(key, keys);
+                    if (keys.size() > 0)
+                    {
+                        keyNamesList.addAll(keys);
+                    } else
+                    {
+                        System.err.println("2 - Source line for Key["+key+"]  src["+key+"]");
+                    }
+                } else
+                {
+                    if (isAllCaps(key))
+                    {
+                        String srcLine = findLineWith(lines, key);
+                        if (srcLine != null)
+                        {
+                            Vector<String> keys = new Vector<String>();
+                            extractQuotedValues(srcLine, keys);
+                            if (keys.size() > 0)
+                            {
+                                keyNamesList.addAll(keys);
+                            } else
+                            {
+                                System.err.println("3 - Source line for Key["+key+"]  src["+srcLine+"]");
+                            }
+                        } else
+                        {
+                            System.err.println("Couldn't find source line for ["+key+"] "+lineNum);
+                        }
+                    } else
+                    {
+                        System.err.println("Not Sure what to do with ["+key+"] ["+line+"]"+lineNum);    
+                    }
+                }
+            }
+            
+            //System.out.println(key);
+            //keyNamesList.add(key);
+        }
+    }
+    
+    /**
+     * 
+     */
+    @SuppressWarnings("unchecked")
+    protected void collectResources()
+    {
+        String reskey = "getResourceString(";
+        
+        Vector<String> keyNamesList = new Vector<String>();
+        
+        String[] filesToSkip = {"PrefsToolbar",};
+        Hashtable<String, Boolean> skipNameHash = new Hashtable<String, Boolean>();
+        for (String nm : filesToSkip)
+        {
+            skipNameHash.put(nm, true);
+        }
+        
+        File dir = new File("src");
+        try
+        {
+            Collection<?> files = FileUtils.listFiles(dir, new String[] {"java"}, true);
+            for (Object obj : files)
+            {
+                File file = (File)obj;
+                
+                //System.out.println(file.getAbsolutePath());
+                if (file.getAbsolutePath().indexOf("/tools/") > -1)
+                {
+                    continue;
+                }
+                
+                if (skipNameHash.get(FilenameUtils.getBaseName(file.getName())) != null)
+                {
+                    continue;
+                }
+
+                boolean firstTime = true;
+                
+                String         packName = getPackageName(file);
+                PackageTracker pt       = packageHash.get(packName);
+                if (pt == null)
+                {
+                    pt = new PackageTracker(packName);
+                    packageHash.put(packName, pt);
+                }
+                
+                FileTracker ft = pt.getFileHash().get(file);
+                if (ft == null)
+                {
+                    ft = new FileTracker(file);
+                    pt.getFileHash().put(file, ft);
+                }
+                
+                int lineNum = 1;
+                List<?> lines = FileUtils.readLines(file);
+                for (String line : (List<String>)lines)
+                {
+                    int inx = line.indexOf(reskey);
+                    if (inx > -1)
+                    {
+                        keyNamesList.clear();
+                        parseForNames(line, inx + reskey.length(), keyNamesList, (List<String>)lines, lineNum);
+                        
+                        if (keyNamesList.size() > 0 && firstTime)
+                        {
+                            System.out.println(file.getAbsolutePath());
+                            firstTime = false;
+                        }
+                        for (String nm : keyNamesList)
+                        {
+                            if (nameHash.get(nm) == null)
+                            {
+                                nameHash.put(nm, true);
+                                ft.getMapping().put(nm, nm);
+                            } else
+                            {
+                                //log.warn("["+nm+"] name was found.");
+                            }
+                        }
+                    }
+                    lineNum++;
+                }
+            }
+            
+            File resFile = new File("src/resources_"+currLocale.getLanguage()+".properties");
+            List<?> lines = FileUtils.readLines(resFile);
+            for (String line : (List<String>)lines)
+            {
+                int inx = line.indexOf("=");
+                if (inx > -1)
+                {
+                    String[] toks = StringUtils.split(line, "=");
+                    resHash.put(toks[0], toks[1]);
+                }
+            }
+            
+            System.out.println("In Resource not in Source Code:");
+            for (String key : resHash.keySet())
+            {
+                if (nameHash.get(key) == null)
+                {
+                    System.out.println(key);
+                }
+            }
+            System.out.println("In Source not in Resource:");
+            for (String key : nameHash.keySet())
+            {
+                if (resHash.get(key) == null)
+                {
+                    System.out.println(key);
+                }
+            }
+            
+        } catch (IOException ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+    
+    /**
+     * 
+     */
+    protected String getPackageName(final File f)
+    {
+        String name = f.getAbsolutePath();
+        int    sinx = name.indexOf("src/") + 4;
+        int    einx = StringUtils.lastIndexOf(name, "/");
+        name = name.substring(sinx, einx);
+        name = StringUtils.replaceChars(name, "/", ".");
+        return name;
+    }
+    
     /**
      * 
      */
     protected void createResourceFiles()
     {
+        
         Hashtable<String, String> localeHash = new Hashtable<String, String>();
         for (Table table : getTables())
         {
@@ -1076,31 +1325,22 @@ public class FieldDescApp extends LocalizableBaseApp
                 checkForLocales(f, localeHash);
             }
         }
-
         
         for (String key : localeHash.keySet())
         {
+            System.out.println(key);
+            
             String[] toks = StringUtils.split(key, '_');
-            
-            String lang    = toks[0];
-            String country = toks.length > 1 && StringUtils.isNotEmpty(toks[1]) ? toks[1] : "";
-            
-            //System.out.println("["+key+"] "+lang+" "+country);
-            
-            File resFile = new File("db_resources" +
-                    (StringUtils.isNotEmpty(lang) ? ("_"+lang)  : "") +
-                    (StringUtils.isNotEmpty(country) ? ("_"+country)  : "") + 
-                    ".properties");
-            
+            File resFile = new File("res_"+toks[0]+"_"+toks[1]+".properties");
             try
             {
                 PrintWriter pw = new PrintWriter(resFile);
                 for (Table table : getTables())
                 {
-                    printLocales(pw, null, table, lang, country);
+                    printLocales(pw, null, table, toks[0], toks[1]);
                     for (Field f : table.getFields())
                     {
-                        printLocales(pw, table, f, lang, country);
+                        printLocales(pw, table, f, toks[0], toks[1]);
                     }
                 }
                 pw.close();
@@ -1109,52 +1349,71 @@ public class FieldDescApp extends LocalizableBaseApp
             {
                 ex.printStackTrace();
             }
-        }
-        statusBar.setText("Done writing resource file(s)");
-    }
-
-    public class MacOSAppHandler extends Application
-    {
-        protected WeakReference<FieldDescApp> app;
-
-        public MacOSAppHandler(final FieldDescApp app)
-        {
-            this.app = new WeakReference<FieldDescApp>(app);
-
-            addApplicationListener(new AppHandler());
-
-            setEnabledPreferencesMenu(false);
-        }
-
-        class AppHandler extends ApplicationAdapter
-        {
-            public void handleAbout(ApplicationEvent event)
-            {
-                app.get().doAbout();
-                event.setHandled(true);
-            }
-
-            public void handleAppPrefsMgr(ApplicationEvent event)
-            {
-                //app.get().preferences();
-                event.setHandled(true);
-            }
             
-            public void handlePreferences(ApplicationEvent event) 
-            {
-                //app.get().preferences();
-                event.setHandled(true);
-            }
-
-            public void handleQuit(ApplicationEvent event)
-            {
-                app.get().shutdown();
-                event.setHandled(false);  // This is so bizarre that this needs to be set to false
-                                          // It seems to work backwards compared to the other calls
-             }
         }
     }
+    
+    class PackageTracker 
+    {
+        protected String packageName;
+        protected Hashtable<File, FileTracker> fileHash = new Hashtable<File, FileTracker>();
+        /**
+         * @param packageName
+         */
+        public PackageTracker(String packageName)
+        {
+            super();
+            this.packageName = packageName;
+        }
+        /**
+         * @return the packageName
+         */
+        public String getPackageName()
+        {
+            return packageName;
+        }
+        /**
+         * @return the fileHash
+         */
+        public Hashtable<File, FileTracker> getFileHash()
+        {
+            return fileHash;
+        }
+        
+        
+    }
 
+    class FileTracker 
+    {
+        protected File file;
+        protected Hashtable<String, String> mapping = new Hashtable<String, String>();
+        /**
+         * @param file
+         */
+        public FileTracker(File file)
+        {
+            super();
+            this.file = file;
+        }
+        /**
+         * @return the file
+         */
+        public File getFile()
+        {
+            return file;
+        }
+        /**
+         * @return the mapping
+         */
+        public Hashtable<String, String> getMapping()
+        {
+            return mapping;
+        }
+
+        
+    }
+
+    
     /**
      * @param args
      */
@@ -1165,10 +1424,12 @@ public class FieldDescApp extends LocalizableBaseApp
         {
             public void run()
             {
-                FieldDescApp fd = new FieldDescApp();
-                fd.createDisplay();
+                LocalizeAppOld fd = new LocalizeAppOld();
                 
-                UIHelper.centerAndShow(fd);
+                fd.collectResources();
+
+                //fd.createDisplay();
+                //UIHelper.centerAndShow(fd);
             }
         });
 
