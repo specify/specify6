@@ -98,7 +98,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     protected String              name;
     protected String              title;
 
-    protected Vector<NavBoxIFace> navBoxes      = new Vector<NavBoxIFace>();
+    protected List<NavBoxIFace> navBoxes      = new Vector<NavBoxIFace>();
     protected ImageIcon           icon          = null;
     protected boolean             isInitialized = false;
 
