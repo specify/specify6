@@ -128,7 +128,7 @@ public class ExportTask extends BaseTask
                     exportersList.add(makeDnDNavBtn(navBox, exporter.getName(), exporter.getIconName(), cmdAction, null, true, false));// true means make it draggable
                 }
     
-                navBoxes.addElement(navBox);
+                navBoxes.add(navBox);
             }
         }
 

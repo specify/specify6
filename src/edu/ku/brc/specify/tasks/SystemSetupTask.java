@@ -148,7 +148,7 @@ public class SystemSetupTask extends BaseTask
                     startEditor(edu.ku.brc.specify.datamodel.Collection.class, name, "Collection");
                 }
             })); // I18N
-            navBoxes.addElement(sysNavBox);
+            navBoxes.add(sysNavBox);
            
 
             
@@ -175,7 +175,7 @@ public class SystemSetupTask extends BaseTask
 
             }
 
-            navBoxes.addElement(sysNavBox);
+            navBoxes.add(sysNavBox);
             
             session.close();
         }

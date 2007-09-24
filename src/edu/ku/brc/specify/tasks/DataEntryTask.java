@@ -130,9 +130,9 @@ public class DataEntryTask extends BaseTask
             // Temporary
             NavBox navBox = new NavBox(getResourceString("Actions"));
             navBox.add(NavBox.createBtn(getResourceString("Series_Processing"), name, IconManager.IconSize.Std16));
-            navBoxes.addElement(navBox);
+            navBoxes.add(navBox);
            
-            navBoxes.addElement(viewsNavBox);
+            navBoxes.add(viewsNavBox);
         }
         isShowDefault = true;
     }

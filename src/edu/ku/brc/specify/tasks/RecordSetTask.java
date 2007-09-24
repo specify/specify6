@@ -134,7 +134,7 @@ public class RecordSetTask extends BaseTask
                 
                 addToNavBox(recordSet);
             }
-            navBoxes.addElement(navBox);
+            navBoxes.add(navBox);
             session.close();
 
         }

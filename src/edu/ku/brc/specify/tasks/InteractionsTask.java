@@ -239,7 +239,7 @@ public class InteractionsTask extends BaseTask
                     }
                 }
             }
-            navBoxes.addElement(navBox);
+            navBoxes.add(navBox);
             
             // Load InfoRequests into NavBox
             infoRequestNavBox  = new NavBox(getResourceString("InfoRequest"));
@@ -260,7 +260,7 @@ public class InteractionsTask extends BaseTask
                 //setUpDraggable(nbi, new DataFlavor[]{Trash.TRASH_FLAVOR, INFOREQUEST_FLAVOR}, new NavBoxAction("", ""));
                 
             }      
-            navBoxes.addElement(infoRequestNavBox);
+            navBoxes.add(infoRequestNavBox);
             session.close();
         }
     }

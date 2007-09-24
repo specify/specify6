@@ -186,7 +186,7 @@ public class ReportsBaseTask extends BaseTask
                 }
                 
                 
-                navBoxes.addElement(navBox);
+                navBoxes.add(navBox);
             }
         }
     }

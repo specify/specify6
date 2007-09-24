@@ -230,7 +230,7 @@ public class WorkbenchTask extends BaseTask
             roc.addDragDataFlavor(new DataFlavor(Workbench.class, EXPORT_TEMPLATE));
             enableNavBoxList.add((NavBoxItemIFace)roc);
             
-            navBoxes.addElement(navBox);
+            navBoxes.add(navBox);
             
             int dataSetCount = 0;
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
@@ -260,7 +260,7 @@ public class WorkbenchTask extends BaseTask
             {
                 NavBox reportsNavBox = new NavBox(getResourceString("Reports"));
                 
-                navBoxes.addElement(reportsNavBox);
+                navBoxes.add(reportsNavBox);
                 for (AppResourceIFace ap : AppContextMgr.getInstance().getResourceByMimeType("jrxml/report"))
                 {
                     Map<String, String> params = ap.getMetaDataMap();
@@ -327,7 +327,7 @@ public class WorkbenchTask extends BaseTask
             
             // Add these last and in order
             // TEMPLATES navBoxes.addElement(templateNavBox);
-            navBoxes.addElement(workbenchNavBox);
+            navBoxes.add(workbenchNavBox);
             
             updateNavBoxUI(dataSetCount);
         }

@@ -132,7 +132,7 @@ public class InfoRequestTask extends BaseTask
                 addInfoRequest((InfoRequest)iter.next());
                 
             }      
-            navBoxes.addElement(navBox);
+            navBoxes.add(navBox);
             session.close();
         }
     }
