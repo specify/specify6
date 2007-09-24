@@ -14,6 +14,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Set;
 
+import javax.persistence.Transient;
 import javax.swing.JCheckBox;
 import javax.swing.JMenuItem;
 
@@ -21,6 +22,7 @@ import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Taxon;
@@ -62,6 +64,13 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
         initialize();
 	}
 	
+    @Transient
+    @Override
+    protected TaxonTreeDef getCurrentTreeDef()
+    {
+        return CollectionType.getCurrentCollectionType().getTaxonTreeDef();
+    }
+
     /* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.BaseTreeTask#showTree(edu.ku.brc.specify.datamodel.TreeDefIface)
 	 */

@@ -8,6 +8,10 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import javax.persistence.Transient;
+
+import edu.ku.brc.specify.datamodel.CollectionType;
+import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.Location;
 import edu.ku.brc.specify.datamodel.LocationTreeDef;
 import edu.ku.brc.specify.datamodel.LocationTreeDefItem;
@@ -41,6 +45,13 @@ public class LocationTreeTask extends BaseTreeTask<Location,LocationTreeDef,Loca
         initialize();
 	}
     
+    @Transient
+    @Override
+    protected LocationTreeDef getCurrentTreeDef()
+    {
+        return CollectionType.getCurrentCollectionType().getLocationTreeDef();
+    }
+
 //    protected void adjustTreeDefForm(FormViewObj form)
 //    {
 //    }

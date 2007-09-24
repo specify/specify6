@@ -8,6 +8,10 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import javax.persistence.Transient;
+
+import edu.ku.brc.specify.datamodel.CollectionType;
+import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem;
@@ -41,6 +45,13 @@ public class GtpTreeTask extends BaseTreeTask<GeologicTimePeriod,GeologicTimePer
         initialize();
 	}
     
+    @Transient
+    @Override
+    protected GeologicTimePeriodTreeDef getCurrentTreeDef()
+    {
+        return CollectionType.getCurrentCollectionType().getGeologicTimePeriodTreeDef();
+    }
+
 //    protected void adjustTreeDefForm(FormViewObj form)
 //    {
 //    }
