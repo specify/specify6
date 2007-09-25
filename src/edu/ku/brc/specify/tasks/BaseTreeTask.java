@@ -40,8 +40,6 @@ import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
-import edu.ku.brc.specify.treeutils.TreeDataService;
-import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.ui.treetables.TreeDefinitionEditor;
 import edu.ku.brc.specify.ui.treetables.TreeTableViewer;
 import edu.ku.brc.ui.CommandAction;
@@ -210,7 +208,6 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         visibleSubPane = ttv;
         return ttv;
     }
-    
 
     /**
      * Opens a {@link SubPaneIFace} for viewing/editing a {@link TreeDefIface} object.
@@ -226,7 +223,6 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         return defEditor;
 	}
     
-
 	/**
 	 * Switches the current view from {@link TreeTableViewer} to {@link TreeDefinitionEditor}
      * or vice versa.  If the current view is neither of these, this does nothing.
