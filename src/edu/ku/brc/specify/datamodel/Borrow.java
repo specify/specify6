@@ -66,30 +66,31 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer borrowId;
-     protected String invoiceNumber;
-     protected Calendar receivedDate;
-     protected Calendar originalDueDate;
-     protected Calendar dateClosed;
-     protected String remarks;
-     protected String text1;
-     protected String text2;
-     protected Float number1;
-     protected Float number2;
-     protected Boolean isClosed;
-     protected Boolean yesNo1;
-     protected Boolean yesNo2;
-     protected Calendar currentDueDate;
-     //protected Set<BorrowShipment> borrowShipments;
-     protected Set<Shipment> shipments;
-     protected Set<BorrowAgent> borrowAgents;
-     protected Set<BorrowMaterial> borrowMaterials;
+    protected Integer             borrowId;
+    protected String              invoiceNumber;
+    protected Calendar            receivedDate;
+    protected Calendar            originalDueDate;
+    protected Calendar            dateClosed;
+    protected String              remarks;
+    protected String              text1;
+    protected String              text2;
+    protected Float               number1;
+    protected Float               number2;
+    protected Boolean             isClosed;
+    protected Boolean             yesNo1;
+    protected Boolean             yesNo2;
+    protected Calendar            currentDueDate;
+    // protected Set<BorrowShipment> borrowShipments;
+    protected Set<Shipment>       shipments;
+    protected Set<BorrowAgent>    borrowAgents;
+    protected Set<BorrowMaterial> borrowMaterials;
 
 
     // Constructors
 
     /** default constructor */
-    public Borrow() {
+    public Borrow() 
+    {
         //
     }
     

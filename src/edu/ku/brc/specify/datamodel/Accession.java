@@ -69,27 +69,27 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
 
     // Fields
 
-     protected Integer accessionId;
-     protected String type;
-     protected String status;
-     protected String number;
-     protected String verbatimDate;
-     protected Calendar dateAccessioned;
-     protected Calendar dateReceived;
-     protected String text1;
-     protected String text2;
-     protected String text3;
-     protected Float number1;
-     protected Float number2;
-     protected String remarks;
-     protected Boolean yesNo1;
-     protected Boolean yesNo2;
-     protected RepositoryAgreement         repositoryAgreement;
-     protected Set<CollectionObject>       collectionObjects;
-     protected Set<AccessionAuthorization> accessionAuthorizations;
-     protected Set<AccessionAgent>         accessionAgents;
-     protected Set<AccessionAttachment>    accessionAttachments;
-     protected Set<ConservDescription>     conservDescriptions;
+    protected Integer                     accessionId;
+    protected String                      type;
+    protected String                      status;
+    protected String                      number;
+    protected String                      verbatimDate;
+    protected Calendar                    dateAccessioned;
+    protected Calendar                    dateReceived;
+    protected String                      text1;
+    protected String                      text2;
+    protected String                      text3;
+    protected Float                       number1;
+    protected Float                       number2;
+    protected String                      remarks;
+    protected Boolean                     yesNo1;
+    protected Boolean                     yesNo2;
+    protected RepositoryAgreement         repositoryAgreement;
+    protected Set<CollectionObject>       collectionObjects;
+    protected Set<AccessionAuthorization> accessionAuthorizations;
+    protected Set<AccessionAgent>         accessionAgents;
+    protected Set<AccessionAttachment>    accessionAttachments;
+    protected Set<ConservDescription>     conservDescriptions;
 
 
     // Constructors

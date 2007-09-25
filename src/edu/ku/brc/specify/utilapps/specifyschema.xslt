@@ -156,7 +156,7 @@
      <xsl:with-param name="substr">.</xsl:with-param>
 </xsl:call-template>
 
-<xsl:apply-templates select="desc"/>
+    <xsl:apply-templates select="desc[@lang='en']"/>
 
        </td></tr>
         <tr>
@@ -175,8 +175,9 @@
        
        <tr><td colspan="5" class="subhead">Relationships</td></tr>
        <tr>
-        <td class="hd" colspan="3">Type</td>
-        <td class="hd" colspan="2">To Table</td>
+        <td class="hd" colspan="2">Type</td>
+        <td class="hd" colspan="2">Name</td>
+        <td class="hd" colspan="1">To Table</td>
         </tr>
        
        <xsl:apply-templates select="relationship">
@@ -197,10 +198,10 @@
 	</a>
   </td>
   <td>
-  <xsl:if test="count( desc ) > 0">
-	<xsl:apply-templates select="desc" mode="tbl"/>
+  <xsl:if test="count( desc[@lang='en'] ) > 0">
+	<xsl:apply-templates select="desc[@lang='en']" mode="tbl"/>
   </xsl:if>
-  <xsl:if test="count( desc ) = 0">
+  <xsl:if test="count( desc[@lang='en'] ) = 0">
 	<xsl:text>&#160;</xsl:text>
   </xsl:if>
 
@@ -254,7 +255,7 @@
           </xsl:when>  
           <xsl:otherwise><td align="center"><xsl:text>&#160;</xsl:text></td></xsl:otherwise>
         </xsl:choose>
-        <td align="left"><xsl:value-of select="desc"/><xsl:text>&#160;</xsl:text></td>
+        <td align="left"><xsl:value-of select="desc[@lang='en']"/><xsl:text>&#160;</xsl:text></td>
         </tr>
 
   </xsl:template>
@@ -283,8 +284,11 @@
   
   <xsl:template match="relationship">
         <tr>
-        <td align="center" colspan="3"><xsl:value-of select="@type"/></td>
+        <td align="center" colspan="2"><xsl:value-of select="@type"/></td>
         <td align="center" colspan="2">
+            <xsl:value-of select="nameDesc [@lang='en']"/><xsl:text>&#160;</xsl:text>
+        </td>
+        <td align="center" colspan="1">
             <xsl:call-template name="substring-after-last">
 			   <xsl:with-param name="input" select="@classname"/>
 			   <xsl:with-param name="substr">.</xsl:with-param>
@@ -336,7 +340,6 @@
         </xsl:when>  
 		<xsl:otherwise></xsl:otherwise>
         </xsl:choose>
-        
   </xsl:template>
   
 </xsl:stylesheet>

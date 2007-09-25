@@ -27,7 +27,8 @@ public class Table implements LocalizableNameDescIFace, Comparable<Table>, Clone
     protected List<Name>  names = new Vector<Name>();
     protected List<Desc>  descs = new Vector<Desc>();
     
-    protected List<Field> fields = new Vector<Field>();
+    protected List<Field>        fields        = new Vector<Field>();
+    protected List<Relationship> relationships = new Vector<Relationship>();
 
     public Table(final String name)
     {
@@ -101,6 +102,22 @@ public class Table implements LocalizableNameDescIFace, Comparable<Table>, Clone
     public void setNames(List<Name> names)
     {
         this.names = names;
+    }
+
+    /**
+     * @return the relationships
+     */
+    public List<Relationship> getRelationships()
+    {
+        return relationships;
+    }
+
+    /**
+     * @param relationships the relationships to set
+     */
+    public void setRelationships(List<Relationship> relationships)
+    {
+        this.relationships = relationships;
     }
 
     /* (non-Javadoc)
@@ -186,6 +203,11 @@ public class Table implements LocalizableNameDescIFace, Comparable<Table>, Clone
         for (Field f : fields)
         {
             table.fields.add((Field)f.clone());
+        }
+
+        for (Relationship r : relationships)
+        {
+            table.relationships.add((Relationship)r.clone());
         }
 
         for (Name nm : names)

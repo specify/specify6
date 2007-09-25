@@ -59,12 +59,16 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.NavBoxLayoutManager;
 import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.af.core.expresssearch.ERTICaptionInfo;
+import edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL;
 import edu.ku.brc.af.core.expresssearch.TableFieldPair;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.MultiStateIconButon;
 import edu.ku.brc.ui.UIHelper;
@@ -242,7 +246,7 @@ public class QueryBldrPane extends BaseSubPane
                 }
                 fieldsStr.append(qfi.getFieldQRI().getParent().getTableTree().getAbbrev());
                 fieldsStr.append('.');
-                fieldsStr.append(fixFieldName(qfi.getFieldName()));
+                fieldsStr.append(qfi.getFieldInfo().getName());
             }
             
             Stack<BaseQRI>  stack = new Stack<BaseQRI>();
@@ -343,6 +347,74 @@ public class QueryBldrPane extends BaseSubPane
     
     protected void processSQL(final String sql)
     {
+        
+        class MyQueryForIdResultsHQL extends QueryForIdResultsHQL
+        {
+        
+            public MyQueryForIdResultsHQL(final Color             bannerColor,
+                                          final String            searchTerm,
+                                          final List<?>           listOfIds)
+            {
+                super(null, bannerColor, searchTerm, listOfIds);
+            }
+            
+            public void setCaptions(List<ERTICaptionInfo> list)
+            {
+                this.captions = list;
+            }
+
+            /* (non-Javadoc)
+             * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL#getDisplayOrder()
+             */
+            @Override
+            public Integer getDisplayOrder()
+            {
+                return 0;
+            }
+
+            /* (non-Javadoc)
+             * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL#getIconName()
+             */
+            @Override
+            public String getIconName()
+            {
+                return CollectionObject.class.getSimpleName();
+            }
+
+            /* (non-Javadoc)
+             * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL#buildCaptions()
+             */
+            @Override
+            protected void buildCaptions()
+            {
+            }
+            
+            public String getTitle()
+            {
+                return "Hello";
+            }
+            
+            public int getTableId()
+            {
+                return 1;
+            }
+            
+        };
+        
+        List<ERTICaptionInfo> captions = new Vector<ERTICaptionInfo>();
+        captions.add(new ERTICaptionInfo("de.remarks", "Remarks", true, null, 0));
+        captions.add(new ERTICaptionInfo("co.catalogNumber", "CatalogNumber", true, null, 0));
+        
+        List<Integer> list = new Vector<Integer>();
+        //list.add(1);
+        //list.add(1);
+        MyQueryForIdResultsHQL qri = new MyQueryForIdResultsHQL(new Color(144, 30, 255), "XXX", list);
+        qri.setSQL(sql);
+        qri.setCaptions(captions);
+        
+        CommandDispatcher.dispatch(new CommandAction("Express_Search", "HQL", qri));
+        
+        /*
         Session session = HibernateUtil.getNewSession();
         try
         {
@@ -358,7 +430,7 @@ public class QueryBldrPane extends BaseSubPane
         } finally
         {
             session.close();
-        }
+        }*/
     }
     
     protected void printTree(ProcessNode pn, int lvl)
@@ -784,20 +856,36 @@ public class QueryBldrPane extends BaseSubPane
         
         public String getCriteriaFormula()
         {
-            StringBuilder str = new StringBuilder();
             String criteriaStr = criteria.getText();
-            if (criteriaStr.length() > 0)
+            if (StringUtils.isNotEmpty(criteriaStr))
             {
-                TableTree parentTree = fieldQRI.getParent().getTableTree();
-                str.append(parentTree.getAbbrev() + '.');
-                str.append(QueryBldrPane.fixFieldName(getFieldName()));
-                str.append(' ');
-                str.append(isNotCheckbox.isSelected() ? "NOT" : "");
-                str.append(' ');
-                str.append(operatorCBX.getSelectedItem().toString());
-                str.append(' ');
-                str.append(criteriaStr);
-                return str.toString();
+                StringBuilder str  = new StringBuilder();
+                String operStr     = operatorCBX.getSelectedItem().toString();
+                
+                System.out.println(fieldQRI.getFieldInfo().getDataClass().getSimpleName());
+                if (fieldQRI.getFieldInfo().getDataClass() == String.class)
+                {
+                    if (operStr.equals("Like"))
+                    {
+                        criteriaStr = "'%" + criteriaStr + "%'";
+                    } else
+                    {
+                        criteriaStr = "'" + criteriaStr + "'";
+                    }
+                }
+                if (criteriaStr.length() > 0)
+                {
+                    TableTree parentTree = fieldQRI.getParent().getTableTree();
+                    str.append(parentTree.getAbbrev() + '.');
+                    str.append(QueryBldrPane.fixFieldName(getFieldName()));
+                    str.append(' ');
+                    str.append(isNotCheckbox.isSelected() ? "NOT" : "");
+                    str.append(' ');
+                    str.append(operStr);
+                    str.append(' ');
+                    str.append(criteriaStr);
+                    return str.toString();
+                }
             }
             return null;
         }
@@ -927,7 +1015,7 @@ public class QueryBldrPane extends BaseSubPane
         /**
          * Split apart the name keying on upper case
          * @param nameToFix the name of the field
-         * @return the splt apart name
+         * @return the split apart name
          */
         protected String fixName(final String nameToFix)
         {
@@ -1117,8 +1205,8 @@ public class QueryBldrPane extends BaseSubPane
          */
         public int compareTo(QryListRendererIFace qri)
         {
-            System.out.println(qri);
-            System.out.println(title+"]["+qri.getTitle());
+            //System.out.println(qri);
+            //System.out.println(title+"]["+qri.getTitle());
             return title.compareTo(qri.getTitle());
         }
         

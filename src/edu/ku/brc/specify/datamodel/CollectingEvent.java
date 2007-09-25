@@ -76,10 +76,10 @@ public class CollectingEvent extends DataModelObjBase implements AttachmentOwner
     protected String                method;
     protected String                verbatimDate;
     protected Calendar              startDate;
-    protected Short                 startDatePrecision;
+    protected Short                 startDatePrecision; // Accurate to Year, Month, Day
     protected String                startDateVerbatim;
     protected Calendar              endDate;
-    protected Short                 endDatePrecision;
+    protected Short                 endDatePrecision;   // Accurate to Year, Month, Day
     protected String                endDateVerbatim;
     protected Short                 startTime;
     protected Short                 endTime;

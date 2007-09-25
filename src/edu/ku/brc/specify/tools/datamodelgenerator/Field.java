@@ -1,8 +1,5 @@
 package edu.ku.brc.specify.tools.datamodelgenerator;
 
-import java.util.List;
-import java.util.Vector;
-
 import org.apache.commons.lang.StringUtils;
 
 

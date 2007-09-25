@@ -51,12 +51,12 @@ public class AccessionAgent extends DataModelObjBase implements java.io.Serializ
 
     // Fields    
 
-     protected Integer accessionAgentId;
-     protected String role;
-     protected String remarks;
-     protected Agent agent;
-     protected Accession accession;
-     protected RepositoryAgreement repositoryAgreement;
+    protected Integer             accessionAgentId;
+    protected String              role;
+    protected String              remarks;
+    protected Agent               agent;
+    protected Accession           accession;
+    protected RepositoryAgreement repositoryAgreement;
 
 
     // Constructors

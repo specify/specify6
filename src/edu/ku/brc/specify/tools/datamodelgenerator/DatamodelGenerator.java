@@ -76,7 +76,7 @@ public class DatamodelGenerator
     protected FieldDescApp fda          = null;
     
     protected Hashtable<String, String> abbrvHash = new Hashtable<String, String>();
-    protected boolean      includeDesc = false;
+    protected boolean      includeDesc = true;
     
 
     /**
@@ -168,6 +168,44 @@ public class DatamodelGenerator
         } else
         {
             log.error("No Desc for Table["+tableName+"] Field["+fieldName+"]");
+        }
+            
+        return null;
+    }
+
+    /**
+     * @param tableName
+     * @return
+     */
+    protected Desc getRelDesc(final String tableName, final String relName)
+    {
+        edu.ku.brc.specify.tools.fielddesc.Desc d = fda.getRelDesc(tableName, relName);
+        if (d != null)
+        {
+            Desc desc = new Desc(d.getText(), d.getCountry(), d.getLang(), d.getVariant());
+            return desc;
+        } else
+        {
+            log.error("No Desc for Table["+tableName+"] Field["+relName+"]");
+        }
+            
+        return null;
+    }
+    
+    /**
+     * @param tableName
+     * @return
+     */
+    protected Name getRelNameDesc(final String tableName, final String relName)
+    {
+        edu.ku.brc.specify.tools.fielddesc.Name d = fda.getRelNameDesc(tableName, relName);
+        if (d != null)
+        {
+            Name nm = new Name(d.getText(), d.getCountry(), d.getLang(), d.getVariant());
+            return nm;
+        } else
+        {
+            log.error("No Desc for Table["+tableName+"] Field["+relName+"]");
         }
             
         return null;
@@ -759,7 +797,13 @@ public class DatamodelGenerator
                         if (join != null)
                         {
                             //String othersideName = typeClass == null ? "" : getOthersideName(classObj, typeClass, thisSideName, RelType.OneToMany);
-                            table.addRelationship(createRelationsip(method, "many-to-one", join, otherSideName, join != null ? !join.nullable() : false));
+                            Relationship rel = createRelationsip(method, "many-to-one", join, otherSideName, join != null ? !join.nullable() : false);
+                            table.addRelationship(rel);
+                            if (includeDesc)
+                            {
+                                rel.setDesc(getRelDesc(tableName, rel.getRelationshipName()));
+                                rel.setNameDesc(getRelNameDesc(tableName, rel.getRelationshipName()));
+                            }
                             
                         } else
                         {
@@ -777,7 +821,13 @@ public class DatamodelGenerator
                         }
 
                         javax.persistence.JoinColumn join = method.isAnnotationPresent(javax.persistence.JoinColumn.class) ? (javax.persistence.JoinColumn)method.getAnnotation(javax.persistence.JoinColumn.class) : null;
-                        table.addRelationship(createRelationsip(method, "many-to-many", join, othersideName, join != null ? !join.nullable() : false));
+                        Relationship rel = createRelationsip(method, "many-to-many", join, othersideName, join != null ? !join.nullable() : false);
+                        table.addRelationship(rel);
+                        if (includeDesc)
+                        {
+                            rel.setDesc(getRelDesc(tableName, rel.getRelationshipName()));
+                            rel.setNameDesc(getRelNameDesc(tableName, rel.getRelationshipName()));
+                        }
                         
                     } else if (method.isAnnotationPresent(javax.persistence.OneToMany.class))
                     {
@@ -791,7 +841,13 @@ public class DatamodelGenerator
                         }
                         
                         javax.persistence.JoinColumn join = method.isAnnotationPresent(javax.persistence.JoinColumn.class) ? (javax.persistence.JoinColumn)method.getAnnotation(javax.persistence.JoinColumn.class) : null;
-                        table.addRelationship(createRelationsip(method, "one-to-many", join, othersideName, join != null ? !join.nullable() : false));
+                        Relationship rel = createRelationsip(method, "one-to-many", join, othersideName, join != null ? !join.nullable() : false);
+                        table.addRelationship(rel);
+                        if (includeDesc)
+                        {
+                            rel.setDesc(getRelDesc(tableName, rel.getRelationshipName()));
+                            rel.setNameDesc(getRelNameDesc(tableName, rel.getRelationshipName()));
+                        }
                         
                     } else if (method.isAnnotationPresent(javax.persistence.OneToOne.class))
                     {
@@ -806,8 +862,13 @@ public class DatamodelGenerator
                         }
                         
                         javax.persistence.JoinColumn join = method.isAnnotationPresent(javax.persistence.JoinColumn.class) ? (javax.persistence.JoinColumn)method.getAnnotation(javax.persistence.JoinColumn.class) : null;
-                        table.addRelationship(createRelationsip(method, "one-to-one", join, othersideName, join != null ? !join.nullable() : false));
-                        
+                        Relationship rel = createRelationsip(method, "one-to-one", join, othersideName, join != null ? !join.nullable() : false);
+                        table.addRelationship(rel);
+                        if (includeDesc)
+                        {
+                            rel.setDesc(getRelDesc(tableName, rel.getRelationshipName()));
+                            rel.setNameDesc(getRelNameDesc(tableName, rel.getRelationshipName()));
+                        }
                     }
                     isLob = false;
                 }

@@ -105,7 +105,7 @@ public class FieldDescApp extends LocalizableBaseApp
     protected JButton          nxtEmptyBtn;
     
     protected Table            prevTable     = null;
-    protected Field            prevField     = null;
+    protected LocalizableNameDescIFace  prevField     = null;
     
     protected JStatusBar       statusBar     = new JStatusBar(new int[] {5});
     protected JButton          tblSpellChkBtn = null;
@@ -229,91 +229,133 @@ public class FieldDescApp extends LocalizableBaseApp
         Vector<Table> list = null;
         Hashtable<String, Boolean> hash = new Hashtable<String, Boolean>();
         
+        Hashtable<String, Boolean> fldHash = new Hashtable<String, Boolean>();
+        Hashtable<String, Boolean> relHash = new Hashtable<String, Boolean>();
+        
+        
+        
         try
         {
-            if (true)
+            boolean changed = false;
+            
+            list = new Vector<Table>();
+            Element root = XMLHelper.readFileToDOM4J(file);
+            for (Object obj : root.selectNodes("/database/table"))
             {
-                list = new Vector<Table>();
-                Element root = XMLHelper.readFileToDOM4J(file);
-                for (Object obj : root.selectNodes("/database/table"))
+                Element tbl = (Element)obj;
+                Table table = new Table(XMLHelper.getAttr(tbl, "name", null));
+                
+                DBTableIdMgr.TableInfo ti = DBTableIdMgr.getInstance().getInfoByTableName(table.getName());
+                if (ti == null)
                 {
-                    Element tbl = (Element)obj;
-                    Table table = new Table(XMLHelper.getAttr(tbl, "name", null));
+                    throw new RuntimeException("Table is null for ["+table.getName()+"]");
+                }
+                tableHash.put(ti.getTableName(), table);
+                
+                if (ti != null)
+                {
+                    relHash.clear();
+                    fldHash.clear();
                     
-                    DBTableIdMgr.TableInfo ti = DBTableIdMgr.getInstance().getInfoByTableName(table.getName());
-                    if (ti == null)
-                    {
-                        throw new RuntimeException("Table is null for ["+table.getName()+"]");
-                    }
-                    tableHash.put(ti.getTableName(), table);
+                    list.add(table);
+                    hash.put(table.getName(), true);
                     
-                    if (ti != null)
+                    loadNamesDesc(table, tbl);
+                    
+                    //setNameDescStrForCurrLocale(table, UIRegistry.getResourceString(ti.getClassObj().getSimpleName()));
+                    
+                    // Add Fields, checking to see if it is in the schema
+                    // if not, then drop it.
+                    for (Object fobj : tbl.selectNodes("field"))
                     {
-                        list.add(table);
-                        hash.put(table.getName(), true);
+                        Element fld = (Element)fobj;
                         
-                        loadNamesDesc(table, tbl);
+                        String name = XMLHelper.getAttr(fld, "name", null);
+                        String type = XMLHelper.getAttr(fld, "type", null);
                         
-                        //setNameDescStrForCurrLocale(table, UIRegistry.getResourceString(ti.getClassObj().getSimpleName()));
-                        
-                        for (Object fobj : tbl.selectNodes("field"))
+                        DBTableIdMgr.FieldInfo fldInfo = null;
+                        for (DBTableIdMgr.FieldInfo fi : ti.getFields())
                         {
-                            Element fld = (Element)fobj;
-                            
-                            String name = XMLHelper.getAttr(fld, "name", null);
-                            String type = XMLHelper.getAttr(fld, "type", null); 
-                            
-                            Field field = new Field(name, type);
-                            table.getFields().add(field);
-                            
-                            //String nm = field.getName();
-                            //nm = nm.substring(0,1).toUpperCase() + nm.substring(1);
-                            //setNameDescStrForCurrLocale(field, UIHelper.makeNamePretty(nm));
-                            
-                            DBTableIdMgr.FieldInfo fldInfo = null;
-                            for (DBTableIdMgr.FieldInfo fi : ti.getFields())
+                            if (fi.getName().equals(name))
                             {
-                                if (fi.getName().equals(field.getName()))
-                                {
-                                    field.setName(fi.getName()); 
-                                    field.setType(fi.getType()); 
-                                    fldInfo = fi;
-                                    break;
-                                }
+                                Field field = new Field(name, type);
+                                table.getFields().add(field);
+                                
+                                field.setName(fi.getName()); 
+                                field.setType(fi.getType()); 
+                                fldInfo = fi;
+                                loadNamesDesc(field, fld);
+                                fldHash.put(name, true);
+                                break;
                             }
-                            if (fldInfo == null)
-                            {
-                                log.error("Can't find field by name ["+field.getName()+"]");
-                            }
-                            
-                            loadNamesDesc(field, fld);
-                            
                         }
                         
-                        /*
-                        for (DBTableIdMgr.TableRelationship rel : ti.getRelationships())
+                        if (fldInfo == null)
                         {
-                            if (rel.getType() == DBTableIdMgr.RelationshipType.ManyToMany || rel.getType() == DBTableIdMgr.RelationshipType.ManyToOne)
-                            {
-                                table.getFields().add(new Field(rel.getName(), rel.getType().toString()));
-                            }
-                        }*/
-                    } else
-                    {
-                     // Discarding old table.
-                        log.warn("Discarding Old Table ["+table.getName()+"]");
+                            log.error("Dropping Field ["+name+"]");
+                            changed = true;
+                        }
                     }
+                    
+                    // Any in new Fields that were not in the XML
+                    for (DBTableIdMgr.FieldInfo fi : ti.getFields())
+                    {
+                        if (fldHash.get(fi.getName()) == null)
+                        {
+                            Field field = new Field(fi.getName(), fi.getType());
+                            table.getFields().add(field);
+                            field.setName(fi.getName()); 
+                            field.setType(fi.getType()); 
+                            setNameDescStrForCurrLocale(field, UIHelper.makeNamePretty(fi.getColumn()));
+                            changed = true;
+                        }
+                    }        
+                    
+                    // Do the Same for relationships
+                    for (Object robj : tbl.selectNodes("relationship"))
+                    {
+                        Element rel = (Element)robj;
+                        
+                        String name = XMLHelper.getAttr(rel, "name", null);
+                        String type = XMLHelper.getAttr(rel, "type", null); 
+                        
+                        DBTableIdMgr.TableRelationship relInfo = null;
+                        for (DBTableIdMgr.TableRelationship ri : ti.getRelationships())
+                        {
+                            if (ri.getName().equals(name))
+                            {
+                                Relationship reltn = new Relationship(name, type);
+                                table.getRelationships().add(reltn);
+                                relInfo = ri;
+                                
+                                loadNamesDesc(reltn, rel);
+                                break;
+                            }
+                        }
+                        if (relInfo == null)
+                        {
+                            log.error("Dropping Field ["+name+"]");
+                            changed = true;
+                        }
+                    }
+                    
+                    for (DBTableIdMgr.TableRelationship ri : ti.getRelationships())
+                    {
+                        if (ri.getName().equals(ri.getName()))
+                        {
+                            Relationship reltn = new Relationship(ri.getName(), ri.getType().toString());
+                            table.getRelationships().add(reltn);
+                            String nm = ri.getName();
+                            nm = nm.substring(0,1).toUpperCase() + nm.substring(1);
+                            setNameDescStrForCurrLocale(reltn, UIHelper.makeNamePretty(nm));
+                            changed = true;
+                        }
+                    }
+                } else
+                {
+                 // Discarding old table.
+                    log.warn("Discarding Old Table ["+table.getName()+"]");
                 }
-            } else
-            {
-                /*XStream xstream = new XStream();
-                xstream.alias("table", Table.class);
-                xstream.alias("desc", Desc.class);
-                xstream.alias("field", Field.class);
-                xstream.alias("database", Database.class);
-                Database database = (Database)xstream.fromXML(new FileReader(file));
-                list = database.getTables();
-                */
             }
             
             // Add New Tables
@@ -324,21 +366,39 @@ public class FieldDescApp extends LocalizableBaseApp
                     Table table = new Table(ti.getTableName());
                     list.add(table);
                     tableHash.put(ti.getTableName(), table);
+                    changed = true;
                     
                     log.warn("Adding New Table ["+table.getName()+"]");
                     for (DBTableIdMgr.FieldInfo fi : ti.getFields())
                     {
                         Field field = new Field(fi.getName(), fi.getType());
                         table.getFields().add(field);
+                        field.setName(fi.getName()); 
+                        field.setType(fi.getType()); 
+                        setNameDescStrForCurrLocale(field, UIHelper.makeNamePretty(fi.getColumn()));
+                    }
+                    for (DBTableIdMgr.TableRelationship ri : ti.getRelationships())
+                    {
+                        Relationship reltn = new Relationship(ri.getName(), ri.getType().toString());
+                        table.getRelationships().add(reltn);
+                        String nm = ri.getName();
+                        nm = nm.substring(0,1).toUpperCase() + nm.substring(1);
+                        setNameDescStrForCurrLocale(reltn, UIHelper.makeNamePretty(nm));
                     }
                 }
             }
             Collections.sort(list);
             
+            if (changed)
+            {
+                setHasChanged(true);
+            }
+            
         } catch (Exception ex)
         {
             ex.printStackTrace();
         }
+        
      
         return list;
     }
@@ -432,6 +492,49 @@ public class FieldDescApp extends LocalizableBaseApp
     }
     
     /**
+     * @param tableName
+     * @return
+     */
+    public Desc getRelDesc(final String tableName, final String relName)
+    {
+        Table table = tableHash.get(tableName);
+        if (table != null)
+        {
+            for (Relationship r : table.getRelationships())
+            {
+                if (r.getName().equals(relName))
+                {
+                    return getDescForCurrLocale(r);
+                }
+            }
+           
+        }
+        log.error("Couldn't find table ["+tableName+"]["+relName+"]");
+        return null;
+    }
+    
+    /**
+     * @param tableName
+     * @return
+     */
+    public Name getRelNameDesc(final String tableName, final String relName)
+    {
+        Table table = tableHash.get(tableName);
+        if (table != null)
+        {
+            for (Relationship r : table.getRelationships())
+            {
+                if (r.getName().equals(relName))
+                {
+                    return getNameDescForCurrLocale(r);
+                }
+            }
+        }
+        log.error("Couldn't find table ["+tableName+"]["+relName+"]");
+        return null;
+    }
+    
+    /**
      * Loads name descriptions
      * @param lndi the LocalizableNameDescIFace
      * @param parent the DOM node
@@ -487,7 +590,7 @@ public class FieldDescApp extends LocalizableBaseApp
                 write();
             }
         });
-        //saveMenuItem.setEnabled(false);
+        saveMenuItem.setEnabled(hasChanged);
         
         if (!UIHelper.isMacOS())
         {
@@ -785,7 +888,7 @@ public class FieldDescApp extends LocalizableBaseApp
         {
             for (int i=inx;i<fieldsModel.size();i++)
             {
-                Field f = (Field)fieldsModel.get(i);
+                LocalizableNameDescIFace f = (LocalizableNameDescIFace)fieldsModel.get(i);
                 if (f != null)
                 {
                     Desc  desc = getDescForCurrLocale(f);
@@ -871,6 +974,10 @@ public class FieldDescApp extends LocalizableBaseApp
             {
                 fieldsModel.addElement(f);
             }
+            for (Relationship r : tbl.getRelationships())
+            {
+                fieldsModel.addElement(r);
+            }
             fieldsList.setSelectedIndex(0);
         }
         updateBtns();
@@ -881,7 +988,7 @@ public class FieldDescApp extends LocalizableBaseApp
      */
     protected void fieldSelected()
     {
-        Field fld  = (Field)fieldsList.getSelectedValue();
+        LocalizableNameDescIFace fld  = (LocalizableNameDescIFace)fieldsList.getSelectedValue();
         if (fld != null)
         {
             fieldDescText.setText(getDescStrForCurrLocale(fld));

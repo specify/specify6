@@ -114,8 +114,8 @@ public class QueryTask extends BaseTask
      */
     public SubPaneIFace getStarterPane()
     {
-        return new SimpleDescPane(QUERY, this, "Query Builder Goes Here");
-        //return starterPane = new QueryBldrPane(name, this);
+        //return new SimpleDescPane(QUERY, this, "Query Builder Goes Here");
+        return starterPane = new QueryBldrPane(name, this);
     }
 
     /*

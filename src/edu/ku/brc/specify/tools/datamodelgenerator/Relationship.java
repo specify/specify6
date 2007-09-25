@@ -21,6 +21,9 @@ public class Relationship
     protected boolean  isRequired;
     protected boolean  isUpdatable;
     
+    protected Desc    desc;
+    protected Name    nameDesc;
+    
     /**
      * @param type
      * @param className
@@ -161,6 +164,38 @@ public class Relationship
     public void setUpdatable(boolean isUpdatable)
     {
         this.isUpdatable = isUpdatable;
+    }
+
+    /**
+     * @return the desc
+     */
+    public Desc getDesc()
+    {
+        return desc;
+    }
+
+    /**
+     * @param desc the desc to set
+     */
+    public void setDesc(Desc desc)
+    {
+        this.desc = desc;
+    }
+
+    /**
+     * @return the nameDesc
+     */
+    public Name getNameDesc()
+    {
+        return nameDesc;
+    }
+
+    /**
+     * @param nameDesc the nameDesc to set
+     */
+    public void setNameDesc(Name nameDesc)
+    {
+        this.nameDesc = nameDesc;
     }
     
 }

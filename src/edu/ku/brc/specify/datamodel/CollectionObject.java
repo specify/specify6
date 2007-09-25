@@ -91,6 +91,7 @@ public class CollectionObject extends DataModelObjBase implements AttachmentOwne
     protected String                        name;
     protected String                        modifier;
     protected Calendar                      catalogedDate;
+    protected Short                         catalogedDatePrecision;   // Accurate to Year, Month, Day
     protected String                        catalogedDateVerbatim;
     protected String                        guid;
     // protected String altCatalogNumber;
