@@ -200,6 +200,11 @@ public class TreeFactory
             return "SELECT l.locationId, l.name, l.nodeNumber, l.highestChildNodeNumber, l.rankId FROM Location l WHERE l.parent=:PARENT ORDER BY l.rankId, l.name";
         }
         
+        if (parent instanceof LithoStrat)
+        {
+            return "SELECT l.lithoStratId, l.name, l.nodeNumber, l.highestChildNodeNumber, l.rankId FROM LithoStrat l WHERE l.parent=:PARENT ORDER BY l.rankId, l.name";
+        }
+        
         return null;
     }
 
@@ -223,16 +228,21 @@ public class TreeFactory
 			return new Pair<String,String>("SystemSetup","GeologicTimePeriod");
 		}
 
+        if( node instanceof LithoStrat )
+        {
+            return new Pair<String,String>("SystemSetup","LithoStrat");
+        }
+        
 		if( node instanceof Location )
 		{
 			return new Pair<String,String>("SystemSetup","Location");
 		}
 
-		if( node instanceof Taxon )
-		{
-			return new Pair<String,String>("SystemSetup","Taxon");
-		}
-		
+        if( node instanceof Taxon )
+        {
+            return new Pair<String,String>("SystemSetup","Taxon");
+        }
+        
 		if( node instanceof TreeDefIface<?,?,?>)
 		{
 			return new Pair<String,String>("SystemSetup","TreeDefEditor");
@@ -358,7 +368,7 @@ public class TreeFactory
             { 600, "Epoch", false },
             { 800, "Age", false }, };
 
-    /** An array describing the standard levels of a {@link GeologicTimePeriod} tree. */
+    /** An array describing the standard levels of a {@link LithoStrat} tree. */
     @SuppressWarnings("unused")
     private Object[][] stdLithoStratItems = {
             { 0, "Litho Root", true },
