@@ -1262,7 +1262,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                     DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
                     try
                     {
-                        mergedNode = (T)session.merge(node);
+                        mergedNode = session.merge(node);
                     }
                     catch (StaleObjectException e1)
                     {
