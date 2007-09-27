@@ -9,13 +9,9 @@ public class TreeNode
     protected Class<?> dataObjClass;
     protected int rank;
     protected int parentRank;
+    protected Integer acceptedParentId;
     
-    public TreeNode()
-    {
-        super();
-    }
-
-    public TreeNode(String name, int id, int parentId, int rank, int parentRank, boolean hasChildren)
+    public TreeNode(String name, int id, int parentId, int rank, int parentRank, boolean hasChildren, Integer acceptedParentId)
     {
         super();
         this.name = name;
@@ -24,6 +20,7 @@ public class TreeNode
         this.rank = rank;
         this.parentRank = parentRank;
         this.hasChildren = hasChildren;
+        this.acceptedParentId = acceptedParentId;
     }
 
     public Class<?> getDataObjClass()
@@ -100,6 +97,16 @@ public class TreeNode
     public void setRank(int rank)
     {
         this.rank = rank;
+    }
+
+    public Integer getAcceptedParentId()
+    {
+        return acceptedParentId;
+    }
+
+    public void setAcceptedParentId(Integer acceptedParentId)
+    {
+        this.acceptedParentId = acceptedParentId;
     }
 
     /* (non-Javadoc)

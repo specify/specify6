@@ -10,6 +10,7 @@ package edu.ku.brc.specify.ui.treetables;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -490,7 +491,20 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
             }
             
             String clippedName = GraphicsUtils.clipString(fm, name, stringEndX-stringStartX);
+            Font baseFont = g.getFont();
+            if (treeNode.getAcceptedParentId() != null)
+            {
+                g.setFont(baseFont.deriveFont(Font.ITALIC));
+            }
+            else
+            {
+                g.setFont(baseFont.deriveFont(Font.BOLD));
+            }
             g.drawString(clippedName, stringStartX, stringY);
+            if (treeNode.getAcceptedParentId() != null)
+            {
+                g.setFont(baseFont);
+            }
         }
     }
 }

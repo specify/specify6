@@ -122,7 +122,7 @@ public interface TreeDataService <T extends Treeable<T,D,I>,
      * @param destination any node
      * @return a localized, human-readable status message, or null
      */
-    public String createNodeLink(T source, T destination);
+    public String synonymize(T source, T destination);
     
     /**
      * Initializes any data associated with the given node.

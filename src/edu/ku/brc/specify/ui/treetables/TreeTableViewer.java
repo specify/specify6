@@ -1468,7 +1468,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		if( dropAction == DnDConstants.ACTION_COPY || dropAction == DnDConstants.ACTION_NONE )
 		{
 			log.info("User requested new link be created between " + draggedNode.getName() + " and " + droppedOnNode.getName());
-			String statusMsg = dataService.createNodeLink(draggedRecord, droppedRecord);
+			String statusMsg = dataService.synonymize(draggedRecord, droppedRecord);
+            draggedNode.setAcceptedParentId(droppedOnNode.getId());
+            repaint();
 			if (statusMsg != null)
 			{
 			    statusBar.setText(statusMsg);
@@ -1793,6 +1795,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         String nodeName = dataRecord.getName();
         int id = dataRecord.getTreeId();
         int rank = dataRecord.getRankId();
+        T acceptedParent = dataRecord.getAcceptedParent();
 
         int parentId;
         int parentRank;
@@ -1810,7 +1813,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         }
         
         int descCount = dataService.getDescendantCount(dataRecord);
-        TreeNode node = new TreeNode(nodeName,id,parentId,rank,parentRank, (descCount != 0));
+        TreeNode node = new TreeNode(nodeName,id,parentId,rank,parentRank, (descCount != 0), (acceptedParent != null) ? acceptedParent.getTreeId() : null);
         return node;
     }
     

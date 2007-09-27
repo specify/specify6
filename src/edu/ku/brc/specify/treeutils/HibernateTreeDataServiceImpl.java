@@ -129,12 +129,23 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         return treeNodes;
     }
     
+    /**
+     * Creates a {@link TreeNode} from the passed in {@link Object} array.  The array
+     * must contain the following objects, in order: {@link Integer} id, {@link String} name,
+     * {@link Integer} nodeNumber, {@link Integer} highestChildNodeNumber, {@link Integer} rankId,
+     * and {@link T} acceptedParent.  (The acceptedParent field will commonly be <code>null</code>.)
+     * 
+     * @param nodeInfo an object array containing the node info
+     * @param parent the parent record
+     * @return a TreeNode object
+     */
+    @SuppressWarnings("unchecked")
     private TreeNode createNode(Object[] nodeInfo, T parent)
     {
         Integer id = (Integer)nodeInfo[0];
         String nodeName = (String)nodeInfo[1];
-        Integer highChild = (Integer)nodeInfo[3];
         Integer nodeNum   = (Integer)nodeInfo[2];
+        Integer highChild = (Integer)nodeInfo[3];
         int descCount = 0;
         if (highChild != null && nodeNum != null)
         {
@@ -157,7 +168,9 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
             parentRank = parentRecord.getRankId();
         }
         
-        TreeNode node = new TreeNode(nodeName,id,parentId,rank,parentRank, (descCount != 0));
+        Integer acceptedParentId = (Integer)nodeInfo[5];
+        
+        TreeNode node = new TreeNode(nodeName,id,parentId,rank,parentRank, (descCount != 0), acceptedParentId);
         return node;
     }
 
@@ -703,7 +716,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
      * @see edu.ku.brc.specify.treeutils.TreeDataService#createNodeLink(edu.ku.brc.specify.datamodel.Treeable, edu.ku.brc.specify.datamodel.Treeable)
      */
     @SuppressWarnings("unchecked")
-    public String createNodeLink(T source, T destination)
+    public String synonymize(T source, T destination)
     {
         Session session = getNewSession(source);
         T mergedDest = (T)mergeIntoSession(session, destination);
