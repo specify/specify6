@@ -1391,65 +1391,99 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 * @param t the newly selected TreeNode
 	 */
 	@SuppressWarnings("unchecked")
-	protected void newNodeSelected(JList sourceList, TreeNode selectedNode)
+	protected void newNodeSelected(final JList sourceList, final TreeNode selectedNode)
 	{
-        T nodeRecord = null;
-        if (selectedNode != null)
+        SwingWorker bgWork = new SwingWorker()
         {
-            nodeRecord = getRecordForNode(selectedNode);
-        }
-        
-        // these calls should work even if nodeRecord is null
-        boolean canDelete   = (businessRules != null) ? businessRules.okToDelete(nodeRecord) : false;
-        boolean canAddChild = (selectedNode != null) ? (selectedNode.getRank() < getHighestPossibleNodeRank()) : false;
-        
-        popupMenu.setDeleteEnabled(canDelete);
-        popupMenu.setNewEnabled(canAddChild);
-
-        boolean enable = (selectedNode != null);
-        
-        // update the state of all selection-sensative buttons
-        if (sourceList == lists[0])
-        {
-            newChild0.setEnabled(canAddChild);
-            deleteNode0.setEnabled(canDelete);
+            private T nodeRecord;
+            private boolean canDelete = false;
+            private boolean canAddChild = false;
             
-            editNode0.setEnabled(enable);
-            subtree0.setEnabled(enable);
-            toParent0.setEnabled(enable);
-        }
-        else
-        {
-            newChild1.setEnabled(canAddChild);
-            deleteNode1.setEnabled(canDelete);
-            
-            editNode1.setEnabled(enable);
-            subtree1.setEnabled(enable);
-            toParent1.setEnabled(enable);
-        }
-        
-        // clear the status bar if nothing is selected or show the fullname if a node is selected
-        String statusBarText = null;
-		if( selectedNode != null  && nodeRecord != null)
-		{
-            StringBuilder sbTextBuilder = new StringBuilder(nodeRecord.getFullName());
-            if (nodeRecord.getAcceptedParent() != null)
+            @SuppressWarnings("synthetic-access")
+            @Override
+            public Object construct()
             {
-                sbTextBuilder.append("   " + getResourceString("TTV_CURRENT_NAME") + ": " + nodeRecord.getAcceptedParent().getFullName());
-            }
-            else if (nodeRecord.getAcceptedChildren().size() > 0)
-            {
-                sbTextBuilder.append("   " + getResourceString("TTV_SYNONYMS") + ": ");
-                for (T accChild: nodeRecord.getAcceptedChildren())
+                nodeRecord = null;
+                if (selectedNode != null)
                 {
-                    sbTextBuilder.append(accChild.getFullName() + ", ");
+                    nodeRecord = getRecordForNode(selectedNode);
                 }
-                sbTextBuilder.deleteCharAt(sbTextBuilder.length()-2);
+                
+                // these calls should work even if nodeRecord is null
+                canDelete   = (businessRules != null) ? businessRules.okToDelete(nodeRecord) : false;
+                canAddChild = (selectedNode != null) ? (selectedNode.getRank() < getHighestPossibleNodeRank()) : false;
+                return null;
             }
-            statusBarText = sbTextBuilder.toString();
-		}
-		
-		setStatusBarText(statusBarText);
+
+            @Override
+            public void finished()
+            {
+                super.finished();
+                
+                if (selectedNode != sourceList.getSelectedValue())
+                {
+                    // the node selection changed after we started the thread
+                    // ignore the results
+                    System.err.println("selection changed before updating status bar");
+                    return;
+                }
+                
+                popupMenu.setDeleteEnabled(canDelete);
+                popupMenu.setNewEnabled(canAddChild);
+
+                boolean enable = (selectedNode != null);
+                
+                // update the state of all selection-sensative buttons
+                if (sourceList == lists[0])
+                {
+                    newChild0.setEnabled(canAddChild);
+                    deleteNode0.setEnabled(canDelete);
+                    
+                    editNode0.setEnabled(enable);
+                    subtree0.setEnabled(enable);
+                    toParent0.setEnabled(enable);
+                }
+                else
+                {
+                    newChild1.setEnabled(canAddChild);
+                    deleteNode1.setEnabled(canDelete);
+                    
+                    editNode1.setEnabled(enable);
+                    subtree1.setEnabled(enable);
+                    toParent1.setEnabled(enable);
+                }
+                
+                // clear the status bar if nothing is selected or show the fullname if a node is selected
+                String statusBarText = null;
+                if( selectedNode != null  && nodeRecord != null)
+                {
+                    StringBuilder sbTextBuilder = new StringBuilder(nodeRecord.getFullName());
+                    if (nodeRecord.getAcceptedParent() != null)
+                    {
+                        sbTextBuilder.append("   ");
+                        sbTextBuilder.append(getResourceString("TTV_CURRENT_NAME"));
+                        sbTextBuilder.append(": ");
+                        sbTextBuilder.append(nodeRecord.getAcceptedParent().getFullName());
+                    }
+                    else if (nodeRecord.getAcceptedChildren().size() > 0)
+                    {
+                        sbTextBuilder.append("   ");
+                        sbTextBuilder.append(getResourceString("TTV_SYNONYMS"));
+                        sbTextBuilder.append(": ");
+                        for (T accChild: nodeRecord.getAcceptedChildren())
+                        {
+                            sbTextBuilder.append(accChild.getFullName() + ", ");
+                        }
+                        sbTextBuilder.deleteCharAt(sbTextBuilder.length()-2);
+                    }
+                    statusBarText = sbTextBuilder.toString();
+                }
+                
+                setStatusBarText(statusBarText);
+            }            
+        };
+        
+        bgWork.start();
 	}
 
 	/**
