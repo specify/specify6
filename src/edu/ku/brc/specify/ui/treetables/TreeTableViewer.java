@@ -1429,13 +1429,27 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         }
         
         // clear the status bar if nothing is selected or show the fullname if a node is selected
-        String fullname = null;
+        String statusBarText = null;
 		if( selectedNode != null  && nodeRecord != null)
 		{
-            fullname = nodeRecord.getFullName();
+            StringBuilder sbTextBuilder = new StringBuilder(nodeRecord.getFullName());
+            if (nodeRecord.getAcceptedParent() != null)
+            {
+                sbTextBuilder.append("   " + getResourceString("TTV_CURRENT_NAME") + ": " + nodeRecord.getAcceptedParent().getFullName());
+            }
+            else if (nodeRecord.getAcceptedChildren().size() > 0)
+            {
+                sbTextBuilder.append("   " + getResourceString("TTV_SYNONYMS") + ": ");
+                for (T accChild: nodeRecord.getAcceptedChildren())
+                {
+                    sbTextBuilder.append(accChild.getFullName() + ", ");
+                }
+                sbTextBuilder.deleteCharAt(sbTextBuilder.length()-2);
+            }
+            statusBarText = sbTextBuilder.toString();
 		}
 		
-		setStatusBarText(fullname);
+		setStatusBarText(statusBarText);
 	}
 
 	/**
@@ -1541,7 +1555,12 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             // this is a request to make a node relationship (e.g. synonym on a Taxon record)
 			if(dragged instanceof TreeNode && droppedOn instanceof TreeNode)
 			{
-				return true;
+                TreeNode droppedOnNode = (TreeNode)droppedOn;
+                if (droppedOnNode.getAcceptedParentId() == null)
+                {
+                    return true;
+                }
+				return false;
 			}
 		}
 		else if(dropAction == DnDConstants.ACTION_MOVE)
