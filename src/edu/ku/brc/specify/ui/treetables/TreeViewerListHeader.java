@@ -10,6 +10,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -195,7 +196,7 @@ public class TreeViewerListHeader extends JPanel implements ListDataListener
         }
         else
         {
-            System.out.println("ignoring drag event");
+            //System.out.println("ignoring drag event");
         }
     }
     
@@ -235,11 +236,12 @@ public class TreeViewerListHeader extends JPanel implements ListDataListener
 			Pair<Integer,Integer> textBounds = cellRenderer.getTextBoundsForRank(rank); 
 			g.setColor(textColor);
             String clippedName = GraphicsUtils.clipString(g.getFontMetrics(), rankName, textBounds.second-textBounds.first);
+            g.setFont(g.getFont().deriveFont(Font.BOLD));
 			g.drawString(clippedName,textBounds.first,getHeight()/2);
 		}
         
         g2.setColor(this.getBackground());
-        g2.setStroke(new BasicStroke(4));
+        g2.setStroke(new BasicStroke(8));
         g2.drawLine(0,h,w,h);
 	}
 
