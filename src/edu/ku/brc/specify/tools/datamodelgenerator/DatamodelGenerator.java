@@ -45,7 +45,11 @@ import org.hibernate.annotations.Index;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.tools.fielddesc.FieldDescApp;
+import edu.ku.brc.specify.tools.fielddesc.LocalizableNameDescIFace;
+import edu.ku.brc.specify.tools.fielddesc.LocalizerBasePanel;
+import edu.ku.brc.specify.tools.fielddesc.LocalizerContainerIFace;
+import edu.ku.brc.specify.tools.fielddesc.SchemaLocalizerFrame;
+import edu.ku.brc.specify.tools.fielddesc.SchemaLocalizerXMLHelper;
 import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.util.DatamodelHelper;
 
@@ -67,13 +71,13 @@ public class DatamodelGenerator
 
     protected Hashtable<String, TableMetaData> tblMetaDataHash = new Hashtable<String, TableMetaData>();
     
-    protected Vector<edu.ku.brc.specify.tools.fielddesc.Table> descTableList = new Vector<edu.ku.brc.specify.tools.fielddesc.Table>();
+    protected Vector<LocalizerContainerIFace> descTableList = new Vector<LocalizerContainerIFace>();
     
     protected File         srcCodeDir   = null;
     protected String       packageName  = null;
     protected int          missing      = 0;
     
-    protected FieldDescApp fda          = null;
+    protected SchemaLocalizerXMLHelper schemaLocalizer          = null;
     
     protected Hashtable<String, String> abbrvHash = new Hashtable<String, String>();
     protected boolean      includeDesc = false;
@@ -91,8 +95,8 @@ public class DatamodelGenerator
     {
         if (includeDesc)
         {
-            fda = new FieldDescApp();
-            descTableList = fda.getTables();
+            schemaLocalizer = new SchemaLocalizerXMLHelper();
+            descTableList = schemaLocalizer.getTables();
         }
     }
     
@@ -102,14 +106,21 @@ public class DatamodelGenerator
      */
     protected Desc getTableDesc(final String tableName)
     {
-        edu.ku.brc.specify.tools.fielddesc.Desc d = fda.getTableDesc(tableName);
-        if (d != null)
+        LocalizerContainerIFace container = schemaLocalizer.getContainer(tableName);
+        if (container != null)
         {
-            Desc desc = new Desc(d.getText(), d.getCountry(), d.getLang(), d.getVariant());
-            return desc;
+            edu.ku.brc.specify.tools.fielddesc.Desc d = LocalizerBasePanel.getDescForCurrLocale(container);
+            if (d != null)
+            {
+                Desc desc = new Desc(d.getText(), d.getCountry(), d.getLang(), d.getVariant());
+                return desc;
+            } else
+            {
+                log.error("No Desc for Table["+tableName+"]");
+            }
         } else
         {
-            log.error("No Desc for Table["+tableName+"]");
+            log.error("No Table["+tableName+"]");
         }
             
         return null;
@@ -121,16 +132,22 @@ public class DatamodelGenerator
      */
     protected Name getTableNameDesc(final String tableName)
     {
-        edu.ku.brc.specify.tools.fielddesc.Name d = fda.getTableNameDesc(tableName);
-        if (d != null)
+        LocalizerContainerIFace container = schemaLocalizer.getContainer(tableName);
+        if (container != null)
         {
-            Name nm = new Name(d.getText(), d.getCountry(), d.getLang(), d.getVariant());
-            return nm;
+            edu.ku.brc.specify.tools.fielddesc.Name dn = LocalizerBasePanel.getNameDescForCurrLocale(container);
+            if (dn != null)
+            {
+                Name nm = new Name(dn.getText(), dn.getCountry(), dn.getLang(), dn.getVariant());
+                return nm;
+            } else
+            {
+                log.error("No NameDesc for ["+tableName+"]");
+            }
         } else
         {
-            log.error("No Desc for Table["+tableName+"]");
+            log.error("No Table["+tableName+"]");
         }
-            
         return null;
     }
     
@@ -141,14 +158,28 @@ public class DatamodelGenerator
      */
     protected Desc getFieldDesc(final String tableName, final String fieldName)
     {
-        edu.ku.brc.specify.tools.fielddesc.Desc d = fda.getFieldDesc(tableName, fieldName);
-        if (d != null)
+        LocalizerContainerIFace container = schemaLocalizer.getContainer(tableName);
+        if (container != null)
         {
-            Desc desc = new Desc(d.getText(), d.getCountry(), d.getLang(), d.getVariant());
-            return desc;
+            LocalizableNameDescIFace item = container.getItemByName(fieldName);
+            if (item != null)
+            {
+                edu.ku.brc.specify.tools.fielddesc.Desc d = LocalizerBasePanel.getDescForCurrLocale(item);
+                if (d != null)
+                {
+                    Desc desc = new Desc(d.getText(), d.getCountry(), d.getLang(), d.getVariant());
+                    return desc;
+                } else
+                {
+                    log.error("No Desc for ["+tableName+"] Field["+fieldName+"]");
+                }
+            } else
+            {
+                log.error("No Field ["+tableName+"] Field["+fieldName+"]");
+            }
         } else
         {
-            log.error("No Desc for Table["+tableName+"] Field["+fieldName+"]");
+            log.error("No Table["+tableName+"] Field["+fieldName+"]");
         }
             
         return null;
@@ -160,14 +191,28 @@ public class DatamodelGenerator
      */
     protected Name getFieldNameDesc(final String tableName, final String fieldName)
     {
-        edu.ku.brc.specify.tools.fielddesc.Name d = fda.getFieldNameDesc(tableName, fieldName);
-        if (d != null)
+        LocalizerContainerIFace container = schemaLocalizer.getContainer(tableName);
+        if (container != null)
         {
-            Name nm = new Name(d.getText(), d.getCountry(), d.getLang(), d.getVariant());
-            return nm;
+            LocalizableNameDescIFace item = container.getItemByName(fieldName);
+            if (item != null)
+            {
+                edu.ku.brc.specify.tools.fielddesc.Name dn = LocalizerBasePanel.getNameDescForCurrLocale(item);
+                if (dn != null)
+                {
+                    Name nm = new Name(dn.getText(), dn.getCountry(), dn.getLang(), dn.getVariant());
+                    return nm;
+                } else
+                {
+                    log.error("No Name for ["+tableName+"] Field["+fieldName+"]");
+                }
+            } else
+            {
+                log.error("No Field ["+tableName+"] Field["+fieldName+"]");
+            }
         } else
         {
-            log.error("No Desc for Table["+tableName+"] Field["+fieldName+"]");
+            log.error("No Table["+tableName+"] Field["+fieldName+"]");
         }
             
         return null;
@@ -179,7 +224,8 @@ public class DatamodelGenerator
      */
     protected Desc getRelDesc(final String tableName, final String relName)
     {
-        edu.ku.brc.specify.tools.fielddesc.Desc d = fda.getRelDesc(tableName, relName);
+        /*
+        edu.ku.brc.specify.tools.fielddesc.Desc d = sla.getRelDesc(tableName, relName);
         if (d != null)
         {
             Desc desc = new Desc(d.getText(), d.getCountry(), d.getLang(), d.getVariant());
@@ -190,6 +236,8 @@ public class DatamodelGenerator
         }
             
         return null;
+        */
+        return getFieldDesc(tableName, relName);
     }
     
     /**
@@ -198,7 +246,8 @@ public class DatamodelGenerator
      */
     protected Name getRelNameDesc(final String tableName, final String relName)
     {
-        edu.ku.brc.specify.tools.fielddesc.Name d = fda.getRelNameDesc(tableName, relName);
+        /*
+        edu.ku.brc.specify.tools.fielddesc.Name d = sla.getRelNameDesc(tableName, relName);
         if (d != null)
         {
             Name nm = new Name(d.getText(), d.getCountry(), d.getLang(), d.getVariant());
@@ -209,6 +258,8 @@ public class DatamodelGenerator
         }
             
         return null;
+        */
+        return getFieldNameDesc(tableName, relName);
     }
 
     /**

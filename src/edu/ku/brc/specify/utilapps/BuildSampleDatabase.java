@@ -93,7 +93,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.ButtonBarFactory;
@@ -102,7 +101,6 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
-import com.lowagie.text.pdf.SpotColor;
 
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.AttributeIFace;
@@ -177,12 +175,10 @@ import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.specify.tools.fielddesc.Desc;
-import edu.ku.brc.specify.tools.fielddesc.Field;
-import edu.ku.brc.specify.tools.fielddesc.FieldDescApp;
 import edu.ku.brc.specify.tools.fielddesc.LocalizableNameDescIFace;
+import edu.ku.brc.specify.tools.fielddesc.LocalizerContainerIFace;
 import edu.ku.brc.specify.tools.fielddesc.Name;
-import edu.ku.brc.specify.tools.fielddesc.Relationship;
-import edu.ku.brc.specify.tools.fielddesc.Table;
+import edu.ku.brc.specify.tools.fielddesc.SchemaLocalizerXMLHelper;
 import edu.ku.brc.specify.treeutils.TreeHelper;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIHelper;
@@ -2618,8 +2614,8 @@ public class BuildSampleDatabase
     
     protected void loadSchemaLocalization(final CollectionType collTyp)
     {
-        FieldDescApp fda = new FieldDescApp();
-        for (Table table : fda.getTables())
+        SchemaLocalizerXMLHelper schemaLocalizer = new SchemaLocalizerXMLHelper();
+        for (LocalizerContainerIFace table : schemaLocalizer.getTables())
         {
             SpLocaleContainer container = new SpLocaleContainer();
             container.initialize();
@@ -2630,23 +2626,12 @@ public class BuildSampleDatabase
             collTyp.getSpLocaleContainers().add(container);
             container.setCollectionType(collTyp);
             
-            for (Field field : table.getFields())
+            for (LocalizableNameDescIFace field : table.getItems())
             {
                 SpLocaleContainerItem item = new SpLocaleContainerItem();
                 item.initialize();
                 item.setType(field.getType());
                 loadLocalization(field, item);
-                
-                container.getItems().add(item);
-                item.setContainer(container);
-            }
-            
-            for (Relationship rel : table.getRelationships())
-            {
-                SpLocaleContainerItem item = new SpLocaleContainerItem();
-                item.initialize();
-                item.setType(rel.getType());
-                loadLocalization(rel, item);
                 
                 container.getItems().add(item);
                 item.setContainer(container);

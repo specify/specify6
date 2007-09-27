@@ -21,7 +21,7 @@ import java.util.Vector;
  * Sep 4, 2007
  *
  */
-public class Table implements LocalizableNameDescIFace, Comparable<Table>, Cloneable
+public class Table implements LocalizerContainerIFace, Comparable<LocalizerContainerIFace>, Cloneable
 {
     protected String      name;
     protected List<Name>  names = new Vector<Name>();
@@ -29,6 +29,10 @@ public class Table implements LocalizableNameDescIFace, Comparable<Table>, Clone
     
     protected List<Field>        fields        = new Vector<Field>();
     protected List<Relationship> relationships = new Vector<Relationship>();
+    
+    // Transient
+    protected List<LocalizableNameDescIFace> items = null;
+
 
     public Table(final String name)
     {
@@ -119,13 +123,22 @@ public class Table implements LocalizableNameDescIFace, Comparable<Table>, Clone
     {
         this.relationships = relationships;
     }
+    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableNameDescIFace#getType()
+     */
+    public String getType()
+    {
+        return "";
+    }
 
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    public int compareTo(Table o)
+    public int compareTo(LocalizerContainerIFace o)
     {
-        return name.compareTo(o.name);
+        return name.compareTo(o.getName());
     }
     
     /* (non-Javadoc)
@@ -185,6 +198,37 @@ public class Table implements LocalizableNameDescIFace, Comparable<Table>, Clone
             Desc desc = new Desc(srcDesc.getText(), dstLocale);
             descs.add(desc);
         }       
+    }
+
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableNameDescIFace#getLocaleFields()
+     */
+    public List<LocalizableNameDescIFace> getItems()
+    {
+        if (items == null)
+        {
+            items = new Vector<LocalizableNameDescIFace>();
+            items.addAll(fields);
+            items.addAll(relationships);
+        }
+        return items;
+    }
+    
+    /**
+     * @param nm
+     * @return
+     */
+    public LocalizableNameDescIFace getItemByName(final String nm)
+    {
+        for (LocalizableNameDescIFace lndi : getItems())
+        {
+            if (lndi.getName().equals(nm))
+            {
+                return lndi;
+            }
+        }
+        return null;
     }
 
     /* (non-Javadoc)

@@ -23,7 +23,12 @@ import java.util.Locale;
 public interface LocalizableNameDescIFace
 {
     
+    /**
+     * @return
+     */
     public String getName();
+    
+    public String getType();
     
     /**
      * @return the descs
@@ -49,4 +54,11 @@ public interface LocalizableNameDescIFace
      * @param locale
      */
     public void setLocale(final Locale locale);
+    
+    /**
+     * @param srcLocale
+     * @param dstLocale
+     */
+    public void copyLocale(final Locale srcLocale, final Locale dstLocale);
+    
 }
