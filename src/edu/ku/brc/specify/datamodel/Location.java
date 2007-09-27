@@ -394,8 +394,7 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
 		this.containers = containers;
 	}
 
-    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "parent")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, fetch = FetchType.LAZY, mappedBy = "parent")
 	public Set<Location> getChildren()
 	{
 		return this.children;

@@ -429,11 +429,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
 		this.parent = parent;
 	}
 
-	/**
-	 * 
-	 */
-    @OneToMany(mappedBy = "parent")
-    @Cascade( {CascadeType.ALL} )
+    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, fetch = FetchType.LAZY, mappedBy = "parent")
 	public Set<GeologicTimePeriod> getChildren()
 	{
 		return this.children;

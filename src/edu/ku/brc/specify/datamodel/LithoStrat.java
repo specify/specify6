@@ -362,11 +362,7 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
 		this.parent = parent;
 	}
 
-	/**
-	 * 
-	 */
-    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "parent")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, fetch = FetchType.LAZY, mappedBy = "parent")
 	public Set<LithoStrat> getChildren()
 	{
 		return this.children;

@@ -699,9 +699,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 		this.parent = parent;
 	}
 
-
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "parent")
-    @Cascade( {CascadeType.DELETE, CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
+    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, fetch = FetchType.LAZY, mappedBy = "parent")
 	public Set<Taxon> getChildren()
 	{
 		return this.children;
