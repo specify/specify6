@@ -19,7 +19,9 @@ import java.util.List;
 
 import edu.ku.brc.ui.forms.persist.FormCell;
 import edu.ku.brc.ui.forms.persist.FormCellField;
-import edu.ku.brc.ui.forms.persist.FormViewDef;
+import edu.ku.brc.ui.forms.persist.FormCellFieldIFace;
+import edu.ku.brc.ui.forms.persist.FormCellIFace;
+import edu.ku.brc.ui.forms.persist.FormViewDefIFace;
 
 /**
  * This class holds all the carry forward information for a single form. It also knows how to "copy" or carry forward 
@@ -33,18 +35,18 @@ import edu.ku.brc.ui.forms.persist.FormViewDef;
 public class CarryForwardInfo
 {
     
-    protected static FormCell searchObject = new FormCell(); 
+    protected static FormCellIFace searchObject = new FormCell(); 
     
     protected List<FormCellField> fieldList = new ArrayList<FormCellField>();
     protected DataObjectGettable  getter;
     protected DataObjectSettable  setter;
-    protected FormViewDef         formViewDef;
+    protected FormViewDefIFace         formViewDef;
     protected FormViewObj         formViewObj;
     
     /**
      * @param classObj
      */
-    public CarryForwardInfo(final Class<?> classObj, final FormViewObj formViewObj, final FormViewDef formViewDef)
+    public CarryForwardInfo(final Class<?> classObj, final FormViewObj formViewObj, final FormViewDefIFace formViewDef)
     {
         this.formViewObj = formViewObj;
         this.formViewDef = formViewDef;
@@ -59,7 +61,7 @@ public class CarryForwardInfo
      */
     public void add(final String id)
     {
-        FormCell cellField = formViewDef.getFormCellById(id);
+        FormCellIFace cellField = formViewDef.getFormCellById(id);
         if (cellField != null && cellField instanceof FormCellField)
         {
             fieldList.add((FormCellField)cellField);
@@ -69,7 +71,7 @@ public class CarryForwardInfo
     
     public void remove(final String id)
     {
-        FormCell cellField = formViewDef.getFormCellById(id);
+        FormCellIFace cellField = formViewDef.getFormCellById(id);
         if (cellField != null && cellField instanceof FormCellField)
         {
             fieldList.remove(cellField);
@@ -89,9 +91,9 @@ public class CarryForwardInfo
         //return Collections.binarySearch(fieldList, searchObject) > -1;
         
         
-        for (FormCellField cellField : fieldList)
+        for (FormCellFieldIFace cellField : fieldList)
         {
-            if (cellField.getId().equals(id))
+            if (cellField.getIdent().equals(id))
             {
                 return true;
             }
@@ -114,7 +116,7 @@ public class CarryForwardInfo
      */
     public void carryForward(final Object carryFwdData, final Object newData)
     {
-        for (FormCellField cellField : fieldList)
+        for (FormCellFieldIFace cellField : fieldList)
         {
             //Object data = getter.getFieldValue(carryFwdData, cellField.getName());
             //System.out.println(data);

@@ -26,22 +26,20 @@ import java.util.Vector;
  * @author rods
  *
  */
-public class AltView implements Comparable<AltView>, Cloneable
+public class AltView implements Comparable<AltViewIFace>, Cloneable, AltViewIFace
 {
-    public enum CreationMode {None, Edit, View, Search}
+    protected ViewIFace     view;
+    protected String        name;
+    protected String        label;
+    protected AltViewIFace.CreationMode  mode;
+    protected boolean       validated;
+    protected boolean       isDefault;
     
-    protected View         view;
-    protected String       name;
-    protected String       label;
-    protected CreationMode mode;
-    protected boolean      validated;
-    protected boolean      isDefault;
-    
-    protected ViewDef      viewDef = null;
+    protected ViewDefIFace  viewDef = null;
     
     protected String        selectorName  = null;
     protected String        selectorValue = null;
-    protected List<AltView> subViews      = null;
+    protected List<AltViewIFace> subViews      = null;
 
     /**
      * 
@@ -51,13 +49,13 @@ public class AltView implements Comparable<AltView>, Cloneable
         // do nothing
     }
 
-    public AltView(final View view, 
+    public AltView(final ViewIFace view, 
                    final String name, 
                    final String label, 
                    final CreationMode mode, 
                    final boolean validated, 
                    final boolean isDefault, 
-                   final ViewDef viewDef)
+                   final ViewDefIFace viewDef)
     {
         this.view = view;
         this.name = name;
@@ -69,66 +67,105 @@ public class AltView implements Comparable<AltView>, Cloneable
     }
 
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.AltViewIFace#getMode()
+     */
     public CreationMode getMode()
     {
         return mode;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.AltViewIFace#getViewDefName()
+     */
     public String getViewDefName()
     {
         return viewDef.getName();
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.AltViewIFace#getLabel()
+     */
     public String getLabel()
     {
         return label;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.AltViewIFace#setLabel(java.lang.String)
+     */
     public void setLabel(String label)
     {
         this.label = label;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.AltViewIFace#getName()
+     */
     public String getName()
     {
         return name;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.AltViewIFace#setName(java.lang.String)
+     */
     public void setName(String name)
     {
         this.name = name;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.AltViewIFace#isValidated()
+     */
     public boolean isValidated()
     {
         return validated;
     }
 
-    public ViewDef getViewDef()
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.AltViewIFace#getViewDef()
+     */
+    public ViewDefIFace getViewDef()
     {
         return viewDef;
     }
 
-    public void setViewDef(ViewDef viewDef)
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.AltViewIFace#setViewDef(edu.ku.brc.ui.forms.persist.ViewDefIFace)
+     */
+    public void setViewDef(ViewDefIFace viewDef)
     {
         this.viewDef = viewDef;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.AltViewIFace#isDefault()
+     */
     public boolean isDefault()
     {
         return isDefault;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.AltViewIFace#setDefault(boolean)
+     */
     public void setDefault(boolean isDefault)
     {
         this.isDefault = isDefault;
     }
     
-    public View getView()
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.AltViewIFace#getView()
+     */
+    public ViewIFace getView()
     {
         return view;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.AltViewIFace#setMode(edu.ku.brc.ui.forms.persist.AltView.CreationMode)
+     */
     public void setMode(CreationMode mode)
     {
         this.mode = mode;
@@ -140,51 +177,69 @@ public class AltView implements Comparable<AltView>, Cloneable
         return label;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.AltViewIFace#getSelectorName()
+     */
     public String getSelectorName()
     {
         return selectorName;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.AltViewIFace#setSelectorName(java.lang.String)
+     */
     public void setSelectorName(String selectorName)
     {
         this.selectorName = selectorName;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.AltViewIFace#getSelectorValue()
+     */
     public String getSelectorValue()
     {
         return selectorValue;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.AltViewIFace#setSelectorValue(java.lang.String)
+     */
     public void setSelectorValue(String selectorValue)
     {
         this.selectorValue = selectorValue;
     }
 
-    public List<AltView> getSubViews()
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.AltViewIFace#getSubViews()
+     */
+    public List<AltViewIFace> getSubViews()
     {
         return subViews;
     }
 
-    public void setSubViews(List<AltView> subViews)
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.AltViewIFace#setSubViews(java.util.List)
+     */
+    public void setSubViews(List<AltViewIFace> subViews)
     {
         this.subViews = subViews;
     }
 
-    public static AltView.CreationMode parseMode(final String modeStr, final AltView.CreationMode defaultMode)
+    public static AltView.CreationMode parseMode(final String modeStr, final AltViewIFace.CreationMode defaultMode)
     {
         if (isNotEmpty(modeStr))
         {
             if (modeStr.equalsIgnoreCase("edit"))
             {
-                return AltView.CreationMode.Edit;
+                return AltViewIFace.CreationMode.Edit;
                
             } else if (modeStr.equalsIgnoreCase("view"))
             {
-                return AltView.CreationMode.View;
+                return AltViewIFace.CreationMode.View;
                 
             } if (modeStr.equalsIgnoreCase("search"))
             {
-                return AltView.CreationMode.Search;
+                return AltViewIFace.CreationMode.Search;
             }
         }
         return defaultMode;
@@ -192,6 +247,9 @@ public class AltView implements Comparable<AltView>, Cloneable
     
     /* (non-Javadoc)
      * @see java.lang.Object#clone()
+     */
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.AltViewIFace#clone()
      */
     public Object clone() throws CloneNotSupportedException
     {
@@ -205,22 +263,25 @@ public class AltView implements Comparable<AltView>, Cloneable
         altView.viewDef = viewDef;
         altView.selectorName = selectorName;
         altView.selectorValue = selectorValue;
-        altView.subViews = new Vector<AltView>(subViews); // OK not rto clone the references
+        altView.subViews = new Vector<AltViewIFace>(subViews); // OK not to clone the references
         return altView;      
     }
     
     //-------------------------------------
     // Comparable
     //-------------------------------------
-    public int compareTo(AltView obj)
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.AltViewIFace#compareTo(edu.ku.brc.ui.forms.persist.AltView)
+     */
+    public int compareTo(AltViewIFace obj)
     {
-        if (name.equals(obj.name))
+        if (name.equals(obj.getName()))
         {
             return 0;
 
         }
         // else
-        return name.compareTo(obj.name);
+        return name.compareTo(obj.getName());
     }
 
 }

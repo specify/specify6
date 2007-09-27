@@ -26,12 +26,12 @@ import java.util.Vector;
  * @author rods
  *
  */
-public class FormCellPanel extends FormCell implements Cloneable
+public class FormCellPanel extends FormCell implements Cloneable, FormCellPanelIFace
 {
     protected String colDef;
     protected String rowDef;
     protected String panelType;
-    protected List<FormRow> rows = new Vector<FormRow>(); 
+    protected List<FormRowIFace> rows = new Vector<FormRowIFace>(); 
 
     /**
      * Constructor
@@ -50,7 +50,7 @@ public class FormCellPanel extends FormCell implements Cloneable
                          final int               colspan, 
                          final int               rowspan)
     {
-        super(FormCell.CellType.panel, id, name, colspan, rowspan);
+        super(FormCellIFace.CellType.panel, id, name, colspan, rowspan);
         this.panelType    = panelType;
         this.ignoreSetGet = true;
         this.colDef       = colDef;
@@ -62,7 +62,7 @@ public class FormCellPanel extends FormCell implements Cloneable
      * @param row the row to add
      * @return the row that was added
      */
-    public FormRow addRow(FormRow row)
+    public FormRowIFace addRow(FormRow row)
     {
         rows.add(row);
         return row;
@@ -83,7 +83,7 @@ public class FormCellPanel extends FormCell implements Cloneable
         return panelType;
     }
 
-    public List<FormRow> getRows()
+    public List<FormRowIFace> getRows()
     {
         return rows;
     }
@@ -94,11 +94,11 @@ public class FormCellPanel extends FormCell implements Cloneable
     public Object clone() throws CloneNotSupportedException
     {
         FormCellPanel fcp = (FormCellPanel)super.clone();
-        fcp.rows         = new Vector<FormRow>(); 
+        fcp.rows         = new Vector<FormRowIFace>(); 
         fcp.panelType    = panelType;
         fcp.colDef       = colDef;
         fcp.rowDef       = rowDef;
-        for (FormRow formRow : rows)
+        for (FormRowIFace formRow : rows)
         {
             fcp.rows.add((FormRow)formRow.clone());
         }

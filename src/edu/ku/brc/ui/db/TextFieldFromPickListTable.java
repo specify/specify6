@@ -100,7 +100,7 @@ public class TextFieldFromPickListTable extends JTextField implements GetSetValu
                     if (isFormObjIFace && valObj instanceof FormDataObjIFace)
                     {
                         //System.out.println(((FormDataObjIFace)value).getId().longValue()+"  "+(((FormDataObjIFace)valObj).getId().longValue()));
-                        if (((FormDataObjIFace)value).getId().longValue() == (((FormDataObjIFace)valObj).getId().longValue()))
+                        if (((FormDataObjIFace)value).getId().intValue() == (((FormDataObjIFace)valObj).getId().intValue()))
                         {
                             data = pli.getTitle();
                             break;                                

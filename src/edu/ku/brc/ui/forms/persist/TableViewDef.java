@@ -23,7 +23,7 @@ import java.util.Vector;
  * @author rods
  *
  */
-public class TableViewDef extends ViewDef implements Cloneable
+public class TableViewDef extends ViewDef implements Cloneable, TableViewDefIFace
 {
 
     protected Vector<FormColumn> columns = new Vector<FormColumn>();
@@ -46,19 +46,28 @@ public class TableViewDef extends ViewDef implements Cloneable
         
     }
     
-    /**
-     * Add a column definition
-     * @param column the column def to add
-     * @return the column def that was added
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.TableDefIFace#addColumn(edu.ku.brc.ui.forms.persist.FormColumn)
      */
-    public FormColumn addColumn(final FormColumn column)
+    public FormColumnIFace addColumn(final FormColumn column)
     {
         columns.add(column);
         return column;
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#getDerivedInterface()
+     */
+    public Class<?> getDerivedInterface()
+    {
+        return TableViewDefIFace.class;
+    }
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormView#cleanUp()
+     */
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.TableDefIFace#cleanUp()
      */
     @Override
     public void cleanUp()
@@ -67,24 +76,25 @@ public class TableViewDef extends ViewDef implements Cloneable
         columns.clear();
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.TableDefIFace#getColumns()
+     */
     public List<FormColumn> getColumns()
     {
         return columns;
-    }
-
-    public void setColumns(Vector<FormColumn> columns)
-    {
-        this.columns = columns;
     }
     
     /* (non-Javadoc)
      * @see java.lang.Object#clone()
      */
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.TableDefIFace#clone()
+     */
     public Object clone() throws CloneNotSupportedException
     {
         TableViewDef tvd = (TableViewDef)super.clone();
         tvd.columns = new Vector<FormColumn>();
-        for (FormColumn formCol : columns)
+        for (FormColumnIFace formCol : columns)
         {
             tvd.columns.add((FormColumn)formCol.clone()); 
         }

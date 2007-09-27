@@ -27,9 +27,9 @@ import org.apache.commons.lang.StringUtils;
  * @author rods
  *
  */
-public class FormCell implements Comparable<FormCell>, Cloneable
+public class FormCell implements Comparable<FormCellIFace>, Cloneable, FormCellIFace
 {
-    public enum CellType {separator, field, label, statictext, subview, command, panel, statusbar, iconview}
+    
 
     // Required fields
     protected CellType type;
@@ -101,110 +101,173 @@ public class FormCell implements Comparable<FormCell>, Cloneable
         this.rowspan = rowspan;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#getColspan()
+     */
     public int getColspan()
     {
         return colspan;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#getName()
+     */
     public String getName()
     {
         return name;
     }
 
-    public String getId()
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#getId()
+     */
+    public String getIdent()
     {
         return id;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#getRowspan()
+     */
     public int getRowspan()
     {
         return rowspan;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#getType()
+     */
     public CellType getType()
     {
         return type;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#isIgnoreSetGet()
+     */
     public boolean isIgnoreSetGet()
     {
         return ignoreSetGet;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#isChangeListenerOnly()
+     */
     public boolean isChangeListenerOnly()
     {
         return changeListenerOnly;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#isMultiField()
+     */
     public boolean isMultiField()
     {
         return isMultiField;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#getFieldNames()
+     */
     public String[] getFieldNames()
     {
         return fieldNames;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#setChangeListenerOnly(boolean)
+     */
     public void setChangeListenerOnly(boolean changeListenerOnly)
     {
         this.changeListenerOnly = changeListenerOnly;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#setColspan(int)
+     */
     public void setColspan(int colspan)
     {
         this.colspan = colspan;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#setFieldNames(java.lang.String[])
+     */
     public void setFieldNames(String[] fieldNames)
     {
         this.fieldNames = fieldNames;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#setIgnoreSetGet(boolean)
+     */
     public void setIgnoreSetGet(boolean ignoreSetGet)
     {
         this.ignoreSetGet = ignoreSetGet;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#setMultiField(boolean)
+     */
     public void setMultiField(boolean isMultiField)
     {
         this.isMultiField = isMultiField;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#setName(java.lang.String)
+     */
     public void setName(String name)
     {
         this.name = name;
     }
 
-    public void setId(String id)
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#setId(java.lang.String)
+     */
+    public void setIdent(String id)
     {
         this.id = id;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#setRowspan(int)
+     */
     public void setRowspan(int rowspan)
     {
         this.rowspan = rowspan;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#setType(edu.ku.brc.ui.forms.persist.FormCell.CellType)
+     */
     public void setType(CellType type)
     {
         this.type = type;
     }
 
-    public int compareTo(FormCell obj)
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#compareTo(edu.ku.brc.ui.forms.persist.FormCell)
+     */
+    public int compareTo(FormCellIFace obj)
     {
-        if (obj == null || obj.id == null)
+        if (obj == null || obj.getIdent() == null)
         {
             return 0;
         }
-        return id.compareTo(obj.id);
+        return id.compareTo(obj.getIdent());
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#setProperties(java.util.Properties)
+     */
     public void setProperties(final Properties properties)
     {
         this.properties = properties;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#addProperty(java.lang.String, java.lang.String)
+     */
     public void addProperty(final String nameStr, final String value)
     {
         if (properties == null)
@@ -214,6 +277,9 @@ public class FormCell implements Comparable<FormCell>, Cloneable
         properties.put(nameStr, value);
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#getProperty(java.lang.String)
+     */
     public String getProperty(final String nameStr)
     {
         if (properties != null)
@@ -223,6 +289,9 @@ public class FormCell implements Comparable<FormCell>, Cloneable
         return null;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#getPropertyAsInt(java.lang.String, int)
+     */
     public int getPropertyAsInt(final String nameStr, final int defVal)
     {
         if (properties != null)
@@ -236,6 +305,9 @@ public class FormCell implements Comparable<FormCell>, Cloneable
         return defVal;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#getPropertyAsBoolean(java.lang.String, boolean)
+     */
     public boolean getPropertyAsBoolean(final String nameStr, final boolean defVal)
     {
         if (properties != null)
@@ -249,6 +321,9 @@ public class FormCell implements Comparable<FormCell>, Cloneable
         return defVal;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#getProperties()
+     */
     public Properties getProperties()
     {
         return properties;
@@ -257,6 +332,9 @@ public class FormCell implements Comparable<FormCell>, Cloneable
     
     /* (non-Javadoc)
      * @see java.lang.Object#clone()
+     */
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#clone()
      */
     public Object clone() throws CloneNotSupportedException
     {

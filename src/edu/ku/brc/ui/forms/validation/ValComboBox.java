@@ -498,7 +498,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
                         if (isFormObjIFace && valObj instanceof FormDataObjIFace)
                         {
                             //System.out.println(((FormDataObjIFace)value).getId().longValue()+"  "+(((FormDataObjIFace)valObj).getId().longValue()));
-                            if (((FormDataObjIFace)value).getId().longValue() == (((FormDataObjIFace)valObj).getId().longValue()))
+                            if (((FormDataObjIFace)value).getId().intValue() == (((FormDataObjIFace)valObj).getId().intValue()))
                             {
                                 comboBox.setSelectedIndex(i);
                                 fnd = true;

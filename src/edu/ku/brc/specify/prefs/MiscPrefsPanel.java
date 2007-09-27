@@ -30,7 +30,7 @@ import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.ViewFactory;
 import edu.ku.brc.ui.forms.Viewable;
-import edu.ku.brc.ui.forms.persist.View;
+import edu.ku.brc.ui.forms.persist.ViewIFace;
 import edu.ku.brc.ui.forms.validation.FormValidator;
 
 /**
@@ -45,7 +45,7 @@ public class MiscPrefsPanel extends JPanel implements PrefsSavable, PrefsPanelIF
 {
     private static final Logger log  = Logger.getLogger(MiscPrefsPanel.class);
     
-    protected View         formView = null;
+    protected ViewIFace         formView = null;
     protected Viewable     form     = null;
     
     /**

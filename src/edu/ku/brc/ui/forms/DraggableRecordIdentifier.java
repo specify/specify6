@@ -23,8 +23,8 @@ import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
 import edu.ku.brc.ui.dnd.ShadowFactory;

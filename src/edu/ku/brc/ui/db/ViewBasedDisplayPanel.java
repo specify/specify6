@@ -31,8 +31,8 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.NavBoxLayoutManager;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.Viewable;
-import edu.ku.brc.ui.forms.persist.AltView;
-import edu.ku.brc.ui.forms.persist.View;
+import edu.ku.brc.ui.forms.persist.AltViewIFace;
+import edu.ku.brc.ui.forms.persist.ViewIFace;
 import edu.ku.brc.ui.forms.validation.FormValidator;
 
 /**
@@ -54,7 +54,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
 
     // Form Stuff
     protected MultiView      multiView;
-    protected View           formView;
+    protected ViewIFace           formView;
     protected List<String>   fieldNames;
 
     protected ViewBasedDisplayActionAdapter vbdaa = null;
@@ -130,7 +130,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
             multiView = new MultiView(null,
                                       null, 
                                       formView, 
-                                      isEdit ? AltView.CreationMode.Edit : AltView.CreationMode.View,
+                                      isEdit ? AltViewIFace.CreationMode.Edit : AltViewIFace.CreationMode.View,
                                       options, null);
 
         } else

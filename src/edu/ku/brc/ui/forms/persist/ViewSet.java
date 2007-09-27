@@ -18,7 +18,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Hashtable;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
@@ -35,13 +34,10 @@ import edu.ku.brc.helpers.XMLHelper;
  * @author rods
  */
 
-public class ViewSet implements Comparable<ViewSet>
+public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
 {
     private static final Logger  log = Logger.getLogger(ViewSet.class);
     private static boolean ALWAYS_LOAD = true; // XXX PREF
-
-    public enum Type {System, User}
-
 
     protected Type                       type              = Type.User;
     protected String                     name              = null;
@@ -50,10 +46,10 @@ public class ViewSet implements Comparable<ViewSet>
     protected File                       dirPath           = null;
 
     protected boolean                    hasLoadedViews    = false;
-    protected Hashtable<String, View>    transientViews    = null;
-    protected Hashtable<String, ViewDef> transientViewDefs = null;
-    protected Hashtable<String, View>    views             = new Hashtable<String, View>();
-    protected Hashtable<String, ViewDef> viewDefs          = new Hashtable<String, ViewDef>();
+    protected Hashtable<String, ViewIFace>    transientViews    = null;
+    protected Hashtable<String, ViewDefIFace> transientViewDefs = null;
+    protected Hashtable<String, ViewIFace>    views             = new Hashtable<String, ViewIFace>();
+    protected Hashtable<String, ViewDefIFace> viewDefs          = new Hashtable<String, ViewDefIFace>();
 
     /**
      * Default Constructor.
@@ -111,8 +107,8 @@ public class ViewSet implements Comparable<ViewSet>
         return Type.System;
     }
 
-    /**
-     * Cleans up intneral data.
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewSetIFace#cleanUp()
      */
     public void cleanUp()
     {
@@ -173,86 +169,76 @@ public class ViewSet implements Comparable<ViewSet>
         }
     }
 
-    /**
-     * Gets a view by name.
-     * @param nameStr name of view to be retrieved
-     * @return the view or null if it isn't found
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewSetIFace#getView(java.lang.String)
      */
-    public View getView(final String nameStr)
+    public ViewIFace getView(final String nameStr)
     {
         loadViews();
 
         return views.get(nameStr);
     }
 
-    /**
-     * Get all the views. It loads them if they have not been loaded yet.
-     * @return the vector of all the view in the ViewSet
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewSetIFace#getViews()
      */
-    public Map<String, View> getViews()
+    public Hashtable<String, ViewIFace> getViews()
     {
         loadViews();
         
         return views;
     }
 
-    /**
-     * Returns all the ViewDefs.
-     * @return all the ViewDefs.
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewSetIFace#getViewDefs()
      */
-    public Hashtable<String, ViewDef> getViewDefs()
+    public Hashtable<String, ViewDefIFace> getViewDefs()
     {
         return viewDefs;
     }
 
-    /**
-     * Gets the name.
-     * @return the name of the viewset
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewSetIFace#getName()
      */
     public String getName()
     {
         return name;
     }
 
-    /**
-     * Returns the type of ViewSet it is.
-     * @return the type of ViewSet it is
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewSetIFace#getType()
      */
     public Type getType()
     {
         return type;
     }
 
-    /**
-     * Sets the name.
-     * @param name the name of the viewset
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewSetIFace#setName(java.lang.String)
      */
     public void setName(final String name)
     {
         this.name = name;
     }
 
-    /**
-     * Returns the title.
-     * @return the title
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewSetIFace#getTitle()
      */
     public String getTitle()
     {
         return title;
     }
 
-    /**
-     * Returns file name (no path)
-     * @return file name (no path)
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewSetIFace#getFileName()
      */
     public String getFileName()
     {
         return fileName;
     }
 
-    /**
-     * Indicates that is contains the core set of forms that can be referred in other places with specifying the viewset name.
-     * @return that is contains the core set of forms that can be referred in other places with specifying the viewset name
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewSetIFace#isSystem()
      */
     public boolean isSystem()
     {
@@ -263,11 +249,11 @@ public class ViewSet implements Comparable<ViewSet>
      * Adds a dynamic or transient View; which is a View that is not read from the database or a file.
      * @param view the in memory View
      */
-    public void addTransientView(final View view)
+    public void addTransientView(final ViewIFace view)
     {
         if (transientViews == null)
         {
-            transientViews = new Hashtable<String, View>();
+            transientViews = new Hashtable<String, ViewIFace>();
             
         } else if (transientViews.get(view.getName()) != null)
         {
@@ -282,11 +268,11 @@ public class ViewSet implements Comparable<ViewSet>
      * Adds a dynamic or transient ViewDef; which is a View that is not read from the database or a file.
      * @param viewDef the in memory ViewDef
      */
-    public void addTransientViewDef(final ViewDef viewDef)
+    public void addTransientViewDef(final ViewDefIFace viewDef)
     {
         if (transientViewDefs == null)
         {
-            transientViewDefs = new Hashtable<String, ViewDef>();
+            transientViewDefs = new Hashtable<String, ViewDefIFace>();
             
         } else if (transientViews.get(viewDef.getName()) != null)
         {
@@ -301,7 +287,7 @@ public class ViewSet implements Comparable<ViewSet>
      * Adds a dynamic or transient View; which is a View that is not read from the database or a file.
      * @param view the in memory View
      */
-    public void removeTransientView(final View view)
+    public void removeTransientView(final ViewIFace view)
     {
         if (transientViews != null)
         {
@@ -316,7 +302,7 @@ public class ViewSet implements Comparable<ViewSet>
      * Adds a dynamic or transient ViewDef; which is a View that is not read from the database or a file.
      * @param viewDef the in memory ViewDef
      */
-    public void removeTransientViewDef(final ViewDef viewDef)
+    public void removeTransientViewDef(final ViewDefIFace viewDef)
     {
         if (transientViewDefs != null)
         {
@@ -372,13 +358,11 @@ public class ViewSet implements Comparable<ViewSet>
         loadDOM(XMLHelper.readFileToDOM4J(fileInputStream), false);
     }
 
-    /**
-     * Comparator.
-     * @param obj the obj to compare
-     * @return 0,1,-1
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewSetIFace#compareTo(edu.ku.brc.ui.forms.persist.ViewSet)
      */
-    public int compareTo(ViewSet obj)
+    public int compareTo(ViewSetIFace obj)
     {
-        return name.compareTo(obj.name);
+        return name.compareTo(obj.getName());
     }
 }

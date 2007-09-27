@@ -74,7 +74,7 @@ import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.Viewable;
-import edu.ku.brc.ui.forms.persist.View;
+import edu.ku.brc.ui.forms.persist.ViewIFace;
 
 /**
  * Creates a dialog listing all the Preparations that are available to be loaned.
@@ -608,7 +608,7 @@ public class LoanSelectPrepsDlg extends JDialog
                 loans.add(lpo.getLoan());
             }
             
-            View view  = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getView("Loan", CollectionType.getCurrentCollectionType());
+            ViewIFace view  = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getView("Loan", CollectionType.getCurrentCollectionType());
             final ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog(parent,
                     view.getViewSetName(),
                     "Loan",

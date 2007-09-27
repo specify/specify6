@@ -85,6 +85,8 @@ public class ViewSetObj extends DataModelObjBase implements java.io.Serializable
      // Non Persisted Fields
      protected String                    fileName     = null;
      protected Hashtable<String, String> metaDataHash = null;
+     
+     protected Set<SpUIViewSet>             viewSets;
 
 
     // Constructors
@@ -286,6 +288,26 @@ public class ViewSetObj extends DataModelObjBase implements java.io.Serializable
         }
     }
     
+    
+    
+    /**
+     * @return the viewSets
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "viewSetObj")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    public Set<SpUIViewSet> getViewSets()
+    {
+        return viewSets;
+    }
+
+    /**
+     * @param viewSets the viewSets to set
+     */
+    public void setViewSets(Set<SpUIViewSet> viewSets)
+    {
+        this.viewSets = viewSets;
+    }
+
     /**
      * 
      */
@@ -316,11 +338,13 @@ public class ViewSetObj extends DataModelObjBase implements java.io.Serializable
      */
     @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "viewSetObj")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<AppResourceData> getAppResourceDatas() {
+    public Set<AppResourceData> getAppResourceDatas() 
+    {
         return appResourceDatas;
     }
     
-    public void setAppResourceDatas(Set<AppResourceData> appResourceDatas) {
+    public void setAppResourceDatas(Set<AppResourceData> appResourceDatas) 
+    {
         this.appResourceDatas = appResourceDatas;
     }
 

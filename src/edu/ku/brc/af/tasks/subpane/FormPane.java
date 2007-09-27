@@ -18,7 +18,8 @@ import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.AltView;
-import edu.ku.brc.ui.forms.persist.View;
+import edu.ku.brc.ui.forms.persist.AltViewIFace;
+import edu.ku.brc.ui.forms.persist.ViewIFace;
 
 /**
  * A class that can display a form, it is dervied from DroppableTaskPane which means objects can be
@@ -80,7 +81,7 @@ public class FormPane extends DroppableTaskPane
         this.viewName    = viewName;
         this.data        = data;
 
-        createForm(viewSetName, viewName, AltView.parseMode(mode, AltView.CreationMode.View), data, options);
+        createForm(viewSetName, viewName, AltView.parseMode(mode, AltViewIFace.CreationMode.View), data, options);
     }
 
     /**
@@ -93,7 +94,7 @@ public class FormPane extends DroppableTaskPane
      */
     public FormPane(final String   name,
                     final Taskable task,
-                    final View     view,
+                    final ViewIFace     view,
                     final String   mode,
                     final Object   data,
                     final int      options)
@@ -104,7 +105,7 @@ public class FormPane extends DroppableTaskPane
         this.viewName    = view.getName();
         this.data        = data;
 
-        createForm(view, AltView.parseMode(mode, AltView.CreationMode.View), data, options);
+        createForm(view, AltView.parseMode(mode, AltViewIFace.CreationMode.View), data, options);
     }
 
     /**
@@ -210,7 +211,7 @@ public class FormPane extends DroppableTaskPane
                 
                 createForm(dfo.getViewSetName(), 
                            DBTableIdMgr.getInstance().getDefaultFormNameById(dfo.getFormId()), 
-                           AltView.CreationMode.View, 
+                           AltViewIFace.CreationMode.View, 
                            dfo.getData(), 
                            MultiView.VIEW_SWITCHER);
              }
@@ -246,7 +247,7 @@ public class FormPane extends DroppableTaskPane
      * @param dataArg the data to fill the form
      * @param options the options needed for creating the form
      */
-    public void createForm(final View    view,
+    public void createForm(final ViewIFace    view,
                            final AltView.CreationMode mode,
                            final Object  dataArg,
                            final int     options)

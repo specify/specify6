@@ -82,6 +82,8 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     protected Set<Locality>             localities;
     protected Set<AppResourceDefault>   appResourceDefaults;
     protected Set<UserPermission>       userPermissions;
+    
+    protected Set<SpLocaleContainer>    spLocaleContainers;
      
 
     // Constructors
@@ -126,6 +128,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
         lithoStratTreeDef = null;
         localities = new HashSet<Locality>();
         appResourceDefaults = new HashSet<AppResourceDefault>();
+        spLocaleContainers    = new HashSet<SpLocaleContainer>();
     }
     // End Initializer
 
@@ -338,6 +341,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     {
         this.appResourceDefaults = appResourceDefaults;
     }
+    
     @OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="collectionType")
     @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<UserPermission> getUserPermissions() 
@@ -348,6 +352,25 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     public void setUserPermissions(Set<UserPermission> userPermissions) 
     {
         this.userPermissions = userPermissions;
+    }
+    
+
+    /**
+     * @return the localeContainers
+     */
+    @OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="collectionType")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
+    public Set<SpLocaleContainer> getSpLocaleContainers()
+    {
+        return spLocaleContainers;
+    }
+
+    /**
+     * @param localeContainers the localeContainers to set
+     */
+    public void setSpLocaleContainers(Set<SpLocaleContainer> spLocaleContainers)
+    {
+        this.spLocaleContainers = spLocaleContainers;
     }
 
     /* (non-Javadoc)

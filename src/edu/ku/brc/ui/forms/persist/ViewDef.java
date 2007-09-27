@@ -30,11 +30,9 @@ import edu.ku.brc.ui.forms.DataObjectSettableFactory;
  * @author rods
  *
  */
-public class ViewDef implements Cloneable
+public class ViewDef implements Cloneable, ViewDefIFace
 {
     private static final Logger log = Logger.getLogger(ViewDef.class);
-    
-    public enum ViewType {form, table, field, formtable, iconview, rstable}
     
     protected ViewType             type;
     protected String               name;
@@ -113,8 +111,17 @@ public class ViewDef implements Cloneable
         dataSettable = viewDef.dataSettable;
     }
     
-    /**
-     * Clean up internal data 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#getDerivedInterface()
+     */
+    public Class<?> getDerivedInterface()
+    {
+        return ViewDefIFace.class;
+    }
+
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#cleanUp()
      */
     public void cleanUp()
     {
@@ -122,61 +129,97 @@ public class ViewDef implements Cloneable
         dataSettable = null;
     }
     
-    public ViewType getType()
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#getType()
+     */
+    public ViewDefIFace.ViewType getType()
     {
         return type;
     }
 
-    public void setType(final ViewType type)
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#setType(edu.ku.brc.ui.forms.persist.ViewDef.ViewType)
+     */
+    public void setType(final ViewDefIFace.ViewType type)
     {
         this.type = type;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#getDesc()
+     */
     public String getDesc()
     {
         return desc;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#setDesc(java.lang.String)
+     */
     public void setDesc(String desc)
     {
         this.desc = desc;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#getName()
+     */
     public String getName()
     {
         return name;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#setName(java.lang.String)
+     */
     public void setName(String name)
     {
         this.name = name;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#getClassName()
+     */
     public String getClassName()
     {
         return className;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#setClassName(java.lang.String)
+     */
     public void setClassName(String className)
     {
         this.className = className;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#getDataGettableName()
+     */
     public String getDataGettableName()
     {
         return dataGettableName;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#setDataGettableName(java.lang.String)
+     */
     public void setDataGettableName(String dataGettableName)
     {
         this.dataGettableName = dataGettableName;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#getDataGettable()
+     */
     public DataObjectGettable getDataGettable()
     {
         return dataGettable;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#getDataSettable()
+     */
     public DataObjectSettable getDataSettable()
     {
         return dataSettable;
@@ -194,17 +237,20 @@ public class ViewDef implements Cloneable
     /* (non-Javadoc)
      * @see java.lang.Object#clone()
      */
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#clone()
+     */
     public Object clone() throws CloneNotSupportedException
     {
         ViewDef viewDef = (ViewDef)super.clone();
-        viewDef.type = type;
-        viewDef.name = name;
-        viewDef.className = className;
+        viewDef.type             = type;
+        viewDef.name             = name;
+        viewDef.className        = className;
         viewDef.dataGettableName = dataGettableName;
         viewDef.dataSettableName = dataSettableName;
-        viewDef.desc = desc;
-        viewDef.dataGettable = dataGettable;
-        viewDef.dataSettable = dataSettable;
+        viewDef.desc             = desc;
+        viewDef.dataGettable     = dataGettable;
+        viewDef.dataSettable     = dataSettable;
         return viewDef;      
     }
 }

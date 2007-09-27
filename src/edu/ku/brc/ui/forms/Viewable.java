@@ -23,9 +23,10 @@ import javax.swing.JLabel;
 
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
-import edu.ku.brc.ui.forms.persist.AltView;
-import edu.ku.brc.ui.forms.persist.View;
+import edu.ku.brc.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.ui.forms.persist.ViewDef;
+import edu.ku.brc.ui.forms.persist.ViewDefIFace;
+import edu.ku.brc.ui.forms.persist.ViewIFace;
 import edu.ku.brc.ui.forms.validation.FormValidator;
 
 /**
@@ -168,19 +169,19 @@ public interface Viewable
      * Returns the View definition for this viewable.
      * @return the View definition for this viewable
      */
-    public View getView();
+    public ViewIFace getView();
 
     /**
      * Returns the ViewDef definition for this viewable.
      * @return the ViewDef definition for this viewable
      */
-    public ViewDef getViewDef();
+    public ViewDefIFace getViewDef();
 
     /**
      * Returns the AltView definition for this viewable.
      * @return the AltView definition for this viewable
      */
-    public AltView getAltView();
+    public AltViewIFace getAltView();
 
     /**
      * Indicates it should hide the UI that enables switching between different AltViews;

@@ -20,7 +20,7 @@ package edu.ku.brc.ui.forms.persist;
  * @author rods
  *
  */
-public class FormColumn implements Cloneable
+public class FormColumn implements Cloneable, FormColumnIFace
 {
 
     protected String name;
@@ -36,21 +36,33 @@ public class FormColumn implements Cloneable
         this.format = format;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormColumnIFace#getDataObjFormatter()
+     */
     public String getDataObjFormatter()
     {
         return dataObjFormatter;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormColumnIFace#getFormat()
+     */
     public String getFormat()
     {
         return format;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormColumnIFace#getLabel()
+     */
     public String getLabel()
     {
         return label;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormColumnIFace#getName()
+     */
     public String getName()
     {
         return name;
@@ -59,13 +71,16 @@ public class FormColumn implements Cloneable
     /* (non-Javadoc)
      * @see java.lang.Object#clone()
      */
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormColumnIFace#clone()
+     */
     public Object clone() throws CloneNotSupportedException
     {
         FormColumn formCol = (FormColumn)super.clone();
-        formCol.name   = name;
-        formCol.label  = label;
+        formCol.name             = name;
+        formCol.label            = label;
         formCol.dataObjFormatter = dataObjFormatter;
-        formCol.format = format;
+        formCol.format           = format;
         return formCol;      
     }
  }

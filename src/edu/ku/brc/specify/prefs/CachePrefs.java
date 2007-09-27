@@ -25,7 +25,7 @@ import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.ViewFactory;
 import edu.ku.brc.ui.forms.Viewable;
-import edu.ku.brc.ui.forms.persist.View;
+import edu.ku.brc.ui.forms.persist.ViewIFace;
 import edu.ku.brc.ui.forms.validation.FormValidator;
 
 /**
@@ -40,7 +40,7 @@ public class CachePrefs extends JPanel implements PrefsSavable, PrefsPanelIFace
 {
     private static final Logger log  = Logger.getLogger(CachePrefs.class);
 
-    protected View         formView  = null;
+    protected ViewIFace         formView  = null;
     protected Viewable     form      = null;
     
     /**

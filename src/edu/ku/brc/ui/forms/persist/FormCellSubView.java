@@ -14,13 +14,18 @@
  */
 package edu.ku.brc.ui.forms.persist;
 
+import java.util.List;
+import java.util.Vector;
+
+import org.apache.commons.lang.StringUtils;
+
 /*
  * @code_status Beta
  **
  * @author rods
  *
  */
-public class FormCellSubView extends FormCell
+public class FormCellSubView extends FormCell implements FormCellSubViewIFace
 {
 
     protected String viewSetName;
@@ -32,6 +37,8 @@ public class FormCellSubView extends FormCell
     
     // For Table/Grid SubViews
     protected int    tableRows = 5;
+    
+    protected List<Modes> modesList = null;
     
     /**
      * Constructor.
@@ -102,63 +109,122 @@ public class FormCellSubView extends FormCell
         this(id, name, viewSetName, viewName, classDesc, description, null, 5, colspan, rowspan, false);
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellSubViewIFace#getClassDesc()
+     */
     public String getClassDesc()
     {
         return classDesc;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellSubViewIFace#setClassDesc(java.lang.String)
+     */
     public void setClassDesc(String classDesc)
     {
         this.classDesc = classDesc;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellSubViewIFace#getViewName()
+     */
     public String getViewName()
     {
         return viewName;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellSubViewIFace#setView(java.lang.String)
+     */
     public void setView(String viewName)
     {
         this.viewName = viewName;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellSubViewIFace#getViewSetName()
+     */
     public String getViewSetName()
     {
         return viewSetName;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellSubViewIFace#setViewSetName(java.lang.String)
+     */
     public void setViewSetName(String viewSetName)
     {
         this.viewSetName = viewSetName;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellSubViewIFace#isSingleValueFromSet()
+     */
     public boolean isSingleValueFromSet()
     {
         return singleValueFromSet;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellSubViewIFace#getDescription()
+     */
     public String getDescription()
     {
         return description;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellSubViewIFace#getDefaultAltViewType()
+     */
     public String getDefaultAltViewType()
     {
         return defaultAltViewType;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellSubViewIFace#getTableRows()
+     */
     public int getTableRows()
     {
         return tableRows;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellSubViewIFace#setTableRows(int)
+     */
     public void setTableRows(int tableRows)
     {
         this.tableRows = tableRows;
     }
 
+    /**
+     * @param funcModes
+     */
+    public void setFuncModes(final String funcModes)
+    {
+        if (StringUtils.isNotEmpty(funcModes))
+        {
+            modesList = new Vector<Modes>();
+            for (String tok : StringUtils.split(funcModes, ','))
+            {
+                modesList.add(Modes.valueOf(tok));
+            }
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellSubViewIFace#getModes(java.util.List)
+     */
+    public void getModes(List<Modes> list)
+    {
+        list.addAll(modesList);
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#clone()
+     */
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellSubViewIFace#clone()
      */
     public Object clone() throws CloneNotSupportedException
     {

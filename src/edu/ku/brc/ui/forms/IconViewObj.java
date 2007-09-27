@@ -44,11 +44,12 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.IconTray;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
-import edu.ku.brc.ui.forms.persist.AltView;
+import edu.ku.brc.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.ui.forms.persist.FormViewDef;
-import edu.ku.brc.ui.forms.persist.View;
 import edu.ku.brc.ui.forms.persist.ViewDef;
-import edu.ku.brc.ui.forms.persist.AltView.CreationMode;
+import edu.ku.brc.ui.forms.persist.ViewDefIFace;
+import edu.ku.brc.ui.forms.persist.ViewIFace;
+import edu.ku.brc.ui.forms.persist.AltViewIFace.CreationMode;
 import edu.ku.brc.ui.forms.validation.FormValidator;
 
 /**
@@ -65,11 +66,11 @@ public class IconViewObj implements Viewable
     // Data Members
     protected DataProviderSessionIFace      session;
     protected MultiView                     mvParent;
-    protected View                          view;
-    protected AltView                       altView;
-    protected ViewDef                       viewDef;
+    protected ViewIFace                          view;
+    protected AltViewIFace                       altView;
+    protected ViewDefIFace                       viewDef;
     protected String                        cellName;
-    protected Vector<AltView>               altViewsList;
+    protected Vector<AltViewIFace>               altViewsList;
     protected int                           viewOptions;
     
     protected FormDataObjIFace              parentDataObj;
@@ -101,7 +102,7 @@ public class IconViewObj implements Viewable
      * @param mvParent the parent MultiView
      * @param options the view options
      */
-    public IconViewObj(final View view, final AltView altView, final MultiView mvParent, final int options)
+    public IconViewObj(final ViewIFace view, final AltViewIFace altView, final MultiView mvParent, final int options)
     {
         this.view = view;
         this.altView = altView;
@@ -139,7 +140,7 @@ public class IconViewObj implements Viewable
         newButton    = UIHelper.createButton("CreateObj", getResourceString("NewRecord"), IconManager.IconSize.Std16, true);
         deleteButton = UIHelper.createButton("DeleteRecord", getResourceString("DeleteRecord"), IconManager.IconSize.Std16, true);
 
-        altViewsList = new Vector<AltView>();
+        altViewsList = new Vector<AltViewIFace>();
         switcherUI   = FormViewObj.createMenuSwitcherPanel(mvParent, view, altView, altViewsList);
         
         validationInfoBtn = FormViewObj.createValidationIndicator(this);
@@ -622,7 +623,7 @@ public class IconViewObj implements Viewable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#getView()
      */
-    public View getView()
+    public ViewIFace getView()
     {
         return view;
     }
@@ -638,7 +639,7 @@ public class IconViewObj implements Viewable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#getAltView()
      */
-    public AltView getAltView()
+    public AltViewIFace getAltView()
     {
         return altView;
     }
@@ -747,7 +748,7 @@ public class IconViewObj implements Viewable
             this.icIconViewObj = icIconViewObj;
         }
 
-        public AltView getAltView()
+        public AltViewIFace getAltView()
         {
             return icIconViewObj.getAltView();
         }
@@ -757,12 +758,12 @@ public class IconViewObj implements Viewable
             return icIconViewObj;
         }
 
-        public View getView()
+        public ViewIFace getView()
         {
             return icIconViewObj.getView();
         }
 
-        public ViewDef getViewDef()
+        public ViewDefIFace getViewDef()
         {
             return icIconViewObj.getViewDef();
         }

@@ -14,67 +14,28 @@
  */
 package edu.ku.brc.ui.forms.persist;
 
+import java.util.List;
 
-/*
- * @code_status Beta
- **
- * @author rods
- *
- */
-public class FormAltView implements Cloneable
+public interface TableViewDefIFace
 {
 
-    private int    id;
-    private String label;
-    
     /**
-     * 
-     *
+     * Add a column definition
+     * @param column the column def to add
+     * @return the column def that was added
      */
-    public FormAltView()
-    {
-        // do nothing
-    }
+    public abstract FormColumnIFace addColumn(final FormColumn column);
 
-    /**
-     * 
-     * @param aId
-     * @param aLabel
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormView#cleanUp()
      */
-    public FormAltView(int aId, String aLabel)
-    {
-        id    = aId;
-        label = aLabel;
-    }
+    public abstract void cleanUp();
 
-    public int getId()
-    {
-        return id;
-    }
+    public abstract List<FormColumn> getColumns();
 
-    public void setId(int id)
-    {
-        this.id = id;
-    }
-
-    public String getLabel()
-    {
-        return label;
-    }
-
-    public void setLabel(String label)
-    {
-        this.label = label;
-    }
-    
     /* (non-Javadoc)
      * @see java.lang.Object#clone()
      */
-    public Object clone() throws CloneNotSupportedException
-    {
-        FormAltView fav = (FormAltView)super.clone();
-        fav.id = id;
-        fav.label = label;
-        return fav;      
-    }
+    public abstract Object clone() throws CloneNotSupportedException;
+
 }

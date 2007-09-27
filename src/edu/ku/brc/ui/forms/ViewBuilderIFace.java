@@ -20,7 +20,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 
-import edu.ku.brc.ui.forms.persist.FormCell;
+import edu.ku.brc.ui.forms.persist.FormCellIFace;
 import edu.ku.brc.ui.forms.persist.FormCellLabel;
 import edu.ku.brc.ui.forms.persist.FormCellSubView;
 
@@ -48,7 +48,7 @@ public interface ViewBuilderIFace
      * @param formCell the FormCell def that describe the cell
      * @param control the control to be added
      */    
-    public void registerControl(FormCell formCell, Component control);
+    public void registerControl(FormCellIFace formCell, Component control);
     
     /**
      * Adds a control to the UI (usually it is being added to a container).

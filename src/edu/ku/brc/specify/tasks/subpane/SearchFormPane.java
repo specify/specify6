@@ -12,7 +12,7 @@ import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.Viewable;
-import edu.ku.brc.ui.forms.persist.AltView;
+import edu.ku.brc.ui.forms.persist.AltViewIFace;
 
 /*
  * @code_status Alpha
@@ -40,7 +40,7 @@ public class SearchFormPane extends FormPane
                           final String   viewSetName,
                           final String   viewName)
     {
-        super(name, task, viewSetName, viewName, AltView.CreationMode.Search.toString(), null, MultiView.IS_NEW_OBJECT);
+        super(name, task, viewSetName, viewName, AltViewIFace.CreationMode.Search.toString(), null, MultiView.IS_NEW_OBJECT);
 
         Viewable viewable = multiView.getCurrentView();
         if (viewable instanceof FormViewObj)

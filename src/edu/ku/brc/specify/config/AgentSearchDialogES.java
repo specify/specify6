@@ -46,7 +46,7 @@ import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.ViewFactory;
 import edu.ku.brc.ui.forms.Viewable;
-import edu.ku.brc.ui.forms.persist.View;
+import edu.ku.brc.ui.forms.persist.ViewIFace;
 
 /**
  * NOTE: Thiks is an example of how to do the Search dialog usin express search instead of a regular search.
@@ -86,7 +86,7 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
     protected RecordSetIFace      recordSet      = null;
 
     // Form Stuff
-    protected View           formView = null;
+    protected ViewIFace           formView = null;
     protected Viewable   form     = null;
     //protected Agent          agent    = new Agent();
 

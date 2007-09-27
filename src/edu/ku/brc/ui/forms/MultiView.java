@@ -39,8 +39,8 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
-import edu.ku.brc.ui.forms.persist.AltView;
-import edu.ku.brc.ui.forms.persist.View;
+import edu.ku.brc.ui.forms.persist.AltViewIFace;
+import edu.ku.brc.ui.forms.persist.ViewIFace;
 import edu.ku.brc.ui.forms.validation.DataChangeListener;
 import edu.ku.brc.ui.forms.validation.DataChangeNotifier;
 import edu.ku.brc.ui.forms.validation.FormValidator;
@@ -78,7 +78,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
 
     protected MultiView                    mvParent          = null;
     protected String                       cellName          = null;
-    protected View                         view;
+    protected ViewIFace                    view;
     protected Hashtable<String, Viewable>  viewMapByName   = new Hashtable<String, Viewable>();
     protected Object                       data            = null;
     protected Object                       parentDataObj   = null;
@@ -86,7 +86,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     protected Viewable                     currentViewable = null;
     
     protected boolean                      editable        = false;
-    protected AltView.CreationMode         createWithMode  = AltView.CreationMode.None;
+    protected AltViewIFace.CreationMode    createWithMode  = AltViewIFace.CreationMode.None;
     protected Vector<FormValidator>        formValidators  = new Vector<FormValidator>();
     protected boolean                      ignoreDataChanges = false;
 
@@ -116,8 +116,8 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      */
     public MultiView(final MultiView mvParent,
                      final String    cellName,
-                     final View      view,
-                     final AltView.CreationMode createWithMode,
+                     final ViewIFace      view,
+                     final AltViewIFace.CreationMode createWithMode,
                      final int       options)
     {
         this(mvParent, cellName, view, createWithMode, null, options, null);
@@ -134,8 +134,8 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      */
     public MultiView(final MultiView mvParent,
                      final String    cellName,
-                     final View      view,
-                     final AltView.CreationMode createWithMode,
+                     final ViewIFace      view,
+                     final AltViewIFace.CreationMode createWithMode,
                      final int       options,
                      final Color     bgColor)
     {
@@ -153,8 +153,8 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      */
     public MultiView(final MultiView mvParent,
                      final String    cellName,
-                     final View      view,
-                     final AltView.CreationMode createWithMode,
+                     final ViewIFace      view,
+                     final AltViewIFace.CreationMode createWithMode,
                      final String    defaultAltViewType,
                      final int       options)
     {
@@ -173,8 +173,8 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      */
     public MultiView(final MultiView mvParent,
                      final String    cellName,
-                     final View      view,
-                     final AltView.CreationMode createWithMode,
+                     final ViewIFace      view,
+                     final AltViewIFace.CreationMode createWithMode,
                      final String    defaultAltViewType,
                      final int       options,
                      final Color     bgColor)
@@ -185,7 +185,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         this.cellName       = cellName;
         this.view           = view;
         this.createWithMode = createWithMode;
-        this.createOptions  = options | (createWithMode == AltView.CreationMode.Edit ? IS_EDITTING : 0);
+        this.createOptions  = options | (createWithMode == AltViewIFace.CreationMode.Edit ? IS_EDITTING : 0);
         
         isSelectorForm = StringUtils.isNotEmpty(view.getSelectorName());
         
@@ -208,9 +208,9 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      */
     public MultiView(final MultiView mvParent,
                      final String    cellName,
-                     final View      view,
-                     final AltView   altView,
-                     final AltView.CreationMode createWithMode,
+                     final ViewIFace      view,
+                     final AltViewIFace   altView,
+                     final AltViewIFace.CreationMode createWithMode,
                      final int       options)
     {
         setLayout(cardLayout);
@@ -219,7 +219,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         this.cellName       = cellName;
         this.view           = view;
         this.createWithMode = createWithMode;
-        this.createOptions  = options | (createWithMode == AltView.CreationMode.Edit ? IS_EDITTING : NO_OPTIONS);
+        this.createOptions  = options | (createWithMode == AltViewIFace.CreationMode.Edit ? IS_EDITTING : NO_OPTIONS);
         
         createWithAltView(altView != null ? altView : createDefaultViewable(null));
     }
@@ -339,7 +339,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      * Returns the View (the definition).
      * @return the View (the definition)
      */
-    public View getView()
+    public ViewIFace getView()
     {
         return view;
     }
@@ -494,9 +494,9 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      * @param defAltViewType should contain values: null, grid, form
      * @return return the default Viewable (ViewDef)
      */
-    protected AltView createDefaultViewable(final String defAltViewType)
+    protected AltViewIFace createDefaultViewable(final String defAltViewType)
     {
-        AltView  altView;
+        AltViewIFace  altView;
         if (createWithMode != null)
         {
             altView = view.getDefaultAltViewWithMode(createWithMode, defAltViewType);
@@ -509,13 +509,13 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     }
     
     /**
-     * Create MultiView with an AltView.
+     * Create MultiView with an AltViewIFace.
      * @param altView the altView to use.
      * @param bgColor the bgColor
      */
-    protected Viewable createWithAltView(final AltView altView)
+    protected Viewable createWithAltView(final AltViewIFace altView)
     {
-        editable = altView.getMode() == AltView.CreationMode.Edit;
+        editable = altView.getMode() == AltViewIFace.CreationMode.Edit;
 
         // this call parents the viewable to the multiview
         Viewable viewable = ViewFactory.getInstance().buildViewable(view, altView, this, createOptions, getBackground());
@@ -623,10 +623,10 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     }
 
     /**
-     * Show the AltView.
-     * @param altView show the AltView
+     * Show the AltViewIFace.
+     * @param altView show the AltViewIFace
      */
-    public void showView(final AltView altView)
+    public void showView(final AltViewIFace altView)
     {
         showView(altView.getName());
     }
@@ -645,9 +645,9 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         // all the view are created when needed.
         if (viewable == null)
         {
-            List<AltView> list = currentViewable.getView().getAltViews();
+            List<AltViewIFace> list = currentViewable.getView().getAltViews();
             int inx = 0;
-            for (AltView altView : list)
+            for (AltViewIFace altView : list)
             {
                 if (name.equals(altView.getName()))
                 {
@@ -658,8 +658,8 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
 
             if (inx < list.size())
             {
-                AltView altView = list.get(inx);
-                View newView = AppContextMgr.getInstance().getView(currentViewable.getView().getViewSetName(), altView.getView().getName());
+                AltViewIFace altView = list.get(inx);
+                ViewIFace newView = AppContextMgr.getInstance().getView(currentViewable.getView().getViewSetName(), altView.getView().getName());
                 if (newView != null)
                 {
                     log.debug("--------------------------");
@@ -684,7 +684,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                     removeFormValidator(currentViewable.getValidator());
                     
                     
-                    editable       = altView.getMode() == AltView.CreationMode.Edit;
+                    editable       = altView.getMode() == AltViewIFace.CreationMode.Edit;
                     createWithMode = altView.getMode();
                     
                     //printCreateOptions("Create Sub View "+altViewName, createOptions);
@@ -714,7 +714,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                     
                     } else
                     {
-                        log.error("The Viewable could not be created for some reason View["+newView+"] AltView["+altViewName+"] Options["+createOptions+"]");
+                        log.error("The Viewable could not be created for some reason View["+newView+"] AltViewIFace["+altViewName+"] Options["+createOptions+"]");
                     }
 
                 } else
@@ -723,7 +723,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                 }
             } else
             {
-                log.error("Couldn't find Alt View ["+name+"]in AltView List");
+                log.error("Couldn't find Alt View ["+name+"]in AltViewIFace List");
             }
 
         } else
@@ -768,7 +768,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      * Return whether the MultiView's CreateMode (may be null, true or false) meaning don't assume it will always be non-null.
      * @return whether the MultiView's CreateMode (may be null, true or false)
      */
-    public AltView.CreationMode getCreateWithMode()
+    public AltViewIFace.CreationMode getCreateWithMode()
     {
         return createWithMode;
     }
@@ -785,11 +785,11 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         
         // We the data gets set into the MultiView we need to display the correct
         // AlView with the matching selector value.
-        AltView altView = currentViewable.getAltView();
+        AltViewIFace altView = currentViewable.getAltView();
         selectorValue = null;
         if (isSelectorForm)
         {
-            // Set the data into the Current view even though this may not be the correct AltView
+            // Set the data into the Current view even though this may not be the correct AltViewIFace
             currentViewable.setDataObj(data);
             
             String             selectorName    = altView.getSelectorName();
@@ -806,7 +806,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                     selectorValue = newSelectorValue;
                     
                     // Find the matching Viewable with the same selectorValue
-                    for (AltView av : view.getAltViews())
+                    for (AltViewIFace av : view.getAltViews())
                     {
                         log.info("["+av.getSelectorName()+"]["+av.getSelectorValue()+"]["+selectorValue+"]");
                         

@@ -20,7 +20,7 @@ package edu.ku.brc.ui.forms.persist;
  * @author rods
  *
  */
-public class FormCellSeparator extends FormCell implements Cloneable
+public class FormCellSeparator extends FormCell implements Cloneable, FormCellSeparatorIFace
 {
     protected String label;
     protected String collapseCompName;
@@ -39,7 +39,7 @@ public class FormCellSeparator extends FormCell implements Cloneable
                              final String collapseCompName,
                              final int    colspan)
      {
-         super(FormCell.CellType.separator, id, name);
+         super(FormCellIFace.CellType.separator, id, name);
          
          this.label   = label;
          this.collapseCompName   = collapseCompName;
@@ -47,16 +47,25 @@ public class FormCellSeparator extends FormCell implements Cloneable
          this.ignoreSetGet = true;
      }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellSeparatorIFace#getLabel()
+     */
     public String getLabel()
     {
         return label;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellSeparatorIFace#setLabel(java.lang.String)
+     */
     public void setLabel(String label)
     {
         this.label = label;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellSeparatorIFace#getCollapseCompName()
+     */
     public String getCollapseCompName()
     {
         return collapseCompName;
@@ -64,6 +73,9 @@ public class FormCellSeparator extends FormCell implements Cloneable
     
     /* (non-Javadoc)
      * @see java.lang.Object#clone()
+     */
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellSeparatorIFace#clone()
      */
     public Object clone() throws CloneNotSupportedException
     {

@@ -49,7 +49,7 @@ import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
-import edu.ku.brc.ui.forms.persist.AltView.CreationMode;
+import edu.ku.brc.ui.forms.persist.AltViewIFace.CreationMode;
 import edu.ku.brc.ui.forms.validation.ValComboBox;
 
 /**

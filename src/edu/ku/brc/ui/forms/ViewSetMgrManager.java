@@ -21,8 +21,8 @@ import java.util.Stack;
 import org.apache.commons.io.FileUtils;
 
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.ui.forms.persist.View;
-import edu.ku.brc.ui.forms.persist.ViewSet;
+import edu.ku.brc.ui.forms.persist.ViewIFace;
+import edu.ku.brc.ui.forms.persist.ViewSetIFace;
 
 /**
  * This class manages one or more ViewSetMgrs as a "stack", this way there can be a "backstop" ViewSetMgr.<br>
@@ -105,16 +105,16 @@ public class ViewSetMgrManager
      * @param viewName the view's name
      * @return the named view set
      */
-    public static View getView(final String viewSetName, final String viewName)
+    public static ViewIFace getView(final String viewSetName, final String viewName)
     {
         for (int inx=stack.size()-1;inx>=0;inx--)
         {
             ViewSetMgr viewMgr = stack.get(inx);
             
-            ViewSet viewSet = viewMgr.getViewSet(viewSetName);
+            ViewSetIFace viewSet = viewMgr.getViewSet(viewSetName);
             if (viewSet != null)
             {   
-                View view = viewSet.getView(viewName);
+                ViewIFace view = viewSet.getView(viewName);
                 if (view != null)
                 {
                     return view;
@@ -139,7 +139,7 @@ public class ViewSetMgrManager
     {
         if (overwrite || dstVM.getViewSet(viewSetName) == null)
         {
-            ViewSet vs = srcVM.getViewSet(viewSetName);
+            ViewSetIFace vs = srcVM.getViewSet(viewSetName);
             if (vs != null)
             {
                 File srcFile = new File(srcVM.getContextDir().getAbsolutePath() + File.separator + vs.getFileName());

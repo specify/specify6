@@ -33,8 +33,8 @@ import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
-import edu.ku.brc.ui.forms.persist.AltView;
-import edu.ku.brc.ui.forms.persist.View;
+import edu.ku.brc.ui.forms.persist.AltViewIFace;
+import edu.ku.brc.ui.forms.persist.ViewIFace;
 import edu.ku.brc.ui.forms.validation.FormValidator;
 
 /**
@@ -73,8 +73,8 @@ public class RecordSetTableViewObj extends TableViewObj
      * @param mvParent the parent MultiView
      * @param options the view options
      */
-    public RecordSetTableViewObj(final View          view,
-                                 final AltView       altView,
+    public RecordSetTableViewObj(final ViewIFace     view,
+                                 final AltViewIFace  altView,
                                  final MultiView     mvParent,
                                  final FormValidator formValidator,
                                  final int           options,

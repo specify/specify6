@@ -84,9 +84,10 @@ import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.ViewFactory;
 import edu.ku.brc.ui.forms.Viewable;
-import edu.ku.brc.ui.forms.persist.FormCell;
 import edu.ku.brc.ui.forms.persist.FormCellField;
-import edu.ku.brc.ui.forms.persist.View;
+import edu.ku.brc.ui.forms.persist.FormCellFieldIFace;
+import edu.ku.brc.ui.forms.persist.FormCellIFace;
+import edu.ku.brc.ui.forms.persist.ViewIFace;
 import edu.ku.brc.ui.forms.validation.FormValidator;
 import edu.ku.brc.ui.forms.validation.UIValidator;
 import edu.ku.brc.ui.forms.validation.ValComboBoxFromQuery;
@@ -271,8 +272,8 @@ public class LoanReturnDlg extends JDialog
      */
     protected ValComboBoxFromQuery createAgentCombobox()
     {
-        FormCellField fcf = new FormCellField(FormCell.CellType.field,
-                                               "1", "agent", FormCellField.FieldType.querycbx, FormCellField.FieldType.querycbx, 
+        FormCellField fcf = new FormCellField(FormCellIFace.CellType.field,
+                                               "1", "agent", FormCellFieldIFace.FieldType.querycbx, FormCellFieldIFace.FieldType.querycbx, 
                                                "", "", "", true,
                                                1, 1, 1, 1, "Changed", null, false);
         fcf.addProperty("name", "Agent");
@@ -716,7 +717,7 @@ public class LoanReturnDlg extends JDialog
                 loans.add(loanPO.getLoan());
             }
             
-            View view  = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getView("Loan", CollectionType.getCurrentCollectionType());
+            ViewIFace view  = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getView("Loan", CollectionType.getCurrentCollectionType());
             final ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog(parent,
                     view.getViewSetName(),
                     "Loan",

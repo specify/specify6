@@ -61,7 +61,7 @@ import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.dnd.Trash;
 import edu.ku.brc.ui.forms.MultiView;
-import edu.ku.brc.ui.forms.persist.View;
+import edu.ku.brc.ui.forms.persist.ViewIFace;
 
 /**
  *
@@ -221,7 +221,7 @@ public class SystemSetupTask extends BaseTask
             List<?>                  collection = session.getDataList(clazz);
             session.close();
             
-            View view = AppContextMgr.getInstance().getView("SystemSetup", viewName);
+            ViewIFace view = AppContextMgr.getInstance().getView("SystemSetup", viewName);
             
             createFormPanel(view.getViewSetName(), 
                             view.getName(), 
@@ -243,7 +243,7 @@ public class SystemSetupTask extends BaseTask
             List<?> prepTypes = session.getDataList(DataType.class);
             session.close();
             
-            View view = AppContextMgr.getInstance().getView("SystemSetup", "PrepType");
+            ViewIFace view = AppContextMgr.getInstance().getView("SystemSetup", "PrepType");
             
             createFormPanel(view.getViewSetName(), 
                             view.getName(), 
@@ -265,7 +265,7 @@ public class SystemSetupTask extends BaseTask
             List<?> prepTypes = session.getDataList(CollectionType.class);
             session.close();
             
-            View view = AppContextMgr.getInstance().getView("SystemSetup", "PrepType");
+            ViewIFace view = AppContextMgr.getInstance().getView("SystemSetup", "PrepType");
             
             createFormPanel(view.getViewSetName(), 
                             view.getName(), 
@@ -287,7 +287,7 @@ public class SystemSetupTask extends BaseTask
             List<?> prepTypes = session.getDataList(PrepType.class);
             session.close();
             
-            View view = AppContextMgr.getInstance().getView("SystemSetup", "PrepType");
+            ViewIFace view = AppContextMgr.getInstance().getView("SystemSetup", "PrepType");
             
             createFormPanel(view.getViewSetName(), 
                             view.getName(), 
@@ -309,7 +309,7 @@ public class SystemSetupTask extends BaseTask
             List<?> determinationStatus = session.getDataList(DeterminationStatus.class);
             session.close();
             
-            View view = AppContextMgr.getInstance().getView("SystemSetup", "DeterminationStatus");
+            ViewIFace view = AppContextMgr.getInstance().getView("SystemSetup", "DeterminationStatus");
             if (view != null)
             {
                 createFormPanel(view.getViewSetName(), 

@@ -36,8 +36,8 @@ import org.apache.commons.lang.StringUtils;
 import edu.ku.brc.ui.DropDownButtonStateful;
 import edu.ku.brc.ui.DropDownMenuInfo;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.forms.persist.AltView;
-import edu.ku.brc.ui.forms.persist.ViewDef;
+import edu.ku.brc.ui.forms.persist.AltViewIFace;
+import edu.ku.brc.ui.forms.persist.ViewDefIFace;
 
 /**
  * @author rods
@@ -50,7 +50,7 @@ import edu.ku.brc.ui.forms.persist.ViewDef;
 public class MenuSwitcherPanel extends JPanel
 {
     protected CardLayout                                cardLayout      = null;
-    protected Hashtable<String, Vector<AltView>>        selectorValHash = null;
+    protected Hashtable<String, Vector<AltViewIFace>>   selectorValHash = null;
     protected Hashtable<String, DropDownButtonStateful> switcherHash    = null;
     protected boolean                                   isSelector;
 
@@ -60,27 +60,27 @@ public class MenuSwitcherPanel extends JPanel
      * @param altViewArg
      * @param altViewsListArg
      */
-    public MenuSwitcherPanel(final MultiView       mvParent, 
-                             final AltView         altView, 
-                             final Vector<AltView> altViewsList)
+    public MenuSwitcherPanel(final MultiView            mvParent, 
+                             final AltViewIFace         altView, 
+                             final Vector<AltViewIFace> altViewsList)
     {
         super();
         setOpaque(false);
         
         switcherHash    = new Hashtable<String, DropDownButtonStateful>();
-        selectorValHash = new Hashtable<String, Vector<AltView>>();
+        selectorValHash = new Hashtable<String, Vector<AltViewIFace>>();
         
         isSelector = StringUtils.isNotEmpty(altView.getSelectorName());
         
         if (isSelector)
         {
             setLayout(cardLayout = new CardLayout());
-            for (AltView av : altViewsList)
+            for (AltViewIFace av : altViewsList)
             {
-                Vector<AltView> avList = selectorValHash.get(av.getSelectorValue());
+                Vector<AltViewIFace> avList = selectorValHash.get(av.getSelectorValue());
                 if (avList == null)
                 {
-                    avList = new Vector<AltView>();
+                    avList = new Vector<AltViewIFace>();
                     selectorValHash.put(av.getSelectorValue(), avList);
                 }
                 avList.add(av);
@@ -88,7 +88,7 @@ public class MenuSwitcherPanel extends JPanel
             
             for (String selectorVal : selectorValHash.keySet())
             {
-                Vector<AltView> avList = selectorValHash.get(selectorVal);
+                Vector<AltViewIFace> avList = selectorValHash.get(selectorVal);
                 DropDownButtonStateful switcherUI = createSwitcher(mvParent, avList);
                 switcherUI.setOpaque(false);
                 add(switcherUI, selectorVal);
@@ -109,7 +109,7 @@ public class MenuSwitcherPanel extends JPanel
     /**
      * @param value
      */
-    public void set(final AltView altView)
+    public void set(final AltViewIFace altView)
     {
         if (cardLayout != null)
         {
@@ -117,7 +117,7 @@ public class MenuSwitcherPanel extends JPanel
         }
         
         String value = isSelector ? altView.getSelectorValue() : "0";
-        Vector<AltView>        avList = selectorValHash.get(value);
+        Vector<AltViewIFace>        avList = selectorValHash.get(value);
         DropDownButtonStateful dds    = switcherHash.get(value);
         
         if (dds != null && avList != null)
@@ -129,11 +129,11 @@ public class MenuSwitcherPanel extends JPanel
     /**
      * Creates a special drop "switcher UI" component for switching between the Viewables in the MultiView.
      * @param mvParentArg the MultiView Parent
-     * @param altViewsListArg the Vector of AltView that will contains the ones in the Drop Down
+     * @param altViewsListArg the Vector of AltViewIFace that will contains the ones in the Drop Down
      * @return the special combobox
      */
     protected DropDownButtonStateful createSwitcher(final MultiView       mvParentArg, 
-                                                    final Vector<AltView> altViewsListArg)
+                                                    final Vector<AltViewIFace> altViewsListArg)
     {
         DropDownButtonStateful switcher = null;
         List<DropDownMenuInfo> items    = new ArrayList<DropDownMenuInfo>(altViewsListArg.size());
@@ -154,25 +154,25 @@ public class MenuSwitcherPanel extends JPanel
             }
         }
         
-        // If we have AltView then we need to build information for the Switcher Control
+        // If we have AltViewIFace then we need to build information for the Switcher Control
         if (altViewsListArg.size() > 0)
         {
-            for (AltView av : altViewsListArg)
+            for (AltViewIFace av : altViewsListArg)
             {
                 String    label   = av.getLabel();
                 ImageIcon imgIcon = null;
                 String    toolTip = null;
 
                 // TODO This is Sort of Temporary until I get it all figured out
-                // But somehow we need to externalize this, possible have the AltView Definition
+                // But somehow we need to externalize this, possible have the AltViewIFace Definition
                 // define its own icon
-                if (av.getMode() == AltView.CreationMode.Edit)
+                if (av.getMode() == AltViewIFace.CreationMode.Edit)
                 {
                     imgIcon = IconManager.getImage("EditForm", IconManager.IconSize.Std16);
                     toolTip = getResourceString("ShowEditViewTT");
 
-                } else if (av.getViewDef().getType() == ViewDef.ViewType.table ||
-                           av.getViewDef().getType() == ViewDef.ViewType.formtable)
+                } else if (av.getViewDef().getType() == ViewDefIFace.ViewType.table ||
+                           av.getViewDef().getType() == ViewDefIFace.ViewType.formtable)
                 {
                     imgIcon = IconManager.getImage("Spreadsheet", IconManager.IconSize.Std16);
                     toolTip = getResourceString("ShowSpreadsheetTT");

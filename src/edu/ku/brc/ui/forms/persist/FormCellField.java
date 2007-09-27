@@ -27,13 +27,8 @@ import edu.ku.brc.ui.DateWrapper;
  * @author rods
  *
  */
-public final class FormCellField extends FormCell
+public final class FormCellField extends FormCell implements FormCellFieldIFace
 {
-    // NOTE: textpl is not intended to be defined in the form, it is for internal use only
-    public enum FieldType {text, formattedtext, label, dsptextfield, textfieldinfo, image, url, combobox, checkbox, spinner,
-                           password, dsptextarea, textarea, browse, querycbx, list, colorchooser, button, progress, plugin,
-                           textpl}
-
     protected static DateWrapper scrDateFormat = null;
     
     protected FieldType uiType;
@@ -98,7 +93,7 @@ public final class FormCellField extends FormCell
      * @param validationRule the rule on how to validate
      * @param isEncrypted whether the control should have its value encrypted
      */
-    public FormCellField(final FormCell.CellType type,
+    public FormCellField(final FormCellIFace.CellType type,
                          final String            id,
                          final String    name,
                          final FieldType uiType,
@@ -133,21 +128,33 @@ public final class FormCellField extends FormCell
         setDspUIType(dspUIType);
     }
 
-    public int getCols()
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#getCols()
+     */
+    public int getTxtCols()
     {
         return cols;
     }
 
-    public void setCols(int cols)
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#setCols(int)
+     */
+    public void setTxtCols(int cols)
     {
         this.cols = cols;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#getDspUIType()
+     */
     public FieldType getDspUIType()
     {
         return dspUIType;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#setDspUIType(edu.ku.brc.ui.forms.persist.FormCellField.FieldType)
+     */
     public void setDspUIType(FieldType dspUIType)
     {
         this.dspUIType = dspUIType;
@@ -156,46 +163,73 @@ public final class FormCellField extends FormCell
 
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#getFormat()
+     */
     public String getFormat()
     {
         return format;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#setFormat(java.lang.String)
+     */
     public void setFormat(String format)
     {
         this.format = format;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#getFormatName()
+     */
     public String getFormatName()
     {
         return formatName;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#setFormatName(java.lang.String)
+     */
     public void setFormatName(String formatName)
     {
         this.formatName = formatName;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#isEncrypted()
+     */
     public boolean isEncrypted()
     {
         return isEncrypted;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#setEncrypted(boolean)
+     */
     public void setEncrypted(boolean isEncrypted)
     {
         this.isEncrypted = isEncrypted;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#isRequired()
+     */
     public boolean isRequired()
     {
         return isRequired;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#useThisData()
+     */
     public boolean useThisData()
     {
         return useThisData;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#getDefaultValue()
+     */
     public String getDefaultValue()
     {
         if (defaultDateToday == null)
@@ -215,82 +249,130 @@ public final class FormCellField extends FormCell
         return defaultValue;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#setDefaultValue(java.lang.String)
+     */
     public void setDefaultValue(String defaultValue)
     {
         this.defaultValue = defaultValue;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#isReadOnly()
+     */
     public boolean isReadOnly()
     {
         return isReadOnly;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#setReadOnly(boolean)
+     */
     public void setReadOnly(boolean isReadOnly)
     {
         this.isReadOnly = isReadOnly;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#setRequired(boolean)
+     */
     public void setRequired(boolean isRequired)
     {
         this.isRequired = isRequired;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#isTextField(edu.ku.brc.ui.forms.persist.AltViewIFace.CreationMode)
+     */
     public boolean isTextField(AltView.CreationMode mode)
     {
         // A mode of "None" default to "Edit"
-        return mode == AltView.CreationMode.View ? isDSPTextField : isTextField;
+        return mode == AltViewIFace.CreationMode.View ? isDSPTextField : isTextField;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#setTextField(boolean)
+     */
     public void setTextField(boolean isTextField)
     {
         this.isTextField = isTextField;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#getLabel()
+     */
     public String getLabel()
     {
         return label;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#setLabel(java.lang.String)
+     */
     public void setLabel(String label)
     {
         this.label = label;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#getPickListName()
+     */
     public String getPickListName()
     {
         return pickListName;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#setPickListName(java.lang.String)
+     */
     public void setPickListName(String pickListName)
     {
         this.pickListName = pickListName;
     }
 
-    public int getRows()
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#getRows()
+     */
+    public int getTxtRows()
     {
         return rows;
     }
 
-    public void setRows(int rows)
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#setRows(int)
+     */
+    public void setTxtRows(int rows)
     {
         this.rows = rows;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#getUIFieldFormatter()
+     */
     public String getUIFieldFormatter()
     {
         return uiFieldFormatter;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#setUIFieldFormatter(java.lang.String)
+     */
     public void setUIFieldFormatter(String uiFieldFormatter)
     {
         this.uiFieldFormatter = uiFieldFormatter;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#getUiType()
+     */
     public FieldType getUiType()
     {
         return uiType;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#setUiType(edu.ku.brc.ui.forms.persist.FormCellField.FieldType)
+     */
     public void setUiType(FieldType uiType)
     {
         this.uiType = uiType;
@@ -300,21 +382,33 @@ public final class FormCellField extends FormCell
                            uiType == FieldType.textarea;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#getValidationRule()
+     */
     public String getValidationRule()
     {
         return validationRule;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#setValidationRule(java.lang.String)
+     */
     public void setValidationRule(String validationRule)
     {
         this.validationRule = validationRule;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#getValidationType()
+     */
     public String getValidationType()
     {
         return validationType;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#setValidationType(java.lang.String)
+     */
     public void setValidationType(String validationType)
     {
         this.validationType = validationType;
@@ -322,6 +416,9 @@ public final class FormCellField extends FormCell
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormCell#clone()
+     */
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#clone()
      */
     @SuppressWarnings("unchecked")
     public Object clone() throws CloneNotSupportedException

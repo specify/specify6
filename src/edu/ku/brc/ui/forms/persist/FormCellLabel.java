@@ -26,7 +26,7 @@ import edu.ku.brc.ui.IconManager;
  * @author rods
  *
  */
-public class FormCellLabel extends FormCellSeparator
+public class FormCellLabel extends FormCellSeparator implements FormCellLabelIFace
 {
     protected String    labelFor;
     protected String    iconName;
@@ -43,7 +43,7 @@ public class FormCellLabel extends FormCellSeparator
     {
         super(name, id, label, colspan);
         
-        this.type      = FormCell.CellType.label;        
+        this.type      = FormCellIFace.CellType.label;        
         this.labelFor  = labelFor;
         this.recordObj = recordObj;
         this.iconName  = iconName;
@@ -51,46 +51,73 @@ public class FormCellLabel extends FormCellSeparator
         icon = StringUtils.isNotEmpty(iconName) ? IconManager.getIcon(iconName, IconManager.IconSize.Std16) : null;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellLabelIFace#getLabelFor()
+     */
     public String getLabelFor()
     {
         return labelFor;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellLabelIFace#setLabelFor(java.lang.String)
+     */
     public void setLabelFor(String labelFor)
     {
         this.labelFor = labelFor;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellLabelIFace#getIcon()
+     */
     public ImageIcon getIcon()
     {
         return icon;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellLabelIFace#setIcon(javax.swing.ImageIcon)
+     */
     public void setIcon(ImageIcon icon)
     {
         this.icon = icon;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellLabelIFace#isRecordObj()
+     */
     public boolean isRecordObj()
     {
         return recordObj;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellLabelIFace#setRecordObj(boolean)
+     */
     public void setRecordObj(boolean recordObj)
     {
         this.recordObj = recordObj;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellLabelIFace#getIconName()
+     */
     public String getIconName()
     {
         return iconName;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellLabelIFace#setIconName(java.lang.String)
+     */
     public void setIconName(String iconName)
     {
         this.iconName = iconName;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellLabelIFace#clone()
+     */
     public Object clone() throws CloneNotSupportedException
     {
         FormCellLabel fcl = (FormCellLabel)super.clone();

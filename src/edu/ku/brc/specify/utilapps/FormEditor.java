@@ -109,8 +109,8 @@ import edu.ku.brc.ui.db.DatabaseLoginListener;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.ViewSetMgr;
 import edu.ku.brc.ui.forms.Viewable;
-import edu.ku.brc.ui.forms.persist.AltView;
-import edu.ku.brc.ui.forms.persist.View;
+import edu.ku.brc.ui.forms.persist.AltViewIFace;
+import edu.ku.brc.ui.forms.persist.ViewIFace;
 import edu.ku.brc.util.FileCache;
 
 /**
@@ -490,10 +490,10 @@ public class FormEditor implements DatabaseLoginListener
      * Create a form
      * @param formView the definition of the form to create
      */
-    protected Viewable createView(View view)
+    protected Viewable createView(ViewIFace view)
     {
         //multiView   = new MultiView(null, view, AltView.CreationMode.View, false, false);
-        multiView   = new MultiView(null, null, view, AltView.CreationMode.Edit, MultiView.VIEW_SWITCHER | MultiView.RESULTSET_CONTROLLER);
+        multiView   = new MultiView(null, null, view, AltViewIFace.CreationMode.Edit, MultiView.VIEW_SWITCHER | MultiView.RESULTSET_CONTROLLER);
         contentPane.removeAll();
         builder.add(multiView, cc.xy(1,1));
 
@@ -775,7 +775,7 @@ public class FormEditor implements DatabaseLoginListener
         currViewSetName =   "Fish Views";
 
         //View view =  AppContextMgr.getInstance().getView(currViewSetName, currViewName);
-        View view = viewSetMgr.getView(currViewSetName, currViewName);
+        ViewIFace view = viewSetMgr.getView(currViewSetName, currViewName);
 
         if (view != null)
         {

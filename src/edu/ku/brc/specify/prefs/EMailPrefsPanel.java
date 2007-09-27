@@ -53,7 +53,7 @@ import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.ViewFactory;
 import edu.ku.brc.ui.forms.Viewable;
-import edu.ku.brc.ui.forms.persist.View;
+import edu.ku.brc.ui.forms.persist.ViewIFace;
 import edu.ku.brc.ui.forms.validation.FormValidator;
 import edu.ku.brc.ui.forms.validation.ValPasswordField;
 
@@ -72,7 +72,7 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
 {
     private static final Logger log  = Logger.getLogger(EMailPrefsPanel.class);
 
-    protected View         formView = null;
+    protected ViewIFace         formView = null;
     protected Viewable     form     = null;
 
     // Checker

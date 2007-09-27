@@ -14,8 +14,8 @@
  */
 package edu.ku.brc.ui.forms.persist;
 
+import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 
 
@@ -25,14 +25,14 @@ import java.util.Vector;
  * @author rods
  *
  */
-public class FormViewDef extends ViewDef implements Cloneable
+public class FormViewDef extends ViewDef implements Cloneable, FormViewDefIFace
 {
-    protected String        columnDef      = "";
-    protected String        rowDef         = "";
-    protected List<FormRow> rows           = new Vector<FormRow>(); 
-    protected String        definitionName = null;
+    protected String             columnDef      = "";
+    protected String             rowDef         = "";
+    protected List<FormRowIFace> rows           = new Vector<FormRowIFace>(); 
+    protected String             definitionName = null;
     
-    protected Map<String, String>  enableRules = null;
+    protected Hashtable<String, String>  enableRules = null;
 
     /**
      * @param type the type (could be form or field)
@@ -53,37 +53,41 @@ public class FormViewDef extends ViewDef implements Cloneable
         
     }
     
-    /**
-     * Add a row to the form
-     * @param row the row to add
-     * @return the row that was added
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#getDerivedInterface()
      */
-    public FormRow addRow(FormRow row)
+    public Class<?> getDerivedInterface()
+    {
+        return FormViewDefIFace.class;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormViewDefIFace#addRow(edu.ku.brc.ui.forms.persist.FormRowIFace)
+     */
+    public FormRowIFace addRow(FormRowIFace row)
     {
         rows.add(row);
         return row;
     }
 
-    /**
-     * @return all the rows
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormViewDefIFace#getRows()
      */
-    public List<FormRow> getRows()
+    public List<FormRowIFace> getRows()
     {
         return rows;
     }
     
-    /**
-     * Returns a FormCell by ID (searches the rows and then the columns)
-     * @param idStr the ID of the field 
-     * @return a FormCell by ID (searches the rows and then the columns)
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormViewDefIFace#getFormCellById(java.lang.String)
      */
-    public FormCell getFormCellById(String idStr)
+    public FormCellIFace getFormCellById(String idStr)
     {
-        for (FormRow row : rows)
+        for (FormRowIFace row : rows)
         {
-            for (FormCell c : row.getCells())
+            for (FormCellIFace c : row.getCells())
             {
-                if (c.getId().equals(idStr))
+                if (c.getIdent().equals(idStr))
                 {
                     return c;
                 }
@@ -92,16 +96,14 @@ public class FormViewDef extends ViewDef implements Cloneable
         return null;
     }
     
-    /**
-     * Returns a FormCell by name (searches the rows and then the columns)
-     * @param nameStr the name of the field 
-     * @return a FormCell by name (searches the rows and then the columns)
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormViewDefIFace#getFormCellByName(java.lang.String)
      */
-    public FormCell getFormCellByName(final String nameStr)
+    public FormCellIFace getFormCellByName(final String nameStr)
     {
-        for (FormRow row : rows)
+        for (FormRowIFace row : rows)
         {
-            for (FormCell c : row.getCells())
+            for (FormCellIFace c : row.getCells())
             {
                 if (c.getName().equals(nameStr))
                 {
@@ -115,11 +117,14 @@ public class FormViewDef extends ViewDef implements Cloneable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormView#cleanUp()
      */
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormViewDefIFace#cleanUp()
+     */
     @Override
     public void cleanUp()
     {
         super.cleanUp();
-        for (FormRow row : rows)
+        for (FormRowIFace row : rows)
         {
             row.cleanUp();
         }
@@ -127,41 +132,65 @@ public class FormViewDef extends ViewDef implements Cloneable
         enableRules.clear();
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormViewDefIFace#getColumnDef()
+     */
     public String getColumnDef()
     {
         return columnDef;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormViewDefIFace#setColumnDef(java.lang.String)
+     */
     public void setColumnDef(String columnDef)
     {
         this.columnDef = columnDef;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormViewDefIFace#getRowDef()
+     */
     public String getRowDef()
     {
         return rowDef;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormViewDefIFace#setRowDef(java.lang.String)
+     */
     public void setRowDef(String rowDef)
     {
         this.rowDef = rowDef;
     }
 
-    public Map<String, String> getEnableRules()
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormViewDefIFace#getEnableRules()
+     */
+    public Hashtable<String, String> getEnableRules()
     {
         return enableRules;
     }
 
-    public void setEnableRules(Map<String, String> enableRules)
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormViewDefIFace#setEnableRules(java.util.Map)
+     */
+    public void setEnableRules(Hashtable<String, String> enableRules)
     {
         this.enableRules = enableRules;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormViewDefIFace#getDefinitionName()
+     */
     public String getDefinitionName()
     {
         return definitionName;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormViewDefIFace#setDefinitionName(java.lang.String)
+     */
     public void setDefinitionName(String definitionName)
     {
         this.definitionName = definitionName;
@@ -170,13 +199,16 @@ public class FormViewDef extends ViewDef implements Cloneable
     /* (non-Javadoc)
      * @see java.lang.Object#clone()
      */
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormViewDefIFace#clone()
+     */
     public Object clone() throws CloneNotSupportedException
     {
         FormViewDef fvd = (FormViewDef)super.clone();
-        fvd.rows      = new Vector<FormRow>(); 
+        fvd.rows      = new Vector<FormRowIFace>(); 
         fvd.columnDef = columnDef;
         fvd.rowDef    = rowDef;
-        for (FormRow formRow : rows)
+        for (FormRowIFace formRow : rows)
         {
             fvd.rows.add((FormRow)formRow.clone()); 
         }

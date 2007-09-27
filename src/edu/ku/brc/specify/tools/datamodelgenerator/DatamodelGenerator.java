@@ -76,7 +76,7 @@ public class DatamodelGenerator
     protected FieldDescApp fda          = null;
     
     protected Hashtable<String, String> abbrvHash = new Hashtable<String, String>();
-    protected boolean      includeDesc = true;
+    protected boolean      includeDesc = false;
     
 
     /**
@@ -1213,6 +1213,7 @@ public class DatamodelGenerator
                     String fileName = file.getName();
                     if (!StringUtils.contains(fileName, "DataModelObjBase") && 
                             !StringUtils.contains(fileName, "Treeable") && 
+                            !StringUtils.contains(fileName, "SpLocaleBase") && 
                             !StringUtils.contains(fileName.toLowerCase(), "iface"))
                     {
                         throw new RuntimeException("Couldn't locate class name for "+file.getAbsolutePath());

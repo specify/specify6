@@ -21,7 +21,7 @@ import java.util.List;
 
 import org.dom4j.Element;
 
-import edu.ku.brc.ui.forms.persist.View;
+import edu.ku.brc.ui.forms.persist.ViewIFace;
 
 /**
  * Abstract class for setting application context. It is designed that each application should implement its own.<br>
@@ -56,7 +56,7 @@ public abstract class AppContextMgr
      * @param viewName the name of the view (cannot be null)
      * @return the view
      */
-    public abstract View getView(final String viewSetName, final String viewName);
+    public abstract ViewIFace getView(final String viewSetName, final String viewName);
     
     /**
      * Returns an Application Resource object by name

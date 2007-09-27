@@ -319,7 +319,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 recId = id;
             }
             
-            System.out.println("id "+id+"  "+recId);
+            //System.out.println("id "+id+"  "+recId);
             
             String tableIdAsStr = Integer.toString(qfir.getTableId());
             
@@ -722,7 +722,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             instance.sqlResultsCount--;
         }
         
-        System.out.println(instance.sqlResultsCount);
+        //System.out.println(instance.sqlResultsCount);
         if (instance.sqlResultsCount == 0)
         {
             searchText.setEnabled(true);

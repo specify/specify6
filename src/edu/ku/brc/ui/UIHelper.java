@@ -105,8 +105,8 @@ import edu.ku.brc.ui.forms.DataObjectGettable;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.MultiView;
-import edu.ku.brc.ui.forms.persist.AltView;
-import edu.ku.brc.ui.forms.persist.FormCell;
+import edu.ku.brc.ui.forms.persist.AltViewIFace;
+import edu.ku.brc.ui.forms.persist.FormCellIFace;
 
 /**
  * A Helper class that has a very wide array of misc methods for helping out. (Is that meaningless or what?)
@@ -981,7 +981,7 @@ public final class UIHelper
      * @param getter the DataObjectGettable to use to get the data
      * @return an array of values at least as long as the fielName list, but may be longer
      */
-    public static Object[] getFieldValues(final FormCell formCell, final Object dataObj, final DataObjectGettable getter)
+    public static Object[] getFieldValues(final FormCellIFace formCell, final Object dataObj, final DataObjectGettable getter)
     {
         String[] fieldNames = formCell.getFieldNames();
         if( fieldNames != null && fieldNames.length != 0 )
@@ -1417,7 +1417,7 @@ public final class UIHelper
      * @param isNewObject whether it is a new object
      * @return the dialog
      */
-    public static  ViewBasedDisplayIFace createDataObjectDialog(final AltView          altView, 
+    public static  ViewBasedDisplayIFace createDataObjectDialog(final AltViewIFace          altView, 
                                                                 final JComponent       mainComp, 
                                                                 final FormDataObjIFace dataObj, 
                                                                 final boolean          isEditMode,

@@ -27,7 +27,7 @@ import edu.ku.brc.dbsupport.QueryResultsProcessable;
 import edu.ku.brc.specify.tasks.subpane.SQLQueryPane;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.forms.persist.View;
+import edu.ku.brc.ui.forms.persist.ViewIFace;
 
 /**
  * This class reads in the statistics.xml file and then enables others to ask for a statistic by name.
@@ -239,7 +239,7 @@ public class StatsMgr
         String viewName    = domElement.attributeValue("view");
         String mode        = domElement.attributeValue("mode");
 
-        View view = AppContextMgr.getInstance().getView(viewSetName, viewName);
+        ViewIFace view = AppContextMgr.getInstance().getView(viewSetName, viewName);
         if (view != null)
         {
             CommandDispatcher.dispatch(new CommandAction("Data_Entry", "ShowView", new Object[] {view, mode, idStr}));

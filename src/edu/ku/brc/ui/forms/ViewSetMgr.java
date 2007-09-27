@@ -35,8 +35,9 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import edu.ku.brc.exceptions.ConfigurationException;
-import edu.ku.brc.ui.forms.persist.View;
+import edu.ku.brc.ui.forms.persist.ViewIFace;
 import edu.ku.brc.ui.forms.persist.ViewSet;
+import edu.ku.brc.ui.forms.persist.ViewSetIFace;
 
 /**
  * Reads a registry xml file in a directory that can contain one or more ViewSets. <br>
@@ -176,9 +177,9 @@ public class ViewSetMgr
      * @param viewName the name of the view
      * @return the FormView from a view set by id 
      */
-    public View getView(final String viewSetName, final String viewName)
+    public ViewIFace getView(final String viewSetName, final String viewName)
     {
-        ViewSet viewSet = viewsHash.get(viewSetName);
+        ViewSetIFace viewSet = viewsHash.get(viewSetName);
         if (viewSet != null)
         {
             return viewSet.getView(viewName);
@@ -191,7 +192,7 @@ public class ViewSetMgr
      * @param viewSetName the name of the view set
      * @return ViewSet containing the hashtable of FormViews for this view set (this is not a copy)
      */
-    public ViewSet getViewSet(final String viewSetName)
+    public ViewSetIFace getViewSet(final String viewSetName)
     {
         if (viewSetName == null)
         {
@@ -203,7 +204,7 @@ public class ViewSetMgr
             }
             // else
             log.error("User ViewSets:");
-            for (ViewSet vs : userVS)
+            for (ViewSetIFace vs : userVS)
             {
                 log.error(vs.getName());
             }
@@ -232,7 +233,7 @@ public class ViewSetMgr
         for (Enumeration<ViewSet> e=viewsHash.elements();e.hasMoreElements();)
         {
             ViewSet vs = e.nextElement();
-            if (vs.getType() == ViewSet.Type.User)
+            if (vs.getType() == ViewSetIFace.Type.User)
             {
                 list.add(vs);
             }
@@ -376,7 +377,7 @@ public class ViewSetMgr
             output.write("<files>\n");
             for (Enumeration<ViewSet> e = viewsHash.elements(); e.hasMoreElements();)
             {
-                ViewSet viewSet = e.nextElement();
+                ViewSetIFace viewSet = e.nextElement();
                 output.write("      <file type=\""+
                                     viewSet.getType().toString()+"\" name=\""+
                                     viewSet.getName()+"\" title=\""+

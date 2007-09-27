@@ -73,7 +73,6 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.dbsupport.StaleObjectException;
-import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.ui.ColorChooser;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.CommandAction;
@@ -88,14 +87,17 @@ import edu.ku.brc.ui.db.JAutoCompComboBox;
 import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
-import edu.ku.brc.ui.forms.persist.AltView;
+import edu.ku.brc.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.ui.forms.persist.FormCell;
 import edu.ku.brc.ui.forms.persist.FormCellField;
+import edu.ku.brc.ui.forms.persist.FormCellFieldIFace;
+import edu.ku.brc.ui.forms.persist.FormCellIFace;
 import edu.ku.brc.ui.forms.persist.FormCellLabel;
 import edu.ku.brc.ui.forms.persist.FormCellSubView;
+import edu.ku.brc.ui.forms.persist.FormCellSubViewIFace;
 import edu.ku.brc.ui.forms.persist.FormViewDef;
-import edu.ku.brc.ui.forms.persist.View;
 import edu.ku.brc.ui.forms.persist.ViewDef;
+import edu.ku.brc.ui.forms.persist.ViewIFace;
 import edu.ku.brc.ui.forms.validation.DataChangeNotifier;
 import edu.ku.brc.ui.forms.validation.FormValidator;
 import edu.ku.brc.ui.forms.validation.FormValidatorInfo;
@@ -142,13 +144,13 @@ public class FormViewObj implements Viewable,
     protected boolean                       isEditting     = false;
     protected boolean                       formIsInNewDataMode = false; // when this is true it means the form was cleared and new data is expected
     protected MultiView                     mvParent       = null;
-    protected View                          view;
-    protected AltView                       altView;
+    protected ViewIFace                     view;
+    protected AltViewIFace                  altView;
     protected FormViewDef                   formViewDef;
     protected String                        cellName;
     protected Component                     formComp       = null;
     protected List<MultiView>               kids           = new ArrayList<MultiView>();
-    protected Vector<AltView>               altViewsList   = null;
+    protected Vector<AltViewIFace>               altViewsList   = null;
 
     protected Hashtable<String, FieldInfo>  controlsById   = new Hashtable<String, FieldInfo>();
     protected Hashtable<String, FieldInfo>  controlsByName = new Hashtable<String, FieldInfo>();
@@ -206,14 +208,14 @@ public class FormViewObj implements Viewable,
     /**
      * Constructor with FormView definition
      * @param view the definition of the view
-     * @param altView indicates which AltView we will be using
+     * @param altView indicates which AltViewIFace we will be using
      * @param mvParent the mvParent mulitview
      * @param createResultSetController indicates that a ResultSet Controller should be created
      * @param formValidator the form's formValidator
      * @param options the options needed for creating the form
      */
-    public FormViewObj(final View          view,
-                       final AltView       altView,
+    public FormViewObj(final ViewIFace          view,
+                       final AltViewIFace       altView,
                        final MultiView     mvParent,
                        final FormValidator formValidator,
                        final int           options,
@@ -225,15 +227,15 @@ public class FormViewObj implements Viewable,
     /**
      * Constructor with FormView definition
      * @param view the definition of the view
-     * @param altView indicates which AltView we will be using
+     * @param altView indicates which AltViewIFace we will be using
      * @param mvParent the mvParent mulitview
      * @param createResultSetController indicates that a ResultSet Controller should be created
      * @param formValidator the form's formValidator
      * @param options the options needed for creating the form
      * @param properties creation properties
      */
-    public FormViewObj(final View          view,
-                       final AltView       altView,
+    public FormViewObj(final ViewIFace          view,
+                       final AltViewIFace       altView,
                        final MultiView     mvParent,
                        final FormValidator formValidator,
                        final int           options,
@@ -248,7 +250,7 @@ public class FormViewObj implements Viewable,
 
         
         businessRules    = view.getBusinessRule();
-        isEditting       = altView.getMode() == AltView.CreationMode.Edit;
+        isEditting       = altView.getMode() == AltViewIFace.CreationMode.Edit;
 
         this.formViewDef = (FormViewDef)altView.getViewDef();
         
@@ -288,7 +290,7 @@ public class FormViewObj implements Viewable,
 
         boolean addController = mvParent != null && view.getAltViews().size() > 1;
 
-        boolean addExtraRow = addController || createResultSetController || altView.getMode() == AltView.CreationMode.Search;
+        boolean addExtraRow = addController || createResultSetController || altView.getMode() == AltViewIFace.CreationMode.Search;
         
         // See if we need to add a Selector ComboBox
         isSelectorForm = StringUtils.isNotEmpty(view.getSelectorName());
@@ -311,9 +313,9 @@ public class FormViewObj implements Viewable,
         {
             Vector<String> cbxList = new Vector<String>();
             cbxList.add(altView.getName());
-            for (AltView av : view.getAltViews())
+            for (AltViewIFace av : view.getAltViews())
             {
-                if (av != altView && av.getMode() == AltView.CreationMode.Edit)
+                if (av != altView && av.getMode() == AltViewIFace.CreationMode.Edit)
                 {
                     cbxList.add(av.getName());
                 }
@@ -352,14 +354,14 @@ public class FormViewObj implements Viewable,
                 // (This is because they were created that way. It also makes no sense that while in "View" mode
                 // you would want to switch an individual subview to a differe "mode" view than the root).
 
-                altViewsList = new Vector<AltView>();
+                altViewsList = new Vector<AltViewIFace>();
                 
                 // This will return null if it isn't suppose to have a switcher
                 switcherUI = createMenuSwitcherPanel(mvParent, view, altView, altViewsList);
                 
                 if (altViewsList.size() > 0)
                 {
-                    if (altView.getMode() == AltView.CreationMode.Edit && mvParent != null && mvParent.isTopLevel())
+                    if (altView.getMode() == AltViewIFace.CreationMode.Edit && mvParent != null && mvParent.isTopLevel())
                     {
                         // We want it on the left side of other buttons
                         // so wee need to add it before the Save button
@@ -380,7 +382,7 @@ public class FormViewObj implements Viewable,
                 }
             }
             
-            if (!saveWasAdded && altView.getMode() == AltView.CreationMode.Edit)
+            if (!saveWasAdded && altView.getMode() == AltViewIFace.CreationMode.Edit)
             {
                 if (mvParent != null && mvParent.isTopLevel() && !hideSaveBtn)
                 {
@@ -397,7 +399,7 @@ public class FormViewObj implements Viewable,
         }
 
         // This here because the Seach mode shouldn't be combined with other modes
-        if (altView.getMode() == AltView.CreationMode.Search)
+        if (altView.getMode() == AltViewIFace.CreationMode.Search)
         {
             if (!hideSaveBtn)
             {
@@ -449,14 +451,14 @@ public class FormViewObj implements Viewable,
      * Creates a special drop "switcher UI" component for switching between the Viewables in the MultiView.
      * @param mvParentArg the MultiView Parent
      * @param viewArg the View
-     * @param altViewArg the AltView
-     * @param altViewsListArg the Vector of AltView that will contains the ones in the Drop Down
+     * @param altViewArg the AltViewIFace
+     * @param altViewsListArg the Vector of AltViewIFace that will contains the ones in the Drop Down
      * @return the special combobox
      */
-    public static MenuSwitcherPanel createMenuSwitcherPanel(final MultiView       mvParentArg, 
-                                                            final View            viewArg, 
-                                                            final AltView         altViewArg, 
-                                                            final Vector<AltView> altViewsListArg)
+    public static MenuSwitcherPanel createMenuSwitcherPanel(final MultiView            mvParentArg, 
+                                                            final ViewIFace            viewArg, 
+                                                            final AltViewIFace         altViewArg, 
+                                                            final Vector<AltViewIFace> altViewsListArg)
     {
         
         // Add all the View if we are at the top level
@@ -467,8 +469,8 @@ public class FormViewObj implements Viewable,
             
         } else
         {
-            AltView.CreationMode mode = altViewArg.getMode();
-            for (AltView av : viewArg.getAltViews())
+            AltViewIFace.CreationMode mode = altViewArg.getMode();
+            for (AltViewIFace av : viewArg.getAltViews())
             {
                 //ViewDef.ViewType type = av.getViewDef().getType();
                 if (av.getMode() == mode)//|| type == ViewDef.ViewType.table || type == ViewDef.ViewType.formtable)
@@ -662,7 +664,7 @@ public class FormViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#getAltView()
      */
-    public AltView getAltView()
+    public AltViewIFace getAltView()
     {
         return altView;
     }
@@ -771,7 +773,7 @@ public class FormViewObj implements Viewable,
             {
                 if (!ignoreSelection)
                 {
-                     mv.showView((AltView)((JComboBox)ae.getSource()).getSelectedItem());
+                     mv.showView((AltViewIFace)((JComboBox)ae.getSource()).getSelectedItem());
                 }
             }
         }
@@ -1647,7 +1649,7 @@ public class FormViewObj implements Viewable,
         // If the Control panel doesn't exist, then add it
         if (rsController == null && controlPanel != null)
         {
-            boolean inEditMode = altView.getMode() == AltView.CreationMode.Edit;
+            boolean inEditMode = altView.getMode() == AltViewIFace.CreationMode.Edit;
             rsController = new ResultSetController(formValidator, inEditMode, inEditMode, view.getObjTitle(), 0);
             rsController.getPanel().setBackground(bgColor);
             
@@ -1957,8 +1959,8 @@ public class FormViewObj implements Viewable,
         
         for (FieldInfo fieldInfo : controlsById.values())
         {
-            if (fieldInfo.isOfType(FormCell.CellType.subview) ||
-                fieldInfo.isOfType(FormCell.CellType.iconview))
+            if (fieldInfo.isOfType(FormCellIFace.CellType.subview) ||
+                fieldInfo.isOfType(FormCellIFace.CellType.iconview))
             {
                 fieldInfo.getSubView().setParentDataObj(null);
             }
@@ -2110,16 +2112,16 @@ public class FormViewObj implements Viewable,
             for (FieldInfo fieldInfo : controlsById.values())
             {
                 fieldInfo.getComp().setEnabled(false);
-                if (fieldInfo.isOfType(FormCell.CellType.field))
+                if (fieldInfo.isOfType(FormCellIFace.CellType.field))
                 {
                     setDataIntoUIComp(fieldInfo.getComp(), null, null);
                     //log.debug("Setting ["+fieldInfo.getName()+"] to enabled=false");
 
-                } else if (fieldInfo.isOfType(FormCell.CellType.subview))
+                } else if (fieldInfo.isOfType(FormCellIFace.CellType.subview))
                 {
                     fieldInfo.getSubView().setData(null);
                     
-                } else if (fieldInfo.isOfType(FormCell.CellType.statictext))
+                } else if (fieldInfo.isOfType(FormCellIFace.CellType.statictext))
                 {
                     setDataIntoUIComp(fieldInfo.getComp(), null, null);
                 }
@@ -2180,7 +2182,7 @@ public class FormViewObj implements Viewable,
                 Object data = null;
 
                 // This is for panels that use in layout but have no data
-                if (fieldInfo.isOfType(FormCell.CellType.field))
+                if (fieldInfo.isOfType(FormCellIFace.CellType.field))
                 {
                     // Do Formatting here
                     FormCellField cellField    = (FormCellField)fieldInfo.getFormCell();
@@ -2220,7 +2222,7 @@ public class FormViewObj implements Viewable,
                     } else
                     {
                         Object[] values;
-                        if (((FormCellField)fieldInfo.getFormCell()).useThisData())
+                        if (((FormCellFieldIFace)fieldInfo.getFormCell()).useThisData())
                         {
                             values = new Object[] {dataObj};
                             
@@ -2268,7 +2270,7 @@ public class FormViewObj implements Viewable,
                         }
                     }
 
-                } else if (fieldInfo.isOfType(FormCell.CellType.subview))
+                } else if (fieldInfo.isOfType(FormCellIFace.CellType.subview))
                 {
                     if (fieldInfo.getFormCell().isIgnoreSetGet())
                     {
@@ -2290,7 +2292,7 @@ public class FormViewObj implements Viewable,
                     
                     if (data != null)
                     {
-                        if (((FormCellSubView)fieldInfo.getFormCell()).isSingleValueFromSet() && data instanceof Set)
+                        if (((FormCellSubViewIFace)fieldInfo.getFormCell()).isSingleValueFromSet() && data instanceof Set)
                         {
                             Set<?> set = (Set<?>)data;
                             if (set.size() > 0)
@@ -2392,13 +2394,13 @@ public class FormViewObj implements Viewable,
                 
                 for (FieldInfo fieldInfo : controlsById.values())
                 {
-                    FormCell fc = fieldInfo.getFormCell();
+                    FormCellIFace fc = fieldInfo.getFormCell();
                     boolean isReadOnly = false;
                     boolean useThisData; // meaning the control is using the same data object as what is in the form
                                          // so we don't need to go get the data (skip it)
                     if (fc instanceof FormCellField)
                     {
-                        FormCellField fcf = (FormCellField)fc;
+                        FormCellFieldIFace fcf = (FormCellFieldIFace)fc;
                         isReadOnly  = fcf.isReadOnly();
                         useThisData = fcf.useThisData();
                         
@@ -2414,7 +2416,7 @@ public class FormViewObj implements Viewable,
                     
                     log.debug(fieldInfo.getName()+"  "+fieldInfo.getFormCell().getName());
 
-                    String id = fieldInfo.getFormCell().getId();
+                    String id = fieldInfo.getFormCell().getIdent();
                     if (hasFormControlChanged(id))
                     {
                         // this ends up calling the getData on the GetSetValueIFace 
@@ -2482,7 +2484,7 @@ public class FormViewObj implements Viewable,
 
                 } else if (comp instanceof MultiView)
                 {
-                    if (((FormCellSubView)fieldInfo.getFormCell()).isSingleValueFromSet())
+                    if (((FormCellSubViewIFace)fieldInfo.getFormCell()).isSingleValueFromSet())
                     {
                         return ((MultiView)comp).getData();
                     } 
@@ -2520,7 +2522,7 @@ public class FormViewObj implements Viewable,
                 {
                     return new Boolean(((JCheckBox)comp).isSelected());
 
-                } else if (fieldInfo.getFormCell().getType() == FormCell.CellType.command)
+                } else if (fieldInfo.getFormCell().getType() == FormCellIFace.CellType.command)
                 {
                    // no op
                 } else
@@ -2701,7 +2703,7 @@ public class FormViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#getView()
      */
-    public View getView()
+    public ViewIFace getView()
     {
         return view;
     }
@@ -2832,13 +2834,13 @@ public class FormViewObj implements Viewable,
      * @param formCell the FormCell def that describe the cell
      * @param control the control
      */
-    public void registerControl(final FormCell formCell, final Component control)
+    public void registerControl(final FormCellIFace formCell, final Component control)
     {
         if (formCell != null)
         {
-            if (controlsById.get(formCell.getId()) != null)
+            if (controlsById.get(formCell.getIdent()) != null)
             {
-                throw new RuntimeException("Two controls have the same id ["+formCell.getId()+"] "+formViewDef.getName());
+                throw new RuntimeException("Two controls have the same id ["+formCell.getIdent()+"] "+formViewDef.getName());
             }
 
             if (controlsByName.get(formCell.getName()) != null)
@@ -2859,7 +2861,7 @@ public class FormViewObj implements Viewable,
             }
             
             FieldInfo fieldInfo = new FieldInfo(formCell, comp, scrPane, controlsById.size());
-            controlsById.put(formCell.getId(), fieldInfo);
+            controlsById.put(formCell.getIdent(), fieldInfo);
             controlsByName.put(formCell.getName(), fieldInfo);
 
         }
@@ -2913,9 +2915,9 @@ public class FormViewObj implements Viewable,
     {
         if (formCell != null)
         {
-            if (controlsById.get(formCell.getId()) != null)
+            if (controlsById.get(formCell.getIdent()) != null)
             {
-                throw new RuntimeException("Two controls have the same id ["+formCell.getId()+"] "+formViewDef.getName());
+                throw new RuntimeException("Two controls have the same id ["+formCell.getIdent()+"] "+formViewDef.getName());
             }
 
             if (controlsByName.get(formCell.getName()) != null)
@@ -2929,7 +2931,7 @@ public class FormViewObj implements Viewable,
             }
             
             FieldInfo fi = new FieldInfo(formCell, subView, controlsById.size());
-            controlsById.put(formCell.getId(), fi);
+            controlsById.put(formCell.getIdent(), fi);
             controlsByName.put(formCell.getName(), fi);
             kids.add(subView);
         }
@@ -3154,14 +3156,14 @@ public class FormViewObj implements Viewable,
     {
         for (FieldInfo fieldInfo : controlsById.values())
         {
-            if (fieldInfo.isOfType(FormCell.CellType.field))
+            if (fieldInfo.isOfType(FormCellIFace.CellType.field))
             {
-                FormCellField cellField = (FormCellField)fieldInfo.getFormCell();
+                FormCellFieldIFace cellField = (FormCellFieldIFace)fieldInfo.getFormCell();
                 FormCellField.FieldType uiType = cellField.getUiType();
                 //log.debug("["+uiType+"]");
 
                 // XXX maybe check check to see if it is a JTextField component instead
-                if (uiType == FormCellField.FieldType.dsptextfield || uiType == FormCellField.FieldType.dsptextarea)
+                if (uiType == FormCellFieldIFace.FieldType.dsptextfield || uiType == FormCellFieldIFace.FieldType.dsptextarea)
                 {
                     Component comp = fieldInfo.getComp();
                     if (colorType == 0)
@@ -3199,9 +3201,9 @@ public class FormViewObj implements Viewable,
     {
         for (FieldInfo fieldInfo : controlsById.values())
         {
-            if (fieldInfo.isOfType(FormCell.CellType.field))
+            if (fieldInfo.isOfType(FormCellIFace.CellType.field))
             {
-                fieldIds.add(((FormCellField)fieldInfo.getFormCell()).getId());
+                fieldIds.add(((FormCellField)fieldInfo.getFormCell()).getIdent());
             }
         }
 
@@ -3212,13 +3214,13 @@ public class FormViewObj implements Viewable,
     //-------------------------------------------------
     class FieldInfo
     {
-        protected FormCell    formCell;
+        protected FormCellIFace    formCell;
         protected MultiView   subView;
         protected Component   comp;
         protected JScrollPane fieldScrollPane;
         protected int         insertPos;
 
-        public FieldInfo(FormCell formCell, Component comp, JScrollPane scrollPane, int insertPos)
+        public FieldInfo(FormCellIFace formCell, Component comp, JScrollPane scrollPane, int insertPos)
         {
             this.comp     = comp;
             this.formCell = formCell;
@@ -3227,7 +3229,7 @@ public class FormViewObj implements Viewable,
             this.insertPos = insertPos;
         }
 
-        public FieldInfo(FormCell formCell, MultiView subView, int insertPos)
+        public FieldInfo(FormCellIFace formCell, MultiView subView, int insertPos)
         {
             this.formCell = formCell;
             this.subView  = subView;
@@ -3247,14 +3249,14 @@ public class FormViewObj implements Viewable,
 
         public String getId()
         {
-            return formCell.getId();
+            return formCell.getIdent();
         }
 
         public Component getComp()
         {
             return comp;
         }
-        public FormCell getFormCell()
+        public FormCellIFace getFormCell()
         {
             return formCell;
         }

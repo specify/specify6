@@ -63,7 +63,7 @@ import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.ViewFactory;
 import edu.ku.brc.ui.forms.Viewable;
-import edu.ku.brc.ui.forms.persist.View;
+import edu.ku.brc.ui.forms.persist.ViewIFace;
 
 /**
  * This is a "generic" or more specifically "configurable" search panel class. This enables you to specify a form to be used to enter the search criteria
@@ -83,7 +83,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
     private static final Logger log  = Logger.getLogger(DBObjSearchDialog.class);
 
     // Form Stuff
-    protected View           formView  = null;
+    protected ViewIFace           formView  = null;
     protected Viewable       form      = null;
     protected List<String>   fieldIds  = new ArrayList<String>();
     protected ActionListener doQuery   = null;

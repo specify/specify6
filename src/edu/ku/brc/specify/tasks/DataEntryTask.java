@@ -69,7 +69,7 @@ import edu.ku.brc.ui.dnd.Trash;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.MultiView;
-import edu.ku.brc.ui.forms.persist.View;
+import edu.ku.brc.ui.forms.persist.ViewIFace;
 
 /**
  * This task controls the data entry forms.
@@ -153,7 +153,7 @@ public class DataEntryTask extends BaseTask
      * @param view the view 
      * @return the icon for the view
      */
-    protected static ImageIcon getIconForView(final View view)
+    protected static ImageIcon getIconForView(final ViewIFace view)
     {
         ImageIcon imgIcon = iconForFormClass.get(createFullName(view.getViewSetName(), view.getName()));
         if (imgIcon == null)
@@ -193,7 +193,7 @@ public class DataEntryTask extends BaseTask
                          final FormDataObjIFace data,
                          final boolean          isNewForm)
     {
-        View view = viewSetName == null ? SpecifyAppContextMgr.getInstance().getView(viewName, CollectionType.getCurrentCollectionType()) : 
+        ViewIFace view = viewSetName == null ? SpecifyAppContextMgr.getInstance().getView(viewName, CollectionType.getCurrentCollectionType()) : 
                                           AppContextMgr.getInstance().getView(viewSetName, viewName);
         FormDataObjIFace  dataObj = data;
         if (dataObj == null)
@@ -248,7 +248,7 @@ public class DataEntryTask extends BaseTask
      * @param mode the mode of how it is to be opened (View, Edit) 
      * @param idStr a string that contains the Integer Id (Primary Key) of the object to be shown
      */
-    public static void openView(final Taskable task, final View view, final String mode, final String idStr)
+    public static void openView(final Taskable task, final ViewIFace view, final String mode, final String idStr)
     {
         int tableId = DBTableIdMgr.getInstance().getIdByClassName(view.getClassName());
 
@@ -314,7 +314,7 @@ public class DataEntryTask extends BaseTask
                 SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
     
                 
-                View view = appContextMgr.getView(defaultFormName, CollectionType.getCurrentCollectionType());
+                ViewIFace view = appContextMgr.getView(defaultFormName, CollectionType.getCurrentCollectionType());
                 
                 formPane = new FormPane(name, task, view, null, null, MultiView.VIEW_SWITCHER | MultiView.RESULTSET_CONTROLLER);
                 formPane.setIcon(getIconForView(view));
@@ -379,7 +379,7 @@ public class DataEntryTask extends BaseTask
                             log.error("Icon ["+iconname+"] could not be found.");
                         }
                         
-                        View view = appContextMgr.getView(viewsetName, viewName);
+                        ViewIFace view = appContextMgr.getView(viewsetName, viewName);
                         if (view != null)
                         {
                             DBTableIdMgr.TableInfo ti = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
@@ -588,7 +588,7 @@ public class DataEntryTask extends BaseTask
                 Object[] dataList = (Object[])cmdAction.getData();
                 if (dataList.length != 3)
                 {
-                    View   view = (View)dataList[0];
+                    ViewIFace   view = (ViewIFace)dataList[0];
                     String mode = (String)dataList[1];
                     String idStr = (String)dataList[2];
                     openView(this, view, mode, idStr);
@@ -607,7 +607,7 @@ public class DataEntryTask extends BaseTask
             if (cmdAction.getData() instanceof Object[])
             {
                 Object[] dataList = (Object[])cmdAction.getData();
-                View   view = (View)dataList[0];
+                ViewIFace   view = (ViewIFace)dataList[0];
                 String mode = (String)dataList[1];
                 String idStr = (String)dataList[2];
                 openView(this, view, mode, idStr);

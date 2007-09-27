@@ -20,7 +20,7 @@ package edu.ku.brc.ui.forms.persist;
  * @author rods
  *
  */
-public class FormCellCommand extends FormCellSeparator implements Cloneable
+public class FormCellCommand extends FormCellSeparator implements Cloneable, FormCellCommandIFace
 {
     protected String commandType;
     protected String action;
@@ -29,26 +29,38 @@ public class FormCellCommand extends FormCellSeparator implements Cloneable
     {
         super(id, name, label, 1);
         
-        this.type        = FormCell.CellType.command;
+        this.type        = FormCellIFace.CellType.command;
         this.commandType = commandType;
         this.action      = action;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellCommandIFace#getAction()
+     */
     public String getAction()
     {
         return action;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellCommandIFace#setAction(java.lang.String)
+     */
     public void setAction(String action)
     {
         this.action = action;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellCommandIFace#getCommandType()
+     */
     public String getCommandType()
     {
         return commandType;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellCommandIFace#setCommandType(java.lang.String)
+     */
     public void setCommandType(String commandType)
     {
         this.commandType = commandType;
@@ -56,6 +68,9 @@ public class FormCellCommand extends FormCellSeparator implements Cloneable
     
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormCellSeparator#clone()
+     */
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellCommandIFace#clone()
      */
     public Object clone() throws CloneNotSupportedException
     {

@@ -60,8 +60,9 @@ import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.ViewSetMgr;
-import edu.ku.brc.ui.forms.persist.View;
+import edu.ku.brc.ui.forms.persist.ViewIFace;
 import edu.ku.brc.ui.forms.persist.ViewSet;
+import edu.ku.brc.ui.forms.persist.ViewSetIFace;
 
 /**
  * This class provides the current context of the Specify application. The context consists of the following:<br>
@@ -348,7 +349,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         appResDef.initialize();
 
         ViewSetMgr viewSetMgr = new ViewSetMgr(dir);
-        for (ViewSet vs : viewSetMgr.getViewSets())
+        for (ViewSetIFace vs : viewSetMgr.getViewSets())
         {
             ViewSetObj vso = new ViewSetObj();
             vso.initialize();
@@ -590,7 +591,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
      * @param collType the CollectionType
      * @return the view or null
      */
-    public View getView(final String viewName, final CollectionType collType)
+    public ViewIFace getView(final String viewName, final CollectionType collType)
     {
         log.debug("Looking Up View ["+viewName+"] collType["+(collType != null ? collType.getName() : "null")+"]");
         
@@ -602,9 +603,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
             if (appResDef.getCollectionType() != null && appResDef.getCollectionType() == collType)
             {
                 fndColObjDef = true;
-                for (ViewSet vs : getViewSetList(appResDef))
+                for (ViewSetIFace vs : getViewSetList(appResDef))
                 {
-                    View view = vs.getView(viewName);
+                    ViewIFace view = vs.getView(viewName);
                     if (view != null)
                     {
                         return view;
@@ -633,9 +634,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     (dType == null || disciplineName == null)) && (uType == null || uType.equals(userType)) ||
                     (userType != null && dType != null && dType.equals(userType)))
                 {
-                    for (ViewSet vs : getViewSetList(appResDef))
+                    for (ViewSetIFace vs : getViewSetList(appResDef))
                     {
-                        View view = vs.getView(viewName);
+                        ViewIFace view = vs.getView(viewName);
                         if (view != null)
                         {
                             return view;
@@ -645,9 +646,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
         }
         
-        for (ViewSet vs : backStopViewSetMgr.getViewSets())
+        for (ViewSetIFace vs : backStopViewSetMgr.getViewSets())
         {
-            View view = backStopViewSetMgr.getView(vs.getName(), viewName);
+            ViewIFace view = backStopViewSetMgr.getView(vs.getName(), viewName);
             if (view != null)
             {
                 return view;
@@ -659,7 +660,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.AppResourceDefaultIFace#getView(java.lang.String, java.lang.String)
      */
-    public View getView(final String viewSetName, final String viewName)
+    public ViewIFace getView(final String viewSetName, final String viewName)
     {
 
         if (StringUtils.isEmpty(viewName))
@@ -676,13 +677,13 @@ public class SpecifyAppContextMgr extends AppContextMgr
         {
             log.debug("getView "+getAppResDefAsString(appResDef)+"  ["+appResDef.getUniqueIdentifer()+"]");
 
-            for (ViewSet vs : getViewSetList(appResDef))
+            for (ViewSetIFace vs : getViewSetList(appResDef))
             {
                 log.debug("VS  ["+vs.getName()+"]["+viewSetName+"]");
 
                 if (vs.getName().equals(viewSetName))
                 {
-                    View view = vs.getView(viewName);
+                    ViewIFace view = vs.getView(viewName);
                     if (view != null)
                     {
                         return view;

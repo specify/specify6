@@ -93,6 +93,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.factories.ButtonBarFactory;
@@ -101,6 +102,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
+import com.lowagie.text.pdf.SpotColor;
 
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.AttributeIFace;
@@ -155,6 +157,10 @@ import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.ReferenceWork;
 import edu.ku.brc.specify.datamodel.RepositoryAgreement;
 import edu.ku.brc.specify.datamodel.Shipment;
+import edu.ku.brc.specify.datamodel.SpLocaleContainer;
+import edu.ku.brc.specify.datamodel.SpLocaleContainerItem;
+import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
+import edu.ku.brc.specify.datamodel.SpLocalizableIFace;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonCitation;
@@ -170,6 +176,13 @@ import edu.ku.brc.specify.datamodel.WorkbenchRowImage;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
+import edu.ku.brc.specify.tools.fielddesc.Desc;
+import edu.ku.brc.specify.tools.fielddesc.Field;
+import edu.ku.brc.specify.tools.fielddesc.FieldDescApp;
+import edu.ku.brc.specify.tools.fielddesc.LocalizableNameDescIFace;
+import edu.ku.brc.specify.tools.fielddesc.Name;
+import edu.ku.brc.specify.tools.fielddesc.Relationship;
+import edu.ku.brc.specify.tools.fielddesc.Table;
 import edu.ku.brc.specify.treeutils.TreeHelper;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIHelper;
@@ -326,6 +339,8 @@ public class BuildSampleDatabase
         startTx();
         persist(collectionType);
         commitTx();
+        
+        loadSchemaLocalization(collectionType);
         
         SpecifyUser.setCurrentUser(user);
         user.setAgent(userAgent);
@@ -499,10 +514,14 @@ public class BuildSampleDatabase
         
         CollectionType collectionType = createCollectionType(discipline.getName(), discipline.getTitle(), dataType, user, taxonTreeDef, null, null, null, lithoStratTreeDef);
         List<Object> gtps = createSimpleGeologicTimePeriod(collectionType, "Geologic Time Period");
+        loadSchemaLocalization(collectionType);
         
         //startTx();
         persist(collectionType);
         persist(userAgent);
+        
+        loadSchemaLocalization(collectionType);
+        
         //commitTx();
         
         SpecifyUser.setCurrentUser(user);
@@ -2561,6 +2580,90 @@ public class BuildSampleDatabase
                 setupDlg = null;
             }
         }
+    }
+    
+    protected void loadLocalization(final LocalizableNameDescIFace lndi, final SpLocalizableIFace loc)
+    {
+        loc.setName(lndi.getName());
+       
+        for (Name nm : lndi.getNames())
+        {
+            SpLocaleItemStr str = new SpLocaleItemStr();
+            str.initialize();
+            
+            str.setText(nm.getText());
+            str.setLanguage(nm.getLang());
+            str.setCountry(nm.getCountry());
+            str.setVariant(nm.getVariant());
+            
+            loc.getNames().add(str);
+            str.setSpLocalizable(loc);
+        }
+        
+        for (Desc desc : lndi.getDescs())
+        {
+            SpLocaleItemStr str = new SpLocaleItemStr();
+            str.initialize();
+            
+            str.setText(desc.getText());
+            str.setLanguage(desc.getLang());
+            str.setCountry(desc.getCountry());
+            str.setVariant(desc.getVariant());
+            
+            loc.getNames().add(str);
+            str.setSpLocalizable(loc);
+        }
+        
+    }
+    
+    protected void loadSchemaLocalization(final CollectionType collTyp)
+    {
+        FieldDescApp fda = new FieldDescApp();
+        for (Table table : fda.getTables())
+        {
+            SpLocaleContainer container = new SpLocaleContainer();
+            container.initialize();
+            container.setName(table.getName());
+            
+            loadLocalization(table, container);
+            
+            collTyp.getSpLocaleContainers().add(container);
+            container.setCollectionType(collTyp);
+            
+            for (Field field : table.getFields())
+            {
+                SpLocaleContainerItem item = new SpLocaleContainerItem();
+                item.initialize();
+                item.setType(field.getType());
+                loadLocalization(field, item);
+                
+                container.getItems().add(item);
+                item.setContainer(container);
+            }
+            
+            for (Relationship rel : table.getRelationships())
+            {
+                SpLocaleContainerItem item = new SpLocaleContainerItem();
+                item.initialize();
+                item.setType(rel.getType());
+                loadLocalization(rel, item);
+                
+                container.getItems().add(item);
+                item.setContainer(container);
+            }
+        }
+        /*
+        try
+        {
+            startTx();
+            session.merge(collTyp);
+            session.saveOrUpdate(collTyp);
+            commitTx();
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }*/
     }
     
     public static void main(final String[] args)

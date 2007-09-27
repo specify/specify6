@@ -21,7 +21,7 @@ import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.ViewFactory;
 import edu.ku.brc.ui.forms.Viewable;
-import edu.ku.brc.ui.forms.persist.View;
+import edu.ku.brc.ui.forms.persist.ViewIFace;
 import edu.ku.brc.ui.forms.validation.FormValidator;
 import edu.ku.brc.ui.forms.validation.ValComboBox;
 
@@ -38,7 +38,7 @@ public class FormattingPrefsPanel extends JPanel implements PrefsPanelIFace, Pre
 {
     private static final Logger log  = Logger.getLogger(FormattingPrefsPanel.class);
 
-    protected View         formView  = null;
+    protected ViewIFace         formView  = null;
     protected Viewable     form      = null;
     protected JComboBox    fontNames = null;
     protected JComboBox    fontSizes = null;

@@ -74,7 +74,7 @@ import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.TableViewObj;
 import edu.ku.brc.ui.forms.Viewable;
-import edu.ku.brc.ui.forms.persist.View;
+import edu.ku.brc.ui.forms.persist.ViewIFace;
 
 /**
  * Takes care of offering up record sets, updating, deleteing and creating them.
@@ -248,7 +248,7 @@ public class InfoRequestTask extends BaseTask
         
         SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
         
-        View view = appContextMgr.getView(tableInfo.getDefaultFormName(), CollectionType.getCurrentCollectionType());
+        ViewIFace view = appContextMgr.getView(tableInfo.getDefaultFormName(), CollectionType.getCurrentCollectionType());
 
         InfoRequest infoRequest = new InfoRequest();
         infoRequest.initialize();

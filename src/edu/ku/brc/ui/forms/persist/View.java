@@ -31,7 +31,7 @@ import edu.ku.brc.ui.forms.BusinessRulesIFace;
  * @author rods
  *
  */
-public class View implements Comparable<View>
+public class View implements Comparable<View>, ViewIFace
 {
     protected String               viewSetName;
     protected String               name;
@@ -39,17 +39,16 @@ public class View implements Comparable<View>
     protected String               objTitle; // The title of a single object
     protected String               className;
     protected String               businessRulesClassName;
-    protected List<AltView>        altViews       = new Vector<AltView>();
+    protected List<AltViewIFace>   altViews       = new Vector<AltViewIFace>();
     protected boolean              useResourceLabels;
     protected String               resourceLabels = null;
     
-    protected AltView.CreationMode defaultMode    = AltView.CreationMode.View;
-    protected String               selectorName   = null;
+    protected AltViewIFace.CreationMode defaultMode = AltViewIFace.CreationMode.View;
+    protected String               selectorName     = null;
     
     // transient data members
     protected BusinessRulesIFace   businessRule = null;
     protected Boolean              isSpecial    = null;
-    
    
     /**
      * Constructs a View.
@@ -81,35 +80,31 @@ public class View implements Comparable<View>
 
     }
     
-    /**
-     * Adds an alternative view.
-     * @param altView the alternate view
-     * @return the altView that was passed in
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewIFace#addAltView(edu.ku.brc.ui.forms.persist.AltViewIFace)
      */
-    public AltView addAltView(final AltView altView)
+    public AltViewIFace addAltView(final AltViewIFace altView)
     {
         altViews.add(altView);
         return altView;
     }
     
-    /**
-     * Find the default AltView and creates it.
-     * @param altViewType look for a default view for this type of view
-     * @return the default altView
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewIFace#getDefaultAltView(edu.ku.brc.ui.forms.persist.AltViewIFace.CreationMode, java.lang.String)
      */
-    public AltView getDefaultAltView(final AltView.CreationMode creationMode, final String altViewType)
+    public AltViewIFace getDefaultAltView(final AltViewIFace.CreationMode creationMode, final String altViewType)
     {
         
         if (creationMode != null && StringUtils.isNotEmpty(altViewType))
         {
-            AltView defAltView = null;
-            boolean isForm     = altViewType.equals("form");
-            for (AltView altView : altViews)
+            AltViewIFace defAltView = null;
+            boolean      isForm     = altViewType.equals("form");
+            for (AltViewIFace altView : altViews)
             {
                 ViewDef.ViewType type = altView.getViewDef().getType();
                 //System.out.println("View.getDefaultAltView ["+type+"]["+altView.getName()+"] mode["+altView.getMode()+"]["+creationMode+"]");
-                if (isForm && type == ViewDef.ViewType.form ||
-                    !isForm && type != ViewDef.ViewType.form)
+                if (isForm && type == ViewDefIFace.ViewType.form ||
+                    !isForm && type != ViewDefIFace.ViewType.form)
                 {
                     if (altView.getMode() == creationMode)
                     {
@@ -130,7 +125,7 @@ public class View implements Comparable<View>
             
         } else
         {
-            for (AltView altView : altViews)
+            for (AltViewIFace altView : altViews)
             {
                 if (altView.isDefault())
                 {
@@ -142,34 +137,30 @@ public class View implements Comparable<View>
         throw new RuntimeException("No default Alt View in View["+name+"]");
     }
     
-    /**
-     * Find the default AltView and creates it.
-     * @return the default altView
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewIFace#getDefaultAltView()
      */
-    public AltView getDefaultAltView()
+    public AltViewIFace getDefaultAltView()
     {
         return getDefaultAltView(null, null);
     }
 
-    /**
-     * Find the default AltView for a mode and creates it.
-     * @param creationMode the mode to be looked up
-     * @param defAltViewType default Alt View Type
-     * @return @return the default altView
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewIFace#getDefaultAltViewWithMode(edu.ku.brc.ui.forms.persist.AltViewIFace.CreationMode, java.lang.String)
      */
-    public AltView getDefaultAltViewWithMode(final AltView.CreationMode creationMode, final String defAltViewType)
+    public AltViewIFace getDefaultAltViewWithMode(final AltViewIFace.CreationMode creationMode, final String defAltViewType)
     {
-        // First get default AltView and check to see if it's 
+        // First get default AltViewIFace and check to see if it's 
         // edit mode matches the desired edit mode
-        AltView defAltView = getDefaultAltView(creationMode, defAltViewType);
+        AltViewIFace defAltView = getDefaultAltView(creationMode, defAltViewType);
         if (defAltView.getMode() == creationMode || altViews.size() == 1)
         {
             return defAltView;
         }
         
-        // OK, so we need to use the AltView that is the opposite of the 
-        // of the default AltView's edit mode.
-        for (AltView av : altViews)
+        // OK, so we need to use the AltViewIFace that is the opposite of the 
+        // of the default AltViewIFace's edit mode.
+        for (AltViewIFace av : altViews)
         {
             if (!av.isDefault() && av.getViewDefName().equals(defAltView.getViewDefName()))
             {
@@ -177,15 +168,13 @@ public class View implements Comparable<View>
             }
         }
         return defAltView;
-        //throw new RuntimeException("No default AltView in View["+name+"] with the right mode.");
+        //throw new RuntimeException("No default AltViewIFace in View["+name+"] with the right mode.");
     }
 
-    /**
-     * Finds a AltView by name, if the name is null then it returs the default AltView.
-     * @param nameStr the name of the altView
-     * @return the altView
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewIFace#getAltView(java.lang.String)
      */
-    public AltView getAltView(final String nameStr)
+    public AltViewIFace getAltView(final String nameStr)
     {
         if (nameStr == null)
         {
@@ -193,7 +182,7 @@ public class View implements Comparable<View>
             
         }
         // else
-        for (AltView altView : altViews)
+        for (AltViewIFace altView : altViews)
         {
             if (altView.getName().equals(nameStr))
             {
@@ -203,9 +192,8 @@ public class View implements Comparable<View>
         return null;
     }
     
-    /**
-     * Returns whether it is a special view, meaning a view with just to AltViews where one is edit and the other is view.
-     * @return whether it is a special view, meaning a view with just to AltViews where one is edit and the other is view.
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewIFace#isSpecialViewAndEdit()
      */
     public boolean isSpecialViewAndEdit()
     {
@@ -214,8 +202,8 @@ public class View implements Comparable<View>
         {
             if (altViews.size() == 2)
             {
-                AltView av0 = altViews.get(0);
-                AltView av1 = altViews.get(1);
+                AltViewIFace av0 = altViews.get(0);
+                AltViewIFace av1 = altViews.get(1);
                 
                 isSpecial = av0.getViewDefName().equals(av1.getViewDefName());
                 
@@ -227,9 +215,8 @@ public class View implements Comparable<View>
         return isSpecial;
     }
     
-    /**
-     * Creates an instance of the BusinessRuleIFace object for processing.
-     * @return an instance of the BusinessRuleIFace object for processing.
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewIFace#getBusinessRule()
      */
     public BusinessRulesIFace getBusinessRule()
     {
@@ -258,8 +245,8 @@ public class View implements Comparable<View>
 
     }
 
-    /**
-     * Clean up internal data.
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewIFace#cleanUp()
      */
     public void cleanUp()
     {
@@ -275,61 +262,97 @@ public class View implements Comparable<View>
         return name.compareTo(obj.getName());
     }
     
-    public List<AltView> getAltViews()
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewIFace#getAltViews()
+     */
+    public List<AltViewIFace> getAltViews()
     {
         return altViews;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewIFace#isUseResourceLabels()
+     */
     public boolean isUseResourceLabels()
     {
         return useResourceLabels;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewIFace#getResourceLabels()
+     */
     public String getResourceLabels()
     {
         return resourceLabels;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewIFace#getDesc()
+     */
     public String getDesc()
     {
         return desc;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewIFace#getName()
+     */
     public String getName()
     {
         return name;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewIFace#getObjTitle()
+     */
     public String getObjTitle()
     {
         return StringUtils.isNotEmpty(objTitle) ? objTitle : name;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewIFace#getClassName()
+     */
     public String getClassName()
     {
         return className;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewIFace#getViewSetName()
+     */
     public String getViewSetName()
     {
         return viewSetName;
     }
 
-    public AltView.CreationMode getDefaultMode()
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewIFace#getDefaultMode()
+     */
+    public AltViewIFace.CreationMode getDefaultMode()
     {
         return defaultMode;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewIFace#getSelectorName()
+     */
     public String getSelectorName()
     {
         return selectorName;
     }
 
-    public void setDefaultMode(AltView.CreationMode defaultMode)
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewIFace#setDefaultMode(edu.ku.brc.ui.forms.persist.AltViewIFace.CreationMode)
+     */
+    public void setDefaultMode(AltViewIFace.CreationMode defaultMode)
     {
         this.defaultMode = defaultMode;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewIFace#setSelectorName(java.lang.String)
+     */
     public void setSelectorName(String selectorName)
     {
         this.selectorName = selectorName;

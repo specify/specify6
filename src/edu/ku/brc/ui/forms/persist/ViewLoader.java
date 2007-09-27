@@ -86,8 +86,8 @@ public class ViewLoader
      * @return the view
      * @throws Exception anything
      */
-    public static View createView(final Element element,
-                                  final Hashtable<String, ViewDef> viewDefs) throws Exception
+    public static ViewIFace createView(final Element element,
+                                       final Hashtable<String, ViewDefIFace> viewDefs) throws Exception
     {
        boolean useResourceLabels = getAttr(element, "useresourcelabels", "false").equals("true");
 
@@ -103,9 +103,9 @@ public class ViewLoader
         Element altviews = (Element)element.selectSingleNode("altviews");
         if (altviews != null)
         {
-            AltView defaultAltView = null;
+            AltViewIFace defaultAltView = null;
             
-            AltView.CreationMode defaultMode  = AltView.parseMode(getAttr(altviews, "mode", ""), AltView.CreationMode.View);
+            AltView.CreationMode defaultMode  = AltView.parseMode(getAttr(altviews, "mode", ""), AltViewIFace.CreationMode.View);
             String               selectorName = altviews.attributeValue("selector");
             
             view.setDefaultMode(defaultMode);
@@ -118,16 +118,16 @@ public class ViewLoader
             {
                 Element altElement = (Element) i.next();
 
-                AltView.CreationMode mode = AltView.parseMode(getAttr(altElement, "mode", ""), AltView.CreationMode.View);
+                AltView.CreationMode mode = AltView.parseMode(getAttr(altElement, "mode", ""), AltViewIFace.CreationMode.View);
                 
                 String altName      = altElement.attributeValue(NAME);
                 String viewDefName  = altElement.attributeValue("viewdef");
                 String label        = altElement.attributeValue(LABEL);
-                boolean isValidated = getAttr(altElement, "validated", mode == AltView.CreationMode.Edit);
+                boolean isValidated = getAttr(altElement, "validated", mode == AltViewIFace.CreationMode.Edit);
                 boolean isDefault   = getAttr(altElement, "default", false);
 
                 //log.debug("Trying to get viewDef ["+ viewDefName + "]");
-                ViewDef viewDef = viewDefs.get(viewDefName);
+                ViewDefIFace viewDef = viewDefs.get(viewDefName);
                 if (viewDef == null)
                 {
                     throw new RuntimeException("View Name["+name+"] refers to a ViewDef ["+viewDefName+"] that doesn't exist.");
@@ -202,7 +202,7 @@ public class ViewLoader
         ViewDef.ViewType type;
         try
         {
-            type = ViewDef.ViewType.valueOf(element.attributeValue(TYPE));
+            type = ViewDefIFace.ViewType.valueOf(element.attributeValue(TYPE));
 
         } catch (Exception ex)
         {
@@ -261,8 +261,8 @@ public class ViewLoader
      * @throws Exception for duplicate view set names or if a Form ID is not unique
      */
     public static String getViews(final Element doc,
-                                  final Hashtable<String, View> views,
-                                  final Hashtable<String, ViewDef> viewDefs) throws Exception
+                                  final Hashtable<String, ViewIFace> views,
+                                  final Hashtable<String, ViewDefIFace> viewDefs) throws Exception
     {
         instance.viewSetName = doc.attributeValue(NAME);
 
@@ -271,8 +271,8 @@ public class ViewLoader
         {
             for ( Iterator<?> i = viewsElement.elementIterator( "view" ); i.hasNext(); )
             {
-                Element  element = (Element) i.next(); // assume element is NOT null, if it is null it will cause an exception
-                View     view    = createView(element, viewDefs);
+                Element   element = (Element) i.next(); // assume element is NOT null, if it is null it will cause an exception
+                ViewIFace view    = createView(element, viewDefs);
                 if (views.get(view.getName()) == null)
                 {
                     views.put(view.getName(), view);
@@ -294,7 +294,7 @@ public class ViewLoader
      * @param viewDefs the list to be filled
      * @throws Exception for duplicate view set names or if a ViewDef name is not unique
      */
-    public static String getViewDefs(final Element doc, final Hashtable<String, ViewDef> viewDefs) throws Exception
+    public static String getViewDefs(final Element doc, final Hashtable<String, ViewDefIFace> viewDefs) throws Exception
     {
         instance.viewSetName = doc.attributeValue(NAME);
 
@@ -320,22 +320,22 @@ public class ViewLoader
             
             // Now that all the definitions have been read in
             // cycle thru and have all the tableform objects clone there definitions
-            for (ViewDef viewDef : new Vector<ViewDef>(viewDefs.values()))
+            for (ViewDefIFace viewDef : new Vector<ViewDefIFace>(viewDefs.values()))
             {
-                if (viewDef.getType() == ViewDef.ViewType.formtable)
+                if (viewDef.getType() == ViewDefIFace.ViewType.formtable)
                 {
-                    ViewDef actualDef = viewDefs.get(((FormViewDef)viewDef).getDefinitionName());
+                    ViewDefIFace actualDef = viewDefs.get(((FormViewDefIFace)viewDef).getDefinitionName());
                     if (actualDef != null)
                     {
                         viewDefs.remove(viewDef.getName());
                         actualDef = (ViewDef)actualDef.clone();
-                        actualDef.setType(ViewDef.ViewType.formtable);
+                        actualDef.setType(ViewDefIFace.ViewType.formtable);
                         actualDef.setName(viewDef.getName());
                         viewDefs.put(actualDef.getName(), actualDef);
                         
                     } else
                     {
-                        throw new RuntimeException("Couldn't find the ViewDef for formtable definition name["+((FormViewDef)viewDef).getDefinitionName()+"]");
+                        throw new RuntimeException("Couldn't find the ViewDef for formtable definition name["+((FormViewDefIFace)viewDef).getDefinitionName()+"]");
                     }
                 }
             }
@@ -350,9 +350,9 @@ public class ViewLoader
      * @param aFormView the form they should be associated with
      * @param aElement the element to process
      */
-    protected static Map<String, String> getEnableRules(final Element element)
+    protected static Hashtable<String, String> getEnableRules(final Element element)
     {
-        Map<String, String> rulesList = new Hashtable<String, String>();
+        Hashtable<String, String> rulesList = new Hashtable<String, String>();
 
         if (element != null)
         {
@@ -457,7 +457,7 @@ public class ViewLoader
      * @param element the parent DOM element of the rows
      * @param cellRows the list the rows are to be added to
      */
-    protected static void processRows(Element element, List<FormRow> cellRows)
+    protected static void processRows(Element element, List<FormRowIFace> cellRows)
     {
         Element rowsElement = (Element)element.selectSingleNode("rows");
         if (rowsElement != null)
@@ -475,8 +475,8 @@ public class ViewLoader
                     int     colspan     = getAttr(cellElement, "colspan", 1);
                     int     rowspan     = getAttr(cellElement, "rowspan", 1);
 
-                    FormCell.CellType cellType = FormCell.CellType.valueOf(cellElement.attributeValue(TYPE));
-                    FormCell          cell     = null;
+                    FormCell.CellType cellType = FormCellIFace.CellType.valueOf(cellElement.attributeValue(TYPE));
+                    FormCellIFace          cell     = null;
 
                     switch (cellType)
                     {
@@ -535,7 +535,7 @@ public class ViewLoader
 
                             // THis switch is used to get the "display type" and 
                             // set up other vars needed for creating the controls
-                            FormCellField.FieldType uitype       = FormCellField.FieldType.valueOf(uitypeStr);
+                            FormCellFieldIFace.FieldType uitype       = FormCellFieldIFace.FieldType.valueOf(uitypeStr);
                             String                  dspUITypeStr = null;
                             switch (uitype)
                             {
@@ -566,7 +566,7 @@ public class ViewLoader
                                         {
                                             log.error("Couldn't find formatter["+uiFieldFormatter+"]");
                                             uiFieldFormatter = "";
-                                            uitype = FormCellField.FieldType.text;
+                                            uitype = FormCellFieldIFace.FieldType.text;
                                         }
                                     }
                                     break;
@@ -605,7 +605,7 @@ public class ViewLoader
                                 
                             } //switch
 
-                            FormCellField.FieldType dspUIType = FormCellField.FieldType.valueOf(dspUITypeStr);
+                            FormCellFieldIFace.FieldType dspUIType = FormCellFieldIFace.FieldType.valueOf(dspUITypeStr);
                             
                             // check to see see if the validation is a node in the cell
                             if (isEmpty(validationRule))
@@ -624,7 +624,7 @@ public class ViewLoader
                             boolean isEncrypted = getAttr(cellElement, "isencrypted", false);
                             
                             
-                            FormCellField field = new FormCellField(FormCell.CellType.field, cellId, 
+                            FormCellField field = new FormCellField(FormCellIFace.CellType.field, cellId, 
                                                                     cellName, uitype, dspUIType, format, formatName, uiFieldFormatter, isRequired,
                                                                     cols, rows, colspan, rowspan, validationType, validationRule, isEncrypted);
                             
@@ -701,7 +701,7 @@ public class ViewLoader
 
                         case statusbar:
                         {
-                            cell = formRow.addCell(new FormCell(FormCell.CellType.statusbar, cellId, cellName, colspan, rowspan));
+                            cell = formRow.addCell(new FormCell(FormCellIFace.CellType.statusbar, cellId, cellName, colspan, rowspan));
                             break;
                         }
                         default:
@@ -742,9 +742,9 @@ public class ViewLoader
     {
         FormViewDef formView = new FormViewDef(type, name, className, gettableClassName, settableClassName, desc);
 
-        if (type != ViewDef.ViewType.formtable)
+        if (type != ViewDefIFace.ViewType.formtable)
         {
-            List<FormRow> rows = formView.getRows();
+            List<FormRowIFace> rows = formView.getRows();
             
             processRows(element, rows);
             
@@ -798,7 +798,7 @@ public class ViewLoader
 
     /**
      * Creates a Table Form View
-     * @param type the type of form to be built
+     * @param typeName the type of form to be built
      * @param element the DOM element for building the form
      * @param name the name of the form
      * @param className the class name of the data object
@@ -807,14 +807,14 @@ public class ViewLoader
      * @param desc the description
      * @return a form view of type "table"
      */
-    protected static TableViewDef createTableView(final Element element,
+    protected static TableViewDefIFace createTableView(final Element element,
                                                    final String  name,
                                                    final String  className,
                                                    final String  gettableClassName,
                                                    final String  settableClassName,
                                                    final String  desc)
     {
-        TableViewDef tableView = new TableViewDef( name, className, gettableClassName, settableClassName, desc);
+        TableViewDefIFace tableView = new TableViewDef( name, className, gettableClassName, settableClassName, desc);
 
         //tableView.setResourceLabels(resLabels);
 

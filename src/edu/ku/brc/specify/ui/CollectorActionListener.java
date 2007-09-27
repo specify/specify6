@@ -34,7 +34,7 @@ import edu.ku.brc.ui.ViewBasedDialogFactoryIFace.FRAME_TYPE;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.IconViewObj;
 import edu.ku.brc.ui.forms.MultiView;
-import edu.ku.brc.ui.forms.persist.AltView;
+import edu.ku.brc.ui.forms.persist.AltViewIFace;
 
 /**
  * @author rods
@@ -79,7 +79,7 @@ public class CollectorActionListener implements ActionListener
         }
 
         int     options    = iconViewObj.getViewOptions();
-        boolean isEditting = iconViewObj.getAltView().getMode() == AltView.CreationMode.Edit;
+        boolean isEditting = iconViewObj.getAltView().getMode() == AltViewIFace.CreationMode.Edit;
         String  title      = (MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT) && isEditting) ? 
                                 getResourceString("Edit") : collector.getIdentityTitle();
                                 

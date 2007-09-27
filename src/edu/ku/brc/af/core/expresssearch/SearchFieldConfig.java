@@ -51,7 +51,7 @@ public class SearchFieldConfig implements edu.ku.brc.af.core.expresssearch.Table
     
     /**
      * @param fieldName
-     * @param order
+     * @param colOrder
      * @param isSortable
      * @param isAscending
      */

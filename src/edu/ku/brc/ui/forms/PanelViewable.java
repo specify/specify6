@@ -32,7 +32,7 @@ import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.ui.forms.persist.FormCell;
+import edu.ku.brc.ui.forms.persist.FormCellIFace;
 import edu.ku.brc.ui.forms.persist.FormCellLabel;
 import edu.ku.brc.ui.forms.persist.FormCellPanel;
 import edu.ku.brc.ui.forms.persist.FormCellSubView;
@@ -158,7 +158,7 @@ public class PanelViewable extends JPanel implements ViewBuilderIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.ViewBuilderIFace#registerControl(edu.ku.brc.ui.forms.persist.FormCell, java.awt.Component)
      */
-    public void registerControl(final FormCell formCell, final Component control)
+    public void registerControl(final FormCellIFace formCell, final Component control)
     {
         parentBuilder.registerControl(formCell, control);
     }

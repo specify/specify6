@@ -83,15 +83,18 @@ import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
-import edu.ku.brc.ui.forms.persist.AltView;
-import edu.ku.brc.ui.forms.persist.FormCell;
+import edu.ku.brc.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.ui.forms.persist.FormCellField;
+import edu.ku.brc.ui.forms.persist.FormCellIFace;
 import edu.ku.brc.ui.forms.persist.FormCellLabel;
 import edu.ku.brc.ui.forms.persist.FormCellSubView;
+import edu.ku.brc.ui.forms.persist.FormCellSubViewIFace;
 import edu.ku.brc.ui.forms.persist.FormViewDef;
+import edu.ku.brc.ui.forms.persist.FormViewDefIFace;
 import edu.ku.brc.ui.forms.persist.TableViewDef;
-import edu.ku.brc.ui.forms.persist.View;
 import edu.ku.brc.ui.forms.persist.ViewDef;
+import edu.ku.brc.ui.forms.persist.ViewDefIFace;
+import edu.ku.brc.ui.forms.persist.ViewIFace;
 import edu.ku.brc.ui.forms.validation.FormValidator;
 import edu.ku.brc.ui.forms.validation.UIValidatable;
 import edu.ku.brc.ui.forms.validation.UIValidator;
@@ -130,15 +133,15 @@ public class TableViewObj implements Viewable,
     protected boolean                       isEditting     = false;
     protected boolean                       formIsInNewDataMode = false; // when this is true it means the form was cleared and new data is expected
     protected MultiView                     mvParent       = null;
-    protected View                          view;
-    protected AltView                       altView;
-    protected ViewDef                       viewDef;
-    protected FormViewDef                   formViewDef;
+    protected ViewIFace                          view;
+    protected AltViewIFace                       altView;
+    protected ViewDefIFace                       viewDef;
+    protected FormViewDefIFace                   formViewDef;
     protected int                           options;
     protected String                        cellName       = null;
     protected Component                     formComp       = null;
     protected List<MultiView>               kids           = new ArrayList<MultiView>();
-    protected Vector<AltView>               altViewsList   = null;
+    protected Vector<AltViewIFace>               altViewsList   = null;
     protected TableViewDef                  tableViewDef;
     protected DataObjectGettable            dataGetter      = null;
     
@@ -202,8 +205,8 @@ public class TableViewObj implements Viewable,
      * @param formValidator the validator
      * @param options the creation options
      */
-    public TableViewObj(final View          view,
-                        final AltView       altView,
+    public TableViewObj(final ViewIFace     view,
+                        final AltViewIFace  altView,
                         final MultiView     mvParent,
                         final FormValidator formValidator,
                         final int           options,
@@ -218,7 +221,7 @@ public class TableViewObj implements Viewable,
         
         businessRules    = view.getBusinessRule();
         dataGetter       = altView.getViewDef().getDataGettable();
-        this.formViewDef = (FormViewDef)altView.getViewDef();
+        this.formViewDef = (FormViewDefIFace)altView.getViewDef();
         
         MultiView.printCreateOptions("Creating Form "+altView.getName(), options);
 
@@ -230,7 +233,7 @@ public class TableViewObj implements Viewable,
 
         boolean createViewSwitcher         = MultiView.isOptionOn(options, MultiView.VIEW_SWITCHER);
         boolean hideSaveBtn                = MultiView.isOptionOn(options, MultiView.HIDE_SAVE_BTN);
-        isEditting                         = MultiView.isOptionOn(options, MultiView.IS_EDITTING) && altView.getMode() == AltView.CreationMode.Edit;
+        isEditting                         = MultiView.isOptionOn(options, MultiView.IS_EDITTING) && altView.getMode() == AltViewIFace.CreationMode.Edit;
         
         setValidator(formValidator);
 
@@ -264,21 +267,21 @@ public class TableViewObj implements Viewable,
                 // (This is because they were created that way. It also makes no sense that while in "View" mode
                 // you would want to switch an individual subview to a differe "mode" view than the root).
 
-                altViewsList = new Vector<AltView>();
+                altViewsList = new Vector<AltViewIFace>();
                 
                 // Very Special Case until Tables can handle edit mode or be in edit mode.
                 // Since they can't, and when a form is for a "new" object then we need to fake out the switcher code 
                 // so it thinks we are in edit mode (at this time Tables are ALWAYS in View mode)
-                // so we temporarily set the mode of the Table's AltView to Edit create the switcher
+                // so we temporarily set the mode of the Table's AltViewIFace to Edit create the switcher
                 // and then set it back to View.
                 boolean overrideViewMode = MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT) || MultiView.isOptionOn(options, MultiView.IS_EDITTING);
                 
-                AltView.CreationMode tempMode = null;
-                //if (isNewObj && altView.getMode() == AltView.CreationMode.View)
-                if (overrideViewMode && altView.getMode() == AltView.CreationMode.View)
+                AltViewIFace.CreationMode tempMode = null;
+                //if (isNewObj && altView.getMode() == AltViewIFace.CreationMode.View)
+                if (overrideViewMode && altView.getMode() == AltViewIFace.CreationMode.View)
                                        {
                     tempMode = altView.getMode();
-                    altView.setMode(AltView.CreationMode.Edit);
+                    altView.setMode(AltViewIFace.CreationMode.Edit);
                 }
                 
                 switcherUI = FormViewObj.createMenuSwitcherPanel(mvParent, view, altView, altViewsList);
@@ -358,7 +361,7 @@ public class TableViewObj implements Viewable,
                 }
             }
             
-            if (!saveWasAdded && altView.getMode() == AltView.CreationMode.Edit)
+            if (!saveWasAdded && altView.getMode() == AltViewIFace.CreationMode.Edit)
             {
                 if (mvParent != null && mvParent.isTopLevel() && !hideSaveBtn && saveBtn != null)
                 {
@@ -1031,7 +1034,7 @@ public class TableViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#getView()
      */
-    public View getView()
+    public ViewIFace getView()
     {
         return view;
     }
@@ -1047,7 +1050,7 @@ public class TableViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#getAltView()
      */
-    public AltView getAltView()
+    public AltViewIFace getAltView()
     {
         return altView;
     }
@@ -1193,7 +1196,7 @@ public class TableViewObj implements Viewable,
     protected String getParentClassName()
     {
         String className = null;
-        FormCellSubView formSubView = subViewStack.size() > 0 ? subViewStack.peek() : null;
+        FormCellSubViewIFace formSubView = subViewStack.size() > 0 ? subViewStack.peek() : null;
         if (formSubView != null)
         {
             className = formSubView.getClassDesc();
@@ -1211,7 +1214,7 @@ public class TableViewObj implements Viewable,
      * @param formCell the FormCell def that describe the cell
      * @param control the control
      */
-    public void registerControl(final FormCell formCell, final Component control)
+    public void registerControl(final FormCellIFace formCell, final Component control)
     {
         if (skipControls > 0)
         {
@@ -1235,7 +1238,7 @@ public class TableViewObj implements Viewable,
                 comp = control;
             }
             
-            String     fullId  = appendName(formCell.getId());
+            String     fullId  = appendName(formCell.getIdent());
             ColumnInfo colInfo = controlsById.get(fullId);
             if (colInfo == null)
             {
@@ -1332,7 +1335,7 @@ public class TableViewObj implements Viewable,
                 skipControls++;
                 
                 String     fullCompName = subFormCell.getName();//appendName(subFormCell.getName());
-                String     fullId       = appendName(subFormCell.getId());
+                String     fullId       = appendName(subFormCell.getIdent());
                 ColumnInfo colInfo      = controlsById.get(fullId);
                 if (colInfo == null)
                 {
@@ -1516,7 +1519,7 @@ public class TableViewObj implements Viewable,
      */
     class ColumnInfo
     {
-        protected FormCell    formCell;
+        protected FormCellIFace    formCell;
         protected String      parentClassName;
         protected String      fullCompName;
         protected String      label;
@@ -1528,7 +1531,7 @@ public class TableViewObj implements Viewable,
         protected boolean     hasDataObjFormatter = false;
 
         public ColumnInfo(String       parentClassName,
-                          FormCell     formCell, 
+                          FormCellIFace     formCell, 
                           String       fullCompName, 
                           Component    comp, 
                           JScrollPane  scrollPane)
@@ -1611,7 +1614,7 @@ public class TableViewObj implements Viewable,
 
         public String getId()
         {
-            return formCell.getId();
+            return formCell.getIdent();
         }
 
         public Component getComp()
@@ -1629,12 +1632,12 @@ public class TableViewObj implements Viewable,
             this.scrollPane = scrollPane;
         }
 
-        public FormCell getFormCell()
+        public FormCellIFace getFormCell()
         {
             return formCell;
         }
 
-        public void setFormCell(FormCell formCell)
+        public void setFormCell(FormCellIFace formCell)
         {
             this.formCell = formCell;
             checkForDataObjFormatter();

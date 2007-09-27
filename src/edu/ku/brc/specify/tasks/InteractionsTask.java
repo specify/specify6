@@ -96,7 +96,7 @@ import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.TableViewObj;
 import edu.ku.brc.ui.forms.Viewable;
-import edu.ku.brc.ui.forms.persist.View;
+import edu.ku.brc.ui.forms.persist.ViewIFace;
 import edu.ku.brc.ui.forms.validation.UIValidatable;
 import edu.ku.brc.ui.forms.validation.ValFormattedTextField;
 
@@ -660,7 +660,7 @@ public class InteractionsTask extends BaseTask
         
         SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
         
-        View view = appContextMgr.getView(tableInfo.getDefaultFormName(), CollectionType.getCurrentCollectionType());
+        ViewIFace view = appContextMgr.getView(tableInfo.getDefaultFormName(), CollectionType.getCurrentCollectionType());
 
         InfoRequest infoRequest = new InfoRequest();
         infoRequest.initialize();

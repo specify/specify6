@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last Used Id is 120 or 502
+    Last Used Id is 120 or 512
     
     PLEASE Keep this file in alphabetical order! 
 
@@ -237,6 +237,16 @@
             <businessrule>edu.ku.brc.specify.datamodel.busrules.ShipmentBusRules</businessrule>                                    
         </table>
         <table name="edu.ku.brc.specify.datamodel.SpecifyUser" id="72"/>
+        <table name="edu.ku.brc.specify.datamodel.SpLocaleContainer" id="503"/>
+        <table name="edu.ku.brc.specify.datamodel.SpLocaleContainerItem" id="504"/>
+        <table name="edu.ku.brc.specify.datamodel.SpLocaleItemStr" id="505"/>
+        <table name="edu.ku.brc.specify.datamodel.SpUIAltView" id="507"/>
+        <table name="edu.ku.brc.specify.datamodel.SpUICell" id="509"/>
+        <table name="edu.ku.brc.specify.datamodel.SpUIColumn" id="512"/>
+        <table name="edu.ku.brc.specify.datamodel.SpUIRow" id="510"/>
+        <table name="edu.ku.brc.specify.datamodel.SpUIView" id="506"/>
+        <table name="edu.ku.brc.specify.datamodel.SpUIViewDef" id="508"/>
+        <table name="edu.ku.brc.specify.datamodel.SpUIViewSet" id="511"/>
         <table name="edu.ku.brc.specify.datamodel.Taxon" id="4" workbench="true" query="true">
             <display objtitle="Taxon" view="Taxon" dataobjformatter="Taxon" searchdlg="TaxonSearch" newobjdlg="TaxonDisplay"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.TaxonBusRules</businessrule>                                                

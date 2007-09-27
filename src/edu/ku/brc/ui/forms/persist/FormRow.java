@@ -22,7 +22,7 @@ import java.util.Vector;
  * @author rods
  *
  */
-public class FormRow implements Cloneable
+public class FormRow implements Cloneable, FormRowIFace
 {
     protected Vector<FormCell> cells = new Vector<FormCell>();
     
@@ -35,35 +35,33 @@ public class FormRow implements Cloneable
         // do nothing
     }
     
-    /**
-     * Adds a FormCell and return the same FormCell
-     * @param cell the cell to be added
-     * @return the same FormCell
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormRowIFace#addCell(edu.ku.brc.ui.forms.persist.FormCell)
      */
-    public FormCell addCell(FormCell cell)
+    public FormCellIFace addCell(FormCell cell)
     {
         cells.add(cell);
         return cell;
     }
     
-    /**
-     * Clean up internal data
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormRowIFace#cleanUp()
      */
     public void cleanUp()
     {
         cells.clear();
     }
     
-    /**
-     * @return Return the collection of cells
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormRowIFace#getCells()
      */
     public Vector<FormCell> getCells()
     {
         return cells;
     }
 
-    /**
-     * @param cells all the cells
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormRowIFace#setCells(java.util.Vector)
      */
     public void setCells(Vector<FormCell> cells)
     {
@@ -73,11 +71,14 @@ public class FormRow implements Cloneable
     /* (non-Javadoc)
      * @see java.lang.Object#clone()
      */
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormRowIFace#clone()
+     */
     public Object clone() throws CloneNotSupportedException
     {
         FormRow formRow = (FormRow)super.clone();
         formRow.cells   = new Vector<FormCell>();
-        for (FormCell cell : cells)
+        for (FormCellIFace cell : cells)
         {
             formRow.cells.add((FormCell)cell.clone());
         }
