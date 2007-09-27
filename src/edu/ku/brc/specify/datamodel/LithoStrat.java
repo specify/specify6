@@ -278,7 +278,7 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
         this.isAccepted = accepted;
     }
 
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "acceptedLithoStrat")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "acceptedLithoStrat")
     @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public Set<LithoStrat> getAcceptedChildren()
     {

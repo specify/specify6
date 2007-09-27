@@ -437,7 +437,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
         this.isAccepted = accepted;
     }
 
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "acceptedGeography")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "acceptedGeography")
     @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public Set<Geography> getAcceptedChildren()
     {

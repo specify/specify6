@@ -36,6 +36,7 @@ import java.util.Vector;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -344,7 +345,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
         this.isAccepted = accepted;
     }
 
-    @OneToMany(mappedBy = "acceptedGeologicTimePeriod")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "acceptedGeologicTimePeriod")
     @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public Set<GeologicTimePeriod> getAcceptedChildren()
     {

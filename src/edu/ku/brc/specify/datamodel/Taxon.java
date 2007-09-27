@@ -513,7 +513,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         this.visibilitySetBy = visibilitySetBy;
     }
     
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "acceptedTaxon")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "acceptedTaxon")
     @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
 	public Set<Taxon> getAcceptedChildren()
 	{

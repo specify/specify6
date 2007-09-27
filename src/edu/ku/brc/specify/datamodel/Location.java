@@ -295,7 +295,7 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
         this.isAccepted = accepted;
     }
 
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "acceptedLocation")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "acceptedLocation")
     @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public Set<Location> getAcceptedChildren()
     {
