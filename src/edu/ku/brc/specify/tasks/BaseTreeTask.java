@@ -22,6 +22,7 @@ import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 import org.apache.log4j.Logger;
@@ -80,7 +81,9 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     protected boolean currentDefInUse;
     protected SubPaneIFace visibleSubPane;
     
-    protected JMenuItem menuItem;
+    protected JMenu subMenu;
+    protected JMenuItem showTreeMenuItem;
+    protected JMenuItem editDefMenuItem;
     
     protected String menuItemText;
     protected String menuItemMnemonic;
@@ -141,12 +144,13 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 	protected List<MenuItemDesc> createMenus()
 	{
         Vector<MenuItemDesc> menus = new Vector<MenuItemDesc>();
-        menuItem = new JMenuItem(menuItemText);
-        menuItem.setMnemonic(menuItemMnemonic.charAt(0));
-        MenuItemDesc miDesc = new MenuItemDesc(menuItem, "AdvMenu");
-        menus.add(miDesc);
+        subMenu = new JMenu(menuItemText);
         
-        menuItem.addActionListener(new ActionListener()
+        MenuItemDesc treeSubMenuMI = new MenuItemDesc(subMenu, "AdvMenu");
+        menus.add(treeSubMenuMI);
+        
+        showTreeMenuItem = new JMenuItem(getResourceString("TTV_SHOW_TREE_MENU_ITEM"));
+        showTreeMenuItem.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -157,11 +161,47 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                 }
                 else
                 {
-                    SubPaneMgr.getInstance().showPane(visibleSubPane);
+                    // If the TTV is already open, show it.
+                    if (visibleSubPane instanceof TreeTableViewer<?,?,?>)
+                    {
+                        SubPaneMgr.getInstance().showPane(visibleSubPane);
+                    }
+                    else // Otherwise a def editor must be open.  Close it an open a TTV.
+                    {
+                        switchViewType();
+                    }
                 }
             }
         });
         
+        editDefMenuItem = new JMenuItem(getResourceString("TTV_EDIT_DEF_MENU_ITEM"));
+        editDefMenuItem.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                if (!currentDefInUse)
+                {
+                    requestContext();
+                    openTreeDefEditor(currentDef);
+                }
+                else
+                {
+                    // If the def editor is already open, show it.
+                    if (visibleSubPane instanceof TreeDefinitionEditor<?,?,?>)
+                    {
+                        SubPaneMgr.getInstance().showPane(visibleSubPane);
+                    }
+                    else // Otherwise a TTV must be open.  Close it an open a def editor.
+                    {
+                        switchViewType();
+                    }
+                }
+            }
+        });
+
+        subMenu.add(showTreeMenuItem);
+        subMenu.add(editDefMenuItem);
+
         return menus;
 	}
     
