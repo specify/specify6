@@ -49,6 +49,8 @@ public interface ViewDefIFace
     public abstract DataObjectGettable getDataGettable();
 
     public abstract DataObjectSettable getDataSettable();
+    
+    public abstract Boolean isAbsoluteLayout();
 
     /* (non-Javadoc)
      * @see java.lang.Object#clone()

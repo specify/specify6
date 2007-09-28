@@ -83,7 +83,7 @@ public class SpLocaleContainerItem extends SpLocaleBase implements LocalizableIt
      */
     @Id
     @GeneratedValue
-    @Column(name = "LocaleContainerItemID", unique = false, nullable = false, insertable = true, updatable = true)
+    @Column(name = "SpLocaleContainerItemID", unique = false, nullable = false, insertable = true, updatable = true)
     public Integer getSpLocaleContainerItemId()
     {
         return spLocaleContainerItemId;
@@ -116,7 +116,7 @@ public class SpLocaleContainerItem extends SpLocaleBase implements LocalizableIt
     /**
      * @return the descs
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "item")
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "itemDesc")
     @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<SpLocaleItemStr> getDescs()
     {
@@ -134,7 +134,7 @@ public class SpLocaleContainerItem extends SpLocaleBase implements LocalizableIt
     /**
      * @return the names
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "item")
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "itemName")
     @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<SpLocaleItemStr> getNames()
     {
@@ -153,7 +153,7 @@ public class SpLocaleContainerItem extends SpLocaleBase implements LocalizableIt
      * @return the container
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "LocaleContainerID", unique = false, nullable = false, insertable = true, updatable = true)
+    @JoinColumn(name = "SpLocaleContainerID", unique = false, nullable = false, insertable = true, updatable = true)
     public SpLocaleContainer getContainer()
     {
         return container;

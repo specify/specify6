@@ -88,7 +88,7 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
     
     /**
      * Constructor.
-     * @param items the list to be selected from
+     * @param spItems the list to be selected from
      * @param uiType the type toggle buttons
      */
     public ToggleButtonChooserPanel(final int  staticSize, 
@@ -101,7 +101,7 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
 
     /**
      * Constructor.
-     * @param items the list to be selected from
+     * @param spItems the list to be selected from
      * @param uiType the type toggle buttons
      */
     public ToggleButtonChooserPanel(final List<T>   listItems, 
@@ -112,7 +112,7 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
 
     /**
      * Constructor.
-     * @param items the list to be selected from
+     * @param spItems the list to be selected from
      * @param desc description label above list (optional)
      * @param uiType the type toggle buttons
      */

@@ -44,6 +44,11 @@ public class FormCell implements Comparable<FormCellIFace>, Cloneable, FormCellI
     protected int      colspan = 1;
     protected int      rowspan = 1;
 
+    protected int      xCoord  = 0;
+    protected int      yCoord  = 0;
+    protected int      width   = 0;
+    protected int      height  = 0;
+
 
     protected Properties properties = null;
 
@@ -328,8 +333,71 @@ public class FormCell implements Comparable<FormCellIFace>, Cloneable, FormCellI
     {
         return properties;
     }
-
     
+    /**
+     * @return the xCoord
+     */
+    public int getXCoord()
+    {
+        return xCoord;
+    }
+
+    /**
+     * @param coord the xCoord to set
+     */
+    public void setXCoord(int coord)
+    {
+        xCoord = coord;
+    }
+
+    /**
+     * @return the yCoord
+     */
+    public int getYCoord()
+    {
+        return yCoord;
+    }
+
+    /**
+     * @param coord the yCoord to set
+     */
+    public void setYCoord(int coord)
+    {
+        yCoord = coord;
+    }
+
+    /**
+     * @return the height
+     */
+    public int getHeight()
+    {
+        return height;
+    }
+
+    /**
+     * @param height the height to set
+     */
+    public void setHeight(int height)
+    {
+        this.height = height;
+    }
+
+    /**
+     * @return the width
+     */
+    public int getWidth()
+    {
+        return width;
+    }
+
+    /**
+     * @param width the width to set
+     */
+    public void setWidth(int width)
+    {
+        this.width = width;
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#clone()
      */
@@ -339,16 +407,20 @@ public class FormCell implements Comparable<FormCellIFace>, Cloneable, FormCellI
     public Object clone() throws CloneNotSupportedException
     {
         FormCell formCell = (FormCell)super.clone();
-        formCell.type = type;
-        formCell.id   = id;
-        formCell.name = name;
+        formCell.type       = type;
+        formCell.id         = id;
+        formCell.name       = name;
         formCell.isMultiField = isMultiField;
         formCell.ignoreSetGet       = ignoreSetGet;
         formCell.changeListenerOnly = changeListenerOnly;
         formCell.fieldNames         = fieldNames != null ? fieldNames.clone() : null;
-        formCell.colspan = colspan;
-        formCell.rowspan = colspan;
+        formCell.colspan    = colspan;
+        formCell.rowspan    = colspan;
         formCell.properties = properties != null ? (Properties)properties.clone() : null;
+        formCell.xCoord     = xCoord;
+        formCell.yCoord     = yCoord;
+        formCell.width      = width;
+        formCell.height     = height;
 
         return formCell;
 

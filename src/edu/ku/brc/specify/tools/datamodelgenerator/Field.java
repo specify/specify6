@@ -2,6 +2,8 @@ package edu.ku.brc.specify.tools.datamodelgenerator;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.specify.tools.fielddesc.LocalizedStrIFace;
+
 
 /**
  * Create field data.
@@ -22,8 +24,8 @@ public class Field implements Comparable<Field>
     protected boolean isUpdatable;
     protected boolean isUnique;
     
-    protected Desc    desc;
-    protected Name    nameDesc;
+    protected LocalizedStrIFace desc;
+    protected LocalizedStrIFace nameDesc;
     
     /**
      * @param name the name of the field	
@@ -198,7 +200,7 @@ public class Field implements Comparable<Field>
     /**
      * @return the desc
      */
-    public Desc getDesc()
+    public LocalizedStrIFace getDesc()
     {
         return desc;
     }
@@ -206,7 +208,7 @@ public class Field implements Comparable<Field>
     /**
      * @param desc the desc to set
      */
-    public void setDesc(Desc desc)
+    public void setDesc(LocalizedStrIFace desc)
     {
         this.desc = desc;
     }
@@ -214,7 +216,7 @@ public class Field implements Comparable<Field>
     /**
      * @return the nameDesc
      */
-    public Name getNameDesc()
+    public LocalizedStrIFace getNameDesc()
     {
         return nameDesc;
     }
@@ -222,7 +224,7 @@ public class Field implements Comparable<Field>
     /**
      * @param nameDesc the nameDesc to set
      */
-    public void setNameDesc(Name nameDesc)
+    public void setNameDesc(LocalizedStrIFace nameDesc)
     {
         this.nameDesc = nameDesc;
     }

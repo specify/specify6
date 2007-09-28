@@ -350,7 +350,7 @@ public class ViewLoader
      * @param aFormView the form they should be associated with
      * @param aElement the element to process
      */
-    protected static Hashtable<String, String> getEnableRules(final Element element)
+    public static Hashtable<String, String> getEnableRules(final Element element)
     {
         Hashtable<String, String> rulesList = new Hashtable<String, String>();
 

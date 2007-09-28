@@ -54,14 +54,16 @@ public class SpLocaleItemStr extends DataModelObjBase implements LocalizableStrI
 {
     private static final Logger  log      = Logger.getLogger(SpLocaleItemStr.class);
             
-    protected Integer localeItemStrId;
+    protected Integer spLocaleItemStrId;
     protected String  language;
     protected String  country;
     protected String  variant;
     protected String  text;
     
-    protected SpLocaleContainer     container;
-    protected SpLocaleContainerItem item;
+    protected SpLocaleContainer     containerDesc;
+    protected SpLocaleContainer     containerName;
+    protected SpLocaleContainerItem itemDesc;
+    protected SpLocaleContainerItem itemName;
     
     /**
      * 
@@ -88,7 +90,7 @@ public class SpLocaleItemStr extends DataModelObjBase implements LocalizableStrI
     {
         super.init();
         
-        localeItemStrId = null;
+        spLocaleItemStrId = null;
         language        = null;
         country         = null;
         variant         = null;
@@ -100,18 +102,18 @@ public class SpLocaleItemStr extends DataModelObjBase implements LocalizableStrI
      */
     @Id
     @GeneratedValue
-    @Column(name = "LocaleItemStrID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Integer getLocaleItemStrId()
+    @Column(name = "SpLocaleItemStrID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Integer getSpLocaleItemStrId()
     {
-        return localeItemStrId;
+        return spLocaleItemStrId;
     }
 
     /**
      * @param localeItemStrId the localeItemStrId to set
      */
-    public void setLocaleItemStrId(Integer localeItemStrId)
+    public void setSpLocaleItemStrId(Integer localeItemStrId)
     {
-        this.localeItemStrId = localeItemStrId;
+        this.spLocaleItemStrId = localeItemStrId;
     }
     
     /**
@@ -212,36 +214,72 @@ public class SpLocaleItemStr extends DataModelObjBase implements LocalizableStrI
      * @return the container
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "LocaleContainerID", unique = false, nullable = true, insertable = true, updatable = true)
-    public SpLocaleContainer getContainer()
+    @JoinColumn(name = "SpLocaleContainerDescID", unique = false, nullable = true, insertable = true, updatable = true)
+    public SpLocaleContainer getContainerDesc()
     {
-        return container;
+        return containerDesc;
+    }
+
+    /**
+     * @return the container
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "SpLocaleContainerNameID", unique = false, nullable = true, insertable = true, updatable = true)
+    public SpLocaleContainer getContainerName()
+    {
+        return containerName;
     }
 
     /**
      * @param container the container to set
      */
-    public void setContainer(SpLocaleContainer container)
+    public void setContainerDesc(SpLocaleContainer containerDesc)
     {
-        this.container = container;
+        this.containerDesc = containerDesc;
+    }
+
+    /**
+     * @param container the container to set
+     */
+    public void setContainerName(SpLocaleContainer containerName)
+    {
+        this.containerName = containerName;
     }
 
     /**
      * @return the item
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "LocaleContainerItemID", unique = false, nullable = true, insertable = true, updatable = true)
-    public SpLocaleContainerItem getItem()
+    @JoinColumn(name = "SpLocaleContainerItemDescID", unique = false, nullable = true, insertable = true, updatable = true)
+    public SpLocaleContainerItem getItemDesc()
     {
-        return item;
+        return itemDesc;
     }
 
     /**
      * @param item the item to set
      */
-    public void setItem(SpLocaleContainerItem item)
+    public void setItemDesc(SpLocaleContainerItem itemDesc)
     {
-        this.item = item;
+        this.itemDesc = itemDesc;
+    }
+
+    /**
+     * @return the item
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "SpLocaleContainerItemNameID", unique = false, nullable = true, insertable = true, updatable = true)
+    public SpLocaleContainerItem getItemName()
+    {
+        return itemName;
+    }
+
+    /**
+     * @param item the item to set
+     */
+    public void setItemName(SpLocaleContainerItem itemName)
+    {
+        this.itemName = itemName;
     }
 
     /* (non-Javadoc)
@@ -261,7 +299,7 @@ public class SpLocaleItemStr extends DataModelObjBase implements LocalizableStrI
     @Transient
     public Integer getId()
     {
-        return localeItemStrId;
+        return spLocaleItemStrId;
     }
 
     /* (non-Javadoc)

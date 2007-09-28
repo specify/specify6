@@ -34,6 +34,7 @@ import com.swabunga.spell.engine.SpellDictionaryHashMap;
 import com.swabunga.spell.swing.JTextComponentSpellChecker;
 
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.ToggleButtonChooserPanel;
 import edu.ku.brc.ui.UIRegistry;
@@ -220,6 +221,8 @@ public abstract class LocalizerBasePanel extends JPanel
             if (!text.equals(desc.getText()))
             {
                 desc.setText(text);
+                System.out.println("Setting Desc text ["+text+"] "+((SpLocaleItemStr)desc).getId());
+
                 return true;
             }
         }
@@ -239,11 +242,9 @@ public abstract class LocalizerBasePanel extends JPanel
             //lndi.addDesc(desc);
             //return desc.getText();
             return "";
-        } else
-        {
-            return desc.getText();
         }
-        
+        System.out.println("Getting Desc text ["+desc.getText()+"] "+((SpLocaleItemStr)desc).getId());
+        return desc.getText();
     }
     
     /**
@@ -302,10 +303,9 @@ public abstract class LocalizerBasePanel extends JPanel
             //lndi.addName(nameDesc);
             return "";
             
-        } else
-        {
-            return nameDesc.getText();
         }
+        System.out.println("Getting Name text ["+nameDesc.getText()+"] "+((SpLocaleItemStr)nameDesc).getId());
+        return nameDesc.getText();
     }
     
     /**

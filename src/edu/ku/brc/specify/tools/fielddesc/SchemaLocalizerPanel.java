@@ -141,7 +141,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
                     LocalizableJListItem jlistItem = (LocalizableJListItem)tablesList.getSelectedValue();
                     if (jlistItem != null)
                     {
-                        currContainer = (LocalizableContainerIFace)localizableIO.getContainer(jlistItem);
+                        currContainer = localizableIO.getContainer(jlistItem);
                         
                         fillFieldList();
                         
@@ -564,14 +564,12 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
         LocalizableJListItem jlistContainerItem = (LocalizableJListItem)tablesList.getSelectedValue();
         if (jlistContainerItem != null)
         {
-            LocalizableContainerIFace tbl = (LocalizableContainerIFace)localizableIO.getContainer(jlistContainerItem);
+            LocalizableContainerIFace tbl = localizableIO.getContainer(jlistContainerItem);
             if (tbl != null)
             {
                 for (LocalizableJListItem f : localizableIO.getDisplayItems(jlistContainerItem))
                 {
-                    
                     fieldsModel.addElement(f);
-                    //System.out.println(f.toString());
                 }
     
                 fieldsList.setSelectedIndex(0);

@@ -505,7 +505,6 @@ public class BuildSampleDatabase
         
         CollectionType collectionType = createCollectionType(discipline.getName(), discipline.getTitle(), dataType, user, taxonTreeDef, null, null, null, lithoStratTreeDef);
         List<Object> gtps = createSimpleGeologicTimePeriod(collectionType, "Geologic Time Period");
-        loadSchemaLocalization(collectionType);
         
         //startTx();
         persist(collectionType);
@@ -2573,10 +2572,11 @@ public class BuildSampleDatabase
         }
     }
     
-    protected void loadLocalization(final SpLocaleContainerItem memoryItem, final SpLocaleContainerItem loc)
+    boolean debugOn = false;
+    protected void loadLocalization(final SpLocaleContainerItem memoryItem, final SpLocaleContainerItem newItem)
     {
-        loc.setName(memoryItem.getName());
-        loc.setType(memoryItem.getType());
+        newItem.setName(memoryItem.getName());
+        newItem.setType(memoryItem.getType());
        
         for (SpLocaleItemStr nm : memoryItem.getNames())
         {
@@ -2584,12 +2584,13 @@ public class BuildSampleDatabase
             str.initialize();
             
             str.setText(nm.getText());
+            if (debugOn) System.out.println(nm.getText());
             str.setLanguage(nm.getLanguage());
             str.setCountry(nm.getCountry());
             str.setVariant(nm.getVariant());
             
-            loc.getNames().add(str);
-            str.setItem(loc);
+            newItem.getNames().add(str);
+            str.setItemName(newItem);
         }
         
         for (SpLocaleItemStr desc : memoryItem.getDescs())
@@ -2598,12 +2599,13 @@ public class BuildSampleDatabase
             str.initialize();
             
             str.setText(desc.getText());
+            if (debugOn) System.out.println(desc.getText());
             str.setLanguage(desc.getLanguage());
             str.setCountry(desc.getCountry());
             str.setVariant(desc.getVariant());
             
-            loc.getNames().add(str);
-            str.setItem(loc);
+            newItem.getDescs().add(str);
+            str.setItemDesc(newItem);
         }
 
     }
@@ -2612,6 +2614,8 @@ public class BuildSampleDatabase
     {
         newContainer.setName(memoryContainer.getName());
         newContainer.setType(memoryContainer.getType());
+        
+        debugOn = memoryContainer.getName().equals("accession");
        
         for (SpLocaleItemStr nm : memoryContainer.getNames())
         {
@@ -2624,7 +2628,7 @@ public class BuildSampleDatabase
             str.setVariant(nm.getVariant());
             
             newContainer.getNames().add(str);
-            str.setContainer(newContainer);
+            str.setContainerName(newContainer);
         }
         
         for (SpLocaleItemStr desc : memoryContainer.getDescs())
@@ -2637,16 +2641,18 @@ public class BuildSampleDatabase
             str.setCountry(desc.getCountry());
             str.setVariant(desc.getVariant());
             
-            newContainer.getNames().add(str);
-            str.setContainer(newContainer);
+            newContainer.getDescs().add(str);
+            str.setContainerDesc(newContainer);
         }
         
         for (SpLocaleContainerItem item : memoryContainer.getItems())
         {
             SpLocaleContainerItem newItem = new SpLocaleContainerItem();
             newItem.initialize();
+            
             newContainer.getItems().add(newItem);
             newItem.setContainer(newContainer);
+            
             loadLocalization(item, newItem);
         }
     }
@@ -2654,11 +2660,14 @@ public class BuildSampleDatabase
     protected void loadSchemaLocalization(final CollectionType collTyp)
     {
         SchemaLocalizerXMLHelper schemaLocalizer = new SchemaLocalizerXMLHelper();
+        schemaLocalizer.load();
+        
         for (SpLocaleContainer table : schemaLocalizer.getSpLocaleContainers())
         {
             SpLocaleContainer container = new SpLocaleContainer();
             container.initialize();
             container.setName(table.getName());
+            container.setType(table.getType());
             
             loadLocalization(table, container);
             

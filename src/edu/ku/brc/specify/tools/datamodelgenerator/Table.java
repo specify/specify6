@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
+import edu.ku.brc.specify.tools.fielddesc.LocalizedStrIFace;
+
 /**
  * Create table data.
  *
@@ -27,8 +29,8 @@ public class Table implements Comparable<Table>
 	private List<Id>                 ids           = new ArrayList<Id>();
 	private List<Relationship>       relationships = new ArrayList<Relationship>();
     private Display                  display;
-    private Desc                     desc;
-    private Name                     nameDesc;
+    private LocalizedStrIFace        desc;
+    private LocalizedStrIFace        nameDesc;
     
     // Transient
     private Vector<TableIndex>       indexes = new Vector<TableIndex>();
@@ -239,7 +241,7 @@ public class Table implements Comparable<Table>
     /**
      * @return the desc
      */
-    public Desc getDesc()
+    public LocalizedStrIFace getDesc()
     {
         return desc;
     }
@@ -247,7 +249,7 @@ public class Table implements Comparable<Table>
     /**
      * @param desc the desc to set
      */
-    public void setDesc(Desc desc)
+    public void setDesc(LocalizedStrIFace desc)
     {
         this.desc = desc;
     }
@@ -291,7 +293,7 @@ public class Table implements Comparable<Table>
     /**
      * @param nameDesc the nameDesc to set
      */
-    public void setNameDesc(Name nameDesc)
+    public void setNameDesc(LocalizedStrIFace nameDesc)
     {
         this.nameDesc = nameDesc;
     }
@@ -299,7 +301,7 @@ public class Table implements Comparable<Table>
     /**
      * @return the nameDesc
      */
-    public Name getNameDesc()
+    public LocalizedStrIFace getNameDesc()
     {
         return nameDesc;
     }
@@ -311,7 +313,6 @@ public class Table implements Comparable<Table>
         {
             return 0;
         }
-       
         return name.compareTo(obj.name);
     }
 }

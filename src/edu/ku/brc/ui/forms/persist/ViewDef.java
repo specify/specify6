@@ -40,6 +40,7 @@ public class ViewDef implements Cloneable, ViewDefIFace
     protected String               className;
     protected String               dataGettableName;
     protected String               dataSettableName;
+    protected boolean              isAbsoluteLayout = false;
     
     protected DataObjectGettable   dataGettable   = null;
     protected DataObjectSettable   dataSettable   = null;
@@ -223,6 +224,22 @@ public class ViewDef implements Cloneable, ViewDefIFace
     public DataObjectSettable getDataSettable()
     {
         return dataSettable;
+    }
+    
+    /**
+     * @return the isAbsoluteLayout
+     */
+    public Boolean isAbsoluteLayout()
+    {
+        return isAbsoluteLayout;
+    }
+
+    /**
+     * @param isAbsoluteLayout the isAbsoluteLayout to set
+     */
+    public void setAbsoluteLayout(boolean isAbsoluteLayout)
+    {
+        this.isAbsoluteLayout = isAbsoluteLayout;
     }
 
     /* (non-Javadoc)

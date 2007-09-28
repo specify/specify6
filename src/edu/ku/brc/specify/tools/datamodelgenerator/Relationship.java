@@ -1,5 +1,7 @@
 package edu.ku.brc.specify.tools.datamodelgenerator;
 
+import edu.ku.brc.specify.tools.fielddesc.LocalizedStrIFace;
+
 /**
  * Create relationship data.
  * 
@@ -21,8 +23,8 @@ public class Relationship
     protected boolean  isRequired;
     protected boolean  isUpdatable;
     
-    protected Desc    desc;
-    protected Name    nameDesc;
+    protected LocalizedStrIFace desc;
+    protected LocalizedStrIFace nameDesc;
     
     /**
      * @param type
@@ -169,7 +171,7 @@ public class Relationship
     /**
      * @return the desc
      */
-    public Desc getDesc()
+    public LocalizedStrIFace getDesc()
     {
         return desc;
     }
@@ -177,7 +179,7 @@ public class Relationship
     /**
      * @param desc the desc to set
      */
-    public void setDesc(Desc desc)
+    public void setDesc(LocalizedStrIFace desc)
     {
         this.desc = desc;
     }
@@ -185,7 +187,7 @@ public class Relationship
     /**
      * @return the nameDesc
      */
-    public Name getNameDesc()
+    public LocalizedStrIFace getNameDesc()
     {
         return nameDesc;
     }
@@ -193,7 +195,7 @@ public class Relationship
     /**
      * @param nameDesc the nameDesc to set
      */
-    public void setNameDesc(Name nameDesc)
+    public void setNameDesc(LocalizedStrIFace nameDesc)
     {
         this.nameDesc = nameDesc;
     }

@@ -63,7 +63,7 @@ public class SpLocaleContainer extends SpLocaleBase implements LocalizableContai
 {
     private static final Logger log = Logger.getLogger(SpLocaleContainer.class);
             
-    protected Integer                    localeContainerId;
+    protected Integer                    spLocaleContainerId;
     protected Set<SpLocaleContainerItem> items;
     
     protected Set<SpLocaleItemStr>       names;
@@ -90,8 +90,8 @@ public class SpLocaleContainer extends SpLocaleBase implements LocalizableContai
     {
         super.initialize();
         
-        localeContainerId = null;
-        items             = new HashSet<SpLocaleContainerItem>();
+        spLocaleContainerId = null;
+        items               = new HashSet<SpLocaleContainerItem>();
         
         names = new HashSet<SpLocaleItemStr>();
         descs = new HashSet<SpLocaleItemStr>();
@@ -104,18 +104,18 @@ public class SpLocaleContainer extends SpLocaleBase implements LocalizableContai
      */
     @Id
     @GeneratedValue
-    @Column(name = "LocaleContainerID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Integer getLocaleContainerId()
+    @Column(name = "SpLocaleContainerID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Integer getSpLocaleContainerId()
     {
-        return localeContainerId;
+        return spLocaleContainerId;
     }
 
     /**
      * @param localeContainerId the localeContainerId to set
      */
-    public void setLocaleContainerId(Integer localeContainerId)
+    public void setSpLocaleContainerId(Integer spLocaleContainerId)
     {
-        this.localeContainerId = localeContainerId;
+        this.spLocaleContainerId = spLocaleContainerId;
     }
 
     /**
@@ -140,7 +140,7 @@ public class SpLocaleContainer extends SpLocaleBase implements LocalizableContai
     /**
      * @return the descs
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "container")
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "containerDesc")
     @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<SpLocaleItemStr> getDescs()
     {
@@ -158,7 +158,7 @@ public class SpLocaleContainer extends SpLocaleBase implements LocalizableContai
     /**
      * @return the names
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "container")
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "containerName")
     @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<SpLocaleItemStr> getNames()
     {
@@ -208,7 +208,7 @@ public class SpLocaleContainer extends SpLocaleBase implements LocalizableContai
     @Transient
     public Integer getId()
     {
-        return localeContainerId;
+        return spLocaleContainerId;
     }
 
     /* (non-Javadoc)
@@ -421,7 +421,7 @@ public class SpLocaleContainer extends SpLocaleBase implements LocalizableContai
     {
         if (str != null && str instanceof SpLocaleItemStr)
         {
-            descs.remove((SpLocaleItemStr)str);
+            descs.remove(str);
         } else
         {
             log.error("LocalizableStrIFace was null or not of Class SpLocaleItemStr");

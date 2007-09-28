@@ -19,7 +19,9 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
@@ -107,6 +109,7 @@ import edu.ku.brc.specify.datamodel.TaxonAttachment;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.specify.tests.SpecifyAppPrefs;
+import edu.ku.brc.specify.tools.fielddesc.SchemaLocalizerDlg;
 import edu.ku.brc.specify.ui.CollectorActionListener;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CommandAction;
@@ -649,6 +652,16 @@ public class Specify extends JPanel implements DatabaseLoginListener
         {
             menu = UIHelper.createMenu(mb, "AdvMenu", "AdvMneu");
             menu.add(UIHelper.createMenu(mb, "SystemMenu", "SystemMneu"));
+            
+            mi = UIHelper.createMenuItem(menu, "SchemaConfig", "C", "SchemaConfig C", true, null); // XXX I18N
+            mi.addActionListener(new ActionListener()
+                    {
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            doSchemaConfig();
+                        }
+                    });
+
         }
 
 
@@ -803,6 +816,13 @@ public class Specify extends JPanel implements DatabaseLoginListener
                     });
         }
         return mb;
+    }
+    
+    protected void doSchemaConfig()
+    {
+        SchemaLocalizerDlg dlg = new SchemaLocalizerDlg((Frame)UIRegistry.getTopWindow(), "SchemaConfig", true, CustomDialog.OKCANCELHELP, (Component)null);
+        dlg.setVisible(true);
+        
     }
     
     /**

@@ -9,6 +9,10 @@
  */
 package edu.ku.brc.specify.tools.datamodelgenerator;
 
+import java.util.Locale;
+
+import edu.ku.brc.specify.tools.fielddesc.LocalizedStrIFace;
+
 /**
  * @author rod
  *
@@ -17,7 +21,7 @@ package edu.ku.brc.specify.tools.datamodelgenerator;
  * Sep 4, 2007
  *
  */
-public class Desc
+public class Desc implements LocalizedStrIFace, Cloneable
 {
     protected String text;
     protected String country;
@@ -49,7 +53,7 @@ public class Desc
     /**
      * @return the lang
      */
-    public String getLang()
+    public String getLanguage()
     {
         return lang;
     }
@@ -78,7 +82,7 @@ public class Desc
     /**
      * @param lang the lang to set
      */
-    public void setLang(String lang)
+    public void setLanguage(String lang)
     {
         this.lang = lang;
     }
@@ -89,5 +93,25 @@ public class Desc
     {
         this.variant = variant;
     }
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.fielddesc.LocalizedStrIFace#isLocale(java.util.Locale)
+     */
+    public boolean isLocale(final Locale locale)
+    {
+        return lang.equals(locale.getLanguage()) &&
+               (country == null || country.equals(locale.getCountry())) && 
+               (variant == null || variant.equals(locale.getVariant()));
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        //return super.clone();
+        throw new RuntimeException("Not implememnted");
+    }
+    
+    
     
 }

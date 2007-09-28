@@ -37,13 +37,14 @@ import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.dom4j.Element;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.forms.DataObjectGettable;
 import edu.ku.brc.ui.forms.DataObjectSettable;
-import edu.ku.brc.ui.forms.persist.FormCell;
 import edu.ku.brc.ui.forms.persist.FormCellIFace;
 import edu.ku.brc.ui.forms.persist.FormColumn;
 import edu.ku.brc.ui.forms.persist.FormColumnIFace;
@@ -51,6 +52,7 @@ import edu.ku.brc.ui.forms.persist.FormRowIFace;
 import edu.ku.brc.ui.forms.persist.FormViewDefIFace;
 import edu.ku.brc.ui.forms.persist.TableViewDefIFace;
 import edu.ku.brc.ui.forms.persist.ViewDefIFace;
+import edu.ku.brc.ui.forms.persist.ViewLoader;
 
 /**
  * @author rods
@@ -81,6 +83,7 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
     protected String           enableRulesXML;     // Memo (XML)
     protected String           colDef;
     protected String           rowDef;
+    protected Boolean          isAbsoluteLayout;
     
     protected Set<SpUIRow>     spRows;
     protected Set<SpUIColumn>  spCols;
@@ -133,6 +136,7 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
         enableRulesXML = null;
         colDef         = null;
         rowDef         = null;
+        isAbsoluteLayout = false;
         
         spRows      = new HashSet<SpUIRow>();
         spCols      = new HashSet<SpUIColumn>();
@@ -205,9 +209,11 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
     /**
      * @param enableRules the enableRules to set
      */
-    public void setEnableRulesXML(String enableRules)
+    public void setEnableRulesXML(String enableRulesXML)
     {
-        this.enableRulesXML = enableRules;
+        this.enableRulesXML = enableRulesXML;
+        
+        this.enableRules = null; // clear the cache is it has one
     }
 
     /**
@@ -300,6 +306,23 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
     public void setTypeName(String type)
     {
         this.typeName = type;
+    }
+
+    /**
+     * @return the isAbsoluteLayout
+     */
+    @Column(name = "IsAbsoluteLayout", unique = false, nullable = false, insertable = true, updatable = true)
+    public Boolean getIsAbsoluteLayout()
+    {
+        return isAbsoluteLayout == null ? false : isAbsoluteLayout;
+    }
+
+    /**
+     * @param isAbsoluteLayout the isAbsoluteLayout to set
+     */
+    public void setIsAbsoluteLayout(Boolean isAbsoluteLayout)
+    {
+        this.isAbsoluteLayout = isAbsoluteLayout;
     }
 
     /**
@@ -596,17 +619,40 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
     @Transient
     public Hashtable<String, String> getEnableRules()
     {
-        // TODO Auto-generated method stub
-        return null;
+        if (enableRules == null && StringUtils.isNotEmpty(enableRulesXML))
+        {
+            try
+            {
+                Element element = XMLHelper.readStrToDOM4J(enableRulesXML);
+                if (element != null)
+                {
+                    enableRules = ViewLoader.getEnableRules(element);
+                }
+                
+            } catch (Exception ex)
+            {
+                log.error(ex);
+            }
+        }
+        return enableRules;
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormViewDefIFace#getFormCellById(java.lang.String)
      */
     @Transient
-    public FormCell getFormCellById(String idStr)
+    public FormCellIFace getFormCellById(String idStr)
     {
-        // TODO Auto-generated method stub
+        for (FormRowIFace row : spRows)
+        {
+            for (FormCellIFace c : row.getCells())
+            {
+                if (c.getIdent().equals(idStr))
+                {
+                    return c;
+                }
+            }
+        }
         return null;
     }
 
@@ -616,7 +662,16 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
     @Transient
     public FormCellIFace getFormCellByName(String nameStr)
     {
-        // TODO Auto-generated method stub
+        for (FormRowIFace row : spRows)
+        {
+            for (FormCellIFace c : row.getCells())
+            {
+                if (c.getName().equals(nameStr))
+                {
+                    return c;
+                }
+            }
+        }
         return null;
     }
 
@@ -626,8 +681,8 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
     @Transient
     public List<FormRowIFace> getRows()
     {
-        // TODO Auto-generated method stub
-        return null;
+        // XXX Not the best approach
+        return new Vector<FormRowIFace>(spRows);
     }
 
     /* (non-Javadoc)
@@ -655,6 +710,15 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
     {
         this.enableRules = enableRules;
         
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#isAbsoluteLayout()
+     */
+    @Transient
+    public Boolean isAbsoluteLayout()
+    {
+        return getIsAbsoluteLayout();
     }
     
 }

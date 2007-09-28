@@ -86,7 +86,11 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
     protected Boolean   changeListenerOnlyDB;
     protected Boolean   isMultiFieldDB;
     protected Byte      colSpanDB;
-    protected Byte      rowSpanDB;  
+    protected Byte      rowSpanDB;
+    protected Short     xCoordDB;
+    protected Short     yCoordDB;
+    protected Short     heightDB;
+    protected Short     widthDB;
     
     // FormCell Transient 
     protected String[]   fieldNames = null;
@@ -187,6 +191,10 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
         isMultiFieldDB     = false;
         colSpanDB          = 1;
         rowSpanDB          = 1;
+        xCoordDB           = null;
+        yCoordDB           = null;
+        widthDB            = null;
+        heightDB           = null;
 
         
         fieldNames         = null;
@@ -1131,6 +1139,74 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
         this.properties = properties;
     }
 
+    /**
+     * @return the xCoordDB
+     */
+    @Column(name = "XCoord", unique = false, nullable = false, insertable = true, updatable = true)
+    public Short getXCoordDB()
+    {
+        return xCoordDB;
+    }
+
+    /**
+     * @param coordDB the xCoordDB to set
+     */
+    public void setXCoordDB(Short coordDB)
+    {
+        xCoordDB = coordDB;
+    }
+
+    /**
+     * @return the yCoordDB
+     */
+    @Column(name = "YCoord", unique = false, nullable = false, insertable = true, updatable = true)
+    public Short getYCoordDB()
+    {
+        return yCoordDB;
+    }
+
+    /**
+     * @param coordDB the yCoordDB to set
+     */
+    public void setYCoordDB(Short coordDB)
+    {
+        yCoordDB = coordDB;
+    }
+    
+    /**
+     * @return the height
+     */
+    @Column(name = "Height", unique = false, nullable = false, insertable = true, updatable = true)
+    public Short getHeightDB()
+    {
+        return heightDB;
+    }
+
+    /**
+     * @param height the height to set
+     */
+    public void setHeightDB(Short height)
+    {
+        this.heightDB = height;
+    }
+
+    /**
+     * @return the width
+     */
+    @Column(name = "Width", unique = false, nullable = false, insertable = true, updatable = true)
+    public Short getWidthDB()
+    {
+        return widthDB;
+    }
+
+    /**
+     * @param width the width to set
+     */
+    public void setWidthDB(Short width)
+    {
+        this.widthDB = width;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getDataClass()
      */
@@ -1594,4 +1670,71 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
         return useThisDataDB == null ? false : useThisDataDB;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#getXCoord()
+     */
+    @Transient
+    public int getXCoord()
+    {
+        return xCoordDB;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#getYCoord()
+     */
+    @Transient
+    public int getYCoord()
+    {
+        return yCoordDB;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#setXCoord(int)
+     */
+    public void setXCoord(int xCoord)
+    {
+        xCoordDB = (short)xCoord;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#setYCoord(int)
+     */
+    public void setYCoord(int yCoord)
+    {
+        yCoordDB = (short)yCoord;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#getHeight()
+     */
+    @Transient
+    public int getHeight()
+    {
+        return heightDB;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#getWidth()
+     */
+    @Transient
+    public int getWidth()
+    {
+        return widthDB;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#setHeight(int)
+     */
+    public void setHeight(int height)
+    {
+        heightDB = (short)height;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#setWidth(int)
+     */
+    public void setWidth(int width)
+    {
+        widthDB = (short)width;
+    }
 }

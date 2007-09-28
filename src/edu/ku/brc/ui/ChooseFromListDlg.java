@@ -186,7 +186,7 @@ public class ChooseFromListDlg<T> extends JDialog
      * 
      * @param frame  parent frame
      * @param title the title of the dialog
-     * @param items the list to be selected from
+     * @param spItems the list to be selected from
      * @param icon the icon to be displayed in front of each entry in the list
      * @throws HeadlessException
      */
@@ -203,7 +203,7 @@ public class ChooseFromListDlg<T> extends JDialog
      * 
      * @param frame  parent frame
      * @param title the title of the dialog
-     * @param items the list to be selected from
+     * @param spItems the list to be selected from
      * @param whichBtns mask describing which buttons to create
      * @param icon the icon to be displayed in front of each entry in the list
      * @throws HeadlessException
@@ -222,7 +222,7 @@ public class ChooseFromListDlg<T> extends JDialog
      * 
      * @param frame  parent frame
      * @param title the title of the dialog
-     * @param items the list to be selected from
+     * @param spItems the list to be selected from
      * @param whichBtns mask describing which buttons to create
      * @param icon the icon to be displayed in front of each entry in the list
      * @param helpContext  help context identifier
