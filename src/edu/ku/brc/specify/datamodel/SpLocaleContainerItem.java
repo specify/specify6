@@ -18,6 +18,7 @@
 package edu.ku.brc.specify.datamodel;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -31,9 +32,13 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
+
+import edu.ku.brc.specify.tools.fielddesc.LocalizableItemIFace;
+import edu.ku.brc.specify.tools.fielddesc.LocalizableStrIFace;
 
 /**
  * @author rods
@@ -50,13 +55,19 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Table(appliesTo="localecontaineritem", indexes =
     {   @Index (name="SpLocaleContainerItemNameIDX", columnNames={"Name"})
     })
-public class SpLocaleContainerItem extends SpLocaleBase implements SpLocalizableIFace
+public class SpLocaleContainerItem extends SpLocaleBase implements LocalizableItemIFace
 {
-    protected Integer localeContainerItemId;
+    private static final Logger log = Logger.getLogger(SpLocaleContainerItem.class);
+    
+    protected Integer spLocaleContainerItemId;
     protected SpLocaleContainer container;
     
     protected Set<SpLocaleItemStr> names;
     protected Set<SpLocaleItemStr> descs;
+
+    // Transient
+    //protected Vector<LocalizableStrIFace> names;
+    //protected Vector<LocalizableStrIFace> desc;
 
  
     /**
@@ -73,17 +84,17 @@ public class SpLocaleContainerItem extends SpLocaleBase implements SpLocalizable
     @Id
     @GeneratedValue
     @Column(name = "LocaleContainerItemID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Integer getLocaleContainerItemId()
+    public Integer getSpLocaleContainerItemId()
     {
-        return localeContainerItemId;
+        return spLocaleContainerItemId;
     }
 
     /**
      * @param localeContainerItemId the localeContainerItemId to set
      */
-    public void setLocaleContainerItemId(Integer localeContainerItemId)
+    public void setSpLocaleContainerItemId(Integer localeContainerItemId)
     {
-        this.localeContainerItemId = localeContainerItemId;
+        this.spLocaleContainerItemId = localeContainerItemId;
     }
 
     /* (non-Javadoc)
@@ -93,7 +104,7 @@ public class SpLocaleContainerItem extends SpLocaleBase implements SpLocalizable
     public void initialize()
     {
         super.initialize();
-        localeContainerItemId = null;
+        spLocaleContainerItemId = null;
         
         names = new HashSet<SpLocaleItemStr>();
         descs = new HashSet<SpLocaleItemStr>();
@@ -173,7 +184,7 @@ public class SpLocaleContainerItem extends SpLocaleBase implements SpLocalizable
     @Transient
     public Integer getId()
     {
-        return localeContainerItemId;
+        return spLocaleContainerItemId;
     }
 
     /* (non-Javadoc)
@@ -192,5 +203,88 @@ public class SpLocaleContainerItem extends SpLocaleBase implements SpLocalizable
     {
         return 504;
     }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    public String toString()
+    {
+        return name;
+    }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableItemIFace#fillDescs(java.util.List)
+     */
+    public void fillDescs(List<LocalizableStrIFace> descsArg)
+    {
+        descsArg.clear();
+        descsArg.addAll(descs);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableItemIFace#fillNames(java.util.List)
+     */
+    public void fillNames(List<LocalizableStrIFace> namesArg)
+    {
+        namesArg.clear();
+        namesArg.addAll(names);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableItemIFace#addDesc(edu.ku.brc.specify.tools.fielddesc.LocalizableStrIFace)
+     */
+    public void addDesc(LocalizableStrIFace str)
+    {
+        if (str != null && str instanceof SpLocaleItemStr)
+        {
+            descs.add((SpLocaleItemStr)str);
+        } else
+        {
+            log.error("LocalizableStrIFace was null or not of Class SpLocaleItemStr");
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableItemIFace#addName(edu.ku.brc.specify.tools.fielddesc.LocalizableStrIFace)
+     */
+    public void addName(LocalizableStrIFace str)
+    {
+        if (str != null && str instanceof SpLocaleItemStr)
+        {
+            names.add((SpLocaleItemStr)str);
+        } else
+        {
+            log.error("LocalizableStrIFace was null or not of Class SpLocaleItemStr");
+        }
+        
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableItemIFace#removeDesc(edu.ku.brc.specify.tools.fielddesc.LocalizableStrIFace)
+     */
+    public void removeDesc(LocalizableStrIFace str)
+    {
+        if (str != null && str instanceof SpLocaleItemStr)
+        {
+            descs.remove((SpLocaleItemStr)str);
+        } else
+        {
+            log.error("LocalizableStrIFace was null or not of Class SpLocaleItemStr");
+        }
+        
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableItemIFace#removeName(edu.ku.brc.specify.tools.fielddesc.LocalizableStrIFace)
+     */
+    public void removeName(LocalizableStrIFace str)
+    {
+        if (str != null && str instanceof SpLocaleItemStr)
+        {
+            names.add((SpLocaleItemStr)str);
+        } else
+        {
+            log.error("LocalizableStrIFace was null or not of Class SpLocaleItemStr");
+        }
+    }
 }

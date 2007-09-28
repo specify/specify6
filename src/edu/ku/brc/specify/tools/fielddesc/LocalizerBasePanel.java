@@ -48,11 +48,19 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public abstract class LocalizerBasePanel extends JPanel
 {
-    protected static Locale    currLocale;
-    protected Vector<Locale>   locales            = new Vector<Locale>();
+    protected static Locale                      currLocale;
+    protected static LocalizableStrFactory       localizableStrFactory;
     
+    // Used for Caching the lists
+    protected static Vector<LocalizableStrIFace> namesList = new Vector<LocalizableStrIFace>();
+    protected static Vector<LocalizableStrIFace> descsList = new Vector<LocalizableStrIFace>();
+
+    
+    // Locale Members
+    protected Vector<Locale>            locales           = new Vector<Locale>();
     protected Vector<JCheckBoxMenuItem> localeMenuItems   = new Vector<JCheckBoxMenuItem>();
     
+    // Spell Check Members
     protected boolean          doAutoSpellCheck   = false;
     
     protected SpellDictionary  dictionary         = null;
@@ -62,6 +70,7 @@ public abstract class LocalizerBasePanel extends JPanel
     protected JTextComponentSpellChecker checker  = null;
     protected SpellDictionary  userDict;
     
+    // UI Helpers
     protected boolean          hasChanged         = false;
     protected JButton          saveBtn            = null;
     protected JMenuItem        saveMenuItem       = null;
@@ -86,6 +95,25 @@ public abstract class LocalizerBasePanel extends JPanel
         }
     }
     
+    
+    
+    /**
+     * @return the localizableStrFactory
+     */
+    public static LocalizableStrFactory getLocalizableStrFactory()
+    {
+        return localizableStrFactory;
+    }
+
+    /**
+     * @param localizableStrFactory the localizableStrFactory to set
+     */
+    public static void setLocalizableStrFactory(LocalizableStrFactory localizableStrFactory)
+    {
+        LocalizerBasePanel.localizableStrFactory = localizableStrFactory;
+    }
+
+
     /**
      * 
      */
@@ -176,18 +204,23 @@ public abstract class LocalizerBasePanel extends JPanel
      * @param lndi
      * @param text
      */
-    public static boolean setDescStrForCurrLocale(final LocalizableNameDescIFace lndi, final String text)
+    public static boolean setDescStrForCurrLocale(final LocalizableItemIFace lndi, final String text)
     {
-        Desc  desc = getDescForCurrLocale(lndi);
+        LocalizableStrIFace desc = getDescForCurrLocale(lndi);
         if (desc == null)
         {
-            desc = new Desc(text, currLocale);
-            lndi.getDescs().add(desc);
+            if (StringUtils.isNotEmpty(text))
+            {
+                desc =  localizableStrFactory.create(text, currLocale);
+                lndi.addDesc(desc);
+                return true;
+            }
         } else
         {
             if (!text.equals(desc.getText()))
             {
                 desc.setText(text);
+                return true;
             }
         }
         return false;
@@ -197,24 +230,30 @@ public abstract class LocalizerBasePanel extends JPanel
      * @param lndi
      * @return
      */
-    public static String getDescStrForCurrLocale(final LocalizableNameDescIFace lndi)
+    public static String getDescStrForCurrLocale(final LocalizableItemIFace lndi)
     {
-        Desc desc = getDescForCurrLocale(lndi);
+        LocalizableStrIFace desc = getDescForCurrLocale(lndi);
         if (desc == null)
         {
-            desc = new Desc("", currLocale);
-            lndi.getDescs().add(desc);
+            //desc = localizableStrFactory.create("", currLocale);
+            //lndi.addDesc(desc);
+            //return desc.getText();
+            return "";
+        } else
+        {
+            return desc.getText();
         }
-        return desc.getText();
+        
     }
     
     /**
      * @param lndi
      * @return
      */
-    public static Desc getDescForCurrLocale(final LocalizableNameDescIFace lndi)
+    public static LocalizableStrIFace getDescForCurrLocale(final LocalizableItemIFace lndi)
     {
-        for (Desc d : lndi.getDescs())
+        lndi.fillDescs(descsList);
+        for (LocalizableStrIFace d : descsList)
         {
             if (d.isLocale(currLocale))
             {
@@ -228,13 +267,17 @@ public abstract class LocalizerBasePanel extends JPanel
      * @param lndi
      * @param text
      */
-    public static boolean setNameDescStrForCurrLocale(final LocalizableNameDescIFace lndi, final String text)
+    public static boolean setNameDescStrForCurrLocale(final LocalizableItemIFace lndi, final String text)
     {
-        Name nameDesc = getNameDescForCurrLocale(lndi);
+        LocalizableStrIFace nameDesc = getNameDescForCurrLocale(lndi);
         if (nameDesc == null)
         {
-            nameDesc = new Name(text, currLocale);
-            lndi.getNames().add(nameDesc);
+            if (StringUtils.isNotEmpty(text))
+            {
+                nameDesc = localizableStrFactory.create(text, currLocale);
+                lndi.addName(nameDesc);
+                return true;
+            }
         }  else
         {
             if (!text.equals(nameDesc.getText()))
@@ -250,24 +293,29 @@ public abstract class LocalizerBasePanel extends JPanel
      * @param lndi
      * @return
      */
-    public static String getNameDescStrForCurrLocale(final LocalizableNameDescIFace lndi)
+    public static String getNameDescStrForCurrLocale(final LocalizableItemIFace lndi)
     {
-        Name nameDesc = getNameDescForCurrLocale(lndi);
+        LocalizableStrIFace nameDesc = getNameDescForCurrLocale(lndi);
         if (nameDesc == null)
         {
-            nameDesc = new Name("", currLocale);
-            lndi.getNames().add(nameDesc);
+            //nameDesc = localizableStrFactory.create("", currLocale);
+            //lndi.addName(nameDesc);
+            return "";
+            
+        } else
+        {
+            return nameDesc.getText();
         }
-        return nameDesc.getText();
     }
     
     /**
      * @param lndi
      * @return
      */
-    public static Name getNameDescForCurrLocale(final LocalizableNameDescIFace lndi)
+    public static LocalizableStrIFace getNameDescForCurrLocale(final LocalizableItemIFace lndi)
     {
-        for (Name n : lndi.getNames())
+        lndi.fillNames(namesList);
+        for (LocalizableStrIFace n : namesList)
         {
             if (n.isLocale(currLocale))
             {
@@ -309,11 +357,11 @@ public abstract class LocalizerBasePanel extends JPanel
         hasChanged = changed;
         if (saveBtn != null)
         {
-            saveBtn.setEnabled(true);
+            saveBtn.setEnabled(changed);
         }
         if (saveMenuItem != null)
         {
-            saveMenuItem.setEnabled(true);
+            saveMenuItem.setEnabled(changed);
         }
     }
     
@@ -412,11 +460,11 @@ public abstract class LocalizerBasePanel extends JPanel
             public void actionPerformed(ActionEvent e)
             {
                 
-                currLocale = getLocaleByName(((JCheckBoxMenuItem)e.getSource()).getText());
-                checkLocaleMenu(currLocale);
+                Locale newLocale = getLocaleByName(((JCheckBoxMenuItem)e.getSource()).getText());
+                checkLocaleMenu(newLocale);
 
                 UIRegistry.pushWindow(frame);
-                localeChanged(currLocale.getDisplayName());
+                localeChanged(newLocale);
                 UIRegistry.popWindow(frame);
             }  
         });
@@ -424,7 +472,7 @@ public abstract class LocalizerBasePanel extends JPanel
         return localeMenu;
     }
     
-    public abstract void localeChanged(final String newLocaleName);
+    public abstract void localeChanged(final Locale newLocale);
     
     //-------------------------------------------------------------
     //-- Inner Classes

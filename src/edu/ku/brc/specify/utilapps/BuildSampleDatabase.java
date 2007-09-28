@@ -158,7 +158,6 @@ import edu.ku.brc.specify.datamodel.Shipment;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpLocaleContainerItem;
 import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
-import edu.ku.brc.specify.datamodel.SpLocalizableIFace;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonCitation;
@@ -174,10 +173,6 @@ import edu.ku.brc.specify.datamodel.WorkbenchRowImage;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
-import edu.ku.brc.specify.tools.fielddesc.Desc;
-import edu.ku.brc.specify.tools.fielddesc.LocalizableNameDescIFace;
-import edu.ku.brc.specify.tools.fielddesc.LocalizerContainerIFace;
-import edu.ku.brc.specify.tools.fielddesc.Name;
 import edu.ku.brc.specify.tools.fielddesc.SchemaLocalizerXMLHelper;
 import edu.ku.brc.specify.treeutils.TreeHelper;
 import edu.ku.brc.ui.ProgressFrame;
@@ -2578,44 +2573,88 @@ public class BuildSampleDatabase
         }
     }
     
-    protected void loadLocalization(final LocalizableNameDescIFace lndi, final SpLocalizableIFace loc)
+    protected void loadLocalization(final SpLocaleContainerItem memoryItem, final SpLocaleContainerItem loc)
     {
-        loc.setName(lndi.getName());
+        loc.setName(memoryItem.getName());
+        loc.setType(memoryItem.getType());
        
-        for (Name nm : lndi.getNames())
+        for (SpLocaleItemStr nm : memoryItem.getNames())
         {
             SpLocaleItemStr str = new SpLocaleItemStr();
             str.initialize();
             
             str.setText(nm.getText());
-            str.setLanguage(nm.getLang());
+            str.setLanguage(nm.getLanguage());
             str.setCountry(nm.getCountry());
             str.setVariant(nm.getVariant());
             
             loc.getNames().add(str);
-            str.setSpLocalizable(loc);
+            str.setItem(loc);
         }
         
-        for (Desc desc : lndi.getDescs())
+        for (SpLocaleItemStr desc : memoryItem.getDescs())
         {
             SpLocaleItemStr str = new SpLocaleItemStr();
             str.initialize();
             
             str.setText(desc.getText());
-            str.setLanguage(desc.getLang());
+            str.setLanguage(desc.getLanguage());
             str.setCountry(desc.getCountry());
             str.setVariant(desc.getVariant());
             
             loc.getNames().add(str);
-            str.setSpLocalizable(loc);
+            str.setItem(loc);
+        }
+
+    }
+    
+    protected void loadLocalization(final SpLocaleContainer memoryContainer, final SpLocaleContainer newContainer)
+    {
+        newContainer.setName(memoryContainer.getName());
+        newContainer.setType(memoryContainer.getType());
+       
+        for (SpLocaleItemStr nm : memoryContainer.getNames())
+        {
+            SpLocaleItemStr str = new SpLocaleItemStr();
+            str.initialize();
+            
+            str.setText(nm.getText());
+            str.setLanguage(nm.getLanguage());
+            str.setCountry(nm.getCountry());
+            str.setVariant(nm.getVariant());
+            
+            newContainer.getNames().add(str);
+            str.setContainer(newContainer);
         }
         
+        for (SpLocaleItemStr desc : memoryContainer.getDescs())
+        {
+            SpLocaleItemStr str = new SpLocaleItemStr();
+            str.initialize();
+            
+            str.setText(desc.getText());
+            str.setLanguage(desc.getLanguage());
+            str.setCountry(desc.getCountry());
+            str.setVariant(desc.getVariant());
+            
+            newContainer.getNames().add(str);
+            str.setContainer(newContainer);
+        }
+        
+        for (SpLocaleContainerItem item : memoryContainer.getItems())
+        {
+            SpLocaleContainerItem newItem = new SpLocaleContainerItem();
+            newItem.initialize();
+            newContainer.getItems().add(newItem);
+            newItem.setContainer(newContainer);
+            loadLocalization(item, newItem);
+        }
     }
     
     protected void loadSchemaLocalization(final CollectionType collTyp)
     {
         SchemaLocalizerXMLHelper schemaLocalizer = new SchemaLocalizerXMLHelper();
-        for (LocalizerContainerIFace table : schemaLocalizer.getTables())
+        for (SpLocaleContainer table : schemaLocalizer.getSpLocaleContainers())
         {
             SpLocaleContainer container = new SpLocaleContainer();
             container.initialize();
@@ -2625,30 +2664,7 @@ public class BuildSampleDatabase
             
             collTyp.getSpLocaleContainers().add(container);
             container.setCollectionType(collTyp);
-            
-            for (LocalizableNameDescIFace field : table.getItems())
-            {
-                SpLocaleContainerItem item = new SpLocaleContainerItem();
-                item.initialize();
-                item.setType(field.getType());
-                loadLocalization(field, item);
-                
-                container.getItems().add(item);
-                item.setContainer(container);
-            }
         }
-        /*
-        try
-        {
-            startTx();
-            session.merge(collTyp);
-            session.saveOrUpdate(collTyp);
-            commitTx();
-            
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }*/
     }
     
     public static void main(final String[] args)

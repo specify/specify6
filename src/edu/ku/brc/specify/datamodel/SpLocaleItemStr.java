@@ -17,6 +17,8 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Locale;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -29,6 +31,8 @@ import javax.persistence.Transient;
 
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Index;
+
+import edu.ku.brc.specify.tools.fielddesc.LocalizableStrIFace;
 
 /**
  * @author rods
@@ -46,7 +50,7 @@ import org.hibernate.annotations.Index;
     {   @Index (name="SpLocaleLanguageIDX", columnNames={"Language"}),
         @Index (name="SpLocaleCountyIDX", columnNames={"Country"})
     })
-public class SpLocaleItemStr extends DataModelObjBase
+public class SpLocaleItemStr extends DataModelObjBase implements LocalizableStrIFace
 {
     private static final Logger  log      = Logger.getLogger(SpLocaleItemStr.class);
             
@@ -65,6 +69,15 @@ public class SpLocaleItemStr extends DataModelObjBase
     public SpLocaleItemStr()
     {
         // no op
+    }
+
+    public SpLocaleItemStr(final String text, final Locale locale)
+    {
+        initialize();
+        this.text = text;
+        language = locale.getLanguage();
+        country  = locale.getCountry();
+        variant  = locale.getVariant();
     }
 
     /* (non-Javadoc)
@@ -104,7 +117,7 @@ public class SpLocaleItemStr extends DataModelObjBase
     /**
      * @param owner
      */
-    public void setSpLocalizable(SpLocalizableIFace owner)
+    /*public void setSpLocalizable(SpLocalizableIFace owner)
     {
         if (owner instanceof SpLocaleContainer)
         {
@@ -117,7 +130,7 @@ public class SpLocaleItemStr extends DataModelObjBase
         {
             throw new RuntimeException("Can't set class of ["+owner+"]");
         }
-    }
+    }*/
 
     /**
      * @return the text
@@ -266,5 +279,13 @@ public class SpLocaleItemStr extends DataModelObjBase
     public static int getClassTableId()
     {
         return 505;
+    }
+    
+    @Transient
+    public boolean isLocale(final Locale locale)
+    {
+        return language.equals(locale.getLanguage()) &&
+               (country == null || country.equals(locale.getCountry())) && 
+               (variant == null || variant.equals(locale.getVariant()));
     }
 }

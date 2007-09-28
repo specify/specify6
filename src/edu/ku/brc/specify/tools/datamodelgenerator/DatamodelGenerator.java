@@ -45,10 +45,11 @@ import org.hibernate.annotations.Index;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.tools.fielddesc.LocalizableNameDescIFace;
+import edu.ku.brc.specify.datamodel.SpLocaleContainer;
+import edu.ku.brc.specify.tools.fielddesc.LocalizableContainerIFace;
+import edu.ku.brc.specify.tools.fielddesc.LocalizableItemIFace;
+import edu.ku.brc.specify.tools.fielddesc.LocalizableStrIFace;
 import edu.ku.brc.specify.tools.fielddesc.LocalizerBasePanel;
-import edu.ku.brc.specify.tools.fielddesc.LocalizerContainerIFace;
-import edu.ku.brc.specify.tools.fielddesc.SchemaLocalizerFrame;
 import edu.ku.brc.specify.tools.fielddesc.SchemaLocalizerXMLHelper;
 import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.util.DatamodelHelper;
@@ -71,7 +72,7 @@ public class DatamodelGenerator
 
     protected Hashtable<String, TableMetaData> tblMetaDataHash = new Hashtable<String, TableMetaData>();
     
-    protected Vector<LocalizerContainerIFace> descTableList = new Vector<LocalizerContainerIFace>();
+    //protected Vector<SpLocaleContainer> descTableList = new Vector<SpLocaleContainer>();
     
     protected File         srcCodeDir   = null;
     protected String       packageName  = null;
@@ -96,7 +97,9 @@ public class DatamodelGenerator
         if (includeDesc)
         {
             schemaLocalizer = new SchemaLocalizerXMLHelper();
-            descTableList = schemaLocalizer.getTables();
+            includeDesc = schemaLocalizer.load();
+            
+            //descTableList = schemaLocalizer.getSpLocaleContainers();
         }
     }
     
@@ -106,13 +109,13 @@ public class DatamodelGenerator
      */
     protected Desc getTableDesc(final String tableName)
     {
-        LocalizerContainerIFace container = schemaLocalizer.getContainer(tableName);
+        LocalizableContainerIFace container = schemaLocalizer.getContainer(tableName);
         if (container != null)
         {
-            edu.ku.brc.specify.tools.fielddesc.Desc d = LocalizerBasePanel.getDescForCurrLocale(container);
+            LocalizableStrIFace d = LocalizerBasePanel.getDescForCurrLocale(container);
             if (d != null)
             {
-                Desc desc = new Desc(d.getText(), d.getCountry(), d.getLang(), d.getVariant());
+                Desc desc = new Desc(d.getText(), d.getCountry(), d.getLanguage(), d.getVariant());
                 return desc;
             } else
             {
@@ -132,13 +135,13 @@ public class DatamodelGenerator
      */
     protected Name getTableNameDesc(final String tableName)
     {
-        LocalizerContainerIFace container = schemaLocalizer.getContainer(tableName);
+        LocalizableContainerIFace container = schemaLocalizer.getContainer(tableName);
         if (container != null)
         {
-            edu.ku.brc.specify.tools.fielddesc.Name dn = LocalizerBasePanel.getNameDescForCurrLocale(container);
+            LocalizableStrIFace dn = LocalizerBasePanel.getNameDescForCurrLocale(container);
             if (dn != null)
             {
-                Name nm = new Name(dn.getText(), dn.getCountry(), dn.getLang(), dn.getVariant());
+                Name nm = new Name(dn.getText(), dn.getCountry(), dn.getLanguage(), dn.getVariant());
                 return nm;
             } else
             {
@@ -158,16 +161,16 @@ public class DatamodelGenerator
      */
     protected Desc getFieldDesc(final String tableName, final String fieldName)
     {
-        LocalizerContainerIFace container = schemaLocalizer.getContainer(tableName);
+        LocalizableContainerIFace container = schemaLocalizer.getContainer(tableName);
         if (container != null)
         {
-            LocalizableNameDescIFace item = container.getItemByName(fieldName);
+            LocalizableItemIFace item = container.getItemByName(fieldName);
             if (item != null)
             {
-                edu.ku.brc.specify.tools.fielddesc.Desc d = LocalizerBasePanel.getDescForCurrLocale(item);
+                LocalizableStrIFace d = LocalizerBasePanel.getDescForCurrLocale(item);
                 if (d != null)
                 {
-                    Desc desc = new Desc(d.getText(), d.getCountry(), d.getLang(), d.getVariant());
+                    Desc desc = new Desc(d.getText(), d.getCountry(), d.getLanguage(), d.getVariant());
                     return desc;
                 } else
                 {
@@ -191,16 +194,16 @@ public class DatamodelGenerator
      */
     protected Name getFieldNameDesc(final String tableName, final String fieldName)
     {
-        LocalizerContainerIFace container = schemaLocalizer.getContainer(tableName);
+        LocalizableContainerIFace container = schemaLocalizer.getContainer(tableName);
         if (container != null)
         {
-            LocalizableNameDescIFace item = container.getItemByName(fieldName);
+            LocalizableItemIFace item = container.getItemByName(fieldName);
             if (item != null)
             {
-                edu.ku.brc.specify.tools.fielddesc.Name dn = LocalizerBasePanel.getNameDescForCurrLocale(item);
+                LocalizableStrIFace dn = LocalizerBasePanel.getNameDescForCurrLocale(item);
                 if (dn != null)
                 {
-                    Name nm = new Name(dn.getText(), dn.getCountry(), dn.getLang(), dn.getVariant());
+                    Name nm = new Name(dn.getText(), dn.getCountry(), dn.getLanguage(), dn.getVariant());
                     return nm;
                 } else
                 {
@@ -216,50 +219,6 @@ public class DatamodelGenerator
         }
             
         return null;
-    }
-
-    /**
-     * @param tableName
-     * @return
-     */
-    protected Desc getRelDesc(final String tableName, final String relName)
-    {
-        /*
-        edu.ku.brc.specify.tools.fielddesc.Desc d = sla.getRelDesc(tableName, relName);
-        if (d != null)
-        {
-            Desc desc = new Desc(d.getText(), d.getCountry(), d.getLang(), d.getVariant());
-            return desc;
-        } else
-        {
-            log.error("No Desc for Table["+tableName+"] Field["+relName+"]");
-        }
-            
-        return null;
-        */
-        return getFieldDesc(tableName, relName);
-    }
-    
-    /**
-     * @param tableName
-     * @return
-     */
-    protected Name getRelNameDesc(final String tableName, final String relName)
-    {
-        /*
-        edu.ku.brc.specify.tools.fielddesc.Name d = sla.getRelNameDesc(tableName, relName);
-        if (d != null)
-        {
-            Name nm = new Name(d.getText(), d.getCountry(), d.getLang(), d.getVariant());
-            return nm;
-        } else
-        {
-            log.error("No Desc for Table["+tableName+"] Field["+relName+"]");
-        }
-            
-        return null;
-        */
-        return getFieldNameDesc(tableName, relName);
     }
 
     /**
@@ -852,8 +811,8 @@ public class DatamodelGenerator
                             table.addRelationship(rel);
                             if (includeDesc)
                             {
-                                rel.setDesc(getRelDesc(tableName, rel.getRelationshipName()));
-                                rel.setNameDesc(getRelNameDesc(tableName, rel.getRelationshipName()));
+                                rel.setDesc(getFieldDesc(tableName, rel.getRelationshipName()));
+                                rel.setNameDesc(getFieldNameDesc(tableName, rel.getRelationshipName()));
                             }
                             
                         } else
@@ -876,8 +835,8 @@ public class DatamodelGenerator
                         table.addRelationship(rel);
                         if (includeDesc)
                         {
-                            rel.setDesc(getRelDesc(tableName, rel.getRelationshipName()));
-                            rel.setNameDesc(getRelNameDesc(tableName, rel.getRelationshipName()));
+                            rel.setDesc(getFieldDesc(tableName, rel.getRelationshipName()));
+                            rel.setNameDesc(getFieldNameDesc(tableName, rel.getRelationshipName()));
                         }
                         
                     } else if (method.isAnnotationPresent(javax.persistence.OneToMany.class))
@@ -896,8 +855,8 @@ public class DatamodelGenerator
                         table.addRelationship(rel);
                         if (includeDesc)
                         {
-                            rel.setDesc(getRelDesc(tableName, rel.getRelationshipName()));
-                            rel.setNameDesc(getRelNameDesc(tableName, rel.getRelationshipName()));
+                            rel.setDesc(getFieldDesc(tableName, rel.getRelationshipName()));
+                            rel.setNameDesc(getFieldNameDesc(tableName, rel.getRelationshipName()));
                         }
                         
                     } else if (method.isAnnotationPresent(javax.persistence.OneToOne.class))
@@ -917,8 +876,8 @@ public class DatamodelGenerator
                         table.addRelationship(rel);
                         if (includeDesc)
                         {
-                            rel.setDesc(getRelDesc(tableName, rel.getRelationshipName()));
-                            rel.setNameDesc(getRelNameDesc(tableName, rel.getRelationshipName()));
+                            rel.setDesc(getFieldDesc(tableName, rel.getRelationshipName()));
+                            rel.setNameDesc(getFieldNameDesc(tableName, rel.getRelationshipName()));
                         }
                     }
                     isLob = false;

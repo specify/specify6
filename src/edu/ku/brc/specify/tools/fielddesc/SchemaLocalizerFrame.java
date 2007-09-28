@@ -10,6 +10,7 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.ref.WeakReference;
+import java.util.Locale;
 
 import javax.swing.BorderFactory;
 import javax.swing.JMenu;
@@ -20,12 +21,11 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
-import org.apache.log4j.Logger;
-
 import com.apple.eawt.Application;
 import com.apple.eawt.ApplicationAdapter;
 import com.apple.eawt.ApplicationEvent;
 
+import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -41,11 +41,11 @@ import edu.ku.brc.ui.UIRegistry;
 public class SchemaLocalizerFrame extends LocalizableBaseApp
 {
     protected SchemaLocalizerPanel     panel;
-    protected SchemaLocalizerXMLHelper helper = new SchemaLocalizerXMLHelper();
     
     protected JStatusBar           statusBar     = new JStatusBar(new int[] {5});
     
-    
+    protected LocalizableIOIFace   localizableIO;
+
     protected String               appName             = "";
     protected String               appVersion          = "";
     protected String               appBuildVersion     = "";
@@ -74,11 +74,28 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
      */
     protected void buildUI()
     {
+        localizableIO = new SchemaLocalizerXMLHelper();
+        localizableIO.load();
+        
+        LocalizerBasePanel.setLocalizableStrFactory(new LocalizableStrFactory() {
+            public LocalizableStrIFace create()
+            {
+                SpLocaleItemStr str = new SpLocaleItemStr();
+                str.initialize();
+                return str;
+            }
+            public LocalizableStrIFace create(String text, Locale locale)
+            {
+                return new SpLocaleItemStr(text, locale); // no initialize needed for this constructor
+            }
+            
+        });
+        
         panel = new SchemaLocalizerPanel();
-        panel.setTables(helper.readTableList());
+        panel.setLocalizableIO(localizableIO);
         panel.setStatusBar(statusBar);
         panel.buildUI();
-        panel.setHasChanged(helper.isChangesMadeDuringStartup());
+        panel.setHasChanged(localizableIO.didModelChangeDuringLoad());
         
         UIRegistry.setStatusBar(statusBar);
         
@@ -148,6 +165,8 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
             }
         }
         
+        //helper.dumpAsNew(panel.getTables());
+        
         setVisible(false);
         System.exit(0);
     }
@@ -162,7 +181,7 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
         
         panel.getAllDataFromUI();
         
-        if (helper.write())
+        if (localizableIO.save())
         {
             panel.setHasChanged(false);
             statusBar.setText("Saved.");
@@ -178,7 +197,7 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
      */
     protected void createResourceFiles()
     {
-        helper.createResourceFiles();
+        localizableIO.createResourceFiles();
         statusBar.setText("Done writing resource file(s)");
     }
     
@@ -224,7 +243,7 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
              }
         }
     }
-
+    
     /**
      * @param args
      */

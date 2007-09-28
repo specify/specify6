@@ -17,8 +17,12 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -31,9 +35,14 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
+
+import edu.ku.brc.specify.tools.fielddesc.LocalizableContainerIFace;
+import edu.ku.brc.specify.tools.fielddesc.LocalizableItemIFace;
+import edu.ku.brc.specify.tools.fielddesc.LocalizableStrIFace;
 
 /**
  * @author rods
@@ -50,8 +59,10 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Table(appliesTo="splocalecontainer", indexes =
     {   @Index (name="SpLocaleContainerNameIDX", columnNames={"Name"})
     })
-public class SpLocaleContainer extends SpLocaleBase implements SpLocalizableIFace
+public class SpLocaleContainer extends SpLocaleBase implements LocalizableContainerIFace
 {
+    private static final Logger log = Logger.getLogger(SpLocaleContainer.class);
+            
     protected Integer                    localeContainerId;
     protected Set<SpLocaleContainerItem> items;
     
@@ -59,6 +70,9 @@ public class SpLocaleContainer extends SpLocaleBase implements SpLocalizableIFac
     protected Set<SpLocaleItemStr>       descs;
     
     protected CollectionType             collectionType;
+    
+    // Transient
+    protected Vector<LocalizableItemIFace> containerItems = null;
     
     /**
      * 
@@ -81,6 +95,8 @@ public class SpLocaleContainer extends SpLocaleBase implements SpLocalizableIFac
         
         names = new HashSet<SpLocaleItemStr>();
         descs = new HashSet<SpLocaleItemStr>();
+        
+        containerItems = null;
     }
     
     /**
@@ -211,4 +227,221 @@ public class SpLocaleContainer extends SpLocaleBase implements SpLocalizableIFac
     {
         return 503;
     }
+    
+    
+    
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(SpLocaleContainer obj)
+    {
+        return name.compareTo(obj.name);
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    public String toString()
+    {
+        return name;
+    }
+
+    /**
+     * @param item
+     * @param srcLocale
+     * @param dstLocale
+     */
+    public static void copyLocaleXXX(LocalizableItemIFace item, final Locale srcLocale, final Locale dstLocale)
+    {/*
+        SpLocaleItemStr srcName = null;
+        for (SpLocaleItemStr nm : item.getNames())
+        {
+            if (nm.isLocale(srcLocale))
+            {
+                srcName = nm;
+                break;
+            }
+        }
+        
+        if (srcName != null)
+        {
+            SpLocaleItemStr name = new SpLocaleItemStr(srcName.getText(), dstLocale);
+            item.getNames().add(name);
+        }
+
+        SpLocaleItemStr srcDesc = null;
+        for (SpLocaleItemStr d : item.getDescs())
+        {
+            if (d.isLocale(srcLocale))
+            {
+                srcDesc = d;
+                break;
+            }
+        }
+        
+        if (srcDesc != null)
+        {
+            SpLocaleItemStr desc = new SpLocaleItemStr(srcDesc.getText(), dstLocale);
+            item.getDescs().add(desc);
+        }  
+        */     
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableContainerIFace#getContainerItems()
+     */
+    @Transient
+    public Collection<LocalizableItemIFace> getContainerItems()
+    {
+        if (containerItems == null)
+        {
+            containerItems = new Vector<LocalizableItemIFace>(items);
+        }
+        return containerItems;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableContainerIFace#removeItem(edu.ku.brc.specify.tools.fielddesc.LocalizableItemIFace)
+     */
+    public void removeItem(LocalizableItemIFace item)
+    {
+        if (item != null)
+        {
+            if (item instanceof SpLocaleContainerItem)
+            {
+                SpLocaleContainerItem it = (SpLocaleContainerItem)item;
+                items.remove(it);
+                if (containerItems != null)
+                {
+                    containerItems.remove(it);
+                }
+            } else
+            {
+                log.error("Trying to remove an item that isn't of class SpLocaleContainerItem");
+            }
+        }        
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(LocalizableContainerIFace o)
+    {
+        return name.compareTo(o.getName());
+    }
+
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableContainerIFace#addItem(edu.ku.brc.specify.tools.fielddesc.LocalizableItemIFace)
+     */
+    public void addItem(LocalizableItemIFace item)
+    {
+        if (item != null && item instanceof SpLocaleContainerItem)
+        {
+            SpLocaleContainerItem it = (SpLocaleContainerItem)item;
+            items.add(it);
+            it.setContainer(this);
+            if (containerItems != null)
+            {
+                containerItems.add(it);
+            }
+        } else
+        {
+            log.error("LocalizableItemIFace was null or not of Class SpLocaleContainerItem");
+        }        
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableContainerIFace#getItemByName(java.lang.String)
+     */
+    public LocalizableItemIFace getItemByName(String nameArg)
+    {
+        for (SpLocaleContainerItem item : items)
+        {
+            if (nameArg.equals(item.getName()))
+            {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableItemIFace#fillDescs(java.util.List)
+     */
+    public void fillDescs(List<LocalizableStrIFace> descsArg)
+    {
+        descsArg.clear();
+        descsArg.addAll(descs);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableItemIFace#fillNames(java.util.List)
+     */
+    public void fillNames(List<LocalizableStrIFace> namesArg)
+    {
+        namesArg.clear();
+        namesArg.addAll(names);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableItemIFace#addDesc(edu.ku.brc.specify.tools.fielddesc.LocalizableStrIFace)
+     */
+    public void addDesc(LocalizableStrIFace str)
+    {
+        if (str != null && str instanceof SpLocaleItemStr)
+        {
+            descs.add((SpLocaleItemStr)str);
+        } else
+        {
+            log.error("LocalizableStrIFace was null or not of Class SpLocaleItemStr");
+        }
+        
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableItemIFace#addName(edu.ku.brc.specify.tools.fielddesc.LocalizableStrIFace)
+     */
+    public void addName(LocalizableStrIFace str)
+    {
+        if (str != null && str instanceof SpLocaleItemStr)
+        {
+            names.add((SpLocaleItemStr)str);
+        } else
+        {
+            log.error("LocalizableStrIFace was null or not of Class SpLocaleItemStr");
+        }
+        
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableItemIFace#removeDesc(edu.ku.brc.specify.tools.fielddesc.LocalizableStrIFace)
+     */
+    public void removeDesc(LocalizableStrIFace str)
+    {
+        if (str != null && str instanceof SpLocaleItemStr)
+        {
+            descs.remove((SpLocaleItemStr)str);
+        } else
+        {
+            log.error("LocalizableStrIFace was null or not of Class SpLocaleItemStr");
+        }
+        
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableItemIFace#removeName(edu.ku.brc.specify.tools.fielddesc.LocalizableStrIFace)
+     */
+    public void removeName(LocalizableStrIFace str)
+    {
+        if (str != null && str instanceof SpLocaleItemStr)
+        {
+            names.add((SpLocaleItemStr)str);
+        } else
+        {
+            log.error("LocalizableStrIFace was null or not of Class SpLocaleItemStr");
+        }
+    }
+    
+    
 }

@@ -6,72 +6,26 @@
  */
 package edu.ku.brc.specify.tools.fielddesc;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.lang.ref.WeakReference;
-import java.net.MalformedURLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
-import java.util.zip.ZipInputStream;
 
-import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.WindowConstants;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
-import org.apache.commons.betwixt.XMLIntrospector;
-import org.apache.commons.betwixt.io.BeanWriter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.dom4j.Element;
 
 import com.apple.eawt.Application;
 import com.apple.eawt.ApplicationAdapter;
 import com.apple.eawt.ApplicationEvent;
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.factories.ButtonBarFactory;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-import com.swabunga.spell.engine.SpellDictionaryHashMap;
-import com.swabunga.spell.swing.JTextComponentSpellChecker;
-
-import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.ui.JStatusBar;
-import edu.ku.brc.ui.UIHelper;
 
 /**
  * @author rod
@@ -89,32 +43,7 @@ public class LocalizerApp extends LocalizableBaseApp
     
     protected Locale           currLocale = Locale.getDefault();
     
-    protected Vector<Table>    tables     = new Vector<Table>();
-    protected Hashtable<String, Table> tableHash  = new Hashtable<String, Table>();
-    
-    // Table Fields
-    protected JList            tablesList;
-    protected JTextArea        tblDescText   = new JTextArea();
-    protected JTextField       tblNameText   = new JTextField();
-    protected JLabel           tblDescLbl;
-    protected JLabel           tblNameLbl;
-    
-    // Field Fields
-    protected JList            fieldsList;
-    protected JTextArea        fieldDescText = new JTextArea();
-    protected JTextField       fieldNameText = new JTextField();
-    protected JLabel           fieldDescLbl;
-    protected JLabel           fieldNameLbl;
-    protected DefaultListModel fieldsModel   = new DefaultListModel();
-    protected JButton          nxtBtn;
-    protected JButton          nxtEmptyBtn;
-    
-    protected Table            prevTable     = null;
-    protected Field            prevField     = null;
-    
-    protected JStatusBar       statusBar     = new JStatusBar(new int[] {5});
-    protected JButton          tblSpellChkBtn = null;
-    protected JButton          fldSpellChkBtn = null;
+
     
     protected Hashtable<String, String>         resHash     = new Hashtable<String, String>();
     protected Hashtable<String, PackageTracker> packageHash = new Hashtable<String, PackageTracker>();
@@ -137,10 +66,10 @@ public class LocalizerApp extends LocalizableBaseApp
     
  
     protected void printLocales(final PrintWriter pw,
-                                final LocalizableNameDescIFace parent, 
-                                final LocalizableNameDescIFace lndi, 
+                                final LocalizableItemIFace parent, 
+                                final LocalizableItemIFace lndi, 
                                 final String lang, final String country)
-    {
+    {/*
         for (Name nm : lndi.getNames())
         {
             if (nm.getLang().equals(lang) && nm.getCountry().equals(country))
@@ -167,6 +96,7 @@ public class LocalizerApp extends LocalizableBaseApp
             pw.write(d.getText());
             pw.write("\n");
         }
+        */
     }
     
     
@@ -517,42 +447,7 @@ public class LocalizerApp extends LocalizableBaseApp
      */
     protected void createResourceFiles()
     {
-        
-        Hashtable<String, String> localeHash = new Hashtable<String, String>();
-        for (Table table : tables)
-        {
-            SchemaLocalizerPanel.checkForLocales(table, localeHash);
-            for (Field f : table.getFields())
-            {
-                SchemaLocalizerPanel.checkForLocales(f, localeHash);
-            }
-        }
-        
-        for (String key : localeHash.keySet())
-        {
-            System.out.println(key);
-            
-            String[] toks = StringUtils.split(key, '_');
-            File resFile = new File("res_"+toks[0]+"_"+toks[1]+".properties");
-            try
-            {
-                PrintWriter pw = new PrintWriter(resFile);
-                for (Table table : tables)
-                {
-                    printLocales(pw, null, table, toks[0], toks[1]);
-                    for (Field f : table.getFields())
-                    {
-                        printLocales(pw, table, f, toks[0], toks[1]);
-                    }
-                }
-                pw.close();
-                
-            } catch (IOException ex)
-            {
-                ex.printStackTrace();
-            }
-            
-        }
+
     }
     
     class PackageTracker 
@@ -658,7 +553,6 @@ public class LocalizerApp extends LocalizableBaseApp
      */
     public static void main(String[] args)
     {
-        
         SwingUtilities.invokeLater(new Runnable()
         {
             public void run()

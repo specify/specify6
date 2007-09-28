@@ -10,23 +10,25 @@
 package edu.ku.brc.specify.tools.fielddesc;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Vector;
 
-import org.apache.commons.betwixt.XMLIntrospector;
-import org.apache.commons.betwixt.io.BeanWriter;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.dom4j.Element;
 
-import edu.ku.brc.dbsupport.DBTableIdMgr;
+import com.thoughtworks.xstream.XStream;
+
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
+import edu.ku.brc.specify.datamodel.SpLocaleBase;
+import edu.ku.brc.specify.datamodel.SpLocaleContainer;
+import edu.ku.brc.specify.datamodel.SpLocaleContainerItem;
+import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
 
 /**
  * THis is a helper class for reading and writing the Schema Description XML to a file.
@@ -38,16 +40,26 @@ import edu.ku.brc.ui.UIHelper;
  * Sep 26, 2007
  *
  */
-public class SchemaLocalizerXMLHelper
+public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
 {
     private static final Logger log = Logger.getLogger(SchemaLocalizerXMLHelper.class);
     
-    protected static String    fileName   = "field_desc.xml";
+    protected static String    fileName   = "schema_localization.xml";
     
-    protected Vector<LocalizerContainerIFace>            tables     = new Vector<LocalizerContainerIFace>();
-    protected Hashtable<String, LocalizerContainerIFace> tableHash  = new Hashtable<String, LocalizerContainerIFace>();
+    protected Vector<SpLocaleContainer>                    tables     = new Vector<SpLocaleContainer>();
+    protected Hashtable<String, LocalizableContainerIFace> tableHash  = new Hashtable<String, LocalizableContainerIFace>();
+    
+    protected Vector<LocalizableJListItem>                 tableDisplayItems;
+    protected Hashtable<String, LocalizableJListItem>      tableDisplayItemsHash = new Hashtable<String, LocalizableJListItem>();
+    
+    protected Hashtable<LocalizableJListItem, Vector<LocalizableJListItem>> itemJListItemsHash = new Hashtable<LocalizableJListItem, Vector<LocalizableJListItem>>();
     
     protected boolean changesMadeDuringStartup = false;
+    
+    // Used for Caching the lists
+    protected Vector<LocalizableStrIFace> namesList = new Vector<LocalizableStrIFace>();
+    protected Vector<LocalizableStrIFace> descsList = new Vector<LocalizableStrIFace>();
+
 
 
     /**
@@ -58,34 +70,64 @@ public class SchemaLocalizerXMLHelper
         
     }
     
-    /**
-     * @return the tables
-     */
-    public Vector<LocalizerContainerIFace> getTables()
+    public Vector<SpLocaleContainer> getSpLocaleContainers()
     {
         return tables;
     }
 
-    /**
-     * @return
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableIOIFace#load()
      */
-    protected Vector<LocalizerContainerIFace> readTableList()
+    @SuppressWarnings("unchecked")
+    public boolean load()
     {
-        return readTables(XMLHelper.getConfigDir(fileName));
-    }
-    
-    /**
-     * @return the tableHash
-     */
-    public Hashtable<String, LocalizerContainerIFace> getTableHash()
-    {
-        return tableHash;
+        XStream xstream = new XStream();
+        configXStream(xstream);
+        
+        try
+        {
+            File file = XMLHelper.getConfigDir(fileName);
+            tables = (Vector<SpLocaleContainer>)xstream.fromXML(new FileReader(file));
+            
+            for (SpLocaleContainer ct : tables)
+            {
+                Hashtable<String, Boolean> hash = new Hashtable<String, Boolean>();
+                for (SpLocaleContainerItem item : new Vector<SpLocaleContainerItem>(ct.getItems()))
+                {
+                    if (hash.get(item.getName()) == null)
+                    {
+                        hash.put(item.getName(), true);
+                    } else
+                    {
+                        System.out.println("Removing Duplicate["+item.getName()+"]");
+                        ct.getItems().remove(item);
+                    }
+                }
+            }
+            
+            tableDisplayItems = new Vector<LocalizableJListItem>();
+            for (SpLocaleContainer cont : tables)
+            {
+                LocalizableJListItem item = new LocalizableJListItem(cont.getName(), cont.getId(), null);
+                tableDisplayItems.add(item);
+                tableDisplayItemsHash.put(cont.getName(), item);
+                
+                tableHash.put(cont.getName(), cont);
+            }
+            
+            return true;
+            
+        } catch (IOException ex)
+        {
+            ex.printStackTrace();
+        }
+        return false;
     }
 
-    /**
-     * @return the changesMadeDuringStartup
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableIOIFace#didModelChangeDuringLoad()
      */
-    public boolean isChangesMadeDuringStartup()
+    public boolean didModelChangeDuringLoad()
     {
         return changesMadeDuringStartup;
     }
@@ -94,216 +136,128 @@ public class SchemaLocalizerXMLHelper
      * @param name
      * @return
      */
-    public LocalizerContainerIFace getContainer(final String name)
+    public LocalizableContainerIFace getContainer(final String name)
     {
         return tableHash.get(name);
     }
-    
-    /**
-     * Loads name descriptions
-     * @param lndi the LocalizableNameDescIFace
-     * @param parent the DOM node
-     */
-    protected void loadNamesDesc(final LocalizableNameDescIFace lndi, final Element parent)
+
+    /*
+    protected void dumpAsNew(Vector<LocalizableContainerIFace> contrs)
     {
-        List<?> list = parent.selectNodes("desc");
-        if (list != null)
-        {
-            for (Object dobj : list)
-            {
-                Element de = (Element)dobj;
-                
-                String country = XMLHelper.getAttr(de, "country", "");
-                Desc desc = new Desc(de.getTextTrim(),
-                                        country,
-                                        XMLHelper.getAttr(de, "lang", ""),
-                                        XMLHelper.getAttr(de, "variant", ""));
-                lndi.getDescs().add(desc);
-            }
-        }
+        Vector<LocalizableContainerIFace> containers = new Vector<LocalizableContainerIFace>();
         
-        list = parent.selectNodes("name");
-        if (list != null)
+        for (LocalizableContainerIFace ctr : contrs)
         {
-            for (Object nobj : list)
+            LocalizableContainerIFace container = new LocalizableContainerIFace();
+            container.initialize();
+            container.setName(ctr.getName());
+            container.setType(ctr.getType());
+            containers.add(container);
+            
+            for (Name nm : ctr.getNames())
             {
-                Element nm = (Element)nobj;
+                SpLocaleItemStr cDesc = new SpLocaleItemStr();
+                cDesc.setText(nm.getText());
+                cDesc.setCountry(nm.getCountry());
+                cDesc.setLanguage(nm.getLang());
+                cDesc.setVariant(nm.getVariant());
+                container.getNames().add(cDesc);
+            }
+            for (Desc nm : ctr.getDescs())
+            {
+                SpLocaleItemStr cDesc = new SpLocaleItemStr();
+                cDesc.setText(nm.getText());
+                cDesc.setCountry(nm.getCountry());
+                cDesc.setLanguage(nm.getLang());
+                cDesc.setVariant(nm.getVariant());
+                container.getDescs().add(cDesc);
+            }
+
+            for (LocalizableItemIFace lndi:  ctr.getItems())
+            {
+                LocalizableItemIFace item = new LocalizableItemIFace();
+                item.initialize();
+                item.setName(lndi.getName());
+                item.setType(lndi.getType());
+                container.getItems().add(item);
                 
-                String country = XMLHelper.getAttr(nm, "country", "");
-                Name nameDesc = new Name(nm.getTextTrim(),
-                        country,
-                        XMLHelper.getAttr(nm, "lang", ""),
-                        XMLHelper.getAttr(nm, "variant", ""));
-                lndi.getNames().add(nameDesc);
+                for (Name nm : lndi.getNames())
+                {
+                    SpLocaleItemStr cDesc = new SpLocaleItemStr();
+                    cDesc.setText(nm.getText());
+                    cDesc.setCountry(nm.getCountry());
+                    cDesc.setLanguage(nm.getLang());
+                    cDesc.setVariant(nm.getVariant());
+                    item.getNames().add(cDesc);
+                }
+                for (Desc nm : lndi.getDescs())
+                {
+                    SpLocaleItemStr cDesc = new SpLocaleItemStr();
+                    cDesc.setText(nm.getText());
+                    cDesc.setCountry(nm.getCountry());
+                    cDesc.setLanguage(nm.getLang());
+                    cDesc.setVariant(nm.getVariant());
+                    item.getDescs().add(cDesc);
+                }
             }
         }
-    }
-    
 
-
-    /**
-     * @param file
-     * @return
-     */
-    @SuppressWarnings({ "unchecked", "unchecked" })
-    public Vector<LocalizerContainerIFace> readTables(final File file)
-    {
-        Vector<LocalizerContainerIFace> list = null;
+        XStream xstream = new XStream();
+        
+        xstream.alias("container", LocalizableContainerIFace.class);
+        xstream.alias("item",      LocalizableItemIFace.class);
+        xstream.alias("str",       SpLocaleItemStr.class);
+        
+        xstream.useAttributeFor(SpLocaleBase.class, "name");
+        xstream.useAttributeFor(SpLocaleBase.class, "type");
+        
+        xstream.useAttributeFor(SpLocaleItemStr.class, "country");
+        xstream.useAttributeFor(SpLocaleItemStr.class, "language");
+        xstream.useAttributeFor(SpLocaleItemStr.class, "variant");
+        
+        xstream.omitField(LocalizableContainerIFace.class,  "spLocaleContainerId");
+        xstream.omitField(LocalizableItemIFace.class,  "spLocaleContainerItemId");
+        xstream.omitField(SpLocaleItemStr.class,  "spLocaleItemStrId");
         
         try
         {
-            list = new Vector<LocalizerContainerIFace>();
-            Element root = XMLHelper.readFileToDOM4J(file);
-            for (Object obj : root.selectNodes("/database/table"))
-            {
-                Element tbl = (Element)obj;
-                Table table = new Table(XMLHelper.getAttr(tbl, "name", null));
-                
-                DBTableIdMgr.TableInfo ti = DBTableIdMgr.getInstance().getInfoByTableName(table.getName());
-                
-                if (ti != null)
-                {
-                    list.add(table);
-                    tableHash.put(table.getName(), table);
-                    
-                    loadNamesDesc(table, tbl);
-                    
-                    //setNameDescStrForCurrLocale(table, UIRegistry.getResourceString(ti.getClassObj().getSimpleName()));
-                    
-                    for (Object fobj : tbl.selectNodes("field"))
-                    {
-                        Element fld = (Element)fobj;
-                        
-                        String name = XMLHelper.getAttr(fld, "name", null);
-                        String type = XMLHelper.getAttr(fld, "type", null); 
-                        
-                        Field field = new Field(name, type);
-                        table.getFields().add(field);
-                        
-                        //String nm = field.getName();
-                        //nm = nm.substring(0,1).toUpperCase() + nm.substring(1);
-                        //setNameDescStrForCurrLocale(field, UIHelper.makeNamePretty(nm));
-                        
-                        DBTableIdMgr.FieldInfo fldInfo = null;
-                        for (DBTableIdMgr.FieldInfo fi : ti.getFields())
-                        {
-                            if (fi.getName().equals(field.getName()))
-                            {
-                                field.setName(fi.getName()); 
-                                field.setType(fi.getType()); 
-                                fldInfo = fi;
-                                break;
-                            }
-                        }
-                        if (fldInfo == null)
-                        {
-                            log.error("Can't find field by name ["+field.getName()+"]");
-                        }
-                        
-                        loadNamesDesc(field, fld);
-                    }
-                    
-                    // Do the Same for relationships
-                    for (Object robj : tbl.selectNodes("relationship"))
-                    {
-                        Element rel = (Element)robj;
-                        
-                        String name = XMLHelper.getAttr(rel, "name", null);
-                        String type = XMLHelper.getAttr(rel, "type", null); 
-                        
-                        DBTableIdMgr.TableRelationship relInfo = null;
-                        for (DBTableIdMgr.TableRelationship ri : ti.getRelationships())
-                        {
-                            if (ri.getName().equals(name))
-                            {
-                                Relationship reltn = new Relationship(name, type);
-                                table.getRelationships().add(reltn);
-                                relInfo = ri;
-                                
-                                loadNamesDesc(reltn, rel);
-                                break;
-                            }
-                        }
-                        if (relInfo == null)
-                        {
-                            log.error("Dropping Field ["+name+"]");
-                            changesMadeDuringStartup = true;
-                            
-                        }
-                    }
-                    
-                    for (DBTableIdMgr.TableRelationship ri : ti.getRelationships())
-                    {
-                        if (ri.getName().equals(ri.getName()))
-                        {
-                            Relationship reltn = new Relationship(ri.getName(), ri.getType().toString());
-                            table.getRelationships().add(reltn);
-                            String nm = ri.getName();
-                            nm = nm.substring(0,1).toUpperCase() + nm.substring(1);
-                            Name nameObj = new Name(UIHelper.makeNamePretty(nm), LocalizerBasePanel.getCurrLocale());
-                            reltn.getNames().add(nameObj);
-                            changesMadeDuringStartup = true;
-                            
-                        }
-                    }
-
-                } else
-                {
-                 // Discarding old table.
-                    log.warn("Discarding Old Table ["+table.getName()+"]");
-                }
-            }
-            
-            
-            // Add New Tables
-            for (DBTableIdMgr.TableInfo ti : DBTableIdMgr.getInstance().getList())
-            {
-                if (tableHash.get(ti.getTableName()) == null)
-                {
-                    Table table = new Table(ti.getTableName());
-                    list.add(table);
-                    changesMadeDuringStartup = true;
-                    
-                    log.warn("Adding New Table ["+table.getName()+"]");
-                    for (DBTableIdMgr.FieldInfo fi : ti.getFields())
-                    {
-                        Field field = new Field(fi.getName(), fi.getType());
-                        table.getFields().add(field);
-                        field.setName(fi.getName()); 
-                        field.setType(fi.getType()); 
-                        
-                        Name nameObj = new Name(UIHelper.makeNamePretty(fi.getColumn()), LocalizerBasePanel.getCurrLocale());
-                        field.getNames().add(nameObj);
-                        
-                    }
-                    for (DBTableIdMgr.TableRelationship ri : ti.getRelationships())
-                    {
-                        Relationship reltn = new Relationship(ri.getName(), ri.getType().toString());
-                        table.getRelationships().add(reltn);
-                        String nm = ri.getName();
-                        
-                        nm = nm.substring(0,1).toUpperCase() + nm.substring(1);
-                        Name nameObj = new Name(UIHelper.makeNamePretty(nm), LocalizerBasePanel.getCurrLocale());
-                        reltn.getNames().add(nameObj);
-
-                    }
-                }
-            }
-
-            Collections.sort(list);
-            
-        } catch (Exception ex)
+            FileUtils.writeStringToFile(new File("schema_localization.xml"), xstream.toXML(containers));
+        } catch (IOException ex)
         {
             ex.printStackTrace();
         }
-     
-        return list;
+    }
+    */
+    
+    protected void configXStream(final XStream xstream)
+    {
+        xstream.alias("container", SpLocaleContainer.class);
+        xstream.alias("item",      SpLocaleContainerItem.class);
+        xstream.alias("str",       SpLocaleItemStr.class);
+        
+        xstream.useAttributeFor(SpLocaleBase.class, "name");
+        xstream.useAttributeFor(SpLocaleBase.class, "type");
+        
+        xstream.useAttributeFor(SpLocaleItemStr.class, "country");
+        xstream.useAttributeFor(SpLocaleItemStr.class, "language");
+        xstream.useAttributeFor(SpLocaleItemStr.class, "variant");
+        
+        xstream.omitField(SpLocaleContainer.class,  "spLocaleContainerId");
+        xstream.omitField(SpLocaleContainer.class,  "containerItems");
+        xstream.omitField(SpLocaleContainerItem.class,  "spLocaleContainerItemId");
+        xstream.omitField(SpLocaleItemStr.class,  "spLocaleItemStrId");
+        
+        xstream.omitField(DataModelObjBase.class,  "timestampCreated");
+        xstream.omitField(DataModelObjBase.class,  "timestampModified");
+        xstream.omitField(DataModelObjBase.class,  "lastEditedBy");
+        
+        
     }
     
-    /**
-     * @return
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableIOIFace#save()
      */
-    protected boolean write()
+    public boolean save()
     {
         try
         {
@@ -316,48 +270,41 @@ public class SchemaLocalizerXMLHelper
             File file = XMLHelper.getConfigDir(fileName);
             log.info("Writing descriptions to file: " + file.getAbsolutePath());
             
-            //Element root = XMLHelper.readFileToDOM4J(new FileInputStream(XMLHelper.getConfigDirPath(datamodelOutputFileName)));
+            XStream xstream = new XStream();
             
-            FileWriter fw = new FileWriter(file);
-            fw.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-            /*fw.write("<!-- \n");
-            fw.write("    Do Not Edit this file!\n");
-            fw.write("    Run DatamodelGenerator \n");
-            Date date = new Date();
-            fw.write("    Generated: "+date.toString()+"\n");
-            fw.write("-->\n");*/
+            configXStream(xstream);
             
-            //using betwixt for writing out datamodel file.  associated .betwixt files allow you to map and define 
-            //output format of attributes in xml file.
-            BeanWriter      beanWriter    = new BeanWriter(fw);
-            XMLIntrospector introspector = beanWriter.getXMLIntrospector();
-            
-            introspector.getConfiguration().setWrapCollectionsInElement(false);
-            
-            beanWriter.getBindingConfiguration().setMapIDs(false);
-            beanWriter.setWriteEmptyElements(false);
-            beanWriter.enablePrettyPrint();
-            beanWriter.write("database", tables);
-            
-            fw.close();
+            FileUtils.writeStringToFile(file, xstream.toXML(tables));
             
             return true;
             
-        } catch (Exception ex)
+        } catch (IOException ex)
         {
             log.error("error writing writeTree", ex);
         }
         return false;
     }
+    
 
+    /**
+     * @param pw
+     * @param parent
+     * @param lndi
+     * @param lang
+     * @param country
+     */
     protected void printLocales(final PrintWriter pw,
-                                final LocalizableNameDescIFace parent, 
-                                final LocalizableNameDescIFace lndi, 
-                                final String lang, final String country)
+                                final LocalizableItemIFace parent, 
+                                final LocalizableItemIFace lndi, 
+                                final String lang, 
+                                final String country)
     {
-        for (Name nm : lndi.getNames())
+        lndi.fillNames(namesList);
+        lndi.fillNames(descsList);
+        
+        for (LocalizableStrIFace nm : namesList)
         {
-            if (nm.getLang().equals(lang) && nm.getCountry().equals(country))
+            if (nm.getLanguage().equals(lang) && nm.getCountry().equals(country))
             {
                 if (parent != null)
                 {
@@ -369,7 +316,7 @@ public class SchemaLocalizerXMLHelper
                 pw.write("\n");
             }
         }
-        for (Desc d : lndi.getDescs())
+        for (LocalizableStrIFace d : descsList)
         {
             if (parent != null)
             {
@@ -386,15 +333,15 @@ public class SchemaLocalizerXMLHelper
     /**
      * 
      */
-    public void createResourceFiles()
+    public boolean createResourceFiles()
     {
         Hashtable<String, String> localeHash = new Hashtable<String, String>();
-        for (LocalizerContainerIFace table : getTables())
+        for (LocalizableContainerIFace table : tables)
         {
-            SchemaLocalizerPanel.checkForLocales(table, localeHash);
-            for (LocalizableNameDescIFace f : table.getItems())
+            SchemaLocalizerPanel.checkForLocales((LocalizableItemIFace)table, localeHash);
+            for (LocalizableItemIFace f : table.getContainerItems())
             {
-                SchemaLocalizerPanel.checkForLocales(f, localeHash);
+                SchemaLocalizerPanel.checkForLocales((LocalizableItemIFace)f, localeHash);
             }
         }
         
@@ -415,22 +362,91 @@ public class SchemaLocalizerXMLHelper
             try
             {
                 PrintWriter pw = new PrintWriter(resFile);
-                for (LocalizerContainerIFace table : getTables())
+                for (LocalizableContainerIFace table : tables)
                 {
                     printLocales(pw, null, table, lang, country);
-                    for (LocalizableNameDescIFace f : table.getItems())
+                    for (LocalizableItemIFace f : table.getContainerItems())
                     {
                         printLocales(pw, table, f, lang, country);
                     }
                 }
                 pw.close();
                 
+                return true;
+                
             } catch (IOException ex)
             {
                 ex.printStackTrace();
             }
         }
-        
+        return false;
     }
+
+
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableIOIFace#getContainer(edu.ku.brc.specify.tools.fielddesc.LocalizableJListItem)
+     */
+    public LocalizableContainerIFace getContainer(LocalizableJListItem item)
+    {
+        return tableHash.get(item.getName());
+    }
+
+
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableIOIFace#getContainerDisplayItems()
+     */
+    public Vector<LocalizableJListItem> getContainerDisplayItems()
+    {
+        return tableDisplayItems;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableIOIFace#getItem(edu.ku.brc.specify.tools.fielddesc.LocalizableContainerIFace, edu.ku.brc.specify.tools.fielddesc.LocalizableJListItem)
+     */
+    public LocalizableItemIFace getItem(LocalizableContainerIFace container,
+                                        LocalizableJListItem      item)
+    {
+        for (LocalizableItemIFace cItem : container.getContainerItems())
+        {
+            if (cItem.getName().equals(item.getName()))
+            {
+                return cItem;
+            }
+        }
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableIOIFace#getDisplayItems(edu.ku.brc.specify.tools.fielddesc.LocalizableJListItem)
+     */
+    public Vector<LocalizableJListItem> getDisplayItems(LocalizableJListItem container)
+    {
+        Vector<LocalizableJListItem> items = itemJListItemsHash.get(container);
+        if (items == null)
+        {
+            LocalizableContainerIFace cont = tableHash.get(container.getName());
+            if (cont != null)
+            {
+                items = new Vector<LocalizableJListItem>();
+                for (LocalizableItemIFace item : cont.getContainerItems())
+                {
+                    SpLocaleContainerItem cItem = (SpLocaleContainerItem)item;
+                    items.add(new LocalizableJListItem(cItem.getName(), cItem.getId(), null));
+                    //System.out.println(cItem.getName());
+                }
+                itemJListItemsHash.put(container, items);
+                Collections.sort(items);
+                
+            } else
+            {
+                log.error("Couldn't find container ["+container.getName()+"]");
+            }
+        }
+        return items;
+    }
+    
+    
 
 }
