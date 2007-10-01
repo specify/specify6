@@ -1446,6 +1446,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 return null;
             }
 
+            @SuppressWarnings("synthetic-access")
             @Override
             public void finished()
             {
@@ -1455,7 +1456,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 {
                     // the node selection changed after we started the thread
                     // ignore the results
-                    System.err.println("selection changed before updating status bar");
+                    log.info("selection changed before updating status bar");
                     return;
                 }
                 
