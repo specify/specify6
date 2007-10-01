@@ -193,7 +193,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         businessRules = DBTableIdMgr.getInstance().getBusinessRule(treeDef.getNodeClass());
         
         // TODO: implement some UI to let the user set this pref
-        restoreTreeState = AppPreferences.getLocalPrefs().getBoolean("RestoreTreeExpansionState", false);
+        restoreTreeState = AppPreferences.getRemote().getBoolean("RestoreTreeExpansionState", false);
         restoreTreeState = true;
         
         selNodePrefName = "selected_node:" + treeDef.getClass().getSimpleName() + ":" + treeDef.getTreeDefId();
@@ -647,10 +647,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         newNodeSelected(lists[0],null);
         newNodeSelected(lists[1],null);
         
-        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
-        if (localPrefs != null)
+        AppPreferences prefs = AppPreferences.getRemote();
+        if (prefs != null)
         {
-            String selectedNodeId = localPrefs.get(selNodePrefName, "null");
+            String selectedNodeId = prefs.get(selNodePrefName, "null");
             if (!selectedNodeId.equals("null"))
             {
                 Integer nodeId = null;
@@ -662,7 +662,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 {
                     nodeId = null;
                     log.warn("'selected_node' preference contained unparsable value.  Removing value.");
-                    localPrefs.remove(selNodePrefName);
+                    prefs.remove(selNodePrefName);
                 }
                 if (nodeId != null)
                 {
@@ -1842,7 +1842,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         try
         {
             T selectedNode = getSelectedNode(lists[0]);
-            AppPreferences appPrefs = AppPreferences.getLocalPrefs();
+            AppPreferences appPrefs = AppPreferences.getRemote();
             if (appPrefs != null)
             {
                 if (selectedNode != null)
