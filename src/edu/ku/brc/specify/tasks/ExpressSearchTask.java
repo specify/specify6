@@ -164,7 +164,6 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     {
         boolean exists = doesIndexExist();
         
-        //log.debug(lucenePath.getAbsoluteFile() + " has index " + (lucenePath.list().length > 0));
         if (searchBtn != null)
         {
             searchBtn.setEnabled(exists);
@@ -418,12 +417,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     }
 
     /**
-     * Executes a Local query directly against the Lucene index that is locally on disk.
-     * @param lucenePath the Path to the Lucene Directory
-     * @param analyzer the analyzer to use
-     * @param searchTextStr the search string to be searched
-     * @param esrPane the desintation panel of the results
-     * @return true if OK
+     * @param searchName
      */
     public void doBasicSearch(final String searchName)
     {

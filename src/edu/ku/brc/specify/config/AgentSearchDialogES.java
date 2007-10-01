@@ -24,8 +24,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.SimpleAnalyzer;
 
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -74,8 +72,6 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
     protected JScrollPane    scrollPane;
     protected JTable         table;
 
-    protected Analyzer       analyzer       = new SimpleAnalyzer();//WhitespaceAnalyzer();
-    protected File           lucenePath     = null;
     protected JButton        searchBtn;
     protected Color          textBGColor    = null;
     protected Color          badSearchColor = new Color(255,235,235);
@@ -244,7 +240,7 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace#addSearchResults(edu.ku.brc.specify.tasks.ExpressResultsTableInfo, org.apache.lucene.search.Hits)
+     * @see edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace#addSearchResults(edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace)
      */
     public void addSearchResults(final QueryForIdResultsIFace results)
     {

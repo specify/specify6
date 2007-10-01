@@ -22,7 +22,6 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -43,12 +42,6 @@ import javax.swing.JPanel;
 import javax.swing.UIManager;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.Hits;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.WildcardQuery;
-import org.apache.lucene.store.FSDirectory;
 import org.hibernate.Session;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -62,8 +55,8 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.tests.forms.TestDataObj;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.JAutoCompComboBox;
 import edu.ku.brc.ui.db.JAutoCompTextField;
 import edu.ku.brc.ui.forms.validation.ValComboBoxFromQuery;
@@ -488,46 +481,6 @@ public class PickListTestApp
     // Taxon Stuff
     //-----------------------------------------------------------------------
     
-    protected static void buildTaxaSearch()
-    {
-        /*
-        File lucenePath = getIndexDirPath(); // must be initialized here
-        try
-        {
-            Directory   dir    = FSDirectory.getDirectory(lucenePath, true);
-            IndexWriter writer = new IndexWriter(dir, new StandardAnalyzer(), true);
-            writer.mergeFactor   = 1000;
-            writer.maxMergeDocs  = 9999999;
-            writer.minMergeDocs  = 1000;
-            
-            Connection dbConnection = DBConnection.getInstance().createConnection();
-            Statement  dbStatement  = dbConnection.createStatement();
-
-            ResultSet rs = dbStatement.executeQuery("SELECT DISTINCT tx.taxonName FROM taxonname AS tx where tx.taxonName is not null;");
-            rs.first();
-            do
-            {
-                Document doc = new Document();
-                doc.add(Field.Keyword("id", rs.getString(1)));
-                //doc.add(Field.UnIndexed("table", Integer.toString(tableId)));
-                
-                writer.addDocument(doc);
-                
-            } while(rs.next());
-            
-            dbStatement.close();
-            dbConnection.close();
-            
-        } catch (IOException ex)
-        {
-            ex.printStackTrace();
-        } catch (SQLException ex)
-        {
-            ex.printStackTrace();
-        }
-        */
-    }
-    
     protected static void testLookUpDB()
     {
         try
@@ -552,41 +505,6 @@ public class PickListTestApp
             dbConnection.close();
             
         } catch (SQLException ex)
-        {
-            ex.printStackTrace();
-        }
-        
-    }
-    
-    protected static void testLookUpLucene()
-    {
-        File lucenePath = getIndexDirPath(); // must be initialized here
-        try
-        {
-            Vector<String> list     = new Vector<String>();
-            IndexSearcher  searcher = new IndexSearcher(FSDirectory.getDirectory(lucenePath, false));
-            
-            long           start    = System.currentTimeMillis();
-            Query query = new WildcardQuery(new Term("id", "s*"));
-            
-            //Query query = QueryParser.parse("", "id", new SimpleAnalyzer());
-            Hits  hits  = searcher.search(query);
-            
-            for (int i=0;i<hits.length();i++)
-            {
-                list.addElement(hits.doc(i).get("id"));
-            }
-            long end = System.currentTimeMillis();
-            
-            System.out.println(end - start + " Items: "+list.size());
-            
-
-            
-        //} catch (ParseException ex)
-        //{
-        //    ex.printStackTrace();
-        //    
-        } catch (IOException ex)
         {
             ex.printStackTrace();
         }

@@ -427,7 +427,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace#addSearchResults(edu.ku.brc.af.core.ExpressSearchResults, org.apache.lucene.search.Hits)
+     * @see edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace#addSearchResults(edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace)
      */
     public void addSearchResults(final QueryForIdResultsIFace results)
     {
