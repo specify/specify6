@@ -352,21 +352,20 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
             
             if (this.items.size() > buttons.size())
             {
-                int num = this.items.size() - buttons.size() + 1;
+                int num = this.items.size() - buttons.size();
                 for (int i=0;i<num;i++)
                 {
                     buttons.add(createBtn(" "));
                 }
             }
             
-            int i = 0;
-            for (T item : items)
+            for (int i=0;i<items.size();i++)
             {
                 JToggleButton tb = buttons.elementAt(i);
                 tb.setText(items.get(i).toString());
-                listPanel.add(tb);
                 tb.setSelected(false);
-                i++;
+                tb.setEnabled(true);
+                listPanel.add(tb);
             }
         }
         Dimension size = listPanel.getPreferredSize();
