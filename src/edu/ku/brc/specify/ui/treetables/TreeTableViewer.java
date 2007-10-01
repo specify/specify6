@@ -666,12 +666,19 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 }
                 if (nodeId != null)
                 {
-                    T nodeRecord = dataService.getNodeById(treeDef.getNodeClass(), nodeId);
-                    showPathToNode(nodeRecord);
-                    TreeNode node = listModel.getNodeById(nodeRecord.getTreeId());
-                    lists[0].setSelectedValue(node, true);
-                    lists[0].setSelectedValue(node, true);
-                    System.out.println("Previously selected node: " + nodeRecord.getFullName());
+                    try
+                    {
+                        T nodeRecord = dataService.getNodeById(treeDef.getNodeClass(), nodeId);
+                        showPathToNode(nodeRecord);
+                        TreeNode node = listModel.getNodeById(nodeRecord.getTreeId());
+                        lists[0].setSelectedValue(node, true);
+                        lists[0].setSelectedValue(node, true);
+                        log.info("Showing and selecting previously selected node: " + nodeRecord.getFullName());
+                    }
+                    catch (Exception e)
+                    {
+                        log.warn("Failed to show and select previously selected node", e);
+                    }
                 }
             }
         }
