@@ -203,9 +203,12 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
      */
     @SuppressWarnings("unchecked")
     @Override
-    public boolean afterSaveCommit(Object dataObj)
+    public boolean beforeSaveCommit(Object dataObj, DataProviderSessionIFace session) throws Exception
     {
-        super.afterSaveCommit(dataObj);
+        if (super.beforeSaveCommit(dataObj,session) == false)
+        {
+            return false;
+        }
         
         boolean success = true;
         
@@ -223,7 +226,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
             {
                 log.info("Saved tree node was added.  Updating node numbers appropriately.");
                 TreeDataService dataServ = TreeDataServiceFactory.createService();
-                success = dataServ.updateNodeNumbersAfterNodeAddition(node);
+                success = dataServ.updateNodeNumbersAfterNodeAddition(node,session);
             }
         }
         
@@ -235,7 +238,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
      */
     @SuppressWarnings("unchecked")
     @Override
-    public void afterDeleteCommit(Object dataObj)
+    public boolean beforeDeleteCommit(Object dataObj, DataProviderSessionIFace session) throws Exception
     {
         if (dataObj instanceof Treeable)
         {
@@ -246,8 +249,11 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
             log.info("A tree node was deleted.  Updating node numbers appropriately.");
             TreeDataService<T,D,I> dataServ = TreeDataServiceFactory.createService();
             @SuppressWarnings("unused")
-            boolean success = dataServ.updateNodeNumbersAfterNodeDeletion(node);
+            boolean success = dataServ.updateNodeNumbersAfterNodeDeletion(node,session);
+            return success;
         }
+        
+        return true;
     }
     
     /**

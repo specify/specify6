@@ -21,6 +21,7 @@ import org.hibernate.Transaction;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
@@ -255,6 +256,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 		D def = (D)query.uniqueResult();
 
         // force loading of all related def items
+        // (they should load anyway as long as FetchType.EAGER is set on getTreeDefItems())
         def.getTreeDefItems().size();
         
         session.close();
@@ -404,7 +406,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
     }
     
     @SuppressWarnings({ "unchecked", "null" })
-    public synchronized boolean updateNodeNumbersAfterNodeAddition(T newNode)
+    public synchronized boolean updateNodeNumbersAfterNodeAddition(T newNode, DataProviderSessionIFace session) throws Exception
     {
         // update the nodeNumber and highestChildNodeNumber fields for all effected nodes
         boolean doNodeNumberUpdate = true;
@@ -430,23 +432,20 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         }
         // else, node number update needed
         
-        Session session = getNewSession();
-        Transaction tx = session.beginTransaction();
-
-        T mergedParent = (T)session.merge(parent);
+        T mergedParent = session.merge(parent);
         session.refresh(mergedParent);
 
         String className = mergedParent.getClass().getName();
         TreeDefIface<T,D,I> def = mergedParent.getDefinition();
 
         String updateNodeNumbersQueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber+1 WHERE nodeNumber>:parentNN AND definition=:def";
-        Query fixNodeNumQuery = session.createQuery(updateNodeNumbersQueryStr);
+        QueryIFace fixNodeNumQuery = session.createQuery(updateNodeNumbersQueryStr);
         fixNodeNumQuery.setParameter("parentNN", parentNN);
         fixNodeNumQuery.setParameter("def", def);
         fixNodeNumQuery.executeUpdate();
 
         String updateHighChildQueryStr = "UPDATE " + className + " SET highestChildNodeNumber=highestChildNodeNumber+1 WHERE highestChildNodeNumber>=:parentNN AND definition=:def";
-        Query fixHighChildQuery = session.createQuery(updateHighChildQueryStr);
+        QueryIFace fixHighChildQuery = session.createQuery(updateHighChildQueryStr);
         fixHighChildQuery.setParameter("parentNN", parentNN);
         fixHighChildQuery.setParameter("def", def);
         fixHighChildQuery.executeUpdate();
@@ -454,29 +453,24 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         // now set the initial values of the nodeNumber and highestChildNodeNumber fields for the new node
         int newChildNN = parentNN+1;
         String setChildNNQueryStr = "UPDATE " + className + " SET nodeNumber=:newChildNN WHERE nodeNumber IS NULL AND parentID=:parentID";
-        Query setChildNNQuery = session.createQuery(setChildNNQueryStr);
+        QueryIFace setChildNNQuery = session.createQuery(setChildNNQueryStr);
         setChildNNQuery.setParameter("newChildNN", newChildNN);
         setChildNNQuery.setParameter("parentID", parent.getTreeId());
         setChildNNQuery.executeUpdate();
 
         String setChildHCQueryStr = "UPDATE " + className + " SET highestChildNodeNumber=:newChildNN WHERE highestChildNodeNumber IS NULL AND parentID=:parentID";
-        Query setChildHCQuery = session.createQuery(setChildHCQueryStr);
+        QueryIFace setChildHCQuery = session.createQuery(setChildHCQueryStr);
         setChildHCQuery.setParameter("newChildNN", newChildNN);
         setChildHCQuery.setParameter("parentID", parent.getTreeId());
         setChildHCQuery.executeUpdate();
 
-        boolean success = commitTransaction(session, tx);
-
-        return success;
+        return true;
     }
     
     @SuppressWarnings("null")
-    public boolean updateNodeNumbersAfterNodeDeletion(T deletedNode)
+    public boolean updateNodeNumbersAfterNodeDeletion(T deletedNode, DataProviderSessionIFace session) throws Exception
     {
         boolean success = true;
-        
-        Session session = getNewSession();
-        Transaction tx = session.beginTransaction();
         
         // save the original nodeNumber and highestChildNodeNumber values
         Integer delNodeNN = deletedNode.getNodeNumber();
@@ -497,20 +491,18 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
             TreeDefIface<T,D,I> def = deletedNode.getDefinition();
 
             String updateNodeNumbersQueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber-:nodesDeleted WHERE nodeNumber>=:delNodeNN AND definition=:def";
-            Query fixNodeNumQuery = session.createQuery(updateNodeNumbersQueryStr);
+            QueryIFace fixNodeNumQuery = session.createQuery(updateNodeNumbersQueryStr);
             fixNodeNumQuery.setParameter("nodesDeleted", nodesDeleted);
             fixNodeNumQuery.setParameter("delNodeNN", delNodeNN);
             fixNodeNumQuery.setParameter("def", def);
             fixNodeNumQuery.executeUpdate();
 
             String updateHighChildQueryStr = "UPDATE " + className + " SET highestChildNodeNumber=highestChildNodeNumber-:nodesDeleted WHERE highestChildNodeNumber>=:delNodeHC AND definition=:def";
-            Query fixHighChildQuery = session.createQuery(updateHighChildQueryStr);
+            QueryIFace fixHighChildQuery = session.createQuery(updateHighChildQueryStr);
             fixHighChildQuery.setParameter("nodesDeleted", nodesDeleted);
             fixHighChildQuery.setParameter("delNodeHC", delNodeHC);
             fixHighChildQuery.setParameter("def", def);
             fixHighChildQuery.executeUpdate();
-            
-            success = commitTransaction(session, tx);
         }
 
         return success;

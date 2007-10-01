@@ -9,6 +9,7 @@ package edu.ku.brc.specify.treeutils;
 import java.util.List;
 import java.util.Set;
 
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
@@ -98,9 +99,9 @@ public interface TreeDataService <T extends Treeable<T,D,I>,
     
     public List<String> nodeNamesAtLevel(int rankID, D treeDef);
     
-    public boolean updateNodeNumbersAfterNodeAddition(T newNode);
+    public boolean updateNodeNumbersAfterNodeAddition(T newNode, DataProviderSessionIFace session) throws Exception;
     
-    public boolean updateNodeNumbersAfterNodeDeletion(T deletedNode);
+    public boolean updateNodeNumbersAfterNodeDeletion(T deletedNode, DataProviderSessionIFace session) throws Exception;
     
     /**
      * Moves the given node from its current parent to the given new parent node.  This can
