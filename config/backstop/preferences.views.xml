@@ -171,15 +171,6 @@
 			<columnDef>p,2dlu,p,5dlu,p,2dlu,p</columnDef>
 			<rowDef auto="true" cell="p" sep="2dlu"/>
 			
-			<rows>
-				<row>
-					<cell type="separator" label="Misc" colspan="3"/>
-				</row>
-				<row>
-					<cell type="label" labelfor="luceneLocation" label="Lucene Location"/>
-					<cell type="field" uitype="browse" id="luceneLocation" name="ui.misc.luceneLocation" cols="30" initialize="dirsonly=true" isrequired="false" changesonly="true"/>
-				</row>
-			</rows>
 		</viewdef>
 		
 		<viewdef
