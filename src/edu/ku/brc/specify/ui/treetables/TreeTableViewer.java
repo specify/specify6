@@ -140,6 +140,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     protected String busyReason;
     
     protected List<AbstractButton> allButtons;
+    
     protected JButton subtree0;
     protected JButton wholeTree0;
     protected JButton toParent0;
@@ -148,6 +149,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     protected JButton newChild0;
     protected JButton editNode0;
     protected JButton deleteNode0;
+    
     protected JButton subtree1;
     protected JButton wholeTree1;
     protected JButton toParent1;
@@ -164,6 +166,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     protected Set<Integer> idsToReexpand = new HashSet<Integer>();
     
     protected boolean restoreTreeState = false;
+    
+    protected String selNodePrefName;
     
 	/**
 	 * Build a TreeTableViewer to view/edit the data found.
@@ -191,6 +195,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         // TODO: implement some UI to let the user set this pref
         restoreTreeState = AppPreferences.getLocalPrefs().getBoolean("RestoreTreeExpansionState", false);
         restoreTreeState = true;
+        
+        selNodePrefName = "selected_node:" + treeDef.getClass().getSimpleName() + ":" + treeDef.getTreeDefId();
         
 		setBusy(false,null);
 	}
@@ -641,6 +647,35 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         newNodeSelected(lists[0],null);
         newNodeSelected(lists[1],null);
         
+        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        if (localPrefs != null)
+        {
+            String selectedNodeId = localPrefs.get(selNodePrefName, "null");
+            if (!selectedNodeId.equals("null"))
+            {
+                Integer nodeId = null;
+                try
+                {
+                    nodeId = Integer.parseInt(selectedNodeId);
+                }
+                catch (NumberFormatException nfe)
+                {
+                    nodeId = null;
+                    log.warn("'selected_node' preference contained unparsable value.  Removing value.");
+                    localPrefs.remove(selNodePrefName);
+                }
+                if (nodeId != null)
+                {
+                    T nodeRecord = dataService.getNodeById(treeDef.getNodeClass(), nodeId);
+                    showPathToNode(nodeRecord);
+                    TreeNode node = listModel.getNodeById(nodeRecord.getTreeId());
+                    lists[0].setSelectedValue(node, true);
+                    lists[0].setSelectedValue(node, true);
+                    System.out.println("Previously selected node: " + nodeRecord.getFullName());
+                }
+            }
+        }
+        
         UIRegistry.forceTopFrameRepaint();
 	}
 	
@@ -661,24 +696,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		{
 			ab.setEnabled(!busy);
 		}
-
-        // Why is this here?  This is a weird place for this
-//        // now fix the add/delete buttons to be disabled if addition/deletion isn't possible
-//		if (lists != null)
-//        {
-//            if (lists[0] != null)
-//            {
-//                TreeNode node = (TreeNode)lists[0].getSelectedValue();
-//                newChild0.setEnabled(listModel.canAddChildToNode(node));
-//                deleteNode0.setEnabled(listModel.canDeleteNode(node));
-//            }
-//            if (lists[1] != null)
-//            {
-//                TreeNode node = (TreeNode)lists[1].getSelectedValue();
-//                newChild1.setEnabled(listModel.canAddChildToNode(node));
-//                deleteNode1.setEnabled(listModel.canDeleteNode(node));
-//            }
-//        }
 
 		this.busy = busy;
 		busyReason = statusText;
@@ -962,6 +979,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         if (parentId != node.getId())
         {
             TreeNode parentNode = listModel.getNodeById(parentId);
+            // I doubled this call b/c Swing wasn't doing this unless I put it in here twice
             list.setSelectedValue(parentNode,true);
             list.setSelectedValue(parentNode,true);
         }
@@ -1001,6 +1019,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         
 		if((where & DualViewSearchable.TOPVIEW) != 0)
 		{
+            // I doubled this call b/c Swing wasn't doing this unless I put it in here twice
 			lists[0].setSelectedValue(firstMatchNode,true);
             lists[0].setSelectedValue(firstMatchNode,true);
 		}
@@ -1010,6 +1029,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             {
                 toggleViewMode();
             }
+            // I doubled this call b/c Swing wasn't doing this unless I put it in here twice
             lists[1].setSelectedValue(firstMatchNode,true);
             lists[1].setSelectedValue(firstMatchNode,true);
 		}
@@ -1057,6 +1077,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             
 			if((where & DualViewSearchable.TOPVIEW) != 0)
 			{
+                // I doubled this call b/c Swing wasn't doing this unless I put it in here twice
                 lists[0].setSelectedValue(nextMatchNode,true);
                 lists[0].setSelectedValue(nextMatchNode,true);
 			}
@@ -1066,6 +1087,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 {
                     toggleViewMode();
                 }
+                // I doubled this call b/c Swing wasn't doing this unless I put it in here twice
                 lists[1].setSelectedValue(nextMatchNode,true);
                 lists[1].setSelectedValue(nextMatchNode,true);
 			}
@@ -1111,6 +1133,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         
 		if((where & DualViewSearchable.TOPVIEW) != 0)
 		{
+            // I doubled this call b/c Swing wasn't doing this unless I put it in here twice
             lists[0].setSelectedValue(nextMatchNode,true);
             lists[0].setSelectedValue(nextMatchNode,true);
 		}
@@ -1120,6 +1143,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             {
                 toggleViewMode();
             }
+            // I doubled this call b/c Swing wasn't doing this unless I put it in here twice
             lists[1].setSelectedValue(nextMatchNode,true);
             lists[1].setSelectedValue(nextMatchNode,true);
 		}
@@ -1807,6 +1831,27 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		{
 			return false;
 		}
+        
+        try
+        {
+            T selectedNode = getSelectedNode(lists[0]);
+            AppPreferences appPrefs = AppPreferences.getLocalPrefs();
+            if (appPrefs != null)
+            {
+                if (selectedNode != null)
+                {
+                    appPrefs.put(selNodePrefName, selectedNode.getTreeId().toString());
+                }
+                else
+                {
+                    appPrefs.remove(selNodePrefName);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            log.error("Unknown error when trying to store the selected node id.", e);
+        }
 		
 		return true;
 	}
