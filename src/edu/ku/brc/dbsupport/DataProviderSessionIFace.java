@@ -80,6 +80,11 @@ public interface DataProviderSessionIFace
     public boolean delete(Object dataObj) throws Exception; 
     
     public void deleteOnSaveOrUpdate(Object dataObj);
+
+    //---------------------------
+    // Query Methods
+    //---------------------------
+    public QueryIFace createQuery(String hql);
     
     //---------------------------
     // Transaction Methods
@@ -97,4 +102,11 @@ public interface DataProviderSessionIFace
     
     public void close();
     
+    public static interface QueryIFace
+    {
+        public void setParameter(String name, Object value);
+        public int executeUpdate();
+        public List<?> list();
+        public Object uniqueResult();
+    }
 }

@@ -476,6 +476,11 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
         return false;
     }
     
+    public QueryIFace createQuery(String hql)
+    {
+        return new HibernateQuery(hql);
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#beginTransaction()
      */
@@ -588,5 +593,35 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
             }
         }
         deleteList.clear();
+    }
+    
+    public class HibernateQuery implements QueryIFace
+    {
+        protected Query queryDelegate;
+        
+        public HibernateQuery(String hql)
+        {
+            queryDelegate = session.createQuery(hql);
+        }
+
+        public int executeUpdate()
+        {
+            return queryDelegate.executeUpdate();
+        }
+
+        public List<?> list()
+        {
+            return queryDelegate.list();
+        }
+
+        public void setParameter(String name, Object value)
+        {
+            queryDelegate.setParameter(name, value);
+        }
+
+        public Object uniqueResult()
+        {
+            return queryDelegate.uniqueResult();
+        }
     }
 }
