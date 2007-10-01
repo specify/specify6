@@ -148,6 +148,10 @@ public class ExpressSearchConfigDlg extends CustomDialog
 
         for (DBTableIdMgr.TableInfo ti : DBTableIdMgr.getInstance().getList())
         {
+            if (!ti.isSearchable())
+            {
+                continue;
+            }
             int notSortedIndex = 1000;
             boolean hasIndexedFields = false;
             for (DBTableIdMgr.FieldInfo fi : ti.getFields())

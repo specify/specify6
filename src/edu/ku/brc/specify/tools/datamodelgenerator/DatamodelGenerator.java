@@ -318,7 +318,7 @@ public class DatamodelGenerator
                          null, 
                          tableMetaData.getId(), 
                          tableMetaData.getDisplay(), 
-                         tableMetaData.isForQuery(), 
+                         tableMetaData.isSearchable(), 
                          tableMetaData.getBusinessRule(),
                          makeTableAbbrv(tableName));
 
@@ -719,12 +719,12 @@ public class DatamodelGenerator
                 org.hibernate.annotations.Table hiberTableAnno = (org.hibernate.annotations.Table)classObj.getAnnotation(org.hibernate.annotations.Table.class);
                 if (hiberTableAnno != null)
                 {
-                    /*System.out.println("Table Indexes: ");
+                    //System.out.println("Table Indexes: ");
                     for (Index index : hiberTableAnno.indexes())
                     {
-                        System.out.println("  "+index.name() + "  "+ index.columnNames());
+                        //System.out.println("  "+index.name() + "  "+ index.columnNames());
                         indexes.add(new TableIndex(index.name(), index.columnNames()));
-                    }*/
+                    }
                 }
                 
                 table = createTable(packageName + "." + className, tableName);
@@ -1328,11 +1328,11 @@ public class DatamodelGenerator
             {
                 for (Iterator<?> i = dbNode.elementIterator("table"); i.hasNext();)
                 {
-                    Element element     = (Element)i.next();
-                    String tablename    = element.attributeValue("name");
-                    String defaultView  = element.attributeValue("view");
-                    String id           = element.attributeValue("id");
-                    boolean isQuery     = XMLHelper.getAttr(element, "query", false);
+                    Element element      = (Element)i.next();
+                    String tablename     = element.attributeValue("name");
+                    String defaultView   = element.attributeValue("view");
+                    String id            = element.attributeValue("id");
+                    boolean isSearchable = XMLHelper.getAttr(element, "searchable", false);
                     
                     String busRule      = "";
                     Element brElement = (Element)element.selectSingleNode("businessrule");
@@ -1342,7 +1342,7 @@ public class DatamodelGenerator
                     }
                     //log.debug("Creating TableMetaData and putting in tblMetaDataHashtable for name: " + tablename + " id: " + id + " defaultview: " + defaultView);
                     
-                    tblMetaDataHash.put(tablename, new TableMetaData(id, defaultView, createDisplay(element), isQuery, busRule));
+                    tblMetaDataHash.put(tablename, new TableMetaData(id, defaultView, createDisplay(element), isSearchable, busRule));
                     
                 }
                 

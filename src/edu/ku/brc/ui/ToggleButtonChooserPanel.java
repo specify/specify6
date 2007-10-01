@@ -131,6 +131,45 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
         setDoubleBuffered(true);
     }
     
+    protected JToggleButton createBtn(final String label)
+    {
+        JToggleButton togBtn;
+        if (uiType == Type.Checkbox)
+        {
+            togBtn = new JCheckBox(label);
+        } else
+        {
+            togBtn = new JRadioButton(label);
+            group.add(togBtn);
+        }
+        
+        if (changeListener != null)
+        {
+            togBtn.addChangeListener(changeListener);
+        }
+        
+        if (actionListener != null)
+        {
+            togBtn.addActionListener(actionListener);
+        }
+        
+        if (okBtn != null)
+        {
+            togBtn.addChangeListener(new ChangeListener() {
+                public void stateChanged(ChangeEvent e)
+                {
+                    if (((JToggleButton)e.getSource()).isSelected())
+                    {
+                        okBtn.setEnabled(true);
+                    }
+                }
+            });
+        }
+        
+        togBtn.setOpaque(false);
+        return togBtn;
+    }
+    
     /**
      * Creates the UI. 
      */
@@ -188,40 +227,8 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
         {
             T      obj   = isStaticSize ? null : items.get(i); 
             String label = isStaticSize ? "XXXXXXXXXXXXXXXXXXXXXXXXXX" : obj.toString();
-            JToggleButton togBtn;
-            if (uiType == Type.Checkbox)
-            {
-                togBtn = new JCheckBox(label);
-            } else
-            {
-                togBtn = new JRadioButton(label);
-                group.add(togBtn);
-            }
             
-            if (changeListener != null)
-            {
-                togBtn.addChangeListener(changeListener);
-            }
-            
-            if (actionListener != null)
-            {
-                togBtn.addActionListener(actionListener);
-            }
-            
-            if (okBtn != null)
-            {
-                togBtn.addChangeListener(new ChangeListener() {
-                    public void stateChanged(ChangeEvent e)
-                    {
-                        if (((JToggleButton)e.getSource()).isSelected())
-                        {
-                            okBtn.setEnabled(true);
-                        }
-                    }
-                });
-            }
-            
-            togBtn.setOpaque(false);
+            JToggleButton togBtn = createBtn(label);
             
             buttons.add(togBtn);
             listPanel.add(togBtn);
@@ -343,20 +350,28 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
         {
             this.items.addAll(items);
             
-            int i = 0;
-            for (JToggleButton tb : buttons)
+            if (this.items.size() > buttons.size())
             {
-                if (i < items.size())
+                int num = this.items.size() - buttons.size() + 1;
+                for (int i=0;i<num;i++)
                 {
-                    tb.setText(items.get(i).toString());
-                    listPanel.add(tb);
+                    buttons.add(createBtn(" "));
                 }
+            }
+            
+            int i = 0;
+            for (T item : items)
+            {
+                JToggleButton tb = buttons.elementAt(i);
+                tb.setText(items.get(i).toString());
+                listPanel.add(tb);
                 tb.setSelected(false);
                 i++;
             }
         }
         Dimension size = listPanel.getPreferredSize();
         listPanel.setSize(size);
+        
         //listPanel.validate();
         //listPanel.invalidate();
         //listPanel.repaint();

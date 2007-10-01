@@ -123,7 +123,7 @@ public class DBTableIdMgr
                     
 					String  tablename      = tableNode.attributeValue("table");
 					int     tableId        = Integer.parseInt(tableNode.attributeValue("tableid"));
-                    boolean isQuery        = XMLHelper.getAttr(tableNode, "query", false);
+                    boolean isSearchable   = XMLHelper.getAttr(tableNode, "searchable", false);
 
 					String primaryKeyField = null;
                     
@@ -149,7 +149,7 @@ public class DBTableIdMgr
 					//log.debug("Populating hashtable ID["+tableId+"]for class: " + classname+" "+ inputFile.getName());
                     
                     TableInfo tblInfo = new TableInfo(tableId, classname, tablename, primaryKeyField);
-                    tblInfo.setForQuery(isQuery);
+                    tblInfo.setIsSearchable(isSearchable);
                     tblInfo.setBusinessRule(XMLHelper.getAttr(tableNode, "businessrule", null));
                     
                     if (hash.get(tableId) != null)
@@ -576,7 +576,7 @@ public class DBTableIdMgr
 		protected String   tableName;
 		protected String   primaryKeyName;
 		protected Class<?> classObj;
-        protected boolean  isForQuery       = false;
+        protected boolean  isSearchable       = false;
         protected String   businessRule;
         
         // ID Fields
@@ -762,14 +762,14 @@ public class DBTableIdMgr
             this.idType = idType;
         }
 
-        public boolean isForQuery()
+        public boolean isSearchable()
         {
-            return isForQuery;
+            return isSearchable;
         }
 
-        public void setForQuery(boolean isForQuery)
+        public void setIsSearchable(boolean isSearchable)
         {
-            this.isForQuery = isForQuery;
+            this.isSearchable = isSearchable;
         }
 
         public String getBusinessRule()

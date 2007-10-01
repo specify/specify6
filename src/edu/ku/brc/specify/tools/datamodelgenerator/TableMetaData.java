@@ -13,7 +13,7 @@ public class TableMetaData
     private String className;
     private Display display;
     private boolean isForWorkBench;
-    private boolean isForQuery;
+    private boolean isSearchable;
     private String businessRule;
 
 	/**
@@ -24,13 +24,13 @@ public class TableMetaData
 	public TableMetaData(final String  id, 
                          final String  className, 
                          final Display display, 
-                         final boolean isForQuery,
+                         final boolean isSearchable,
                          final String businessRule)
 	{
 		this.id             = id;
         this.className      = className;
         this.display        = display;
-        this.isForQuery     = isForQuery;
+        this.isSearchable   = isSearchable;
         this.businessRule   = businessRule;
 	}
 
@@ -59,9 +59,12 @@ public class TableMetaData
         return isForWorkBench;
     }
 
-    public boolean isForQuery()
+    /**
+     * @return the isSearchable
+     */
+    public boolean isSearchable()
     {
-        return isForQuery;
+        return isSearchable;
     }
 
     public String getBusinessRule()

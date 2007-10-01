@@ -41,6 +41,8 @@ import edu.ku.brc.af.core.AppContextMgr;
  */
 public class SearchConfigService
 {
+    //private static final Logger log = Logger.getLogger(SearchConfigService.class);
+    
     protected static SearchConfigService instance = new SearchConfigService();
     
     protected SearchConfig                 searchConfig    = null;
@@ -50,7 +52,7 @@ public class SearchConfigService
     /**
      * Constructor/
      */
-    public SearchConfigService()
+    protected SearchConfigService()
     {
 
     }
@@ -119,6 +121,8 @@ public class SearchConfigService
         SearchConfig.configXStream(xstream);
         
         String xmlStr = AppContextMgr.getInstance().getResourceAsXML("ExpressSearchConfig");
+        
+        //log.debug(xmlStr);
         
         searchConfig = (SearchConfig)xstream.fromXML(xmlStr);
         
