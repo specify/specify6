@@ -1031,4 +1031,69 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         return taxonAttachments;
     }
 
+    @Transient
+    public Taxon getGenus()
+    {
+        return getLevel(TaxonTreeDef.GENUS);
+    }
+
+    @Transient
+    public Taxon getSpecies()
+    {
+        return getLevel(TaxonTreeDef.SPECIES);
+    }
+
+    @Transient
+    public Taxon getSubspecies()
+    {
+        return getLevel(TaxonTreeDef.SUBSPECIES);
+    }
+    
+    @Transient
+    public String getGenusName()
+    {
+        return getLevelName(TaxonTreeDef.GENUS);
+    }
+
+    @Transient
+    public String getSpeciesName()
+    {
+        return getLevelName(TaxonTreeDef.SPECIES);
+    }
+
+    @Transient
+    public String getSubspeciesName()
+    {
+        return getLevelName(TaxonTreeDef.SUBSPECIES);
+    }
+    
+    public Taxon getLevel(int levelRank)
+    {
+        Taxon t = this;
+        
+        while (t != null)
+        {
+            int rank = (t.getRankId() != null) ? t.getRankId().intValue() : Integer.MAX_VALUE;
+            if (rank == levelRank)
+            {
+                return t;
+            }
+            if (rank < levelRank)
+            {
+                return null;
+            }
+            t = t.getParent();
+        }
+        return null;
+    }
+    
+    public String getLevelName(int levelRank)
+    {
+        Taxon t = getLevel(levelRank);
+        if (t != null)
+        {
+            return t.getName();
+        }
+        return null;
+    }
 }
