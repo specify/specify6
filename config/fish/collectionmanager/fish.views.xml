@@ -674,6 +674,7 @@
                 <row>
                     <cell type="label" labelfor="7" label="E-mail"/>
                     <cell type="field" id="7" name="email" uitype="text" cols="32" valtype="Changed"/>
+                    <cell type="field" id="mailto" name="this" uitype="plugin" initialize="class=edu.ku.brc.specify.ui.WebLinkLauncherButton;url=mailto:$email$;label=Send Mail"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="8" label="Abbreviation"/>
