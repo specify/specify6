@@ -4,7 +4,7 @@
  * [INSERT KU-APPROVED LICENSE TEXT HERE]
  *
  */
-package edu.ku.brc.specify.tools.fielddesc;
+package edu.ku.brc.specify.tools.schemalocale;
 
 import java.io.File;
 import java.io.IOException;

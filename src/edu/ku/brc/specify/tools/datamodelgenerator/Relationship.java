@@ -1,6 +1,6 @@
 package edu.ku.brc.specify.tools.datamodelgenerator;
 
-import edu.ku.brc.specify.tools.fielddesc.LocalizedStrIFace;
+import edu.ku.brc.specify.tools.schemalocale.LocalizedStrIFace;
 
 /**
  * Create relationship data.

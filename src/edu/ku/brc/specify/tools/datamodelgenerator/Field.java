@@ -2,7 +2,7 @@ package edu.ku.brc.specify.tools.datamodelgenerator;
 
 import org.apache.commons.lang.StringUtils;
 
-import edu.ku.brc.specify.tools.fielddesc.LocalizedStrIFace;
+import edu.ku.brc.specify.tools.schemalocale.LocalizedStrIFace;
 
 
 /**

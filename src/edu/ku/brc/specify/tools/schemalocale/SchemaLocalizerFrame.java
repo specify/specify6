@@ -4,7 +4,7 @@
  * [INSERT KU-APPROVED LICENSE TEXT HERE]
  *
  */
-package edu.ku.brc.specify.tools.fielddesc;
+package edu.ku.brc.specify.tools.schemalocale;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -46,10 +46,6 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
     
     protected LocalizableIOIFace   localizableIO;
 
-    protected String               appName             = "";
-    protected String               appVersion          = "";
-    protected String               appBuildVersion     = "";
-    
     /**
      * 
      */

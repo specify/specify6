@@ -7,7 +7,7 @@
 /**
  * 
  */
-package edu.ku.brc.specify.tools.fielddesc;
+package edu.ku.brc.specify.tools.schemalocale;
 
 import java.util.Collection;
 

@@ -7,7 +7,7 @@
 /**
  * 
  */
-package edu.ku.brc.specify.tools.fielddesc;
+package edu.ku.brc.specify.tools.schemalocale;
 
 import java.io.File;
 import java.io.FileReader;
@@ -17,8 +17,6 @@ import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Locale;
 import java.util.Vector;
-
-import javax.swing.SwingUtilities;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -32,7 +30,6 @@ import edu.ku.brc.specify.datamodel.SpLocaleBase;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpLocaleContainerItem;
 import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
-import edu.ku.brc.ui.UIRegistry;
 
 /**
  * THis is a helper class for reading and writing the Schema Description XML to a file.
@@ -82,7 +79,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableIOIFace#load()
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#load()
      */
     @SuppressWarnings("unchecked")
     public boolean load()
@@ -131,7 +128,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableIOIFace#didModelChangeDuringLoad()
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#didModelChangeDuringLoad()
      */
     public boolean didModelChangeDuringLoad()
     {
@@ -261,7 +258,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableIOIFace#save()
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#save()
      */
     public boolean save()
     {
@@ -344,10 +341,10 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
         Hashtable<String, Boolean> localeHash = new Hashtable<String, Boolean>();
         for (LocalizableContainerIFace table : tables)
         {
-            checkForLocales((LocalizableItemIFace)table, localeHash);
+            checkForLocales(table, localeHash);
             for (LocalizableItemIFace f : table.getContainerItems())
             {
-                checkForLocales((LocalizableItemIFace)f, localeHash);
+                checkForLocales(f, localeHash);
             }
         }
         
@@ -391,7 +388,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
 
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableIOIFace#getContainer(edu.ku.brc.specify.tools.fielddesc.LocalizableJListItem)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getContainer(edu.ku.brc.specify.tools.schemalocale.LocalizableJListItem)
      */
     public LocalizableContainerIFace getContainer(LocalizableJListItem item)
     {
@@ -401,7 +398,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
 
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableIOIFace#getContainerDisplayItems()
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getContainerDisplayItems()
      */
     public Vector<LocalizableJListItem> getContainerDisplayItems()
     {
@@ -409,7 +406,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableIOIFace#getItem(edu.ku.brc.specify.tools.fielddesc.LocalizableContainerIFace, edu.ku.brc.specify.tools.fielddesc.LocalizableJListItem)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getItem(edu.ku.brc.specify.tools.schemalocale.LocalizableContainerIFace, edu.ku.brc.specify.tools.schemalocale.LocalizableJListItem)
      */
     public LocalizableItemIFace getItem(LocalizableContainerIFace container,
                                         LocalizableJListItem      item)
@@ -425,7 +422,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableIOIFace#getDisplayItems(edu.ku.brc.specify.tools.fielddesc.LocalizableJListItem)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getDisplayItems(edu.ku.brc.specify.tools.schemalocale.LocalizableJListItem)
      */
     public Vector<LocalizableJListItem> getDisplayItems(LocalizableJListItem container)
     {
@@ -454,7 +451,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableIOIFace#realize(edu.ku.brc.specify.tools.fielddesc.LocalizableItemIFace)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#realize(edu.ku.brc.specify.tools.schemalocale.LocalizableItemIFace)
      */
     public LocalizableItemIFace realize(LocalizableItemIFace item)
     {
@@ -595,7 +592,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableIOIFace#copyLocale(java.util.Locale, java.util.Locale)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#copyLocale(java.util.Locale, java.util.Locale)
      */
     public void copyLocale(Locale srcLocale, Locale dstLocale)
     {

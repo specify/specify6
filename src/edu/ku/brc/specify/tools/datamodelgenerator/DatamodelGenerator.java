@@ -46,11 +46,11 @@ import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
-import edu.ku.brc.specify.tools.fielddesc.LocalizableContainerIFace;
-import edu.ku.brc.specify.tools.fielddesc.LocalizableItemIFace;
-import edu.ku.brc.specify.tools.fielddesc.LocalizableStrIFace;
-import edu.ku.brc.specify.tools.fielddesc.LocalizerBasePanel;
-import edu.ku.brc.specify.tools.fielddesc.SchemaLocalizerXMLHelper;
+import edu.ku.brc.specify.tools.schemalocale.LocalizableContainerIFace;
+import edu.ku.brc.specify.tools.schemalocale.LocalizableItemIFace;
+import edu.ku.brc.specify.tools.schemalocale.LocalizableStrIFace;
+import edu.ku.brc.specify.tools.schemalocale.LocalizerBasePanel;
+import edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerXMLHelper;
 import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.util.DatamodelHelper;
 

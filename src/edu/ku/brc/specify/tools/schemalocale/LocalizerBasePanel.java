@@ -4,7 +4,7 @@
  * [INSERT KU-APPROVED LICENSE TEXT HERE]
  *
  */
-package edu.ku.brc.specify.tools.fielddesc;
+package edu.ku.brc.specify.tools.schemalocale;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

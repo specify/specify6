@@ -4,7 +4,7 @@
  * [INSERT KU-APPROVED LICENSE TEXT HERE]
  *
  */
-package edu.ku.brc.specify.tools.fielddesc;
+package edu.ku.brc.specify.tools.schemalocale;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
@@ -45,7 +45,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.helpers.SwingWorker;
-import edu.ku.brc.specify.tools.fielddesc.LocalizerApp.PackageTracker;
+import edu.ku.brc.specify.tools.schemalocale.LocalizerApp.PackageTracker;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -551,7 +551,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
         {
             for (int i=inx;i<fieldsModel.size();i++)
             {
-                LocalizableItemIFace f = (LocalizableItemIFace)getFieldItem(i);
+                LocalizableItemIFace f = getFieldItem(i);
                 if (f != null)
                 {
                     f = localizableIO.realize(f);
@@ -672,10 +672,8 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
             if (jlistFieldItem != null)
             {
                 return localizableIO.getItem(currContainer, jlistFieldItem);
-            } else
-            {
-                log.error("fieldsList item was null");
             }
+            log.error("fieldsList item was null");
         } else
         {
             log.error("currContainer was null");
@@ -697,10 +695,8 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
                 if (jlistFieldItem != null)
                 {
                     return localizableIO.getItem(currContainer, jlistFieldItem);
-                } else
-                {
-                    log.error("fieldsList item was null");
                 }
+                log.error("fieldsList item was null");
             }
         } else
         {
@@ -749,7 +745,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
 
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.fielddesc.LocalizerBasePanel#localeChanged(java.lang.String)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizerBasePanel#localeChanged(java.lang.String)
      */
     public void localeChanged(final Locale newLocale)
     {
@@ -803,7 +799,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.fielddesc.LocalizerBasePanel#enableSpellCheck()
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizerBasePanel#enableSpellCheck()
      */
     @Override
     protected void enableSpellCheck()
@@ -840,10 +836,8 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run()
                     {
-                        String text = tc.getText();
-                        tc.setText(text.substring(0, maxLength));
+                        tc.setText(tc.getText().substring(0, maxLength));
                     }
-                    
                 });
                 
             }

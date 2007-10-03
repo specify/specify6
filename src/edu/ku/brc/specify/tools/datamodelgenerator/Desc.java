@@ -11,7 +11,7 @@ package edu.ku.brc.specify.tools.datamodelgenerator;
 
 import java.util.Locale;
 
-import edu.ku.brc.specify.tools.fielddesc.LocalizedStrIFace;
+import edu.ku.brc.specify.tools.schemalocale.LocalizedStrIFace;
 
 /**
  * @author rod
@@ -94,7 +94,7 @@ public class Desc implements LocalizedStrIFace, Cloneable
         this.variant = variant;
     }
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.fielddesc.LocalizedStrIFace#isLocale(java.util.Locale)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizedStrIFace#isLocale(java.util.Locale)
      */
     public boolean isLocale(final Locale locale)
     {

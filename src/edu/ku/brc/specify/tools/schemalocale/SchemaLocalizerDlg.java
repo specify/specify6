@@ -15,7 +15,7 @@
 /**
  * 
  */
-package edu.ku.brc.specify.tools.fielddesc;
+package edu.ku.brc.specify.tools.schemalocale;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
@@ -224,7 +224,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableIOIFace#createResourceFiles()
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#createResourceFiles()
      */
     public boolean createResourceFiles()
     {
@@ -233,7 +233,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
 
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableIOIFace#didModelChangeDuringLoad()
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#didModelChangeDuringLoad()
      */
     public boolean didModelChangeDuringLoad()
     {
@@ -241,7 +241,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableIOIFace#getContainerDisplayItems()
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getContainerDisplayItems()
      */
     public Vector<LocalizableJListItem> getContainerDisplayItems()
     {
@@ -290,7 +290,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableIOIFace#getContainer(edu.ku.brc.specify.tools.fielddesc.LocalizableJListItem)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getContainer(edu.ku.brc.specify.tools.schemalocale.LocalizableJListItem)
      */
     public LocalizableContainerIFace getContainer(LocalizableJListItem item)
     {
@@ -304,7 +304,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableIOIFace#getDisplayItems(edu.ku.brc.specify.tools.fielddesc.LocalizableJListItem)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getDisplayItems(edu.ku.brc.specify.tools.schemalocale.LocalizableJListItem)
      */
     public Vector<LocalizableJListItem> getDisplayItems(LocalizableJListItem containerArg)
     {
@@ -337,7 +337,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableIOIFace#getItem(edu.ku.brc.specify.tools.fielddesc.LocalizableContainerIFace, edu.ku.brc.specify.tools.fielddesc.LocalizableJListItem)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getItem(edu.ku.brc.specify.tools.schemalocale.LocalizableContainerIFace, edu.ku.brc.specify.tools.schemalocale.LocalizableJListItem)
      */
     public LocalizableItemIFace getItem(LocalizableContainerIFace containerArg, LocalizableJListItem item)
     {
@@ -356,13 +356,13 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
             
         } else
         {
-            log.error("Couldn't merge container ["+container.getName()+"]");
+            log.error("Couldn't merge container ["+containerArg.getName()+"]");
         }
         return null;
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableIOIFace#load()
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#load()
      */
     public boolean load()
     {
@@ -422,7 +422,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableIOIFace#save()
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#save()
      */
     public boolean save()
     {
@@ -465,7 +465,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableIOIFace#realize(edu.ku.brc.specify.tools.fielddesc.LocalizableItemIFace)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#realize(edu.ku.brc.specify.tools.schemalocale.LocalizableItemIFace)
      */
     public LocalizableItemIFace realize(final LocalizableItemIFace liif)
     {
@@ -473,7 +473,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableIOIFace#isLocaleInUse(java.util.Locale)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#isLocaleInUse(java.util.Locale)
      */
     public boolean isLocaleInUse(final Locale locale)
     {
@@ -497,7 +497,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableIOIFace#getLocalesInUse()
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getLocalesInUse()
      */
     public Vector<Locale> getLocalesInUse()
     {
@@ -659,7 +659,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableIOIFace#copyLocale(java.util.Locale, java.util.Locale)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#copyLocale(java.util.Locale, java.util.Locale)
      */
     public void copyLocale(Locale srcLocale, Locale dstLocale)
     {

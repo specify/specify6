@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
-import edu.ku.brc.specify.tools.fielddesc.LocalizedStrIFace;
+import edu.ku.brc.specify.tools.schemalocale.LocalizedStrIFace;
 
 /**
  * Create table data.

@@ -7,7 +7,7 @@
 /**
  * 
  */
-package edu.ku.brc.specify.tools.fielddesc;
+package edu.ku.brc.specify.tools.schemalocale;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 

@@ -7,7 +7,7 @@
 /**
  * 
  */
-package edu.ku.brc.specify.tools.fielddesc;
+package edu.ku.brc.specify.tools.schemalocale;
 
 import org.apache.commons.lang.StringUtils;
 

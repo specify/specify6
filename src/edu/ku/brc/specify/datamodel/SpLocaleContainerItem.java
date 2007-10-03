@@ -37,8 +37,8 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
-import edu.ku.brc.specify.tools.fielddesc.LocalizableItemIFace;
-import edu.ku.brc.specify.tools.fielddesc.LocalizableStrIFace;
+import edu.ku.brc.specify.tools.schemalocale.LocalizableItemIFace;
+import edu.ku.brc.specify.tools.schemalocale.LocalizableStrIFace;
 
 /**
  * @author rods
@@ -213,7 +213,7 @@ public class SpLocaleContainerItem extends SpLocaleBase implements LocalizableIt
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableItemIFace#fillDescs(java.util.List)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableItemIFace#fillDescs(java.util.List)
      */
     public void fillDescs(List<LocalizableStrIFace> descsArg)
     {
@@ -222,7 +222,7 @@ public class SpLocaleContainerItem extends SpLocaleBase implements LocalizableIt
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableItemIFace#fillNames(java.util.List)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableItemIFace#fillNames(java.util.List)
      */
     public void fillNames(List<LocalizableStrIFace> namesArg)
     {
@@ -231,7 +231,7 @@ public class SpLocaleContainerItem extends SpLocaleBase implements LocalizableIt
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableItemIFace#addDesc(edu.ku.brc.specify.tools.fielddesc.LocalizableStrIFace)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableItemIFace#addDesc(edu.ku.brc.specify.tools.schemalocale.LocalizableStrIFace)
      */
     public void addDesc(LocalizableStrIFace str)
     {
@@ -245,7 +245,7 @@ public class SpLocaleContainerItem extends SpLocaleBase implements LocalizableIt
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableItemIFace#addName(edu.ku.brc.specify.tools.fielddesc.LocalizableStrIFace)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableItemIFace#addName(edu.ku.brc.specify.tools.schemalocale.LocalizableStrIFace)
      */
     public void addName(LocalizableStrIFace str)
     {
@@ -260,7 +260,7 @@ public class SpLocaleContainerItem extends SpLocaleBase implements LocalizableIt
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableItemIFace#removeDesc(edu.ku.brc.specify.tools.fielddesc.LocalizableStrIFace)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableItemIFace#removeDesc(edu.ku.brc.specify.tools.schemalocale.LocalizableStrIFace)
      */
     public void removeDesc(LocalizableStrIFace str)
     {
@@ -275,7 +275,7 @@ public class SpLocaleContainerItem extends SpLocaleBase implements LocalizableIt
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableItemIFace#removeName(edu.ku.brc.specify.tools.fielddesc.LocalizableStrIFace)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableItemIFace#removeName(edu.ku.brc.specify.tools.schemalocale.LocalizableStrIFace)
      */
     public void removeName(LocalizableStrIFace str)
     {
