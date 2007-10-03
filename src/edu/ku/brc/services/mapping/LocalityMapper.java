@@ -1384,6 +1384,9 @@ public class LocalityMapper implements TimingTarget
 ////        SimpleMapLocation l3 = new SimpleMapLocation(38.879,-94.877,null,null);
 ////        SimpleMapLocation l4 = new SimpleMapLocation(38.871,-94.879,null,null);
 //
+//        // this spot gives the WMS server some problems for some reason
+//        // it returns a totally transparent image
+//        SimpleMapLocation l1 = new SimpleMapLocation(39.0247,-95.5,null,null);
 //        LocalityMapper lm = new LocalityMapper();
 //        lm.addLocationAndLabel(l1, null);
 ////        lm.addLocationAndLabel(l2, null);
@@ -1395,8 +1398,8 @@ public class LocalityMapper implements TimingTarget
 //        JFrame f = new JFrame();
 //        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 //        final JLabel mapLabel = new JLabel();
-//        int w = 400;
-//        int h = 250;
+//        int w = 500;
+//        int h = 500;
 //        Dimension dimension = new Dimension(w,h);
 //        mapLabel.setSize(dimension);
 //        mapLabel.setPreferredSize(dimension);
