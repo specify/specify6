@@ -1759,29 +1759,33 @@ public final class UIHelper
     }
 
     /**
-     * Parses a string for ";" colon separated name/value pairs.
+     * Parses a string for ";" colon separated name/value pairs.  In order to allow '=' in the value portion
+     * of the string, the first '=' is assumed to separate the name and value.  All other occurances of '='
+     * are left untouched.
+     * 
      * @param namedValuePairs a string of named/value pairs
      * @return a properties object with the named value pairs or null if the string it null or empty
      */
-    public static Properties parseProperties(final String namedValuePairs)
+    public static Properties parseProperties(final String nameValuePairs)
     {
-        if (isNotEmpty(namedValuePairs))
+        if (isNotEmpty(nameValuePairs))
         {
             Properties props = new Properties();
             
-            for (String pair : StringUtils.split(namedValuePairs, ";"))
+            for (String pair : StringUtils.split(nameValuePairs, ";"))
             {
-                String[] args = StringUtils.split(pair, "=");
-                if (args.length % 2 != 0)
+                int firstEqualsSign = pair.indexOf('=');
+
+                // the the '=' isn't present or is the last character, ERROR
+                if (firstEqualsSign == -1 || firstEqualsSign == pair.length()-1)
                 {
-                    log.error("Initialize string["+namedValuePairs+"] is an a set of named value pairs separated by `;`");
-                } else
+                    log.error("Initialize string["+nameValuePairs+"] must be a set of name/value pairs separated by ';'.");
+                }
+                else
                 {
-                    for (int i=0;i<args.length;i++)
-                    {
-                        props.put(args[i].trim(), args[i+1].trim());
-                        i++;
-                    }
+                    String name = pair.substring(0, firstEqualsSign);
+                    String value = pair.substring(firstEqualsSign+1);
+                    props.put(name, value);
                 }
             }
             return props.size() > 0 ? props : null;
@@ -1790,11 +1794,11 @@ public final class UIHelper
     }
     
     /**
-     * Returns a Properties object as ";" separated string of named/value pairs.
+     * Returns a Properties object as ";" separated string of name/value pairs.
      * @param props the properties object
      * @return the string representing it
      */
-    public String createNamedValuePairs(final Properties props)
+    public String createNameValuePairs(final Properties props)
     {
         StringBuilder str = new StringBuilder();
         for (Object key : props.keySet())
