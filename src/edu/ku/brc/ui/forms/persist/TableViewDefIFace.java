@@ -16,7 +16,7 @@ package edu.ku.brc.ui.forms.persist;
 
 import java.util.List;
 
-public interface TableViewDefIFace
+public interface TableViewDefIFace extends ViewDefIFace
 {
 
     /**
@@ -24,14 +24,17 @@ public interface TableViewDefIFace
      * @param column the column def to add
      * @return the column def that was added
      */
-    public abstract FormColumnIFace addColumn(final FormColumn column);
+    public abstract FormColumnIFace addColumn(final FormColumnIFace column);
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormView#cleanUp()
      */
     public abstract void cleanUp();
 
-    public abstract List<FormColumn> getColumns();
+    /**
+     * @return the list of FormColumns
+     */
+    public abstract List<FormColumnIFace> getColumns();
 
     /* (non-Javadoc)
      * @see java.lang.Object#clone()

@@ -69,10 +69,10 @@ public class ConservEvent extends DataModelObjBase implements AttachmentOwnerIFa
     protected Agent                      treatedByAgent;
     protected ConservDescription         conservDescription;
     
-    protected Set<ConservRecommendation> lightRecommendations;
-    protected Set<ConservRecommendation> displayRecommendations;
-    protected Set<ConservRecommendation> otherRecommendations;
-    private Set<ConservEventAttachment> conservEventAttachments;
+    protected Set<ConservRecommendation>  lightRecommendations;
+    protected Set<ConservRecommendation>  displayRecommendations;
+    protected Set<ConservRecommendation>  otherRecommendations;
+    protected Set<ConservEventAttachment> conservEventAttachments;
 
     // Constructors
 

@@ -40,7 +40,7 @@ public class SearchFormPane extends FormPane
                           final String   viewSetName,
                           final String   viewName)
     {
-        super(name, task, viewSetName, viewName, AltViewIFace.CreationMode.Search.toString(), null, MultiView.IS_NEW_OBJECT);
+        super(name, task, viewSetName, viewName, AltViewIFace.CreationMode.SEARCH.toString(), null, MultiView.IS_NEW_OBJECT);
 
         Viewable viewable = multiView.getCurrentView();
         if (viewable instanceof FormViewObj)

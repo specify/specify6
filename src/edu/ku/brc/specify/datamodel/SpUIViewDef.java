@@ -46,7 +46,6 @@ import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.forms.DataObjectGettable;
 import edu.ku.brc.ui.forms.DataObjectSettable;
 import edu.ku.brc.ui.forms.persist.FormCellIFace;
-import edu.ku.brc.ui.forms.persist.FormColumn;
 import edu.ku.brc.ui.forms.persist.FormColumnIFace;
 import edu.ku.brc.ui.forms.persist.FormRowIFace;
 import edu.ku.brc.ui.forms.persist.FormViewDefIFace;
@@ -84,18 +83,23 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
     protected String           colDef;
     protected String           rowDef;
     protected Boolean          isAbsoluteLayout;
-    
+    protected String           definitionName;// formtable needs this
+
     protected Set<SpUIRow>     spRows;
     protected Set<SpUIColumn>  spCols;
-    protected Set<SpUIAltView> altViews;
-    protected SpUIViewSet      viewSet;
+    protected Set<SpUIAltView> spAltViews;
+    protected SpUIViewSet      spViewSet;
+    
+    protected Short            xCoordDB;
+    protected Short            yCoordDB;
+    protected Short            heightDB;
+    protected Short            widthDB;   
     
     // Transient
     protected DataObjectGettable gettable = null;
     protected DataObjectSettable settable = null;
     
-    protected Vector<FormColumn> columns  = null;
-    protected String             definitionName = null;
+    protected Vector<FormColumnIFace>   columns  = null;
     protected Hashtable<String, String> enableRules;
     
     /**
@@ -137,11 +141,17 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
         colDef         = null;
         rowDef         = null;
         isAbsoluteLayout = false;
+        definitionName = null;
         
+        xCoordDB           = null;
+        yCoordDB           = null;
+        widthDB            = null;
+        heightDB           = null;
+
         spRows      = new HashSet<SpUIRow>();
         spCols      = new HashSet<SpUIColumn>();
-        altViews    = new HashSet<SpUIAltView>();
-        viewSet     = null;
+        spAltViews    = new HashSet<SpUIAltView>();
+        spViewSet     = null;
     }
 
     /**
@@ -269,7 +279,7 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
     /**
      * @return the settableName
      */
-    @Column(name = "SettableName", unique = false, nullable = false, insertable = true, updatable = true, length = 128)
+    @Column(name = "SettableName", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
     public String getSettableName()
     {
         return settableName;
@@ -311,7 +321,7 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
     /**
      * @return the isAbsoluteLayout
      */
-    @Column(name = "IsAbsoluteLayout", unique = false, nullable = false, insertable = true, updatable = true)
+    @Column(name = "IsAbsoluteLayout", unique = false, nullable = true, insertable = true, updatable = true)
     public Boolean getIsAbsoluteLayout()
     {
         return isAbsoluteLayout == null ? false : isAbsoluteLayout;
@@ -326,9 +336,18 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
     }
 
     /**
+     * @return the definition
+     */
+    @Column(name = "DefinitionName", unique = false, nullable = true, insertable = true, updatable = true)
+    public String getDefinitionName()
+    {
+        return definitionName;
+    }
+
+    /**
      * @return the rows
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "viewDef")
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "spViewDef")
     @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<SpUIRow> getSpRows()
     {
@@ -346,7 +365,7 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
     /**
      * @return the spCols
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "viewDef")
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "spViewDef")
     @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<SpUIColumn> getSpCols()
     {
@@ -365,18 +384,18 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
      * @return the altViews
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "spViewDef")
-    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<SpUIAltView> getAltViews()
+    //@Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    public Set<SpUIAltView> getSpAltViews()
     {
-        return altViews;
+        return spAltViews;
     }
 
     /**
      * @param altViews the altViews to set
      */
-    public void setAltViews(Set<SpUIAltView> altViews)
+    public void setSpAltViews(Set<SpUIAltView> spAltViews)
     {
-        this.altViews = altViews;
+        this.spAltViews = spAltViews;
     }
     
     /**
@@ -384,17 +403,85 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "SpUIViewSetID", unique = false, nullable = false, insertable = true, updatable = true)
-    public SpUIViewSet getViewSet()
+    public SpUIViewSet getSpViewSet()
     {
-        return viewSet;
+        return spViewSet;
     }
 
     /**
      * @param viewSet the viewSet to set
      */
-    public void setViewSet(SpUIViewSet viewSet)
+    public void setSpViewSet(SpUIViewSet spViewSet)
     {
-        this.viewSet = viewSet;
+        this.spViewSet = spViewSet;
+    }
+
+    /**
+     * @return the xCoordDB
+     */
+    @Column(name = "XCoord", unique = false, nullable = false, insertable = true, updatable = true)
+    public Short getXCoordDB()
+    {
+        return xCoordDB;
+    }
+
+    /**
+     * @param coordDB the xCoordDB to set
+     */
+    public void setXCoordDB(Short coordDB)
+    {
+        xCoordDB = coordDB;
+    }
+
+    /**
+     * @return the yCoordDB
+     */
+    @Column(name = "YCoord", unique = false, nullable = false, insertable = true, updatable = true)
+    public Short getYCoordDB()
+    {
+        return yCoordDB;
+    }
+
+    /**
+     * @param coordDB the yCoordDB to set
+     */
+    public void setYCoordDB(Short coordDB)
+    {
+        yCoordDB = coordDB;
+    }
+    
+    /**
+     * @return the height
+     */
+    @Column(name = "Height", unique = false, nullable = false, insertable = true, updatable = true)
+    public Short getHeightDB()
+    {
+        return heightDB;
+    }
+
+    /**
+     * @param height the height to set
+     */
+    public void setHeightDB(Short height)
+    {
+        this.heightDB = height;
+    }
+
+    /**
+     * @return the width
+     */
+    @Column(name = "Width", unique = false, nullable = false, insertable = true, updatable = true)
+    public Short getWidthDB()
+    {
+        return widthDB;
+    }
+
+    /**
+     * @param width the width to set
+     */
+    public void setWidthDB(Short width)
+    {
+        this.widthDB = width;
     }
 
     /* (non-Javadoc)
@@ -560,11 +647,11 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.TableViewDefIFace#addColumn(edu.ku.brc.ui.forms.persist.FormColumn)
      */
-    public FormColumnIFace addColumn(FormColumn column)
+    public FormColumnIFace addColumn(FormColumnIFace column)
     {
         if (columns == null)
         {
-            columns = new Vector<FormColumn>();
+            columns = new Vector<FormColumnIFace>();
         }
         return null;
     }
@@ -573,7 +660,7 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
      * @see edu.ku.brc.ui.forms.persist.TableViewDefIFace#getColumns()
      */
     @Transient
-    public List<FormColumn> getColumns()
+    public List<FormColumnIFace> getColumns()
     {
         return columns;
     }
@@ -590,7 +677,7 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
         if (row instanceof SpUIRow)
         {
             spRows.add((SpUIRow)row);
-            ((SpUIRow)row).setViewDef(this);
+            ((SpUIRow)row).setSpViewDef(this);
         }
         return row;
     }
@@ -602,15 +689,6 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
     public String getColumnDef()
     {
         return this.colDef;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.persist.FormViewDefIFace#getDefinitionName()
-     */
-    @Transient
-    public String getDefinitionName()
-    {
-        return this.definitionName;
     }
 
     /* (non-Javadoc)
@@ -719,6 +797,175 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
     public Boolean isAbsoluteLayout()
     {
         return getIsAbsoluteLayout();
+    }
+    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#getXCoord()
+     */
+    @Transient
+    public int getXCoord()
+    {
+        return xCoordDB;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#getYCoord()
+     */
+    @Transient
+    public int getYCoord()
+    {
+        return yCoordDB;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#setXCoord(int)
+     */
+    public void setXCoord(int xCoord)
+    {
+        xCoordDB = (short)xCoord;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#setYCoord(int)
+     */
+    public void setYCoord(int yCoord)
+    {
+        yCoordDB = (short)yCoord;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#getHeight()
+     */
+    @Transient
+    public int getHeight()
+    {
+        return heightDB;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#getWidth()
+     */
+    @Transient
+    public int getWidth()
+    {
+        return widthDB;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#setHeight(int)
+     */
+    public void setHeight(int height)
+    {
+        heightDB = (short)height;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#setWidth(int)
+     */
+    public void setWidth(int width)
+    {
+        widthDB = (short)width;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#getDataSettableName()
+     */
+    public String getDataSettableName()
+    {
+        return settableName;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#setDataGettableName(java.lang.String)
+     */
+    public void setDataGettableName(String dataGettableName)
+    {
+        this.gettableName = dataGettableName;
+        
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#setDataSettableName(java.lang.String)
+     */
+    public void setDataSettableName(String dataSettableName)
+    {
+        this.settableName = dataSettableName;
+    }
+    
+    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#compareTo(edu.ku.brc.ui.forms.persist.ViewDefIFace)
+     */
+    public int compareTo(ViewDefIFace obj)
+    {
+        return name.compareTo(obj.getName());
+    }
+    
+    protected String createEnableRulesXML(final Hashtable<String, String> enableRules)
+    {
+        if (enableRules.keySet().size() > 0)
+        {
+            StringBuilder sb = new StringBuilder("<enableRules>");
+            for (String key : enableRules.keySet())
+            {
+                sb.append("<rule id=\"");
+                sb.append(key);
+                sb.append("\"><![CDATA[");
+                sb.append(enableRules.get(key));
+                sb.append("]]></rule>");
+            }
+            sb.append("</enableRules>");
+            return sb.toString();
+        }
+        return null;
+    }
+    
+    /**
+     * Copy the values from the source into the object.
+     * @param vd the source
+     */
+    public void copyInto(final ViewDefIFace vd)
+    {
+        typeName      = vd.getType().toString();
+        name          = vd.getName();
+        dataClassName = vd.getClassName();
+        gettableName  = vd.getDataGettableName();
+        settableName  = vd.getDataSettableName();
+        description   = vd.getDesc();
+        
+        //if (vd instanceof TableViewDefIFace)
+        //{
+        //    TableViewDefIFace tvd = (TableViewDefIFace)vd;
+        //}
+        
+        if (vd instanceof FormViewDefIFace)
+        {
+            FormViewDefIFace fvd = (FormViewDefIFace)vd;
+            enableRulesXML = createEnableRulesXML(fvd.getEnableRules());
+            definitionName = fvd.getDefinitionName();
+            colDef         = fvd.getColumnDef();
+            rowDef         = fvd.getRowDef();
+        }
+        isAbsoluteLayout = vd.isAbsoluteLayout();
+        
+        /*
+        protected Set<SpUIRow>     spRows;
+        protected Set<SpUIColumn>  spCols;
+        protected Set<SpUIAltView> altViews;
+        protected SpUIViewSet      viewSet;
+        protected Vector<FormColumnIFace>   columns  = null;
+        */
+        
+        xCoordDB = (short)vd.getXCoord();
+        yCoordDB = (short)vd.getYCoord();
+        heightDB = (short)vd.getHeight();
+        widthDB  = (short)vd.getWidth();
+        
+        // Transient
+        gettable = vd.getDataGettable();
+        settable = vd.getDataSettable();
     }
     
 }

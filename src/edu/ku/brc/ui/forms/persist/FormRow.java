@@ -24,7 +24,7 @@ import java.util.Vector;
  */
 public class FormRow implements Cloneable, FormRowIFace
 {
-    protected Vector<FormCell> cells = new Vector<FormCell>();
+    protected Vector<FormCellIFace> cells = new Vector<FormCellIFace>();
     
     /**
      * Default Constructor
@@ -55,7 +55,7 @@ public class FormRow implements Cloneable, FormRowIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormRowIFace#getCells()
      */
-    public Vector<FormCell> getCells()
+    public Vector<FormCellIFace> getCells()
     {
         return cells;
     }
@@ -63,7 +63,7 @@ public class FormRow implements Cloneable, FormRowIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormRowIFace#setCells(java.util.Vector)
      */
-    public void setCells(Vector<FormCell> cells)
+    public void setCells(Vector<FormCellIFace> cells)
     {
         this.cells = cells;
     }
@@ -77,7 +77,7 @@ public class FormRow implements Cloneable, FormRowIFace
     public Object clone() throws CloneNotSupportedException
     {
         FormRow formRow = (FormRow)super.clone();
-        formRow.cells   = new Vector<FormCell>();
+        formRow.cells   = new Vector<FormCellIFace>();
         for (FormCellIFace cell : cells)
         {
             formRow.cells.add((FormCell)cell.clone());

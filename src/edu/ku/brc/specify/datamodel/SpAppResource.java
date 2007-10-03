@@ -52,15 +52,13 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
 
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.helpers.XMLHelper;
 
-
-
-
 /**
- * Clone does NOT clone the appResourceDefaults hashSet, but it DOES clone the appResourceDatas HashSet
+ * Clone does NOT clone the spAppResourceDirs hashSet, but it DOES clone the spAppResourceDatas HashSet
  * 
  * @author rods
  *
@@ -71,26 +69,30 @@ import edu.ku.brc.helpers.XMLHelper;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "appresource")
-public class AppResource extends DataModelObjBase implements java.io.Serializable, AppResourceIFace, Cloneable
+@Table(name = "spappresource")
+@org.hibernate.annotations.Table(appliesTo="spuiviewset", indexes =
+    {   @Index (name="SpAppResNameIDX", columnNames={"Name"}),
+        @Index (name="SpAppResMimeTypeIDX", columnNames={"MimeType"})
+    })
+public class SpAppResource extends DataModelObjBase implements java.io.Serializable, AppResourceIFace, Cloneable
 {
     //private static final Logger  log       = Logger.getLogger(AppResource.class);
     
     // Fields    
 
-     protected Integer                 appResourceId;
-     protected Short                   level;
-     protected String                  name;
-     protected String                  description;
-     protected String                  mimeType;
-     protected String                  metaData;
-     protected Integer                 ownerPermissionLevel;
-     protected Integer                 groupPermissionLevel;
-     protected Integer                 allPermissionLevel;
-     protected Set<AppResourceData>    appResourceDatas;
-     protected Set<AppResourceDefault> appResourceDefaults;
-     protected SpecifyUser             specifyUser;
-     protected UserGroup               group;
+     protected Integer                   spAppResourceId;
+     protected Short                     level;
+     protected String                    name;
+     protected String                    description;
+     protected String                    mimeType;
+     protected String                    metaData;
+     protected Integer                   ownerPermissionLevel;
+     protected Integer                   groupPermissionLevel;
+     protected Integer                   allPermissionLevel;
+     protected Set<SpAppResourceData>    spAppResourceDatas;
+     protected Set<SpAppResourceDir> spAppResourceDirs;
+     protected SpecifyUser               specifyUser;
+     protected UserGroup                 group;
      
      // Non Persisted Fields
      protected String                    fileName     = null;
@@ -99,15 +101,15 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     // Constructors
 
     /** default constructor */
-    public AppResource() 
+    public SpAppResource() 
     {
         //
     }
     
     /** constructor with id */
-    public AppResource(Integer appResourceId) 
+    public SpAppResource(Integer spAppResourceId) 
     {
-        this.appResourceId = appResourceId;
+        this.spAppResourceId = spAppResourceId;
     }
    
     
@@ -116,7 +118,7 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     public void initialize()
     {
         super.init();
-        appResourceId       = null;
+        spAppResourceId     = null;
         level               = null;
         name                = null;
         description         = null;
@@ -125,8 +127,8 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
         ownerPermissionLevel = null;
         groupPermissionLevel = null;
         allPermissionLevel = null;
-        appResourceDefaults = new HashSet<AppResourceDefault>();
-        appResourceDatas    = new HashSet<AppResourceData>();
+        spAppResourceDirs = new HashSet<SpAppResourceDir>();
+        spAppResourceDatas    = new HashSet<SpAppResourceData>();
         specifyUser = null;
         group = null;       
         fileName = null;
@@ -142,9 +144,9 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
      */
     @Id
     @GeneratedValue
-    @Column(name = "AppResourceID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Integer getAppResourceId() {
-        return this.appResourceId;
+    @Column(name = "SpAppResourceID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Integer getSpAppResourceId() {
+        return this.spAppResourceId;
     }
 
     /**
@@ -155,7 +157,7 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     @Override
     public Integer getId()
     {
-        return this.appResourceId;
+        return this.spAppResourceId;
     }
 
     /* (non-Javadoc)
@@ -165,7 +167,7 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     @Override
     public Class<?> getDataClass()
     {
-        return AppResource.class;
+        return SpAppResource.class;
     }
     
     /* (non-Javadoc)
@@ -178,8 +180,8 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
         return false;
     }
     
-    public void setAppResourceId(Integer appResourceId) {
-        this.appResourceId = appResourceId;
+    public void setSpAppResourceId(Integer spAppResourceId) {
+        this.spAppResourceId = spAppResourceId;
     }
 
     /* (non-Javadoc)
@@ -348,20 +350,22 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
 
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.AppResourceIFace#getAppResourceDefaults()
+     * @see edu.ku.brc.specify.datamodel.AppResourceIFace#getSpAppResourceDirs()
      */
     @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
-    @JoinTable(name = "appresdef_appres", joinColumns = { @JoinColumn(name = "AppResourceID", unique = false, nullable = false, insertable = true, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "AppResourceDefaultID", unique = false, nullable = false, insertable = true, updatable = false) })
+    @JoinTable(name = "spappresdef_appres", joinColumns = { @JoinColumn(name = "SpAppResourceID", unique = false, nullable = false, insertable = true, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "SpAppResourceDirID", unique = false, nullable = false, insertable = true, updatable = false) })
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    public Set<AppResourceDefault> getAppResourceDefaults() {
-        return this.appResourceDefaults;
+    public Set<SpAppResourceDir> getSpAppResourceDirs() 
+    {
+        return this.spAppResourceDirs;
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.AppResourceIFace#setAppResourceDefaults(java.util.Set)
+     * @see edu.ku.brc.specify.datamodel.AppResourceIFace#setSpAppResourceDirs(java.util.Set)
      */
-    public void setAppResourceDefaults(Set<AppResourceDefault> appResourceDefaults) {
-        this.appResourceDefaults = appResourceDefaults;
+    public void setSpAppResourceDirs(Set<SpAppResourceDir> spAppResourceDirs) 
+    {
+        this.spAppResourceDirs = spAppResourceDirs;
     }
     /**
      * 
@@ -403,14 +407,16 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     /**
      * 
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "appResource")
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "spAppResource")
     @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<AppResourceData> getAppResourceDatas() {
-        return appResourceDatas;
+    public Set<SpAppResourceData> getSpAppResourceDatas() 
+    {
+        return spAppResourceDatas;
     }
     
-    public void setAppResourceDatas(Set<AppResourceData> appResourceDatas) {
-        this.appResourceDatas = appResourceDatas;
+    public void setSpAppResourceDatas(Set<SpAppResourceData> spAppResourceDatas) 
+    {
+        this.spAppResourceDatas = spAppResourceDatas;
     }
 
     /* (non-Javadoc)
@@ -425,28 +431,28 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
         
         if (StringUtils.isNotEmpty(dataStr))
         {
-            AppResourceData ard;
-            if (appResourceDatas.size() == 0)
+            SpAppResourceData ard;
+            if (spAppResourceDatas.size() == 0)
             {
-                ard = new AppResourceData();
+                ard = new SpAppResourceData();
                 ard.initialize();
-                ard.setAppResource(this);
-                appResourceDatas.add(ard);
+                ard.setSpAppResource(this);
+                spAppResourceDatas.add(ard);
                 
             } else
             {
-                ard = appResourceDatas.iterator().next();
+                ard = spAppResourceDatas.iterator().next();
             }
 
             ard.setData(dataStr.getBytes());
 
 
-        } else if (appResourceDatas.size() > 0)
+        } else if (spAppResourceDatas.size() > 0)
         {
-            appResourceDatas.iterator().next().setData(null);
+            spAppResourceDatas.iterator().next().setData(null);
         }
         
-        //setAppResourceDatas(appResourceDatas); // Must call this to make sure it knows we changed it
+        //setSpAppResourceDatas(spAppResourceDatas); // Must call this to make sure it knows we changed it
     }
 
     /* (non-Javadoc)
@@ -455,12 +461,12 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     @Transient
     public String getDataAsString()
     {
-        getAppResourceDatas(); // Must call this before accessing it as a local data member
+        getSpAppResourceDatas(); // Must call this before accessing it as a local data member
         
-        AppResourceData ard = null;
-        if (appResourceDatas.size() > 0)
+        SpAppResourceData ard = null;
+        if (spAppResourceDatas.size() > 0)
         {
-            ard = appResourceDatas.iterator().next();
+            ard = spAppResourceDatas.iterator().next();
             if (ard != null)
             {
                 return new String(ard.getData());
@@ -499,7 +505,7 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
      */
     public static int getClassTableId()
     {
-        return 83;
+        return 514;
     }
 
     /* (non-Javadoc)
@@ -517,12 +523,12 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
     @Override
     public Object clone() throws CloneNotSupportedException
     {
-        AppResource obj = (AppResource)super.clone();
+        SpAppResource obj = (SpAppResource)super.clone();
         
         obj.timestampCreated     = new Timestamp(System.currentTimeMillis());
         obj.timestampModified    = timestampCreated;
         
-        obj.appResourceId        = null;
+        obj.spAppResourceId        = null;
         obj.level                = level;
         obj.name                 = name;
         obj.description          = description;
@@ -534,8 +540,8 @@ public class AppResource extends DataModelObjBase implements java.io.Serializabl
         obj.specifyUser          = specifyUser;
         obj.group                = group;       
         obj.fileName             = fileName;
-        obj.appResourceDefaults  = new HashSet<AppResourceDefault>();
-        obj.appResourceDatas     = new HashSet<AppResourceData>();
+        obj.spAppResourceDirs  = new HashSet<SpAppResourceDir>();
+        obj.spAppResourceDatas     = new HashSet<SpAppResourceData>();
         
         return obj;
     }

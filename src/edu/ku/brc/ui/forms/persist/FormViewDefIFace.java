@@ -17,9 +17,8 @@ package edu.ku.brc.ui.forms.persist;
 import java.util.Hashtable;
 import java.util.List;
 
-public interface FormViewDefIFace
+public interface FormViewDefIFace extends ViewDefIFace
 {
-
     /**
      * Add a row to the form
      * @param row the row to add
@@ -46,48 +45,48 @@ public interface FormViewDefIFace
      */
     public abstract FormCellIFace getFormCellByName(final String nameStr);
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.persist.FormView#cleanUp()
+    /**
+     * Asks the object to clean up data strcuture before going away
      */
     public abstract void cleanUp();
 
     /**
-     * @return
+     * @return The JGoodies coldef
      */
     public abstract String getColumnDef();
 
     /**
-     * @param columnDef
+     * @param columnDef JGoodies coldef
      */
     public abstract void setColumnDef(String columnDef);
 
     /**
-     * @return
+     * @return the JGoodies row def
      */
     public abstract String getRowDef();
 
     /**
-     * @param rowDef
+     * @param rowDef the JGoodies row def
      */
     public abstract void setRowDef(String rowDef);
 
     /**
-     * @return
+     * @return the enables rules
      */
     public abstract Hashtable<String, String> getEnableRules();
 
     /**
-     * @param enableRules
+     * @param enableRules 
      */
     public abstract void setEnableRules(Hashtable<String, String> enableRules);
 
     /**
-     * @return
+     * @return the name of the ViewDef it should use for it's definition
      */
     public abstract String getDefinitionName();
 
     /**
-     * @param definitionName
+     * @param definitionName  the name of the ViewDef it should use for it's definition
      */
     public abstract void setDefinitionName(String definitionName);
 

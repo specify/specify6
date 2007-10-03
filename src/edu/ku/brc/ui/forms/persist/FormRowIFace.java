@@ -34,12 +34,12 @@ public interface FormRowIFace
     /**
      * @return Return the collection of cells
      */
-    public abstract Vector<FormCell> getCells();
+    public abstract Vector<FormCellIFace> getCells();
 
     /**
      * @param cells all the cells
      */
-    public abstract void setCells(Vector<FormCell> cells);
+    public abstract void setCells(Vector<FormCellIFace> cells);
 
     /* (non-Javadoc)
      * @see java.lang.Object#clone()

@@ -40,14 +40,14 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.AppResource;
-import edu.ku.brc.specify.datamodel.AppResourceDefault;
+import edu.ku.brc.specify.datamodel.SpAppResource;
+import edu.ku.brc.specify.datamodel.SpAppResourceDir;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.specify.datamodel.ViewSetObj;
+import edu.ku.brc.specify.datamodel.SpViewSetObj;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
@@ -91,8 +91,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
 {
     private static final Logger  log = Logger.getLogger(SpecifyAppContextMgr.class);
 
-    protected List<AppResourceDefault>         appResourceList = new ArrayList<AppResourceDefault>();
-    protected Hashtable<String, List<ViewSet>> viewSetHash     = new Hashtable<String, List<ViewSet>>();
+    protected List<SpAppResourceDir>            spAppResourceList = new ArrayList<SpAppResourceDir>();
+    protected Hashtable<String, List<ViewSetIFace>> viewSetHash       = new Hashtable<String, List<ViewSetIFace>>();
     
 
     protected String         databaseName          = null;
@@ -120,6 +120,14 @@ public class SpecifyAppContextMgr extends AppContextMgr
         return (SpecifyAppContextMgr)AppContextMgr.getInstance();
     }
 
+
+    /**
+     * @return the viewSetHash
+     */
+    public Hashtable<String, List<ViewSetIFace>> getViewSetHash()
+    {
+        return viewSetHash;
+    }
 
     /**
      * Returns the backstop ViewSetMgr.
@@ -313,15 +321,15 @@ public class SpecifyAppContextMgr extends AppContextMgr
      * @param collType the CollectionType
      * @return the AppResourceDefault object or null
      */
-    protected AppResourceDefault find(final List<?>          appResDefList,
-                                      final SpecifyUser      userArg,
-                                      final Collection    catSeries,
+    protected SpAppResourceDir find(final List<?>        appResDefList,
+                                      final SpecifyUser    userArg,
+                                      final Collection     catSeries,
                                       final CollectionType collType)
     {
         log.debug("finding AppResourceDefault");
         for (Object obj : appResDefList)
         {
-            AppResourceDefault ard = (AppResourceDefault)obj;
+            SpAppResourceDir ard = (SpAppResourceDir)obj;
 
             SpecifyUser      spUser = ard.getSpecifyUser();
             Collection    cs        = ard.getCollection();
@@ -342,16 +350,16 @@ public class SpecifyAppContextMgr extends AppContextMgr
      * @param dir the directory in question)
      * @return a new AppResourceDefault object
      */
-    protected AppResourceDefault createAppResourceDefFromDir(final File dir)
+    protected SpAppResourceDir createAppResourceDefFromDir(final String viewSetMgrName, final File dir)
     {
         log.debug("Creating AppResourceDef from Dir ["+dir.getAbsolutePath()+"]");
-        AppResourceDefault appResDef = new AppResourceDefault();
+        SpAppResourceDir appResDef = new SpAppResourceDir();
         appResDef.initialize();
 
-        ViewSetMgr viewSetMgr = new ViewSetMgr(dir);
+        ViewSetMgr viewSetMgr = new ViewSetMgr(viewSetMgrName, dir);
         for (ViewSetIFace vs : viewSetMgr.getViewSets())
         {
-            ViewSetObj vso = new ViewSetObj();
+            SpViewSetObj vso = new SpViewSetObj();
             vso.initialize();
 
             // Set up File Name to load the ViewSet
@@ -372,16 +380,16 @@ public class SpecifyAppContextMgr extends AppContextMgr
             vso.setLevel((short)0);
             vso.setName(vs.getFileName());
 
-            vso.getAppResourceDefaults().add(appResDef);
-            appResDef.getViewSets().add(vso);
+            vso.getSpAppResourceDirs().add(appResDef);
+            appResDef.getSpViewSets().add(vso);
 
         }
 
         AppResourceMgr appResMgr = new AppResourceMgr(dir);
-        for (AppResource appRes : appResMgr.getAppResources())
+        for (SpAppResource appRes : appResMgr.getSpAppResources())
         {
-            appRes.getAppResourceDefaults().add(appResDef);
-            appResDef.getAppResources().add(appRes);
+            appRes.getSpAppResourceDirs().add(appResDef);
+            appResDef.getSpAppResources().add(appRes);
         }
         return appResDef;
     }
@@ -391,7 +399,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
      * @param appResDef AppResourceDefault
      * @return string of info
      */
-    protected String getAppResDefAsString(final AppResourceDefault appResDef)
+    protected String getSpAppResDefAsString(final SpAppResourceDir appResDef)
     {
         SpecifyUser      spUser = appResDef.getSpecifyUser();
         Collection    cs   = appResDef.getCollection();
@@ -460,10 +468,10 @@ public class SpecifyAppContextMgr extends AppContextMgr
         userType = StringUtils.replace(userType, " ", "").toLowerCase();
         log.debug("Def Type["+userType+"]");
         
-        appResourceList.clear();
+        spAppResourceList.clear();
         viewSetHash.clear();
 
-        List<?> appResDefList = session.getDataList( "From AppResourceDefault where specifyUserId = "+user.getSpecifyUserId());
+        List<?> appResDefList = session.getDataList( "From SpAppResourceDir where specifyUserId = "+user.getSpecifyUserId());
 
         CollectionType ct = collection.getCollectionType();
         CollectionType.setCurrentCollectionType(ct);
@@ -475,11 +483,11 @@ public class SpecifyAppContextMgr extends AppContextMgr
         
         dispHash.put(ct.getDiscipline(), ct.getDiscipline());
         
-        AppResourceDefault appResourceDef = find(appResDefList, user, collection, ct);
+        SpAppResourceDir appResourceDef = find(appResDefList, user, collection, ct);
         if (appResourceDef != null)
         {
-            log.debug("Adding1 "+getAppResDefAsString(appResourceDef));
-            appResourceList.add(appResourceDef);
+            log.debug("Adding1 "+getSpAppResDefAsString(appResourceDef));
+            spAppResourceList.add(appResourceDef);
         }
 
 
@@ -491,15 +499,15 @@ public class SpecifyAppContextMgr extends AppContextMgr
             File dir = XMLHelper.getConfigDir(discipline.toLowerCase() + File.separator + userType);
             if (dir.exists())
             {
-                AppResourceDefault appResDef = createAppResourceDefFromDir(dir);
+                SpAppResourceDir appResDef = createAppResourceDefFromDir(discipline+" "+userType, dir);
                 appResDef.setDisciplineType(discipline);
                 appResDef.setUserType(userType);
                 appResDef.setSpecifyUser(user);//added to fix not-null constraints
                 appResDef.setCollection(Collection.getCurrentCollection());
                 appResDef.setCollectionType(CollectionType.getCurrentCollectionType());
                 
-                log.debug("Adding2 "+getAppResDefAsString(appResDef));
-                appResourceList.add(appResDef);
+                log.debug("Adding2 "+getSpAppResDefAsString(appResDef));
+                spAppResourceList.add(appResDef);
                 
             } else
             {
@@ -514,15 +522,15 @@ public class SpecifyAppContextMgr extends AppContextMgr
             File dir = XMLHelper.getConfigDir(discipline.toLowerCase());
             if (dir.exists())
             {
-                AppResourceDefault appResDef = createAppResourceDefFromDir(dir);
+                SpAppResourceDir appResDef = createAppResourceDefFromDir(discipline, dir);
                 appResDef.setDisciplineType(discipline);
                 appResDef.setSpecifyUser(user);
                 
                 appResDef.setCollection(collection);
                 appResDef.setCollectionType(ct);
 
-                log.debug("Adding3 "+getAppResDefAsString(appResDef));
-                appResourceList.add(appResDef);
+                log.debug("Adding3 "+getSpAppResDefAsString(appResDef));
+                spAppResourceList.add(appResDef);
                 
             } else
             {
@@ -530,7 +538,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
         }
 
-        backStopViewSetMgr = new ViewSetMgr(XMLHelper.getConfigDir("backstop"));
+        backStopViewSetMgr = new ViewSetMgr("BackStop", XMLHelper.getConfigDir("backstop"));
         backStopAppResMgr  = new AppResourceMgr(XMLHelper.getConfigDir("backstop"));
         
         currentStatus = CONTEXT_STATUS.OK;
@@ -545,7 +553,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
      * @param appResDef the AppResourceDefault
      * @return list of ViewSet objects
      */
-    protected List<ViewSet> getViewSetList(final AppResourceDefault appResDef)
+    protected List<ViewSetIFace> getViewSetList(final SpAppResourceDir appResDef)
     {
         log.debug("Looking up["+appResDef.getUniqueIdentifer()+"]["+appResDef.getVerboseUniqueIdentifer()+"]");
         
@@ -555,16 +563,16 @@ public class SpecifyAppContextMgr extends AppContextMgr
             viewSetHash.clear();
         }
         
-        List<ViewSet> viewSetList = viewSetHash.get(appResDef.getUniqueIdentifer());
+        List<ViewSetIFace> viewSetList = viewSetHash.get(appResDef.getUniqueIdentifer());
         if (viewSetList == null)
         {
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            if (appResDef.getAppResourceDefaultId() != null)
+            if (appResDef.getSpAppResourceDirId() != null)
             {
                 session.attach(appResDef);
             }
-            viewSetList = new Vector<ViewSet>();
-            for (ViewSetObj vso : appResDef.getViewSets())
+            viewSetList = new Vector<ViewSetIFace>();
+            for (SpViewSetObj vso : appResDef.getSpViewSets())
             {
                 try
                 {
@@ -584,6 +592,15 @@ public class SpecifyAppContextMgr extends AppContextMgr
         }
         return viewSetList;
     }
+    
+
+    /**
+     * @return the appResourceList
+     */
+    public List<SpAppResourceDir> getSpAppResourceList()
+    {
+        return spAppResourceList;
+    }
 
     /**
      * Finds a View by name using a CollectionType.
@@ -596,7 +613,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         log.debug("Looking Up View ["+viewName+"] collType["+(collType != null ? collType.getName() : "null")+"]");
         
         boolean fndColObjDef = false;
-        for (AppResourceDefault appResDef : appResourceList)
+        for (SpAppResourceDir appResDef : spAppResourceList)
         {
             log.debug("Looking["+(appResDef.getCollectionType() != null ? appResDef.getCollectionType().getName() : "null")+"]["+(collType != null ? collType.getName() : "null")+"]");
             
@@ -623,7 +640,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             userType = StringUtils.replace(userType, " ", "").toLowerCase();
 
             // Search Using the colObjectDef's discipline
-            for (AppResourceDefault appResDef : appResourceList)
+            for (SpAppResourceDir appResDef : spAppResourceList)
             {
                 String dType = appResDef.getDisciplineType();
                 String uType = appResDef.getUserType();
@@ -673,9 +690,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
             throw new RuntimeException("Sorry not empty or null ViewSetNames use the call with CollectionType instead.");
         }
 
-        for (AppResourceDefault appResDef : appResourceList)
+        for (SpAppResourceDir appResDef : spAppResourceList)
         {
-            log.debug("getView "+getAppResDefAsString(appResDef)+"  ["+appResDef.getUniqueIdentifer()+"]");
+            log.debug("getView "+getSpAppResDefAsString(appResDef)+"  ["+appResDef.getUniqueIdentifer()+"]");
 
             for (ViewSetIFace vs : getViewSetList(appResDef))
             {
@@ -715,14 +732,14 @@ public class SpecifyAppContextMgr extends AppContextMgr
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
-            for (AppResourceDefault appResDef : appResourceList)
+            for (SpAppResourceDir appResDef : spAppResourceList)
             {
-                if (appResDef.getAppResourceDefaultId() != null)
+                if (appResDef.getSpAppResourceDirId() != null)
                 {
                     session.attach(appResDef);
                 }
                 
-                for (AppResourceIFace appRes : appResDef.getAppResources())
+                for (AppResourceIFace appRes : appResDef.getSpAppResources())
                 {
                     if (appRes.getName().equals(name))
                     {
@@ -747,7 +764,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             {
                 throw new RuntimeException("The backStopAppResMgr is null which means somehow a call was made to this method before the backStopAppResMgr was initialized.");
             }
-            return backStopAppResMgr.getAppResource(name);
+            return backStopAppResMgr.getSpAppResource(name);
         }
         
         return null;
@@ -783,13 +800,13 @@ public class SpecifyAppContextMgr extends AppContextMgr
     {
         AppResourceIFace appResource = getResource(name);
         
-        if (appResource != null && appResource instanceof AppResource)
+        if (appResource != null && appResource instanceof SpAppResource)
         {
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            AppResource              appRes  = (AppResource)appResource;
+            SpAppResource              appRes  = (SpAppResource)appResource;
             try
             {
-                if (appRes.getAppResourceId() != null)
+                if (appRes.getSpAppResourceId() != null)
                 {
                     session.attach(appRes);
                 }
@@ -833,8 +850,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
     @Override
     public void putResourceAsXML(String name, String xmlStr)
     {
-        AppResourceDefault appResourceDef = null;
-        AppResource        appRes         = null;
+        SpAppResourceDir appResourceDef = null;
+        SpAppResource        appRes         = null;
         
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
@@ -843,7 +860,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             AppResourceIFace appResource = getResource(name, false);
             if (appResource == null)
             {
-                appResource = backStopAppResMgr.getAppResource(name);
+                appResource = backStopAppResMgr.getSpAppResource(name);
                 
                 if (session != null)
                 {
@@ -851,7 +868,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     appResourceDef = find(appResDefList, user, Collection.getCurrentCollection(), CollectionType.getCurrentCollectionType());
                     if (appResourceDef == null)
                     {
-                        appResourceDef = new AppResourceDefault();
+                        appResourceDef = new SpAppResourceDir();
                         appResourceDef.initialize();
                         appResourceDef.setCollection(Collection.getCurrentCollection());
                         appResourceDef.setCollectionType(CollectionType.getCurrentCollectionType());
@@ -860,13 +877,13 @@ public class SpecifyAppContextMgr extends AppContextMgr
                         appResourceDef.setUserType(SpecifyUser.getCurrentUser().getUserType());
                     }
                     
-                    if (appResource instanceof AppResource)
+                    if (appResource instanceof SpAppResource)
                     {
                         try
                         {
-                            appRes = (AppResource)((AppResource)appResource).clone();
-                            appRes.getAppResourceDefaults().add(appResourceDef);
-                            appResourceDef.getPersistedAppResources().add(appRes);
+                            appRes = (SpAppResource)((SpAppResource)appResource).clone();
+                            appRes.getSpAppResourceDirs().add(appResourceDef);
+                            appResourceDef.getSpPersistedAppResources().add(appRes);
                             
                         } catch (CloneNotSupportedException ex)
                         {
@@ -886,12 +903,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 }
             } else
             {
-                appRes  = (AppResource)appResource;
+                appRes  = (SpAppResource)appResource;
             }
     
-            if (appResource != null && appResource instanceof AppResource)
+            if (appResource != null && appResource instanceof SpAppResource)
             {
-                if (appRes.getAppResourceId() != null)
+                if (appRes.getSpAppResourceId() != null)
                 {
                     session.attach(appRes);
                 }
@@ -941,9 +958,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
     public List<AppResourceIFace> getResourceByMimeType(final String mimeType)
     {
         List<AppResourceIFace> list = new ArrayList<AppResourceIFace>();
-        for (AppResourceDefault appResDef : appResourceList)
+        for (SpAppResourceDir appResDef : spAppResourceList)
         {
-            for (AppResourceIFace appRes : appResDef.getAppResources())
+            for (AppResourceIFace appRes : appResDef.getSpAppResources())
             {
                 //log.debug("["+appRes.getMimeType()+"]["+mimeType+"]");
                 if (appRes.getMimeType() != null && appRes.getMimeType().equals(mimeType))
@@ -963,17 +980,17 @@ public class SpecifyAppContextMgr extends AppContextMgr
     class AppResourceMgr
     {
         protected File locationDir;
-        protected Hashtable<String, AppResource> appResources = null;
+        protected Hashtable<String, SpAppResource> appResources = null;
 
         public AppResourceMgr(final File file)
         {
             locationDir = file;
-            appResources = new Hashtable<String, AppResource>();
+            appResources = new Hashtable<String, SpAppResource>();
             init(locationDir);
 
         }
 
-        public AppResource getAppResource(final String name)
+        public SpAppResource getSpAppResource(final String name)
         {
 
             return appResources.get(name);
@@ -982,7 +999,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         /**
          * @param appRes
          */
-        public void addAppRes(final AppResource appRes)
+        public void addAppRes(final SpAppResource appRes)
         {
             appResources.put(appRes.getName(), appRes);
         }
@@ -1032,7 +1049,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                                     log.error("AppResource file cannot be found at["+resFile.getAbsolutePath()+"]");
                                 }
 
-                                AppResource appRes = new AppResource();
+                                SpAppResource appRes = new SpAppResource();
                                 appRes.initialize();
                                 appRes.setLevel(level.shortValue());
                                 appRes.setName(name);
@@ -1071,7 +1088,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
          * Returns a list of all the AppResources
          * @return a list of all the AppResources
          */
-        public List<AppResource> getAppResources()
+        public List<SpAppResource> getSpAppResources()
         {
             return Collections.list(appResources.elements());
         }

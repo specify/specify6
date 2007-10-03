@@ -52,28 +52,29 @@ import javax.persistence.Transient;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "appresourcedata")
-public class AppResourceData extends DataModelObjBase implements java.io.Serializable, Cloneable
+@Table(name = "spappresourcedata")
+public class SpAppResourceData extends DataModelObjBase implements java.io.Serializable, Cloneable
 {
 
     // Fields    
 
-     protected Integer     appResourceDataId;
-     protected byte[]      data;
-     protected AppResource appResource;
-     protected ViewSetObj  viewSetObj;
+     protected Integer       spAppResourceDataId;
+     protected byte[]        data;
+     protected SpAppResource spAppResource;
+     protected SpViewSetObj  spViewSetObj;
 
 
     // Constructors
 
     /** default constructor */
-    public AppResourceData() {
+    public SpAppResourceData() {
         //
     }
     
     /** constructor with id */
-    public AppResourceData(Integer appResourceDataId) {
-        this.appResourceDataId = appResourceDataId;
+    public SpAppResourceData(Integer spAppResourceDataId) 
+    {
+        this.spAppResourceDataId = spAppResourceDataId;
     }
    
     
@@ -81,10 +82,10 @@ public class AppResourceData extends DataModelObjBase implements java.io.Seriali
     public void initialize()
     {
         super.init();
-        appResourceDataId = null;
-        data = null;
-        appResource = null;
-        viewSetObj = null;
+        spAppResourceDataId = null;
+        data                = null;
+        spAppResource       = null;
+        spViewSetObj        = null;
     }
     
 
@@ -95,9 +96,10 @@ public class AppResourceData extends DataModelObjBase implements java.io.Seriali
      */
     @Id
     @GeneratedValue
-    @Column(name = "AppResourceDataID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Integer getAppResourceDataId() {
-        return this.appResourceDataId;
+    @Column(name = "SpAppResourceDataID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Integer getSpAppResourceDataId() 
+    {
+        return this.spAppResourceDataId;
     }
 
     /**
@@ -108,7 +110,7 @@ public class AppResourceData extends DataModelObjBase implements java.io.Seriali
     @Override
     public Integer getId()
     {
-        return this.appResourceDataId;
+        return this.spAppResourceDataId;
     }
 
     /* (non-Javadoc)
@@ -118,7 +120,7 @@ public class AppResourceData extends DataModelObjBase implements java.io.Seriali
     @Override
     public Class<?> getDataClass()
     {
-        return AppResourceData.class;
+        return SpAppResourceData.class;
     }
     
     /* (non-Javadoc)
@@ -131,8 +133,9 @@ public class AppResourceData extends DataModelObjBase implements java.io.Seriali
         return false;
     }
     
-    public void setAppResourceDataId(Integer appResourceDataId) {
-        this.appResourceDataId = appResourceDataId;
+    public void setSpAppResourceDataId(Integer spAppResourceDataId) 
+    {
+        this.spAppResourceDataId = spAppResourceDataId;
     }
 
     /**
@@ -140,21 +143,25 @@ public class AppResourceData extends DataModelObjBase implements java.io.Seriali
      */
     /*
     @Column(name = "data", unique = false, nullable = false, insertable = true, updatable = true, length = 1073741823)
-    public java.sql.Blob getData() {
+    public java.sql.Blob getData() 
+    {
         return this.data;
     }
     
-    public void setData(java.sql.Blob data) {
+    public void setData(java.sql.Blob data) 
+    {
         this.data = data;
     }*/
     
     @Lob
     @Column(name = "data", unique = false, nullable = true, insertable = true, updatable = true, length=16000000)
-    public byte[] getData() {
+    public byte[] getData() 
+    {
         return this.data;
     }
     
-    public void setData(final byte[] data) {
+    public void setData(final byte[] data) 
+    {
         this.data = data;
     }
     
@@ -162,26 +169,28 @@ public class AppResourceData extends DataModelObjBase implements java.io.Seriali
      * 
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "AppResourceID", unique = false, nullable = false, insertable = true, updatable = true)
-    public AppResource getAppResource() {
-        return this.appResource;
+    @JoinColumn(name = "SpAppResourceID", unique = false, nullable = false, insertable = true, updatable = true)
+    public SpAppResource getSpAppResource() {
+        return this.spAppResource;
     }
     
-    public void setAppResource(AppResource AppResource) {
-        this.appResource = AppResource;
+    public void setSpAppResource(SpAppResource AppResource) 
+    {
+        this.spAppResource = AppResource;
     }
 
     /**
      * 
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "ViewSetObjID", unique = false, nullable = true, insertable = true, updatable = true)
-    public ViewSetObj getViewSetObj() {
-        return this.viewSetObj;
+    @JoinColumn(name = "SpViewSetObjID", unique = false, nullable = true, insertable = true, updatable = true)
+    public SpViewSetObj getSpViewSetObj() {
+        return this.spViewSetObj;
     }
     
-    public void setViewSetObj(ViewSetObj ViewSetObj) {
-        this.viewSetObj = ViewSetObj;
+    public void setSpViewSetObj(SpViewSetObj ViewSetObj) 
+    {
+        this.spViewSetObj = ViewSetObj;
     }
 
     /* (non-Javadoc)
@@ -199,7 +208,7 @@ public class AppResourceData extends DataModelObjBase implements java.io.Seriali
      */
     public static int getClassTableId()
     {
-        return 84;
+        return 515;
     }
     
     /* (non-Javadoc)
@@ -208,13 +217,13 @@ public class AppResourceData extends DataModelObjBase implements java.io.Seriali
     @Override
     public Object clone() throws CloneNotSupportedException
     {
-        AppResourceData obj  = (AppResourceData)super.clone();
-        obj.appResourceDataId = null;
+        SpAppResourceData obj  = (SpAppResourceData)super.clone();
+        obj.spAppResourceDataId = null;
         obj.timestampCreated  = new Timestamp(System.currentTimeMillis());
         obj.timestampModified = timestampCreated;
         obj.data              = data != null ? data.clone() : null;
-        obj.appResource       = appResource;
-        obj.viewSetObj        = viewSetObj;
+        obj.spAppResource     = spAppResource;
+        obj.spViewSetObj      = spViewSetObj;
         return obj;
     }
 

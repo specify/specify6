@@ -36,6 +36,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.prefs.BackingStoreException;
@@ -86,6 +87,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.Encryption;
+import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.LoggerDialog;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
@@ -109,7 +111,9 @@ import edu.ku.brc.specify.datamodel.TaxonAttachment;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.specify.tests.SpecifyAppPrefs;
+import edu.ku.brc.specify.tools.fielddesc.DisplayLocale;
 import edu.ku.brc.specify.tools.fielddesc.SchemaLocalizerDlg;
+import edu.ku.brc.specify.tools.fielddesc.SchemaToolsDlg;
 import edu.ku.brc.specify.ui.CollectorActionListener;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CommandAction;
@@ -653,7 +657,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
             menu = UIHelper.createMenu(mb, "AdvMenu", "AdvMneu");
             menu.add(UIHelper.createMenu(mb, "SystemMenu", "SystemMneu"));
             
-            mi = UIHelper.createMenuItem(menu, "SchemaConfig", "C", "SchemaConfig C", true, null); // XXX I18N
+            String title = getResourceString("SCHEMA_CONFIG");
+            mi = UIHelper.createMenuItem(menu, title, getResourceString("SCHEMA_CONFIG_MNU"), title, true, null);
             mi.addActionListener(new ActionListener()
                     {
                         public void actionPerformed(ActionEvent ae)
@@ -818,11 +823,41 @@ public class Specify extends JPanel implements DatabaseLoginListener
         return mb;
     }
     
+    /**
+     * 
+     */
     protected void doSchemaConfig()
     {
-        SchemaLocalizerDlg dlg = new SchemaLocalizerDlg((Frame)UIRegistry.getTopWindow(), "SchemaConfig", true, CustomDialog.OKCANCELHELP, (Component)null);
-        dlg.setVisible(true);
+        UIRegistry.getStatusBar().setIndeterminate(true);
+        UIRegistry.getStatusBar().setText(UIRegistry.getResourceString("LOADING_LOCALES"));
+        UIRegistry.getStatusBar().repaint();
         
+        SwingWorker workerThread = new SwingWorker()
+        {
+            @Override
+            public Object construct()
+            {
+                Locale.getAvailableLocales(); // load all the locales
+                return null;
+            }
+            
+            @Override
+            public void finished()
+            {
+                UIRegistry.getStatusBar().setText("");
+                UIRegistry.getStatusBar().setIndeterminate(false);
+                
+                SchemaToolsDlg dlg = new SchemaToolsDlg((Frame)UIRegistry.getTopWindow());
+                dlg.setVisible(true);
+            }
+        };
+        
+        // start the background task
+        workerThread.start();
+        
+        
+        
+
     }
     
     /**

@@ -98,7 +98,7 @@ public class ViewSetMgrTests extends TestCase
         assertTrue(dstDir.mkdir());
         
         // Add an entry and copy the "real" file over to the source dir
-        ViewSetMgr srcVM = new ViewSetMgr(srcDir);
+        ViewSetMgr srcVM = new ViewSetMgr("", srcDir);
         srcVM.addViewSetDef("user", "Fish Views", "Fish Views Title", viewsetFileName);
         
 
@@ -192,8 +192,8 @@ public class ViewSetMgrTests extends TestCase
 
         log.info("testViewMgrCreation");
         
-        ViewSetMgr srcVM = new ViewSetMgr(new File(srcDirName));
-        ViewSetMgr dstVM = new ViewSetMgr(new File(dstDirName));
+        ViewSetMgr srcVM = new ViewSetMgr("", new File(srcDirName));
+        ViewSetMgr dstVM = new ViewSetMgr("", new File(dstDirName));
         
          
         //-------------------------------------------
@@ -216,7 +216,7 @@ public class ViewSetMgrTests extends TestCase
         // and check for the new ViewSet
         //-------------------------------------------
         
-        dstVM = new ViewSetMgr(new File(dstDirName));
+        dstVM = new ViewSetMgr("", new File(dstDirName));
         assertTrue(dstVM.isViewInUse("Fish Views", "CollectionObject"));
 
     }
@@ -226,8 +226,8 @@ public class ViewSetMgrTests extends TestCase
      */
     public void testViewSetMgr()
     {
-        ViewSetMgrManager.pushViewMgr(new ViewSetMgr(new File(XMLHelper.getConfigDirPath(File.separator + ViewSetMgrManager.BACKSTOP)), false));
-        ViewSetMgrManager.pushViewMgr(new ViewSetMgr(new File(srcDirName)));
+        ViewSetMgrManager.pushViewMgr(new ViewSetMgr("", new File(XMLHelper.getConfigDirPath(File.separator + ViewSetMgrManager.BACKSTOP)), false));
+        ViewSetMgrManager.pushViewMgr(new ViewSetMgr("", new File(srcDirName)));
         
         // Check a Fish View
         assertNotNull(AppContextMgr.getInstance().getView("Fish Views", "CollectionObject"));

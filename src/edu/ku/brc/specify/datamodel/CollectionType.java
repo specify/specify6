@@ -80,7 +80,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     protected TaxonTreeDef              taxonTreeDef;
     protected LithoStratTreeDef         lithoStratTreeDef;
     protected Set<Locality>             localities;
-    protected Set<AppResourceDefault>   appResourceDefaults;
+    protected Set<SpAppResourceDir> spAppResourceDirs;
     protected Set<UserPermission>       userPermissions;
     
     protected Set<SpLocaleContainer>    spLocaleContainers;
@@ -127,7 +127,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
         taxonTreeDef = null;
         lithoStratTreeDef = null;
         localities = new HashSet<Locality>();
-        appResourceDefaults = new HashSet<AppResourceDefault>();
+        spAppResourceDirs = new HashSet<SpAppResourceDir>();
         spLocaleContainers    = new HashSet<SpLocaleContainer>();
     }
     // End Initializer
@@ -332,14 +332,14 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
 
     @OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="collectionType")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<AppResourceDefault> getAppResourceDefaults()
+    public Set<SpAppResourceDir> getSpAppResourceDirs()
     {
-        return appResourceDefaults;
+        return spAppResourceDirs;
     }
 
-    public void setAppResourceDefaults(Set<AppResourceDefault> appResourceDefaults)
+    public void setSpAppResourceDirs(Set<SpAppResourceDir> spAppResourceDirs)
     {
-        this.appResourceDefaults = appResourceDefaults;
+        this.spAppResourceDirs = spAppResourceDirs;
     }
     
     @OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="collectionType")

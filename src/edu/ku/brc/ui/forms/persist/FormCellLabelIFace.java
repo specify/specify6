@@ -16,22 +16,56 @@ package edu.ku.brc.ui.forms.persist;
 
 import javax.swing.ImageIcon;
 
+/**
+ * Represents a Label in the UI.
+ * 
+ * @author rod
+ *
+ * @code_status Alpha
+ *
+ * Sep 29, 2007
+ *
+ */
 public interface FormCellLabelIFace extends FormCellSeparatorIFace
 {
+    /**
+     * @return what form control this label is for
+     */
     public abstract String getLabelFor();
 
+    /**
+     * @param labelFor what form control this label is for
+     */
     public abstract void setLabelFor(String labelFor);
 
+    /**
+     * @return  the icon created form the icon name
+     */
     public abstract ImageIcon getIcon();
 
+    /**
+     * @param icon the icon created form the icon name
+     */
     public abstract void setIcon(ImageIcon icon);
 
+    /**
+     * @return whether this should create a special control that enables the user to drag the record ID form the icon in the separator
+     */
     public abstract boolean isRecordObj();
 
+    /**
+     * @param recordObj whether this should create a special control that enables the user to drag the record ID form the icon in the separator
+     */
     public abstract void setRecordObj(boolean recordObj);
 
+    /**
+     * @return the name of the icon to use for the separator
+     */
     public abstract String getIconName();
 
+    /**
+     * @param iconName the name of the icon to use for the separator
+     */
     public abstract void setIconName(String iconName);
 
     //public abstract Object clone() throws CloneNotSupportedException;

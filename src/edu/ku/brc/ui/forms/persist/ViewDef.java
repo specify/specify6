@@ -45,6 +45,11 @@ public class ViewDef implements Cloneable, ViewDefIFace
     protected DataObjectGettable   dataGettable   = null;
     protected DataObjectSettable   dataSettable   = null;
     
+    protected int                  xCoord  = 0;
+    protected int                  yCoord  = 0;
+    protected int                  width   = 0;
+    protected int                  height  = 0;
+    
     /**
      * Default Constructor
      *
@@ -218,6 +223,22 @@ public class ViewDef implements Cloneable, ViewDefIFace
         return dataGettable;
     }
 
+    /**
+     * @return the dataSettableName
+     */
+    public String getDataSettableName()
+    {
+        return dataSettableName;
+    }
+
+    /**
+     * @param dataSettableName the dataSettableName to set
+     */
+    public void setDataSettableName(String dataSettableName)
+    {
+        this.dataSettableName = dataSettableName;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#getDataSettable()
      */
@@ -241,6 +262,70 @@ public class ViewDef implements Cloneable, ViewDefIFace
     {
         this.isAbsoluteLayout = isAbsoluteLayout;
     }
+    
+    /**
+     * @return the xCoord
+     */
+    public int getXCoord()
+    {
+        return xCoord;
+    }
+
+    /**
+     * @param coord the xCoord to set
+     */
+    public void setXCoord(int coord)
+    {
+        xCoord = coord;
+    }
+
+    /**
+     * @return the yCoord
+     */
+    public int getYCoord()
+    {
+        return yCoord;
+    }
+
+    /**
+     * @param coord the yCoord to set
+     */
+    public void setYCoord(int coord)
+    {
+        yCoord = coord;
+    }
+
+    /**
+     * @return the width
+     */
+    public int getWidth()
+    {
+        return width;
+    }
+
+    /**
+     * @param width the width to set
+     */
+    public void setWidth(int width)
+    {
+        this.width = width;
+    }
+
+    /**
+     * @return the height
+     */
+    public int getHeight()
+    {
+        return height;
+    }
+
+    /**
+     * @param height the height to set
+     */
+    public void setHeight(int height)
+    {
+        this.height = height;
+    }
 
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -251,6 +336,14 @@ public class ViewDef implements Cloneable, ViewDefIFace
         return this.name;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#compareTo(edu.ku.brc.ui.forms.persist.ViewDefIFace)
+     */
+    public int compareTo(ViewDefIFace obj)
+    {
+        return name.compareTo(obj.getName());
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#clone()
      */

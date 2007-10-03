@@ -9,6 +9,7 @@
  */
 package edu.ku.brc.specify.tools.fielddesc;
 
+import java.util.Locale;
 import java.util.Vector;
 
 
@@ -33,6 +34,14 @@ public interface LocalizableIOIFace
     public abstract Vector<LocalizableJListItem> getContainerDisplayItems();
     
     public abstract Vector<LocalizableJListItem> getDisplayItems(LocalizableJListItem container);
+    
+    public abstract LocalizableItemIFace realize(LocalizableItemIFace item);
+    
+    public abstract boolean isLocaleInUse(final Locale locale);
+    
+    public abstract Vector<Locale> getLocalesInUse();
+    
+    public abstract void copyLocale(Locale src, Locale dst);
     
     public abstract boolean save();
     

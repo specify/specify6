@@ -81,7 +81,7 @@ public class FormPane extends DroppableTaskPane
         this.viewName    = viewName;
         this.data        = data;
 
-        createForm(viewSetName, viewName, AltView.parseMode(mode, AltViewIFace.CreationMode.View), data, options);
+        createForm(viewSetName, viewName, AltView.parseMode(mode, AltViewIFace.CreationMode.VIEW), data, options);
     }
 
     /**
@@ -105,7 +105,7 @@ public class FormPane extends DroppableTaskPane
         this.viewName    = view.getName();
         this.data        = data;
 
-        createForm(view, AltView.parseMode(mode, AltViewIFace.CreationMode.View), data, options);
+        createForm(view, AltView.parseMode(mode, AltViewIFace.CreationMode.VIEW), data, options);
     }
 
     /**
@@ -211,7 +211,7 @@ public class FormPane extends DroppableTaskPane
                 
                 createForm(dfo.getViewSetName(), 
                            DBTableIdMgr.getInstance().getDefaultFormNameById(dfo.getFormId()), 
-                           AltViewIFace.CreationMode.View, 
+                           AltViewIFace.CreationMode.VIEW, 
                            dfo.getData(), 
                            MultiView.VIEW_SWITCHER);
              }

@@ -236,7 +236,7 @@ public class FormEditor implements DatabaseLoginListener
         dlg.dispose();
         if (!dlg.isCancelled())
         {
-            viewSetMgr = new ViewSetMgr(dlg.getSelectedNode());
+            viewSetMgr = new ViewSetMgr("", dlg.getSelectedNode());
             startup("fish", "fish");
         }
 
@@ -493,7 +493,7 @@ public class FormEditor implements DatabaseLoginListener
     protected Viewable createView(ViewIFace view)
     {
         //multiView   = new MultiView(null, view, AltView.CreationMode.View, false, false);
-        multiView   = new MultiView(null, null, view, AltViewIFace.CreationMode.Edit, MultiView.VIEW_SWITCHER | MultiView.RESULTSET_CONTROLLER);
+        multiView   = new MultiView(null, null, view, AltViewIFace.CreationMode.EDIT, MultiView.VIEW_SWITCHER | MultiView.RESULTSET_CONTROLLER);
         contentPane.removeAll();
         builder.add(multiView, cc.xy(1,1));
 

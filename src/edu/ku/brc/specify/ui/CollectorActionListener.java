@@ -79,7 +79,7 @@ public class CollectorActionListener implements ActionListener
         }
 
         int     options    = iconViewObj.getViewOptions();
-        boolean isEditting = iconViewObj.getAltView().getMode() == AltViewIFace.CreationMode.Edit;
+        boolean isEditting = iconViewObj.getAltView().getMode() == AltViewIFace.CreationMode.EDIT;
         String  title      = (MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT) && isEditting) ? 
                                 getResourceString("Edit") : collector.getIdentityTitle();
                                 

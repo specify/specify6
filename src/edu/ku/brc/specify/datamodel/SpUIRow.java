@@ -61,9 +61,9 @@ public class SpUIRow implements java.io.Serializable, FormRowIFace
     protected Short         rowNum;           // The used for ordering the rows
     protected Set<SpUICell> spCells;
     
-    protected SpUIViewDef   viewDef;
+    protected SpUIViewDef   spViewDef;
     
-    protected Vector<FormCell> cells;
+    protected Vector<FormCellIFace> cells;
     
     /**
      * 
@@ -92,7 +92,7 @@ public class SpUIRow implements java.io.Serializable, FormRowIFace
         spUIRowId = null;
         rowNum    = null;
         spCells   = new HashSet<SpUICell>();
-        viewDef   = null;
+        spViewDef   = null;
     }
     
     /**
@@ -143,17 +143,17 @@ public class SpUIRow implements java.io.Serializable, FormRowIFace
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "SpUIAltViewID", unique = false, nullable = false, insertable = true, updatable = true)
-    public SpUIViewDef getViewDef()
+    public SpUIViewDef getSpViewDef()
     {
-        return viewDef;
+        return spViewDef;
     }
 
     /**
      * @param viewDef the viewDef to set
      */
-    public void setViewDef(SpUIViewDef viewDef)
+    public void setSpViewDef(SpUIViewDef viewDef)
     {
-        this.viewDef = viewDef;
+        this.spViewDef = viewDef;
     }
     
     /* (non-Javadoc)
@@ -193,7 +193,7 @@ public class SpUIRow implements java.io.Serializable, FormRowIFace
     {
         if (cells == null)
         {
-            cells = new Vector<FormCell>();
+            cells = new Vector<FormCellIFace>();
         }
         cells.add(cell);
         return cell;
@@ -211,7 +211,7 @@ public class SpUIRow implements java.io.Serializable, FormRowIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormRowIFace#getCells()
      */
-    public Vector<FormCell> getCells()
+    public Vector<FormCellIFace> getCells()
     {
         return cells;
     }
@@ -219,7 +219,7 @@ public class SpUIRow implements java.io.Serializable, FormRowIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormRowIFace#setCells(java.util.Vector)
      */
-    public void setCells(Vector<FormCell> cells)
+    public void setCells(Vector<FormCellIFace> cells)
     {
         this.cells = cells;
         
@@ -232,7 +232,7 @@ public class SpUIRow implements java.io.Serializable, FormRowIFace
     public Object clone() throws CloneNotSupportedException
     {
         SpUIRow formRow = (SpUIRow)super.clone();
-        formRow.cells   = new Vector<FormCell>();
+        formRow.cells   = new Vector<FormCellIFace>();
         for (FormCellIFace cell : cells)
         {
             formRow.cells.add((FormCell)cell.clone());

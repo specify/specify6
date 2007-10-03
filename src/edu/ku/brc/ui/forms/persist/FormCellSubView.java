@@ -28,12 +28,18 @@ import org.apache.commons.lang.StringUtils;
 public class FormCellSubView extends FormCell implements FormCellSubViewIFace
 {
 
-    protected String viewSetName;
-    protected String viewName;
-    protected String classDesc;
+    protected String  viewSetName;
+    protected String  viewName;
+    protected String  classDesc;
     protected boolean singleValueFromSet;
-    protected String description;
-    protected String defaultAltViewType;
+    protected String  description;
+    protected String  defaultAltViewType;
+    protected String  funcModes = null;
+    
+    protected int     xCoord  = 0;
+    protected int     yCoord  = 0;
+    protected int     width   = 0;
+    protected int     height  = 0;
     
     // For Table/Grid SubViews
     protected int    tableRows = 5;
@@ -196,12 +202,88 @@ public class FormCellSubView extends FormCell implements FormCellSubViewIFace
     {
         this.tableRows = tableRows;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellSubViewIFace#getModes(java.util.List)
+     */
+    public void getModes(List<Modes> list)
+    {
+        list.addAll(modesList);
+    }
+    
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCell#getXCoord()
+     */
+    public int getXCoord()
+    {
+        return xCoord;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCell#setXCoord(int)
+     */
+    public void setXCoord(int coord)
+    {
+        xCoord = coord;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCell#getYCoord()
+     */
+    public int getYCoord()
+    {
+        return yCoord;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCell#setYCoord(int)
+     */
+    public void setYCoord(int coord)
+    {
+        yCoord = coord;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCell#getWidth()
+     */
+    public int getWidth()
+    {
+        return width;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCell#setWidth(int)
+     */
+    public void setWidth(int width)
+    {
+        this.width = width;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCell#getHeight()
+     */
+    public int getHeight()
+    {
+        return height;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCell#setHeight(int)
+     */
+    public void setHeight(int height)
+    {
+        this.height = height;
+    }
+    
 
     /**
      * @param funcModes
      */
     public void setFuncModes(final String funcModes)
     {
+        this.funcModes = funcModes;
+        
         if (StringUtils.isNotEmpty(funcModes))
         {
             modesList = new Vector<Modes>();
@@ -211,18 +293,23 @@ public class FormCellSubView extends FormCell implements FormCellSubViewIFace
             }
         }
     }
+
+    /**
+     * @return the funcModes
+     */
+    public String getFuncModes()
+    {
+        return funcModes;
+    }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.persist.FormCellSubViewIFace#getModes(java.util.List)
+     * @see edu.ku.brc.ui.forms.persist.FormCellSubViewIFace#fillWithFuncModes(java.util.List)
      */
-    public void getModes(List<Modes> list)
+    public void fillWithFuncModes(List<Modes> list)
     {
         list.addAll(modesList);
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#clone()
-     */
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormCellSubViewIFace#clone()
      */
@@ -234,7 +321,7 @@ public class FormCellSubView extends FormCell implements FormCellSubViewIFace
         subViewDef.viewSetName = viewSetName;
         subViewDef.singleValueFromSet = singleValueFromSet;
         subViewDef.description = description;
-        subViewDef.tableRows = tableRows;
+        subViewDef.tableRows   = tableRows;
         return subViewDef;      
     }
 }

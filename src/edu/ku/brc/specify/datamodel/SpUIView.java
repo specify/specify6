@@ -70,7 +70,7 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
     protected Integer spUIViewId;
     protected String  name;
     protected String  javaClassName;
-    protected String  busRulesClassName;
+    protected String  businessRulesClassName;
     protected Boolean useResourceLabels;
     protected String  description;
     protected String  resourceLabels;
@@ -78,7 +78,7 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
     protected String  objTitle;
     protected String  defaultModeName;
     
-    protected SpUIViewSet       viewSet;
+    protected SpUIViewSet       spViewSet;
     protected Set<SpUIAltView>  spAltViews;
     
     // Transient
@@ -87,6 +87,9 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
     protected Boolean            isSpecial   = null;
     protected String             viewSetName = null;
     
+    /**
+     * 
+     */
     public SpUIView()
     {
         // no op
@@ -107,7 +110,7 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
         this.name              = name;
         this.objTitle          = objTitle;
         this.javaClassName     = className;
-        this.busRulesClassName = businessRulesClassName;
+        this.businessRulesClassName = businessRulesClassName;
         this.description       = desc;
         this.useResourceLabels = useResourceLabels;
         this.resourceLabels   = resourceLabels;
@@ -117,7 +120,7 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
         defaultModeName   = null;
         
         spAltViews = new HashSet<SpUIAltView>();
-        viewSet  = null;
+        spViewSet  = null;
 
     }
 
@@ -132,7 +135,7 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
         spUIViewId        = null;
         name              = null;
         javaClassName     = null;
-        busRulesClassName = null;
+        businessRulesClassName = null;
         useResourceLabels = null;
         description       = null;
         resourceLabels    = null;
@@ -141,7 +144,7 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
         defaultModeName   = null;
         
         spAltViews = new HashSet<SpUIAltView>();
-        viewSet  = null;
+        spViewSet  = null;
          
     }
 
@@ -157,12 +160,12 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
     }
 
     /**
-     * @return the busRulesClassName
+     * @return the businessRulesClassName
      */
     @Column(name = "BusRulesClassName", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
-    public String getBusRulesClassName()
+    public String getBusinessRulesClassName()
     {
-        return busRulesClassName;
+        return businessRulesClassName;
     }
 
     /**
@@ -174,11 +177,11 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
     }
 
     /**
-     * @param busRulesClassName the busRulesClassName to set
+     * @param businessRulesClassName the businessRulesClassName to set
      */
-    public void setBusRulesClassName(String busRulesClassName)
+    public void setBusinessRulesClassName(String businessRulesClassName)
     {
-        this.busRulesClassName = busRulesClassName;
+        this.businessRulesClassName = businessRulesClassName;
     }
 
     /**
@@ -321,7 +324,7 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
     /**
      * @return the altViews
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "view")
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "spView")
     @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<SpUIAltView> getSpAltViews()
     {
@@ -341,17 +344,17 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "SpUIViewSetID", unique = false, nullable = false, insertable = true, updatable = true)
-    public SpUIViewSet getViewSet()
+    public SpUIViewSet getSpViewSet()
     {
-        return viewSet;
+        return spViewSet;
     }
 
     /**
      * @param spUIViewSet the spUIViewSet to set
      */
-    public void setViewSet(SpUIViewSet viewSet)
+    public void setSpViewSet(SpUIViewSet spViewSet)
     {
-        this.viewSet = viewSet;
+        this.spViewSet = spViewSet;
     }
 
     /* (non-Javadoc)
@@ -404,7 +407,7 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
         {
             SpUIAltView spav = (SpUIAltView)altView;
             spAltViews.add(spav);
-            spav.setView(this);
+            spav.setSpView(this);
             
         } else
         {
@@ -459,11 +462,11 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
     @Transient
     public BusinessRulesIFace getBusinessRule()
     {
-        if (busRule == null && StringUtils.isNotEmpty(busRulesClassName))
+        if (busRule == null && StringUtils.isNotEmpty(businessRulesClassName))
         {
             try
             {
-                Class<?> cls = Class.forName(busRulesClassName);
+                Class<?> cls = Class.forName(businessRulesClassName);
                 return busRule = (BusinessRulesIFace)cls.newInstance();
                 
             } catch (ClassNotFoundException ex)
@@ -599,22 +602,22 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
         {
             if (creationModeStr.equals("view"))
             {
-                mode = AltViewIFace.CreationMode.View;
+                mode = AltViewIFace.CreationMode.VIEW;
                 
             } else if (creationModeStr.equals("edit"))
             {
-                mode = AltViewIFace.CreationMode.Edit;
+                mode = AltViewIFace.CreationMode.EDIT;
                 
             } else if (creationModeStr.equals("search"))
             {
-                mode = AltViewIFace.CreationMode.Search;
+                mode = AltViewIFace.CreationMode.SEARCH;
             } else 
             {
-                mode = AltViewIFace.CreationMode.None;
+                mode = AltViewIFace.CreationMode.NONE;
             }
         } else
         {
-            mode = AltViewIFace.CreationMode.View;
+            mode = AltViewIFace.CreationMode.VIEW;
         }
         return mode;
     }
@@ -623,10 +626,10 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
     {
         switch (creationMode)
         {
-            case None: return "none";
-            case Edit: return "edit";
-            case View: return "view";
-            case Search: return "search";
+            case NONE: return "none";
+            case EDIT: return "edit";
+            case VIEW: return "view";
+            case SEARCH: return "search";
         }
         return null;
     }
@@ -647,7 +650,7 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
     @Transient
     public String getViewSetName()
     {
-        return viewSet.getName();
+        return spViewSet.getName();
     }
 
     /* (non-Javadoc)
@@ -691,4 +694,37 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
     {
         this.defaultMode = defaultMode;
     }
+    
+    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewIFace#compareTo(edu.ku.brc.ui.forms.persist.ViewIFace)
+     */
+    public int compareTo(ViewIFace obj)
+    {
+        return name.compareTo(obj.getName());
+    }
+    
+    /**
+     * Copies an existing View into this persistable View.
+     * @param view the source view
+     */
+    public void copyInto(final ViewIFace view)
+    {
+        name              = view.getName();;
+        javaClassName     = view.getClassName();
+        businessRulesClassName = view.getBusinessRulesClassName();
+        useResourceLabels = view.isUseResourceLabels();
+        description       = view.getDesc();
+        resourceLabels    = view.getResourceLabels();
+        selectorName      = view.getSelectorName();
+        objTitle          = view.getObjTitle();
+        defaultModeName   = view.getDefaultMode().toString().toLowerCase();
+        
+        busRule           = view.getBusinessRule();
+        defaultMode       = view.getDefaultMode();
+        isSpecial         = view.isSpecialViewAndEdit();
+        viewSetName       = view.getViewSetName();
+    }
+    
 }

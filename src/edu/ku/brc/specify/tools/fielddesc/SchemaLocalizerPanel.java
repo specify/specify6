@@ -1,13 +1,12 @@
 /*
-     * Copyright (C) 2007  The University of Kansas
-     *
-     * [INSERT KU-APPROVED LICENSE TEXT HERE]
-     *
-     */
-/**
- * 
+ * Copyright (C) 2007  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ *
  */
 package edu.ku.brc.specify.tools.fielddesc;
+
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,9 +14,10 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Hashtable;
 import java.util.Locale;
-import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
@@ -44,6 +44,7 @@ import com.jgoodies.forms.factories.ButtonBarFactory;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.tools.fielddesc.LocalizerApp.PackageTracker;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIRegistry;
@@ -92,12 +93,15 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
     protected Hashtable<String, String>         resHash     = new Hashtable<String, String>();
     protected Hashtable<String, PackageTracker> packageHash = new Hashtable<String, PackageTracker>();
     protected Hashtable<String, Boolean>        nameHash    = new Hashtable<String, Boolean>();
+    
+    protected PropertyChangeListener            listener    = null;
 
     /**
      * 
      */
-    public SchemaLocalizerPanel()
+    public SchemaLocalizerPanel(PropertyChangeListener l)
     {
+        listener = l;
         init();
     }
     
@@ -116,6 +120,16 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
     {
         this.localizableIO = localizableIO;
     }
+    
+    
+    /**
+     * @return the main list of containers/tables
+     */
+    public JList getContainerList()
+    {
+        return tablesList;
+    }
+
 
     /**
      * 
@@ -136,45 +150,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
             {
                 if (!e.getValueIsAdjusting())
                 {
-                    getAllDataFromUI();
-                    
-                    LocalizableJListItem jlistItem = (LocalizableJListItem)tablesList.getSelectedValue();
-                    if (jlistItem != null)
-                    {
-                        currContainer = localizableIO.getContainer(jlistItem);
-                        
-                        fillFieldList();
-                        
-                        if (currContainer != null)
-                        {
-                            tblDescText.setText(getDescStrForCurrLocale(currContainer));
-                            tblNameText.setText(getNameDescStrForCurrLocale(currContainer));
-        
-                            if (doAutoSpellCheck)
-                            {
-                                checker.spellCheck(tblNameText);
-                                checker.spellCheck(tblDescText);
-                            }
-                        } else
-                        {
-                            tblDescText.setText("");
-                            tblNameText.setText("");
-                            fieldsList.setSelectedIndex(-1);
-                        }
-                        
-                        boolean ok = currContainer != null;
-                        tblDescText.setEnabled(ok);
-                        tblNameText.setEnabled(ok);
-                        tblNameLbl.setEnabled(ok);
-                        tblDescLbl.setEnabled(ok);
-    
-                        prevTable = currContainer;
-                        
-                    } else
-                    {
-                        currContainer = null;
-                        log.error("jlistItem was null in list");
-                    }
+                    startTableSelected();
                 }
             }
             
@@ -221,11 +197,15 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
         tblDescText.setWrapStyleWord(true);
         tblDescText.addKeyListener(new LengthWatcher(255));
         tblNameText.addKeyListener(new LengthWatcher(64));
+        
+        String descStr = getResourceString("SL_DESC") + ":";
+        String nameStr = getResourceString("SL_NAME") + ":";
+        String labelStr = getResourceString("SL_LABEL") + ":";
 
         PanelBuilder topInner   = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p,4px,p,4px,p"));
-        topInner.add(tblDescLbl = new JLabel("Name:", SwingConstants.RIGHT), cc.xy(1, 1));
+        topInner.add(tblDescLbl = new JLabel(nameStr, SwingConstants.RIGHT), cc.xy(1, 1));
         topInner.add(tblNameText,        cc.xy(3, 1));
-        topInner.add(tblNameLbl = new JLabel("Desc:", SwingConstants.RIGHT), cc.xy(1, 3));
+        topInner.add(tblNameLbl = new JLabel(descStr, SwingConstants.RIGHT), cc.xy(1, 3));
         topInner.add(sp,                 cc.xy(3, 3));
         topInner.add(tpbbp,              cc.xywh(1, 5, 3, 1));
 
@@ -237,19 +217,19 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
         PanelBuilder inner = new PanelBuilder(new FormLayout("max(200px;p),4px,p,2px,f:p:g", 
                                                              "p,2px,p,2px,p,2px,f:p:g"));
         inner.add(fldsp, cc.xywh(1, 1, 1, 7));
-        inner.add(fieldNameLbl = new JLabel("Label:", SwingConstants.RIGHT), cc.xy(3, 1));
+        inner.add(fieldNameLbl = new JLabel(labelStr, SwingConstants.RIGHT), cc.xy(3, 1));
         inner.add(fieldNameText, cc.xy(5, 1));
         
-        inner.add(fieldDescLbl = new JLabel("Desc:", SwingConstants.RIGHT), cc.xy(3, 3));
+        inner.add(fieldDescLbl = new JLabel(descStr, SwingConstants.RIGHT), cc.xy(3, 3));
         sp = new JScrollPane(fieldDescText, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         inner.add(sp,   cc.xy(5, 3));
         fieldDescText.setLineWrap(true);
         fieldDescText.setRows(8);
         fieldDescText.setWrapStyleWord(true);
         
-        nxtBtn         = new JButton("Next");
-        nxtEmptyBtn    = new JButton("Next Empty");
-        fldSpellChkBtn = new JButton("Spell Check");
+        nxtBtn         = new JButton(getResourceString("NEXT"));
+        nxtEmptyBtn    = new JButton(getResourceString("SL_NEXT_EMPTY"));
+        fldSpellChkBtn = new JButton(getResourceString("SL_SPELL_CHECK"));
         
         JPanel bbp = ButtonBarFactory.buildCenteredBar(new JButton[] {nxtEmptyBtn, nxtBtn, fldSpellChkBtn});
         inner.add(bbp,   cc.xywh(3, 5, 3, 1));
@@ -259,10 +239,10 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
         
         
         PanelBuilder pb = new PanelBuilder(new FormLayout("max(200px;p),4px,f:p:g", "p,4px,t:p,4px,p,4px,f:p:g,4px,p,4px,p"), this);
-        pb.addSeparator("Tables",   cc.xywh(1, 1, 3, 1));
+        pb.addSeparator(getResourceString("SL_TABLES"),   cc.xywh(1, 1, 3, 1));
         pb.add(tblsp,               cc.xy  (1, 3));
         pb.add(topInner.getPanel(), cc.xy  (3, 3));
-        pb.addSeparator("Fields",   cc.xywh(1, 5, 3, 1));
+        pb.addSeparator(getResourceString("SL_FIELDS"),   cc.xywh(1, 5, 3, 1));
         pb.add(inner.getPanel(),    cc.xywh(1, 7, 3, 1));
         //pb.add(statusBar,           cc.xywh(1, 11, 3, 1));
 
@@ -307,22 +287,91 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
         
         //statusBar.setSectionText(0, currLocale.getDisplayName());
         
-        fieldDescText.setEnabled(false);
-        fieldNameText.setEnabled(false);
-        
-        tblDescText.setEnabled(false);
-        tblNameText.setEnabled(false);
-        
-        fieldNameLbl.setEnabled(false);
-        fieldDescLbl.setEnabled(false);
-        
-        tblNameLbl.setEnabled(false);
-        tblDescLbl.setEnabled(false);
+        tablesList.setEnabled(false);
         
         checkLocaleMenu(currLocale);
         
-        tblSpellChkBtn.setEnabled(checker != null);
-        fldSpellChkBtn.setEnabled(checker != null);
+        enableUIControls(false);
+    }
+    
+    /**
+     * Enable the controls.
+     * @param enable true/false
+     */
+    protected void enableUIControls(final boolean enable)
+    {
+        fieldDescText.setEnabled(enable);
+        fieldNameText.setEnabled(enable);
+        
+        tblDescText.setEnabled(enable);
+        tblNameText.setEnabled(enable);
+        
+        fieldNameLbl.setEnabled(enable);
+        fieldDescLbl.setEnabled(enable);
+        
+        tblNameLbl.setEnabled(enable);
+        tblDescLbl.setEnabled(enable);
+        
+        if (!enable)
+        {
+            tblSpellChkBtn.setEnabled(false);
+            fldSpellChkBtn.setEnabled(false);
+            nxtBtn.setEnabled(false);
+            nxtEmptyBtn.setEnabled(false);
+            
+        } else
+        {
+            updateBtns();
+            checkForMoreEmpties();
+            enableSpellCheck();
+        }
+    }
+    
+    /**
+     * 
+     */
+    protected void startTableSelected()
+    {
+       getAllDataFromUI();
+       
+        LocalizableJListItem jlistItem = (LocalizableJListItem)tablesList.getSelectedValue();
+        if (jlistItem != null)
+        {
+            currContainer = localizableIO.getContainer(jlistItem);
+            if (currContainer != null)
+            {
+                fillFieldList();
+                
+                if (currContainer != null)
+                {
+                    currContainer = (LocalizableContainerIFace)localizableIO.realize(currContainer);
+                    tblDescText.setText(getDescStrForCurrLocale(currContainer));
+                    tblNameText.setText(getNameDescStrForCurrLocale(currContainer));
+
+                    if (doAutoSpellCheck)
+                    {
+                        checker.spellCheck(tblNameText);
+                        checker.spellCheck(tblDescText);
+                    }
+                } else
+                {
+                    tblDescText.setText("");
+                    tblNameText.setText("");
+                    fieldsList.setSelectedIndex(-1);
+                }
+
+                prevTable = currContainer;
+                
+            } else
+            {
+                log.error("jlistItem was null in list");
+            }
+            enableUIControls(currContainer != null);
+        }
+    }
+    
+    protected void tableItemRetrieved()
+    {
     }
     
     /**
@@ -332,24 +381,54 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
     {
         this.statusBar = statusBar;
     }
-
+    
     /**
+     * @param item
      * @param srcLocale
      * @param dstLocale
      */
-    protected void copy(final Locale srcLocale, final Locale dstLocale)
+    protected void startLocaleCopy(final Locale srcLocale, final Locale dstLocale)
     {
-        for (LocalizableJListItem listItem : localizableIO.getContainerDisplayItems())
+        enableUIControls(false);
+        UIRegistry.getStatusBar().setText(UIRegistry.getResourceString("COPYING_LOCALE")); // XXX I18N (this may not need to be localized)
+        tablesList.setEnabled(false);
+        fieldsList.setEnabled(false);
+        
+        if (listener != null)
         {
-            LocalizableContainerIFace table = localizableIO.getContainer(listItem);
-            
-            copyLocale(table, srcLocale, dstLocale);
-            
-            for (LocalizableItemIFace field : table.getContainerItems())
-            {
-                copyLocale(field, srcLocale, dstLocale);
-            }
+            listener.propertyChange(new PropertyChangeEvent(this, "copyStart", null, null));
         }
+        UIRegistry.getStatusBar().setIndeterminate(true);
+        
+        SwingWorker workerThread = new SwingWorker()
+        {
+            @Override
+            public Object construct()
+            {
+                localizableIO.copyLocale(srcLocale, dstLocale);  
+                
+                return null;
+            }
+            
+            @SuppressWarnings("unchecked")
+            @Override
+            public void finished()
+            {
+                UIRegistry.getStatusBar().setText("");
+                enableUIControls(true);
+                tablesList.setEnabled(true);
+                fieldsList.setEnabled(true);
+                
+                if (listener != null)
+                {
+                    listener.propertyChange(new PropertyChangeEvent(this, "copyEnd", null, null));
+                }
+                UIRegistry.getStatusBar().setIndeterminate(false);
+            }
+        };
+        
+        // start the background task
+        workerThread.start();
     }
 
     /**
@@ -475,6 +554,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
                 LocalizableItemIFace f = (LocalizableItemIFace)getFieldItem(i);
                 if (f != null)
                 {
+                    f = localizableIO.realize(f);
                     LocalizableStrIFace  desc = getDescForCurrLocale(f);
                     if (desc != null && StringUtils.isEmpty(desc.getText()))
                     {
@@ -637,9 +717,10 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
     {
         statusBar.setText("");
         
-        LocalizableItemIFace fld  = getSelectedFieldItem();
+        LocalizableItemIFace fld = getSelectedFieldItem();
         if (fld != null)
         {
+            fld = localizableIO.realize(fld);
             fieldDescText.setText(getDescStrForCurrLocale(fld));
             fieldNameText.setText(getNameDescStrForCurrLocale(fld));
             
@@ -664,83 +745,8 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
         
         updateBtns();
     }
-    
-    /**
-     * @param lndi
-     * @param localeHash
-     */
-    public static void checkForLocales(final LocalizableItemIFace lndi, final Hashtable<String, String> localeHash)
-    {
-        lndi.fillDescs(descsList);
-        lndi.fillNames(namesList);
-        
-        for (LocalizableStrIFace nm : namesList)
-        {
-            if (nm.getLanguage().equals("de"))
-            {
-                int x= 0;
-                x++;
-            }
-            localeHash.put(makeLocaleKey(nm.getLanguage(), nm.getCountry(), nm.getVariant()), "X");
-        }
-        for (LocalizableStrIFace d : descsList)
-        {
-            if (d.getLanguage().equals("de"))
-            {
-                int x= 0;
-                x++;
-            }
-            localeHash.put(makeLocaleKey(d.getLanguage(), d.getCountry(), d.getVariant()), "X");
-        }
-    }
-    
-    /**
-     * @param locale
-     * @return
-     */
-    public Vector<Locale> getLocalesInUse()
-    {
-        Hashtable<String, String> localeHash = new Hashtable<String, String>();
-        for (LocalizableJListItem listItem : localizableIO.getContainerDisplayItems())
-        {
-            LocalizableContainerIFace table = localizableIO.getContainer(listItem);
-            checkForLocales(table, localeHash);
-            for (LocalizableItemIFace f : table.getContainerItems())
-            {
-                checkForLocales(f, localeHash);
-            }
-        }
-        Vector<Locale> inUseLocales = new Vector<Locale>(localeHash.keySet().size()+10);
-        for (String key : localeHash.keySet())
-        {
-            String[] toks = StringUtils.split(key, "_");
-            inUseLocales.add(new Locale(toks[0], "", ""));
-        }
-        return inUseLocales;
-    }
-    
-    /**
-     * @param locale
-     * @return
-     */
-    public boolean isLocaleInUse(final Locale locale)
-    {
-        Hashtable<String, String> localeHash = new Hashtable<String, String>();
-        for (LocalizableJListItem listItem : localizableIO.getContainerDisplayItems())
-        {
-            LocalizableContainerIFace table = localizableIO.getContainer(listItem);
-            checkForLocales(table, localeHash);
-            for (LocalizableItemIFace f : table.getContainerItems())
-            {
-                checkForLocales(f, localeHash);
-            }
-        }
-        for (String key : localeHash.keySet())
-        {
-            System.out.println("In Use: "+key);
-        }
-        return localeHash.get(makeLocaleKey(locale)) != null;
-    }
+
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.fielddesc.LocalizerBasePanel#localeChanged(java.lang.String)
@@ -757,16 +763,18 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
         currLocale = newLocale;
         checkLocaleMenu(currLocale);
         
-        if (!isLocaleInUse(currLocale))
+        if (!localizableIO.isLocaleInUse(currLocale))
         {
             int rv = JOptionPane.showConfirmDialog(UIRegistry.getTopWindow(),
-                    "Do you wish to copy a Locale?", "Locale is Empty", JOptionPane.YES_NO_OPTION);
+                                                   getResourceString("SL_WISH_CHANGE_LOCALE"), 
+                                                   getResourceString("SL_LOCALE_EMPTY"), 
+                                                   JOptionPane.YES_NO_OPTION);
             if (rv == JOptionPane.YES_OPTION)
             {
-                Locale localeToCopy = chooseNewLocale(getLocalesInUse());
+                Locale localeToCopy = chooseNewLocale(localizableIO.getLocalesInUse());
                 if (localeToCopy != null)
                 {
-                    copy(localeToCopy, currLocale);
+                    startLocaleCopy(localeToCopy, currLocale);
                     setHasChanged(true);
                 }
             } else
@@ -789,11 +797,24 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
         }
         
         statusBar.setSectionText(0, currLocale.getDisplayName());
-        boolean ok = currLocale.getLanguage().equals("en");
-        tblSpellChkBtn.setEnabled(ok && checker != null);
-        fldSpellChkBtn.setEnabled(ok && checker != null);
+        
+        enableSpellCheck();
+        
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.fielddesc.LocalizerBasePanel#enableSpellCheck()
+     */
+    @Override
+    protected void enableSpellCheck()
+    {
+        boolean ok = currLocale.getLanguage().equals("en");
+        tblSpellChkBtn.setEnabled(ok && checker != null && spellCheckLoaded);
+        fldSpellChkBtn.setEnabled(ok && checker != null && spellCheckLoaded);
+    }
+
+
+
     class LengthWatcher extends KeyAdapter
     {
         protected int maxLength;
@@ -827,49 +848,5 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
                 
             }
         }
-        
-    }
-    
-    /**
-     * @param item
-     * @param srcLocale
-     * @param dstLocale
-     */
-    public void copyLocale(LocalizableItemIFace item, final Locale srcLocale, final Locale dstLocale)
-    {
-        item.fillDescs(descsList);
-        item.fillNames(namesList);
-        
-        LocalizableStrIFace srcName = null;
-        for (LocalizableStrIFace nm : namesList)
-        {
-            if (nm.isLocale(srcLocale))
-            {
-                srcName = nm;
-                break;
-            }
-        }
-        
-        if (srcName != null)
-        {
-            LocalizableStrIFace name = localizableStrFactory.create(srcName.getText(), dstLocale);
-            item.addName(name);
-        }
-
-        LocalizableStrIFace srcDesc = null;
-        for (LocalizableStrIFace d : descsList)
-        {
-            if (d.isLocale(srcLocale))
-            {
-                srcDesc = d;
-                break;
-            }
-        }
-        
-        if (srcDesc != null)
-        {
-            LocalizableStrIFace desc = localizableStrFactory.create(srcDesc.getText(), dstLocale);
-            item.addDesc(desc);
-        }       
     }
 }

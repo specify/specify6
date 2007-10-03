@@ -250,7 +250,7 @@ public class FormViewObj implements Viewable,
 
         
         businessRules    = view.getBusinessRule();
-        isEditting       = altView.getMode() == AltViewIFace.CreationMode.Edit;
+        isEditting       = altView.getMode() == AltViewIFace.CreationMode.EDIT;
 
         this.formViewDef = (FormViewDef)altView.getViewDef();
         
@@ -290,7 +290,7 @@ public class FormViewObj implements Viewable,
 
         boolean addController = mvParent != null && view.getAltViews().size() > 1;
 
-        boolean addExtraRow = addController || createResultSetController || altView.getMode() == AltViewIFace.CreationMode.Search;
+        boolean addExtraRow = addController || createResultSetController || altView.getMode() == AltViewIFace.CreationMode.SEARCH;
         
         // See if we need to add a Selector ComboBox
         isSelectorForm = StringUtils.isNotEmpty(view.getSelectorName());
@@ -315,7 +315,7 @@ public class FormViewObj implements Viewable,
             cbxList.add(altView.getName());
             for (AltViewIFace av : view.getAltViews())
             {
-                if (av != altView && av.getMode() == AltViewIFace.CreationMode.Edit)
+                if (av != altView && av.getMode() == AltViewIFace.CreationMode.EDIT)
                 {
                     cbxList.add(av.getName());
                 }
@@ -361,7 +361,7 @@ public class FormViewObj implements Viewable,
                 
                 if (altViewsList.size() > 0)
                 {
-                    if (altView.getMode() == AltViewIFace.CreationMode.Edit && mvParent != null && mvParent.isTopLevel())
+                    if (altView.getMode() == AltViewIFace.CreationMode.EDIT && mvParent != null && mvParent.isTopLevel())
                     {
                         // We want it on the left side of other buttons
                         // so wee need to add it before the Save button
@@ -382,7 +382,7 @@ public class FormViewObj implements Viewable,
                 }
             }
             
-            if (!saveWasAdded && altView.getMode() == AltViewIFace.CreationMode.Edit)
+            if (!saveWasAdded && altView.getMode() == AltViewIFace.CreationMode.EDIT)
             {
                 if (mvParent != null && mvParent.isTopLevel() && !hideSaveBtn)
                 {
@@ -399,7 +399,7 @@ public class FormViewObj implements Viewable,
         }
 
         // This here because the Seach mode shouldn't be combined with other modes
-        if (altView.getMode() == AltViewIFace.CreationMode.Search)
+        if (altView.getMode() == AltViewIFace.CreationMode.SEARCH)
         {
             if (!hideSaveBtn)
             {
@@ -1649,7 +1649,7 @@ public class FormViewObj implements Viewable,
         // If the Control panel doesn't exist, then add it
         if (rsController == null && controlPanel != null)
         {
-            boolean inEditMode = altView.getMode() == AltViewIFace.CreationMode.Edit;
+            boolean inEditMode = altView.getMode() == AltViewIFace.CreationMode.EDIT;
             rsController = new ResultSetController(formValidator, inEditMode, inEditMode, view.getObjTitle(), 0);
             rsController.getPanel().setBackground(bgColor);
             
@@ -2195,7 +2195,7 @@ public class FormViewObj implements Viewable,
                         x++;
                     }
 
-                    boolean isTextFieldPerMode = cellField.isTextField(altView.getMode());
+                    boolean isTextFieldPerMode = cellField.isTextFieldForMode(altView.getMode());
 
                     boolean useFormatName = isTextFieldPerMode && isNotEmpty(formatName);
                     //log.debug("["+cellField.getName()+"] useFormatName["+useFormatName+"]  "+comp.getClass().getSimpleName());

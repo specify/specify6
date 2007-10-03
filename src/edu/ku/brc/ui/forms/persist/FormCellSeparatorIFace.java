@@ -14,12 +14,29 @@
  */
 package edu.ku.brc.ui.forms.persist;
 
+/**
+ * @author rod
+ *
+ * @code_status Alpha
+ *
+ * Sep 29, 2007
+ *
+ */
 public interface FormCellSeparatorIFace extends FormCellIFace
 {
+    /**
+     * @return
+     */
     public abstract String getLabel();
 
+    /**
+     * @param label
+     */
     public abstract void setLabel(String label);
 
+    /**
+     * @return the name of the component (subview) it will collapse
+     */
     public abstract String getCollapseCompName();
 
     /* (non-Javadoc)

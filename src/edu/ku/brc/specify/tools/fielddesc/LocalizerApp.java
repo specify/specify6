@@ -35,6 +35,14 @@ import com.apple.eawt.ApplicationEvent;
  * Sep 4, 2007
  *
  */
+/**
+ * @author rod
+ *
+ * @code_status Alpha
+ *
+ * Oct 3, 2007
+ *
+ */
 public class LocalizerApp extends LocalizableBaseApp
 {
     private static final Logger log = Logger.getLogger(LocalizerApp.class);

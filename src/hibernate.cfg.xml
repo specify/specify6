@@ -53,9 +53,6 @@
 		<mapping class="edu.ku.brc.specify.datamodel.Agent"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AgentAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AgentVariant"/>
-		<mapping class="edu.ku.brc.specify.datamodel.AppResourceDefault"/>
-		<mapping class="edu.ku.brc.specify.datamodel.AppResource"/>
-		<mapping class="edu.ku.brc.specify.datamodel.AppResourceData"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Attachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AttachmentMetadata"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AttributeDef"/>
@@ -143,6 +140,9 @@
 		<mapping class="edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Shipment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpecifyUser"/>
+		<mapping class="edu.ku.brc.specify.datamodel.SpAppResourceDir"/>
+		<mapping class="edu.ku.brc.specify.datamodel.SpAppResource"/>
+		<mapping class="edu.ku.brc.specify.datamodel.SpAppResourceData"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpLocaleContainer"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpLocaleContainerItem"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpLocaleItemStr"/>
@@ -153,6 +153,7 @@
 		<mapping class="edu.ku.brc.specify.datamodel.SpUIView"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpUIViewDef"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpUIViewSet"/>
+		<mapping class="edu.ku.brc.specify.datamodel.SpViewSetObj"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Taxon"/>
 		<mapping class="edu.ku.brc.specify.datamodel.TaxonAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.TaxonCitation"/>
@@ -160,7 +161,6 @@
 		<mapping class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem"/>
 		<mapping class="edu.ku.brc.specify.datamodel.UserGroup"/>
 		<mapping class="edu.ku.brc.specify.datamodel.UserPermission"/>
-		<mapping class="edu.ku.brc.specify.datamodel.ViewSetObj"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Workbench"/>
 		<mapping class="edu.ku.brc.specify.datamodel.WorkbenchDataItem"/>
 		<mapping class="edu.ku.brc.specify.datamodel.WorkbenchRow"/>

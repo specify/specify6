@@ -233,7 +233,7 @@ public class TableViewObj implements Viewable,
 
         boolean createViewSwitcher         = MultiView.isOptionOn(options, MultiView.VIEW_SWITCHER);
         boolean hideSaveBtn                = MultiView.isOptionOn(options, MultiView.HIDE_SAVE_BTN);
-        isEditting                         = MultiView.isOptionOn(options, MultiView.IS_EDITTING) && altView.getMode() == AltViewIFace.CreationMode.Edit;
+        isEditting                         = MultiView.isOptionOn(options, MultiView.IS_EDITTING) && altView.getMode() == AltViewIFace.CreationMode.EDIT;
         
         setValidator(formValidator);
 
@@ -278,10 +278,10 @@ public class TableViewObj implements Viewable,
                 
                 AltViewIFace.CreationMode tempMode = null;
                 //if (isNewObj && altView.getMode() == AltViewIFace.CreationMode.View)
-                if (overrideViewMode && altView.getMode() == AltViewIFace.CreationMode.View)
+                if (overrideViewMode && altView.getMode() == AltViewIFace.CreationMode.VIEW)
                                        {
                     tempMode = altView.getMode();
-                    altView.setMode(AltViewIFace.CreationMode.Edit);
+                    altView.setMode(AltViewIFace.CreationMode.EDIT);
                 }
                 
                 switcherUI = FormViewObj.createMenuSwitcherPanel(mvParent, view, altView, altViewsList);
@@ -361,7 +361,7 @@ public class TableViewObj implements Viewable,
                 }
             }
             
-            if (!saveWasAdded && altView.getMode() == AltViewIFace.CreationMode.Edit)
+            if (!saveWasAdded && altView.getMode() == AltViewIFace.CreationMode.EDIT)
             {
                 if (mvParent != null && mvParent.isTopLevel() && !hideSaveBtn && saveBtn != null)
                 {

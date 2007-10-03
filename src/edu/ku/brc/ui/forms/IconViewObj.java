@@ -163,7 +163,7 @@ public class IconViewObj implements Viewable
         
         addActionListenerToEditButton();
         
-        if (altView.getMode() == CreationMode.View)
+        if (altView.getMode() == CreationMode.VIEW)
         {
             newButton.setEnabled(false);
             deleteButton.setEnabled(false);

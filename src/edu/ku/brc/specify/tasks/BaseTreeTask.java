@@ -418,7 +418,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     {
         log.debug("adjustNodeForm(FormViewObj form)");
 
-        if (form.getAltView().getMode() != CreationMode.Edit)
+        if (form.getAltView().getMode() != CreationMode.EDIT)
         {
             // when we're not in edit mode, we don't need to setup any listeners since the user can't change anything
             return;

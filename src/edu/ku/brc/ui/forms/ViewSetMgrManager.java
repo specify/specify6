@@ -49,6 +49,7 @@ public class ViewSetMgrManager
      */
     public static void pushViewMgr(final ViewSetMgr viewMgr)
     {
+        System.err.println("Pushing ["+viewMgr.getName()+"]");
         stack.push(viewMgr);
     }
     
@@ -64,7 +65,7 @@ public class ViewSetMgrManager
         // Or the stack just may have been cleared
         if (stack.size() == 0)
         {
-            ViewSetMgrManager.pushViewMgr(new ViewSetMgr(new File(XMLHelper.getConfigDirPath(File.separator + ViewSetMgrManager.BACKSTOP)), false));
+            ViewSetMgrManager.pushViewMgr(new ViewSetMgr("BackStop", new File(XMLHelper.getConfigDirPath(File.separator + ViewSetMgrManager.BACKSTOP)), false));
         }
     }
     

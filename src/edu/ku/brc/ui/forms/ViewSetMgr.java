@@ -57,35 +57,19 @@ public class ViewSetMgr
     private static SAXReader saxReader  = null;
     
     // Data Members
-    protected Hashtable<String, ViewSet> viewsHash      = new Hashtable<String, ViewSet>();
+    protected String                     name;
+    protected Hashtable<String, ViewSetIFace> viewsHash      = new Hashtable<String, ViewSetIFace>();
     protected File                       contextDir     = null;
     protected boolean                    registryExists = false;
-    
-    /**
-     * Constructor.
-     *
-     */
-    public ViewSetMgr()
-    {
-        // do nothing
-    }
-    
-    /**
-     * Constructor with DOM.
-     *
-     * @param rootDOM the root of the DOM
-     */
-    public ViewSetMgr(Element rootDOM)
-    {
-        init(rootDOM);
-    }
     
     /**
      * Constructor with File as a dir point to ViewSet.
      * @param contextDir the path to the viewset
      */
-    public ViewSetMgr(final File contextDir)
+    public ViewSetMgr(final String name, final File contextDir)
     {
+        this.name = name;
+        
         init(contextDir, true);
     }
     
@@ -95,11 +79,20 @@ public class ViewSetMgr
      * @param contextDir the path to the viewset
      * @param emptyIsOK true means it is ok if it doesn't exist, false means it MUST exist
      */
-    public ViewSetMgr(final File contextDir, final boolean emptyIsOK)
+    public ViewSetMgr(final String name, final File contextDir, final boolean emptyIsOK)
     {
+        this.name = name;
         init(contextDir, emptyIsOK);
     }
     
+    /**
+     * @return the name
+     */
+    public String getName()
+    {
+        return name;
+    }
+
     /**
      * Adds a new ViewSet to the registry
      * @param typeStr the type of viewset
@@ -144,7 +137,7 @@ public class ViewSetMgr
      */
     public void reset()
     {
-        for (Enumeration<ViewSet> e=viewsHash.elements();e.hasMoreElements();)
+        for (Enumeration<ViewSetIFace> e=viewsHash.elements();e.hasMoreElements();)
         {
             e.nextElement().cleanUp();           
         }
@@ -196,7 +189,7 @@ public class ViewSetMgr
     {
         if (viewSetName == null)
         {
-            List<ViewSet> userVS = getUserViewSets();
+            List<ViewSetIFace> userVS = getUserViewSets();
             if (userVS.size() == 1)
             {
                 return userVS.get(0);
@@ -217,7 +210,7 @@ public class ViewSetMgr
      * Returns a list of all the ViewSets
      * @return a list of all the ViewSets
      */
-    public List<ViewSet> getViewSets()
+    public List<ViewSetIFace> getViewSets()
     {
         return Collections.list(viewsHash.elements());
     }
@@ -226,13 +219,13 @@ public class ViewSetMgr
      * Returns a list of all the non-System ViewSets.
      * @return a list of all the non-System ViewSets
      */
-    public List<ViewSet> getUserViewSets()
+    public List<ViewSetIFace> getUserViewSets()
     {
-        List<ViewSet> list = new ArrayList<ViewSet>();
+        List<ViewSetIFace> list = new ArrayList<ViewSetIFace>();
         
-        for (Enumeration<ViewSet> e=viewsHash.elements();e.hasMoreElements();)
+        for (Enumeration<ViewSetIFace> e=viewsHash.elements();e.hasMoreElements();)
         {
-            ViewSet vs = e.nextElement();
+            ViewSetIFace vs = e.nextElement();
             if (vs.getType() == ViewSetIFace.Type.User)
             {
                 list.add(vs);
@@ -334,8 +327,8 @@ public class ViewSetMgr
      */
     protected void init(final File contextDirArg, final boolean emptyIsOK)
     {
-        this.contextDir = contextDirArg;
-        registryExists = false;
+        this.contextDir     = contextDirArg;
+        this.registryExists = false;
         
         if (contextDirArg != null)
         { 
@@ -375,7 +368,7 @@ public class ViewSetMgr
             output = new BufferedWriter(new FileWriter(contextDir.getAbsoluteFile() + File.separator + REGISTRY_FILENAME));
             output.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
             output.write("<files>\n");
-            for (Enumeration<ViewSet> e = viewsHash.elements(); e.hasMoreElements();)
+            for (Enumeration<ViewSetIFace> e = viewsHash.elements(); e.hasMoreElements();)
             {
                 ViewSetIFace viewSet = e.nextElement();
                 output.write("      <file type=\""+

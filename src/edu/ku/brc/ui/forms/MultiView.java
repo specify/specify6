@@ -86,7 +86,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     protected Viewable                     currentViewable = null;
     
     protected boolean                      editable        = false;
-    protected AltViewIFace.CreationMode    createWithMode  = AltViewIFace.CreationMode.None;
+    protected AltViewIFace.CreationMode    createWithMode  = AltViewIFace.CreationMode.NONE;
     protected Vector<FormValidator>        formValidators  = new Vector<FormValidator>();
     protected boolean                      ignoreDataChanges = false;
 
@@ -173,7 +173,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      */
     public MultiView(final MultiView mvParent,
                      final String    cellName,
-                     final ViewIFace      view,
+                     final ViewIFace view,
                      final AltViewIFace.CreationMode createWithMode,
                      final String    defaultAltViewType,
                      final int       options,
@@ -185,7 +185,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         this.cellName       = cellName;
         this.view           = view;
         this.createWithMode = createWithMode;
-        this.createOptions  = options | (createWithMode == AltViewIFace.CreationMode.Edit ? IS_EDITTING : 0);
+        this.createOptions  = options | (createWithMode == AltViewIFace.CreationMode.EDIT ? IS_EDITTING : 0);
         
         isSelectorForm = StringUtils.isNotEmpty(view.getSelectorName());
         
@@ -219,7 +219,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         this.cellName       = cellName;
         this.view           = view;
         this.createWithMode = createWithMode;
-        this.createOptions  = options | (createWithMode == AltViewIFace.CreationMode.Edit ? IS_EDITTING : NO_OPTIONS);
+        this.createOptions  = options | (createWithMode == AltViewIFace.CreationMode.EDIT ? IS_EDITTING : NO_OPTIONS);
         
         createWithAltView(altView != null ? altView : createDefaultViewable(null));
     }
@@ -515,7 +515,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      */
     protected Viewable createWithAltView(final AltViewIFace altView)
     {
-        editable = altView.getMode() == AltViewIFace.CreationMode.Edit;
+        editable = altView.getMode() == AltViewIFace.CreationMode.EDIT;
 
         // this call parents the viewable to the multiview
         Viewable viewable = ViewFactory.getInstance().buildViewable(view, altView, this, createOptions, getBackground());
@@ -684,7 +684,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                     removeFormValidator(currentViewable.getValidator());
                     
                     
-                    editable       = altView.getMode() == AltViewIFace.CreationMode.Edit;
+                    editable       = altView.getMode() == AltViewIFace.CreationMode.EDIT;
                     createWithMode = altView.getMode();
                     
                     //printCreateOptions("Create Sub View "+altViewName, createOptions);

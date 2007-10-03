@@ -44,6 +44,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
 
 /**
 
@@ -51,35 +52,41 @@ import org.hibernate.annotations.CascadeType;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "appresourcedefault")
-public class AppResourceDefault extends DataModelObjBase implements java.io.Serializable
+@Table(name = "spappresourcedir")
+@org.hibernate.annotations.Table(appliesTo="spappresourcedir", indexes =
+    {   @Index (name="SpAppResourceDirDispTypeIDX", columnNames={"DisciplineType"})
+    })
+public class SpAppResourceDir extends DataModelObjBase implements java.io.Serializable
 {
 
     // Fields
 
-     protected Integer          appResourceDefaultId;
-     protected Collection       collection;
-     protected CollectionType   collectionType;
-     protected SpecifyUser      specifyUser;
-     protected Set<AppResource> persistedAppResources;
-     protected Set<ViewSetObj>  persistedViewSets;
-     protected String           userType;
-     protected String           disciplineType;
+     protected Integer            spAppResourceDirId;
+     protected Collection         collection;
+     protected CollectionType     collectionType;
+     protected SpecifyUser        specifyUser;
+     protected Set<SpAppResource> spPersistedAppResources;
+     protected Set<SpViewSetObj>  spPersistedViewSets;
+     protected String             userType;
+     protected String             disciplineType;
      
      // Transient Data Member
-     protected Set<AppResource> appResources = null;
-     protected Set<ViewSetObj>  viewSets;
+     protected Set<SpAppResource> spAppResources     = null;
+     protected Set<SpViewSetObj>  spViewSets         = null;
+     protected boolean            shouldInitialViews = true;
 
     // Constructors
 
     /** default constructor */
-    public AppResourceDefault() {
+    public SpAppResourceDir() 
+    {
         //
     }
 
     /** constructor with id */
-    public AppResourceDefault(Integer appResourceDefaultId) {
-        this.appResourceDefaultId = appResourceDefaultId;
+    public SpAppResourceDir(Integer spAppResourceDirId) 
+    {
+        this.spAppResourceDirId = spAppResourceDirId;
     }
 
     // Initializer
@@ -87,19 +94,19 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
     public void initialize()
     {
         super.init();
-        appResourceDefaultId  = null;
+        spAppResourceDirId  = null;
         collection            = null;
         collectionType        = null;
         specifyUser           = null;
         
-        persistedAppResources = new HashSet<AppResource>();
-        persistedViewSets     = new HashSet<ViewSetObj>();
+        spPersistedAppResources = new HashSet<SpAppResource>();
+        spPersistedViewSets     = new HashSet<SpViewSetObj>();
 
         userType              = null;
         disciplineType        = null;
         
-        appResources          = null;//new HashSet<AppResource>();
-        viewSets              = new HashSet<ViewSetObj>();
+        spAppResources          = null;//new HashSet<AppResource>();
+        spViewSets              = new HashSet<SpViewSetObj>();
 
     }
     // End Initializer
@@ -112,9 +119,10 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
      */
     @Id
     @GeneratedValue
-    @Column(name = "AppResourceDefaultID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Integer getAppResourceDefaultId() {
-        return this.appResourceDefaultId;
+    @Column(name = "SpAppResourceDirID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Integer getSpAppResourceDirId() 
+    {
+        return this.spAppResourceDirId;
     }
 
     /**
@@ -125,7 +133,7 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
     @Override
     public Integer getId()
     {
-        return this.appResourceDefaultId;
+        return this.spAppResourceDirId;
     }
 
     /* (non-Javadoc)
@@ -135,7 +143,7 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
     @Override
     public Class<?> getDataClass()
     {
-        return AppResourceDefault.class;
+        return SpAppResourceDir.class;
     }
     
     /* (non-Javadoc)
@@ -148,8 +156,12 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
         return false;
     }
     
-    public void setAppResourceDefaultId(Integer appResourceDefaultId) {
-        this.appResourceDefaultId = appResourceDefaultId;
+    /**
+     * @param spAppResourceDirId
+     */
+    public void setSpAppResourceDirId(Integer spAppResourceDirId) 
+    {
+        this.spAppResourceDirId = spAppResourceDirId;
     }
 
     /* (non-Javadoc)
@@ -164,7 +176,8 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.AppResourceDefaultIFace#setCollection(edu.ku.brc.specify.datamodel.Collection)
      */
-    public void setCollection(Collection collection) {
+    public void setCollection(Collection collection) 
+    {
         this.collection = collection;
     }
 
@@ -173,111 +186,157 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "CollectionTypeID", unique = false, nullable = true, insertable = true, updatable = true)
-    public CollectionType getCollectionType() {
+    public CollectionType getCollectionType() 
+    {
         return this.collectionType;
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.AppResourceDefaultIFace#setCollectionType(edu.ku.brc.specify.datamodel.CollectionType)
      */
-    public void setCollectionType(CollectionType collectionType) {
+    public void setCollectionType(CollectionType collectionType) 
+    {
         this.collectionType = collectionType;
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.AppResourceDefaultIFace#getSpecifyUser()
+    /**
+     * @return
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "SpecifyUserID", unique = false, nullable = true, insertable = true, updatable = true)
-    public SpecifyUser getSpecifyUser() {
+    public SpecifyUser getSpecifyUser() 
+    {
         return this.specifyUser;
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.AppResourceDefaultIFace#setSpecifyUser(edu.ku.brc.specify.datamodel.SpecifyUser)
+    /**
+     * @param specifyUser
      */
-    public void setSpecifyUser(SpecifyUser specifyUser) {
+    public void setSpecifyUser(SpecifyUser specifyUser) 
+    {
         this.specifyUser = specifyUser;
     }
 
 
-    @ManyToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "appResourceDefaults")
+    /**
+     * @return
+     */
+    @ManyToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "spAppResourceDirs")
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    public Set<AppResource> getPersistedAppResources() {
-        return this.persistedAppResources;
+    public Set<SpAppResource> getSpPersistedAppResources() 
+    {
+        return this.spPersistedAppResources;
     }
 
 
-    public void setPersistedAppResources(Set<AppResource> persistedAppResources) {
-        this.persistedAppResources = persistedAppResources;
+    /**
+     * @param persistedAppResources
+     */
+    public void setSpPersistedAppResources(Set<SpAppResource> persistedAppResources) 
+    {
+        this.spPersistedAppResources = persistedAppResources;
     }
 
 
-    @ManyToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "appResourceDefaults")
+    /**
+     * @return
+     */
+    @ManyToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "spAppResourceDirs")
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    public Set<ViewSetObj> getPersistedViewSets() {
-        return this.persistedViewSets;
+    public Set<SpViewSetObj> getSpPersistedViewSets() 
+    {
+        return this.spPersistedViewSets;
     }
 
-
-    public void setPersistedViewSets(Set<ViewSetObj> persistedViewSets) {
-        this.persistedViewSets = persistedViewSets;
+    /**
+     * @param persistedViewSets
+     */
+    public void setSpPersistedViewSets(Set<SpViewSetObj> persistedViewSets) 
+    {
+        this.spPersistedViewSets = persistedViewSets;
     }
 
+    /**
+     * @return
+     */
     @Column(name = "DisciplineType", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getDisciplineType()
     {
         return disciplineType;
     }
 
+    /**
+     * @param disciplineType
+     */
     public void setDisciplineType(String disciplineType)
     {
         this.disciplineType = disciplineType;
     }
 
+    /**
+     * @return
+     */
     @Column(name = "UserType", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getUserType()
     {
         return userType;
     }
 
+    /**
+     * @param userType
+     */
     public void setUserType(String userType)
     {
         this.userType = userType;
     }
     
+    /**
+     * @return
+     */
     @Transient
-    public Set<AppResource> getAppResources()
+    public Set<SpAppResource> getSpAppResources()
     {
-        if (appResources == null)
+        if (spAppResources == null)
         {
-            appResources = new HashSet<AppResource>();
-            appResources.addAll(getPersistedAppResources());
+            spAppResources = new HashSet<SpAppResource>();
+            spAppResources.addAll(getSpPersistedAppResources());
         }
-        return appResources;
+        return spAppResources;
     }
 
-    public void setAppResources(Set<AppResource> appResources)
+    /**
+     * @param spAppResources
+     */
+    public void setSpAppResources(Set<SpAppResource> spAppResources)
     {
-        this.appResources = appResources;
+        this.spAppResources = spAppResources;
     }
 
+    /**
+     * @return the list of Peristable and transient ViewSetObjs
+     */
     @Transient
-    public Set<ViewSetObj> getViewSets()
+    public Set<SpViewSetObj> getSpViewSets()
     {
-        if (viewSets == null)
+        if (spViewSets == null || shouldInitialViews)
         {
-            viewSets = new HashSet<ViewSetObj>();
-            viewSets.addAll(getPersistedViewSets());
+            spViewSets = new HashSet<SpViewSetObj>();
+            spViewSets.addAll(getSpPersistedViewSets());
         }
-        return viewSets;
+        return spViewSets;
     }
 
-    public void setViewSets(Set<ViewSetObj> viewSets)
+    /**
+     * @param viewSets the set of ViewSets
+     */
+    public void setSpViewSets(Set<SpViewSetObj> viewSets)
     {
-        this.viewSets = viewSets;
+        this.spViewSets = viewSets;
     }
 
+    /**
+     * @return a very descriptive unique identifier
+     */
     @Transient
     public String getVerboseUniqueIdentifer()
     {
@@ -290,10 +349,13 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
         return strBuf.toString(); 
     }
 
+    /**
+     * @return a unique identifier, the ID if it has one or build one if not.
+     */
     @Transient
     public String getUniqueIdentifer()
     {
-        return appResourceDefaultId == null ? getVerboseUniqueIdentifer() : appResourceDefaultId.toString();
+        return spAppResourceDirId == null ? getVerboseUniqueIdentifer() : spAppResourceDirId.toString();
     }
     
     /* (non-Javadoc)
@@ -309,9 +371,11 @@ public class AppResourceDefault extends DataModelObjBase implements java.io.Seri
     /**
      * @return the Table ID for the class.
      */
+    /**
+     * @return
+     */
     public static int getClassTableId()
     {
-        return 85;
+        return 516;
     }
-
 }

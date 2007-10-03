@@ -28,8 +28,8 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPreferences.AppPrefsIOIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.specify.datamodel.AppResource;
-import edu.ku.brc.specify.datamodel.AppResourceData;
+import edu.ku.brc.specify.datamodel.SpAppResource;
+import edu.ku.brc.specify.datamodel.SpAppResourceData;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 
 /**
@@ -45,9 +45,9 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
     protected static final Logger log       = Logger.getLogger(AppPrefsDBIOIImpl.class);
     protected static final String PREF_NAME = "preferences";
     
-    protected AppPreferences appPrefsMgr = null;
-    protected AppResource    appResource = null;
-    protected boolean        found       = false;
+    protected AppPreferences appPrefsMgr   = null;
+    protected SpAppResource  spAppResource = null;
+    protected boolean        found         = false;
     
     /**
      * Constructor.
@@ -95,7 +95,7 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
     {
         load(); // throws exception on error
         
-        return appResource.getTimestampModified();
+        return spAppResource.getTimestampModified();
     }
     
     /* (non-Javadoc)
@@ -104,7 +104,7 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
     public void load()
     {
         log.debug("loading AppPrefsDBIOIImpl");
-        if (appResource == null && appPrefsMgr != null)
+        if (spAppResource == null && appPrefsMgr != null)
         {
             log.debug("loading creating Properties");
             Properties properties = new Properties(); // must be done fist thing
@@ -116,35 +116,35 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
                 session = DataProviderFactory.getInstance().createSession();
                 if (session != null)
                 {
-                    List<?> list = session.getDataList(AppResource.class, "name", PREF_NAME);
+                    List<?> list = session.getDataList(SpAppResource.class, "name", PREF_NAME);
                     if (list.size() == 0)
                     {
                         log.debug("creating AppResource");
-                        appResource = new AppResource();
-                        appResource.initialize();
+                        spAppResource = new SpAppResource();
+                        spAppResource.initialize();
                         
-                        appResource.setName(PREF_NAME);
-                        appResource.setLevel((short)3); // TODO WHAT LEVEL IS USER???????
+                        spAppResource.setName(PREF_NAME);
+                        spAppResource.setLevel((short)3); // TODO WHAT LEVEL IS USER???????
                         SpecifyUser user = SpecifyUser.getCurrentUser();
-                        appResource.setSpecifyUser(user);
+                        spAppResource.setSpecifyUser(user);
 
-                        AppResourceData appData = new AppResourceData();
+                        SpAppResourceData appData = new SpAppResourceData();
                         appData.initialize();
-                        appData.setAppResource(appResource);
-                        appResource.getAppResourceDatas().add(appData);
+                        appData.setSpAppResource(spAppResource);
+                        spAppResource.getSpAppResourceDatas().add(appData);
                         
                         found = false;
                         
                     } else
                     {
-                        appResource = (AppResource)list.get(0);
-                        AppResourceData ard = null;
-                        if (appResource.getAppResourceDatas().size() == 0)
+                        spAppResource = (SpAppResource)list.get(0);
+                        SpAppResourceData ard = null;
+                        if (spAppResource.getSpAppResourceDatas().size() == 0)
                         {
                             /*
                             ard = new AppResourceData();
                             ard.initialize();
-                            appResource.getAppResourceDatas().add(ard);
+                            appResource.getSpAppResourceDatas().add(ard);
                             ard.setAppResource(appResource);
                             Transaction trans = session.beginTransaction();
                             session.save(appResource);
@@ -154,7 +154,7 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
                             
                         }
                         // else
-                        ard = appResource.getAppResourceDatas().iterator().next();
+                        ard = spAppResource.getSpAppResourceDatas().iterator().next();
                          
                         properties.load(new ByteArrayInputStream(ard.getData()));
                         
@@ -185,10 +185,10 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
     {
         load(); // throws exception on error
         
-        if (appResource != null && appPrefsMgr.isChanged())
+        if (spAppResource != null && appPrefsMgr.isChanged())
         {
             
-            if (appResource.getAppResourceDatas().size() == 0)
+            if (spAppResource.getSpAppResourceDatas().size() == 0)
             {
                 throw new RuntimeException("AppResource has no AppResourceData object!");
             }
@@ -199,7 +199,7 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
                 appPrefsMgr.getProperties().store(byteOut, "Remote User Prefs");
                 appPrefsMgr.setChanged(false);
                 
-                AppResourceData apData = appResource.getAppResourceDatas().iterator().next();
+                SpAppResourceData apData = spAppResource.getSpAppResourceDatas().iterator().next();
                 if (apData != null)
                 {
                     //String dataStr = new String(byteOut.toByteArray());
@@ -220,7 +220,7 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
                     {
                         session.beginTransaction();
                         
-                        session.saveOrUpdate(appResource);
+                        session.saveOrUpdate(spAppResource);
                         
                         session.commit();
                     }
@@ -250,7 +250,7 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
             }
         } else
         {
-            log.error("Number of ResourceData objects: "+appResource.getAppResourceDatas().size());
+            log.error("Number of ResourceData objects: "+spAppResource.getSpAppResourceDatas().size());
         }
     }
 }

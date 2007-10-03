@@ -299,6 +299,14 @@ public class SpLocaleContainer extends SpLocaleBase implements LocalizableContai
         }
         return containerItems;
     }
+    
+    /**
+     * 
+     */
+    public void clearCollectionItemsList()
+    {
+        containerItems = null;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.fielddesc.LocalizableContainerIFace#removeItem(edu.ku.brc.specify.tools.fielddesc.LocalizableItemIFace)

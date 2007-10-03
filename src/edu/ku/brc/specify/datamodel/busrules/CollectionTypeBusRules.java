@@ -61,7 +61,7 @@ public class CollectionTypeBusRules extends BaseBusRules
             {
                 return false;
             }
-            if (ct.getAppResourceDefaults().size() > 0)
+            if (ct.getSpAppResourceDirs().size() > 0)
             {
                 return false;
             }
@@ -119,7 +119,7 @@ public class CollectionTypeBusRules extends BaseBusRules
             ct.setTaxonTreeDef(taxonTreeDef);
         }
         
-        if (ct.getAppResourceDefaults() == null)
+        if (ct.getSpAppResourceDirs() == null)
         {
             //ct.setTaxonTreeDef(taxonTreeDef);
         }

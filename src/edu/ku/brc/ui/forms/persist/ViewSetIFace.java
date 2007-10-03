@@ -16,7 +16,7 @@ package edu.ku.brc.ui.forms.persist;
 
 import java.util.Hashtable;
 
-public interface ViewSetIFace
+public interface ViewSetIFace extends Comparable<ViewSetIFace>
 {
     public enum Type {System, User}
 

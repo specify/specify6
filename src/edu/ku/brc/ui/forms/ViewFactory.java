@@ -636,7 +636,7 @@ public class ViewFactory
 
         }
         
-        boolean imageInEdit = mode == AltViewIFace.CreationMode.Edit;
+        boolean imageInEdit = mode == AltViewIFace.CreationMode.EDIT;
         String editModeStr = cellField.getProperty("edit");
         if (isNotEmpty(editModeStr))
         {
@@ -803,7 +803,47 @@ public class ViewFactory
                         
                     } else
                     {
-                        JLabel lbl = new JLabel(isNotEmpty(lblStr) ? lblStr + ":" : "  ", SwingConstants.RIGHT);
+                        boolean useColon = StringUtils.isNotEmpty(cellLabel.getLabelFor());
+                        int align;
+                        String alignProp = cellLabel.getProperty("align");
+                        System.out.println(lblStr);
+                        if (StringUtils.isNotEmpty(alignProp))
+                        {
+                            if (alignProp.equals("left"))
+                            {
+                                align = SwingConstants.LEFT;
+                                
+                            } else if (alignProp.equals("center"))
+                            {
+                                align = SwingConstants.CENTER;
+                                
+                            } else
+                            {
+                                align = SwingConstants.RIGHT;
+                            }
+                        } else if (useColon)
+                        {
+                            align = SwingConstants.RIGHT;
+                        } else
+                        {
+                            align = SwingConstants.LEFT;
+                        }
+                        
+                        String lStr;
+                        if (isNotEmpty(lblStr))
+                        {
+                            if (useColon)
+                            {
+                                lStr = lblStr + ":";
+                            } else
+                            {
+                                lStr = lblStr;
+                            }
+                        } else
+                        {
+                            lStr = "  ";
+                        }
+                        JLabel lbl = new JLabel(lStr, align);
                         labelsForHash.put(cellLabel.getLabelFor(), lbl);
                         compToAdd      =  lbl;
                         viewBldObj.addLabel(cellLabel, lbl);
@@ -837,7 +877,7 @@ public class ViewFactory
                     // here after we have the picklist and actually set the change into the cellField
                     // because it uses the value to determine whether to convert the value into a text string 
                     // before setting it.
-                    if (mode == AltViewIFace.CreationMode.View)
+                    if (mode == AltViewIFace.CreationMode.VIEW)
                     {
                         if (uiType == FormCellFieldIFace.FieldType.combobox && cellField.getDspUIType() != FormCellFieldIFace.FieldType.textpl)
                         {
@@ -866,7 +906,7 @@ public class ViewFactory
                             break;
                         
                         case formattedtext:
-                            compToAdd = createFormattedTextField(validator, cellField, mode == AltViewIFace.CreationMode.View, cellField.getPropertyAsBoolean("alledit", false));
+                            compToAdd = createFormattedTextField(validator, cellField, mode == AltViewIFace.CreationMode.VIEW, cellField.getPropertyAsBoolean("alledit", false));
                             addToValidator = validator == null; // might already added to validator
                             break;
                             
@@ -914,7 +954,7 @@ public class ViewFactory
                         {
                             ValCheckBox checkbox = new ValCheckBox(cellField.getLabel(), 
                                                                    cellField.isRequired(), 
-                                                                   cellField.isReadOnly() || mode == AltViewIFace.CreationMode.View);
+                                                                   cellField.isReadOnly() || mode == AltViewIFace.CreationMode.VIEW);
                             if (validator != null)
                             {
                                 DataChangeNotifier dcn = validator.createDataChangeNotifer(cellField.getIdent(), checkbox, null);
@@ -933,7 +973,7 @@ public class ViewFactory
                             int    max    = StringUtils.isNotEmpty(maxStr) ? Integer.parseInt(maxStr) : 0; 
                             
                             ValSpinner spinner = new ValSpinner(min, max, cellField.isRequired(), 
-                                                                   cellField.isReadOnly() || mode == AltViewIFace.CreationMode.View);
+                                                                   cellField.isReadOnly() || mode == AltViewIFace.CreationMode.VIEW);
                             if (validator != null)
                             {
                                 DataChangeNotifier dcn = validator.createDataChangeNotifer(cellField.getIdent(), spinner, null);
@@ -1020,7 +1060,7 @@ public class ViewFactory
                             break;
                         
                         case plugin:
-                            compToAdd = createPlugin(validator, cellField, mode == AltViewIFace.CreationMode.View);
+                            compToAdd = createPlugin(validator, cellField, mode == AltViewIFace.CreationMode.VIEW);
                             break;
 
                         case textpl:

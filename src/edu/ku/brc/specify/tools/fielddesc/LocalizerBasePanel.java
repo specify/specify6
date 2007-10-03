@@ -33,8 +33,8 @@ import com.swabunga.spell.engine.SpellDictionary;
 import com.swabunga.spell.engine.SpellDictionaryHashMap;
 import com.swabunga.spell.swing.JTextComponentSpellChecker;
 
+import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.ToggleButtonChooserPanel;
 import edu.ku.brc.ui.UIRegistry;
@@ -70,6 +70,7 @@ public abstract class LocalizerBasePanel extends JPanel
     protected String           userFileName       = "user.dict";
     protected JTextComponentSpellChecker checker  = null;
     protected SpellDictionary  userDict;
+    protected boolean          spellCheckLoaded   = false;
     
     // UI Helpers
     protected boolean          hasChanged         = false;
@@ -114,52 +115,79 @@ public abstract class LocalizerBasePanel extends JPanel
         LocalizerBasePanel.localizableStrFactory = localizableStrFactory;
     }
 
-
     /**
      * 
      */
     public void init()
     {
-        try
+        
+        SwingWorker workerThread = new SwingWorker()
         {
-            File           phoneticFile = XMLHelper.getConfigDir(phoneticFileName);
-            File           file         = XMLHelper.getConfigDir(dictionaryFileName);
-            ZipInputStream zip          = null;
-
-            try
+            @Override
+            public Object construct()
             {
-                zip = new ZipInputStream(new FileInputStream(file));
+                try
+                {
+                    File           phoneticFile = XMLHelper.getConfigDir(phoneticFileName);
+                    File           file         = XMLHelper.getConfigDir(dictionaryFileName);
+                    ZipInputStream zip          = null;
 
-            } catch (NullPointerException e)
-            {
-                FileInputStream fin = new FileInputStream(file);
-                zip = new ZipInputStream(fin);
+                    try
+                    {
+                        zip = new ZipInputStream(new FileInputStream(file));
+
+                    } catch (NullPointerException e)
+                    {
+                        FileInputStream fin = new FileInputStream(file);
+                        zip = new ZipInputStream(fin);
+                    }
+
+                    zip.getNextEntry();
+                    
+                    dictionary = new SpellDictionaryHashMap(new BufferedReader(new InputStreamReader(zip)), new FileReader(phoneticFile));
+                    File userDictFile = new File(userFileName);
+                    if (!userDictFile.exists())
+                    {
+                        userDictFile.createNewFile();
+                    }
+                    checker  = new JTextComponentSpellChecker(dictionary);
+                    userDict = new SpellDictionaryHashMap(userDictFile, phoneticFile);
+                    checker.setUserDictionary(userDict);
+                    
+                } catch (MalformedURLException e)
+                {
+                    e.printStackTrace();
+
+                } catch (FileNotFoundException e)
+                {
+                    e.printStackTrace();
+
+                } catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+                return null;
             }
-
-            zip.getNextEntry();
             
-            dictionary = new SpellDictionaryHashMap(new BufferedReader(new InputStreamReader(zip)), new FileReader(phoneticFile));
-            File userDictFile = new File(userFileName);
-            if (!userDictFile.exists())
+            @SuppressWarnings("unchecked")
+            @Override
+            public void finished()
             {
-                userDictFile.createNewFile();
+                spellCheckLoaded = true;
+                enableSpellCheck();
             }
-            checker  = new JTextComponentSpellChecker(dictionary);
-            userDict = new SpellDictionaryHashMap(userDictFile, phoneticFile);
-            checker.setUserDictionary(userDict);
-            
-        } catch (MalformedURLException e)
-        {
-            e.printStackTrace();
-
-        } catch (FileNotFoundException e)
-        {
-            e.printStackTrace();
-
-        } catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+        };
+        
+        // start the background task
+        workerThread.start();
+    }
+    
+    /**
+     * 
+     */
+    protected void enableSpellCheck()
+    {
+        // to be overridden
     }
 
     
@@ -190,7 +218,8 @@ public abstract class LocalizerBasePanel extends JPanel
             list.add(new DisplayLocale(l));
         }
         ToggleButtonChooserDlg<DisplayLocale> dlg = new ToggleButtonChooserDlg<DisplayLocale>(null, 
-                                                   "Choose Locale", list, ToggleButtonChooserPanel.Type.RadioButton);
+                                                   UIRegistry.getResourceString("CHOOSE_LOCALE"), 
+                                                   list, ToggleButtonChooserPanel.Type.RadioButton);
         dlg.setUseScrollPane(true);
         dlg.setVisible(true);
         
@@ -221,8 +250,7 @@ public abstract class LocalizerBasePanel extends JPanel
             if (!text.equals(desc.getText()))
             {
                 desc.setText(text);
-                System.out.println("Setting Desc text ["+text+"] "+((SpLocaleItemStr)desc).getId());
-
+                //System.out.println("Setting Desc text ["+text+"] "+((SpLocaleItemStr)desc).getId());
                 return true;
             }
         }
@@ -243,7 +271,7 @@ public abstract class LocalizerBasePanel extends JPanel
             //return desc.getText();
             return "";
         }
-        System.out.println("Getting Desc text ["+desc.getText()+"] "+((SpLocaleItemStr)desc).getId());
+        //System.out.println("Getting Desc text ["+desc.getText()+"] "+((SpLocaleItemStr)desc).getId());
         return desc.getText();
     }
     
@@ -304,7 +332,7 @@ public abstract class LocalizerBasePanel extends JPanel
             return "";
             
         }
-        System.out.println("Getting Name text ["+nameDesc.getText()+"] "+((SpLocaleItemStr)nameDesc).getId());
+        //System.out.println("Getting Name text ["+nameDesc.getText()+"] "+((SpLocaleItemStr)nameDesc).getId());
         return nameDesc.getText();
     }
     
@@ -323,30 +351,6 @@ public abstract class LocalizerBasePanel extends JPanel
             }
         }
         return null;
-    }
-    
-    /**
-     * @param lang
-     * @param country
-     * @param variant
-     * @return
-     */
-    public static String makeLocaleKey(final String lang, final String country, final String variant)
-    {
-        StringBuilder sb = new StringBuilder();
-        sb.append(lang);
-        sb.append(StringUtils.isNotEmpty(country) ? ("_" + country) : "");
-        sb.append(StringUtils.isNotEmpty(variant) ? ("_" + variant) : "");
-        return sb.toString();
-    }
-    
-    /**
-     * @param locale
-     * @return
-     */
-    protected static String makeLocaleKey(final Locale locale)
-    {
-        return makeLocaleKey(locale.getLanguage(), locale.getCountry(), locale.getVariant());
     }
     
     /**
@@ -474,37 +478,4 @@ public abstract class LocalizerBasePanel extends JPanel
     
     public abstract void localeChanged(final Locale newLocale);
     
-    //-------------------------------------------------------------
-    //-- Inner Classes
-    //-------------------------------------------------------------
-    class DisplayLocale
-    {
-        protected Locale locale;
-
-        /**
-         * @param locale
-         */
-        public DisplayLocale(final Locale locale)
-        {
-            super();
-            this.locale = locale;
-        }
-
-        /**
-         * @return the locale
-         */
-        public Locale getLocale()
-        {
-            return locale;
-        }
-
-        /* (non-Javadoc)
-         * @see java.lang.Object#toString()
-         */
-        @Override
-        public String toString()
-        {
-            return locale.getDisplayName();
-        }
-    }
 }

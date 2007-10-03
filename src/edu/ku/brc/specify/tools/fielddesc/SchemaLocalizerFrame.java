@@ -40,7 +40,7 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class SchemaLocalizerFrame extends LocalizableBaseApp
 {
-    protected SchemaLocalizerPanel     panel;
+    protected SchemaLocalizerPanel schemaLocPanel;
     
     protected JStatusBar           statusBar     = new JStatusBar(new int[] {5});
     
@@ -91,11 +91,11 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
             
         });
         
-        panel = new SchemaLocalizerPanel();
-        panel.setLocalizableIO(localizableIO);
-        panel.setStatusBar(statusBar);
-        panel.buildUI();
-        panel.setHasChanged(localizableIO.didModelChangeDuringLoad());
+        schemaLocPanel = new SchemaLocalizerPanel(null);
+        schemaLocPanel.setLocalizableIO(localizableIO);
+        schemaLocPanel.setStatusBar(statusBar);
+        schemaLocPanel.buildUI();
+        schemaLocPanel.setHasChanged(localizableIO.didModelChangeDuringLoad());
         
         UIRegistry.setStatusBar(statusBar);
         
@@ -133,14 +133,14 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
             }
         });
         
-        menuBar.add(panel.getLocaleMenu(this));
+        menuBar.add(schemaLocPanel.getLocaleMenu(this));
         
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         
         setSize(800, 600);
 
         JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.add(panel, BorderLayout.CENTER);
+        mainPanel.add(schemaLocPanel, BorderLayout.CENTER);
         mainPanel.add(statusBar, BorderLayout.SOUTH);
 
         mainPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
@@ -148,7 +148,9 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
         
         statusBar.setSectionText(0, LocalizerBasePanel.getCurrLocale().getDisplayName());
         
-        panel.setSaveMenuItem(saveMenuItem);
+        schemaLocPanel.setSaveMenuItem(saveMenuItem);
+        
+        schemaLocPanel.getContainerList().setEnabled(true);
     }
     
     /**
@@ -156,7 +158,7 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
      */
     protected void shutdown()
     {
-        if (panel.hasChanged())
+        if (schemaLocPanel.hasChanged())
         {
             int rv = JOptionPane.showConfirmDialog(this, "Save changes?", "Save Changes", JOptionPane.YES_NO_OPTION);
             if (rv == JOptionPane.YES_OPTION)
@@ -179,11 +181,11 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
         statusBar.setText("Saving...");
         statusBar.paintImmediately(statusBar.getBounds());
         
-        panel.getAllDataFromUI();
+        schemaLocPanel.getAllDataFromUI();
         
         if (localizableIO.save())
         {
-            panel.setHasChanged(false);
+            schemaLocPanel.setHasChanged(false);
             statusBar.setText("Saved.");
             
         } else

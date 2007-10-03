@@ -263,6 +263,35 @@
                 <altview name="TaxonAttachment Form Edit"  viewdef="TaxonAttachment Form"     label="Form Edit"  mode="edit"/>                
             </altviews>
         </view>
+        
+        <view name="ViewProps"
+            class="edu.ku.brc.specify.datamodel.ViewIFace"
+            resourcelabels="false">
+            <desc><![CDATA[]]></desc>
+            <altviews>
+                <altview name="View Edit" viewdef="ViewProps" label="Edit" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+        
+        <view name="AltViewProps"
+            class="edu.ku.brc.specify.datamodel.AltViewIFace"
+            resourcelabels="false">
+            <desc><![CDATA[]]></desc>
+            <altviews>
+                <altview name="AltView Edit" viewdef="AltViewProps" label="Edit" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+        
+        <view name="ViewDefProps"
+            class="edu.ku.brc.specify.datamodel.ViewDefIFace"
+            resourcelabels="false">
+            <desc><![CDATA[]]></desc>
+            <altviews>
+                <altview name="ViewDef Edit" viewdef="ViewDefProps" label="Edit" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+        
+        
 
     </views>
   
@@ -1292,6 +1321,152 @@
                 <row>
                     <cell type="label" labelfor="mimeType" label="MIME Type"/>
                     <cell type="field" id="mimeType" name="attachment.mimeType" uitype="text"/>
+                </row>
+			</rows>
+		</viewdef>
+		
+        <viewdef
+            type="form"
+            name="ViewProps"
+            class="edu.ku.brc.specify.datamodel.View"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+
+            <desc><![CDATA[View Props]]></desc>
+
+            <columnDef>p,2px,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+    		<rows>
+    		    <row>
+    		        <cell type="label" label="View Properties" icon="Form" colspan="3" initialize="align=center"/>
+    		    </row>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="name" uitype="text" cols="20"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Description"/>
+                    <cell type="field" id="2" name="desc" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="Title"/>
+                    <cell type="field" id="3" name="objTitle" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="4" label="Data Class"/>
+                    <cell type="field" id="4" name="className" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5" label="Business Rules"/>
+                    <cell type="field" id="5" name="businessRulesClassName" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="6" label="Use Resource Labels"/>
+                    <cell type="field" id="6" name="useResourceLabels" uitype="checkbox" initialize="label=xxxx"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="7" label="Resource Labels"/>
+                    <cell type="field" id="7" name="resourceLabels" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="8" label="Default Mode"/>
+                    <!--   <cell type="field" id="8" name="defaultMode" uitype="text" initialize="helper=;"/> -->
+                </row>
+                <row>
+                    <cell type="label" labelfor="9" label="Selector Name"/>
+                    <cell type="field" id="9" name="selectorName" uitype="text"/>
+                </row>
+			</rows>
+		</viewdef>
+		
+		<viewdef
+            type="form"
+            name="AltViewProps"
+            class="edu.ku.brc.specify.datamodel.AltView"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+
+            <desc><![CDATA[Alt View Props]]></desc>
+
+            <columnDef>p,2px,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+    		<rows>
+    		    <row>
+    		        <cell type="label" label="Alternative View Properties" icon="Form" colspan="3" initialize="align=center"/>
+    		    </row>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="name" uitype="text" cols="20"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Label"/>
+                    <cell type="field" id="2" name="label" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="6" label="Is Default"/>
+                    <cell type="field" id="6" name="validated" uitype="checkbox"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="7" label="Is Default"/>
+                    <cell type="field" id="7" name="isDefault" uitype="checkbox"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="8" label="Default Mode"/>
+                    <!--   <cell type="field" id="8" name="defaultMode" uitype="text" initialize="helper=;"/> -->
+                </row>
+			</rows>
+		</viewdef>
+		
+		<viewdef
+            type="form"
+            name="ViewDefProps"
+            class="edu.ku.brc.specify.datamodel.ViewDefIFace"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+
+            <desc><![CDATA[View Def Props]]></desc>
+
+            <columnDef>p,2px,max(80px;p),p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+    		<rows>
+    		    <row>
+    		        <cell type="label" label="View Def Properties" icon="Form" colspan="4" initialize="align=center"/>
+    		    </row>
+                <row>
+                    <cell type="label" labelfor="3" label="Type"/>
+                    <!-- <cell type="field" id="3" name="type" uitype="checkbox"/>  -->
+                </row>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="name" uitype="text" cols="20" colspan="2"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Description"/>
+                    <cell type="field" id="2" name="desc" uitype="text" colspan="2"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="4" label="Data Class"/>
+                    <cell type="field" id="4" name="className" uitype="text" colspan="2"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5" label="Getter Name"/>
+                    <cell type="field" id="5" name="dataGettableName" uitype="text"  colspan="2"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="6" label="Setter Name"/>
+                    <cell type="field" id="6" name="dataSettableName" uitype="text" colspan="2"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="7" label="Is Absolute Layout"/>
+                    <cell type="field" id="7" name="isAbsoluteLayout" uitype="checkbox" colspan="2"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="8" label="Width"/>
+                    <cell type="field" id="8" name="width" uitype="spinner"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="9" label="Height"/>
+                    <cell type="field" id="9" name="height" uitype="spinner"/>
                 </row>
 			</rows>
 		</viewdef>

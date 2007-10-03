@@ -87,7 +87,7 @@ public class JStatusBar extends JPanel
         progressBar = new JProgressBar(0, 100);
 
         statusLabel.setPreferredSize(new Dimension(100, statusLabel.getPreferredSize().height));
-        progressBar.setPreferredSize(new Dimension(100, statusLabel.getPreferredSize().height));
+        progressBar.setPreferredSize(new Dimension(150, statusLabel.getPreferredSize().height));
         
         PanelBuilder builder = new PanelBuilder(new FormLayout("f:p:g,2px,right:p" + (UIHelper.getOSType() == UIHelper.OSTYPE.MacOSX ? ",15px" : ""), "p"), this);
         CellConstraints cc = new CellConstraints();

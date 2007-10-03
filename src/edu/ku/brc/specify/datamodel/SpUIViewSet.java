@@ -68,7 +68,7 @@ public class SpUIViewSet extends DataModelObjBase implements ViewSetIFace
     protected String           fileName;
     protected File             dirPath;
 
-    protected ViewSetObj       viewSetObj;
+    protected SpViewSetObj     spViewSetObj;
     protected Set<SpUIView>    spViews;
     protected Set<SpUIViewDef> spViewDefs;
     
@@ -101,7 +101,7 @@ public class SpUIViewSet extends DataModelObjBase implements ViewSetIFace
         fileName = null;
         dirPath = null;
 
-        viewSetObj = null;
+        spViewSetObj = null;
         spViews      = new HashSet<SpUIView>();
         spViewDefs   = new HashSet<SpUIViewDef>();
 
@@ -226,7 +226,7 @@ public class SpUIViewSet extends DataModelObjBase implements ViewSetIFace
     /**
      * @return the viewDefs
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "viewSet")
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "spViewSet")
     @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<SpUIViewDef> getSpViewDefs()
     {
@@ -246,7 +246,7 @@ public class SpUIViewSet extends DataModelObjBase implements ViewSetIFace
     /**
      * @return the views
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "viewSet")
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "spViewSet")
     @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<SpUIView> getSpViews()
     {
@@ -267,18 +267,18 @@ public class SpUIViewSet extends DataModelObjBase implements ViewSetIFace
      * @return the viewSetObj
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "ViewSetObjID", unique = false, nullable = false, insertable = true, updatable = true)
-    public ViewSetObj getViewSetObj()
+    @JoinColumn(name = "SpViewSetObjID", unique = false, nullable = false, insertable = true, updatable = true)
+    public SpViewSetObj getSpViewSetObj()
     {
-        return viewSetObj;
+        return spViewSetObj;
     }
 
     /**
      * @param viewSetObj the viewSetObj to set
      */
-    public void setViewSetObj(ViewSetObj viewSetObj)
+    public void setSpViewSetObj(SpViewSetObj spViewSetObj)
     {
-        this.viewSetObj = viewSetObj;
+        this.spViewSetObj = spViewSetObj;
     }
 
     /* (non-Javadoc)

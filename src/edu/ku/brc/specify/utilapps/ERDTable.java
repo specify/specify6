@@ -50,7 +50,7 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
     
     public enum DisplayType { All, MainFields, Title, TitleAndRel }
     
-    protected DisplayType displayType = DisplayType.All;
+    protected static DisplayType displayType = DisplayType.All;
     
     protected Hashtable<DBTableIdMgr.TableRelationship, JComponent> relUIHash   = new Hashtable<DBTableIdMgr.TableRelationship, JComponent>();
     
@@ -173,7 +173,8 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
         PanelBuilder    pb     = new PanelBuilder(new FormLayout("f:p:g", UIHelper.createDuplicateJGoodiesDef("p", "2px", numRows)));
         CellConstraints cc     = new CellConstraints();
         
-        String tblName = UIHelper.makeNamePretty(StringUtils.substringAfterLast(table.getClassName(), "."));
+        String titleStr = StringUtils.substringAfterLast(table.getClassName(), ".");
+        String tblName = titleStr.startsWith("Sp") ? titleStr : UIHelper.makeNamePretty(titleStr);
         int y = 1;
         pb.add(ERDVisualizer.mkLabel(bold, tblName, SwingConstants.CENTER), cc.xy(1,y)); y += 2;
         
@@ -335,7 +336,7 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
     /**
      * @return the displayType
      */
-    public DisplayType getDisplayType()
+    public static DisplayType getDisplayType()
     {
         return displayType;
     }
@@ -343,9 +344,22 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
     /**
      * @param displayType the displayType to set
      */
-    public void setDisplayType(DisplayType displayType)
+    public static void setDisplayType(DisplayType displayType)
     {
-        this.displayType = displayType;
+        ERDTable.displayType = displayType;
+    }
+    
+    /**
+     * @param kid
+     */
+    public boolean addKid(ERDTable kid)
+    {
+        if (!kids.contains(kid))
+        {
+            kids.add(kid);
+            return true;
+        }
+        return false;
     }
 
     /**

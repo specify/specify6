@@ -284,10 +284,18 @@ public final class FormCellField extends FormCell implements FormCellFieldIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#isTextField(edu.ku.brc.ui.forms.persist.AltViewIFace.CreationMode)
      */
-    public boolean isTextField(AltView.CreationMode mode)
+    public boolean isTextFieldForMode(AltView.CreationMode mode)
     {
         // A mode of "None" default to "Edit"
-        return mode == AltViewIFace.CreationMode.View ? isDSPTextField : isTextField;
+        return mode == AltViewIFace.CreationMode.VIEW ? isDSPTextField : isTextField;
+    }
+    
+    /**
+     * @return the isTextField
+     */
+    public boolean isTextField()
+    {
+        return isTextField;
     }
 
     /* (non-Javadoc)

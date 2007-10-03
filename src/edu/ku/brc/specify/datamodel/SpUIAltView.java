@@ -64,7 +64,7 @@ public class SpUIAltView extends DataModelObjBase implements AltViewIFace
     protected String      selectorValue;
     protected String      selectorName;
     protected SpUIViewDef spViewDef;
-    protected SpUIView    view;
+    protected SpUIView    spView;
     
     // Transient
     protected List<AltViewIFace> subViews = null;
@@ -88,7 +88,7 @@ public class SpUIAltView extends DataModelObjBase implements AltViewIFace
     {
         super.init();
         
-        this.view = (SpUIView)view;
+        this.spView = (SpUIView)view;
         this.name = name;
         this.label = label;
         this.modeName = SpUIView.getCreationModeStrFrom(mode);
@@ -115,7 +115,7 @@ public class SpUIAltView extends DataModelObjBase implements AltViewIFace
         isValidated   = null;
         isDefaultAltView = null;
         spViewDef     = null;
-        view          = null;
+        spView        = null;
         selectorValue = null;
         selectorName  = null;
     }
@@ -275,18 +275,18 @@ public class SpUIAltView extends DataModelObjBase implements AltViewIFace
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "SpUIAltViewForViewID", unique = false, nullable = false, insertable = true, updatable = true)
-    public SpUIView getView()
+    public SpUIView getSpView()
     {
-        return view;
+        return spView;
     }
 
 
     /**
      * @param view the view to set
      */
-    public void setView(SpUIView view)
+    public void setSpView(SpUIView spView)
     {
-        this.view = view;
+        this.spView = spView;
     }
 
 
@@ -445,6 +445,37 @@ public class SpUIAltView extends DataModelObjBase implements AltViewIFace
     {
         return spViewDef;
     }
+    
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.AltViewIFace#getView()
+     */
+    @Transient
+    public ViewIFace getView()
+    {
+        return spView;
+    }
+
+
+    /**
+     * Copies a AltViewIFace into this persistable AltView
+     * @param altView the source
+     */
+    public void copyInto(final AltViewIFace altView)
+    {
+        // Need to set the View and the ViewDef Externally
+        
+        name             = altView.getName();
+        label            = altView.getLabel();
+        modeName         = altView.getMode().toString().toLowerCase();
+        isValidated      = altView.isValidated();
+        isDefaultAltView = altView.isDefault();
+        
+        selectorName     = altView.getSelectorName();
+        selectorValue    = altView.getSelectorValue();
+        
+    }
+
 
 
 }

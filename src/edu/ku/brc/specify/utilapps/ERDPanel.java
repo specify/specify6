@@ -410,10 +410,11 @@ class ERDPanel extends JPanel
     {
         if (preferredSize != null)
         {
+            System.out.println("ERDPanel getPreferredSize "+preferredSize);
             return preferredSize;
         }
         Dimension d = super.getPreferredSize();
-        System.out.println(d);
+        System.out.println("ERDPanel getPreferredSize "+d);
         return d;
     }
 
@@ -489,7 +490,13 @@ class ERDPanel extends JPanel
         this.root = root;
         
         preferredSize = getSize();
+        System.out.println(preferredSize+"\n"+super.getPreferredSize());
 
+        // This is Need for the Trees for some reason.
+        if (ERDTable.getDisplayType() == ERDTable.DisplayType.Title)
+        {
+            preferredSize.width += 200;
+        }
 
     }
 }

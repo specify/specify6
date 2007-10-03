@@ -26,7 +26,7 @@ import java.util.Vector;
 public class TableViewDef extends ViewDef implements Cloneable, TableViewDefIFace
 {
 
-    protected Vector<FormColumn> columns = new Vector<FormColumn>();
+    protected Vector<FormColumnIFace> columns = new Vector<FormColumnIFace>();
     
     /**
      * Constructor
@@ -49,7 +49,7 @@ public class TableViewDef extends ViewDef implements Cloneable, TableViewDefIFac
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.TableDefIFace#addColumn(edu.ku.brc.ui.forms.persist.FormColumn)
      */
-    public FormColumnIFace addColumn(final FormColumn column)
+    public FormColumnIFace addColumn(final FormColumnIFace column)
     {
         columns.add(column);
         return column;
@@ -64,9 +64,6 @@ public class TableViewDef extends ViewDef implements Cloneable, TableViewDefIFac
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.persist.FormView#cleanUp()
-     */
-    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.TableDefIFace#cleanUp()
      */
     @Override
@@ -79,7 +76,7 @@ public class TableViewDef extends ViewDef implements Cloneable, TableViewDefIFac
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.TableDefIFace#getColumns()
      */
-    public List<FormColumn> getColumns()
+    public List<FormColumnIFace> getColumns()
     {
         return columns;
     }
@@ -93,7 +90,7 @@ public class TableViewDef extends ViewDef implements Cloneable, TableViewDefIFac
     public Object clone() throws CloneNotSupportedException
     {
         TableViewDef tvd = (TableViewDef)super.clone();
-        tvd.columns = new Vector<FormColumn>();
+        tvd.columns = new Vector<FormColumnIFace>();
         for (FormColumnIFace formCol : columns)
         {
             tvd.columns.add((FormColumn)formCol.clone()); 

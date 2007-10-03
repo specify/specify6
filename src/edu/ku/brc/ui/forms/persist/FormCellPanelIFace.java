@@ -14,7 +14,32 @@
  */
 package edu.ku.brc.ui.forms.persist;
 
+/**
+ * Presents a Panel in the UI.
+ * 
+ * @author rod
+ *
+ * @code_status Alpha
+ *
+ * Sep 29, 2007
+ *
+ */
 public interface FormCellPanelIFace extends FormCellIFace
 {
 
+    /**
+     * @return the type of panel to create
+     */
+    public abstract String getPanelType();
+    
+    /**
+     * @return the JGoodies Row Definition for panel layout
+     */
+    public abstract String getRowDef();
+    
+    /**
+     * @return the JGoodies Column Definition for panel layout
+     */
+    public abstract String getColDef();
+    
 }

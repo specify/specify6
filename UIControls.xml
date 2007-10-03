@@ -12,6 +12,9 @@
         <attr name="labelfor" type="string" required="false" default="">
             <desc>This can contain the id of a field that this label is associated with</desc>
         </attr>
+        <attr name="align" type="boolean" required="false" default="true">
+            <desc>Indicates whetehr the label should automatically get a `:` appended.</desc>
+        </attr>
     </control>
     
     <control type="command">

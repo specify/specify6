@@ -26,7 +26,6 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -65,6 +64,7 @@ import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JTable;
@@ -82,6 +82,10 @@ import javax.swing.table.TableModel;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.prefs.AppPreferences;
@@ -119,7 +123,7 @@ import edu.ku.brc.ui.forms.persist.FormCellIFace;
 public final class UIHelper
 {
     public enum OSTYPE {Unknown, Windows, MacOSX, Linux}
-
+    
     // Static Data Members
     protected static final Logger   log      = Logger.getLogger(UIHelper.class);
     protected static Calendar       calendar = new GregorianCalendar();
@@ -2002,5 +2006,43 @@ public final class UIHelper
             return new Color(Integer.parseInt(r), Integer.parseInt(g), Integer.parseInt(b));
         }
         throw new ConfigurationException("R,G,B value is bad ["+rgb+"]");
+    }
+    
+    /**
+     * @param addAL
+     * @param addTT
+     * @param removeAL
+     * @param removeTT
+     * @param editAL
+     * @param editTT
+     * @return
+     */
+    public static JPanel createAddRemoveEditBtnBar(final ActionListener addAL, 
+                                            final String         addTT,
+                                            final ActionListener removeAL, 
+                                            final String         removeTT,
+                                            final ActionListener editAL,
+                                            final String         editTT)
+    {
+        int numBtns = (addAL != null ? 1 : 0) + (removeAL != null ? 1 : 0) + (editAL != null ? 1 : 0);
+        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,"+ createDuplicateJGoodiesDef("p", "2px", numBtns), "p"));
+        CellConstraints cc = new CellConstraints();
+        int x = 2;
+        if (addAL != null)
+        {
+            pb.add(createIconBtn("PlusSign", addTT, addAL), cc.xy(x,1));
+            x += 2;
+        }
+        if (removeAL != null)
+        {
+            pb.add(createIconBtn("MinusSign", removeTT, removeAL), cc.xy(x,1));
+            x += 2;
+        }
+        if (editAL != null)
+        {
+            pb.add(createIconBtn("EditIcon", editTT, editAL), cc.xy(x,1));
+            x += 2;
+        }
+        return pb.getPanel();
     }
 }

@@ -31,7 +31,7 @@ import edu.ku.brc.ui.forms.BusinessRulesIFace;
  * @author rods
  *
  */
-public class View implements Comparable<View>, ViewIFace
+public class View implements ViewIFace
 {
     protected String               viewSetName;
     protected String               name;
@@ -43,7 +43,7 @@ public class View implements Comparable<View>, ViewIFace
     protected boolean              useResourceLabels;
     protected String               resourceLabels = null;
     
-    protected AltViewIFace.CreationMode defaultMode = AltViewIFace.CreationMode.View;
+    protected AltViewIFace.CreationMode defaultMode = AltViewIFace.CreationMode.VIEW;
     protected String               selectorName     = null;
     
     // transient data members
@@ -242,7 +242,22 @@ public class View implements Comparable<View>, ViewIFace
         }
         
         return businessRule;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewIFace#getBusinessRulesClassName()
+     */
+    public String getBusinessRulesClassName()
+    {
+        return businessRulesClassName;
+    }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewIFace#setBusinessRulesClassName(java.lang.String)
+     */
+    public void setBusinessRulesClassName(String businessRulesClassName)
+    {
+        this.businessRulesClassName = businessRulesClassName;
     }
 
     /* (non-Javadoc)
@@ -257,7 +272,7 @@ public class View implements Comparable<View>, ViewIFace
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    public int compareTo(View obj)
+    public int compareTo(ViewIFace obj)
     {
         return name.compareTo(obj.getName());
     }

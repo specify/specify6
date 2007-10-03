@@ -16,46 +16,113 @@ package edu.ku.brc.ui.forms.persist;
 
 import java.util.List;
 
-public interface AltViewIFace
+/**
+ * Definition of an Alternate View which can be an "Edit", "View", "None".
+ * 
+ * @author rod
+ *
+ * @code_status Alpha
+ *
+ * Sep 29, 2007
+ *
+ */
+public interface AltViewIFace extends Comparable<AltViewIFace>
 {
-    public enum CreationMode {None, Edit, View, Search}
+    public enum CreationMode {NONE, EDIT, VIEW, SEARCH}
 
+    /**
+     * @return the mode used during creation
+     */
     public abstract CreationMode getMode();
 
+    /**
+     * @return the name of the ViewDefIFace it owns
+     */
     public abstract String getViewDefName();
 
+    /**
+     * @return
+     */
     public abstract String getLabel();
 
+    /**
+     * @param label the human readable title string that appears in the combobox switcher
+     */
     public abstract void setLabel(String label);
 
+    /**
+     * @return the unique name of the AltView
+     */
     public abstract String getName();
 
+    /**
+     * @param name the unique name of the AltView
+     */
     public abstract void setName(String name);
 
+    /**
+     * @return whether the ViewDef will have a validator
+     */
     public abstract boolean isValidated();
 
+    /**
+     * @return ViewDefIFace it refers to
+     */
     public abstract ViewDefIFace getViewDef();
 
+    /**
+     * @param viewDef
+     */
     public abstract void setViewDef(ViewDefIFace viewDef);
 
+    /**
+     * @return whether it is the default (initial) altview
+     */
     public abstract boolean isDefault();
 
+    /**
+     * @param isDefault whether it is the default (initial) altview
+     */
     public abstract void setDefault(boolean isDefault);
 
+    /**
+     * @return it's owning view
+     */
     public abstract ViewIFace getView();
 
+    /**
+     * @param mode the mode to use when creating the ViewDef the altview refers to
+     */
     public abstract void setMode(CreationMode mode);
 
+    /**
+     * @return the name of the select (field name)
+     */
     public abstract String getSelectorName();
 
+    /**
+     * @param selectorName the name of the select (field name)
+     */
     public abstract void setSelectorName(String selectorName);
 
+    /**
+     * @return the actual value of the selector to switch between viewdefs
+     */
     public abstract String getSelectorValue();
 
+    /**
+     * @param selectorValue the actual value of the selector to switch between viewdefs
+     */
     public abstract void setSelectorValue(String selectorValue);
 
+    /**
+     * @return the list of subview for the altview
+     */
     public abstract List<AltViewIFace> getSubViews();
 
+    /**
+     * @param subViews the list of subview for the altview
+     */
     public abstract void setSubViews(List<AltViewIFace> subViews);
 
     /* (non-Javadoc)

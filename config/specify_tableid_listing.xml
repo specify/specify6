@@ -2,7 +2,9 @@
 
 <!-- 
 
-    Last Used Id is 120 or 512
+    Last Used Id is 120 or 516
+    
+    83,84,85,86 is Not used
     
     PLEASE Keep this file in alphabetical order! 
 
@@ -36,9 +38,6 @@
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.AgentVariant" id="107" workbench="false" searchable="true"/>
-        <table name="edu.ku.brc.specify.datamodel.AppResource" id="83"/>
-        <table name="edu.ku.brc.specify.datamodel.AppResourceData" id="84"/>
-        <table name="edu.ku.brc.specify.datamodel.AppResourceDefault" id="85"/>    
         <table name="edu.ku.brc.specify.datamodel.Attachment" id="41" searchable="true">
         	<display objtitle="Attachment" view="AttachmentsForm" newobjdlg="AttachmentsForm"/>
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentBusRules</businessrule>
@@ -236,6 +235,11 @@
         <table name="edu.ku.brc.specify.datamodel.Shipment" id="71" searchable="true">
             <businessrule>edu.ku.brc.specify.datamodel.busrules.ShipmentBusRules</businessrule>                                    
         </table>
+        
+        <!--  Internal Specify Tables -->
+        <table name="edu.ku.brc.specify.datamodel.SpAppResource" id="514"/>
+        <table name="edu.ku.brc.specify.datamodel.SpAppResourceData" id="515"/>
+        <table name="edu.ku.brc.specify.datamodel.SpAppResourceDir" id="516"/>    
         <table name="edu.ku.brc.specify.datamodel.SpecifyUser" id="72"/>
         <table name="edu.ku.brc.specify.datamodel.SpLocaleContainer" id="503"/>
         <table name="edu.ku.brc.specify.datamodel.SpLocaleContainerItem" id="504"/>
@@ -247,6 +251,9 @@
         <table name="edu.ku.brc.specify.datamodel.SpUIView" id="506"/>
         <table name="edu.ku.brc.specify.datamodel.SpUIViewDef" id="508"/>
         <table name="edu.ku.brc.specify.datamodel.SpUIViewSet" id="511"/>
+        <table name="edu.ku.brc.specify.datamodel.SpViewSetObj" id="513"/>
+        <!--  Done Internal Specify Tables -->
+        
         <table name="edu.ku.brc.specify.datamodel.Taxon" id="4" workbench="true" searchable="true">
             <display objtitle="Taxon" view="Taxon" dataobjformatter="Taxon" searchdlg="TaxonSearch" newobjdlg="TaxonDisplay"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.TaxonBusRules</businessrule>                                                
@@ -263,7 +270,6 @@
         </table>
         <table name="edu.ku.brc.specify.datamodel.UserGroup" id="78"/>
         <table name="edu.ku.brc.specify.datamodel.UserPermission" id="89"/>
-        <table name="edu.ku.brc.specify.datamodel.ViewSetObj" id="86"/>
         <table name="edu.ku.brc.specify.datamodel.Workbench" id="79"/>
         <table name="edu.ku.brc.specify.datamodel.WorkbenchDataItem" id="80"/>
         <table name="edu.ku.brc.specify.datamodel.WorkbenchRow" id="90"/>

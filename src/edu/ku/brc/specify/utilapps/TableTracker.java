@@ -43,7 +43,7 @@ public class TableTracker
     /**
      * 
      */
-    public TableTracker(ERDTable.DisplayType displayType)
+    public TableTracker()
     {
         font = new JLabel().getFont().deriveFont((float)11.0);
         list = new Vector<ERDTable>();
@@ -54,7 +54,6 @@ public class TableTracker
         for (DBTableIdMgr.TableInfo tbl : DBTableIdMgr.getInstance().getList())
         {
             ERDTable table = new ERDTable(tbl);
-            table.setDisplayType(displayType);
             table.build(font);
             list.add(table);
             hash.put(table.getTable().getClassName(), table);

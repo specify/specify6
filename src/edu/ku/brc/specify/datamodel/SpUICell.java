@@ -17,6 +17,7 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
@@ -36,6 +37,9 @@ import javax.swing.ImageIcon;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.ui.DateWrapper;
+import edu.ku.brc.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.ui.forms.persist.FormCellCommandIFace;
 import edu.ku.brc.ui.forms.persist.FormCellFieldIFace;
 import edu.ku.brc.ui.forms.persist.FormCellIFace;
@@ -70,6 +74,8 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
                                                           FormCellSeparatorIFace,
                                                           FormCellSubViewIFace
 {
+    protected static DateWrapper scrDateFormat = null;
+    
     public final static int VALTYPE_CHANGE = 0;
     public final static int VALTYPE_FOCUS  = 1;
     
@@ -296,7 +302,7 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
      * @see edu.ku.brc.ui.forms.persist.FormCellSubViewIFace#getModes(java.util.List)
      */
     @Transient
-    public void getModes(List<Modes> list)
+    public void fillWithFuncModes(List<Modes> list)
     {
         if (StringUtils.isNotEmpty(funcModes))
         {
@@ -349,7 +355,7 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
     /**
      * @return the classDesc
      */
-    @Column(name = "ClassDesc", unique = false, nullable = false, insertable = true, updatable = true, length = 128)
+    @Column(name = "ClassDesc", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
     public String getClassDesc()
     {
         return classDesc;
@@ -488,6 +494,23 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
     @Column(name = "DefaultValue", unique = false, nullable = true, insertable = true, updatable = true, length = 16)
     public String getDefaultValue()
     {
+        if (defaultValue != null)
+        {
+            if (defaultDateTodayDB == null && StringUtils.isNotEmpty(uiFieldFormatter))
+            {
+                defaultDateTodayDB = uiFieldFormatter.equals("Date") && defaultValue.equals("today");
+            }
+            
+            if (defaultDateTodayDB != null && defaultDateTodayDB)
+            {
+                Date date = new Date();
+                if (scrDateFormat == null)
+                {
+                    scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
+                }
+                return scrDateFormat.format(date);
+            }
+        }
         return defaultValue;
     }
 
@@ -531,7 +554,10 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
      */
     public void setDspUITypeStr(String dspUITypeStr)
     {
-        this.dspUITypeStr = dspUITypeStr;
+        if (StringUtils.isNotEmpty(dspUITypeStr))
+        {
+            setDspUIType(FieldType.valueOf(dspUITypeStr));
+        }
     }
 
     /**
@@ -738,6 +764,16 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
     {
         this.isRequiredDB = isRequiredDB;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#isTextField()
+     * 
+     */
+    @Transient
+    public boolean isTextField()
+    {
+        return isTextFieldDB == null ? false : isTextFieldDB;
+    }
 
     /**
      * @return the isTextFieldDB
@@ -793,7 +829,7 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
     /**
      * @return the name
      */
-    @Column(name = "Name", unique = false, nullable = false, insertable = true, updatable = true, length = 32)
+    @Column(name = "Name", unique = false, nullable = false, insertable = true, updatable = true, length = 64)
     public String getName()
     {
         return name;
@@ -1142,7 +1178,7 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
     /**
      * @return the xCoordDB
      */
-    @Column(name = "XCoord", unique = false, nullable = false, insertable = true, updatable = true)
+    @Column(name = "XCoord", unique = false, nullable = true, insertable = true, updatable = true)
     public Short getXCoordDB()
     {
         return xCoordDB;
@@ -1159,7 +1195,7 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
     /**
      * @return the yCoordDB
      */
-    @Column(name = "YCoord", unique = false, nullable = false, insertable = true, updatable = true)
+    @Column(name = "YCoord", unique = false, nullable = true, insertable = true, updatable = true)
     public Short getYCoordDB()
     {
         return yCoordDB;
@@ -1176,7 +1212,7 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
     /**
      * @return the height
      */
-    @Column(name = "Height", unique = false, nullable = false, insertable = true, updatable = true)
+    @Column(name = "Height", unique = false, nullable = true, insertable = true, updatable = true)
     public Short getHeightDB()
     {
         return heightDB;
@@ -1193,7 +1229,7 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
     /**
      * @return the width
      */
-    @Column(name = "Width", unique = false, nullable = false, insertable = true, updatable = true)
+    @Column(name = "Width", unique = false, nullable = true, insertable = true, updatable = true)
     public Short getWidthDB()
     {
         return widthDB;
@@ -1583,9 +1619,12 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
      * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#isTextField(edu.ku.brc.ui.forms.persist.AltViewIFace.CreationMode)
      */
     @Transient
-    public boolean isTextField(CreationMode mode)
+    public boolean isTextFieldForMode(CreationMode mode)
     {
-        return isTextFieldDB == null ? false : isTextFieldDB;
+        boolean isDSPTextField = isDSPTextFieldDB == null ? false : isDSPTextFieldDB;
+        boolean isTextField    = isTextFieldDB == null ? false : isTextFieldDB;
+        // A mode of "None" default to "Edit"
+        return mode == AltViewIFace.CreationMode.VIEW ? isDSPTextField : isTextField;
     }
 
     /* (non-Javadoc)
@@ -1593,7 +1632,14 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
      */
     public void setDspUIType(FieldType dspUIType)
     {
-        dspUITypeStr = dspUIType.toString();
+        if (dspUIType != null)
+        {
+            dspUITypeStr = dspUIType.toString();
+            this.isDSPTextFieldDB = dspUIType == FieldType.dsptextfield || dspUIType == FieldType.dsptextarea;
+        } else
+        {
+            dspUITypeStr = null;
+        }
     }
 
     /* (non-Javadoc)
@@ -1658,6 +1704,10 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
      */
     public void setUiType(FieldType uiType)
     {
+        this.isTextFieldDB = uiType == FieldType.text ||
+                             uiType == FieldType.formattedtext ||
+                             uiType == FieldType.textarea;
+        
         this.uiTypeStr = uiType.toString();
     }
 
@@ -1736,5 +1786,120 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
     public void setWidth(int width)
     {
         widthDB = (short)width;
+    }
+    
+    /**
+     * Recreates the initialize string from the properties and clones the properties hashtable.
+     * @param cell the source of the props
+     * @return the string
+     */
+    protected String getInitStrFromProps(final FormCellIFace cell)
+    {
+        Properties props = cell.getProperties();
+        if (props != null)
+        {
+            StringBuilder sb = new StringBuilder();
+            for (Object keyObj : props.keySet())
+            {
+                String key = (String)keyObj;
+                if (sb.length() > 0) sb.append(';');
+                sb.append(key);
+                sb.append("=");
+                sb.append(properties.getProperty(key));
+            }
+            properties = (Properties)cell.getProperties().clone();
+            return sb.toString();
+        }
+        return null;
+    }
+    
+    /**
+     * Copies a FormCell object into the this object.
+     * @param cell the source
+     */
+    public void copyInto(final FormCellIFace cell)
+    {
+        initStr              = getInitStrFromProps(cell);
+        typeName             = cell.getType().toString().toLowerCase();
+        uiId                 = cell.getIdent();
+        name                 = cell.getName();
+        ignoreSetGetDB       = cell.isIgnoreSetGet();
+        changeListenerOnlyDB = cell.isChangeListenerOnly();
+        isMultiFieldDB       = cell.isMultiField();
+        colSpanDB            = (byte)cell.getColspan();
+        rowSpanDB            = (byte)cell.getRowspan();
+        xCoordDB             = (short)cell.getXCoord();
+        yCoordDB             = (short)cell.getYCoord();
+        widthDB              = (short)cell.getWidth();
+        heightDB             = (short)cell.getHeight();
+        fieldNames           = fieldNames != null ? fieldNames.clone() : null;
+        
+        if (cell instanceof FormCellSeparatorIFace)
+        {
+            FormCellSeparatorIFace fcs = (FormCellSeparatorIFace)cell;
+            label = fcs.getLabel();
+            collapseCompName = fcs.getCollapseCompName();
+        }
+        
+        if (cell instanceof FormCellLabelIFace)
+        {
+            FormCellLabelIFace fcl = (FormCellLabelIFace)cell;
+            labelFor      = fcl.getLabelFor();
+            icon          = fcl.getIcon();
+            iconName      = fcl.getIconName();
+            isRecordObjDB = fcl.isRecordObj();
+        }
+        
+        if (cell instanceof FormCellCommandIFace)
+        {
+            FormCellCommandIFace fcc = (FormCellCommandIFace)cell;
+            commandType = fcc.getCommandType();
+            action      = fcc.getAction();
+        }
+        
+        if (cell instanceof FormCellFieldIFace)
+        {
+            FormCellFieldIFace fcf = (FormCellFieldIFace)cell;
+            uiTypeStr        = fcf.getUiType().toString().toLowerCase();
+            dspUITypeStr     = fcf.getDspUIType().toString().toLowerCase();
+            format           = fcf.getFormat();
+            formatName       = fcf.getFormatName();
+            uiFieldFormatter = fcf.getUIFieldFormatter();
+            isRequiredDB     = fcf.isRequired();
+            isReadOnlyDB     = fcf.isReadOnly();
+            isEncryptedDB    = fcf.isEncrypted();
+            useThisDataDB    = fcf.useThisData();
+            label            = fcf.getLabel();
+            defaultValue     = fcf.getDefaultValue();
+            pickListName     = fcf.getPickListName();
+            txtRowsDB        = (byte)fcf.getTxtRows();
+            txtColsDB        = (byte)fcf.getTxtCols();
+            validationRule   = fcf.getValidationRule();
+            validationType   = fcf.getValidationType();
+            isTextFieldDB    = fcf.isTextField();
+            
+            setUiType(fcf.getUiType());
+            setDspUIType(fcf.getDspUIType());
+        }
+        
+        if (cell instanceof FormCellPanelIFace)
+        {
+            panelType = ((FormCellPanelIFace)cell).getPanelType();
+            rowDef    = ((FormCellPanelIFace)cell).getRowDef();
+            colDef    = ((FormCellPanelIFace)cell).getColDef();
+        }
+        
+        if (cell instanceof FormCellSubViewIFace)
+        {
+            FormCellSubViewIFace fcs = (FormCellSubViewIFace)cell;
+            viewSetName        = fcs.getViewSetName();
+            viewName           = fcs.getViewName();
+            classDesc          = fcs.getClassDesc();
+            singleValueFromSetDB = fcs.isSingleValueFromSet();
+            description        = fcs.getDescription();
+            defaultAltViewType = fcs.getDefaultAltViewType();
+            funcModes          = fcs.getFuncModes();
+            tableRowsDB        = (byte)fcs.getTableRows();
+        }
     }
 }

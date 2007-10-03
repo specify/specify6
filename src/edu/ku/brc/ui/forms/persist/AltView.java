@@ -174,7 +174,7 @@ public class AltView implements Comparable<AltViewIFace>, Cloneable, AltViewIFac
     @Override
     public String toString()
     {
-        return label;
+        return name + (isDefault ? " (Default)" : ""); // I18N (Maybe)
     }
     
     /* (non-Javadoc)
@@ -229,18 +229,7 @@ public class AltView implements Comparable<AltViewIFace>, Cloneable, AltViewIFac
     {
         if (isNotEmpty(modeStr))
         {
-            if (modeStr.equalsIgnoreCase("edit"))
-            {
-                return AltViewIFace.CreationMode.Edit;
-               
-            } else if (modeStr.equalsIgnoreCase("view"))
-            {
-                return AltViewIFace.CreationMode.View;
-                
-            } if (modeStr.equalsIgnoreCase("search"))
-            {
-                return AltViewIFace.CreationMode.Search;
-            }
+            return AltViewIFace.CreationMode.valueOf(modeStr.toUpperCase());
         }
         return defaultMode;
     }

@@ -55,7 +55,7 @@ public class SpUIColumn extends DataModelObjBase implements FormColumnIFace
     protected String  format;
     protected Integer colOrder;
     
-    protected SpUIViewDef viewDef;
+    protected SpUIViewDef spViewDef;
     
     /**
      * 
@@ -79,7 +79,7 @@ public class SpUIColumn extends DataModelObjBase implements FormColumnIFace
         dataObjFormatter = null;
         format           = null; 
         colOrder         = null;
-        viewDef          = null;
+        spViewDef        = null;
     }
     
     /**
@@ -212,17 +212,17 @@ public class SpUIColumn extends DataModelObjBase implements FormColumnIFace
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "SpUIViewDefID", unique = false, nullable = false, insertable = true, updatable = true)
-    public SpUIViewDef getViewDef()
+    public SpUIViewDef getSpViewDef()
     {
-        return viewDef;
+        return spViewDef;
     }
 
     /**
      * @param viewDef the viewDef to set
      */
-    public void setViewDef(SpUIViewDef viewDef)
+    public void setSpViewDef(SpUIViewDef spViewDef)
     {
-        this.viewDef = viewDef;
+        this.spViewDef = spViewDef;
     }
 
     /* (non-Javadoc)
@@ -240,5 +240,13 @@ public class SpUIColumn extends DataModelObjBase implements FormColumnIFace
     public static int getClassTableId()
     {
         return 512;
+    }
+    
+    public void copyInto(final FormColumnIFace col)
+    {
+        name   = col.getName();
+        label  = col.getLabel();
+        dataObjFormatter = col.getDataObjFormatter();
+        format = col.getFormat();
     }
 }

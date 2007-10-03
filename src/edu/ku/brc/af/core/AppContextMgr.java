@@ -17,11 +17,13 @@ package edu.ku.brc.af.core;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Hashtable;
 import java.util.List;
 
 import org.dom4j.Element;
 
 import edu.ku.brc.ui.forms.persist.ViewIFace;
+import edu.ku.brc.ui.forms.persist.ViewSetIFace;
 
 /**
  * Abstract class for setting application context. It is designed that each application should implement its own.<br>
@@ -108,6 +110,10 @@ public abstract class AppContextMgr
                                               final String userName,
                                               final boolean startingOver);
     
+    /**
+     * @return
+     */
+    public abstract Hashtable<String, List<ViewSetIFace>> getViewSetHash();
     
     /**
      * Returns the instance of the AppContextMgr.

@@ -303,7 +303,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
         ViewIFace view = AppContextMgr.getInstance().getView(null, "LocalityMapper");
         
         // TODO WHERE's the ERROR checking !
-        multiView = new MultiView(null, null, view, AltViewIFace.CreationMode.View, MultiView.NO_OPTIONS);
+        multiView = new MultiView(null, null, view, AltViewIFace.CreationMode.VIEW, MultiView.NO_OPTIONS);
         multiView.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(138,128,128)),
                             BorderFactory.createEmptyBorder(4, 4, 4, 4)));
 

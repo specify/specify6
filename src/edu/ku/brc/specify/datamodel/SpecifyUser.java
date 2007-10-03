@@ -60,20 +60,20 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
 
     // Fields
 
-    protected Integer                    specifyUserId;
-    protected String                  name;
-    protected String                  email;
-    protected String                  userType;
-    protected Short                   privLevel;
-    protected Set<CollectionType>   collectionTypes;//
-    protected Set<RecordSet>          recordSets;//
-    private Set<Workbench>            workbenches;
-    private Set<WorkbenchTemplate>    workbenchTemplates;
-    protected Set<AppResource>        appResources;
-    protected Set<UserGroup>          userGroups;//
-    protected Set<AppResourceDefault> appResourceDefaults;//
-    protected Set<UserPermission>     userPermissions;
-    protected Agent                   agent;
+    protected Integer                   specifyUserId;
+    protected String                    name;
+    protected String                    email;
+    protected String                    userType;
+    protected Short                     privLevel;
+    protected Set<CollectionType>       collectionTypes;
+    protected Set<RecordSet>            recordSets;
+    protected Set<Workbench>            workbenches;
+    protected Set<WorkbenchTemplate>    workbenchTemplates;
+    protected Set<SpAppResource>        spAppResources;
+    protected Set<UserGroup>            userGroups;
+    protected Set<SpAppResourceDir>     spAppResourceDirs;
+    protected Set<UserPermission>       userPermissions;
+    protected Agent                     agent;
 
     // Constructors
 
@@ -123,9 +123,9 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
         recordSets = new HashSet<RecordSet>();
         workbenches = new HashSet<Workbench>();
         workbenchTemplates = new HashSet<WorkbenchTemplate>();
-        appResources = new HashSet<AppResource>();
+        spAppResources = new HashSet<SpAppResource>();
         userGroups = new HashSet<UserGroup>();
-        appResourceDefaults = new HashSet<AppResourceDefault>();
+        spAppResourceDirs = new HashSet<SpAppResourceDir>();
         userPermissions = new HashSet<UserPermission>();
         agent = null;
     }
@@ -318,18 +318,18 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "specifyUser")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<AppResourceDefault> getAppResourceDefaults()
+    public Set<SpAppResourceDir> getSpAppResourceDirs()
     {
-        return appResourceDefaults;
+        return spAppResourceDirs;
     }
 
     /**
-     * @param appResourceDefaults - 
+     * @param spAppResourceDirs - 
      * void
      */
-    public void setAppResourceDefaults(Set<AppResourceDefault> appResourceDefaults)
+    public void setSpAppResourceDirs(Set<SpAppResourceDir> spAppResourceDirs)
     {
-        this.appResourceDefaults = appResourceDefaults;
+        this.spAppResourceDirs = spAppResourceDirs;
     }
 
     /**
@@ -358,18 +358,18 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
      */
     @OneToMany(cascade = { CascadeType.REMOVE }, fetch = FetchType.LAZY, mappedBy = "specifyUser")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<AppResource> getAppResources()
+    public Set<SpAppResource> getSpAppResources()
     {
-        return this.appResources;
+        return this.spAppResources;
     }
 
     /**
-     * @param appResource - 
+     * @param spAppResource - 
      * void
      */
-    public void setAppResources(Set<AppResource> appResource)
+    public void setSpAppResources(Set<SpAppResource> spAppResources)
     {
-        this.appResources = appResource;
+        this.spAppResources = spAppResources;
     }
 
     /**
@@ -479,23 +479,23 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
         workbench.setSpecifyUser(this);
     }
     /**
-     * @param appResource - 
+     * @param spAppResource - 
      * void
      */
-    public void addAppResource(final AppResource appResource)
+    public void addAppResource(final SpAppResource spAppResource)
     {
-        this.appResources.add(appResource);
-        appResource.setSpecifyUser(this);
+        this.spAppResources.add(spAppResource);
+        spAppResource.setSpecifyUser(this);
     }
     
     /**
-     * @param appResourceDefault - 
+     * @param spAppResourceDir - 
      * void
      */
-    public void addAppResourceDefaults(final AppResourceDefault appResourceDefault)
+    public void addSpAppResourceDirs(final SpAppResourceDir spAppResourceDir)
     {
-        this.appResourceDefaults.add(appResourceDefault);
-        appResourceDefault.setSpecifyUser(this);
+        this.spAppResourceDirs.add(spAppResourceDir);
+        spAppResourceDir.setSpecifyUser(this);
     }
 
     // Done Add Methods
@@ -542,13 +542,13 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
         workbench.setSpecifyUser(null);
     }
     /**
-     * @param appResource - 
+     * @param spAppResource - 
      * void
      */
-    public void removeAppResource(final AppResource appResource)
+    public void removeSpAppResource(final SpAppResource spAppResource)
     {
-        this.appResources.remove(appResource);
-        appResource.setSpecifyUser(null);
+        this.spAppResources.remove(spAppResource);
+        spAppResource.setSpecifyUser(null);
     }    
     /**
      * @param userPermission - 
@@ -560,13 +560,13 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
         userPermission.setSpecifyUser(null);
     }    
     /**
-     * @param appResourceDefault - 
+     * @param spAppResourceDir - 
      * void
      */
-    public void removeAppResourceDefaults(final AppResourceDefault appResourceDefault)
+    public void removeSpAppResourceDirs(final SpAppResourceDir spAppResourceDir)
     {
-        this.appResourceDefaults.remove(appResourceDefault);
-        appResourceDefault.setSpecifyUser(null);
+        this.spAppResourceDirs.remove(spAppResourceDir);
+        spAppResourceDir.setSpecifyUser(null);
     }
 
     /* (non-Javadoc)

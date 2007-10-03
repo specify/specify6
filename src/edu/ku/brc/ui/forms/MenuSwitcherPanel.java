@@ -166,7 +166,7 @@ public class MenuSwitcherPanel extends JPanel
                 // TODO This is Sort of Temporary until I get it all figured out
                 // But somehow we need to externalize this, possible have the AltViewIFace Definition
                 // define its own icon
-                if (av.getMode() == AltViewIFace.CreationMode.Edit)
+                if (av.getMode() == AltViewIFace.CreationMode.EDIT)
                 {
                     imgIcon = IconManager.getImage("EditForm", IconManager.IconSize.Std16);
                     toolTip = getResourceString("ShowEditViewTT");

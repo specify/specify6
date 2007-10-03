@@ -15,7 +15,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.Hashtable;
+import java.util.Locale;
 import java.util.Vector;
+
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -29,6 +32,7 @@ import edu.ku.brc.specify.datamodel.SpLocaleBase;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpLocaleContainerItem;
 import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * THis is a helper class for reading and writing the Schema Description XML to a file.
@@ -45,6 +49,8 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     private static final Logger log = Logger.getLogger(SchemaLocalizerXMLHelper.class);
     
     protected static String    fileName   = "schema_localization.xml";
+    
+    protected static LocalizableStrFactory       localizableStrFactory;
     
     protected Vector<SpLocaleContainer>                    tables     = new Vector<SpLocaleContainer>();
     protected Hashtable<String, LocalizableContainerIFace> tableHash  = new Hashtable<String, LocalizableContainerIFace>();
@@ -335,13 +341,13 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
      */
     public boolean createResourceFiles()
     {
-        Hashtable<String, String> localeHash = new Hashtable<String, String>();
+        Hashtable<String, Boolean> localeHash = new Hashtable<String, Boolean>();
         for (LocalizableContainerIFace table : tables)
         {
-            SchemaLocalizerPanel.checkForLocales((LocalizableItemIFace)table, localeHash);
+            checkForLocales((LocalizableItemIFace)table, localeHash);
             for (LocalizableItemIFace f : table.getContainerItems())
             {
-                SchemaLocalizerPanel.checkForLocales((LocalizableItemIFace)f, localeHash);
+                checkForLocales((LocalizableItemIFace)f, localeHash);
             }
         }
         
@@ -445,6 +451,165 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
             }
         }
         return items;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableIOIFace#realize(edu.ku.brc.specify.tools.fielddesc.LocalizableItemIFace)
+     */
+    public LocalizableItemIFace realize(LocalizableItemIFace item)
+    {
+        return item;
+    }
+    
+    
+    /**
+     * @param lang
+     * @param country
+     * @param variant
+     * @return
+     */
+    public static String makeLocaleKey(final String lang, final String country, final String variant)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append(lang);
+        sb.append(StringUtils.isNotEmpty(country) ? ("_" + country) : "");
+        sb.append(StringUtils.isNotEmpty(variant) ? ("_" + variant) : "");
+        return sb.toString();
+    }
+    
+    /**
+     * @param locale
+     * @return
+     */
+    protected static String makeLocaleKey(final Locale locale)
+    {
+        return makeLocaleKey(locale.getLanguage(), locale.getCountry(), locale.getVariant());
+    }
+    
+    /**
+     * @param lndi
+     * @param localeHash
+     */
+    public static void checkForLocales(final LocalizableItemIFace lndi, final Hashtable<String, Boolean> localeHash)
+    {
+        Vector<LocalizableStrIFace> namesList = new Vector<LocalizableStrIFace>();
+        Vector<LocalizableStrIFace> descsList = new Vector<LocalizableStrIFace>();
+        
+        lndi.fillDescs(descsList);
+        lndi.fillNames(namesList);
+        
+        for (LocalizableStrIFace nm : namesList)
+        {
+            localeHash.put(makeLocaleKey(nm.getLanguage(), nm.getCountry(), nm.getVariant()), true);
+        }
+        for (LocalizableStrIFace d : descsList)
+        {
+            localeHash.put(makeLocaleKey(d.getLanguage(), d.getCountry(), d.getVariant()), true);
+        }
+    }
+    
+    /**
+     * @param locale
+     * @return
+     */
+    public boolean isLocaleInUse(final Locale locale)
+    {
+        Hashtable<String, Boolean> localeHash = new Hashtable<String, Boolean>();
+        for (SpLocaleContainer container : tables)
+        {
+            checkForLocales(container, localeHash);
+            for (LocalizableItemIFace f : container.getContainerItems())
+            {
+                checkForLocales(f, localeHash);
+            }
+        }
+        return localeHash.get(makeLocaleKey(locale)) != null;
+    }
+    
+    /**
+     * @param locale
+     * @return
+     */
+    public Vector<Locale> getLocalesInUse()
+    {
+        Hashtable<String, Boolean> localeHash = new Hashtable<String, Boolean>();
+        for (SpLocaleContainer container : tables)
+        {
+            checkForLocales(container, localeHash);
+            for (LocalizableItemIFace f : container.getContainerItems())
+            {
+                checkForLocales(f, localeHash);
+            }
+        }
+        Vector<Locale> inUseLocales = new Vector<Locale>(localeHash.keySet().size()+10);
+        for (String key : localeHash.keySet())
+        {
+            String[] toks = StringUtils.split(key, "_");
+            inUseLocales.add(new Locale(toks[0], "", ""));
+        }
+        return inUseLocales;
+    }
+    
+    
+    /**
+     * @param item
+     * @param srcLocale
+     * @param dstLocale
+     */
+    public void copyLocale(final LocalizableItemIFace item, final Locale srcLocale, final Locale dstLocale)
+    {
+        item.fillDescs(descsList);
+        item.fillNames(namesList);
+        
+        LocalizableStrIFace srcName = null;
+        for (LocalizableStrIFace nm : namesList)
+        {
+            if (nm.isLocale(srcLocale))
+            {
+                srcName = nm;
+                break;
+            }
+        }
+        
+        if (srcName != null)
+        {
+            LocalizableStrIFace name = localizableStrFactory.create(srcName.getText(), dstLocale);
+            item.addName(name);
+        }
+
+        LocalizableStrIFace srcDesc = null;
+        for (LocalizableStrIFace d : descsList)
+        {
+            if (d.isLocale(srcLocale))
+            {
+                srcDesc = d;
+                break;
+            }
+        }
+        
+        if (srcDesc != null)
+        {
+            LocalizableStrIFace desc = localizableStrFactory.create(srcDesc.getText(), dstLocale);
+            item.addDesc(desc);
+        }                 
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.fielddesc.LocalizableIOIFace#copyLocale(java.util.Locale, java.util.Locale)
+     */
+    public void copyLocale(Locale srcLocale, Locale dstLocale)
+    {
+        for (LocalizableJListItem listItem : getContainerDisplayItems())
+        {
+            LocalizableContainerIFace table = getContainer(listItem);
+            
+            copyLocale(table, srcLocale, dstLocale);
+            
+            for (LocalizableItemIFace field : table.getContainerItems())
+            {
+                copyLocale(field, srcLocale, dstLocale);
+            }
+        }
     }
     
     

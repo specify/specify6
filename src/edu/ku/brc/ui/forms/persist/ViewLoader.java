@@ -105,7 +105,7 @@ public class ViewLoader
         {
             AltViewIFace defaultAltView = null;
             
-            AltView.CreationMode defaultMode  = AltView.parseMode(getAttr(altviews, "mode", ""), AltViewIFace.CreationMode.View);
+            AltView.CreationMode defaultMode  = AltView.parseMode(getAttr(altviews, "mode", ""), AltViewIFace.CreationMode.VIEW);
             String               selectorName = altviews.attributeValue("selector");
             
             view.setDefaultMode(defaultMode);
@@ -118,12 +118,12 @@ public class ViewLoader
             {
                 Element altElement = (Element) i.next();
 
-                AltView.CreationMode mode = AltView.parseMode(getAttr(altElement, "mode", ""), AltViewIFace.CreationMode.View);
+                AltView.CreationMode mode = AltView.parseMode(getAttr(altElement, "mode", ""), AltViewIFace.CreationMode.VIEW);
                 
                 String altName      = altElement.attributeValue(NAME);
                 String viewDefName  = altElement.attributeValue("viewdef");
                 String label        = altElement.attributeValue(LABEL);
-                boolean isValidated = getAttr(altElement, "validated", mode == AltViewIFace.CreationMode.Edit);
+                boolean isValidated = getAttr(altElement, "validated", mode == AltViewIFace.CreationMode.EDIT);
                 boolean isDefault   = getAttr(altElement, "default", false);
 
                 //log.debug("Trying to get viewDef ["+ viewDefName + "]");
@@ -489,7 +489,11 @@ public class ViewLoader
                                                                      getAttr(cellElement, "icon", null),
                                                                      getAttr(cellElement, "recordobj", false), 
                                                                      colspan));
-
+                            String initialize = getAttr(cellElement, "initialize", "");
+                            if (StringUtils.isNotEmpty(initialize))
+                            {
+                                cell.setProperties(UIHelper.parseProperties(initialize));
+                            }
                             break;
                         }
                         case separator:
@@ -557,7 +561,7 @@ public class ViewLoader
 
                                 case formattedtext:
                                 {
-                                    validationRule = getAttr(cellElement, "validation", "formatted");
+                                    validationRule = getAttr(cellElement, "validation", "formatted"); // XXX Is this OK?
                                     dspUITypeStr   = getAttr(cellElement, "dspuitype", "formattedtext");
                                     if (isNotEmpty(uiFieldFormatter))
                                     {

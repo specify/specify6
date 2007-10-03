@@ -54,7 +54,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
 
     // Form Stuff
     protected MultiView      multiView;
-    protected ViewIFace           formView;
+    protected ViewIFace      formView;
     protected List<String>   fieldNames;
 
     protected ViewBasedDisplayActionAdapter vbdaa = null;
@@ -130,7 +130,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
             multiView = new MultiView(null,
                                       null, 
                                       formView, 
-                                      isEdit ? AltViewIFace.CreationMode.Edit : AltViewIFace.CreationMode.View,
+                                      isEdit ? AltViewIFace.CreationMode.EDIT : AltViewIFace.CreationMode.VIEW,
                                       options, null);
 
         } else

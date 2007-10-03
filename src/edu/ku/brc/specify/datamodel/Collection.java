@@ -53,7 +53,7 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     protected String                     collectionPrefix;
     protected String                     remarks;
     protected CollectionType             collectionType;
-    protected Set<AppResourceDefault>    appResourceDefaults;
+    protected Set<SpAppResourceDir>  spAppResourceDirs;
     protected Set<CollectionObject>      collectionObjects;
     protected CatalogNumberingScheme     catalogNumberingScheme;
     
@@ -105,7 +105,7 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
         collectionPrefix       = null;
         remarks                = null;
         collectionType         = null;
-        appResourceDefaults    = new HashSet<AppResourceDefault>();
+        spAppResourceDirs    = new HashSet<SpAppResourceDir>();
         collectionObjects      = new HashSet<CollectionObject>();
         catalogNumberingScheme = null;
     }
@@ -224,14 +224,14 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collection")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<AppResourceDefault> getAppResourceDefaults()
+    public Set<SpAppResourceDir> getSpAppResourceDirs()
     {
-        return appResourceDefaults;
+        return spAppResourceDirs;
     }
 
-    public void setAppResourceDefaults(Set<AppResourceDefault> appResourceDefaults)
+    public void setSpAppResourceDirs(Set<SpAppResourceDir> spAppResourceDirs)
     {
-        this.appResourceDefaults = appResourceDefaults;
+        this.spAppResourceDirs = spAppResourceDirs;
     }
 
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collection")

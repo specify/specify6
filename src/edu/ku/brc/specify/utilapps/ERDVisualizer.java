@@ -75,8 +75,11 @@ public class ERDVisualizer extends JFrame
         
     public ERDVisualizer()
     {
+        boolean showTreeHierarchy = true;
         
-        tblTracker = new TableTracker(ERDTable.DisplayType.All);
+        ERDTable.setDisplayType(showTreeHierarchy ? ERDTable.DisplayType.Title : ERDTable.DisplayType.All);
+        
+        tblTracker = new TableTracker();
         
         final File schemaDir = new File("schema");
         if (!schemaDir.exists())
@@ -137,7 +140,10 @@ public class ERDVisualizer extends JFrame
             ex.printStackTrace();
         }
         
-        if (true)
+        // Choose what to display
+        
+        
+        if (!showTreeHierarchy)
         {
             advance();
             
@@ -157,99 +163,231 @@ public class ERDVisualizer extends JFrame
             }
         } else
         {
+            ERDTable.setDisplayType(ERDTable.DisplayType.Title);
+            
             //this.tblTracker.setFont(this.tblTracker.getFont().deriveFont((float)10.0));
+            ERDTable root = null;
             
-            ERDTable root = tblTracker.getTable("CollectionType");
+            boolean doCollectionSchema = false;
             
-            
-            //                                skip,  processKids, alwaysAKid, processAnyRel, okWhenParent
-            tblTracker.addNodeInfo("Agent",              false, true,        true,       false,         null);
-            tblTracker.addNodeInfo("Determination",      false, true,        true,       true,          null);
-            tblTracker.addNodeInfo("Attachment",         true,  true,        true,       false,         null);
-            tblTracker.addNodeInfo("AttributeDef",       true,  true,        true,       false,         null);
-            tblTracker.addNodeInfo("UserPermission",     true,  true,        true,       false,         null);
-            tblTracker.addNodeInfo("AppResourceDefault", true,  true,        true,       false,         null);
-            tblTracker.addNodeInfo("DeaccessionPreparation",  true,  true,    true,       false,         null);
-            tblTracker.addNodeInfo("OtherIdentifier",         true,  true,    true,       false,         null);
-            tblTracker.addNodeInfo("CollectionRelationship",  true,  true,    true,       false,         null);
-            tblTracker.addNodeInfo("ProjectCollectionObject", true,  true,    true,       false,         null);
-            
-            // No Kids
-            tblTracker.addNodeInfo("Taxon",                  false, false, true,  false, null);
-            tblTracker.addNodeInfo("TaxonCitation",          false, false, true,  false, null);
-            tblTracker.addNodeInfo("DeterminationStatus",    false, false, true,  false, null);
-            tblTracker.addNodeInfo("DeterminationCitation",  false, false, true,  false, null);
-            tblTracker.addNodeInfo("ReferenceWork",          false, false, true,  false, null);
-            tblTracker.addNodeInfo("Journal",                false, false, true,  false, null);
-            tblTracker.addNodeInfo("CollectingEvent",        false, false, true,  false, null);
-            tblTracker.addNodeInfo("Locality",               false, false, true,  false, null);
-            tblTracker.addNodeInfo("Geography",              false, false, true,  false, null);
-            tblTracker.addNodeInfo("PaleoContext",           false, false, true,  false, null);
-            tblTracker.addNodeInfo("LithoStrat",             false, false, true,  false, null);
-            tblTracker.addNodeInfo("GeologicTimePeriod",     false, false, true,  false, null);
-            tblTracker.addNodeInfo("CollectionObjectCitation", false, false, true,  false, null);
-            tblTracker.addNodeInfo("Accession",              false, false, true,  false, null);
-            tblTracker.addNodeInfo("AccessionAuthorization", false, false, true,  false, null);
-            tblTracker.addNodeInfo("AccessionAgent",         false, false, true,  false, null);
-            tblTracker.addNodeInfo("Agent",                  false, false, true,  false, null);
-            tblTracker.addNodeInfo("Preparation",            false, false, true,  false, null);
-            tblTracker.addNodeInfo("PrepType",               false, false, true,  false, null);
-            tblTracker.addNodeInfo("RepositoryAgreement",    false, false, true,  false, null);
-            
-            NodeInfo det = tblTracker.getNodeInfo("Determination");
-            det.addKid(tblTracker.getTable("Taxon"));
-            det.addKid(tblTracker.getTable("DeterminationStatus"));
-            
-            NodeInfo ni = tblTracker.getNodeInfo("Taxon");
-            ni.addKid(tblTracker.getTable("TaxonCitation"));
-            
-            ni = tblTracker.getNodeInfo("CollectionObjectCitation");
-            ni.addKid(tblTracker.getTable("ReferenceWork"));
-            
-            ni = tblTracker.getNodeInfo("TaxonCitation");
-            ni.addKid(tblTracker.getTable("ReferenceWork"));
-            
-            ni = tblTracker.getNodeInfo("ReferenceWork");
-            ni.setOkToDuplicate(true);
-            ni.addKid(tblTracker.getTable("Journal"));
+            if (doCollectionSchema)
+            {
+                root = tblTracker.getTable("CollectionType");
+                
+                //                                                skip,  processKids, alwaysAKid, processAnyRel, okWhenParent
+                tblTracker.addNodeInfo("Agent",                   false, true,        true,       false,         null);
+                tblTracker.addNodeInfo("Determination",           false, true,        true,       true,          null);
+                tblTracker.addNodeInfo("ConservDescription",      false, true,        true,       true,          null);
+                
+                tblTracker.addNodeInfo("Attachment",              true,  true,        true,       false,         null);
+                tblTracker.addNodeInfo("AttributeDef",            true,  true,        true,       false,         null);
+                tblTracker.addNodeInfo("UserPermission",          true,  true,        true,       false,         null);
+                tblTracker.addNodeInfo("SpAppResourceDir",    true,  true,        true,       false,         null);
+                tblTracker.addNodeInfo("SpLocaleContainer",       true,  true,        true,       false,         null);
+                tblTracker.addNodeInfo("DeaccessionPreparation",  true,  true,        true,       false,         null);
+                tblTracker.addNodeInfo("OtherIdentifier",         true,  true,        true,       false,         null);
+                tblTracker.addNodeInfo("CollectionRelationship",  true,  true,        true,       false,         null);
+                tblTracker.addNodeInfo("ProjectCollectionObject", true,  true,        true,       false,         null);
+                tblTracker.addNodeInfo("CollectionObjectAttr",    true,  true,        true,       false,         null);
+                tblTracker.addNodeInfo("CollectionObjectAttachment", true,   true,     true,       false,         null);
+                tblTracker.addNodeInfo("ConservDescriptionAttachment", true, true,     true,       false,         null);
+                tblTracker.addNodeInfo("ConservEventAttachment", true, true,     true,       false,         null);
+                
+                // No Kids
+                tblTracker.addNodeInfo("Taxon",                  false, false, true,  false, null);
+                tblTracker.addNodeInfo("TaxonCitation",          false, false, true,  false, null);
+                tblTracker.addNodeInfo("DeterminationStatus",    false, false, true,  false, null);
+                tblTracker.addNodeInfo("DeterminationCitation",  false, false, true,  false, null);
+                tblTracker.addNodeInfo("ReferenceWork",          false, false, true,  false, null);
+                tblTracker.addNodeInfo("Journal",                false, false, true,  false, null);
+                tblTracker.addNodeInfo("CollectingEvent",        false, false, true,  false, null);
+                tblTracker.addNodeInfo("Locality",               false, false, true,  false, null);
+                tblTracker.addNodeInfo("Geography",              false, false, true,  false, null);
+                tblTracker.addNodeInfo("PaleoContext",           false, false, true,  false, null);
+                tblTracker.addNodeInfo("LithoStrat",             false, false, true,  false, null);
+                tblTracker.addNodeInfo("GeologicTimePeriod",     false, false, true,  false, null);
+                tblTracker.addNodeInfo("CollectionObjectCitation", false, false, true,  false, null);
+                tblTracker.addNodeInfo("Accession",              false, false, true,  false, null);
+                tblTracker.addNodeInfo("AccessionAuthorization", false, false, true,  false, null);
+                tblTracker.addNodeInfo("AccessionAgent",         false, false, true,  false, null);
+                tblTracker.addNodeInfo("Agent",                  false, false, true,  false, null);
+                tblTracker.addNodeInfo("Preparation",            false, false, true,  false, null);
+                tblTracker.addNodeInfo("PrepType",               false, false, true,  false, null);
+                tblTracker.addNodeInfo("RepositoryAgreement",    false, false, true,  false, null);
+                tblTracker.addNodeInfo("ConservEvent",           false, false, true,  false, null);
+                
+                NodeInfo det = tblTracker.getNodeInfo("Determination");
+                det.addKid(tblTracker.getTable("Taxon"));
+                det.addKid(tblTracker.getTable("DeterminationStatus"));
+                
+                NodeInfo ni = tblTracker.getNodeInfo("Taxon");
+                ni.addKid(tblTracker.getTable("TaxonCitation"));
+                
+                ni = tblTracker.getNodeInfo("CollectionObjectCitation");
+                ni.addKid(tblTracker.getTable("ReferenceWork"));
+                
+                ni = tblTracker.getNodeInfo("TaxonCitation");
+                ni.addKid(tblTracker.getTable("ReferenceWork"));
+                
+                ni = tblTracker.getNodeInfo("ReferenceWork");
+                ni.setOkToDuplicate(true);
+                ni.addKid(tblTracker.getTable("Journal"));
+    
+                ni = tblTracker.getNodeInfo("GeologicTimePeriod");
+                ni.setOkToDuplicate(true);
+                
+                ni = tblTracker.getNodeInfo("Journal");
+                ni.setOkToDuplicate(true);
+                
+                ni = tblTracker.getNodeInfo("CollectingEvent");
+                ni.addKid(tblTracker.getTable("Locality"));
+                
+                ni = tblTracker.getNodeInfo("CollectionObject");
+                ni.addKid(tblTracker.getTable("CollectingEvent"));
+                ni.addKid(tblTracker.getTable("PaleoContext"));
+                ni.addKid(tblTracker.getTable("Accession"));
+                
+                ni = tblTracker.getNodeInfo("Locality");
+                ni.addKid(tblTracker.getTable("Geography"));
+                
+                ni = tblTracker.getNodeInfo("PaleoContext");
+                ni.addKid(tblTracker.getTable("LithoStrat"));
+                ni.addKid(tblTracker.getTable("GeologicTimePeriod"));
+                
+                ni = tblTracker.getNodeInfo("DeterminationCitation");
+                ni.addKid(tblTracker.getTable("ReferenceWork"));
+                
+                ni = tblTracker.getNodeInfo("Preparation");
+                ni.addKid(tblTracker.getTable("PrepType"));
+                
+                ni = tblTracker.getNodeInfo("Accession");
+                ni.addKid(tblTracker.getTable("AccessionAuthorization"));
+                ni.addKid(tblTracker.getTable("AccessionAgent"));
+                ni.addKid(tblTracker.getTable("RepositoryAgreement"));
+                //ni.addKid(tblTracker.getTable("Attachment"));
+                //protected RepositoryAgreement repositoryAgreement;
+                
+                ni = tblTracker.getNodeInfo("ConservEvent");
+                ni.addKid(tblTracker.getTable("ConservRecommendation"));
+                
+                
+            } else
+            {
+                root = tblTracker.getTable("SpAppResourceDir");
+                
+                //                                           skip,  processKids, alwaysAKid, processAnyRel, okWhenParent
+                //tblTracker.addNodeInfo("Agent",              false, true,        true,       false,         null);
+                
+                // No Kids
+                tblTracker.addNodeInfo("SpAppResourceData", false, false,        true,       false,         null);
+                tblTracker.addNodeInfo("Collection",        false, false,        true,       false,         null);
+                tblTracker.addNodeInfo("CollectionType",    false, false,        true,       false,         null);
+                tblTracker.addNodeInfo("SpecifyUser",       false, false,        true,       false,         null);
+                tblTracker.addNodeInfo("SpAppResource",     false, false,        true,       false,         null);
+                tblTracker.addNodeInfo("SpViewSetObj",      false, false,        true,       false,         null);
+                tblTracker.addNodeInfo("SpUIViewSet",       false, false,        true,       false,         null);
+                tblTracker.addNodeInfo("SpUIView",          false, false,        true,       false,         null);
+                tblTracker.addNodeInfo("SpUIViewDef",       false, false,        true,       false,         null);
+                tblTracker.addNodeInfo("SpUIAltView",       false, false,        true,       false,         null);
+                tblTracker.addNodeInfo("SpUIColumn",        false, false,        true,       false,         null);
+                tblTracker.addNodeInfo("SpUIRow",           false, false,        true,       false,         null);
+                tblTracker.addNodeInfo("SpUICell",          false, false,        true,       false,         null);
+                
+                NodeInfo ni = tblTracker.getNodeInfo("SpAppResourceDir");
+                ni.addKid(tblTracker.getTable("SpAppResource"));
+                ni.addKid(tblTracker.getTable("SpViewSetObj"));
+                //ni.addKid(tblTracker.getTable("Collection"));
+                //ni.addKid(tblTracker.getTable("CollectionType"));
+                //ni.addKid(tblTracker.getTable("SpecifyUser"));
+                
+                ni = tblTracker.getNodeInfo("SpAppResource");
+                ni.addKid(tblTracker.getTable("SpAppResourceData"));
+                
+                ni = tblTracker.getNodeInfo("SpViewSetObj");
+                ni.addKid(tblTracker.getTable("SpAppResourceData"));
+                ni.addKid(tblTracker.getTable("SpUIViewSet"));
+                
+                ni = tblTracker.getNodeInfo("SpUIViewSet");
+                ni.addKid(tblTracker.getTable("SpUIView"));
+                ni.addKid(tblTracker.getTable("SpUIViewDef"));
+                
+                ni = tblTracker.getNodeInfo("SpUIView");
+                ni.addKid(tblTracker.getTable("SpUIAltView"));
+                
+                ni = tblTracker.getNodeInfo("SpUIViewDef");
+                ni.addKid(tblTracker.getTable("SpUIColumn"));
+                ni.addKid(tblTracker.getTable("SpUIRow"));
+                
+                ni = tblTracker.getNodeInfo("SpUIRow");
+                ni.addKid(tblTracker.getTable("SpUICell"));
+                //ni.addKid(tblTracker.getTable("SpUIViewDef"));
+                
+                //ni = tblTracker.getNodeInfo("SpUIAltView");
+                //ni.addKid(tblTracker.getTable("SpUIView"));
+                //ni.addKid(tblTracker.getTable("SpUIViewDef"));
 
-            ni = tblTracker.getNodeInfo("GeologicTimePeriod");
-            ni.setOkToDuplicate(true);
-            
-            ni = tblTracker.getNodeInfo("Journal");
-            ni.setOkToDuplicate(true);
-            
-            ni = tblTracker.getNodeInfo("CollectingEvent");
-            ni.addKid(tblTracker.getTable("Locality"));
-            
-            ni = tblTracker.getNodeInfo("CollectionObject");
-            ni.addKid(tblTracker.getTable("CollectingEvent"));
-            ni.addKid(tblTracker.getTable("PaleoContext"));
-            ni.addKid(tblTracker.getTable("Accession"));
-            
-            ni = tblTracker.getNodeInfo("Locality");
-            ni.addKid(tblTracker.getTable("Geography"));
-            
-            ni = tblTracker.getNodeInfo("PaleoContext");
-            ni.addKid(tblTracker.getTable("LithoStrat"));
-            ni.addKid(tblTracker.getTable("GeologicTimePeriod"));
-            
-            ni = tblTracker.getNodeInfo("DeterminationCitation");
-            ni.addKid(tblTracker.getTable("ReferenceWork"));
-            
-            ni = tblTracker.getNodeInfo("Preparation");
-            ni.addKid(tblTracker.getTable("PrepType"));
-            
-            ni = tblTracker.getNodeInfo("Accession");
-            ni.addKid(tblTracker.getTable("AccessionAuthorization"));
-            ni.addKid(tblTracker.getTable("AccessionAgent"));
-            ni.addKid(tblTracker.getTable("RepositoryAgreement"));
-            //ni.addKid(tblTracker.getTable("Attachment"));
-            //protected RepositoryAgreement repositoryAgreement;
+                
+                ni = tblTracker.getNodeInfo("SpAppResourceData");
+                ni.setOkToDuplicate(true);
+
+                
+                if (false)
+                {
+                    NodeInfo det = tblTracker.getNodeInfo("Determination");
+                    det.addKid(tblTracker.getTable("Taxon"));
+                    det.addKid(tblTracker.getTable("DeterminationStatus"));
+                    
+                    ni = tblTracker.getNodeInfo("Taxon");
+                    ni.addKid(tblTracker.getTable("TaxonCitation"));
+                    
+                    ni = tblTracker.getNodeInfo("CollectionObjectCitation");
+                    ni.addKid(tblTracker.getTable("ReferenceWork"));
+                    
+                    ni = tblTracker.getNodeInfo("TaxonCitation");
+                    ni.addKid(tblTracker.getTable("ReferenceWork"));
+                    
+                    ni = tblTracker.getNodeInfo("ReferenceWork");
+                    ni.setOkToDuplicate(true);
+                    ni.addKid(tblTracker.getTable("Journal"));
+        
+                    ni = tblTracker.getNodeInfo("GeologicTimePeriod");
+                    ni.setOkToDuplicate(true);
+                    
+                    ni = tblTracker.getNodeInfo("Journal");
+                    ni.setOkToDuplicate(true);
+                    
+                    ni = tblTracker.getNodeInfo("CollectingEvent");
+                    ni.addKid(tblTracker.getTable("Locality"));
+                    
+                    ni = tblTracker.getNodeInfo("CollectionObject");
+                    ni.addKid(tblTracker.getTable("CollectingEvent"));
+                    ni.addKid(tblTracker.getTable("PaleoContext"));
+                    ni.addKid(tblTracker.getTable("Accession"));
+                    
+                    ni = tblTracker.getNodeInfo("Locality");
+                    ni.addKid(tblTracker.getTable("Geography"));
+                    
+                    ni = tblTracker.getNodeInfo("PaleoContext");
+                    ni.addKid(tblTracker.getTable("LithoStrat"));
+                    ni.addKid(tblTracker.getTable("GeologicTimePeriod"));
+                    
+                    ni = tblTracker.getNodeInfo("DeterminationCitation");
+                    ni.addKid(tblTracker.getTable("ReferenceWork"));
+                    
+                    ni = tblTracker.getNodeInfo("Preparation");
+                    ni.addKid(tblTracker.getTable("PrepType"));
+                    
+                    ni = tblTracker.getNodeInfo("Accession");
+                    ni.addKid(tblTracker.getTable("AccessionAuthorization"));
+                    ni.addKid(tblTracker.getTable("AccessionAgent"));
+                    ni.addKid(tblTracker.getTable("RepositoryAgreement"));
+                }
+ 
+            }
 
             if (false)
             {
-                ni = tblTracker.getNodeInfo("Agent");
+                NodeInfo ni = tblTracker.getNodeInfo("Agent");
                 ni.setOkToDuplicate(true);
                 
                 String[] toAddAgent = {"CollectionObject", "Accession", "Determination", "Preparation", };
@@ -635,17 +773,19 @@ public class ERDVisualizer extends JFrame
                     rTable = rTable.duplicate(tblTracker.getFont());
                 }
                 
-                if (kidOK && (override || r.getType() == DBTableIdMgr.RelationshipType.OneToMany || r.getType() == DBTableIdMgr.RelationshipType.OneToMany))
+                if (kidOK && (override || r.getType() == DBTableIdMgr.RelationshipType.OneToMany))
                 {
                     System.out.println("    ["+rTable.getClassName()+"]");
 
-                    table.getKids().add(rTable);
-                    rTable.setTreeParent(table);
-                    processAsTree(rTable, level+1);
-                    
-                    Dimension size = rTable.getSpace();
-                    maxWidth  += size.width;
-                    maxHeight = Math.max(maxHeight, size.height);
+                    if (table.addKid(rTable))
+                    {
+                        rTable.setTreeParent(table);
+                        processAsTree(rTable, level+1);
+                        
+                        Dimension size = rTable.getSpace();
+                        maxWidth  += size.width;
+                        maxHeight = Math.max(maxHeight, size.height);
+                    }
                 }
             }
         }
