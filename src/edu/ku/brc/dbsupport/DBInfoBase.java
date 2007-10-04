@@ -20,9 +20,11 @@ package edu.ku.brc.dbsupport;
 import org.apache.commons.lang.StringUtils;
 
 /**
+ * Hold the Schema Information, this is used for for L10N/I18N and whether the item is visible.
+ * 
  * @author rods
  *
- * @code_status Alpha
+ * @code_status Beta
  *
  * Created Date: Oct 3, 2007
  *
@@ -34,21 +36,34 @@ public class DBInfoBase implements Comparable<DBInfoBase>
     protected String  description;
     protected boolean isHidden = false;
     
+    /**
+     * Default Constrcutor.
+     */
     public DBInfoBase()
     {
         this(null, null, null);
     }
 
-    public DBInfoBase(String name)
+    /**
+     * Constructor with name.
+     * @param name the name of the item
+     */
+    public DBInfoBase(final String name)
     {
         this(name, null, null);
     }
 
-    public DBInfoBase(String name, String title, String description)
+    /**
+     * COnstructor with name and localized title and description
+     * @param name
+     * @param title
+     * @param description
+     */
+    protected DBInfoBase(final String name, final String title, final String description)
     {
         super();
-        this.name  = name;
-        this.title = title;
+        this.name        = name;
+        this.title       = title;
         this.description = description;
     }
 
@@ -63,7 +78,7 @@ public class DBInfoBase implements Comparable<DBInfoBase>
     /**
      * @param description the description to set
      */
-    public void setDescription(String description)
+    public void setDescription(final String description)
     {
         this.description = description;
     }
@@ -91,7 +106,7 @@ public class DBInfoBase implements Comparable<DBInfoBase>
     /**
      * @param name the name to set
      */
-    public void setTitle(String title)
+    public void setTitle(final String title)
     {
         this.title = title;
     }
@@ -107,7 +122,7 @@ public class DBInfoBase implements Comparable<DBInfoBase>
     /**
      * @param isHidden the isHidden to set
      */
-    public void setHidden(boolean isHidden)
+    public void setHidden(final boolean isHidden)
     {
         this.isHidden = isHidden;
     }
@@ -124,7 +139,7 @@ public class DBInfoBase implements Comparable<DBInfoBase>
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    public int compareTo(DBInfoBase o)
+    public int compareTo(final DBInfoBase o)
     {
         return getTitle().compareTo(o.getTitle());
     }

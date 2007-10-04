@@ -78,7 +78,7 @@ public class GraphBuilder
             g = new DirectedGraph<Table, Relationship>();
 
             // add vertices
-            for (DBTableInfo tbl : schema.getList())
+            for (DBTableInfo tbl : schema.getTables())
             {
                 if (includeTable(tbl))
                 {

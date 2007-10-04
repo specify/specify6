@@ -24,12 +24,18 @@ import org.apache.log4j.Logger;
 
 import com.thoughtworks.xstream.XStream;
 
+import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.dbsupport.DBInfoBase;
+import edu.ku.brc.dbsupport.DBRelationshipInfo;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.SpLocaleBase;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpLocaleContainerItem;
 import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * THis is a helper class for reading and writing the Schema Description XML to a file.
@@ -63,7 +69,8 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     protected Vector<LocalizableStrIFace> namesList = new Vector<LocalizableStrIFace>();
     protected Vector<LocalizableStrIFace> descsList = new Vector<LocalizableStrIFace>();
 
-
+    protected StringBuilder changesBuffer = new StringBuilder();
+    
 
     /**
      * 
@@ -118,6 +125,150 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                 tableHash.put(cont.getName(), cont);
             }
             
+            log.info("Syncing with Datamodel.... (ignore errors)");
+            changesBuffer.append("<Center><table border=\"1\">");
+            DBTableIdMgr mgr = DBTableIdMgr.getInstance();
+            
+            String lang = Locale.getDefault().getLanguage();
+            
+            log.info("Adding New Tables and fields....");
+            for (DBTableInfo ti : mgr.getTables())
+            {
+                SpLocaleContainer container = (SpLocaleContainer)tableHash.get(ti.getName());
+                if (container == null)
+                {
+                    // OK, table has been Localized, so add it.
+                    container = new SpLocaleContainer();
+                    container.initialize();
+                    container.setName(ti.getName());
+                    SpLocaleItemStr nameStr = new SpLocaleItemStr();
+                    nameStr.initialize();
+                    nameStr.setText(UIHelper.makeNamePretty(ti.getShortClassName()));
+                    nameStr.setLanguage(lang);
+                    container.addName(nameStr);
+                    log.info("Adding Table ["+ti.getName()+"]");
+                    changesMadeDuringStartup = true;
+                    
+                    changesBuffer.append("<tr><td align=\"center\">Added</td>");
+                    changesBuffer.append("<td align=\"center\">");
+                    changesBuffer.append(ti.getName());
+                    changesBuffer.append("</td><td>&nbsp;</td></tr>");
+                                       
+                    for (DBFieldInfo fi : ti.getFields())
+                    {
+                        SpLocaleContainerItem item = new SpLocaleContainerItem();
+                        item.initialize();
+                        item.setName(fi.getName());
+                        nameStr = new SpLocaleItemStr();
+                        nameStr.initialize();
+                        nameStr.setText(UIHelper.makeNamePretty(fi.getDataClass().getSimpleName()));
+                        nameStr.setLanguage(lang);
+                        item.addName(nameStr);
+                        log.info("  Adding Field ["+fi.getName()+"]");
+                        changesBuffer.append("<tr><td align=\"center\">Added</td>");
+                        changesBuffer.append("<td align=\"center\">&nbsp;</td><td align=\"center\">");
+                        changesBuffer.append(fi.getName());
+                        changesBuffer.append("</td></tr>");
+                    }
+                    
+                    for (DBRelationshipInfo ri : ti.getRelationships())
+                    {
+                        SpLocaleContainerItem item = new SpLocaleContainerItem();
+                        item.initialize();
+                        item.setName(ri.getName());
+                        log.info("  Adding Field ["+ri.getName()+"]");
+                        changesBuffer.append("<tr><td align=\"center\">Added</td>");
+                        changesBuffer.append("<td align=\"center\">&nbsp;</td><td align=\"center\">");
+                        changesBuffer.append(ri.getName());
+                        changesBuffer.append("</td></tr>");
+                    }
+                    
+                } else
+                {
+                    // Look for existing Field
+                    for (DBFieldInfo fi : ti.getFields())
+                    {
+                        SpLocaleContainerItem item = (SpLocaleContainerItem)container.getItemByName(fi.getName());
+                        if (item == null)
+                        {
+                            item = new SpLocaleContainerItem();
+                            item.initialize();
+                            item.setName(fi.getName());
+                            SpLocaleItemStr nameStr = new SpLocaleItemStr();
+                            nameStr.initialize();
+                            nameStr.setText(UIHelper.makeNamePretty(fi.getDataClass().getSimpleName()));
+                            nameStr.setLanguage(lang);
+                            item.addName(nameStr);
+                            container.addItem(item);
+                            log.info("For Table["+ti.getName()+"] Adding Field ["+fi.getName()+"]");
+                            changesMadeDuringStartup = true;
+                            changesBuffer.append("<tr><td align=\"center\">Added</td>");
+                            changesBuffer.append("<td align=\"center\">"+ti.getName()+"</td><td align=\"center\">");
+                            changesBuffer.append(fi.getName());
+                            changesBuffer.append("</td></tr>");
+                        }
+                    }
+                    
+                    for (DBRelationshipInfo ri : ti.getRelationships())
+                    {
+                        SpLocaleContainerItem item = (SpLocaleContainerItem)container.getItemByName(ri.getName());
+                        if (item == null)
+                        {
+                            item = new SpLocaleContainerItem();
+                            item.initialize();
+                            item.setName(ri.getName());
+                            container.addItem(item);
+                            SpLocaleItemStr nameStr = new SpLocaleItemStr();
+                            nameStr.initialize();
+                            nameStr.setText(UIHelper.makeNamePretty(ri.getName()));
+                            nameStr.setLanguage(lang);
+                            item.addName(nameStr);
+                            log.info("For Table["+ti.getName()+"] Adding Rel ["+ri.getName()+"]");
+                            changesMadeDuringStartup = true;
+                            changesBuffer.append("<tr><td align=\"center\">Added</td>");
+                            changesBuffer.append("<td align=\"center\">"+ti.getName()+"</td><td align=\"center\">");
+                            changesBuffer.append(ri.getName());
+                            changesBuffer.append("</td></tr>");
+                        }
+                    }
+                }
+            }
+            
+            log.info("Removing Old Tables and fields....");
+            for (SpLocaleContainer container : new Vector<SpLocaleContainer>(tables))
+            {
+                DBTableInfo ti = mgr.getInfoByTableName(container.getName());
+                if (ti == null)
+                {
+                    log.info("Removing Table ["+container.getName()+"] from Schema");
+                    tables.remove(container);
+                    tableHash.remove(container.getName());
+                    changesMadeDuringStartup = true;
+                    changesBuffer.append("<tr><td align=\"center\">Removed</td>");
+                    changesBuffer.append("<td align=\"center\">");
+                    changesBuffer.append(ti.getName());
+                    changesBuffer.append("</td><td>&nbsp;</td></tr>");
+                    
+                } else
+                {
+                    for (LocalizableItemIFace itemIF : new Vector<LocalizableItemIFace>(container.getContainerItems()))
+                    {
+                        SpLocaleContainerItem item     = (SpLocaleContainerItem)itemIF;
+                        DBInfoBase            baseItem = ti.getItemByName(item.getName());
+                        if (baseItem == null)
+                        {
+                            container.removeItem(item);
+                            log.info("For Table["+ti.getName()+"] Removing Rel ["+item.getName()+"]");
+                            changesMadeDuringStartup = true;
+                            changesBuffer.append("<tr><td align=\"center\" color=\"red\">Removed</td>");
+                            changesBuffer.append("<td align=\"center\">"+ti.getName()+"</td><td align=\"center\">");
+                            changesBuffer.append(item.getName());
+                            changesBuffer.append("</td></tr>");
+                        }
+                    }
+                }
+            }
+            changesBuffer.append("</table>");
             return true;
             
         } catch (IOException ex)
@@ -125,6 +276,14 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
             ex.printStackTrace();
         }
         return false;
+    }
+    
+    /**
+     * @return returns a HTML document of what happened during the load.
+     */
+    public String getChangesBuffer()
+    {
+        return changesBuffer.toString();
     }
 
     /* (non-Javadoc)
@@ -245,10 +404,11 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
         xstream.useAttributeFor(SpLocaleItemStr.class, "language");
         xstream.useAttributeFor(SpLocaleItemStr.class, "variant");
         
-        xstream.omitField(SpLocaleContainer.class,  "spLocaleContainerId");
-        xstream.omitField(SpLocaleContainer.class,  "containerItems");
+        xstream.omitField(SpLocaleContainer.class,      "spLocaleContainerId");
+        xstream.omitField(SpLocaleContainer.class,      "containerItems");
         xstream.omitField(SpLocaleContainerItem.class,  "spLocaleContainerItemId");
-        xstream.omitField(SpLocaleItemStr.class,  "spLocaleItemStrId");
+        xstream.omitField(SpLocaleContainerItem.class,  "container");
+        xstream.omitField(SpLocaleItemStr.class,        "spLocaleItemStrId");
         
         xstream.omitField(DataModelObjBase.class,  "timestampCreated");
         xstream.omitField(DataModelObjBase.class,  "timestampModified");

@@ -176,7 +176,7 @@ public class TemplateEditor extends CustomDialog
         
         // Create the Table List
         Vector<TableInfo> tableInfoList = new Vector<TableInfo>();
-        for (DBTableInfo ti : databaseSchema.getList())
+        for (DBTableInfo ti : databaseSchema.getTables())
         {
             if (StringUtils.isNotEmpty(ti.toString()))
             {

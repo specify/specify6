@@ -17,10 +17,9 @@
  */
 package edu.ku.brc.dbsupport;
 
-import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
@@ -30,6 +29,8 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.ui.IconManager;
 
 /**
+ * Holds the Schema information for a table.
+ * 
  * @author rods
  *
  * @code_status Alpha
@@ -59,8 +60,13 @@ public class DBTableInfo extends DBInfoBase
     protected String searchDialog;
     protected String newObjDialog;
     
-    protected Set<DBRelationshipInfo> relationships;
-    protected List<DBFieldInfo>       fields;
+    protected List<DBRelationshipInfo> relationships;
+    protected List<DBFieldInfo>        fields;
+    
+    // Transient 
+    protected Hashtable<String, DBFieldInfo>        fieldsHash = null;
+    protected Hashtable<String, DBRelationshipInfo> relsHash   = null;
+    
 
     public DBTableInfo(final int    tableId, 
                        final String className, 
@@ -81,7 +87,7 @@ public class DBTableInfo extends DBInfoBase
             log.error("Trying to find class: " + className + " but class was not found");
             //e.printStackTrace();
         }
-        relationships = new HashSet<DBRelationshipInfo>();
+        relationships = new Vector<DBRelationshipInfo>();
         fields        = new Vector<DBFieldInfo>();
     }
     
@@ -129,7 +135,7 @@ public class DBTableInfo extends DBInfoBase
         this.defaultFormName = defaultFormName;
     }
 
-    public Set<DBRelationshipInfo> getRelationships()
+    public List<DBRelationshipInfo> getRelationships()
     {
         return relationships;
     }
@@ -244,31 +250,71 @@ public class DBTableInfo extends DBInfoBase
      * @param name the name of the field
      * @return the DBFieldInfo
      */
-    public DBFieldInfo getFieldByName(final String nameArg)
+    public DBInfoBase getItemByName(final String itemName)
     {
-        for (DBFieldInfo fldInfo : fields)
+        DBFieldInfo fieldInfo = getFieldByName(itemName);
+        if (fieldInfo != null)
         {
-            if (fldInfo.getName().equals(nameArg))
-            {
-                return fldInfo;
-            }
+            return fieldInfo;
         }
-        return null;
+        return getRelationshipByName(itemName);
     }
 
-    public DBRelationshipInfo getRelationshipByName(final String nameArg)
+    /**
+     * Assumes all fields have names and returns a DBFieldInfo object by name
+     * @param name the name of the field
+     * @return the DBFieldInfo
+     */
+    public DBFieldInfo getFieldByName(final String fieldName)
     {
-        for (DBRelationshipInfo tr: relationships)
+        if (fieldsHash == null)
         {
-            String relName = tr.getName();
-            if (relName != null && relName.equals(nameArg))
+            fieldsHash = new Hashtable<String, DBFieldInfo>();
+            for (DBFieldInfo fldInfo : fields)
             {
-                return tr;
+                fieldsHash.put(fldInfo.getName().toLowerCase(), fldInfo);
             }
         }
-        return null;
+        return fieldsHash.get(fieldName.toLowerCase());
     }
 
+    /**
+     * @param relName
+     * @return
+     */
+    public DBRelationshipInfo getRelationshipByName(final String relName)
+    {
+        if (relsHash == null)
+        {
+            relsHash  = new Hashtable<String, DBRelationshipInfo>();
+            for (DBRelationshipInfo rel: relationships)
+            {
+                relsHash.put(rel.getName().toLowerCase(), rel);
+            }
+        }
+        return relsHash.get(relName.toLowerCase());
+    }
+    
+    /**
+     * @return an iterator for relationships that only returns 'visible ones'
+     */
+    public DBInfoVisibleIterator<DBRelationshipInfo> getVisableRelationships()
+    {
+        return new DBInfoVisibleIterator<DBRelationshipInfo>(relationships);
+    }
+
+    /**
+     * @return an iterator for fields that only returns 'visible ones'
+     */
+    public DBInfoVisibleIterator<DBFieldInfo> getVisableFields()
+    {
+        return new DBInfoVisibleIterator<DBFieldInfo>(fields);
+    }
+
+    /**
+     * @param fieldName the field name to find
+     * @return the field info
+     */
     public DBRelationshipInfo.RelationshipType getRelType(final String fieldName)
     {
         for (Iterator<DBRelationshipInfo> iter = relationships.iterator();iter.hasNext();)
@@ -282,11 +328,17 @@ public class DBTableInfo extends DBInfoBase
         return null;
     }
     
+    /**
+     * @param fieldInfo
+     */
     public void addField(final DBFieldInfo fieldInfo)
     {
         fields.add(fieldInfo);
     }
     
+    /**
+     * @return the list of fields
+     */
     public List<DBFieldInfo> getFields()
     {
         return fields;

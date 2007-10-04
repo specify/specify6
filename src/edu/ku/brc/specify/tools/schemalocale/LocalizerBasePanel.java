@@ -410,6 +410,11 @@ public abstract class LocalizerBasePanel extends JPanel
         this.saveMenuItem = saveMenuItem;
     }
 
+    public JMenuItem getSaveMenuItem()
+    {
+        return saveMenuItem;
+    }
+
     /**
      * @return
      */

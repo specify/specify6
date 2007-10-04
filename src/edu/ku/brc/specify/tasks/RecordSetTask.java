@@ -103,7 +103,7 @@ public class RecordSetTask extends BaseTask
         
         // Register all Tables as being able to be saved in a RecordSet
         // Althought some system tables we may not want, they won't be searchable anyway.
-        for (DBTableInfo ti : DBTableIdMgr.getInstance().getList())
+        for (DBTableInfo ti : DBTableIdMgr.getInstance().getTables())
         {
             ContextMgr.registerService(ti.getTitle(), ti.getTableId(), new CommandAction(RECORD_SET, SAVE_RECORDSET), this, RECORD_SET, "CreateRecordSetTT");    
         }

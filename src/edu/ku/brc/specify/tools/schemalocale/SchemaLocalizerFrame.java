@@ -13,11 +13,14 @@ import java.lang.ref.WeakReference;
 import java.util.Locale;
 
 import javax.swing.BorderFactory;
+import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
@@ -147,6 +150,31 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
         schemaLocPanel.setSaveMenuItem(saveMenuItem);
         
         schemaLocPanel.getContainerList().setEnabled(true);
+        
+        if (localizableIO.didModelChangeDuringLoad())
+        {
+            saveMenuItem.setEnabled(true);
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run()
+                {
+                    JFrame frame = new JFrame("Changes To the Schema");
+                    frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                    
+                    JTextPane   tp = new JTextPane();
+                    JScrollPane js = new JScrollPane();
+                    js.getViewport().add(tp);
+                    
+                    tp.setContentType("text/html");
+                    tp.setText(((SchemaLocalizerXMLHelper)localizableIO).getChangesBuffer());
+                    
+                    frame.setContentPane(js);
+                    frame.pack();
+                    frame.setSize(400,500);
+                    frame.setVisible(true); 
+                }
+                
+            });
+        }
     }
     
     /**

@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.dbsupport.DBInfoBase;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -112,7 +113,7 @@ public class SpecifySchemaI18NService extends SchemaI18NService
             
             if (ti != null)
             {
-                DBFieldInfo fi = ti.getFieldByName(p.second);
+                DBInfoBase fi = ti.getItemByName(p.second);
                 if (fi != null)
                 {
                     ti.setTitle(p.third);
@@ -146,7 +147,7 @@ public class SpecifySchemaI18NService extends SchemaI18NService
             
             if (ti != null)
             {
-                DBFieldInfo fi = ti.getFieldByName(p.second);
+                DBInfoBase fi = ti.getItemByName(p.second);
                 if (fi != null)
                 {
                     ti.setDescription(p.third);

@@ -148,7 +148,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
         Hashtable<String, List<ExpressResultsTableInfo>> joinHash = ExpressSearchConfigCache.getJoinIdToTableInfoHash();
         Vector<DBTableInfo>                   tableListInfoWithJoins = new Vector<DBTableInfo>();
 
-        for (DBTableInfo ti : DBTableIdMgr.getInstance().getList())
+        for (DBTableInfo ti : DBTableIdMgr.getInstance().getTables())
         {
             if (!ti.isSearchable())
             {

@@ -52,7 +52,7 @@ public class TableTracker
         defaultNodeInfo.setClassName("defaultNodeInfo");
         defaultNodeInfo.setClassName("defaultSkipNodeInfo");
         
-        for (DBTableInfo tbl : DBTableIdMgr.getInstance().getList())
+        for (DBTableInfo tbl : DBTableIdMgr.getInstance().getTables())
         {
             ERDTable table = new ERDTable(tbl);
             table.build(font);

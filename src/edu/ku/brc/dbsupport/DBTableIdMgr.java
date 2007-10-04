@@ -19,16 +19,11 @@ import static edu.ku.brc.helpers.XMLHelper.getAttr;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 import java.util.Vector;
-
-import javax.swing.ImageIcon;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -37,8 +32,6 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.util.DatamodelHelper;
 
@@ -61,8 +54,9 @@ public class DBTableIdMgr
     protected static  DBTableIdMgr instance = null;
     
     // Data Members
-    protected Hashtable<Integer, DBTableInfo> hash = new Hashtable<Integer, DBTableInfo>();
-    protected boolean                       isFullSchema = true;
+    protected Hashtable<Integer, DBTableInfo> hash   = new Hashtable<Integer, DBTableInfo>();
+    protected Vector<DBTableInfo>             tables = new Vector<DBTableInfo>();
+    protected boolean                         isFullSchema = true;
 
     /**
      * Can now be created as a standalone class to read in other types of Schema Definitions (i.e. Workbench Schema).
@@ -155,6 +149,7 @@ public class DBTableIdMgr
                         log.error("Table ID used twice["+tableId+"]");
                     }
 					hash.put(tableId, tblInfo); 
+                    tables.add(tblInfo);
                     
                     Element idElement = (Element)tableNode.selectSingleNode("id");
                     if (idElement != null)
@@ -234,6 +229,7 @@ public class DBTableIdMgr
 			log.error(ex);
 			ex.printStackTrace();
 		}
+        Collections.sort(tables);
         log.debug("Done Reading in datamodel file: " + DatamodelHelper.getDatamodelFilePath());
 	}
     
@@ -253,9 +249,9 @@ public class DBTableIdMgr
      * Returns the full collection of Tables. 
      * @return a collection of DBTableInfo objects
      */
-    public Collection<DBTableInfo> getList()
+    public Vector<DBTableInfo> getTables()
     {
-        return hash.values();
+        return tables;
     }
 
 	/**
@@ -562,6 +558,14 @@ public class DBTableIdMgr
             }
         }
         return null;
+    }
+    
+    /**
+     * @return an iterator for Tables that only returns 'visible ones'
+     */
+    public DBInfoVisibleIterator<DBTableInfo> getVisableTabless()
+    {
+        return new DBInfoVisibleIterator<DBTableInfo>(tables);
     }
 
 }

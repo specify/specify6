@@ -57,7 +57,7 @@ public class DBSchema
     protected void buildSchema()
     {
         tables = new TreeMap<String, Table>();
-        for (DBTableInfo tbl : scheme.getList())
+        for (DBTableInfo tbl : scheme.getTables())
         {
             Table newTbl = new Table(this, tbl);
             tables.put(newTbl.getName().toLowerCase(), newTbl);
