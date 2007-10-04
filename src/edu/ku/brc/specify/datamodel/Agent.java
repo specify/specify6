@@ -230,6 +230,8 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         variants                      = new HashSet<AgentVariant>();
         
         agentAttachments              = new HashSet<AgentAttachment>();
+        
+        specifyUsers                  = new HashSet<SpecifyUser>();
     }
     // End Initializer
 
