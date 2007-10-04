@@ -55,6 +55,7 @@ import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
@@ -430,7 +431,7 @@ public class InteractionsTask extends BaseTask
     {      
         DBTableIdMgr.getInClause(recordSet);
 
-        DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
+        DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
         
         DataProviderFactory.getInstance().evict(tableInfo.getClassObj()); // XXX Not sure if this is really needed
         
@@ -544,7 +545,7 @@ public class InteractionsTask extends BaseTask
                         DataEntryTask dataEntryTask = (DataEntryTask)TaskMgr.getTask(DataEntryTask.DATA_ENTRY);
                         if (dataEntryTask != null)
                         {
-                            DBTableIdMgr.TableInfo loanTableInfo = DBTableIdMgr.getInstance().getInfoById(loan.getTableId());
+                            DBTableInfo loanTableInfo = DBTableIdMgr.getInstance().getInfoById(loan.getTableId());
                             dataEntryTask.openView(thisTask, null, loanTableInfo.getDefaultFormName(), "edit", loan, true);
                         }
                         return null;
@@ -656,7 +657,7 @@ public class InteractionsTask extends BaseTask
      */
     protected void createInfoRequest(final RecordSetIFace recordSet)
     {
-        DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.getInstance().getByShortClassName(InfoRequest.class.getSimpleName());
+        DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByShortClassName(InfoRequest.class.getSimpleName());
         
         SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
         

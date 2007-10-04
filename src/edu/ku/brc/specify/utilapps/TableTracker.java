@@ -17,6 +17,7 @@ import java.util.Vector;
 import javax.swing.JLabel;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 
 /**
  * Reads in and Tracks each tables usage.
@@ -51,7 +52,7 @@ public class TableTracker
         defaultNodeInfo.setClassName("defaultNodeInfo");
         defaultNodeInfo.setClassName("defaultSkipNodeInfo");
         
-        for (DBTableIdMgr.TableInfo tbl : DBTableIdMgr.getInstance().getList())
+        for (DBTableInfo tbl : DBTableIdMgr.getInstance().getList())
         {
             ERDTable table = new ERDTable(tbl);
             table.build(font);

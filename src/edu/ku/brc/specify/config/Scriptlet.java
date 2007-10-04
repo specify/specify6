@@ -442,7 +442,7 @@ public class Scriptlet extends JRDefaultScriptlet
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         //System.out.println(colEvId);
         
-        //DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInstance().lookupByClassName(CollectingEvent.class.getName());
+        //DBTableInfo tblInfo = DBTableIdMgr.getInstance().lookupByClassName(CollectingEvent.class.getName());
         String collectorsStr = "N/A"; // XXX I18N
         List<?> list = session.getDataList(CollectingEvent.class, "collectingEventId", colEvId);
         if (list.size() > 0)

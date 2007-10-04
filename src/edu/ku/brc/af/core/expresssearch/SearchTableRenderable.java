@@ -18,6 +18,7 @@
 package edu.ku.brc.af.core.expresssearch;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 
 /**
  * @author rods
@@ -47,9 +48,9 @@ class SearchTableRenderable extends TableInfoRenderable
 
     public SearchTableRenderable(RelatedQuery rq)
     {
-        super((DBTableIdMgr.TableInfo)null);
+        super((DBTableInfo)null);
         
-        DBTableIdMgr.TableInfo ti = DBTableIdMgr.getInstance().getInfoById(rq.getErti().getTableId());
+        DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(rq.getErti().getTableId());
         tableInfo = ti;
         this.relatedQuery = rq;
     }

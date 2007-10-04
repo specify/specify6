@@ -35,8 +35,8 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
-import edu.ku.brc.dbsupport.DBTableIdMgr.TableInfo;
-import edu.ku.brc.dbsupport.DBTableIdMgr.TableRelationship;
+import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DefaultClassActionHandler;
@@ -691,8 +691,8 @@ public class IconViewObj implements Viewable
         }
         else
         {
-            TableInfo parentTI = DBTableIdMgr.getInstance().getByClassName(parentDataObj.getClass().getName());
-            TableRelationship rel = parentTI.getRelationshipByName(cellName);
+            DBTableInfo        parentTI = DBTableIdMgr.getInstance().getByClassName(parentDataObj.getClass().getName());
+            DBRelationshipInfo rel      = parentTI.getRelationshipByName(cellName);
             this.dataClassName = rel.getClassName();
         }
     }

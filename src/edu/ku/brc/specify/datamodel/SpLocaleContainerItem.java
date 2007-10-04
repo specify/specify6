@@ -59,8 +59,9 @@ public class SpLocaleContainerItem extends SpLocaleBase implements LocalizableIt
 {
     private static final Logger log = Logger.getLogger(SpLocaleContainerItem.class);
     
-    protected Integer spLocaleContainerItemId;
-    protected SpLocaleContainer container;
+    protected Integer              spLocaleContainerItemId;
+    protected Boolean              isHidden;
+    protected SpLocaleContainer    container;
     
     protected Set<SpLocaleItemStr> names;
     protected Set<SpLocaleItemStr> descs;
@@ -105,6 +106,7 @@ public class SpLocaleContainerItem extends SpLocaleBase implements LocalizableIt
     {
         super.initialize();
         spLocaleContainerItemId = null;
+        isHidden                = false;
         
         names = new HashSet<SpLocaleItemStr>();
         descs = new HashSet<SpLocaleItemStr>();
@@ -113,6 +115,23 @@ public class SpLocaleContainerItem extends SpLocaleBase implements LocalizableIt
 
     }
 
+    /**
+     * @return the isHidden
+     */
+    @Column(name = "IsHidden", unique = false, nullable = false, insertable = true, updatable = true)
+    public Boolean getIsHidden()
+    {
+        return isHidden;
+    }
+
+    /**
+     * @param isHidden the isHidden to set
+     */
+    public void setIsHidden(Boolean isHidden)
+    {
+        this.isHidden = isHidden;
+    }
+    
     /**
      * @return the descs
      */
@@ -266,7 +285,7 @@ public class SpLocaleContainerItem extends SpLocaleBase implements LocalizableIt
     {
         if (str != null && str instanceof SpLocaleItemStr)
         {
-            descs.remove((SpLocaleItemStr)str);
+            descs.remove(str);
         } else
         {
             log.error("LocalizableStrIFace was null or not of Class SpLocaleItemStr");

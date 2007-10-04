@@ -25,7 +25,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
+import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.forms.formatters.DataObjSwitchFormatter;
 
@@ -155,12 +157,12 @@ public class ERTICaptionInfo
                 colInfoList.add(columnInfo);
             }
 
-            DBTableIdMgr.TableInfo ti = DBTableIdMgr.getInstance().getByClassName(compositeClassName);
+            DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(compositeClassName);
             if (ti != null)
             {
                 for (ColInfo columnInfo : colInfoList)
                 {
-                    DBTableIdMgr.FieldInfo fi = ti.getFieldByName(columnInfo.getFieldName());
+                    DBFieldInfo fi = ti.getFieldByName(columnInfo.getFieldName());
                     if (fi != null)
                     {
                         columnInfo.setFieldClass(fi.getDataClass());

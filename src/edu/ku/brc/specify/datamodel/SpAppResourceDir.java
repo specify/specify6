@@ -322,6 +322,7 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
         {
             spViewSets = new HashSet<SpViewSetObj>();
             spViewSets.addAll(getSpPersistedViewSets());
+            shouldInitialViews = false;
         }
         return spViewSets;
     }

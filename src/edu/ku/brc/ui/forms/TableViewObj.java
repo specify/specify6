@@ -69,7 +69,9 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
+import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
@@ -855,7 +857,7 @@ public class TableViewObj implements Viewable,
                 RecordSetIFace recordSet = (RecordSetIFace)dataObj;
                 
                 DBTableIdMgr.getInClause(recordSet);
-                DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.getInstance().lookupInfoById(recordSet.getDbTableId());
+                DBTableInfo tableInfo = DBTableIdMgr.getInstance().lookupInfoById(recordSet.getDbTableId());
                 
                 DataProviderFactory.getInstance().evict(tableInfo.getClassObj());
                 
@@ -1321,15 +1323,15 @@ public class TableViewObj implements Viewable,
         fullObjPath.append(subFormCell.getName());
         
         String                 clsName = getParentClassName();
-        DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(clsName);
+        DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(clsName);
         
         if (tblInfo != null)
         {
-            DBTableIdMgr.RelationshipType type = tblInfo.getRelType(subFormCell.getName());
+            DBRelationshipInfo.RelationshipType type = tblInfo.getRelType(subFormCell.getName());
             //String fieldName = subFormCell.getName();
             //log.info(type+"  "+fieldName+" "+clsName);
             
-            boolean isSet = type == DBTableIdMgr.RelationshipType.OneToMany || type == DBTableIdMgr.RelationshipType.ManyToMany;
+            boolean isSet = type == DBRelationshipInfo.RelationshipType.OneToMany || type == DBRelationshipInfo.RelationshipType.ManyToMany;
             if (isSet)
             {
                 skipControls++;
@@ -1571,11 +1573,11 @@ public class TableViewObj implements Viewable,
         {
             if (StringUtils.isNotEmpty(formCell.getName()))
             {
-                DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(parentClassName);
+                DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(parentClassName);
                 if (tblInfo != null)
                 {
-                    DBTableIdMgr.RelationshipType type = tblInfo.getRelType(formCell.getName());
-                    isSet = type == DBTableIdMgr.RelationshipType.ManyToMany || type == DBTableIdMgr.RelationshipType.ManyToOne;
+                    DBRelationshipInfo.RelationshipType type = tblInfo.getRelType(formCell.getName());
+                    isSet = type == DBRelationshipInfo.RelationshipType.ManyToMany || type == DBRelationshipInfo.RelationshipType.ManyToOne;
                 }
             }
         }

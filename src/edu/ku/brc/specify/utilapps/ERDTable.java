@@ -32,7 +32,10 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.dnd.ShadowFactory;
 
@@ -52,9 +55,9 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
     
     protected static DisplayType displayType = DisplayType.All;
     
-    protected Hashtable<DBTableIdMgr.TableRelationship, JComponent> relUIHash   = new Hashtable<DBTableIdMgr.TableRelationship, JComponent>();
+    protected Hashtable<DBRelationshipInfo, JComponent> relUIHash   = new Hashtable<DBRelationshipInfo, JComponent>();
     
-    protected DBTableIdMgr.TableInfo  table;
+    protected DBTableInfo  table;
     
     protected JPanel                 inner;
     
@@ -68,7 +71,7 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
     protected Dimension              space        = new Dimension(0, 0);
     protected int                    shiftX       = 0;
     
-    public ERDTable(final DBTableIdMgr.TableInfo table)
+    public ERDTable(final DBTableInfo table)
     {
         super(new BorderLayout());
         this.table = table;
@@ -82,7 +85,7 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
     /**
      * @return the table
      */
-    public DBTableIdMgr.TableInfo getTable()
+    public DBTableInfo getTable()
     {
         return table;
     }
@@ -95,12 +98,12 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
     /**
      * @return the relUIHash
      */
-    public Hashtable<DBTableIdMgr.TableRelationship, JComponent> getRelUIHash()
+    public Hashtable<DBRelationshipInfo, JComponent> getRelUIHash()
     {
         return relUIHash;
     }
 
-    public void build(final PanelBuilder p, final DBTableIdMgr.FieldInfo f, final Font font, final int y, boolean all)
+    public void build(final PanelBuilder p, final DBFieldInfo f, final Font font, final int y, boolean all)
     {
         String typ = StringUtils.substringAfterLast(f.getType(), ".");
         if (StringUtils.isEmpty(typ))
@@ -123,7 +126,7 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
 
     }
     
-    public void build(final PanelBuilder p, final DBTableIdMgr.TableInfo tbl, final Font font, final int y, boolean all)
+    public void build(final PanelBuilder p, final DBTableInfo tbl, final Font font, final int y, boolean all)
     {
         String typ = StringUtils.substringAfterLast(tbl.getIdType(), ".");
         if (StringUtils.isEmpty(typ))
@@ -142,7 +145,7 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
 
     }
     
-    public JComponent build(final PanelBuilder p, final DBTableIdMgr.TableRelationship r, final Font font, final int y, boolean all)
+    public JComponent build(final PanelBuilder p, final DBRelationshipInfo r, final Font font, final int y, boolean all)
     {
         CellConstraints cc = new CellConstraints();
         p.add(ERDVisualizer.mkLabel(font, StringUtils.substringAfterLast(r.getClassName(), "."), SwingConstants.LEFT), cc.xy(1,y));
@@ -203,7 +206,7 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
             build(fieldsPB, table, font, yy, doingAll); // does ID
             yy += 2;
             
-            for (DBTableIdMgr.FieldInfo f : table.getFields())
+            for (DBFieldInfo f : table.getFields())
             {
                 build(fieldsPB, f, font, yy, doingAll);
                 yy += 2;
@@ -231,9 +234,9 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
             }
             yy += 2;
             
-            Vector<DBTableIdMgr.TableRelationship> orderedList = new Vector<DBTableIdMgr.TableRelationship>(table.getRelationships());
+            Vector<DBRelationshipInfo> orderedList = new Vector<DBRelationshipInfo>(table.getRelationships());
             Collections.sort(orderedList);
-            for (DBTableIdMgr.TableRelationship r : orderedList)
+            for (DBRelationshipInfo r : orderedList)
             {
                 //System.out.println(r.getName()+" "+r.getType());
                 if (!r.getName().toLowerCase().endsWith("iface"))
@@ -330,7 +333,7 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
      */
     public int compareTo(ERDTable arg0)
     {
-        return table.getTableName().compareTo(arg0.getTable().getTableName());
+        return table.getTitle().compareTo(arg0.getTable().getTitle());
     }
 
     /**
@@ -462,7 +465,7 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
         newTable.displayType = DisplayType.Title;
         newTable.build(font);
         
-        newTable.relUIHash   = new Hashtable<DBTableIdMgr.TableRelationship, JComponent>(relUIHash);
+        newTable.relUIHash   = new Hashtable<DBRelationshipInfo, JComponent>(relUIHash);
         
         newTable.shadowBuffer = shadowBuffer;
         newTable.buffer       = buffer;

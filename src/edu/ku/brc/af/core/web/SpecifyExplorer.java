@@ -383,10 +383,8 @@ public class SpecifyExplorer extends HttpServlet
             if (method != null)
             {
                 return method.invoke(dataObj, (Object[])null);
-            } else
-            {
-                log.error("Missing method add(Object) for this type of set ["+dataObj.getClass()+"]");
             }
+            log.error("Missing method add(Object) for this type of set ["+dataObj.getClass()+"]");
         } catch (NoSuchMethodException ex) {}
         return null;
     }

@@ -68,6 +68,7 @@ import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
@@ -201,7 +202,7 @@ public class FormViewObj implements Viewable,
     // RecordSet Management
     protected RecordSetIFace                recordSet         = null;
     protected List<RecordSetItemIFace>      recordSetItemList = null;  
-    protected DBTableIdMgr.TableInfo        tableInfo         = null;
+    protected DBTableInfo                   tableInfo         = null;
     
     protected Color                         bgColor           = null;
 
@@ -1699,7 +1700,7 @@ public class FormViewObj implements Viewable,
             //delRecBtn.setEnabled(false);
             //srchRecBtn.setEnabled(false);
             
-            DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
+            DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
             if (tblInfo != null)
             {
                 searchName = tblInfo.getSearchDialog();

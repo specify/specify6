@@ -77,7 +77,9 @@ import edu.ku.brc.af.tasks.subpane.ChartPane;
 import edu.ku.brc.af.tasks.subpane.PieChartPane;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
@@ -85,7 +87,6 @@ import edu.ku.brc.dbsupport.QueryResultsContainerIFace;
 import edu.ku.brc.dbsupport.QueryResultsHandlerIFace;
 import edu.ku.brc.dbsupport.QueryResultsListener;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
-import edu.ku.brc.dbsupport.DBTableIdMgr.TableInfo;
 import edu.ku.brc.helpers.ImageFilter;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
@@ -2959,13 +2960,13 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         }
         
         DBTableIdMgr schema    = getDatabaseSchema();
-        TableInfo    tableInfo = schema.getInfoById(wbtmi.getSrcTableId());
+        DBTableInfo  tableInfo = schema.getInfoById(wbtmi.getSrcTableId());
         if (tableInfo == null)
         {
             throw new RuntimeException("Cannot find TableInfo in DBTableIdMgr for ID=" + wbtmi.getSrcTableId());
         }
         
-        for (DBTableIdMgr.FieldInfo fi : tableInfo.getFields())
+        for (DBFieldInfo fi : tableInfo.getFields())
         {
             if (fi.getName().equals(wbtmi.getFieldName()))
             {

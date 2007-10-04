@@ -64,6 +64,7 @@ public class SpLocaleContainer extends SpLocaleBase implements LocalizableContai
     private static final Logger log = Logger.getLogger(SpLocaleContainer.class);
             
     protected Integer                    spLocaleContainerId;
+    protected Boolean                    isHidden;
     protected Set<SpLocaleContainerItem> items;
     
     protected Set<SpLocaleItemStr>       names;
@@ -91,6 +92,7 @@ public class SpLocaleContainer extends SpLocaleBase implements LocalizableContai
         super.initialize();
         
         spLocaleContainerId = null;
+        isHidden            = false;
         items               = new HashSet<SpLocaleContainerItem>();
         
         names = new HashSet<SpLocaleItemStr>();
@@ -116,6 +118,23 @@ public class SpLocaleContainer extends SpLocaleBase implements LocalizableContai
     public void setSpLocaleContainerId(Integer spLocaleContainerId)
     {
         this.spLocaleContainerId = spLocaleContainerId;
+    }
+
+    /**
+     * @return the isHidden
+     */
+    @Column(name = "IsHidden", unique = false, nullable = false, insertable = true, updatable = true)
+    public Boolean getIsHidden()
+    {
+        return isHidden;
+    }
+
+    /**
+     * @param isHidden the isHidden to set
+     */
+    public void setIsHidden(Boolean isHidden)
+    {
+        this.isHidden = isHidden;
     }
 
     /**

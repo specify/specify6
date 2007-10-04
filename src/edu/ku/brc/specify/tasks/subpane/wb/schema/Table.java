@@ -4,7 +4,8 @@ import java.util.Collection;
 import java.util.TreeMap;
 import java.util.Vector;
 
-import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.dbsupport.DBTableInfo;
 
 /**
  * @author timbo
@@ -30,7 +31,7 @@ public class Table implements Comparable<Table>
     /**
      * The underlying TableInfo.
      */
-    protected DBTableIdMgr.TableInfo tableInfo;
+    protected DBTableInfo tableInfo;
     /**
      * The primary key of the Table.
      */
@@ -97,13 +98,13 @@ public class Table implements Comparable<Table>
         tableInfo = null;
     }
 
-    public Table(final DBSchema schema, final DBTableIdMgr.TableInfo tableInfo)
+    public Table(final DBSchema schema, final DBTableInfo tableInfo)
     {
         this.schema = schema;
         this.tableInfo = tableInfo;
         this.name = this.tableInfo.getShortClassName();
         fields = new TreeMap<String, Field>();
-        for (DBTableIdMgr.FieldInfo fld : this.tableInfo.getFields())
+        for (DBFieldInfo fld : this.tableInfo.getFields())
         {
             addField(new Field(fld));
         }
@@ -167,7 +168,7 @@ public class Table implements Comparable<Table>
     /**
      * @return the tableInfo
      */
-    public final DBTableIdMgr.TableInfo getTableInfo()
+    public final DBTableInfo getTableInfo()
     {
         return tableInfo;
     }

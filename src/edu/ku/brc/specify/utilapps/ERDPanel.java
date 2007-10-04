@@ -29,6 +29,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.ui.UIHelper;
 
@@ -48,7 +49,7 @@ class ERDPanel extends JPanel
     protected  Hashtable<String, ERDTable> tblHash  = new Hashtable<String, ERDTable>();
     protected Hashtable<ERDTable, Boolean> usedHash = new Hashtable<ERDTable, Boolean>();
     
-    protected  Vector<DBTableIdMgr.TableRelationship> orderedList;
+    protected  Vector<DBRelationshipInfo> orderedList;
     
     
     protected  ERDTable         mainTable = null;
@@ -158,7 +159,7 @@ class ERDPanel extends JPanel
         {
             mainTable = table;
             table.setBackground(mainColor);
-            orderedList = new Vector<DBTableIdMgr.TableRelationship>(mainTable.getTable().getRelationships());
+            orderedList = new Vector<DBRelationshipInfo>(mainTable.getTable().getRelationships());
             Collections.sort(orderedList);
             
         } else
@@ -167,7 +168,7 @@ class ERDPanel extends JPanel
             table.setBackground(relColor);
         }
         tblHash.put(table.getTable().getClassName(), table);
-        System.out.println("Adding ["+table.getTable().getTableName()+"] "+tblHash.size());
+        System.out.println("Adding ["+table.getTable().getName()+"] "+tblHash.size());
 
     }
     
@@ -176,7 +177,7 @@ class ERDPanel extends JPanel
         relTables.clear();
         
         int cnt = 0;
-        for (DBTableIdMgr.TableRelationship t : orderedList)
+        for (DBRelationshipInfo t : orderedList)
         {
             ERDTable table = tblHash.get(t.getClassName());
             if (table != null && table != mainTable && !relTables.contains(table))// && !table.getTable().getClassName().toLowerCase().endsWith("iface"))
@@ -191,7 +192,7 @@ class ERDPanel extends JPanel
         
         leftPB.add(mainTable, cc.xy(1, 1));
         
-        for (DBTableIdMgr.TableRelationship t : orderedList)
+        for (DBRelationshipInfo t : orderedList)
         {
             ERDTable table = tblHash.get(t.getClassName());
             if (table != null)
@@ -261,7 +262,7 @@ class ERDPanel extends JPanel
                 firstPaint = false;
                 aboveCnt = 0;
                 belowCnt = 0;
-                for (DBTableIdMgr.TableRelationship rel : orderedList)
+                for (DBRelationshipInfo rel : orderedList)
                 {
                     String rName = rel.getClassName();
                     String mName = mainTable.getTable().getClassName();
@@ -304,7 +305,7 @@ class ERDPanel extends JPanel
             Integer belowGap = null;
             int xPosAbove = 0;
             int xPosBelow = 0;
-            for (DBTableIdMgr.TableRelationship rel : orderedList)
+            for (DBRelationshipInfo rel : orderedList)
             {
                 String rName = rel.getClassName();
                 String mName = mainTable.getTable().getClassName();
@@ -366,7 +367,7 @@ class ERDPanel extends JPanel
                 }
                 
                 
-                if (rel.getType() == DBTableIdMgr.RelationshipType.ManyToMany || rel.getType() == DBTableIdMgr.RelationshipType.ManyToOne)
+                if (rel.getType() == DBRelationshipInfo.RelationshipType.ManyToMany || rel.getType() == DBRelationshipInfo.RelationshipType.ManyToOne)
                 {
                     // Left
                     g2d.fill(new Arc2D.Double(x+1-5, y-5,
@@ -377,7 +378,7 @@ class ERDPanel extends JPanel
                             Arc2D.OPEN));
                 }
                 
-                if (rel.getType() == DBTableIdMgr.RelationshipType.OneToMany || rel.getType() == DBTableIdMgr.RelationshipType.ManyToMany)
+                if (rel.getType() == DBRelationshipInfo.RelationshipType.OneToMany || rel.getType() == DBRelationshipInfo.RelationshipType.ManyToMany)
                 {
                     // Right
                     g2d.fill(new Arc2D.Double(dx-5, dy-5,

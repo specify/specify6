@@ -61,7 +61,7 @@ import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.StaleObjectException;
-import edu.ku.brc.dbsupport.DBTableIdMgr.TableInfo;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
@@ -1226,7 +1226,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         boolean isEdit = true;
 		String closeBtnText = (isEdit) ? getResourceString("Save") : getResourceString("Close");
 		String className = node.getClass().getName();
-		TableInfo nodeTableInfo = DBTableIdMgr.getInstance().getInfoById(node.getTableId());
+        DBTableInfo nodeTableInfo = DBTableIdMgr.getInstance().getInfoById(node.getTableId());
 		String idFieldName = nodeTableInfo.getIdFieldName();
 		int options = MultiView.HIDE_SAVE_BTN;
 		if (isNewObject)

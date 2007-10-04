@@ -23,6 +23,7 @@ import org.dom4j.Element;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.db.TextFieldWithInfo;
 
@@ -104,7 +105,7 @@ public class TypeSearchForQueryFactory
         TypeSearchInfo typeSearchInfo = instance.hash.get(name);
         if (typeSearchInfo != null)
         {
-            DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(typeSearchInfo.getTableId());
+            DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(typeSearchInfo.getTableId());
             if (tblInfo != null)
             {
     
@@ -114,7 +115,7 @@ public class TypeSearchForQueryFactory
                                              typeSearchInfo.getFormat(),
                                              typeSearchInfo.getFormatName(),
                                              tblInfo.getNewObjDialog(),
-                                             tblInfo.getObjTitle());
+                                             tblInfo.getTitle());
     
             }
             // else
@@ -154,10 +155,10 @@ public class TypeSearchForQueryFactory
         TypeSearchInfo typeSearchInfo = instance.hash.get(name);
         if (typeSearchInfo != null)
         {
-            DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(typeSearchInfo.getTableId());
+            DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(typeSearchInfo.getTableId());
             if (tblInfo != null)
             {
-                return new ValComboBoxFromQuery(tblInfo.getTableName(),
+                return new ValComboBoxFromQuery(tblInfo.getName(),
                                                 tblInfo.getIdColumnName(),
                                                 typeSearchInfo.getSearchColumn(),
                                                 typeSearchInfo.getDisplayColumns(),
@@ -168,7 +169,7 @@ public class TypeSearchForQueryFactory
                                                 typeSearchInfo.getFormatName(),
                                                 tblInfo.getSearchDialog(),
                                                 tblInfo.getNewObjDialog(),
-                                                tblInfo.getObjTitle(),
+                                                tblInfo.getTitle(),
                                                 btnOpts);
 
     

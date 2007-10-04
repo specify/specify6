@@ -46,6 +46,7 @@ import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
@@ -382,7 +383,8 @@ public class DataEntryTask extends BaseTask
                         ViewIFace view = appContextMgr.getView(viewsetName, viewName);
                         if (view != null)
                         {
-                            DBTableIdMgr.TableInfo ti = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
+                            DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
+                            System.out.println(view.getClassName()+" "+ti);
                             if (ti != null)
                             {
                                 CommandAction cmdAction = new CommandAction(DATA_ENTRY, EDIT_DATA);

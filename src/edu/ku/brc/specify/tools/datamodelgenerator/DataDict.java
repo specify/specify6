@@ -24,7 +24,9 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 
+import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.helpers.XMLHelper;
 /**
  * @author rod
@@ -326,10 +328,10 @@ public class DataDict
      * @param tableInfo
      * @param okTables
      */
-    protected void compareFields(final TableDef tableDef, final DBTableIdMgr.TableInfo tableInfo, final Vector<String> okTables)
+    protected void compareFields(final TableDef tableDef, final DBTableInfo tableInfo, final Vector<String> okTables)
     {
-        Hashtable<String, DBTableIdMgr.FieldInfo> fieldHash = new Hashtable<String, DBTableIdMgr.FieldInfo>();
-        for (DBTableIdMgr.FieldInfo fi : tableInfo.getFields())
+        Hashtable<String, DBFieldInfo> fieldHash = new Hashtable<String, DBFieldInfo>();
+        for (DBFieldInfo fi : tableInfo.getFields())
         {
             fieldHash.put(fi.getName().toLowerCase(), fi);
         }
@@ -342,7 +344,7 @@ public class DataDict
                 String fieldName = fieldDef.getName().toLowerCase();
                 for (int i=0;i<2;i++)
                 {
-                    DBTableIdMgr.FieldInfo fieldInfo = fieldHash.get(fieldName);
+                    DBFieldInfo fieldInfo = fieldHash.get(fieldName);
                     if (fieldInfo != null)
                     {
                         //System.err.println("["+fieldDef.getLength()+"]");
@@ -465,7 +467,7 @@ public class DataDict
                 {
                     tblName = tableDef.getName();
                 }
-                DBTableIdMgr.TableInfo tableInfo = mgr.getInfoByTableName(tblName.toLowerCase());
+                DBTableInfo tableInfo = mgr.getInfoByTableName(tblName.toLowerCase());
                 if (tableInfo != null)
                 {
                     compareFields(tableDef, tableInfo, okTables);

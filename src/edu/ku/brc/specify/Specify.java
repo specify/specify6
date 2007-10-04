@@ -74,6 +74,7 @@ import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MainPanel;
+import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.UsageTracker;
@@ -91,6 +92,7 @@ import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.LoggerDialog;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.config.SpecifySchemaI18NService;
 import edu.ku.brc.specify.datamodel.AccessionAttachment;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AgentAttachment;
@@ -374,6 +376,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         System.setProperty(CustomQueryFactory.factoryName,              "edu.ku.brc.specify.dbsupport.SpecifyCustomQueryFactory");
         System.setProperty(UIFieldFormatterMgr.factoryName,             "edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr");    // Needed for CatalogNumberign
         System.setProperty(ExpressSearchSQLAdjuster.factoryName,        "edu.ku.brc.specify.dbsupport.SpecifyExpressSearchSQLAdjuster");    // Needed for ExpressSearch
+        System.setProperty(SchemaI18NService.factoryName,               "edu.ku.brc.specify.config.SpecifySchemaI18NService");    // Needed for Localization and Schema
         
     }
 
@@ -1266,6 +1269,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
             }
         }
         
+        SchemaI18NService.getInstance().loadWithLocale(Locale.getDefault());
         
         restartApp(databaseName, userName, false, firstTime);
         

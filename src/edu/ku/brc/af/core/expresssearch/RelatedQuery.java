@@ -18,6 +18,7 @@
 package edu.ku.brc.af.core.expresssearch;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -36,7 +37,7 @@ public class RelatedQuery implements DisplayOrderingIFace, TableNameRendererIFac
     // Transient
     protected ExpressResultsTableInfo erti      = null;
     protected boolean                 isInUse   = false;
-    protected DBTableIdMgr.TableInfo  tableInfo = null;
+    protected DBTableInfo  tableInfo = null;
     /**
      * 
      */

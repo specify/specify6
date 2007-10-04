@@ -17,7 +17,7 @@
  */
 package edu.ku.brc.af.core.expresssearch;
 
-import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -37,7 +37,7 @@ public class DisplayFieldConfig implements TableNameRendererIFace, Comparable<Di
     // Transient
     protected SearchTableConfig      stc;
     protected boolean                isInUse   = false;
-    protected DBTableIdMgr.FieldInfo fieldInfo = null;
+    protected DBFieldInfo            fieldInfo = null;
     
     /**
      * 
@@ -135,7 +135,7 @@ public class DisplayFieldConfig implements TableNameRendererIFace, Comparable<Di
     /**
      * @return the fieldInfo
      */
-    public DBTableIdMgr.FieldInfo getFieldInfo()
+    public DBFieldInfo getFieldInfo()
     {
         if (fieldInfo == null)
         {
@@ -147,7 +147,7 @@ public class DisplayFieldConfig implements TableNameRendererIFace, Comparable<Di
     /**
      * @param fieldInfo the fieldInfo to set
      */
-    public void setFieldInfo(DBTableIdMgr.FieldInfo fieldInfo)
+    public void setFieldInfo(DBFieldInfo fieldInfo)
     {
         this.fieldInfo = fieldInfo;
     }

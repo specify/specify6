@@ -25,7 +25,7 @@ import java.awt.event.ActionListener;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.dbsupport.DBTableIdMgr.TableInfo;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.ui.UIRegistry;
@@ -70,7 +70,7 @@ public class CollectorActionListener implements ActionListener
 
         // if we use agent.getClass().getName() it might fail if the agent object is a Hibernate-generated proxy, which is common
         String classname = Agent.class.getName();
-        TableInfo setTI = DBTableIdMgr.getInstance().getByClassName(classname);
+        DBTableInfo setTI = DBTableIdMgr.getInstance().getByClassName(classname);
         String defFormName = setTI.getEditObjDialog();
         if (defFormName==null)
         {

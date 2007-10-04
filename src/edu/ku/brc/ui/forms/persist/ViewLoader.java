@@ -97,6 +97,12 @@ public class ViewLoader
         String   resLabels         = element.attributeValue(RESOURCELABELS);
         String   desc              = getDesc(element);
         String   businessRules     = getAttr(element, "busrules", null);
+        
+        if (name.equals("CollectionObject"))
+        {
+            int x= 0;
+            x = 0;
+        }
 
         View view = new View(instance.viewSetName, name, objTitle, className, businessRules != null ? businessRules.trim() : null, desc, useResourceLabels, resLabels);
 

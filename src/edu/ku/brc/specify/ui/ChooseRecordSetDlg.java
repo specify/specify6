@@ -42,6 +42,7 @@ import org.apache.log4j.Logger;
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
@@ -114,7 +115,7 @@ public class ChooseRecordSetDlg extends JDialog implements ActionListener
 
             if (recordSets.size() > 0)
             {
-                DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(recordSets.get(0).getDbTableId());
+                DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(recordSets.get(0).getDbTableId());
                 if (tblInfo != null)
                 {
                     ImageIcon rsIcon = tblInfo.getIcon(IconManager.IconSize.Std16);

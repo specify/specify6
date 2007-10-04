@@ -14,7 +14,9 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.specify.tasks.subpane.wb.graph.DirectedGraph;
 import edu.ku.brc.specify.tasks.subpane.wb.graph.DirectedGraphException;
 import edu.ku.brc.specify.tasks.subpane.wb.graph.Vertex;
@@ -76,7 +78,7 @@ public class GraphBuilder
             g = new DirectedGraph<Table, Relationship>();
 
             // add vertices
-            for (DBTableIdMgr.TableInfo tbl : schema.getList())
+            for (DBTableInfo tbl : schema.getList())
             {
                 if (includeTable(tbl))
                 {
@@ -87,8 +89,8 @@ public class GraphBuilder
             // add edges
             for (Vertex<Table> vTbl : g.getVertices())
             {
-                DBTableIdMgr.TableInfo tbl = vTbl.getData().getTableInfo();
-                for (DBTableIdMgr.TableRelationship rel : tbl.getRelationships())
+                DBTableInfo tbl = vTbl.getData().getTableInfo();
+                for (DBRelationshipInfo rel : tbl.getRelationships())
                 {
                     String relTblName = getRelShortName(rel);
                     if (relTblName != null && g.getVertexByLabel(relTblName) != null && includeEdge(tbl.getShortClassName().toLowerCase(), relTblName, rel))
@@ -115,11 +117,11 @@ public class GraphBuilder
      * @param rel
      * @return false if the edge should be included in the graph
      */
-    private boolean includeEdge(final String tblName, final String relTblName, final DBTableIdMgr.TableRelationship rel)
+    private boolean includeEdge(final String tblName, final String relTblName, final DBRelationshipInfo rel)
     {
         //only one-to-manys are needed
-        //if (rel.getType() != DBTableIdMgr.RelationshipType.OneToMany)
-        if (rel.getType() != DBTableIdMgr.RelationshipType.ManyToOne)
+        //if (rel.getType() != DBRelationshipInfo.RelationshipType.OneToMany)
+        if (rel.getType() != DBRelationshipInfo.RelationshipType.ManyToOne)
         {
             return false;
         }
@@ -135,7 +137,7 @@ public class GraphBuilder
      * @param tbl
      * @return true if tbl should be included in graph
      */
-    private boolean includeTable(final DBTableIdMgr.TableInfo tbl)
+    private boolean includeTable(final DBTableInfo tbl)
     {
         return  !excludeTbls.contains(tbl.getShortClassName().toLowerCase());
     }
@@ -145,12 +147,12 @@ public class GraphBuilder
      * @param rel
      * @return a Relationship object corresponding to a TableRelationship
      */
-    private Relationship getOneToManyRelationship(final DBTableIdMgr.TableInfo tbl,
-                                         final DBTableIdMgr.TableRelationship rel)
+    private Relationship getOneToManyRelationship(final DBTableInfo tbl,
+                                         final DBRelationshipInfo rel)
     {
         try
         {
-            DBTableIdMgr.TableInfo oneSideTblInfo = schema.getByClassName(rel.getClassName());
+            DBTableInfo oneSideTblInfo = schema.getByClassName(rel.getClassName());
             Table oneSideTbl = scheme.getTable(oneSideTblInfo.getShortClassName());
             Field oneSideFld = oneSideTbl.getField(oneSideTblInfo.getIdColumnName());
             Table manySideTbl = scheme.getTable(tbl.getShortClassName());
@@ -173,7 +175,7 @@ public class GraphBuilder
      * @param rel
      * @return rel's shortname or null in case of difficulty
      */
-    private String getRelShortName(final DBTableIdMgr.TableRelationship rel)
+    private String getRelShortName(final DBRelationshipInfo rel)
     {
         try
         {
@@ -188,7 +190,7 @@ public class GraphBuilder
      * @param tbl
      * @return Vertex for tbl
      */
-    private Vertex<Table> buildTableVertex(DBTableIdMgr.TableInfo tbl)
+    private Vertex<Table> buildTableVertex(DBTableInfo tbl)
     {
         Table table = scheme.getTable(tbl.getShortClassName());
         if (table == null)

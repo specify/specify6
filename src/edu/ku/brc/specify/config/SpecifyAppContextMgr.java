@@ -588,6 +588,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 }
             }
             viewSetHash.put(appResDef.getUniqueIdentifer(), viewSetList);
+            int x = 0;
             session.close();
         }
         return viewSetList;

@@ -12,14 +12,16 @@ package edu.ku.brc.specify.tools.schemalocale;
 import java.util.Locale;
 
 /**
+ * Class used for displaying a Locale in a list.
+ * 
  * @author rod
  *
- * @code_status Alpha
+ * @code_status Beta
  *
  * Oct 2, 2007
  *
  */
-public class DisplayLocale
+public class DisplayLocale implements Comparable<DisplayLocale>
 {
     protected Locale locale;
 
@@ -47,5 +49,13 @@ public class DisplayLocale
     public String toString()
     {
         return locale.getDisplayName();
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(DisplayLocale o)
+    {
+        return locale.getDisplayName().compareTo(o.getLocale().getDisplayName());
     }
 }

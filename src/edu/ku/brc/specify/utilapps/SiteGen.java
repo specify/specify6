@@ -314,7 +314,7 @@ public class SiteGen
      */
     protected void processDataObj(final FormDataObjIFace dataObj, final boolean doChildrenSets)
     {
-        //DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(dataObj.getDataClass().getName());
+        //DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(dataObj.getDataClass().getName());
         
         StringBuilder sb = new StringBuilder();
         try
@@ -329,7 +329,7 @@ public class SiteGen
                 }
                 
                 /*String labelName = field.getName();
-                DBTableIdMgr.FieldInfo fi = tblInfo.getFieldByName(field.getName());
+                DBFieldInfo fi = tblInfo.getFieldByName(field.getName());
                 if (fi != null)
                 {
                     fi.getColumn()

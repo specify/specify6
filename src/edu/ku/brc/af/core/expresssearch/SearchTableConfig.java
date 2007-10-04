@@ -27,7 +27,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.UIHelper;
 
@@ -51,7 +53,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
     protected Vector<DisplayFieldConfig> displayFields = new Vector<DisplayFieldConfig>();
     
     // Transient 
-    protected DBTableIdMgr.TableInfo     tableInfo;
+    protected DBTableInfo                tableInfo;
     
     /**
      * 
@@ -167,7 +169,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
     /**
      * @return the tableInfo
      */
-    public DBTableIdMgr.TableInfo getTableInfo()
+    public DBTableInfo getTableInfo()
     {
         if (tableInfo == null)
         {
@@ -179,7 +181,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
     /**
      * @param tableInfo the tableInfo to set
      */
-    public void setTableInfo(DBTableIdMgr.TableInfo tableInfo)
+    public void setTableInfo(DBTableInfo tableInfo)
     {
         this.tableInfo = tableInfo;
     }
@@ -229,7 +231,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
         
         StringBuilder sqlStr = new StringBuilder("SELECT ");
         
-        DBTableIdMgr.TableInfo ti = getTableInfo();
+        DBTableInfo ti = getTableInfo();
         
         String primaryKey = ti.getIdFieldName();
         if (idsOnly)
@@ -273,7 +275,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
         for (SearchFieldConfig searchField : searchFields)
         {
             String clause;
-            DBTableIdMgr.FieldInfo fi = searchField.getFieldInfo();
+            DBFieldInfo fi = searchField.getFieldInfo();
             
             if (ids == null)
             {

@@ -17,6 +17,7 @@
  */
 package edu.ku.brc.af.core.expresssearch;
 
+import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.ui.UIHelper;
 
@@ -37,7 +38,7 @@ public class SearchFieldConfig implements edu.ku.brc.af.core.expresssearch.Table
     
     // Transient
     protected boolean                isInUse   = false;
-    protected DBTableIdMgr.FieldInfo fieldInfo = null;
+    protected DBFieldInfo            fieldInfo = null;
     protected SearchTableConfig      stc       = null;
 
     
@@ -130,7 +131,7 @@ public class SearchFieldConfig implements edu.ku.brc.af.core.expresssearch.Table
     /**
      * @return the fieldInfo
      */
-    public DBTableIdMgr.FieldInfo getFieldInfo()
+    public DBFieldInfo getFieldInfo()
     {
         if (fieldInfo == null)
         {
@@ -142,7 +143,7 @@ public class SearchFieldConfig implements edu.ku.brc.af.core.expresssearch.Table
     /**
      * @param fieldInfo the fieldInfo to set
      */
-    public void setFieldInfo(DBTableIdMgr.FieldInfo fieldInfo)
+    public void setFieldInfo(DBFieldInfo fieldInfo)
     {
         this.fieldInfo = fieldInfo;
     }

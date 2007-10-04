@@ -23,6 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.PickList;
@@ -82,12 +83,12 @@ public class PickListTableAdapter extends PickListDBAdapter
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         
         //DBTableIdMgr.getInstance().getQueryForTable(tableId, recordId)
-        DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(DBTableIdMgr.getInstance().getIdByShortName(pickList.getTableName()));
+        DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(DBTableIdMgr.getInstance().getIdByShortName(pickList.getTableName()));
         if (tableInfo != null)
         {
             // This could be moved to DBTableIdMgr but a new method would be needed
             StringBuffer strBuf = new StringBuffer("from ");
-            strBuf.append(tableInfo.getTableName());
+            strBuf.append(tableInfo.getName());
             strBuf.append(" in class ");
             strBuf.append(tableInfo.getShortClassName());
             
@@ -134,7 +135,7 @@ public class PickListTableAdapter extends PickListDBAdapter
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         
         //DBTableIdMgr.getInstance().getQueryForTable(tableId, recordId)
-        DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(DBTableIdMgr.getInstance().getIdByShortName(pickList.getTableName()));
+        DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(DBTableIdMgr.getInstance().getIdByShortName(pickList.getTableName()));
         if (tableInfo != null)
         {
             try

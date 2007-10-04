@@ -30,6 +30,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
@@ -174,7 +175,7 @@ public class RecordSetTableViewObj extends TableViewObj
             RecordSetIFace recordSet = (RecordSetIFace)dataObj;
             
             DBTableIdMgr.getInClause(recordSet);
-            DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
+            DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
             
             DataProviderFactory.getInstance().evict(tableInfo.getClassObj());
             
@@ -221,7 +222,7 @@ public class RecordSetTableViewObj extends TableViewObj
             RecordSetIFace recordSet = (RecordSetIFace)dataObj;
             
             DBTableIdMgr.getInClause(recordSet);
-            DBTableIdMgr.TableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
+            DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
             
             DataProviderFactory.getInstance().evict(tableInfo.getClassObj());
             

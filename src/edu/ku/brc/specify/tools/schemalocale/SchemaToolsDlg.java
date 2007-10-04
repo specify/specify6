@@ -16,11 +16,14 @@ import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Locale;
 import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
@@ -48,6 +51,7 @@ public class SchemaToolsDlg extends CustomDialog
     protected JButton editSchemaBtn      = new JButton(getResourceString("SL_EDIT_SCHEMA"));
     protected JButton removeLocaleBtn    = new JButton(getResourceString("SL_REMOVE_SCHEMA_LOC"));
     protected JButton exportSchemaLocBtn = new JButton(getResourceString("SL_EXPORT_SCHEMA_LOC"));
+    protected JButton importSchemaLocBtn = new JButton(getResourceString("SL_IMPORT_SCHEMA_LOC"));
     protected JList   localeList;
 
     
@@ -94,6 +98,7 @@ public class SchemaToolsDlg extends CustomDialog
         builder.add(editSchemaBtn,      cc.xy(1,7));
         builder.add(removeLocaleBtn,    cc.xy(3,7));
         builder.add(exportSchemaLocBtn, cc.xy(1,9));
+        builder.add(importSchemaLocBtn, cc.xy(3,9));
         
         contentPanel = builder.getPanel();
         mainPanel.add(contentPanel, BorderLayout.CENTER);
@@ -106,6 +111,15 @@ public class SchemaToolsDlg extends CustomDialog
             public void valueChanged(ListSelectionEvent e)
             {
                 localeSelected();
+            }
+        });
+        localeList.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent me)
+            {
+                if (me.getClickCount() == 2)
+                {
+                    editSchema();
+                }
             }
         });
         
@@ -133,6 +147,14 @@ public class SchemaToolsDlg extends CustomDialog
             }
         });
         
+        importSchemaLocBtn.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent arg0)
+            {
+                JOptionPane.showConfirmDialog((Frame)UIRegistry.getTopWindow(), "Currently no implemented");
+            }
+        });
+        
         pack();
     }
     
@@ -141,8 +163,9 @@ public class SchemaToolsDlg extends CustomDialog
      */
     protected void enableBtns(final boolean enable)
     {
+        
         editSchemaBtn.setEnabled(enable);
-        removeLocaleBtn.setEnabled(enable);
+        removeLocaleBtn.setEnabled(localeList.getModel().getSize() > 1);
         exportSchemaLocBtn.setEnabled(enable);
     }
 

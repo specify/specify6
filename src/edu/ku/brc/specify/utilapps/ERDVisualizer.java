@@ -39,6 +39,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.ui.UIHelper;
@@ -532,7 +533,7 @@ public class ERDVisualizer extends JFrame
         ERDTable table = tblTracker.getList().get(inx);
         
         int relCount = 0;
-        for (DBTableIdMgr.TableRelationship r : table.getTable().getRelationships())
+        for (DBRelationshipInfo r : table.getTable().getRelationships())
         {
             ERDTable relTable = tblTracker.getHash().get(r.getClassName());
             if (relTable != table)
@@ -546,7 +547,7 @@ public class ERDVisualizer extends JFrame
         mainPanel.addTable(table);
         mainPanel.setSize(mainPanel.getPreferredSize());
         
-        for (DBTableIdMgr.TableRelationship r : table.getTable().getRelationships())
+        for (DBRelationshipInfo r : table.getTable().getRelationships())
         {
             ERDTable relTable = tblTracker.getHash().get(r.getClassName());
             if (relTable != table)
@@ -736,7 +737,7 @@ public class ERDVisualizer extends JFrame
         
         if (ni.isProcessKids() || ni.getKids().size() > 0)
         {
-            for (DBTableIdMgr.TableRelationship r : table.getTable().getRelationships())
+            for (DBRelationshipInfo r : table.getTable().getRelationships())
             {
                 ERDTable rTable = tblTracker.getHash().get(r.getClassName());
                 if (rTable == null)
@@ -773,7 +774,7 @@ public class ERDVisualizer extends JFrame
                     rTable = rTable.duplicate(tblTracker.getFont());
                 }
                 
-                if (kidOK && (override || r.getType() == DBTableIdMgr.RelationshipType.OneToMany))
+                if (kidOK && (override || r.getType() == DBRelationshipInfo.RelationshipType.OneToMany))
                 {
                     System.out.println("    ["+rTable.getClassName()+"]");
 

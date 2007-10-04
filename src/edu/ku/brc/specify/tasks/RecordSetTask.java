@@ -22,7 +22,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -46,6 +45,7 @@ import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
@@ -103,9 +103,9 @@ public class RecordSetTask extends BaseTask
         
         // Register all Tables as being able to be saved in a RecordSet
         // Althought some system tables we may not want, they won't be searchable anyway.
-        for (DBTableIdMgr.TableInfo ti : DBTableIdMgr.getInstance().getList())
+        for (DBTableInfo ti : DBTableIdMgr.getInstance().getList())
         {
-            ContextMgr.registerService(ti.getObjTitle(), ti.getTableId(), new CommandAction(RECORD_SET, SAVE_RECORDSET), this, RECORD_SET, "CreateRecordSetTT");    
+            ContextMgr.registerService(ti.getTitle(), ti.getTableId(), new CommandAction(RECORD_SET, SAVE_RECORDSET), this, RECORD_SET, "CreateRecordSetTT");    
         }
     }
 
@@ -155,7 +155,7 @@ public class RecordSetTask extends BaseTask
         
         NavBoxItemIFace nbi = (NavBoxItemIFace)roc;
         
-        DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
+        DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
         if (tblInfo != null)
         {
             ImageIcon rsIcon = tblInfo.getIcon(IconManager.IconSize.Std16);
@@ -462,8 +462,8 @@ public class RecordSetTask extends BaseTask
                     }
                 } else
                 {
-                    DBTableIdMgr.TableInfo srcTI = DBTableIdMgr.getInstance().getInfoById(srcRecordSet.getDbTableId());
-                    DBTableIdMgr.TableInfo dstTI = DBTableIdMgr.getInstance().getInfoById(dstRecordSet.getDbTableId());
+                    DBTableInfo srcTI = DBTableIdMgr.getInstance().getInfoById(srcRecordSet.getDbTableId());
+                    DBTableInfo dstTI = DBTableIdMgr.getInstance().getInfoById(dstRecordSet.getDbTableId());
                     JOptionPane.showMessageDialog(null, 
                         String.format(getResourceString("RECORDSET_MERGE_ERROR"), new Object[] {srcTI.getShortClassName(), dstTI.getShortClassName()}), 
                             getResourceString("Error"), 

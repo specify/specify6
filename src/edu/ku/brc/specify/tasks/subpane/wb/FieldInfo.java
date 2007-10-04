@@ -12,7 +12,8 @@ package edu.ku.brc.specify.tasks.subpane.wb;
 import javax.swing.ImageIcon;
 
 import edu.ku.brc.af.core.expresssearch.TableFieldPair;
-import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.ui.IconManager;
 
 /**
@@ -28,7 +29,7 @@ public class FieldInfo extends TableFieldPair implements TableListItemIFace
     protected static ImageIcon checkMark   = IconManager.getIcon("Checkmark", IconManager.IconSize.Std16);
     protected String name;
     
-    public FieldInfo(DBTableIdMgr.TableInfo tableinfo, DBTableIdMgr.FieldInfo fieldInfo)
+    public FieldInfo(DBTableInfo tableinfo, DBFieldInfo fieldInfo)
     {
         super(tableinfo, fieldInfo);
         

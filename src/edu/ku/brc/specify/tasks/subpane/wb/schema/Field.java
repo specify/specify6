@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.tasks.subpane.wb.schema;
 
+import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 
 /**
@@ -26,7 +27,7 @@ public class Field implements Comparable<Field>
     /**
      * The underlying FieldInfo.
      */
-    protected DBTableIdMgr.FieldInfo fieldInfo;
+    protected DBFieldInfo fieldInfo;
     /**
      * The column index of the field in Table.
      * (Not currently necessary?)
@@ -112,7 +113,7 @@ public class Field implements Comparable<Field>
         this.fieldInfo = null;
     }
 
-    public Field(final DBTableIdMgr.FieldInfo fieldInfo)
+    public Field(final DBFieldInfo fieldInfo)
     {
         super();
         this.fieldInfo = fieldInfo;
@@ -147,7 +148,7 @@ public class Field implements Comparable<Field>
     /**
      * @return the fieldInfo
      */
-    public final DBTableIdMgr.FieldInfo getFieldInfo()
+    public final DBFieldInfo getFieldInfo()
     {
         return fieldInfo;
     }

@@ -24,6 +24,7 @@ import org.hibernate.LockMode;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
+import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -1434,7 +1435,7 @@ public class UploadTable implements Comparable<UploadTable>
         return toDecap.substring(0, 1).toLowerCase().concat(toDecap.substring(1));
     }
        
-    private Class<?> getFieldClass(DBTableIdMgr.FieldInfo fi)
+    private Class<?> getFieldClass(DBFieldInfo fi)
     {
         if (fi == null)
         {

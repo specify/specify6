@@ -64,7 +64,9 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.expresssearch.TableFieldPair;
+import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
@@ -174,7 +176,7 @@ public class TemplateEditor extends CustomDialog
         
         // Create the Table List
         Vector<TableInfo> tableInfoList = new Vector<TableInfo>();
-        for (DBTableIdMgr.TableInfo ti : databaseSchema.getList())
+        for (DBTableInfo ti : databaseSchema.getList())
         {
             if (StringUtils.isNotEmpty(ti.toString()))
             {
@@ -182,7 +184,7 @@ public class TemplateEditor extends CustomDialog
                 tableInfoList.add(tableInfo); 
                 
                 Vector<FieldInfo> fldList = new Vector<FieldInfo>();
-                for (DBTableIdMgr.FieldInfo fi : ti.getFields())
+                for (DBFieldInfo fi : ti.getFields())
                 {
                     fldList.add(new FieldInfo(ti, fi));
                 }
@@ -465,8 +467,8 @@ public class TemplateEditor extends CustomDialog
             ImportColumnInfo colInfo  = fmp.getColInfo();
             if (!fmp.isNew)
             {
-                sb.append("<tr><td>"+fieldInfo.getTableinfo().getObjTitle()+" - "+fieldInfo.getFieldInfo().getName()+"</td><td>"+colInfo.getColTitle()+"</td></tr>");
-                clipBrdTxt.append(fieldInfo.getTableinfo().getObjTitle()+" - "+fieldInfo.getFieldInfo().getName()+" -> "+colInfo.getColTitle()+"\n");
+                sb.append("<tr><td>"+fieldInfo.getTableinfo().getTitle()+" - "+fieldInfo.getFieldInfo().getName()+"</td><td>"+colInfo.getColTitle()+"</td></tr>");
+                clipBrdTxt.append(fieldInfo.getTableinfo().getTitle()+" - "+fieldInfo.getFieldInfo().getName()+" -> "+colInfo.getColTitle()+"\n");
             }
         }
         sb.append("</table><br>The Mappings have been copied to the clipboard for pasting into an email.<br><br></htm>");
@@ -810,7 +812,7 @@ public class TemplateEditor extends CustomDialog
                                                             fieldInfo.getFieldInfo().getColumn(), 
                                                             fieldInfo.getText(), 
                                                             null);
-        FieldMappingPanel fmp = addMappingItem(colInfo, IconManager.getIcon(fieldInfo.getTableinfo().getObjTitle(), IconManager.IconSize.Std24), wbtmi);
+        FieldMappingPanel fmp = addMappingItem(colInfo, IconManager.getIcon(fieldInfo.getTableinfo().getTitle(), IconManager.IconSize.Std24), wbtmi);
         fmp.setFieldInfo(fieldInfo);
         fmp.setAdded(wbtmi == null); // new Items that was not in the data file.
         
@@ -850,7 +852,7 @@ public class TemplateEditor extends CustomDialog
      * @param classObj the class object
      * @return the table info
      */
-    protected DBTableIdMgr.TableInfo getTableInfo(Class<?> classObj)
+    protected DBTableInfo getTableInfo(Class<?> classObj)
     {
         for (int i=0;i<tableModel.size();i++)
         {
@@ -872,7 +874,7 @@ public class TemplateEditor extends CustomDialog
      * @param fieldName the field name
      * @return TableFieldPair object representing the mappable Field for a Table
      */
-    protected FieldInfo getFieldInfo(final DBTableIdMgr.TableInfo ti, final String fieldName)
+    protected FieldInfo getFieldInfo(final DBTableInfo ti, final String fieldName)
     {
         if (ti != null)
         {
@@ -917,7 +919,7 @@ public class TemplateEditor extends CustomDialog
                 //fieldInfo = new FieldInfo(tblFldPair.getTableinfo(),tblFldPair.getFieldInfo());
                 //System.out.println("["+fieldInfo.hashCode()+"]["+tblFldPair.getTableinfo().hashCode()+"]["+tblFldPair.getFieldInfo().hashCode()+"]");
                 log.debug("Mapping incoming column name '" + fieldNameArg +
-                        "' to " + tblFldPair.getTableinfo().getTableName() +
+                        "' to " + tblFldPair.getTableinfo().getName() +
                         "." + tblFldPair.getFieldInfo().getName());
                 for (int i=0;i<tableModel.size();i++)
                 {
@@ -940,7 +942,7 @@ public class TemplateEditor extends CustomDialog
             TableInfo tblInfo = tableModel.getElementAt(i);
             for (FieldInfo fi : tblInfo.getFieldItems())
             {
-                DBTableIdMgr.FieldInfo dbFieldInfo = fi.getFieldInfo();
+                DBFieldInfo dbFieldInfo = fi.getFieldInfo();
                 
                 String    tblFieldName  = dbFieldInfo.getName().toLowerCase();
                 String    tblColumnName = dbFieldInfo.getColumn().toLowerCase();
@@ -996,8 +998,8 @@ public class TemplateEditor extends CustomDialog
             Element mapping = (Element)o;
             String className = XMLHelper.getValue(mapping, "class");
             String fieldName = XMLHelper.getValue(mapping, "field");
-            DBTableIdMgr.TableInfo table = databaseSchema.getByClassName(className);
-            DBTableIdMgr.FieldInfo field = table.getFieldByName(fieldName);
+            DBTableInfo table = databaseSchema.getByClassName(className);
+            DBFieldInfo field = table.getFieldByName(fieldName);
             
             TableFieldPair tblFldPair = new TableFieldPair(table,field);
 
@@ -1044,7 +1046,7 @@ public class TemplateEditor extends CustomDialog
                     }
 
                     FieldMappingPanel fmp = map(null, colInfo, tblInfo, fieldInfo, null);
-                    fmp.setIcon(IconManager.getIcon(fieldInfo.getTableinfo().getObjTitle(), IconManager.IconSize.Std24));
+                    fmp.setIcon(IconManager.getIcon(fieldInfo.getTableinfo().getTitle(), IconManager.IconSize.Std24));
 
                 } else
                 {
@@ -1145,7 +1147,7 @@ public class TemplateEditor extends CustomDialog
                 
                 item.setFieldName(fieldInfo.getFieldInfo().getName());
                 item.setSrcTableId(fieldInfo.getTableinfo().getTableId());
-                item.setTableName(fieldInfo.getTableinfo().getTableName());
+                item.setTableName(fieldInfo.getTableinfo().getName());
                 short len = (short)fieldInfo.getFieldInfo().getLength();
                 item.setDataFieldLength(len == -1 ? 15 : len);
                 

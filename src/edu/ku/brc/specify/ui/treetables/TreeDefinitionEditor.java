@@ -41,7 +41,7 @@ import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.StaleObjectException;
-import edu.ku.brc.dbsupport.DBTableIdMgr.TableInfo;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
@@ -367,7 +367,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         boolean isEdit = true;
         String closeBtnText = (isEdit) ? getResourceString("Save") : getResourceString("Close");
         String className = defItem.getClass().getName();
-        TableInfo nodeTableInfo = DBTableIdMgr.getInstance().getInfoById(((DataModelObjBase)defItem).getTableId());
+        DBTableInfo nodeTableInfo = DBTableIdMgr.getInstance().getInfoById(((DataModelObjBase)defItem).getTableId());
         String idFieldName = nodeTableInfo.getIdFieldName();
         int options = MultiView.HIDE_SAVE_BTN;
         
@@ -602,7 +602,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         boolean isEdit = true;
         String closeBtnText = (isEdit) ? getResourceString("Save") : getResourceString("Close");
         String className = newItem.getClass().getName();
-        TableInfo nodeTableInfo = DBTableIdMgr.getInstance().getInfoById(((DataModelObjBase)newItem).getTableId());
+        DBTableInfo nodeTableInfo = DBTableIdMgr.getInstance().getInfoById(((DataModelObjBase)newItem).getTableId());
         String idFieldName = nodeTableInfo.getIdFieldName();
         int options = MultiView.HIDE_SAVE_BTN | MultiView.IS_NEW_OBJECT;
         
@@ -976,7 +976,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         boolean isEdit = true;
         String closeBtnText = (isEdit) ? getResourceString("Save") : getResourceString("Close");
         String className = def.getClass().getName();
-        TableInfo nodeTableInfo = DBTableIdMgr.getInstance().getInfoById(((DataModelObjBase)def).getTableId());
+        DBTableInfo nodeTableInfo = DBTableIdMgr.getInstance().getInfoById(((DataModelObjBase)def).getTableId());
         String idFieldName = nodeTableInfo.getIdFieldName();
         int options = MultiView.HIDE_SAVE_BTN;
         

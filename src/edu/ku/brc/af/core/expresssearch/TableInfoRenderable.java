@@ -14,26 +14,27 @@
  */
 package edu.ku.brc.af.core.expresssearch;
 
-import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.dbsupport.DBTableInfo;
 
 public class TableInfoRenderable implements TableNameRendererIFace, Comparable<TableInfoRenderable>
 {
     public enum SortBy {Table, Field, TableAndField}
     
-    protected DBTableIdMgr.TableInfo tableInfo;
-    protected DBTableIdMgr.FieldInfo fieldInfo;
-    protected String                 title;
-    protected String                 iconName;
-    protected SortBy                 sortBy = SortBy.Table; 
+    protected DBTableInfo tableInfo;
+    protected DBFieldInfo fieldInfo;
+    protected String      title;
+    protected String      iconName;
+    protected SortBy      sortBy = SortBy.Table; 
     
-    public TableInfoRenderable(final DBTableIdMgr.TableInfo tableInfo)
+    public TableInfoRenderable(final DBTableInfo tableInfo)
     {
         this.tableInfo = tableInfo;
         this.title     = tableInfo.getShortClassName();
         this.iconName  = tableInfo.getClassObj().getSimpleName();
     }
 
-    public TableInfoRenderable(final DBTableIdMgr.FieldInfo fieldInfo)
+    public TableInfoRenderable(final DBFieldInfo fieldInfo)
     {
         this.tableInfo = fieldInfo.getTableInfo();
         this.fieldInfo = fieldInfo;
@@ -41,7 +42,7 @@ public class TableInfoRenderable implements TableNameRendererIFace, Comparable<T
         this.iconName  = tableInfo.getClassObj().getSimpleName();
     }
 
-    public TableInfoRenderable(final DBTableIdMgr.TableInfo tableInfo,
+    public TableInfoRenderable(final DBTableInfo tableInfo,
                                final String                 title,
                                final String                 iconName)
     {
@@ -60,7 +61,7 @@ public class TableInfoRenderable implements TableNameRendererIFace, Comparable<T
     /**
      * @return the tableInfo
      */
-    public DBTableIdMgr.TableInfo getTableInfo()
+    public DBTableInfo getTableInfo()
     {
         return tableInfo;
     }
@@ -68,7 +69,7 @@ public class TableInfoRenderable implements TableNameRendererIFace, Comparable<T
     /**
      * @return the fieldInfo
      */
-    public DBTableIdMgr.FieldInfo getFieldInfo()
+    public DBFieldInfo getFieldInfo()
     {
         return fieldInfo;
     }

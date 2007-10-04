@@ -55,15 +55,13 @@ import edu.ku.brc.util.DatamodelHelper;
  */
 public class DBTableIdMgr
 {
-    public enum RelationshipType { OneToOne, OneToMany, ManyToOne, ManyToMany}
-    
     // Static Data Members
 	protected static final Logger log = Logger.getLogger(DBTableIdMgr.class);
     
     protected static  DBTableIdMgr instance = null;
     
     // Data Members
-    protected Hashtable<Integer, TableInfo> hash = new Hashtable<Integer, TableInfo>();
+    protected Hashtable<Integer, DBTableInfo> hash = new Hashtable<Integer, DBTableInfo>();
     protected boolean                       isFullSchema = true;
 
     /**
@@ -90,7 +88,7 @@ public class DBTableIdMgr
 
     /**
      * Reads in datamodel input file and populates the hashtable of teh
-     * DBTableMgr with TableInfo
+     * DBTableMgr with DBTableInfo
      */
     protected void initialize()
     {
@@ -99,7 +97,7 @@ public class DBTableIdMgr
 
     /**
      * Reads in datamodel input file and populates the hashtable of teh
-     * DBTableMgr with TableInfo
+     * DBTableMgr with DBTableInfo
      */
     public void initialize(final File inputFile)
     {
@@ -148,7 +146,7 @@ public class DBTableIdMgr
                     }
 					//log.debug("Populating hashtable ID["+tableId+"]for class: " + classname+" "+ inputFile.getName());
                     
-                    TableInfo tblInfo = new TableInfo(tableId, classname, tablename, primaryKeyField);
+                    DBTableInfo tblInfo = new DBTableInfo(tableId, classname, tablename, primaryKeyField);
                     tblInfo.setIsSearchable(isSearchable);
                     tblInfo.setBusinessRule(XMLHelper.getAttr(tableNode, "businessrule", null));
                     
@@ -187,14 +185,14 @@ public class DBTableIdMgr
                     for (Iterator<?> ir = tableNode.elementIterator("relationship"); ir.hasNext();)
                     {
                         Element irNode = (Element) ir.next();
-                        TableRelationship tblRel = new TableRelationship(
-                                irNode.attributeValue("relationshipname"),
-                                getRelationshipType(irNode.attributeValue("type")),
-                                irNode.attributeValue("classname"),
-                                irNode.attributeValue("columnname"),
-                                irNode.attributeValue("othersidename"),
-                                getAttr(irNode, "required", false),
-                                getAttr(irNode, "updatable", false));
+                        DBRelationshipInfo tblRel = new DBRelationshipInfo(
+                                                            irNode.attributeValue("relationshipname"),
+                                                            getRelationshipType(irNode.attributeValue("type")),
+                                                            irNode.attributeValue("classname"),
+                                                            irNode.attributeValue("columnname"),
+                                                            irNode.attributeValue("othersidename"),
+                                                            getAttr(irNode, "required", false),
+                                                            getAttr(irNode, "updatable", false));
                         tblInfo.getRelationships().add(tblRel);
                     }
                     
@@ -208,15 +206,15 @@ public class DBTableIdMgr
                         {
                             len = Integer.parseInt(lenStr);
                         }
-                        FieldInfo fieldInfo = new FieldInfo(tblInfo,
-                                irNode.attributeValue("column"),
-                                irNode.attributeValue("name"),
-                                irNode.attributeValue("type"),
-                                len,
-                                getAttr(irNode, "required", false),
-                                getAttr(irNode, "updatable", false),
-                                getAttr(irNode, "unique", false),
-                                getAttr(irNode, "indexed", false));
+                        DBFieldInfo fieldInfo = new DBFieldInfo(tblInfo,
+                                                                irNode.attributeValue("column"),
+                                                                irNode.attributeValue("name"),
+                                                                irNode.attributeValue("type"),
+                                                                len,
+                                                                getAttr(irNode, "required", false),
+                                                                getAttr(irNode, "updatable", false),
+                                                                getAttr(irNode, "unique", false),
+                                                                getAttr(irNode, "indexed", false));
                         tblInfo.addField(fieldInfo);
                     }
                     //Collections.sort(tblInfo.getFields());
@@ -244,7 +242,7 @@ public class DBTableIdMgr
      */
     public void cleanUp()
     {
-        for (TableInfo ti : hash.values())
+        for (DBTableInfo ti : hash.values())
         {
             ti.cleanUp();
         }
@@ -253,9 +251,9 @@ public class DBTableIdMgr
     
     /**
      * Returns the full collection of Tables. 
-     * @return a collection of TableInfo objects
+     * @return a collection of DBTableInfo objects
      */
-    public Collection<TableInfo> getList()
+    public Collection<DBTableInfo> getList()
     {
         return hash.values();
     }
@@ -268,7 +266,7 @@ public class DBTableIdMgr
 	public String getDefaultFormNameById(final int id)
 	{
 		// for now the default name will
-		TableInfo tableInfo = hash.get(id);
+		DBTableInfo tableInfo = hash.get(id);
 		if (tableInfo != null)
 		{
 			return tableInfo.getDefaultFormName();
@@ -284,9 +282,9 @@ public class DBTableIdMgr
 	 */
 	public int getIdByShortName(final String name)
 	{
-		for (TableInfo tableInfo : hash.values())
+		for (DBTableInfo tableInfo : hash.values())
 		{
-			String tableName = tableInfo.getTableName();
+			String tableName = tableInfo.getName();
 			int inx = tableName.lastIndexOf('.');
 
 			tableName = inx > -1 ? tableName.substring(inx + 1) : tableName;
@@ -307,7 +305,7 @@ public class DBTableIdMgr
      */
     public int getIdByClassName(final String className)
     {
-        for (TableInfo tableInfo : hash.values())
+        for (DBTableInfo tableInfo : hash.values())
         {
             if (tableInfo.getClassName().equalsIgnoreCase(className))
             {
@@ -324,9 +322,9 @@ public class DBTableIdMgr
      * @param className the full class name
      * @return the id of the table
      */
-    public TableInfo getByClassName(final String className)
+    public DBTableInfo getByClassName(final String className)
     {
-        for (TableInfo tableInfo : hash.values())
+        for (DBTableInfo tableInfo : hash.values())
         {
             if (tableInfo.getClassName().equalsIgnoreCase(className))
             {
@@ -342,10 +340,10 @@ public class DBTableIdMgr
      * @param className the full class name
      * @return the id of the table
      */
-    public TableInfo getByShortClassName(final String shortClassName)
+    public DBTableInfo getByShortClassName(final String shortClassName)
     {
         // for now just use a brute force linear search
-        for (TableInfo tableInfo : hash.values())
+        for (DBTableInfo tableInfo : hash.values())
         {
             if (tableInfo.getShortClassName().equalsIgnoreCase(shortClassName))
             {
@@ -360,7 +358,7 @@ public class DBTableIdMgr
      * @param tableId the id to look up
      * @return the table info object
      */
-    public TableInfo getInfoById(final String tableId)
+    public DBTableInfo getInfoById(final String tableId)
     {
         return getInfoById(Integer.parseInt(tableId));
     }
@@ -370,7 +368,7 @@ public class DBTableIdMgr
      * @param tableId the id to look up
      * @return the table info object
      */
-    public TableInfo getInfoById(final int tableId)
+    public DBTableInfo getInfoById(final int tableId)
     {
         if (hash.get(tableId) == null)
         {
@@ -384,12 +382,12 @@ public class DBTableIdMgr
      * @param tableName the name of the table
      * @return the table info object
      */
-    public TableInfo getInfoByTableName(final String tableName)
+    public DBTableInfo getInfoByTableName(final String tableName)
     {
         // for now just use a brute force linear search
-        for (TableInfo tblInfo : hash.values())
+        for (DBTableInfo tblInfo : hash.values())
         {
-            if (tblInfo.getTableName().equals(tableName))
+            if (tblInfo.getName().equals(tableName))
             {
                 return tblInfo;
             }
@@ -404,15 +402,15 @@ public class DBTableIdMgr
 	 */
 	public String getQueryForTable(final RecordSetIFace recordSet)
 	{
-		TableInfo tableInfo = hash.get(recordSet.getDbTableId());
+		DBTableInfo tableInfo = hash.get(recordSet.getDbTableId());
 		if (tableInfo != null)
 		{
 			StringBuffer strBuf = new StringBuffer("from ");
-			strBuf.append(tableInfo.getTableName());
+			strBuf.append(tableInfo.getName());
 			strBuf.append(" in class ");
 			strBuf.append(tableInfo.getShortClassName());
 			strBuf.append(" where ");
-			strBuf.append(tableInfo.getTableName());
+			strBuf.append(tableInfo.getName());
 			strBuf.append('.');
 			strBuf.append(tableInfo.getPrimaryKeyName());
 			strBuf.append(getInClause(recordSet));
@@ -429,15 +427,15 @@ public class DBTableIdMgr
 	 */
 	public String getQueryForTable(final int tableId, final long recordId)
 	{
-		TableInfo tableInfo = hash.get(tableId);
+		DBTableInfo tableInfo = hash.get(tableId);
 		if (tableInfo != null)
 		{
             StringBuffer strBuf = new StringBuffer("from ");
-			strBuf.append(tableInfo.getTableName());
+			strBuf.append(tableInfo.getName());
 			strBuf.append(" in class ");
 			strBuf.append(tableInfo.getShortClassName());
 			strBuf.append(" where ");
-			strBuf.append(tableInfo.getTableName());
+			strBuf.append(tableInfo.getName());
 			strBuf.append('.');
 			strBuf.append(tableInfo.getPrimaryKeyName());
 			strBuf.append(" = " + recordId);
@@ -486,23 +484,23 @@ public class DBTableIdMgr
      * @param relTypeStr the string
      * @return the relationship type
      */
-    public static RelationshipType getRelationshipType(final String relTypeStr)
+    public static DBRelationshipInfo.RelationshipType getRelationshipType(final String relTypeStr)
     {
         if (relTypeStr.equals("one-to-many"))
         {
-            return RelationshipType.OneToMany;
+            return DBRelationshipInfo.RelationshipType.OneToMany;
             
         } else if (relTypeStr.equals("many-to-one"))
         {
-            return RelationshipType.ManyToOne;
+            return DBRelationshipInfo.RelationshipType.ManyToOne;
             
         } else if (relTypeStr.equals("many-to-many"))
         {
-            return RelationshipType.ManyToMany;
+            return DBRelationshipInfo.RelationshipType.ManyToMany;
             
         } else if (relTypeStr.equals("one-to-one"))
         {
-            return RelationshipType.OneToOne;
+            return DBRelationshipInfo.RelationshipType.OneToOne;
         }
         return null;
     }
@@ -546,7 +544,7 @@ public class DBTableIdMgr
      */
     public BusinessRulesIFace getBusinessRule(Class<?> classOfObj)
     {
-        TableInfo ti = getByClassName(classOfObj.getName());
+        DBTableInfo ti = getByClassName(classOfObj.getName());
         if (ti != null)
         {
             String br = ti.getBusinessRule();
@@ -566,510 +564,4 @@ public class DBTableIdMgr
         return null;
     }
 
-	// ------------------------------------------------------
-	// Inner Classes
-	// ------------------------------------------------------
-	public class TableInfo implements Comparable<TableInfo>
-	{
-		protected int      tableId;
-		protected String   className;
-		protected String   tableName;
-		protected String   primaryKeyName;
-		protected Class<?> classObj;
-        protected boolean  isSearchable       = false;
-        protected String   businessRule;
-        
-        // ID Fields
-        protected String idColumnName;
-        protected String idFieldName;
-        protected String idType;
-        
-        // Display Items
-		protected String defaultFormName;
-        protected String uiFormatter;
-        protected String dataObjFormatter;
-        protected String searchDialog;
-        protected String newObjDialog;
-        protected String objTitle;      // Human readable name
-        
-        protected Set<TableRelationship> relationships;
-        protected List<FieldInfo>        fields;
-
-		public TableInfo(final int    tableId, 
-                         final String className, 
-                         final String tableName, 
-                         final String primaryKeyName)
-		{
-			this.tableId = tableId;
-			this.className = className;
-			this.tableName = tableName;
-			this.primaryKeyName = primaryKeyName;
-			try
-			{
-				this.classObj = Class.forName(className);
-				//Class.
-			} catch (ClassNotFoundException e)
-			{
-				log.error("Trying to find class: " + className + " but class was not found");
-				//e.printStackTrace();
-			}
-            this.objTitle = UIRegistry.getResourceString(this.classObj.getSimpleName());
-            relationships = new HashSet<TableRelationship>();
-            fields        = new Vector<FieldInfo>();
-		}
-        
-        public void cleanUp()
-        {
-            relationships.clear();
-            fields.clear();
-        }
-
-		public String getShortClassName()
-		{
-            // TODO: replace calls to this with a call to classObj.getSimpleName();
-            
-			int inx = className.lastIndexOf('.');
-			return inx == -1 ? className : className.substring(inx + 1);
-		}
-
-		public int getTableId()
-		{
-			return tableId;
-		}
-
-		public String getClassName()
-		{
-			return className;
-		}
-
-		public String getTableName()
-		{
-			return tableName;
-		}
-
-		public String getPrimaryKeyName()
-		{
-			return primaryKeyName;
-		}
-
-		public Class<?> getClassObj()
-		{
-			return classObj;
-		}
-
-		public String getDefaultFormName()
-		{
-			return defaultFormName;
-		}
-        
-        public void setDefaultFormName(String defaultFormName)
-        {
-            this.defaultFormName = defaultFormName;
-        }
-
-        public Set<TableRelationship> getRelationships()
-        {
-            return relationships;
-        }
-
-        public ImageIcon getIcon(IconManager.IconSize size)
-        {
-            return IconManager.getIcon(getShortClassName(), size);
-        }
-        
-        public String getDataObjFormatter()
-        {
-            return dataObjFormatter;
-        }
-
-        public void setDataObjFormatter(String dataObjFormatter)
-        {
-            this.dataObjFormatter = dataObjFormatter;
-        }
-
-        public String getUiFormatter()
-        {
-            return uiFormatter;
-        }
-
-        public void setUiFormatter(String uiFormatter)
-        {
-            this.uiFormatter = uiFormatter;
-        }
-
-        public String getNewObjDialog()
-        {
-            return newObjDialog;
-        }
-
-        public void setNewObjDialog(String newObjDialog)
-        {
-            this.newObjDialog = newObjDialog;
-        }
-
-        public String getEditObjDialog()
-        {
-            return getNewObjDialog();
-        }
-
-        public void setEditObjDialog(String editObjDialog)
-        {
-            setNewObjDialog(editObjDialog);
-        }
-
-        public String getObjTitle()
-        {
-            return objTitle;
-        }
-
-        public String getSearchDialog()
-        {
-            return searchDialog;
-        }
-
-        public void setSearchDialog(String searchDialog)
-        {
-            this.searchDialog = searchDialog;
-        }
-
-        public String getIdColumnName()
-        {
-            return idColumnName;
-        }
-
-        public void setIdColumnName(String idColumnName)
-        {
-            this.idColumnName = idColumnName;
-        }
-
-        public String getIdFieldName()
-        {
-            return idFieldName;
-        }
-
-        public void setIdFieldName(String idFieldName)
-        {
-            this.idFieldName = idFieldName;
-        }
-
-        public String getIdType()
-        {
-            return idType;
-        }
-
-        public void setIdType(String idType)
-        {
-            this.idType = idType;
-        }
-
-        public boolean isSearchable()
-        {
-            return isSearchable;
-        }
-
-        public void setIsSearchable(boolean isSearchable)
-        {
-            this.isSearchable = isSearchable;
-        }
-
-        public String getBusinessRule()
-        {
-            return businessRule;
-        }
-
-        public void setBusinessRule(String busniessRule)
-        {
-            this.businessRule = busniessRule;
-        }
-
-        /**
-         * Assumes all fields have names and returns a FieldInfo object by name
-         * @param name the name of the field
-         * @return the FieldInfo
-         */
-        public FieldInfo getFieldByName(final String name)
-        {
-            for (FieldInfo fldInfo : fields)
-            {
-                if (fldInfo.getName().equals(name))
-                {
-                    return fldInfo;
-                }
-            }
-            return null;
-        }
-
-        public TableRelationship getRelationshipByName(final String name)
-        {
-            for (TableRelationship tr: relationships)
-            {
-                String relName = tr.getName();
-                if (relName != null && relName.equals(name))
-                {
-                    return tr;
-                }
-            }
-            return null;
-        }
-
-        public RelationshipType getRelType(final String fieldName)
-        {
-            for (Iterator<TableRelationship> iter = relationships.iterator();iter.hasNext();)
-            {
-                TableRelationship tblRel = iter.next();
-                if (tblRel.getName().equals(fieldName))
-                {
-                    return tblRel.getType();
-                }
-            }
-            return null;
-        }
-        
-        public void addField(final FieldInfo fieldInfo)
-        {
-            fields.add(fieldInfo);
-        }
-        
-        public List<FieldInfo> getFields()
-        {
-            return fields;
-        }
-
-        /* (non-Javadoc)
-         * @see java.lang.Object#toString()
-         */
-        public String toString()
-        {
-            return StringUtils.isNotEmpty(objTitle) ? objTitle : tableName;
-        }
-        
-
-        /* (non-Javadoc)
-         * @see java.lang.Comparable#compareTo(java.lang.Object)
-         */
-        public int compareTo(TableInfo obj)
-        {
-            return toString().compareTo(obj.toString());
-        }
-
-	}
-    
-    public class TableRelationship implements Comparable<TableRelationship>
-    {
-        protected String           name;
-        protected RelationshipType type;
-        protected String           className;
-        protected String           colName;
-        protected String           otherSide;
-        protected boolean          isRequired;
-        protected boolean          isUpdatable;
-        
-        public TableRelationship(final String name, 
-                                 final RelationshipType type, 
-                                 final String className, 
-                                 final String colName, 
-                                 final String otherSide, 
-                                 final boolean isRequired, 
-                                 final boolean isUpdatable)
-        {
-            super();
-            this.name = name;
-            this.type = type;
-            this.className = className;
-            this.colName = colName;
-            this.otherSide = otherSide;
-            this.isRequired = isRequired;
-            this.isUpdatable = isUpdatable;
-        }
-
-        public String getClassName()
-        {
-            return className;
-        }
-
-        public String getColName()
-        {
-            return colName;
-        }
-
-        public String getName()
-        {
-            return name;
-        }
-
-        public RelationshipType getType()
-        {
-            return type;
-        }
-
-        /* (non-Javadoc)
-         * @see java.lang.Comparable#compareTo(java.lang.Object)
-         */
-        public int compareTo(TableRelationship o)
-        {
-            return className.compareTo(o.className);
-        }
-
-        /**
-         * @return the otherSide
-         */
-        public String getOtherSide()
-        {
-            return otherSide;
-        }
-
-        /**
-         * @return the isRequired
-         */
-        public boolean isRequired()
-        {
-            return isRequired;
-        }
-
-        /**
-         * @return the isUpdatable
-         */
-        public boolean isUpdatable()
-        {
-            return isUpdatable;
-        }
-        
-    }
-    
-    public class FieldInfo implements Comparable<FieldInfo>
-    {
-        protected TableInfo tableInfo;
-        protected String    column;
-        protected String    name;
-        protected String    type;
-        protected int       length;
-        protected boolean   isRequired;
-        protected boolean   isUpdatable;
-        protected boolean   isUnique;
-        protected boolean   isIndexed;
-
-        public FieldInfo(final TableInfo tableInfo, 
-                         final String column, 
-                         final String name, 
-                         final String type, 
-                         final int length, 
-                         final boolean isRequired, 
-                         final boolean isUpdatable, 
-                         final boolean isUnique, 
-                         final boolean isIndexed)
-        {
-            super();
-            this.tableInfo = tableInfo;
-            this.column = column;
-            this.name = name;
-            this.type = type;
-            this.length = length;
-            this.isRequired = isRequired;
-            this.isUpdatable = isUpdatable;
-            this.isUnique = isUnique;
-            this.isIndexed = isIndexed;
-        }
-
-        public String getColumn()
-        {
-            return column;
-        }
-
-        public int getLength()
-        {
-            return length;
-        }
-
-        public String getName()
-        {
-            return name;
-        }
-
-        public TableInfo getTableInfo()
-        {
-            return tableInfo;
-        }
-
-        public String getType()
-        {
-            return type;
-        }
-        
-        public String toString()
-        {
-            return column;
-        }
-        
-        /**
-         * @return the isRequired
-         */
-        public boolean isRequired()
-        {
-            return isRequired;
-        }
-
-        /**
-         * @return the isUpdatable
-         */
-        public boolean isUpdatable()
-        {
-            return isUpdatable;
-        }
-
-        /**
-         * @return the isUnique
-         */
-        public boolean isUnique()
-        {
-            return isUnique;
-        }
-
-        /**
-         * @return the isIndexed
-         */
-        public boolean isIndexed()
-        {
-            return isIndexed;
-        }
-
-        /* (non-Javadoc)
-         * @see java.lang.Comparable#compareTo(java.lang.Object)
-         */
-        public int compareTo(FieldInfo obj)
-        {
-            return name.compareTo(obj.name);
-        }
-        
-        public Class<?> getDataClass()
-        {
-            if (StringUtils.isNotEmpty(type))
-            {
-                if (type.equals("calendar_date"))
-                {
-                    return Calendar.class;
-                    
-                } else if (type.equals("text"))
-                {
-                    return String.class;
-                    
-                } else if (type.equals("boolean"))
-                {
-                    return Boolean.class;
-                    
-                } else
-                {
-                    try
-                    {
-                        return Class.forName(type);
-                        
-                    } catch (Exception e)
-                    {
-                        log.error(e);
-                    }
-                }
-            }
-            return null;
-        }
-        
-    }
 }

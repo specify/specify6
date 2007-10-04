@@ -26,7 +26,8 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.dbsupport.DBTableIdMgr.TableRelationship;
+import edu.ku.brc.dbsupport.DBRelationshipInfo;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.util.DatamodelHelper;
@@ -403,7 +404,7 @@ public class WorkbenchUploadMapper
      */
     protected void mapRelationship(final WorkbenchTemplateMappingItem wbi, final DefInfo def) throws UploaderException
     {
-        TableRelationship rel = DBTableIdMgr.getInstance().getByShortClassName(def.actualTable)
+        DBRelationshipInfo rel = DBTableIdMgr.getInstance().getByShortClassName(def.actualTable)
                 .getRelationshipByName(def.relationshipName);
         if (rel == null) 
         { 
@@ -412,7 +413,7 @@ public class WorkbenchUploadMapper
                 UploaderException.ABORT_IMPORT); 
         }
         
-        DBTableIdMgr.TableInfo relTbl = DBTableIdMgr.getInstance().getByClassName(rel.getClassName());
+        DBTableInfo relTbl = DBTableIdMgr.getInstance().getByClassName(rel.getClassName());
         UploadMappingDefRel map = findRelMap(def, rel.getColName(), relTbl.getShortClassName());
         if (map == null)
         {

@@ -36,7 +36,9 @@ import javax.persistence.Version;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.ui.forms.DataObjectGettable;
 import edu.ku.brc.ui.forms.DataObjectGettableFactory;
 import edu.ku.brc.ui.forms.DataObjectSettable;
@@ -273,10 +275,10 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
      */
     public void addReference(FormDataObjIFace ref, String fieldName)
     {
-        DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(getTableId());
+        DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(getTableId());
         if (tblInfo != null)
         {
-            DBTableIdMgr.TableRelationship rel = tblInfo.getRelationshipByName(fieldName);
+            DBRelationshipInfo rel = tblInfo.getRelationshipByName(fieldName);
             if (rel != null)
             {
                 //String fieldName = rel.getName();
@@ -334,10 +336,10 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
      */
     public void removeReference(FormDataObjIFace ref, String fieldName)
     {
-        DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(getTableId());
+        DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(getTableId());
         if (tblInfo != null)
         {
-            DBTableIdMgr.TableRelationship rel = tblInfo.getRelationshipByName(fieldName);
+            DBRelationshipInfo rel = tblInfo.getRelationshipByName(fieldName);
             if (rel != null)
             {
                 //String fieldName = rel.getName();

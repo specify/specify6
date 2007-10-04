@@ -9,13 +9,13 @@ import edu.ku.brc.dbsupport.DataProviderIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
-import edu.ku.brc.dbsupport.DBTableIdMgr.TableInfo;
+import edu.ku.brc.dbsupport.DBTableInfo;
 
 public class RecordSetLoader
 {
 	public static List<Object> loadRecordSet(RecordSetIFace recordSet)
 	{
-		TableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
+		DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
 		Class<?> recordClass = tableInfo.getClassObj();
 		DataProviderIFace dataProvider = DataProviderFactory.getInstance();
 		DataProviderSessionIFace session = dataProvider.createSession();

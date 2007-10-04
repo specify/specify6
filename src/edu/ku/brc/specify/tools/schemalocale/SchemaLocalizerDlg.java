@@ -211,8 +211,10 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
                 list.add(new DisplayLocale(locale));
             }
         }
+        Collections.sort(list);
+
         ToggleButtonChooserDlg<DisplayLocale> dlg = new ToggleButtonChooserDlg<DisplayLocale>(null, 
-                                                   getResourceString("CHOOSE_LOCALE"), list, ToggleButtonChooserPanel.Type.RadioButton);
+                                                   "CHOOSE_LOCALE", list, ToggleButtonChooserPanel.Type.RadioButton);
         dlg.setUseScrollPane(true);
         dlg.setVisible(true);
         
@@ -519,6 +521,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
             }
         }
         
+        localeList.clear();
         for (String key : localeHash.keySet())
         {
             String[] toks = StringUtils.split(key, "_");
@@ -542,6 +545,8 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
             
             for (Object lang : list)
             {
+                System.out.println(lang.toString());
+                
                 locales.add(new Locale(lang.toString(), "", ""));
             }
         } catch (Exception ex)

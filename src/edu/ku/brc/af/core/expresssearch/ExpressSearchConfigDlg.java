@@ -61,7 +61,9 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.thoughtworks.xstream.XStream;
 
+import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
@@ -144,9 +146,9 @@ public class ExpressSearchConfigDlg extends CustomDialog
         int maxSearchCnt  = 0;
         
         Hashtable<String, List<ExpressResultsTableInfo>> joinHash = ExpressSearchConfigCache.getJoinIdToTableInfoHash();
-        Vector<DBTableIdMgr.TableInfo>                   tableListInfoWithJoins = new Vector<DBTableIdMgr.TableInfo>();
+        Vector<DBTableInfo>                   tableListInfoWithJoins = new Vector<DBTableInfo>();
 
-        for (DBTableIdMgr.TableInfo ti : DBTableIdMgr.getInstance().getList())
+        for (DBTableInfo ti : DBTableIdMgr.getInstance().getList())
         {
             if (!ti.isSearchable())
             {
@@ -154,7 +156,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
             }
             int notSortedIndex = 1000;
             boolean hasIndexedFields = false;
-            for (DBTableIdMgr.FieldInfo fi : ti.getFields())
+            for (DBFieldInfo fi : ti.getFields())
             {
                 if (fi.isIndexed())
                 {
@@ -179,7 +181,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
             int displayCnt = 0;
             int searchCnt  = 0;
             
-            for (DBTableIdMgr.FieldInfo fi : ti.getFields())
+            for (DBFieldInfo fi : ti.getFields())
             {
                 if (fi.isIndexed())
                 {
@@ -273,7 +275,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
         //------------------------
         Vector<TableInfoRenderable> relatedTableRenderList = new Vector<TableInfoRenderable>();
         Collections.sort(tableListInfoWithJoins);
-        for (DBTableIdMgr.TableInfo ti : tableListInfoWithJoins)
+        for (DBTableInfo ti : tableListInfoWithJoins)
         {
             relatedTableRenderList.add(new TableInfoRenderable(ti));
         }
@@ -422,7 +424,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
     protected static String makeName(final TableNameRendererIFace tnr)
     {
         SearchFieldConfig sfc = (SearchFieldConfig)tnr;
-        return sfc.getFieldInfo().getTableInfo().getTableName() + sfc.getFieldInfo().getColumn();
+        return sfc.getFieldInfo().getTableInfo().getName() + sfc.getFieldInfo().getColumn();
     }
     
     /**
@@ -674,7 +676,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
     {
         public int getSize() { return toBeSearchedVect.size(); }
         public Object getElementAt(int index) { return toBeSearchedVect.get(index); }
-        public void fireChange(@SuppressWarnings("unused")final DBTableIdMgr.FieldInfo field)
+        public void fireChange(@SuppressWarnings("unused")final DBFieldInfo field)
         {
             fireContentsChanged(this, 0, toBeSearchedVect.size());
         }

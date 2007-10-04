@@ -6,7 +6,9 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.specify.tasks.subpane.wb.graph.DirectedGraph;
 import edu.ku.brc.specify.tasks.subpane.wb.graph.DirectedGraphException;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.DB;
@@ -55,7 +57,7 @@ public class DBSchema
     protected void buildSchema()
     {
         tables = new TreeMap<String, Table>();
-        for (DBTableIdMgr.TableInfo tbl : scheme.getList())
+        for (DBTableInfo tbl : scheme.getList())
         {
             Table newTbl = new Table(this, tbl);
             tables.put(newTbl.getName().toLowerCase(), newTbl);
@@ -63,7 +65,7 @@ public class DBSchema
         // add foreign keys
         for (Table tbl : getTables())
         {
-            for (DBTableIdMgr.TableRelationship rel : tbl.getTableInfo().getRelationships())
+            for (DBRelationshipInfo rel : tbl.getTableInfo().getRelationships())
             {
                 String fld2Name = rel.getColName();
                 if (fld2Name == null)

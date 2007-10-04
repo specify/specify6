@@ -6,8 +6,8 @@
      */
 package edu.ku.brc.af.core.expresssearch;
 
-import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.dbsupport.DBTableIdMgr.FieldInfo;
+import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.dbsupport.DBTableInfo;
 
 /**
  * @author rod
@@ -19,11 +19,11 @@ import edu.ku.brc.dbsupport.DBTableIdMgr.FieldInfo;
  */
 public class TableFieldPair implements Comparable<TableFieldPair>
 {
-    protected DBTableIdMgr.TableInfo tableinfo;
-    protected DBTableIdMgr.FieldInfo fieldInfo;
+    protected DBTableInfo tableinfo;
+    protected DBFieldInfo fieldInfo;
     protected boolean                isInUse    = false;
     
-    public TableFieldPair(DBTableIdMgr.TableInfo tableinfo, FieldInfo fieldInfo)
+    public TableFieldPair(final DBTableInfo tableinfo, final DBFieldInfo fieldInfo)
     {
         super();
         this.tableinfo = tableinfo;
@@ -40,12 +40,12 @@ public class TableFieldPair implements Comparable<TableFieldPair>
         this.isInUse = isMapped;
     }
 
-    public DBTableIdMgr.FieldInfo getFieldInfo()
+    public DBFieldInfo getFieldInfo()
     {
         return fieldInfo;
     }
 
-    public DBTableIdMgr.TableInfo getTableinfo()
+    public DBTableInfo getTableinfo()
     {
         return tableinfo;
     }

@@ -804,7 +804,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
     @Override
     protected void enableSpellCheck()
     {
-        boolean ok = currLocale.getLanguage().equals("en");
+        boolean ok = currLocale.getLanguage().equals("en")  && tablesList.isEnabled();
         tblSpellChkBtn.setEnabled(ok && checker != null && spellCheckLoaded);
         fldSpellChkBtn.setEnabled(ok && checker != null && spellCheckLoaded);
     }

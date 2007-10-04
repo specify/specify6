@@ -92,7 +92,7 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.dbsupport.DBTableIdMgr.TableInfo;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.helpers.MenuItemPropertyChangeListener;
 import edu.ku.brc.specify.conversion.CustomDBConverter;
@@ -1427,7 +1427,7 @@ public final class UIHelper
                                                                 final boolean          isEditMode,
                                                                 final boolean          isNewObject)
     {
-        TableInfo setTI = DBTableIdMgr.getInstance().getByClassName(dataObj.getClass().getName());
+        DBTableInfo setTI = DBTableIdMgr.getInstance().getByClassName(dataObj.getClass().getName());
         String defFormName = setTI.getEditObjDialog();
 
         if (StringUtils.isNotEmpty(defFormName))

@@ -59,7 +59,7 @@ public class AutoNumberGeneric implements AutoNumberIFace
         String className = properties.getProperty("class");
         if (StringUtils.isNotEmpty(className))
         {
-            DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(className);
+            DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(className);
             if (tblInfo != null)
             {
                 classObj  = tblInfo.getClassObj();

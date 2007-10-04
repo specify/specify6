@@ -10,21 +10,21 @@ import java.util.Vector;
 
 import javax.swing.ImageIcon;
 
-import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.ui.IconManager;
 
 public class TableInfo implements TableListItemIFace, Comparable<TableInfo>
 {
-    protected DBTableIdMgr.TableInfo tableInfo;
+    protected DBTableInfo tableInfo;
     protected Vector<FieldInfo>      fieldItems;
     protected boolean                isExpanded;
     protected ImageIcon              icon;
     
-    public TableInfo(final DBTableIdMgr.TableInfo tableInfo, IconManager.IconSize size)
+    public TableInfo(final DBTableInfo tableInfo, IconManager.IconSize size)
     {
         this.tableInfo = tableInfo;
         
-        icon = IconManager.getIcon(tableInfo.getObjTitle(), size);
+        icon = IconManager.getIcon(tableInfo.getTitle(), size);
     }
 
     /**
@@ -46,7 +46,7 @@ public class TableInfo implements TableListItemIFace, Comparable<TableInfo>
     /**
      * @return the tableInfo
      */
-    public DBTableIdMgr.TableInfo getTableInfo()
+    public DBTableInfo getTableInfo()
     {
         return tableInfo;
     }

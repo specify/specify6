@@ -63,7 +63,10 @@ import edu.ku.brc.af.core.expresssearch.ERTICaptionInfo;
 import edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL;
 import edu.ku.brc.af.core.expresssearch.TableFieldPair;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
+import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.CollectionObject;
@@ -85,7 +88,7 @@ import edu.ku.brc.ui.UIRegistry;
 public class QueryBldrPane extends BaseSubPane
 {
     protected JList                          tableList;
-    protected Hashtable<DBTableIdMgr.TableInfo, Vector<TableFieldPair>> tableFieldList = new Hashtable<DBTableIdMgr.TableInfo, Vector<TableFieldPair>>();
+    protected Hashtable<DBTableInfo, Vector<TableFieldPair>> tableFieldList = new Hashtable<DBTableInfo, Vector<TableFieldPair>>();
     
     protected Vector<QueryFieldPanel>        queryFieldItems = new Vector<QueryFieldPanel>();
     protected int                            currentInx      = -1;
@@ -496,7 +499,7 @@ public class QueryBldrPane extends BaseSubPane
         {
             Vector<QryListRendererIFace> fldList = new Vector<QryListRendererIFace>();
 
-            for (DBTableIdMgr.FieldInfo fi : tableTree.getTableInfo().getFields())
+            for (DBFieldInfo fi : tableTree.getTableInfo().getFields())
             {
                 if (fi.getColumn() != null && fieldsToSkipHash.get(fi.getColumn()) == null)
                 {
@@ -505,7 +508,7 @@ public class QueryBldrPane extends BaseSubPane
             }
             for (TableTree tt : tableTree.getKids())
             {
-                for (DBTableIdMgr.TableRelationship ri : tableTree.getTableInfo().getRelationships())
+                for (DBRelationshipInfo ri : tableTree.getTableInfo().getRelationships())
                 {
                     String clsName = StringUtils.substringAfterLast(ri.getClassName(), ".");
                     if (clsName.equals(tt.getName()))
@@ -815,7 +818,7 @@ public class QueryBldrPane extends BaseSubPane
         protected JCheckBox        isDisplayedCkbx;
         protected FieldQRI         fieldQRI;
         
-        protected DBTableIdMgr.FieldInfo  field = null;
+        protected DBFieldInfo  field = null;
         
         protected QueryFieldPanel  thisItem;
         
@@ -946,7 +949,7 @@ public class QueryBldrPane extends BaseSubPane
                 col += 2;
             }
 
-            icon = IconManager.getIcon(field.getTableInfo().getObjTitle(), iconSize);
+            icon = IconManager.getIcon(field.getTableInfo().getTitle(), iconSize);
             setIcon(icon);
             isDisplayedCkbx.setSelected(true);
             
@@ -1048,7 +1051,7 @@ public class QueryBldrPane extends BaseSubPane
         /**
          * @return the TableInfo object
          */
-        public DBTableIdMgr.FieldInfo getFieldInfo()
+        public DBFieldInfo getFieldInfo()
         {
             return field;
         }
@@ -1227,7 +1230,7 @@ public class QueryBldrPane extends BaseSubPane
     
     class TableQRI extends BaseQRI
     {
-        protected DBTableIdMgr.TableInfo ti;
+        protected DBTableInfo ti;
         
         public TableQRI(final BaseQRI parent, final TableTree tableTree)
         {
@@ -1237,7 +1240,7 @@ public class QueryBldrPane extends BaseSubPane
             title    = UIHelper.makeNamePretty(iconName);
         }
         
-        public DBTableIdMgr.TableInfo getTableInfo()
+        public DBTableInfo getTableInfo()
         {
             return ti;
         }
@@ -1245,9 +1248,9 @@ public class QueryBldrPane extends BaseSubPane
     
     class FieldQRI extends BaseQRI
     {
-        protected DBTableIdMgr.FieldInfo fi;
+        protected DBFieldInfo fi;
         
-        public FieldQRI(final BaseQRI parent, final DBTableIdMgr.FieldInfo fi)
+        public FieldQRI(final BaseQRI parent, final DBFieldInfo fi)
         {
             super(parent, null);
             this.fi  = fi;
@@ -1255,7 +1258,7 @@ public class QueryBldrPane extends BaseSubPane
             iconName = "BlankIcon";
         }
         
-        public DBTableIdMgr.FieldInfo getFieldInfo()
+        public DBFieldInfo getFieldInfo()
         {
             return fi;
         }
@@ -1268,9 +1271,9 @@ public class QueryBldrPane extends BaseSubPane
     
     class RelQRI extends BaseQRI
     {
-        protected DBTableIdMgr.TableRelationship ri;
+        protected DBRelationshipInfo ri;
         
-        public RelQRI(final BaseQRI parent, final TableTree tableTree, final DBTableIdMgr.TableRelationship ri)
+        public RelQRI(final BaseQRI parent, final TableTree tableTree, final DBRelationshipInfo ri)
         {
             super(parent, tableTree);
             this.ri = ri;
@@ -1287,13 +1290,13 @@ public class QueryBldrPane extends BaseSubPane
                 title    = "????";
             }
         }
-        public DBTableIdMgr.TableRelationship getTableRelationship()
+        public DBRelationshipInfo getTableRelationship()
         {
             return ri;
         }        
         public boolean hasChildren()
         {
-            return true;//ri.getType() == DBTableIdMgr.RelationshipType.OneToMany || ri.getType() == DBTableIdMgr.RelationshipType.ManyToMany;
+            return true;//ri.getType() == DBRelationshipInfo.RelationshipType.OneToMany || ri.getType() == DBRelationshipInfo.RelationshipType.ManyToMany;
         }
     }
     
@@ -1486,7 +1489,7 @@ public class QueryBldrPane extends BaseSubPane
         protected String            field;
         protected TableTree         parent;
         protected Vector<TableTree> kids     = new Vector<TableTree>();
-        protected DBTableIdMgr.TableInfo tableInfo = null;
+        protected DBTableInfo       tableInfo = null;
         
         public TableTree(final TableTree parent, 
                          final String name,
@@ -1551,7 +1554,7 @@ public class QueryBldrPane extends BaseSubPane
         /**
          * @return the tableInfo
          */
-        public DBTableIdMgr.TableInfo getTableInfo()
+        public DBTableInfo getTableInfo()
         {
             return tableInfo;
         }

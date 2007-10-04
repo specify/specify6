@@ -16,6 +16,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Vector;
 import java.util.zip.ZipInputStream;
@@ -217,6 +218,8 @@ public abstract class LocalizerBasePanel extends JPanel
         {
             list.add(new DisplayLocale(l));
         }
+        Collections.sort(list);
+        
         ToggleButtonChooserDlg<DisplayLocale> dlg = new ToggleButtonChooserDlg<DisplayLocale>(null, 
                                                    UIRegistry.getResourceString("CHOOSE_LOCALE"), 
                                                    list, ToggleButtonChooserPanel.Type.RadioButton);
