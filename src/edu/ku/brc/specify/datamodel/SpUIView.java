@@ -17,6 +17,9 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import static edu.ku.brc.ui.forms.persist.View.xmlAttr;
+import static edu.ku.brc.ui.forms.persist.View.xmlNode;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -704,6 +707,7 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
     {
         return name.compareTo(obj.getName());
     }
+
     
     /**
      * Copies an existing View into this persistable View.
@@ -711,7 +715,7 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
      */
     public void copyInto(final ViewIFace view)
     {
-        name              = view.getName();;
+        name              = view.getName();
         javaClassName     = view.getClassName();
         businessRulesClassName = view.getBusinessRulesClassName();
         useResourceLabels = view.isUseResourceLabels();
@@ -725,6 +729,27 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
         defaultMode       = view.getDefaultMode();
         isSpecial         = view.isSpecialViewAndEdit();
         viewSetName       = view.getViewSetName();
+    }
+    
+    public void toXML(final StringBuffer sb)
+    {
+        sb.append("<view ");
+        xmlAttr(sb, "name", name);
+        xmlAttr(sb, "class", javaClassName);
+        xmlAttr(sb, "busrule", businessRulesClassName);
+        xmlAttr(sb, "resourcelabels", useResourceLabels);
+        sb.append(">\n");
+        xmlNode(sb, "desc", description, true);
+        sb.append("  <altviews");
+        xmlAttr(sb, "defaultmode", defaultMode.toString().toLowerCase());
+        xmlAttr(sb, "selector", selectorName);
+        sb.append(">\n");
+        for (AltViewIFace av : spAltViews)
+        {
+            av.toXML(sb);
+        }
+        sb.append("  </altviews>\n");
+        sb.append("</view>\n");
     }
     
 }

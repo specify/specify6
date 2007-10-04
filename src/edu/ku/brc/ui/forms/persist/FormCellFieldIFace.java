@@ -198,6 +198,11 @@ public interface FormCellFieldIFace extends FormCellIFace
      * @param validationType when the control is validated (Focus, Change) default is Change.
      */
     public abstract void setValidationType(String validationType);
+    
+    /**
+     * @return whether it is a password
+     */
+    public abstract boolean isPassword();
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormCell#clone()

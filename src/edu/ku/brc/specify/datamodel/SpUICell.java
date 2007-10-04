@@ -17,6 +17,8 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import static edu.ku.brc.ui.forms.persist.View.xmlAttr;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -111,6 +113,7 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
     protected Boolean   isRequiredDB;
     protected Boolean   isReadOnlyDB;
     protected Boolean   isEncryptedDB;
+    protected Boolean   isPasswordDB;
     protected Boolean   useThisDataDB; // this means the field uses the entire data object to do something special with
     protected String    label;
     protected String    defaultValue;
@@ -211,20 +214,21 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
         format         = null;
         formatName     = null;
         uiFieldFormatter = null;
-        isRequiredDB   = false;
-        isReadOnlyDB   = false;
-        isEncryptedDB  = false;
-        useThisDataDB  = false; // this means the field uses the entire data object to do something special with
+        isRequiredDB   = null;
+        isReadOnlyDB   = null;
+        isEncryptedDB  = null;
+        isPasswordDB   = null;
+        useThisDataDB  = null; // this means the field uses the entire data object to do something special with
         label          = null;
         defaultValue   = null;
         defaultDateTodayDB = null;
         pickListName   = null; // Comboboxes and TextFields
-        txtColsDB      = 10;   // TextField and TextArea
-        txtRowsDB      = 1;    // Text Area Only
-        validationType = "";
-        validationRule = "";
-        isTextFieldDB  = false;
-        isDSPTextFieldDB = false;
+        txtColsDB      = null;   // TextField and TextArea
+        txtRowsDB      = null;    // Text Area Only
+        validationType = null;
+        validationRule = null;
+        isTextFieldDB  = null;
+        isDSPTextFieldDB = null;
         
         // FormCellSeparator
         collapseCompName = null;
@@ -257,7 +261,7 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
         description        = null; 
         defaultAltViewType = null; 
         funcModes          = null;
-        tableRowsDB        = 5;
+        tableRowsDB        = null;
 
     }
 
@@ -712,6 +716,23 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
     public void setIsEncryptedDB(Boolean isEncryptedDB)
     {
         this.isEncryptedDB = isEncryptedDB;
+    }
+
+    /**
+     * @return the isPassword
+     */
+    @Column(name = "IsPassword", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getIsPasswordDB()
+    {
+        return isPasswordDB;
+    }
+
+    /**
+     * @param isPassword the isPassword to set
+     */
+    public void setIsPasswordDB(Boolean isPasswordDB)
+    {
+        this.isPasswordDB = isPasswordDB;
     }
 
     /**
@@ -1788,6 +1809,15 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
         widthDB = (short)width;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#isPassword()
+     */
+    @Transient
+    public boolean isPassword()
+    {
+        return isPasswordDB == null ? false : isPasswordDB;
+    }
+
     /**
      * Recreates the initialize string from the properties and clones the properties hashtable.
      * @param cell the source of the props
@@ -1868,6 +1898,7 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
             isRequiredDB     = fcf.isRequired();
             isReadOnlyDB     = fcf.isReadOnly();
             isEncryptedDB    = fcf.isEncrypted();
+            isPasswordDB     = fcf.isPassword();
             useThisDataDB    = fcf.useThisData();
             label            = fcf.getLabel();
             defaultValue     = fcf.getDefaultValue();
@@ -1902,4 +1933,104 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
             tableRowsDB        = (byte)fcs.getTableRows();
         }
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#toXML(java.lang.StringBuffer)
+     */
+    public void toXML(StringBuffer sb)
+    {
+        sb.append("    <cell");
+        xmlAttr(sb, "type", typeName.toString().toLowerCase());
+        xmlAttr(sb, "id", uiId);
+        xmlAttr(sb, "name", name);
+        
+        // Label
+        //<cell type="label" label="KU Accessions" icon="Accession" recordobj="true" colspan="12"/>
+        //<cell type="label" labelfor="1" label="Number"/>
+        if (typeName.equals("label"))
+        {
+            xmlAttr(sb, "label",     label);
+            xmlAttr(sb, "icon",      iconName);
+            xmlAttr(sb, "recordobj", isRecordObjDB);
+            xmlAttr(sb, "labelfor",  labelFor);
+            
+        } else if (typeName.equals("separator"))
+        {
+            xmlAttr(sb, "label",     label);
+            xmlAttr(sb, "collapse",  collapseCompName);
+            
+            
+        } else if (typeName.equals("field"))
+        {
+            xmlAttr(sb, "uitype", uiTypeStr);
+            xmlAttr(sb, "dsptype", dspUITypeStr);
+            
+            if (uiTypeStr.equals("text"))
+            {
+                // <cell type="field" id="10" name="lastEditedBy" uitype="text" readonly="true"/>
+                xmlAttr(sb, "cols", txtColsDB);
+                xmlAttr(sb, "isencrypted", isEncryptedDB);
+                xmlAttr(sb, "ispassword", isPasswordDB);
+                
+                
+            } else if (uiTypeStr.equals("textarea"))
+            {
+                //<cell type="field" id="3" name="remarks" uitype="textarea" colspan="5" cols="40" valtype="Changed"/>
+                xmlAttr(sb, "rows", txtRowsDB);
+                xmlAttr(sb, "cols", txtColsDB);
+                
+            } else if (uiTypeStr.equals("combobox"))
+            {
+                //<cell type="field" id="2" name="status"  uitype="combobox" picklist="AccessionStatus" isrequired="true" valtype="Changed"/>
+                xmlAttr(sb, "picklist", pickListName);
+            }
+            
+            xmlAttr(sb, "format", format);
+            xmlAttr(sb, "formatname", formatName);
+            xmlAttr(sb, "uifieldformatter", uiFieldFormatter);
+            xmlAttr(sb, "isrequired", isRequiredDB);
+            xmlAttr(sb, "valtype", validationType);
+            xmlAttr(sb, "readonly", isReadOnlyDB);
+            xmlAttr(sb, "ispassword", isPasswordDB);
+            xmlAttr(sb, "changesonly", changeListenerOnlyDB);
+            xmlAttr(sb, "validation", validationRule);
+            
+        } else if (typeName.equals("subview"))
+        {
+            xmlAttr(sb, "commandtype", commandType);
+            xmlAttr(sb, "action", action);
+            
+        } else if (typeName.equals("subview"))
+        {
+            //<cell type="subview" viewname="AccessionAgent" id="8" name="accessionAgents" desc="Agents" colspan="12"/>
+            xmlAttr(sb, "viewname", viewName);
+            xmlAttr(sb, "desc", description);
+            xmlAttr(sb, "funcmode", getFuncModes());
+            xmlAttr(sb, "defaulttype", defaultAltViewType);
+            xmlAttr(sb, "rows", tableRowsDB);
+            xmlAttr(sb, "single", singleValueFromSetDB);
+            
+            
+        } else if (typeName.equals("panel"))
+        {
+            //<cell type="panel" id="outerPanel" name="outerPanel" coldef="16px,1px,f:p:g" rowdef="p" colspan="12">
+            xmlAttr(sb, "coldef", colDef);
+            xmlAttr(sb, "rowdef", rowDef);
+            xmlAttr(sb, "paneltype", panelType);
+            throw new RuntimeException("Panel not supported!");
+        }
+
+        xmlAttr(sb, "colspan", colSpanDB);
+        xmlAttr(sb, "rowspan", rowSpanDB);
+        xmlAttr(sb, "x",       xCoordDB);
+        xmlAttr(sb, "y",       yCoordDB);
+        xmlAttr(sb, "width",   widthDB);
+        xmlAttr(sb, "height",  heightDB);
+        xmlAttr(sb, "initialize",  initStr);
+        
+        sb.append("/>");
+        
+    }
+    
+    
 }

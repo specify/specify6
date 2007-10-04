@@ -11,9 +11,12 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */package edu.ku.brc.ui.forms.persist;
+ */
+package edu.ku.brc.ui.forms.persist;
 
- import static org.apache.commons.lang.StringUtils.isNotEmpty;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
+import static edu.ku.brc.ui.forms.persist.View.xmlAttr;
+import static edu.ku.brc.ui.forms.persist.View.xmlNode;
 
 import java.util.List;
 import java.util.Vector;
@@ -256,6 +259,15 @@ public class AltView implements Comparable<AltViewIFace>, Cloneable, AltViewIFac
         return altView;      
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.AltViewIFace#toXML(java.lang.StringBuffer)
+     */
+    public void toXML(StringBuffer sb)
+    {
+        throw new RuntimeException("Not Implemented.");
+        
+    }
+
     //-------------------------------------
     // Comparable
     //-------------------------------------

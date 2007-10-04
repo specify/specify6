@@ -17,6 +17,9 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import static edu.ku.brc.ui.forms.persist.View.xmlAttr;
+import static edu.ku.brc.ui.forms.persist.View.xmlNode;
+
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
@@ -966,6 +969,36 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
         // Transient
         gettable = vd.getDataGettable();
         settable = vd.getDataSettable();
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#toXML(java.lang.StringBuffer)
+     */
+    public void toXML(StringBuffer sb)
+    {
+        /*
+         <viewdef
+            type="iconview"
+            name="AccessionIconView"
+            class="edu.ku.brc.specify.datamodel.Accession"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The Accession Agent Icon Viewer]]></desc>
+        </viewdef>
+         */
+
+        sb.append("  <viewdef ");
+        xmlAttr(sb, "type", typeName.toString());
+        xmlAttr(sb, "name", name);
+        xmlAttr(sb, "class", dataClassName);
+        xmlAttr(sb, "gettable", gettableName);
+        xmlAttr(sb, "settable", settableName);
+        xmlAttr(sb, "width", widthDB);
+        xmlAttr(sb, "height", heightDB);
+        sb.append(">\n");
+        xmlNode(sb, "desc", description, true);
+        sb.append("</viewdef>");        
+        
     }
     
 }

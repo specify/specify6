@@ -94,7 +94,7 @@ public class SpViewSetObj extends DataModelObjBase implements java.io.Serializab
      protected String                    description;
      protected String                    metaData;
      protected Set<SpAppResourceData>    spAppResourceDatas;
-     protected Set<SpAppResourceDir> spAppResourceDirs;
+     protected Set<SpAppResourceDir>     spAppResourceDirs;
      
      protected Set<SpUIViewSet>          spViewSets;
 

@@ -326,6 +326,14 @@ public class ViewDef implements Cloneable, ViewDefIFace
     {
         this.height = height;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#toXML(java.lang.StringBuffer)
+     */
+    public void toXML(StringBuffer sb)
+    {
+        throw new RuntimeException("Not Implemented.");
+    }
 
     /* (non-Javadoc)
      * @see java.lang.Object#toString()

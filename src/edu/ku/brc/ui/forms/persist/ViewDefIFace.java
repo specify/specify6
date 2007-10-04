@@ -138,6 +138,12 @@ public interface ViewDefIFace extends Comparable<ViewDefIFace>
      */
     public abstract void setHeight(int height);
     
+    /**
+     * Appends its XML.
+     * @param sb the buffer
+     */
+    public abstract void toXML(final StringBuffer sb);
+    
     //-------------------------------------
     // Comparable
     //-------------------------------------

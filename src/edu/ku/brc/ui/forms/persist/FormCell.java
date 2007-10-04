@@ -423,7 +423,13 @@ public class FormCell implements Comparable<FormCellIFace>, Cloneable, FormCellI
         formCell.height     = height;
 
         return formCell;
-
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#toXML(java.lang.StringBuffer)
+     */
+    public void toXML(StringBuffer sb)
+    {
+        throw new RuntimeException("Not Implemented.");
+    }
  }

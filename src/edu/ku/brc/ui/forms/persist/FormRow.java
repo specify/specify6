@@ -69,9 +69,6 @@ public class FormRow implements Cloneable, FormRowIFace
     }
     
     /* (non-Javadoc)
-     * @see java.lang.Object#clone()
-     */
-    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormRowIFace#clone()
      */
     public Object clone() throws CloneNotSupportedException
@@ -83,5 +80,13 @@ public class FormRow implements Cloneable, FormRowIFace
             formRow.cells.add((FormCell)cell.clone());
         }
         return formRow;      
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellIFace#toXML(java.lang.StringBuffer)
+     */
+    public void toXML(StringBuffer sb)
+    {
+        throw new RuntimeException("Not Implemented.");
     }
 }

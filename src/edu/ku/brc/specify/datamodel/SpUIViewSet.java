@@ -414,4 +414,28 @@ public class SpUIViewSet extends DataModelObjBase implements ViewSetIFace
         return viewType == SYSTEM_TYPE;
     }
     
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#toXML(java.lang.StringBuffer)
+     */
+    public void toXML(final StringBuffer sb)
+    {
+        sb.append("<viewset name=\""+name+"\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n");
+        
+        sb.append("<views>\n");
+        for (SpUIView view : spViews)
+        {
+            view.toXML(sb);
+        }
+        sb.append("</views>\n");
+        
+        sb.append("<viewdefs>\n");
+        for (SpUIViewDef viewDef : spViewDefs)
+        {
+            viewDef.toXML(sb);
+        }
+        sb.append("</viewdefs>\n");
+        sb.append("</viewset>\n");
+    }
+    
 }

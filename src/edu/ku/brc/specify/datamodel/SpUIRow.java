@@ -55,7 +55,7 @@ import edu.ku.brc.ui.forms.persist.FormRowIFace;
 @org.hibernate.annotations.Table(appliesTo="spuirow", indexes =
     {   @Index (name="SpUIRowRowNumIDX", columnNames={"RowNum"})
     })
-public class SpUIRow implements java.io.Serializable, FormRowIFace
+public class SpUIRow implements java.io.Serializable, FormRowIFace, Comparable<SpUIRow>
 {
     protected Integer       spUIRowId;
     protected Short         rowNum;           // The used for ordering the rows
@@ -222,7 +222,16 @@ public class SpUIRow implements java.io.Serializable, FormRowIFace
     public void setCells(Vector<FormCellIFace> cells)
     {
         this.cells = cells;
-        
+    }
+    
+    
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(SpUIRow row)
+    {
+        return rowNum.compareTo(row.rowNum);
     }
 
     /* (non-Javadoc)
@@ -239,5 +248,20 @@ public class SpUIRow implements java.io.Serializable, FormRowIFace
         }
         return formRow; 
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormRowIFace#toXML(java.lang.StringBuffer)
+     */
+    public void toXML(StringBuffer sb)
+    {
+        sb.append("   <rows>\n");
+        for (SpUICell cell : spCells)
+        {
+            cell.toXML(sb);
+        }
+        sb.append("   </rows>\n");
+    }
+
+
 
 }

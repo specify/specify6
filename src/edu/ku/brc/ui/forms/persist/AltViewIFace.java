@@ -124,6 +124,12 @@ public interface AltViewIFace extends Comparable<AltViewIFace>
      * @param subViews the list of subview for the altview
      */
     public abstract void setSubViews(List<AltViewIFace> subViews);
+    
+    /**
+     * Appends its XML.
+     * @param sb the buffer
+     */
+    public abstract void toXML(final StringBuffer sb);
 
     /* (non-Javadoc)
      * @see java.lang.Object#clone()

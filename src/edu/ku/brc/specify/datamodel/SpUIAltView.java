@@ -17,6 +17,8 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import static edu.ku.brc.ui.forms.persist.View.xmlAttr;
+
 import java.util.List;
 
 import javax.persistence.Column;
@@ -476,6 +478,22 @@ public class SpUIAltView extends DataModelObjBase implements AltViewIFace
         
     }
 
-
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#toXML(java.lang.StringBuffer)
+     */
+    public void toXML(StringBuffer sb)
+    {
+        //<altview name="AgentNameSearch" viewdef="AgentNameSearch" label="Edit" mode="edit" validated="true" default="true"/>
+        sb.append("    <altview ");
+        xmlAttr(sb, "name", name);
+        xmlAttr(sb, "viewdef", spViewDef.getName());
+        xmlAttr(sb, "label", label);
+        xmlAttr(sb, "validated", isValidated);
+        xmlAttr(sb, "default", isDefaultAltView);
+        xmlAttr(sb, "selector", selectorName);
+        xmlAttr(sb, "default", isDefaultAltView);
+        xmlAttr(sb, "selector_value", selectorValue);
+        sb.append("/>\n");
+    }
 
 }

@@ -169,5 +169,11 @@ public interface ViewIFace  extends Comparable<ViewIFace>
      * @return 0,1,-1
      */
     public abstract int compareTo(ViewIFace obj);
+    
+    /**
+     * Appends its XML.
+     * @param sb the buffer
+     */
+    public abstract void toXML(final StringBuffer sb);
 
 }

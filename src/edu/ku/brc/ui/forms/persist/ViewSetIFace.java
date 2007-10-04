@@ -79,6 +79,13 @@ public interface ViewSetIFace extends Comparable<ViewSetIFace>
      * @return that is contains the core set of forms that can be referred in other places with specifying the viewset name
      */
     public abstract boolean isSystem();
+    
+    /**
+     * Appends its XML.
+     * @param sb the buffer
+     */
+    public abstract void toXML(final StringBuffer sb);
+
 
     /**
      * Comparator.

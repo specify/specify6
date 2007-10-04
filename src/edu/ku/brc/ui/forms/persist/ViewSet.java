@@ -347,6 +347,15 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
         }
         hasLoadedViews = true;
     }
+    
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#toXML(java.lang.StringBuffer)
+     */
+    public void toXML(StringBuffer sb)
+    {
+        throw new RuntimeException("Not Implemented.");
+    }
 
     /**
      * Load an XML View File from a stream if the ViewSet is not unique than it throws and exception.

@@ -39,6 +39,7 @@ public final class FormCellField extends FormCell implements FormCellFieldIFace
     protected boolean   isRequired     = false;
     protected boolean   isReadOnly     = false;
     protected boolean   isEncrypted    = false;
+    protected boolean   isPassword     = false;
     protected boolean   useThisData    = false; // this means the field uses the entire data object to do something special with
     protected String    label          = null;
     protected String    defaultValue   = null;
@@ -142,6 +143,22 @@ public final class FormCellField extends FormCell implements FormCellFieldIFace
     public void setTxtCols(int cols)
     {
         this.cols = cols;
+    }
+
+    /**
+     * @return the isPassword
+     */
+    public boolean isPassword()
+    {
+        return isPassword;
+    }
+
+    /**
+     * @param isPassword the isPassword to set
+     */
+    public void setPassword(boolean isPassword)
+    {
+        this.isPassword = isPassword;
     }
 
     /* (non-Javadoc)

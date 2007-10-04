@@ -86,7 +86,11 @@ public interface FormCellIFace
     
     public abstract void setHeight(int height); 
     
-    
+    /**
+     * Appends its XML.
+     * @param sb the buffer
+     */
+    public abstract void toXML(final StringBuffer sb);
 
     /* (non-Javadoc)
      * @see java.lang.Object#clone()

@@ -40,6 +40,13 @@ public interface FormRowIFace
      * @param cells all the cells
      */
     public abstract void setCells(Vector<FormCellIFace> cells);
+    
+    /**
+     * Appends its XML.
+     * @param sb the buffer
+     */
+    public abstract void toXML(final StringBuffer sb);
+
 
     /* (non-Javadoc)
      * @see java.lang.Object#clone()
