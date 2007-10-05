@@ -21,6 +21,7 @@ import org.hibernate.Session;
 import org.hibernate.StaleObjectStateException;
 import org.hibernate.StaleStateException;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.exception.JDBCConnectionException;
@@ -40,7 +41,7 @@ import edu.ku.brc.dbsupport.StaleObjectException;
  */
 public class HibernateDataProviderSession implements DataProviderSessionIFace
 {
-    private static final Logger log = Logger.getLogger(HibernateDataProviderSession.class);
+    protected static final Logger log = Logger.getLogger(HibernateDataProviderSession.class);
     
     // Used for checking to see if we have any dangling creates without closes
     protected static int     createsCounts = 0;
@@ -481,7 +482,23 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
         return new HibernateQuery(hql);
     }
 
+    
     /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#createCriteria(java.lang.Class)
+     */
+    public CriteriaIFace createCriteria(Class<?> cls)
+    {
+        if (session != null) 
+        { 
+            return new HibernateCriteria(cls); 
+        }
+        log.error("Session was null.", new NullPointerException("Session was null"));
+        return null;
+    }
+    
+    /*
+     * (non-Javadoc)
+     * 
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#beginTransaction()
      */
     public void beginTransaction() throws Exception
@@ -622,6 +639,38 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
         public Object uniqueResult()
         {
             return queryDelegate.uniqueResult();
+        }
+    }
+    
+    public class HibernateCriteria implements CriteriaIFace
+    {
+        protected Criteria criteriaDelegate;
+        
+        public HibernateCriteria(Class<?> cls)
+        {
+            criteriaDelegate = session.createCriteria(cls);
+        }
+        
+        public void add(Object criterion)
+        {
+            if (criterion instanceof Criterion)
+            {
+                criteriaDelegate.add((Criterion)criterion);
+            }
+            else
+            {
+                log.error("invalid criterion.");
+            }
+        }
+        
+        public Object uniqueResult()
+        {
+            return criteriaDelegate.uniqueResult();
+        }
+        
+        public List<?> list()
+        {
+            return criteriaDelegate.list();
         }
     }
 }

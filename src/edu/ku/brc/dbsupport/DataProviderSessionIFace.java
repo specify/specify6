@@ -85,6 +85,10 @@ public interface DataProviderSessionIFace
     // Query Methods
     //---------------------------
     public QueryIFace createQuery(String hql);
+    /**
+     * !NOTE!: Hibernate specific. Added, primarily, to deal with null value difficulties.
+     */
+    public CriteriaIFace createCriteria(Class<?> cls);
     
     //---------------------------
     // Transaction Methods
@@ -108,5 +112,12 @@ public interface DataProviderSessionIFace
         public int executeUpdate();
         public List<?> list();
         public Object uniqueResult();
+    }
+    
+    public static interface CriteriaIFace
+    {
+        public void add(Object criterion);
+        public Object uniqueResult();
+        public List<?> list();
     }
 }
