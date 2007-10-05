@@ -35,7 +35,6 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -150,7 +149,7 @@ public class CollectingEvent extends DataModelObjBase implements AttachmentOwner
      */
     @Id
     @GeneratedValue
-    @Column(name = "CollectingEventID", unique = false, nullable = false, insertable = true, updatable = true)
+    @Column(name = "CollectingEventID", nullable = false)
     public Integer getCollectingEventId() {
         return this.collectingEventId;
     }
@@ -183,7 +182,7 @@ public class CollectingEvent extends DataModelObjBase implements AttachmentOwner
     /**
      *      * Station number or field number of the site where collecting event took place, A number or code recorded in field notes and/or written on field tags that identifies ALL material collected in a CollectingEvent.
      */
-    @Column(name = "StationFieldNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "StationFieldNumber", length = 50)
     public String getStationFieldNumber() {
         return this.stationFieldNumber;
     }
@@ -195,7 +194,7 @@ public class CollectingEvent extends DataModelObjBase implements AttachmentOwner
     /**
      *      * The method used to obtain the biological object
      */
-    @Column(name = "Method", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "Method", length = 50)
     public String getMethod() {
         return this.method;
     }
@@ -207,7 +206,7 @@ public class CollectingEvent extends DataModelObjBase implements AttachmentOwner
     /**
      *      * Date which collector recorded in field book, exactly as reported by the collector.  Should indicate whether reported as range, season, month, etc.
      */
-    @Column(name = "VerbatimDate", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "VerbatimDate", length = 50)
     public String getVerbatimDate() {
         return this.verbatimDate;
     }
@@ -220,7 +219,7 @@ public class CollectingEvent extends DataModelObjBase implements AttachmentOwner
      *      * The date collecting event began
      */
     @Temporal(TemporalType.DATE)
-    @Column(name = "StartDate", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "StartDate")
     public Calendar getStartDate() {
         return this.startDate;
     }
@@ -232,7 +231,7 @@ public class CollectingEvent extends DataModelObjBase implements AttachmentOwner
     /**
      * 
      */
-    @Column(name = "StartDatePrecision", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "StartDatePrecision")
     public Short getStartDatePrecision() {
         return this.startDatePrecision;
     }
@@ -244,7 +243,7 @@ public class CollectingEvent extends DataModelObjBase implements AttachmentOwner
     /**
      * 
      */
-    @Column(name = "StartDateVerbatim", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "StartDateVerbatim", length = 50)
     public String getStartDateVerbatim() {
         return this.startDateVerbatim;
     }
@@ -257,7 +256,7 @@ public class CollectingEvent extends DataModelObjBase implements AttachmentOwner
      *      * The date collecting event ended
      */
     @Temporal(TemporalType.DATE)
-    @Column(name = "EndDate", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "EndDate")
     public Calendar getEndDate() {
         return this.endDate;
     }
@@ -269,7 +268,7 @@ public class CollectingEvent extends DataModelObjBase implements AttachmentOwner
     /**
      * 
      */
-    @Column(name = "EndDatePrecision", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "EndDatePrecision")
     public Short getEndDatePrecision() {
         return this.endDatePrecision;
     }
@@ -281,7 +280,7 @@ public class CollectingEvent extends DataModelObjBase implements AttachmentOwner
     /**
      * 
      */
-    @Column(name = "EndDateVerbatim", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "EndDateVerbatim", length = 50)
     public String getEndDateVerbatim() {
         return this.endDateVerbatim;
     }
@@ -293,7 +292,7 @@ public class CollectingEvent extends DataModelObjBase implements AttachmentOwner
     /**
      *      * Start time in military format
      */
-    @Column(name = "StartTime", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "StartTime")
     public Short getStartTime() {
         return this.startTime;
     }
@@ -305,7 +304,7 @@ public class CollectingEvent extends DataModelObjBase implements AttachmentOwner
     /**
      *      * End time in military format
      */
-    @Column(name = "EndTime", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "EndTime")
     public Short getEndTime() {
         return this.endTime;
     }
@@ -318,7 +317,7 @@ public class CollectingEvent extends DataModelObjBase implements AttachmentOwner
      *      * Original statement (literal quotation) of the location of the CollectingEvent as given by the Collector.
      */
     @Lob
-    @Column(name = "VerbatimLocality", length=2048, unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "VerbatimLocality", length=2048)
     public String getVerbatimLocality() {
         return this.verbatimLocality;
     }
@@ -330,7 +329,7 @@ public class CollectingEvent extends DataModelObjBase implements AttachmentOwner
     /**
      *      * The name of the group that this record is visible to.
      */
-    @Column(name = "GroupPermittedToView", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
+    @Column(name = "GroupPermittedToView")
     public Integer getGroupPermittedToView() {
         return this.groupPermittedToView;
     }
@@ -343,7 +342,7 @@ public class CollectingEvent extends DataModelObjBase implements AttachmentOwner
      *      * Free text to record information that does not conform to structured fields, or to explain data recorded in those fields, particularly problematic interpretations of data given by collector(s).
      */
     @Lob
-    @Column(name="Remarks", unique=false, nullable=true, updatable=true, insertable=true)
+    @Column(name="Remarks")
     public String getRemarks() {
         return this.remarks;
     }
@@ -357,7 +356,7 @@ public class CollectingEvent extends DataModelObjBase implements AttachmentOwner
     /**
      *      * Indicates whether this record can be viewed - by owner, by instituion, or by all
      */
-    @Column(name = "Visibility", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
+    @Column(name = "Visibility")
     public Integer getVisibility() {
         return this.visibility;
     }
@@ -369,7 +368,7 @@ public class CollectingEvent extends DataModelObjBase implements AttachmentOwner
     /**
      * 
      */
-    @Column(name = "VisibilitySetBy", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "VisibilitySetBy", length = 50)
     public String getVisibilitySetBy() {
         return this.visibilitySetBy;
     }
@@ -388,7 +387,7 @@ public class CollectingEvent extends DataModelObjBase implements AttachmentOwner
     /**
      * 
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectingEvent")
+    @OneToMany(mappedBy = "collectingEvent")
     public Set<CollectionObject> getCollectionObjects() {
         return this.collectionObjects;
     }
@@ -400,8 +399,8 @@ public class CollectingEvent extends DataModelObjBase implements AttachmentOwner
     /**
      * 
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectingEvent")
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    @OneToMany(mappedBy = "collectingEvent")
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public Set<Collector> getCollectors() {
         return this.collectors;
     }
@@ -413,8 +412,8 @@ public class CollectingEvent extends DataModelObjBase implements AttachmentOwner
     /**
      *      * Locality where collection took place
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "LocalityID", unique = false, nullable = true, insertable = true, updatable = true)
+    @ManyToOne
+    @JoinColumn(name = "LocalityID")
     public Locality getLocality() {
         return this.locality;
     }
@@ -426,9 +425,8 @@ public class CollectingEvent extends DataModelObjBase implements AttachmentOwner
     /**
      * @return the collectingEventAttrs
      */
-    @OneToMany(targetEntity=CollectingEventAttr.class,
-            cascade = {}, fetch = FetchType.LAZY, mappedBy="collectingEvent")
-    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    @OneToMany(mappedBy="collectingEvent")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<CollectingEventAttr> getCollectingEventAttrs()
     {
         return collectingEventAttrs;
@@ -464,8 +462,8 @@ public class CollectingEvent extends DataModelObjBase implements AttachmentOwner
    }
 
 
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "CollectingTripID", unique = false, nullable = true, insertable = true, updatable = true)
+    @ManyToOne
+    @JoinColumn(name = "CollectingTripID")
     public CollectingTrip getCollectingTrip()
     {
         return collectingTrip;
@@ -476,8 +474,8 @@ public class CollectingEvent extends DataModelObjBase implements AttachmentOwner
         this.collectingTrip = collectingTrip;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "HabitatAttributesID", unique = false, nullable = true, insertable = true, updatable = true)
+    @ManyToOne
+    @JoinColumn(name = "HabitatAttributesID")
     public HabitatAttributes getHabitatAttributes()
     {
         return habitatAttributes;
@@ -488,7 +486,8 @@ public class CollectingEvent extends DataModelObjBase implements AttachmentOwner
         this.habitatAttributes = habitatAttributes;
     }
     
-    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "collectingEvent")
+    @OneToMany(mappedBy = "collectingEvent")
+    @Cascade( {CascadeType.ALL} )
     public Set<CollectingEventAttachment> getCollectingEventAttachments()
     {
         return collectingEventAttachments;
