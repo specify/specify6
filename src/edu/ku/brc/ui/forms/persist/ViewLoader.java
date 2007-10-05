@@ -535,13 +535,13 @@ public class ViewLoader
                             Properties properties = UIHelper.parseProperties(initialize);
                             
                             // XXX DEBUG ONLY PLease REMOVE LATER
-                            /*if (StringUtils.isEmpty(uitypeStr))
+                            if (StringUtils.isEmpty(uitypeStr))
                             {
-                                log.debug("***************************************************************************");
-                                log.debug("***** Cell Id["+cellId+"] Name["+cellName+"] uitype is empty and should be 'text'. (Please Fix!)");
-                                log.debug("***************************************************************************");
+                                //log.debug("***************************************************************************");
+                                //log.debug("***** Cell Id["+cellId+"] Name["+cellName+"] uitype is empty and should be 'text'. (Please Fix!)");
+                                //log.debug("***************************************************************************");
                                 uitypeStr = "text";
-                            }*/
+                            }
 
                             // THis switch is used to get the "display type" and 
                             // set up other vars needed for creating the controls
