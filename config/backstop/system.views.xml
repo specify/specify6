@@ -911,7 +911,7 @@
                 <rule id="hybridParent2"><![CDATA[isHybrid.isSelected()]]></rule>
                 <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
             </enableRules>
-            <columnDef>200px,3dlu,p,3dlu,p:g</columnDef>
+            <columnDef>200px,3dlu,p:g,3dlu,p</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
@@ -920,8 +920,10 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="name" label="Name"/>
-                    <cell type="field" id="name" uitype="text" cols="16" name="name" isrequired="true"/> 
-                    <cell type="field" id="WebLink" name="this" uitype="plugin" initialize="class=edu.ku.brc.specify.ui.WebLinkLauncherButton;url=http://www.fishbase.org/Summary/speciesSummary.php?genusname=$genusName$&amp;speciesname=$speciesName$;label=FishBase"/>
+                    <cell type="field" id="name" uitype="text" cols="16" name="name" isrequired="true"/>
+                    <!--<cell type="field" id="WebLink" name="this" uitype="plugin" initialize="class=edu.ku.brc.specify.ui.WebLinkLauncherButton;url=http://www.fishbase.org/Summary/speciesSummary.php?genusname=$genusName$&amp;speciesname=$speciesName$;label=FishBase"/>-->
+                    <!--<cell type="field" id="WebLink" name="this" uitype="plugin" initialize="class=edu.ku.brc.specify.ui.WebLinkLauncherButton;url=http://www.ncbi.nlm.nih.gov/sites/gquery?term=$genusName$%20$speciesName$;label=NCBI"/>-->
+                    <cell type="field" id="WebLink" name="this" uitype="plugin" initialize="class=edu.ku.brc.specify.ui.WebLinkLauncherButton;url=http://www.cbif.gc.ca/pls/itisca/taxastep?king=Animalia&amp;p_action=containing&amp;taxa=$genusName$%20$speciesName$&amp;p_format=html;label=ITIS"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="remarks" label="Remarks"/>
