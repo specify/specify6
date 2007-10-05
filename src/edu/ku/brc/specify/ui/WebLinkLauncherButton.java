@@ -14,7 +14,6 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.specify.datamodel.Permit;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.UIPluginable;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
