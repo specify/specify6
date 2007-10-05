@@ -242,6 +242,19 @@ public class SpUIColumn extends DataModelObjBase implements FormColumnIFace
         return 512;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#isChangeNotifier()
+     */
+    @Transient
+    @Override
+    public boolean isChangeNotifier()
+    {
+        return false;
+    }
+    
+    /**
+     * @param col
+     */
     public void copyInto(final FormColumnIFace col)
     {
         name   = col.getName();

@@ -75,6 +75,7 @@ public abstract class LocalizerBasePanel extends JPanel
     
     // UI Helpers
     protected boolean          hasChanged         = false;
+    private   boolean          ignoreChanges      = false;   // Yes, private on purpose, I want callers to use the set method
     protected JButton          saveBtn            = null;
     protected JMenuItem        saveMenuItem       = null;
     
@@ -357,18 +358,37 @@ public abstract class LocalizerBasePanel extends JPanel
     }
     
     /**
+     * @return
+     */
+    public boolean isIgnoreChanges()
+    {
+        return ignoreChanges;
+    }
+
+    /**
+     * @param ignoreChanges
+     */
+    public void setIgnoreChanges(boolean ignoreChanges)
+    {
+        this.ignoreChanges = ignoreChanges;
+    }
+
+    /**
      * @param changed
      */
     protected void setHasChanged(final boolean changed)
     {
-        hasChanged = changed;
-        if (saveBtn != null)
+        if (!ignoreChanges)
         {
-            saveBtn.setEnabled(changed);
-        }
-        if (saveMenuItem != null)
-        {
-            saveMenuItem.setEnabled(changed);
+            hasChanged = changed;
+            if (saveBtn != null)
+            {
+                saveBtn.setEnabled(changed);
+            }
+            if (saveMenuItem != null)
+            {
+                saveMenuItem.setEnabled(changed);
+            }
         }
     }
     

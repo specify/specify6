@@ -22,6 +22,7 @@ import java.util.Locale;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -32,6 +33,10 @@ import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.text.JTextComponent;
@@ -63,7 +68,8 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
             
     protected LocalizableIOIFace localizableIO = null;
     
-    protected LocalizableContainerIFace currContainer = null;
+    protected LocalizableContainerIFace currContainer   = null;
+    protected boolean                   includeHiddenUI = true;              // Must be set before creatng the panel
     
     // LocalizableContainerIFace Fields
     protected JList            tablesList;
@@ -71,7 +77,8 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
     protected JTextField       tblNameText   = new JTextField();
     protected JLabel           tblDescLbl;
     protected JLabel           tblNameLbl;
-    
+    protected JCheckBox        tblHideChk  = new JCheckBox(getResourceString("SL_TABLE_HIDE_CHK"));
+    protected boolean          hasTableInfoChanged  = false;
     
     // LocalizableItemIFace Fields
     protected JList            fieldsList;
@@ -82,6 +89,8 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
     protected DefaultListModel fieldsModel   = new DefaultListModel();
     protected JButton          nxtBtn;
     protected JButton          nxtEmptyBtn;
+    protected JCheckBox        fieldHideChk  = new JCheckBox(getResourceString("SL_FIELD_HIDE_CHK"));
+    protected boolean          hasFieldInfoChanged  = false;
 
     protected LocalizableItemIFace prevTable = null;
     protected LocalizableItemIFace prevField = null;
@@ -104,48 +113,20 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
         listener = l;
         init();
     }
-    
-    /**
-     * @return the localizableIO
-     */
-    public LocalizableIOIFace getLocalizableIO()
-    {
-        return localizableIO;
-    }
-
-    /**
-     * @param localizableIO the localizableIO to set
-     */
-    public void setLocalizableIO(LocalizableIOIFace localizableIO)
-    {
-        this.localizableIO = localizableIO;
-    }
-    
-    
-    /**
-     * @return the main list of containers/tables
-     */
-    public JList getContainerList()
-    {
-        return tablesList;
-    }
-
 
     /**
      * 
      */
     public void buildUI()
     {
+        setIgnoreChanges(true);
+        
         tablesList = new JList(localizableIO.getContainerDisplayItems());
         fieldsList = new JList(fieldsModel);
         
         tablesList.setVisibleRowCount(10);
         tablesList.getSelectionModel().addListSelectionListener(new ListSelectionListener()
         {
-
-            /* (non-Javadoc)
-             * @see javax.swing.event.ListSelectionListener#valueChanged(javax.swing.event.ListSelectionEvent)
-             */
             public void valueChanged(ListSelectionEvent e)
             {
                 if (!e.getValueIsAdjusting())
@@ -158,10 +139,6 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
         
         fieldsList.getSelectionModel().addListSelectionListener(new ListSelectionListener()
         {
-
-            /* (non-Javadoc)
-             * @see javax.swing.event.ListSelectionListener#valueChanged(javax.swing.event.ListSelectionEvent)
-             */
             public void valueChanged(ListSelectionEvent e)
             {
                 if (!e.getValueIsAdjusting())
@@ -198,16 +175,26 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
         tblDescText.addKeyListener(new LengthWatcher(255));
         tblNameText.addKeyListener(new LengthWatcher(64));
         
-        String descStr = getResourceString("SL_DESC") + ":";
-        String nameStr = getResourceString("SL_NAME") + ":";
+        String descStr  = getResourceString("SL_DESC") + ":";
+        String nameStr  = getResourceString("SL_NAME") + ":";
         String labelStr = getResourceString("SL_LABEL") + ":";
 
-        PanelBuilder topInner   = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p,4px,p,4px,p"));
-        topInner.add(tblDescLbl = new JLabel(nameStr, SwingConstants.RIGHT), cc.xy(1, 1));
-        topInner.add(tblNameText,        cc.xy(3, 1));
-        topInner.add(tblNameLbl = new JLabel(descStr, SwingConstants.RIGHT), cc.xy(1, 3));
-        topInner.add(sp,                 cc.xy(3, 3));
-        topInner.add(tpbbp,              cc.xywh(1, 5, 3, 1));
+        int y = 1;
+        PanelBuilder topInner   = new PanelBuilder(new FormLayout("p,2px,f:p:g", 
+                                                                  "p,2px,"+(includeHiddenUI ? "p,2px," : "") +"p,2px,p"));
+        
+        topInner.add(tblDescLbl = new JLabel(nameStr, SwingConstants.RIGHT), cc.xy(1, y));
+        topInner.add(tblNameText, cc.xy(3, y)); y += 2;
+        
+        if (includeHiddenUI)
+        {
+            topInner.add(tblHideChk, cc.xy(3, y)); y += 2;
+        }
+        
+        topInner.add(tblNameLbl = new JLabel(descStr, SwingConstants.RIGHT), cc.xy(1, y)); 
+        topInner.add(sp,    cc.xy(3, y));   y += 2;
+        
+        topInner.add(tpbbp, cc.xywh(1, y, 3, 1));
 
         
         JScrollPane tblsp = new JScrollPane(tablesList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -215,14 +202,20 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
         
         // LocalizableNameDescIFace
         PanelBuilder inner = new PanelBuilder(new FormLayout("max(200px;p),4px,p,2px,f:p:g", 
-                                                             "p,2px,p,2px,p,2px,f:p:g"));
-        inner.add(fldsp, cc.xywh(1, 1, 1, 7));
-        inner.add(fieldNameLbl = new JLabel(labelStr, SwingConstants.RIGHT), cc.xy(3, 1));
-        inner.add(fieldNameText, cc.xy(5, 1));
+                                                             (includeHiddenUI ? "p,2px," : "") + "p,2px,p,2px,p,2px,f:p:g"));
+        y = 1;
+        inner.add(fldsp, cc.xywh(1, y, 1, 7));
+        inner.add(fieldNameLbl = new JLabel(labelStr, SwingConstants.RIGHT), cc.xy(3, y));
+        inner.add(fieldNameText, cc.xy(5, y));   y += 2;
         
-        inner.add(fieldDescLbl = new JLabel(descStr, SwingConstants.RIGHT), cc.xy(3, 3));
+        if (includeHiddenUI)
+        {
+            inner.add(fieldHideChk, cc.xy(5, y)); y += 2;
+        }
+       
+        inner.add(fieldDescLbl = new JLabel(descStr, SwingConstants.RIGHT), cc.xy(3, y));
         sp = new JScrollPane(fieldDescText, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        inner.add(sp,   cc.xy(5, 3));
+        inner.add(sp,   cc.xy(5, y));   y += 2;
         fieldDescText.setLineWrap(true);
         fieldDescText.setRows(8);
         fieldDescText.setWrapStyleWord(true);
@@ -232,13 +225,14 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
         fldSpellChkBtn = new JButton(getResourceString("SL_SPELL_CHECK"));
         
         JPanel bbp = ButtonBarFactory.buildCenteredBar(new JButton[] {nxtEmptyBtn, nxtBtn, fldSpellChkBtn});
-        inner.add(bbp,   cc.xywh(3, 5, 3, 1));
+        inner.add(bbp,   cc.xywh(3, y, 3, 1));
 
         
         //bbp = ButtonBarFactory.buildCenteredBar(new JButton[] {exitBtn, saveBtn});
         
         
-        PanelBuilder pb = new PanelBuilder(new FormLayout("max(200px;p),4px,f:p:g", "p,4px,t:p,4px,p,4px,f:p:g,4px,p,4px,p"), this);
+        PanelBuilder pb = new PanelBuilder(new FormLayout("max(200px;p),4px,f:p:g", 
+                                                          "p,4px,t:p,4px,p,4px,f:p:g,4px,p,4px,p"), this);
         pb.addSeparator(getResourceString("SL_TABLES"),   cc.xywh(1, 1, 3, 1));
         pb.add(tblsp,               cc.xy  (1, 3));
         pb.add(topInner.getPanel(), cc.xy  (3, 3));
@@ -285,6 +279,74 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
             
         });
         
+        fieldHideChk.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e)
+            {
+                setHasChanged(true);
+                hasFieldInfoChanged = true;
+            }
+            
+        });
+        
+        tblHideChk.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e)
+            {
+                setHasChanged(true);
+                hasTableInfoChanged = true;
+            }
+        });
+        
+        DocumentListener dl = new DocumentListener() {
+            protected void changed()
+            {
+                if (!hasFieldInfoChanged)
+                {
+                    hasFieldInfoChanged = true;
+                    setHasChanged(true);
+                }
+            }
+            public void changedUpdate(DocumentEvent e)
+            {
+                changed();
+            }
+            public void insertUpdate(DocumentEvent e)
+            {
+                changed();
+            }
+            public void removeUpdate(DocumentEvent e)
+            {
+                changed();
+            }
+        };
+        
+        fieldNameText.getDocument().addDocumentListener(dl);
+        fieldDescText.getDocument().addDocumentListener(dl);
+        
+        dl = new DocumentListener() {
+            protected void changed()
+            {
+                if (!hasTableInfoChanged)
+                {
+                    hasTableInfoChanged = true;
+                    setHasChanged(true);
+                }
+            }
+            public void changedUpdate(DocumentEvent e)
+            {
+                changed();
+            }
+            public void insertUpdate(DocumentEvent e)
+            {
+                changed();
+            }
+            public void removeUpdate(DocumentEvent e)
+            {
+                changed();
+            }
+        };
+        tblNameText.getDocument().addDocumentListener(dl);
+        tblDescText.getDocument().addDocumentListener(dl);
+        
         //statusBar.setSectionText(0, currLocale.getDisplayName());
         
         tablesList.setEnabled(false);
@@ -292,8 +354,44 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
         checkLocaleMenu(currLocale);
         
         enableUIControls(false);
+        
+        setIgnoreChanges(false);
     }
     
+    
+    /**
+     * @param includeHiddenUI tells it to include the checkboxes for hiding tables and fields
+     */
+    public void setIncludeHiddenUI(boolean includeHiddenUI)
+    {
+        this.includeHiddenUI = includeHiddenUI;
+    }
+
+    /**
+     * @return the localizableIO
+     */
+    public LocalizableIOIFace getLocalizableIO()
+    {
+        return localizableIO;
+    }
+
+    /**
+     * @param localizableIO the localizableIO to set
+     */
+    public void setLocalizableIO(LocalizableIOIFace localizableIO)
+    {
+        this.localizableIO = localizableIO;
+    }
+    
+    
+    /**
+     * @return the main list of containers/tables
+     */
+    public JList getContainerList()
+    {
+        return tablesList;
+    }
+
     /**
      * Enable the controls.
      * @param enable true/false
@@ -311,6 +409,9 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
         
         tblNameLbl.setEnabled(enable);
         tblDescLbl.setEnabled(enable);
+        
+        fieldHideChk.setEnabled(enable);
+        tblHideChk.setEnabled(enable);
         
         if (!enable)
         {
@@ -334,6 +435,8 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
     {
        getAllDataFromUI();
        
+       setIgnoreChanges(true);
+       
         LocalizableJListItem jlistItem = (LocalizableJListItem)tablesList.getSelectedValue();
         if (jlistItem != null)
         {
@@ -347,7 +450,8 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
                     currContainer = (LocalizableContainerIFace)localizableIO.realize(currContainer);
                     tblDescText.setText(getDescStrForCurrLocale(currContainer));
                     tblNameText.setText(getNameDescStrForCurrLocale(currContainer));
-
+                    tblHideChk.setSelected(currContainer.getIsHidden());
+                    
                     if (doAutoSpellCheck)
                     {
                         checker.spellCheck(tblNameText);
@@ -358,6 +462,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
                     tblDescText.setText("");
                     tblNameText.setText("");
                     fieldsList.setSelectedIndex(-1);
+                    tblHideChk.setSelected(false);
                 }
 
                 prevTable = currContainer;
@@ -368,6 +473,9 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
             }
             enableUIControls(currContainer != null);
         }
+        
+        hasTableInfoChanged = false;
+        setIgnoreChanges(false);
     }
     
     protected void tableItemRetrieved()
@@ -575,10 +683,15 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
         getItemDataFromUI();
     }
     
+    /**
+     * 
+     */
     protected void getContainerDataFromUI()
     {
-        if (prevTable != null)
+        if (prevTable != null && hasTableInfoChanged)
         {
+            prevTable.setIsHidden(tblHideChk.isSelected());
+            
             boolean nameChanged = setNameDescStrForCurrLocale(prevTable, tblNameText.getText());
             boolean descChanged = setDescStrForCurrLocale(prevTable,     tblDescText.getText());
             if (nameChanged || descChanged)
@@ -587,13 +700,17 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
             }
             prevTable = null;
         }
-        
+        hasTableInfoChanged = false;
     }
     
+    /**
+     * 
+     */
     protected void getItemDataFromUI()
     {
-        if (prevField != null)
+        if (prevField != null && hasFieldInfoChanged)
         {
+            prevField.setIsHidden(fieldHideChk.isSelected());
             boolean nameChanged = setNameDescStrForCurrLocale(prevField, fieldNameText.getText());
             boolean descChanged = setDescStrForCurrLocale(prevField,     fieldDescText.getText());
             if (nameChanged || descChanged)
@@ -602,6 +719,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
             }
             prevField = null;
         }
+        hasFieldInfoChanged = false;
     }
     
     /**
@@ -711,6 +829,10 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
      */
     protected void fieldSelected()
     {
+        boolean ignoreChanges = isIgnoreChanges();
+        
+        setIgnoreChanges(true);
+        
         statusBar.setText("");
         
         LocalizableItemIFace fld = getSelectedFieldItem();
@@ -719,6 +841,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
             fld = localizableIO.realize(fld);
             fieldDescText.setText(getDescStrForCurrLocale(fld));
             fieldNameText.setText(getNameDescStrForCurrLocale(fld));
+            fieldHideChk.setSelected(fld.getIsHidden());
             
             if (doAutoSpellCheck)
             {
@@ -728,7 +851,8 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
         } else
         {
             fieldDescText.setText("");
-            fieldNameText.setText(""); 
+            fieldNameText.setText("");
+            fieldHideChk.setSelected(false);
         }
         
         boolean ok = fld != null;
@@ -736,10 +860,15 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel
         fieldNameText.setEnabled(ok);
         fieldNameLbl.setEnabled(ok);
         fieldDescLbl.setEnabled(ok);
+        
+        
+        setIgnoreChanges(ignoreChanges);
 
         prevField = fld;
         
         updateBtns();
+        
+        hasFieldInfoChanged = false;
     }
 
 

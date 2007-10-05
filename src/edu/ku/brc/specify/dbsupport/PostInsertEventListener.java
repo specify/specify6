@@ -38,10 +38,18 @@ public class PostInsertEventListener implements org.hibernate.event.PostInsertEv
     /* (non-Javadoc)
      * @see org.hibernate.event.PostInsertEventListener#onPostInsert(org.hibernate.event.PostInsertEvent)
      */
-    public void onPostInsert(PostInsertEvent arg0)
+    public void onPostInsert(PostInsertEvent obj)
     {
-        CommandDispatcher.dispatch(new CommandAction("Database", "Insert", arg0.getEntity()));
-
+        if (obj.getEntity() instanceof FormDataObjIFace)
+        {
+            if (((FormDataObjIFace)obj.getEntity()).isChangeNotifier())
+            {
+                CommandDispatcher.dispatch(new CommandAction("Database", "Insert", obj.getEntity()));
+            }
+        } else
+        {
+            CommandDispatcher.dispatch(new CommandAction("Database", "Insert", obj.getEntity()));
+        }
     }
 
 }

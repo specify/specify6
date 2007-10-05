@@ -38,9 +38,18 @@ public class PostDeleteEventListener implements org.hibernate.event.PostDeleteEv
     /* (non-Javadoc)
      * @see org.hibernate.event.PostDeleteEventListener#onPostDelete(org.hibernate.event.PostDeleteEvent)
      */
-    public void onPostDelete(PostDeleteEvent arg0)
+    public void onPostDelete(PostDeleteEvent obj)
     {
-        CommandDispatcher.dispatch(new CommandAction("Database", "Delete", arg0.getEntity()));
+        if (obj.getEntity() instanceof FormDataObjIFace)
+        {
+            if (((FormDataObjIFace)obj.getEntity()).isChangeNotifier())
+            {
+                CommandDispatcher.dispatch(new CommandAction("Database", "Delete", obj.getEntity()));
+            }
+        } else
+        {
+            CommandDispatcher.dispatch(new CommandAction("Database", "Delete", obj.getEntity()));
+        }
     }
 
 }

@@ -224,7 +224,6 @@ public class SpUIRow implements java.io.Serializable, FormRowIFace, Comparable<S
         this.cells = cells;
     }
     
-    
 
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)

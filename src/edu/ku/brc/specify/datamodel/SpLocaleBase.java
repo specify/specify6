@@ -17,6 +17,7 @@ package edu.ku.brc.specify.datamodel;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
 
 import org.apache.log4j.Logger;
 
@@ -35,7 +36,7 @@ public abstract class SpLocaleBase extends DataModelObjBase
     
     protected String  name;
     protected String  type;
-
+    protected Boolean isHidden;
     /**
      * 
      */
@@ -51,8 +52,9 @@ public abstract class SpLocaleBase extends DataModelObjBase
     public void initialize()
     {
         super.init();
-        name = null;
-        type = null;
+        name     = null;
+        type     = null;
+        isHidden = false;
 
     }
 
@@ -104,6 +106,33 @@ public abstract class SpLocaleBase extends DataModelObjBase
         {
             this.type = type;
         }
+    }
+
+    /**
+     * @return the isHidden
+     */
+    @Column(name = "IsHidden", unique = false, nullable = false, insertable = true, updatable = true)
+    public Boolean getIsHidden()
+    {
+        return isHidden;
+    }
+
+    /**
+     * @param isHidden the isHidden to set
+     */
+    public void setIsHidden(Boolean isHidden)
+    {
+        this.isHidden = isHidden;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#isChangeNotifier()
+     */
+    @Transient
+    @Override
+    public boolean isChangeNotifier()
+    {
+        return false;
     }
 
 }

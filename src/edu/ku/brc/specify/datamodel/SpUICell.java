@@ -1817,6 +1817,16 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
     {
         return isPasswordDB == null ? false : isPasswordDB;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#isChangeNotifier()
+     */
+    @Transient
+    @Override
+    public boolean isChangeNotifier()
+    {
+        return false;
+    }
 
     /**
      * Recreates the initialize string from the properties and clones the properties hashtable.

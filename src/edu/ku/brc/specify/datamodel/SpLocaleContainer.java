@@ -20,7 +20,6 @@ package edu.ku.brc.specify.datamodel;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 import java.util.Vector;
 
@@ -64,7 +63,6 @@ public class SpLocaleContainer extends SpLocaleBase implements LocalizableContai
     private static final Logger log = Logger.getLogger(SpLocaleContainer.class);
             
     protected Integer                    spLocaleContainerId;
-    protected Boolean                    isHidden;
     protected Set<SpLocaleContainerItem> items;
     
     protected Set<SpLocaleItemStr>       names;
@@ -92,7 +90,6 @@ public class SpLocaleContainer extends SpLocaleBase implements LocalizableContai
         super.initialize();
         
         spLocaleContainerId = null;
-        isHidden            = false;
         items               = new HashSet<SpLocaleContainerItem>();
         
         names = new HashSet<SpLocaleItemStr>();
@@ -118,23 +115,6 @@ public class SpLocaleContainer extends SpLocaleBase implements LocalizableContai
     public void setSpLocaleContainerId(Integer spLocaleContainerId)
     {
         this.spLocaleContainerId = spLocaleContainerId;
-    }
-
-    /**
-     * @return the isHidden
-     */
-    @Column(name = "IsHidden", unique = false, nullable = false, insertable = true, updatable = true)
-    public Boolean getIsHidden()
-    {
-        return isHidden;
-    }
-
-    /**
-     * @param isHidden the isHidden to set
-     */
-    public void setIsHidden(Boolean isHidden)
-    {
-        this.isHidden = isHidden;
     }
 
     /**
@@ -263,47 +243,6 @@ public class SpLocaleContainer extends SpLocaleBase implements LocalizableContai
     public String toString()
     {
         return name;
-    }
-
-    /**
-     * @param item
-     * @param srcLocale
-     * @param dstLocale
-     */
-    public static void copyLocaleXXX(LocalizableItemIFace item, final Locale srcLocale, final Locale dstLocale)
-    {/*
-        SpLocaleItemStr srcName = null;
-        for (SpLocaleItemStr nm : item.getNames())
-        {
-            if (nm.isLocale(srcLocale))
-            {
-                srcName = nm;
-                break;
-            }
-        }
-        
-        if (srcName != null)
-        {
-            SpLocaleItemStr name = new SpLocaleItemStr(srcName.getText(), dstLocale);
-            item.getNames().add(name);
-        }
-
-        SpLocaleItemStr srcDesc = null;
-        for (SpLocaleItemStr d : item.getDescs())
-        {
-            if (d.isLocale(srcLocale))
-            {
-                srcDesc = d;
-                break;
-            }
-        }
-        
-        if (srcDesc != null)
-        {
-            SpLocaleItemStr desc = new SpLocaleItemStr(srcDesc.getText(), dstLocale);
-            item.getDescs().add(desc);
-        }  
-        */     
     }
 
     /* (non-Javadoc)

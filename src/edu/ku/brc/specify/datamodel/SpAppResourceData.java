@@ -124,11 +124,11 @@ public class SpAppResourceData extends DataModelObjBase implements java.io.Seria
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#isIndexable()
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#isChangeNotifier()
      */
     @Transient
     @Override
-    public boolean isIndexable()
+    public boolean isChangeNotifier()
     {
         return false;
     }

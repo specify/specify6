@@ -31,17 +31,16 @@ import edu.ku.brc.ui.UIHelper;
  */
 public class SearchFieldConfig implements edu.ku.brc.af.core.expresssearch.TableNameRendererIFace, Comparable<SearchFieldConfig>
 {
-    protected String         fieldName;
-    protected Boolean        isSortable;
-    protected Boolean        isAscending;
-    protected Integer        order        = null;
+    protected String             fieldName;
+    protected Boolean            isSortable;
+    protected Boolean            isAscending;
+    protected Integer            order        = null;
     
     // Transient
-    protected boolean                isInUse   = false;
-    protected DBFieldInfo            fieldInfo = null;
-    protected SearchTableConfig      stc       = null;
+    protected boolean            isInUse      = false;
+    protected DBFieldInfo        fieldInfo    = null;
+    protected SearchTableConfig  stc          = null;
 
-    
     /**
      * 
      */

@@ -39,9 +39,18 @@ public class PostUpdateEventListener implements org.hibernate.event.PostUpdateEv
     /* (non-Javadoc)
      * @see org.hibernate.event.PostUpdateEventListener#onPostUpdate(org.hibernate.event.PostUpdateEvent)
      */
-    public void onPostUpdate(PostUpdateEvent arg0)
+    public void onPostUpdate(PostUpdateEvent obj)
     {
-        CommandDispatcher.dispatch(new CommandAction("Database", "Update", arg0.getEntity()));
+        if (obj.getEntity() instanceof FormDataObjIFace)
+        {
+            if (((FormDataObjIFace)obj.getEntity()).isChangeNotifier())
+            {
+                CommandDispatcher.dispatch(new CommandAction("Database", "Update", obj.getEntity()));
+            }
+        } else
+        {
+            CommandDispatcher.dispatch(new CommandAction("Database", "Update", obj.getEntity()));
+        }
 
     }
 

@@ -60,7 +60,6 @@ public class SpLocaleContainerItem extends SpLocaleBase implements LocalizableIt
     private static final Logger log = Logger.getLogger(SpLocaleContainerItem.class);
     
     protected Integer              spLocaleContainerItemId;
-    protected Boolean              isHidden;
     protected SpLocaleContainer    container;
     
     protected Set<SpLocaleItemStr> names;
@@ -106,30 +105,12 @@ public class SpLocaleContainerItem extends SpLocaleBase implements LocalizableIt
     {
         super.initialize();
         spLocaleContainerItemId = null;
-        isHidden                = false;
         
         names = new HashSet<SpLocaleItemStr>();
         descs = new HashSet<SpLocaleItemStr>();
         
         container = null;
 
-    }
-
-    /**
-     * @return the isHidden
-     */
-    @Column(name = "IsHidden", unique = false, nullable = false, insertable = true, updatable = true)
-    public Boolean getIsHidden()
-    {
-        return isHidden;
-    }
-
-    /**
-     * @param isHidden the isHidden to set
-     */
-    public void setIsHidden(Boolean isHidden)
-    {
-        this.isHidden = isHidden;
     }
     
     /**

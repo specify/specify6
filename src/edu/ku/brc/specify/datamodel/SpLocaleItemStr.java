@@ -326,4 +326,14 @@ public class SpLocaleItemStr extends DataModelObjBase implements LocalizableStrI
                (country == null || country.equals(locale.getCountry())) && 
                (variant == null || variant.equals(locale.getVariant()));
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#isChangeNotifier()
+     */
+    @Transient
+    @Override
+    public boolean isChangeNotifier()
+    {
+        return false;
+    }
 }

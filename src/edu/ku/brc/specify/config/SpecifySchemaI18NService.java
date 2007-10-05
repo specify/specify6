@@ -20,8 +20,6 @@ package edu.ku.brc.specify.config;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.Hashtable;
-import java.util.List;
 import java.util.Locale;
 import java.util.Stack;
 import java.util.Vector;
@@ -30,15 +28,9 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.dbsupport.DBConnection;
-import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBInfoBase;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
-import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.specify.datamodel.SpLocaleContainer;
-import edu.ku.brc.specify.datamodel.SpLocaleContainerItem;
-import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
 
 /**
  * @author rods
@@ -52,8 +44,8 @@ public class SpecifySchemaI18NService extends SchemaI18NService
 {
     private static final Logger      log      = Logger.getLogger(SpecifySchemaI18NService.class);
     
-    protected Stack<Triple<String, String, String>>  recycler = new Stack<Triple<String, String, String>>();
-    protected Vector<Triple<String, String, String>> results  = new Vector<Triple<String, String, String>>();
+    protected Stack<Vector<String>>  recycler = new Stack<Vector<String>>();
+    protected Vector<Vector<String>> results  = new Vector<Vector<String>>();
     
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.SchemaI18NService#loadWithLocale(java.util.Locale)
@@ -61,21 +53,23 @@ public class SpecifySchemaI18NService extends SchemaI18NService
     @Override
     public void loadWithLocale(Locale locale)
     {
-        String sql = "SELECT splocalecontainer.Name,Text FROM splocalecontainer INNER JOIN splocaleitemstr ON " +
+        String sql = "SELECT splocalecontainer.Name, Text, IsHidden FROM splocalecontainer INNER JOIN splocaleitemstr ON " +
         "splocalecontainer.SpLocaleContainerID = splocaleitemstr.SpLocaleContainerNameID where Language = '"+locale.getLanguage()+"'";
         
         retrieveString(sql);
         
         DBTableIdMgr mgr = DBTableIdMgr.getInstance();
-        for (Triple<String, String, String> p : results)
+        for (Vector<String> p : results)
         {
-            DBTableInfo ti = mgr.getInfoByTableName(p.first);
+            DBTableInfo ti = mgr.getInfoByTableName(p.get(0));
             if (ti != null)
             {
-                ti.setTitle(p.second);
+                ti.setTitle(p.get(1));
+                ti.setHidden(p.get(2).equals("1"));
+                
             } else
             {
-                log.error("Couldn't find table ["+p.first+"]");
+                log.error("Couldn't find table ["+p.get(0)+"]");
             }
         }
         
@@ -83,15 +77,15 @@ public class SpecifySchemaI18NService extends SchemaI18NService
         "splocalecontainer.SpLocaleContainerID = splocaleitemstr.SpLocaleContainerDescID where Language = '"+locale.getLanguage()+"'";
         
         retrieveString(sql);
-        for (Triple<String, String, String> p : results)
+        for (Vector<String> p : results)
         {
-            DBTableInfo ti = mgr.getInfoByTableName(p.first);
+            DBTableInfo ti = mgr.getInfoByTableName(p.get(0));
             if (ti != null)
             {
-                ti.setDescription(p.second);
+                ti.setDescription(p.get(1));
             } else
             {
-                log.error("Couldn't find table ["+p.first+"]");
+                log.error("Couldn't find table ["+p.get(0)+"]");
             }
         }
         
@@ -103,33 +97,33 @@ public class SpecifySchemaI18NService extends SchemaI18NService
         
         String      name = "";
         DBTableInfo ti   = null;
-        for (Triple<String, String, String> p : results)
+        for (Vector<String> p : results)
         {
-            if (!name.equals(p.first))
+            if (!name.equals(p.get(0)))
             {
-                ti = mgr.getInfoByTableName(p.first);
-                name = p.first;
+                ti = mgr.getInfoByTableName(p.get(0));
+                name = p.get(0);
             }
             
             if (ti != null)
             {
-                DBInfoBase fi = ti.getItemByName(p.second);
+                DBInfoBase fi = ti.getItemByName(p.get(1));
                 if (fi != null)
                 {
-                    ti.setTitle(p.third);
+                    ti.setTitle(p.get(2));
                     
                 } else
                 {
-                    log.error("Couldn't find field["+p.second+"] for table ["+p.first+"]");
+                    log.error("Couldn't find field["+p.get(1)+"] for table ["+p.get(0)+"]");
                 }
             } else
             {
-                log.error("Couldn't find table ["+p.first+"]");
+                log.error("Couldn't find table ["+p.get(0)+"]");
             }
         }
 
         
-        sql = "SELECT splocalecontainer.Name,splocalecontaineritem.Name, splocaleitemstr.Text "+
+        sql = "SELECT splocalecontainer.Name, splocalecontaineritem.Name, splocaleitemstr.Text, splocalecontaineritem.IsHidden "+
               "FROM splocalecontainer INNER JOIN splocalecontaineritem ON splocalecontainer.SpLocaleContainerID = splocalecontaineritem.SpLocaleContainerID "+
               "INNER JOIN splocaleitemstr ON splocalecontaineritem.SpLocaleContainerItemID = splocaleitemstr.SpLocaleContainerItemDescID order by splocalecontainer.Name";
         
@@ -137,28 +131,29 @@ public class SpecifySchemaI18NService extends SchemaI18NService
         
         name = "";
         ti   = null;
-        for (Triple<String, String, String> p : results)
+        for (Vector<String> p : results)
         {
-            if (!name.equals(p.first))
+            if (!name.equals(p.get(0)))
             {
-                ti = mgr.getInfoByTableName(p.first);
-                name = p.first;
+                ti = mgr.getInfoByTableName(p.get(0));
+                name = p.get(0);
             }
             
             if (ti != null)
             {
-                DBInfoBase fi = ti.getItemByName(p.second);
+                DBInfoBase fi = ti.getItemByName(p.get(1));
                 if (fi != null)
                 {
-                    ti.setDescription(p.third);
+                    fi.setDescription(p.get(2));
+                    fi.setHidden(p.get(3).equals("1"));
                     
                 } else
                 {
-                    log.error("Couldn't find field["+p.second+"] for table ["+p.first+"]");
+                    log.error("Couldn't find field["+p.get(1)+"] for table ["+p.get(0)+"]");
                 }
             } else
             {
-                log.error("Couldn't find table ["+p.first+"]");
+                log.error("Couldn't find table ["+p.get(0)+"]");
             }
         }
         
@@ -188,27 +183,25 @@ public class SpecifySchemaI18NService extends SchemaI18NService
             stmt       = connection.createStatement();
             rs         = stmt.executeQuery(sql);
             
-            boolean isTriple = rs.getMetaData().getColumnCount() == 3;
+            int cnt = rs.getMetaData().getColumnCount();
             
             if (rs.first())
             {
                 do
                 {
-                    Triple<String, String, String> p;
+                    Vector<String> p;
                     if (recycler.size() > 0)
                     {
-                        p        = recycler.pop();
-                        p.first  = rs.getString(1);
-                        p.second = rs.getString(2);
-                        
-                        if (isTriple)
-                        {
-                            p.third = rs.getString(3);
-                        }
+                        p = recycler.pop();
+                        p.clear();
                         
                     } else
                     {
-                        p = new Triple<String, String, String>(rs.getString(1), rs.getString(2), isTriple ? rs.getString(3) : null);
+                        p = new Vector<String>();
+                    }
+                    for (int i=0;i<cnt;i++)
+                    {
+                        p.add(rs.getString(i+1));
                     }
                     results.add(p);
                     
@@ -245,37 +238,11 @@ public class SpecifySchemaI18NService extends SchemaI18NService
     /**
      * @param locale
      */
-    protected void loadNames(final Locale locale)
+    protected void loadNames(@SuppressWarnings("unused")
+    final Locale locale)
     {
 
 
     }
-    
-    //---------------------------------------------------------------
-    //-- Inner Class
-    //---------------------------------------------------------------
-    public class Triple<F, S, T>
-    {
-        /** The first value in the <code>Triple</code>. */
-        public F first = null;
-        
-        /** The second value in the <code>Triple</code>. */
-        public S second = null;
-        
-        /** The second value in the <code>Triple</code>. */
-        public T third = null;
-        
-        /**
-         * Construct a new <code>Pair</code> with the given values.
-         * 
-         * @param first the value of <code>first</code>
-         * @param second the value of <code>second</code>
-         */
-        public Triple(F first, S second, T third)
-        {
-            this.first = first;
-            this.second = second;
-            this.third = third;
-        }
-    }
+
 }

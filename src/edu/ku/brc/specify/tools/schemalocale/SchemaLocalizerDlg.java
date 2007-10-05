@@ -36,10 +36,12 @@ import java.util.Vector;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.config.SpecifySchemaI18NService;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpLocaleContainerItem;
 import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
@@ -127,6 +129,9 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
         schemaLocPanel = new SchemaLocalizerPanel(this);
         schemaLocPanel.setLocalizableIO(localizableIOIFace);
         
+        okBtn.setEnabled(false);
+        schemaLocPanel.setSaveBtn(okBtn);
+
         
         schemaLocPanel.setStatusBar(UIRegistry.getStatusBar());
         schemaLocPanel.buildUI();
@@ -172,7 +177,12 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
      */
     protected void saveAndShutdown()
     {
+        schemaLocPanel.setSaveBtn(null);
+        
         enabledDlgBtns(false);
+        
+        UIRegistry.getStatusBar().setText(getResourceString("SL_SAVING_SCHEMA_LOC"));
+        UIRegistry.getStatusBar().setIndeterminate(true);
         
         SwingWorker workerThread = new SwingWorker()
         {
@@ -180,6 +190,9 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
             public Object construct()
             {
                 save();
+                
+                SchemaI18NService.getInstance().loadWithLocale(Locale.getDefault());
+                
                 return null;
             }
             
@@ -614,7 +627,14 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
      */
     protected void enabledDlgBtns(final boolean enable)
     {
-        okBtn.setEnabled(enable);
+        if (enable)
+        {
+            okBtn.setEnabled(schemaLocPanel != null ? schemaLocPanel.hasChanged() : false);
+        } else
+        {
+            okBtn.setEnabled(false);
+        }
+        okBtn.setEnabled(enable ? (schemaLocPanel != null ? schemaLocPanel.hasChanged() : false) : false);
         cancelBtn.setEnabled(enable);
         applyBtn.setEnabled(enable);
         helpBtn.setEnabled(enable);

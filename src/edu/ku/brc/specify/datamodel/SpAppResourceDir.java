@@ -147,11 +147,11 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#isIndexable()
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#isChangeNotifier()
      */
     @Transient
     @Override
-    public boolean isIndexable()
+    public boolean isChangeNotifier()
     {
         return false;
     }

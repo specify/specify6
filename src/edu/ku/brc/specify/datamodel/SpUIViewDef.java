@@ -896,7 +896,15 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
         this.settableName = dataSettableName;
     }
     
-    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#isChangeNotifier()
+     */
+    @Transient
+    @Override
+    public boolean isChangeNotifier()
+    {
+        return false;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#compareTo(edu.ku.brc.ui.forms.persist.ViewDefIFace)
@@ -906,6 +914,10 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
         return name.compareTo(obj.getName());
     }
     
+    /**
+     * @param enableRules
+     * @return
+     */
     protected String createEnableRulesXML(final Hashtable<String, String> enableRules)
     {
         if (enableRules.keySet().size() > 0)

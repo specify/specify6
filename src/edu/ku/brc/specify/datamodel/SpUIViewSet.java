@@ -386,7 +386,16 @@ public class SpUIViewSet extends DataModelObjBase implements ViewSetIFace
         return viewDefHash;
     }
 
-
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#isChangeNotifier()
+     */
+    @Transient
+    @Override
+    public boolean isChangeNotifier()
+    {
+        return false;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.ViewSetIFace#getViews()
      */

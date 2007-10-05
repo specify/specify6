@@ -698,7 +698,15 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
         this.defaultMode = defaultMode;
     }
     
-    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#isChangeNotifier()
+     */
+    @Transient
+    @Override
+    public boolean isChangeNotifier()
+    {
+        return false;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.ViewIFace#compareTo(edu.ku.brc.ui.forms.persist.ViewIFace)

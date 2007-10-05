@@ -427,7 +427,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#isIndexable()
      */
     @Transient
-    public boolean isIndexable()
+    public boolean isChangeNotifier()
     {
         return true;
     }

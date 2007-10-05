@@ -172,11 +172,11 @@ public class SpViewSetObj extends DataModelObjBase implements java.io.Serializab
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#isIndexable()
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#isChangeNotifier()
      */
     @Transient
     @Override
-    public boolean isIndexable()
+    public boolean isChangeNotifier()
     {
         return false;
     }

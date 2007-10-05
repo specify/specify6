@@ -457,7 +457,16 @@ public class SpUIAltView extends DataModelObjBase implements AltViewIFace
     {
         return spView;
     }
-
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#isChangeNotifier()
+     */
+    @Transient
+    @Override
+    public boolean isChangeNotifier()
+    {
+        return false;
+    }
 
     /**
      * Copies a AltViewIFace into this persistable AltView

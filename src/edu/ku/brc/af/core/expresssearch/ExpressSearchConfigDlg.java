@@ -195,10 +195,14 @@ public class ExpressSearchConfigDlg extends CustomDialog
                     }
                     searchCnt++;
                 }
-                // If found it sets inUse to true, otherwise it is false when craeted
-                DisplayFieldConfig dfc = config.findDisplayField(stc, fi.getName(), true);
-                dfc.setFieldInfo(fi);
-                dfc.setStc(stc);
+                
+                if (fi.isIndexed() || !fi.isHidden())
+                {
+                    // If found it sets inUse to true, otherwise it is false when craeted
+                    DisplayFieldConfig dfc = config.findDisplayField(stc, fi.getName(), true);
+                    dfc.setFieldInfo(fi);
+                    dfc.setStc(stc);
+                }
                 
                 displayCnt++;
             }

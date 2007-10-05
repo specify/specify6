@@ -129,7 +129,7 @@ public interface FormDataObjIFace
      * 
      * @return true - index, false - don't
      */
-    public abstract boolean isIndexable();
+    public abstract boolean isChangeNotifier();
     
     //---------------------------------------------------------------------------
     // Property Change Support
