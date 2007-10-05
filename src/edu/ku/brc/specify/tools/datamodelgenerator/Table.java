@@ -29,6 +29,8 @@ public class Table implements Comparable<Table>
     private List<Id>                 ids           = new ArrayList<Id>();
     private List<Relationship>       relationships = new ArrayList<Relationship>();
     private Display                  display;
+    
+    // These are needed for the DataMode Tools for generating schema diagrams etc
     private LocalizedStrIFace        desc;
     private LocalizedStrIFace        nameDesc;
     

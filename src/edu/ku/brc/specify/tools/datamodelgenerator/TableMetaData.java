@@ -15,6 +15,7 @@ public class TableMetaData
     private boolean isForWorkBench;
     private boolean isSearchable;
     private String businessRule;
+    private String abbrv;
 
 	/**
 	 * @param id
@@ -25,13 +26,15 @@ public class TableMetaData
                          final String  className, 
                          final Display display, 
                          final boolean isSearchable,
-                         final String businessRule)
+                         final String businessRule,
+                         final String abbrv)
 	{
 		this.id             = id;
         this.className      = className;
         this.display        = display;
         this.isSearchable   = isSearchable;
         this.businessRule   = businessRule;
+        this.abbrv          = abbrv;
 	}
 
 	public String getId()
@@ -72,4 +75,8 @@ public class TableMetaData
         return businessRule;
     }
 
+    public String getAbbrv()
+    {
+        return abbrv;
+    }
 }

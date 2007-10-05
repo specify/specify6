@@ -245,53 +245,6 @@ public class DatamodelGenerator
     }
     
     /**
-     * Creates a 'n' number letter abbreviation for a table.
-     * @param tableName
-     * @return
-     */
-    protected String makeTableAbbrv(final String tableName)
-    {
-        String firstChar = tableName.substring(0,1);
-        
-        boolean appendAlpha = false;
-        
-        int inx    = 1;
-        int ltrInx = 1;
-        String abbrv = "";
-        do
-        {
-            if (appendAlpha)
-            {
-                abbrv = firstChar + (char)ltrInx;
-                ltrInx++;
-                
-            } else
-            {
-                abbrv = firstChar + tableName.substring(inx, inx+1);
-                inx++;
-                if (inx >= tableName.length())
-                {
-                    firstChar += tableName.substring(ltrInx, ltrInx+1);
-                    ltrInx++;
-                    if (ltrInx >= tableName.length())
-                    {
-                        firstChar = tableName.substring(0,1);
-                        appendAlpha = true;
-                        ltrInx = (int)'a';
-                    }
-                    else
-                    {
-                        inx = ltrInx;
-                    }
-                }
-            }
-        } while (abbrvHash.get(abbrv) != null);
-        
-        abbrvHash.put(abbrv, abbrv);
-        return abbrv;
-    }
-
-    /**
      * Given and XML node, returns a Table object by grabbing the appropriate
      * attribute values.
      * 
@@ -320,7 +273,7 @@ public class DatamodelGenerator
                          tableMetaData.getDisplay(), 
                          tableMetaData.isSearchable(), 
                          tableMetaData.getBusinessRule(),
-                         makeTableAbbrv(tableName));
+                         tableMetaData.getAbbrv());
 
     }
 
@@ -1314,6 +1267,8 @@ public class DatamodelGenerator
      */
     private boolean readTableMetadataFromFile(final String tableIdListingFilePath)
     {
+        Hashtable<String, Boolean> abbrvHash = new Hashtable<String, Boolean>();
+        
         log.info("Preparing to read in Table and TableID listing from file: " + tableIdListingFilePath);
         try
         {
@@ -1332,7 +1287,23 @@ public class DatamodelGenerator
                     String tablename     = element.attributeValue("name");
                     String defaultView   = element.attributeValue("view");
                     String id            = element.attributeValue("id");
+                    String abbrv         = XMLHelper.getAttr(element, "abbrev", null);
                     boolean isSearchable = XMLHelper.getAttr(element, "searchable", false);
+                    
+                    if (StringUtils.isNotEmpty(abbrv))
+                    {
+                        if (abbrvHash.get(abbrv) == null)
+                        {
+                            abbrvHash.put(abbrv, true);
+                        } else
+                        {
+                            throw new RuntimeException("`abbrev` ["+abbrv+"]  or table["+ tablename +"] ids already in use.");
+                        }
+                            
+                    } else
+                    {
+                        throw new RuntimeException("`abbrev` is missing or empty for table["+ tablename +"]");
+                    }
                     
                     String busRule      = "";
                     Element brElement = (Element)element.selectSingleNode("businessrule");
@@ -1342,7 +1313,12 @@ public class DatamodelGenerator
                     }
                     //log.debug("Creating TableMetaData and putting in tblMetaDataHashtable for name: " + tablename + " id: " + id + " defaultview: " + defaultView);
                     
-                    tblMetaDataHash.put(tablename, new TableMetaData(id, defaultView, createDisplay(element), isSearchable, busRule));
+                    tblMetaDataHash.put(tablename, new TableMetaData(id, 
+                                                                     defaultView, 
+                                                                     createDisplay(element), 
+                                                                     isSearchable, 
+                                                                     busRule,
+                                                                     abbrv));
                     
                 }
                 
