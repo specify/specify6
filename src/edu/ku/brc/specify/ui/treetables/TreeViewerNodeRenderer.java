@@ -10,7 +10,6 @@ package edu.ku.brc.specify.ui.treetables;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -113,7 +112,6 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         nodeUI.setNode(node);
         nodeUI.setSelected(isSelected);
         nodeUI.setHasFocus(cellHasFocus);
-        nodeUI.setToolTipText(node.getName());
         return nodeUI;
     }
     
@@ -369,6 +367,11 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
             
             // draw the string name of the node
             drawNodeString(g);
+            
+            if (selected)
+            {
+                drawParentageStrings(g);
+            }
         }
         
         private void drawBackgroundColors(Graphics g)
@@ -490,20 +493,36 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
                 g2d.setColor(list.getSelectionForeground());
             }
             
-            String clippedName = GraphicsUtils.clipString(fm, name, stringEndX-stringStartX);
-            Font baseFont = g.getFont();
-            if (treeNode.getAcceptedParentId() != null)
-            {
-                g.setFont(baseFont.deriveFont(Font.ITALIC));
-            }
-            else
-            {
-                g.setFont(baseFont.deriveFont(Font.BOLD));
-            }
+            String clippedName = GraphicsUtils.clipString(fm, name, stringLength);
             g.drawString(clippedName, stringStartX, stringY);
-            if (treeNode.getAcceptedParentId() != null)
+        }
+        
+        private void drawParentageStrings(Graphics g)
+        {
+            TreeNode node = treeNode;
+            FontMetrics fm = g.getFontMetrics();
+            int cellHeight = list.getFixedCellHeight();
+            int baselineAdj = (int)(1.0/2.0*fm.getAscent() + 1.0/2.0*cellHeight);
+            
+            int parentId = node.getParentId();
+            TreeNode parent = model.getNodeById(parentId);
+            while (parent != null && node != parent)
             {
-                g.setFont(baseFont);
+                String name = parent.getName();
+                Pair<Integer,Integer> stringBounds = getTextBoundsForRank(parent.getRank());
+                if (stringBounds != null)
+                {
+                    int stringStartX = stringBounds.getFirst();
+                    int stringEndX = stringBounds.getSecond();
+                    int stringLength = stringEndX - stringStartX;
+                    int stringY = baselineAdj;
+                    String clippedName = GraphicsUtils.clipString(fm, name, stringLength);
+                    g.drawString(clippedName, stringStartX, stringY);
+                }
+                
+                node = parent;
+                parentId = node.getParentId();
+                parent = model.getNodeById(parentId);
             }
         }
     }
