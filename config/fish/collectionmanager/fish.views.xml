@@ -853,23 +853,24 @@
             <desc><![CDATA[The Collectors form.]]></desc>
             <enableRules/>
 
-            <columnDef>p,5dlu,p:g</columnDef>
+            <columnDef>p,5dlu,p:g,5dlu,p</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
     		<rows>
     		    <row>
-    		        <cell type="label" label="Collectors" icon="Agent" recordobj="true" colspan="3"/>
+    		        <cell type="label" label="Collectors" icon="Agent" recordobj="true" colspan="5"/>
     		    </row>
                 <row>
                     <cell type="label" labelfor="3" label="Last Name"/>
-                    <cell type="field" id="3" name="agent.lastName" uitype="text" cols="20"  isrequired="true" valtype="Changed"/>
+                    <cell type="field" id="3" name="agent.lastName" uitype="text" cols="20"  isrequired="true" valtype="Changed" colspan="3"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="5" label="First Name"/>
-                    <cell type="field" id="5" name="agent.firstName" uitype="text" cols="20" isrequired="true" valtype="Changed"/>
+                    <cell type="field" id="5" name="agent.firstName" uitype="text" cols="20" isrequired="true" valtype="Changed" colspan="3"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="7" label="E-mail"/>
                     <cell type="field" id="7" name="agent.email" uitype="text" cols="32" valtype="Changed"/>
+                    <cell type="field" id="mailto" name="agent" uitype="plugin" initialize="class=edu.ku.brc.specify.ui.WebLinkLauncherButton;url=mailto:$email$;label=Send Mail"/>
                 </row>
     		</rows>
     	</viewdef>
