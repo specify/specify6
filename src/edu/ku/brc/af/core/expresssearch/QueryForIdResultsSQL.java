@@ -42,6 +42,7 @@ public class QueryForIdResultsSQL implements QueryForIdResultsIFace
     protected Integer                 displayOrder = null;
     
     protected String                  overrideSQL  = null;
+    protected boolean                 isExpanded   = false;
     
     protected Hashtable<Integer, Boolean> duplicateRecId = new Hashtable<Integer, Boolean>();
     
@@ -298,6 +299,22 @@ public class QueryForIdResultsSQL implements QueryForIdResultsIFace
     public void setSQL(String sql)
     {
         overrideSQL = sql;
+    }
+
+    /**
+     * @return the isExpanded
+     */
+    public boolean isExpanded()
+    {
+        return isExpanded;
+    }
+
+    /**
+     * @param isExpanded the isExpanded to set
+     */
+    public void setExpanded(boolean isExpanded)
+    {
+        this.isExpanded = isExpanded;
     }
     
     

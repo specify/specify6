@@ -9,6 +9,9 @@ package edu.ku.brc.specify.tools.schemalocale;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.Locale;
 
@@ -27,7 +30,12 @@ import javax.swing.WindowConstants;
 import com.apple.eawt.Application;
 import com.apple.eawt.ApplicationAdapter;
 import com.apple.eawt.ApplicationEvent;
+import com.lowagie.text.pdf.SpotColor;
 
+import edu.ku.brc.af.core.SchemaI18NService;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
@@ -45,15 +53,21 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
 {
     protected SchemaLocalizerPanel schemaLocPanel;
     
-    protected JStatusBar           statusBar     = new JStatusBar(new int[] {5});
+    protected JStatusBar           statusBar     = new JStatusBar(new int[] {5,5});
     
     protected LocalizableIOIFace   localizableIO;
+    protected Byte                 schemaType;
+    protected DBTableIdMgr         tableMgr;
 
     /**
-     * 
+     * Constructor.
      */
-    public SchemaLocalizerFrame()
+    public SchemaLocalizerFrame(final Byte         schemaType, 
+                                final DBTableIdMgr tableMgr)
     {
+        this.schemaType = schemaType;
+        this.tableMgr   = tableMgr;
+        
         new MacOSAppHandler(this);
         
         appName             = "Schema Localizer";
@@ -63,6 +77,9 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
         setTitle(appName + " " + appVersion);// + "  -  "+ appBuildVersion);
     }
     
+    /**
+     * 
+     */
     public void createDisplay()
     {
         buildUI(); 
@@ -73,10 +90,10 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
      */
     protected void buildUI()
     {
-        localizableIO = new SchemaLocalizerXMLHelper();
+        localizableIO = new SchemaLocalizerXMLHelper(schemaType, tableMgr);
         localizableIO.load();
         
-        LocalizerBasePanel.setLocalizableStrFactory(new LocalizableStrFactory() {
+        LocalizableStrFactory localizableStrFactory = new LocalizableStrFactory() {
             public LocalizableStrIFace create()
             {
                 SpLocaleItemStr str = new SpLocaleItemStr();
@@ -87,14 +104,19 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
             {
                 return new SpLocaleItemStr(text, locale); // no initialize needed for this constructor
             }
-            
-        });
+        };
+        
+        LocalizerBasePanel.setLocalizableStrFactory(localizableStrFactory);
+        SchemaLocalizerXMLHelper.setLocalizableStrFactory(localizableStrFactory);
         
         schemaLocPanel = new SchemaLocalizerPanel(null);
         schemaLocPanel.setLocalizableIO(localizableIO);
         schemaLocPanel.setStatusBar(statusBar);
+        schemaLocPanel.setIncludeHiddenUI(false);
         schemaLocPanel.buildUI();
         schemaLocPanel.setHasChanged(localizableIO.didModelChangeDuringLoad());
+        
+        statusBar.setSectionText(1, schemaType == SpLocaleContainer.CORE_SCHEMA ? "Full Schema" : "WorkBench Schema");
         
         UIRegistry.setStatusBar(statusBar);
         
@@ -111,6 +133,14 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
         });
         saveMenuItem.setEnabled(false);
         
+        UIHelper.createMenuItem(fileMenu, "Export", "E", "", true, new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                export();
+            }
+        });
+        
         if (!UIHelper.isMacOS())
         {
             fileMenu.addSeparator();
@@ -123,6 +153,7 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
                 }
             });
         }
+        /*
         JMenu toolMenu = UIHelper.createMenu(menuBar, "Tools", "T");
         UIHelper.createMenuItem(toolMenu, "Create Resource Files", "C", "", true, new ActionListener()
         {
@@ -131,8 +162,17 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
                 createResourceFiles();
             }
         });
+        */
         
-        menuBar.add(schemaLocPanel.getLocaleMenu(this));
+        menuBar.add(SchemaI18NService.getInstance().createLocaleMenu(this, new PropertyChangeListener() {
+            public void propertyChange(PropertyChangeEvent evt)
+            {
+                if (evt.getPropertyName().equals("locale"))
+                {
+                    schemaLocPanel.localeChanged((Locale)evt.getNewValue());
+                }
+            }
+        }));
         
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         
@@ -145,7 +185,7 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
         mainPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         setContentPane(mainPanel);
         
-        statusBar.setSectionText(0, LocalizerBasePanel.getCurrLocale().getDisplayName());
+        statusBar.setSectionText(0, SchemaI18NService.getCurrentLocale().getDisplayName());
         
         schemaLocPanel.setSaveMenuItem(saveMenuItem);
         
@@ -219,6 +259,31 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
     }
     
     /**
+     * Export data 
+     */
+    protected void export()
+    {
+        statusBar.setText("Exporting...");
+        statusBar.paintImmediately(statusBar.getBounds());
+        
+        schemaLocPanel.getAllDataFromUI();
+        
+        File outFile = new File(UIRegistry.getUserHomeDir() + File.separator + "schema_localization.xml");
+        if (localizableIO.export(outFile))
+        {
+            JOptionPane.showMessageDialog(this, "The Schema was exported to: "+outFile.getAbsolutePath(),
+                    "Exported", JOptionPane.INFORMATION_MESSAGE);
+            statusBar.setText("Exported.");
+            
+        } else
+        {
+            statusBar.setText("There was an error exporting.");
+        }
+    }
+    
+    
+    
+    /**
      * 
      */
     protected void createResourceFiles()
@@ -275,11 +340,28 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
      */
     public static void main(String[] args)
     {
+        
         SwingUtilities.invokeLater(new Runnable()
         {
             public void run()
             {
-                SchemaLocalizerFrame sla = new SchemaLocalizerFrame();
+                System.setProperty(SchemaI18NService.factoryName, "edu.ku.brc.specify.config.SpecifySchemaI18NService");    // Needed for Localization and Schema
+                
+                Object[] options = { "Full Specify Schema", "WorkBench Schema" };
+                int retVal = JOptionPane.showOptionDialog(null, "Which Schema would you like to localize?", "Choose a Schema", JOptionPane.YES_NO_CANCEL_OPTION,
+                        JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+
+                SchemaLocalizerFrame sla;
+                if (retVal == JOptionPane.NO_OPTION)
+                {
+                    DBTableIdMgr schema = new DBTableIdMgr(false);
+                    schema.initialize(new File(XMLHelper.getConfigDirPath("specify_workbench_datamodel.xml")));
+                    sla = new SchemaLocalizerFrame(SpLocaleContainer.WORKBENCH_SCHEMA, schema);
+                    
+                } else
+                {
+                    sla = new SchemaLocalizerFrame(SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
+                }
                 
                 sla.createDisplay();
                 UIHelper.centerAndShow(sla);

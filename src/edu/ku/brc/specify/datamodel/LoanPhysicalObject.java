@@ -61,8 +61,9 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
     protected Integer                       loanPhysicalObjectId;
     protected Integer                       quantity;
     protected String                        descriptionOfMaterial;
-    protected String                        outComments;
-    protected String                        inComments;
+    protected String                        outComments;          // Shipped Comments
+    protected String                        inComments;           // Returned Comments
+    //protected String                        receivedComments;     // Received Comments
     protected Integer                       quantityResolved;
     protected Integer                       quantityReturned;
     protected Boolean                       isResolved;
@@ -79,7 +80,8 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
     }
     
     /** constructor with id */
-    public LoanPhysicalObject(Integer loanPhysicalObjectId) {
+    public LoanPhysicalObject(Integer loanPhysicalObjectId) 
+    {
         this.loanPhysicalObjectId = loanPhysicalObjectId;
     }
    

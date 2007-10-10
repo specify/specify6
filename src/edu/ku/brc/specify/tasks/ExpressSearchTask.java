@@ -447,7 +447,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
      */
     protected void doHQLQuery(final QueryForIdResultsIFace  results)
     {
-        ESResultsSubPane expressSearchPane = new ESResultsSubPane("XX", this, true);
+        ESResultsSubPane expressSearchPane = new ESResultsSubPane("Results", this, true); // XXX I18N
         addSubPaneToMgr(expressSearchPane);
         expressSearchPane.addSearchResults(results);
     }

@@ -115,6 +115,8 @@
    			<string>$JAVAROOT/saaj-api.jar</string>
     		<string>$JAVAROOT/saaj-impl.jar</string>
     		<string>$JAVAROOT/sjsxp.jar</string>
+    		<string>$JAVAROOT/xstream.jar</string>
+    		<string>$JAVAROOT/xpp3_minO.jar</string>
 			<string>$JAVAROOT/help</string>
 			</array>
 		<key>Properties</key>

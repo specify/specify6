@@ -24,6 +24,7 @@ import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -35,13 +36,17 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.SwingWorker;
-import edu.ku.brc.specify.config.SpecifySchemaI18NService;
+import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpLocaleContainerItem;
 import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
@@ -63,6 +68,9 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
 {
     private static final Logger log = Logger.getLogger(SchemaLocalizerDlg.class);
     
+    protected Byte                                         schemaType;
+    protected DBTableIdMgr                                 tableMgr;
+    
     protected SchemaLocalizerPanel                         schemaLocPanel;
     protected LocalizableIOIFace                           localizableIOIFace;
     protected LocalizableStrFactory                        localizableStrFactory;
@@ -81,17 +89,16 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
 
     /**
      * @param frame
-     * @param title
-     * @param isModal
-     * @param whichBtns
-     * @param contentPanel
+     * @param schemaType
      * @throws HeadlessException
      */
-    public SchemaLocalizerDlg(Frame frame, final Locale localeToEdit) throws HeadlessException
+    public SchemaLocalizerDlg(final Frame        frame, 
+                              final Byte         schemaType,
+                              final DBTableIdMgr tableMgr) throws HeadlessException
     {
         super(frame, "", true, OKCANCELAPPLYHELP, null);
-        
-        LocalizerBasePanel.setCurrLocale(localeToEdit);
+        this.schemaType = schemaType;
+        this.tableMgr   = tableMgr;
     }
 
 
@@ -152,7 +159,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
      */
     public void setTitle()
     {
-        super.setTitle(getResourceString("SCHEMA_CONFIG") +" - " + LocalizerBasePanel.getCurrLocale().getDisplayName());
+        super.setTitle(getResourceString("SCHEMA_CONFIG") +" - " + SchemaI18NService.getCurrentLocale().getDisplayName());
     }
 
     /* (non-Javadoc)
@@ -191,7 +198,9 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
             {
                 save();
                 
-                SchemaI18NService.getInstance().loadWithLocale(Locale.getDefault());
+                //SchemaI18NService.getInstance().loadWithLocale(new Locale("de", "", ""));
+                int colTypeId = CollectionType.getCurrentCollectionType().getCollectionTypeId();
+                SchemaI18NService.getInstance().loadWithLocale(schemaType, colTypeId, tableMgr, Locale.getDefault());
                 
                 return null;
             }
@@ -493,7 +502,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     public boolean isLocaleInUse(final Locale locale)
     {
         // First check the aDatabase because the extra locales are not loaded automatically.
-        if (isLocaleInUseInDB(locale))
+        if (isLocaleInUseInDB(schemaType, locale))
         {
             return true;
         }
@@ -519,7 +528,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
         Hashtable<String, Boolean> localeHash = new Hashtable<String, Boolean>();
         
         // Add any from the Database
-        Vector<Locale> localeList = getLocalesInUseInDB();
+        Vector<Locale> localeList = getLocalesInUseInDB(schemaType);
         for (Locale locale : localeList)
         {
             localeHash.put(SchemaLocalizerXMLHelper.makeLocaleKey(locale.getLanguage(), locale.getCountry(), locale.getVariant()), true);
@@ -547,21 +556,20 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
      * Return the locales in the database
      * @return the list of locale
      */
-    public static Vector<Locale> getLocalesInUseInDB()
+    public static Vector<Locale> getLocalesInUseInDB(final Byte schemaType)
     {
         Vector<Locale> locales = new Vector<Locale>();
         
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        Session session = HibernateUtil.getNewSession();
         try
         {
-            List<?> list = session.getDataList(SpLocaleItemStr.class, "language", true);
-            
+            Query   query = session.createQuery("SELECT DISTINCT nms.language FROM SpLocaleContainer as ctn INNER JOIN ctn.items as itm INNER JOIN itm.names nms WHERE nms.language <> NULL AND ctn.schemaType = "+ schemaType);
+            List<?> list  = query.list();
             for (Object lang : list)
             {
-                System.out.println(lang.toString());
-                
                 locales.add(new Locale(lang.toString(), "", ""));
             }
+            
         } catch (Exception ex)
         {
             ex.printStackTrace();
@@ -574,11 +582,30 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
 
     /**
      * Check the Database to see if the Locale is being used.
-     * @param locale the local ein question
+     * @param schemaType the which set of locales
+     * @param locale the locale in question
      * @return true/false
      */
-    public boolean isLocaleInUseInDB(Locale locale)
+    public boolean isLocaleInUseInDB(final Byte schemaType, final Locale locale)
     {
+        
+        Session session = HibernateUtil.getNewSession();
+        try
+        {
+            Query   query = session.createQuery("SELECT DISTINCT nms.language FROM SpLocaleContainer as ctn INNER JOIN ctn.items as itm INNER JOIN itm.names nms WHERE nms.language = '"+locale.getLanguage()+"' AND ctn.schemaType = "+ schemaType);
+            List<?> list  = query.list();
+            return list.size() > 0;
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        } finally
+        {
+            session.close();
+        }
+
+ 
+        /*
         Connection connection = null;
         Statement stmt        = null;
         ResultSet rs          = null;
@@ -617,7 +644,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
                 e.printStackTrace();
             }
         }
-
+*/
         return false;
     }
 
@@ -717,7 +744,14 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
         }
         session.close();
     }
-    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#export(java.io.File)
+     */
+    public boolean export(File expportFile)
+    {
+        throw new RuntimeException("Export is not implemented.");
+    }
 
     /* (non-Javadoc)
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)

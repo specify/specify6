@@ -42,6 +42,7 @@ import edu.ku.brc.specify.datamodel.DeaccessionPreparation;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.DeterminationCitation;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
+import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
@@ -50,6 +51,7 @@ import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem;
 import edu.ku.brc.specify.datamodel.GroupPerson;
 import edu.ku.brc.specify.datamodel.InfoRequest;
+import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.Journal;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
 import edu.ku.brc.specify.datamodel.Loan;
@@ -116,6 +118,30 @@ public class DataBuilder
 
     }
 
+    public static Institution createInstitution(final String name)
+    {
+        // Create Collection Type
+        Institution inst = new Institution();
+        inst.initialize();
+        inst.setName(name);
+
+        persist(inst);
+        return inst;
+    }
+    
+    public static Division createDivision(final Institution inst, final String name)
+    {
+        // Create Collection Type
+        Division division = new Division();
+        division.initialize();
+        division.setName(name);
+        
+        inst.addReference(division, "divisions");
+
+        persist(division);
+        return division;
+    }
+    
     public static Agent createAgent(final String title,
                                     final String firstName,
                                     final String middleInit,
@@ -165,15 +191,16 @@ public class DataBuilder
         return attrDef;
     }
 
-    public static CollectionType createCollectionType(final String           name,
-                                                          final String           disciplineName,
-                                                          final DataType         dataType,
-                                                          final SpecifyUser      user,
-                                                          final TaxonTreeDef     taxonTreeDef,
-                                                          final GeographyTreeDef geographyTreeDef,
-                                                          final GeologicTimePeriodTreeDef geologicTimePeriodTreeDef,
-                                                          final LocationTreeDef  locationTreeDef,
-                                                          final LithoStratTreeDef lithoStratTreeDef)
+    public static CollectionType createCollectionType(final Division         division,
+                                                      final String           name,
+                                                      final String           disciplineName,
+                                                      final DataType         dataType,
+                                                      final SpecifyUser      user,
+                                                      final TaxonTreeDef     taxonTreeDef,
+                                                      final GeographyTreeDef geographyTreeDef,
+                                                      final GeologicTimePeriodTreeDef geologicTimePeriodTreeDef,
+                                                      final LocationTreeDef  locationTreeDef,
+                                                      final LithoStratTreeDef lithoStratTreeDef)
     {
         CollectionType collType = new CollectionType();
         collType.initialize();
@@ -187,6 +214,8 @@ public class DataBuilder
         collType.setLocationTreeDef(locationTreeDef);//meg added to support not-null constraints
         collType.setLithoStratTreeDef(lithoStratTreeDef);
         taxonTreeDef.setCollectionType(collType);
+        
+        division.addReference(collType, "collectionTypes");
 
         persist(collType);
         return collType;

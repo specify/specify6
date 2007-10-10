@@ -44,7 +44,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     
     // Fields
 
-    protected Integer              workbenchTemplateMappingItemId;
+    protected Integer           workbenchTemplateMappingItemId;
     protected String            tableName;
     protected Integer           srcTableId;
     protected String            fieldName;

@@ -61,13 +61,13 @@ public class BorrowMaterial extends DataModelObjBase implements java.io.Serializ
     // Fields    
 
      protected Integer borrowMaterialId;
-     protected String materialNumber;
-     protected String description;
-     protected Short quantity;
-     protected String outComments;
-     protected String inComments;
-     protected Short quantityResolved;
-     protected Short quantityReturned;
+     protected String  materialNumber;
+     protected String  description;
+     protected Short   quantity;
+     protected String  outComments;
+     protected String  inComments;
+     protected Short   quantityResolved;
+     protected Short   quantityReturned;
      protected Set<BorrowReturnMaterial> borrowReturnMaterials;
      protected Borrow borrow;
 

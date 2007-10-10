@@ -63,11 +63,14 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.expresssearch.TableFieldPair;
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.datamodel.CollectionType;
+import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
@@ -173,6 +176,10 @@ public class TemplateEditor extends CustomDialog
         super.createUI();
         
         databaseSchema = WorkbenchTask.getDatabaseSchema();
+        
+        int colTypeId = CollectionType.getCurrentCollectionType().getCollectionTypeId();
+        SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.WORKBENCH_SCHEMA, colTypeId, databaseSchema, SchemaI18NService.getCurrentLocale());
+
         
         // Create the Table List
         Vector<TableInfo> tableInfoList = new Vector<TableInfo>();
@@ -869,7 +876,7 @@ public class TemplateEditor extends CustomDialog
     }
     
     /**
-     * TRies to find a Field Name in our Data Model from the column name of the data.
+     * Tries to find a Field Name in our Data Model from the column name of the data.
      * @param ti the TableInfo Object used to get all the mappable field names for the table.
      * @param fieldName the field name
      * @return TableFieldPair object representing the mappable Field for a Table
@@ -1141,8 +1148,8 @@ public class TemplateEditor extends CustomDialog
                 } else
                 {
                     item = fmp.getWbtmi();
-                    item.setCaption(fieldInfo.getTitle());
-                    item.setImportedColName(null);
+                    //item.setCaption(fieldInfo.getTitle()); // removed lines for Bug 4833
+                    //item.setImportedColName(null);
                 }
                 
                 item.setFieldName(fieldInfo.getFieldInfo().getName());
@@ -1383,10 +1390,11 @@ public class TemplateEditor extends CustomDialog
             
             if (fieldInfo != null)
             {
-                String name = UIHelper.makeNamePretty(fieldInfo.getFieldInfo().getTableInfo().getClassObj().getSimpleName());
+                String name = fieldInfo.getFieldInfo().getTableInfo().getTitle();
                 StringBuilder sb = new StringBuilder();
-                sb.append(name.substring(0, 1).toUpperCase());
-                sb.append(name.substring(1, name.length()));
+                //sb.append(name.substring(0, 1).toUpperCase());
+                //sb.append(name.substring(1, name.length()));
+                sb.append(name);
                 sb.append(" - ");
                 sb.append(fieldInfo.getTitle());
                 return sb.toString();

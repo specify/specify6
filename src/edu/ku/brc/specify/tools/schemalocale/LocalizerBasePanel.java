@@ -6,8 +6,6 @@
  */
 package edu.ku.brc.specify.tools.schemalocale;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,9 +20,6 @@ import java.util.Vector;
 import java.util.zip.ZipInputStream;
 
 import javax.swing.JButton;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
@@ -34,6 +29,7 @@ import com.swabunga.spell.engine.SpellDictionary;
 import com.swabunga.spell.engine.SpellDictionaryHashMap;
 import com.swabunga.spell.swing.JTextComponentSpellChecker;
 
+import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
@@ -50,18 +46,12 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public abstract class LocalizerBasePanel extends JPanel
 {
-    protected static Locale                      currLocale;
     protected static LocalizableStrFactory       localizableStrFactory;
     
     // Used for Caching the lists
     protected static Vector<LocalizableStrIFace> namesList = new Vector<LocalizableStrIFace>();
     protected static Vector<LocalizableStrIFace> descsList = new Vector<LocalizableStrIFace>();
 
-    
-    // Locale Members
-    protected Vector<Locale>            locales           = new Vector<Locale>();
-    protected Vector<JCheckBoxMenuItem> localeMenuItems   = new Vector<JCheckBoxMenuItem>();
-    
     // Spell Check Members
     protected boolean          doAutoSpellCheck   = false;
     
@@ -79,24 +69,12 @@ public abstract class LocalizerBasePanel extends JPanel
     protected JButton          saveBtn            = null;
     protected JMenuItem        saveMenuItem       = null;
     
-    static
-    {
-        Locale defLocale = Locale.getDefault();
-        currLocale       = new Locale(defLocale.getLanguage(), "", "");
-    }
-    
     /**
      * 
      */
     public LocalizerBasePanel()
     {
-        for (Locale locale : Locale.getAvailableLocales())
-        {
-            if (StringUtils.isEmpty(locale.getCountry()))
-            {
-                locales.add(locale);
-            }
-        }
+        SchemaI18NService.initializeLocales(); // this should have already been done, but the cost is minimal
     }
     
     
@@ -199,7 +177,7 @@ public abstract class LocalizerBasePanel extends JPanel
      */
     protected Locale getLocaleByName(final String displayName)
     {
-        for (Locale locale : locales)
+        for (Locale locale : SchemaI18NService.getInstance().getLocales())
         {
             if (locale.getDisplayName().equals(displayName))
             {
@@ -245,7 +223,7 @@ public abstract class LocalizerBasePanel extends JPanel
         {
             if (StringUtils.isNotEmpty(text))
             {
-                desc =  localizableStrFactory.create(text, currLocale);
+                desc =  localizableStrFactory.create(text, SchemaI18NService.getCurrentLocale());
                 lndi.addDesc(desc);
                 return true;
             }
@@ -288,7 +266,7 @@ public abstract class LocalizerBasePanel extends JPanel
         lndi.fillDescs(descsList);
         for (LocalizableStrIFace d : descsList)
         {
-            if (d.isLocale(currLocale))
+            if (d.isLocale(SchemaI18NService.getCurrentLocale()))
             {
                 return d;
             }
@@ -307,7 +285,7 @@ public abstract class LocalizerBasePanel extends JPanel
         {
             if (StringUtils.isNotEmpty(text))
             {
-                nameDesc = localizableStrFactory.create(text, currLocale);
+                nameDesc = localizableStrFactory.create(text, SchemaI18NService.getCurrentLocale());
                 lndi.addName(nameDesc);
                 return true;
             }
@@ -331,7 +309,7 @@ public abstract class LocalizerBasePanel extends JPanel
         LocalizableStrIFace nameDesc = getNameDescForCurrLocale(lndi);
         if (nameDesc == null)
         {
-            //nameDesc = localizableStrFactory.create("", currLocale);
+            //nameDesc = localizableStrFactory.create("", SchemaI18NService.getCurrentLocale());
             //lndi.addName(nameDesc);
             return "";
             
@@ -349,7 +327,7 @@ public abstract class LocalizerBasePanel extends JPanel
         lndi.fillNames(namesList);
         for (LocalizableStrIFace n : namesList)
         {
-            if (n.isLocale(currLocale))
+            if (n.isLocale(SchemaI18NService.getCurrentLocale()))
             {
                 return n;
             }
@@ -392,27 +370,13 @@ public abstract class LocalizerBasePanel extends JPanel
         }
     }
     
+    /**
+     * @return
+     */
     public boolean hasChanged()
     {
         return hasChanged;
     }
-    
-    /**
-     * @return the currLocale
-     */
-    public static Locale getCurrLocale()
-    {
-        return currLocale;
-    }
-
-    /**
-     * @param currLocale the currLocale to set
-     */
-    public static void setCurrLocale(Locale currLocale)
-    {
-        LocalizerBasePanel.currLocale = currLocale;
-    }
-    
     
     /**
      * @param saveBtn the saveBtn to set
@@ -430,80 +394,17 @@ public abstract class LocalizerBasePanel extends JPanel
         this.saveMenuItem = saveMenuItem;
     }
 
+    /**
+     * @return
+     */
     public JMenuItem getSaveMenuItem()
     {
         return saveMenuItem;
     }
 
     /**
-     * @return
-     */
-    protected JMenu getLocaleMenu(final ActionListener al)
-    {
-        JMenu menu = new JMenu("Locale");
-        for (Locale locale : locales)
-        {
-            if (locale.getLanguage().equals("en") || locale.getLanguage().equals("de"))
-            {
-                JCheckBoxMenuItem cbmi = new JCheckBoxMenuItem(locale.getDisplayName());
-                localeMenuItems.add(cbmi);
-                menu.add(cbmi);
-                cbmi.addActionListener(al);
-            }
-        }
-        menu.addSeparator();
-        for (Locale locale : locales)
-        {
-            if (!locale.getLanguage().equals("en") && !locale.getLanguage().equals("de"))
-            {
-                JCheckBoxMenuItem cbmi = new JCheckBoxMenuItem(locale.getDisplayName());
-                localeMenuItems.add(cbmi);
-                menu.add(cbmi);
-                cbmi.addActionListener(al);
-            }
-        }
-        return menu;
-    }
-    
-    /**
      * @param newLocale
      */
-    public void checkLocaleMenu(final Locale newLocale)
-    {
-        for (JCheckBoxMenuItem cbmi : localeMenuItems)
-        {
-            if (cbmi.getText().equals(newLocale.getDisplayName()))
-            {
-                cbmi.setSelected(true);
-            } else
-            {
-                cbmi.setSelected(false);     
-            }
-        }
-    }
-    
-    /**
-     * @param frame
-     * @return
-     */
-    public JMenu getLocaleMenu(final JFrame frame)
-    {
-        JMenu localeMenu = getLocaleMenu(new ActionListener() {
-            public void actionPerformed(ActionEvent e)
-            {
-                
-                Locale newLocale = getLocaleByName(((JCheckBoxMenuItem)e.getSource()).getText());
-                checkLocaleMenu(newLocale);
-
-                UIRegistry.pushWindow(frame);
-                localeChanged(newLocale);
-                UIRegistry.popWindow(frame);
-            }  
-        });
-        checkLocaleMenu(currLocale);
-        return localeMenu;
-    }
-    
     public abstract void localeChanged(final Locale newLocale);
     
 }

@@ -60,9 +60,13 @@ import edu.ku.brc.specify.tools.schemalocale.LocalizableStrIFace;
     })
 public class SpLocaleContainer extends SpLocaleBase implements LocalizableContainerIFace
 {
+    public static final Byte CORE_SCHEMA      = 0;
+    public static final Byte WORKBENCH_SCHEMA = 1;
+    
     private static final Logger log = Logger.getLogger(SpLocaleContainer.class);
             
     protected Integer                    spLocaleContainerId;
+    protected Byte                       schemaType;
     protected Set<SpLocaleContainerItem> items;
     
     protected Set<SpLocaleItemStr>       names;
@@ -90,6 +94,7 @@ public class SpLocaleContainer extends SpLocaleBase implements LocalizableContai
         super.initialize();
         
         spLocaleContainerId = null;
+        schemaType          = null;
         items               = new HashSet<SpLocaleContainerItem>();
         
         names = new HashSet<SpLocaleItemStr>();
@@ -115,6 +120,23 @@ public class SpLocaleContainer extends SpLocaleBase implements LocalizableContai
     public void setSpLocaleContainerId(Integer spLocaleContainerId)
     {
         this.spLocaleContainerId = spLocaleContainerId;
+    }
+
+    /**
+     * @return the schemaType
+     */
+    @Column(name = "SchemaType", unique = false, nullable = false, insertable = true, updatable = true)
+    public Byte getSchemaType()
+    {
+        return schemaType;
+    }
+
+    /**
+     * @param schemaType the schemaType to set
+     */
+    public void setSchemaType(Byte schemaType)
+    {
+        this.schemaType = schemaType;
     }
 
     /**

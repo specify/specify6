@@ -27,18 +27,14 @@ import edu.ku.brc.ui.IconManager;
 public class FieldInfo extends TableFieldPair implements TableListItemIFace
 {
     protected static ImageIcon checkMark   = IconManager.getIcon("Checkmark", IconManager.IconSize.Std16);
-    protected String name;
     
+    /**
+     * @param tableinfo
+     * @param fieldInfo
+     */
     public FieldInfo(DBTableInfo tableinfo, DBFieldInfo fieldInfo)
     {
         super(tableinfo, fieldInfo);
-        
-        name = fieldInfo.getColumn();
-        int inx = name.indexOf(" (");
-        if (inx > -1)
-        {
-            name = name.substring(0, inx);
-        }
     }
     
     /* (non-Javadoc)
@@ -54,7 +50,7 @@ public class FieldInfo extends TableFieldPair implements TableListItemIFace
      */
     public String getText()
     {
-        return name;
+        return fieldInfo.getTitle();
     }
 
     /* (non-Javadoc)

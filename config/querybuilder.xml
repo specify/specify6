@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<database>
+
+    <table name="Accession">
+        <table name="AccessionAgent">
+            <alias name="Agent"/>
+        </table>
+        <table name="AccessionAttachment">
+            <alias name="Attachment"/>
+        </table>
+        <table name="AccessionAuthorization">
+            <alias name="Permit"/>
+        </table>
+    </table>
+
+    <table name="Agent">
+        <table name="Address"/>
+        <table name="AgentAttachment">
+            <alias name="Attachment"/>
+        </table>
+        <table name="AgentVariant"/>
+    </table>
+    
+    <table name="Attachment">
+        <table name="AttachmentMetadata"/>
+    </table>
+   
+    <table name="Author">
+        <alias name="Agent"/>
+    </table>
+    
+    <table name="Borrow">
+        <table name="BorrowAgent">
+            <alias name="Agent"/>
+        </table>
+        <table name="BorrowMaterial"/>
+        <table name="BorrowReturnMaterial"/>
+    </table>
+    
+    <table name="Collection">
+    	<alias name="BorrowReturnMaterial"/>
+    </table>
+    
+    <table name="CollectingEvent">
+        <table name="CollectingEventAttachment">
+            <alias name="Attachment"/>
+        </table>
+	    <table name="Collector">
+             <alias name="Agent"/>
+        </table>
+    </table>
+    
+    <table name="CollectingTrip">
+        <alias name="CollectingEvent"/>
+    </table>
+
+    <table name="CollectionObject">
+    	<table name="ColObjAttributes"/>
+        <table name="CollectionObjectAttachment">
+            <alias name="Attachment"/>
+        </table>
+    	<table name="CollectionObjectCitation">
+    		<alias name="ReferenceWork"/>
+    	</table>
+    	
+        <table name="Determination" field="determinations" title="Determinations">
+            <table name="Taxon">
+            	<table name="TaxonAttachment">
+                	<alias name="Attachment"/>
+            	</table>
+                <table name="TaxonCitation">
+                	<alias name="ReferenceWork"/>
+                </table>
+            </table>
+            <table name="DeterminationCitation">
+                <alias name="ReferenceWork"/>
+            </table>
+            <alias name="Agent" field="DeterminedBy"/>
+        </table>
+        <table name="PaleoContext" field="paleoContext">
+    		<table name="GeologicTimePeriod"/>
+    		<table name="LithoStrat"/>
+    	</table>
+        <alias name="Preparation" field="properation"/>
+        <alias name="CollectingEvent" field="collectingEvent"/>
+    </table>
+    
+    <table name="Locality">
+    	<table name="Geography"/>
+        <table name="LocalityNameAlias"/>
+        <table name="LocalityAttachment">
+        	<alias name="Attachment"/>
+        </table>
+        <table name="LocalityCitation">
+            <alias name="ReferenceWork"/>
+        </table>
+    </table>
+    
+    <table name="Permit">
+        <table name="PermitAttachment">
+            <alias name="Attachment"/>
+        </table>
+    </table>
+
+    <table name="Preparation">
+        <table name="PrepType"/>
+        <table name="PreparationAttachment">
+            <table name="Attachment"/>
+        </table>
+        <table name="PreparationAttributes"/>
+    </table>
+    
+    <table name="ReferenceWork">
+        <table name="Journal"/>
+        <table name="Author">
+            <alias name="Agent"/>
+        </table>
+    </table>
+    
+    <!-- Not Searchable
+    <table name="AppResource" id="83"/>
+    <table name="AppResourceData" id="84"/>
+    <table name="AppResourceDefault" id="85"/> 
+    <table name="CatalogNumberingScheme">
+    <table name="AttributeDef"/>
+    <table name="CollectingEventAttr"/>
+    <table name="CollectionObjectAttr"/>
+    <table name="PreparationAttr"/>
+    
+    <table name="Workbench"/>
+    <table name="WorkbenchDataItem"/>
+    <table name="WorkbenchRow"/>
+    <table name="WorkbenchRowImage"/>
+    <table name="WorkbenchTemplate"/>
+    <table name="WorkbenchTemplateMappingItem"/>
+    
+    <table name="CollectionType"/>
+    <table name="TaxonTreeDefItem" id="77">
+    </table>
+    <table name="UserGroup" id="78"/>
+    <table name="UserPermission" id="89"/>
+    <table name="ViewSetObj" id="86"/>
+    <table name="SpecifyUser" id="72"/>
+    <table name="RecordSet" id="68"/>
+    <table name="RecordSetItem" id="502"/>
+    <table name="PickList" id="500">
+    <table name="PickListItem" id="501"/>
+    <table name="DataType" id="33">
+    <table name="GeographyTreeDef" id="44"/>
+    <table name="GeographyTreeDefItem" id="45">
+    <table name="GeologicTimePeriodTreeDef" id="47"/>
+    <table name="GeologicTimePeriodTreeDefItem" id="48">
+    <table name="LithoStratTreeDef" id="101"/>
+    <table name="LithoStratTreeDefItem" id="102"/>
+    <table name="LocationTreeDef" id="59"/>
+    <table name="LocationTreeDefItem" id="60">
+    <table name="TaxonTreeDef" id="76"/>
+    -->
+        
+    
+    <!--
+    <table name="CollectionRelType" id="98">
+    <table name="CollectionRelationship" id="99"/>
+    <table name="Collector" id="30"/>
+    <table name="CommonName" id="106"/>
+    <table name="ConservDescription" id="103"/>
+    <table name="ConservDescriptionAttachment" id="112">
+    <table name="ConservEvent" id="73"/>
+    <table name="ConservEventAttachment" id="113">
+    <table name="ConservRecmdType" id="105"/>
+    <table name="ConservRecommendation" id="104"/>
+    <table name="Container" id="31"/>
+    <table name="Deaccession" id="34"/>
+    <table name="DeaccessionAgent" id="35"/>
+    <table name="DeaccessionPreparation" id="36"/>
+    <table name="DeterminationCitation" id="38"/>
+    <table name="DeterminationStatus" id="88">
+    <table name="Division" id="96">
+    <table name="ExchangeIn" id="39"/>
+    <table name="ExchangeOut" id="40"/>
+    <table name="GroupPerson" id="49"/>
+    <table name="HabitatAttributes" id="92"/>
+    <table name="InfoRequest" id="50">
+    <table name="Institution" id="94">
+    <table name="Journal" id="51">
+    <table name="Loan" id="52">
+    <table name="LoanAgent" id="53"/>
+    <table name="LoanAttachment" id="114">
+    <table name="LoanPhysicalObject" id="54"/>
+    <table name="LoanReturnPhysicalObject" id="55">
+    <table name="Location" id="58">
+    <table name="OtherIdentifier" id="61"/>
+    <table name="Project" id="66"/>
+    <table name="ProjectCollectionObject" id="67"/>
+    <table name="RepositoryAgreement" id="70"/>
+    <table name="RepositoryAgreementAttachment" id="118">
+    <table name="Shipment" id="71">
+
+ -->
+</database>
+
+

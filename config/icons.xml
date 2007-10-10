@@ -28,42 +28,42 @@
     <icon name="Bar_Chart"        file="BarGraph32x32.png" sizes="all"/>
     <icon name="Record_Set"       file="bundle.png" sizes="all"/>
     <icon name="Record_Set16"     file="bundle.png" sizes="16"/>
-    <icon name="Agent"            file="agent.gif" sizes="all"/>
     <icon name="Person"           file="emblem-personal.png" sizes="all"/>
     <icon name="People"           file="emblem-people.png" sizes="all"/>
-    <icon name="Determination"    file="agent.gif" sizes="all"/>
-    <icon name="AccessionAgent"   file="agent.gif" sizes="all"/>
-    <icon name="CollectionObject" file="catobj_fish32x32.gif" sizes="all"/>
     <icon name="Series"     file="series.gif" sizes="all"/>
-    <icon name="Taxon"      file="taxon.gif" sizes="all"/>
-    <icon name="Geography"  file="earth.png" sizes="all"/>
-    <icon name="Locality"   file="locality.gif" sizes="all"/>
-    <icon name="ColObj"     file="catobj_fish.gif" sizes="all"/>
-    <icon name="Address"    file="address.gif" sizes="all"/>
-    <icon name="Location"   file="location.gif" sizes="all"/>
-    <icon name="CollectingEvent" file="collevent.gif" sizes="all"/>
-    <icon name="Accession"  file="accession.gif" sizes="all"/>
-    <icon name="Permit"     file="permit.png" sizes="all"/>
-    <icon name="InfoRequest" file="information.gif" sizes="all"/>
     <icon name="SystemSetup" file="information.gif" sizes="all"/>
     <icon name="Search"      file="search.gif" sizes="all"/>
     <icon name="LocalityMapper" file="map.png" sizes="all"/>
-    <icon name="PrepType"      file="preptype.png" sizes="all"/>
-    <icon name="Loan"          file="loans.gif" sizes="all"/>
     <icon name="SystemSetup"   file="system.png" sizes="all"/>
-    <icon name="Stratigraphy"  file="strat_icon32x32.gif" sizes="all"/>
-    <icon name="CollectingTrip" file="canoe.png" sizes="all"/>
-    <icon name="Collection"    file="package.png" sizes="all"/>
-    <icon name="Journal"       file="journal.png" sizes="all"/>
-    <icon name="CollectionObjectCitation" file="citation.png" sizes="all"/>
-    <icon name="Address"       file="address.png" sizes="all"/>
-    <icon name="ReferenceWork" file="referencework.png" sizes="all"/>
-    <icon name="Author"        file="author.png" sizes="all"/>
-    <icon name="GeologicTimePeriod" file="geologictime.png" sizes="all"/>
-    <icon name="Template"      file="template.png" sizes="all"/>
-    <icon name="ColObjAttributes" file="newworkbench.gif" sizes="32"/>
     <icon name="PlaceHolder"   file="specify32faded.png" sizes="32"/>
+    <icon name="Template"      file="template.png" sizes="all"/>
     
+    <!--  Table Icons -->
+    <icon name="accession"      file="accession.gif" sizes="all"/>
+    <icon name="accessionagent" file="agent.gif" sizes="all"/>
+    <icon name="address"        file="address.png" sizes="all"/>
+    <icon name="agent"          file="agent.gif" sizes="all"/>
+    <icon name="author"         file="author.png" sizes="all"/>
+    <icon name="collectingevent" file="collevent.gif" sizes="all"/>
+    <icon name="collectingtrip" file="canoe.png" sizes="all"/>
+    <icon name="collection"     file="package.png" sizes="all"/>
+    <icon name="collectionobject" file="catobj_fish32x32.gif" sizes="all"/>
+    <icon name="collectionobjectcitation" file="citation.png" sizes="all"/>
+    <icon name="colobj"         file="catobj_fish.gif" sizes="all"/>
+    <icon name="colobjattributes" file="newworkbench.gif" sizes="32"/>
+    <icon name="determination"  file="agent.gif" sizes="all"/>
+    <icon name="geography"      file="earth.png" sizes="all"/>
+    <icon name="geologictimeperiod" file="geologictime.png" sizes="all"/>
+    <icon name="inforequest"    file="information.gif" sizes="all"/>
+    <icon name="journal"        file="journal.png" sizes="all"/>
+    <icon name="loan"           file="loans.gif" sizes="all"/>
+    <icon name="locality"       file="locality.gif" sizes="all"/>
+    <icon name="location"       file="location.gif" sizes="all"/>
+    <icon name="permit"         file="permit.png" sizes="all"/>
+    <icon name="preptype"       file="preptype.png" sizes="all"/>
+    <icon name="referencework"  file="referencework.png" sizes="all"/>
+    <icon name="stratigraphy"   file="strat_icon32x32.gif" sizes="all"/>
+    <icon name="taxon"          file="taxon.gif" sizes="all"/>
     
     <icon name="Labels16"      file="Label16x16.png" sizes="16"/>
     <icon name="Reports"       file="Reports32x32.png" sizes="all"/>
@@ -92,33 +92,35 @@
     <icon name="DropIndicator"  file="dropindicator.png" sizes="NonStd"/>
 
     <!-- Aliases -->
-    <icon name="Accession Agent"        alias="AccessionAgent"/>
-    <icon name="Attachment"             alias="unknown"/>
-    <icon name="Collecting Event"       alias="CollectingEvent"/>
-    <icon name="Collecting Trip"        alias="CollectingTrip"/>
-    <icon name="Collection Object"      alias="CollectionObject"/>
-    <icon name="Preparation"            alias="cs"/>
-    <icon name="Preparation Type"       alias="PrepType"/>
-    <icon name="DeterminationCitation"  alias="CollectionObjectCitation"/>
-    <icon name="LocalityCitation"       alias="CollectionObjectCitation"/>
-    <icon name="TaxonCitation"          alias="CollectionObjectCitation"/>
-    <icon name="DeterminationCitaton"   alias="CollectionObjectCitation"/>
-    <icon name="LocalityCitation"       alias="CollectionObjectCitation"/>
-    <icon name="TaxonCitation"          alias="CollectionObjectCitation"/>
-    <icon name="ShowMap"		        alias="LocalityMapper"/>
-    <icon name="RepositoryAgreement"    alias="Accession"/>
-    <icon name="Repository Agreement"   alias="Accession"/>
-    <icon name="Reference Work"         alias="ReferenceWork"/>
-    <icon name="HabitatAttributes"      alias="ColObjAttributes"/>
-    <icon name="PreparationAttributes"  alias="ColObjAttributes"/>
-    <icon name="Collection Object Attributes" alias="ColObjAttributes"/>
-    <icon name="Habitat Attributes"     alias="ColObjAttributes"/>
-    <icon name="Preparation Attributes" alias="ColObjAttributes"/>
+    <icon name="attachment"             alias="unknown"/>
+    <icon name="preparation"            alias="cs"/>
+    <icon name="determinationcitation"  alias="collectionobjectcitation"/>
+    <icon name="localitycitation"       alias="collectionobjectcitation"/>
+    <icon name="taxoncitation"          alias="collectionobjectcitation"/>
+    <icon name="determinationcitaton"   alias="collectionobjectcitation"/>
+    <icon name="localityxitation"       alias="collectionobjectcitation"/>
+    <icon name="taxoncitation"          alias="collectionobjectcitation"/>
+    <icon name="repositoryagreement"    alias="accession"/>
+    <icon name="habitatattributes"      alias="colobjattributes"/>
+    <icon name="preparationattributes"  alias="colobjattributes"/>
     
-    <icon name="TaxonTreeDef"              alias="Taxon"/>
-    <icon name="GeographyTreeDef"          alias="Geography"/>
-    <icon name="GeologicTimePeriodTreeDef" alias="GeologicTimePeriod"/>
-    <icon name="LocationTreeDef"           alias="Location"/>
+    <icon name="Accession Agent"        alias="accessionagent"/>
+    <icon name="Collecting Event"       alias="collectingevent"/>
+    <icon name="Collecting Trip"        alias="collectingtrip"/>
+    <icon name="Collection Object"      alias="collectionobject"/>
+    <icon name="Collection Object Attributes" alias="colobjattributes"/>
+    <icon name="Habitat Attributes"     alias="colobjattributes"/>
+    <icon name="Preparation Attributes" alias="colobjattributes"/>
+    <icon name="Preparation Type"       alias="preptype"/>
+    <icon name="Repository Agreement"   alias="accession"/>
+    <icon name="Reference Work"         alias="referencework"/>
+    
+    <icon name="ShowMap"		        alias="LocalityMapper"/>
+    
+    <icon name="taxontreedef"              alias="taxon"/>
+    <icon name="geographytreedef"          alias="geography"/>
+    <icon name="geologictimePeriodtreedef" alias="geologictimeperiod"/>
+    <icon name="locationlreedef"           alias="location"/>
     
     <icon name="Startup"	            alias="AppIcon"/>
     

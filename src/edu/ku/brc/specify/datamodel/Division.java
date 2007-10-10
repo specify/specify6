@@ -23,15 +23,12 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 
@@ -53,18 +50,17 @@ import org.hibernate.annotations.Index;
     })
 public class Division extends DataModelObjBase implements java.io.Serializable 
 {
-
     // Fields    
-
-     protected Integer     divisionId;
-     protected String      name;
-     protected String      title;
-     protected String      abbrev;
-     protected String      uri;
-     protected String      iconURI;
-     protected String      discipline;
-     protected String      remarks;
-     protected Institution institution;
+     protected Integer                 divisionId;
+     protected String                  name;
+     protected String                  title;
+     protected String                  abbrev;
+     protected String                  uri;
+     protected String                  iconURI;
+     protected String                  discipline;
+     protected String                  remarks;
+     protected Institution             institution;
+     protected Set<CollectionType>     collectionTypes;
      
      protected Set<Agent>              members;
      protected Set<ConservDescription> conservDescriptions;
@@ -73,11 +69,13 @@ public class Division extends DataModelObjBase implements java.io.Serializable
     // Constructors
 
     /** default constructor */
-    public Division() {
+    public Division() 
+    {
     }
     
     /** constructor with id */
-    public Division(Integer divisionId) {
+    public Division(Integer divisionId) 
+    {
         this.divisionId = divisionId;
     }
    
@@ -97,6 +95,7 @@ public class Division extends DataModelObjBase implements java.io.Serializable
         remarks             = null;
         members             = new HashSet<Agent>();
         conservDescriptions = new HashSet<ConservDescription>();
+        institution         = null;
     }
     
     /**
@@ -170,12 +169,8 @@ public class Division extends DataModelObjBase implements java.io.Serializable
     /**
      * @return the members
      */
-    @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
-    @JoinTable(
-            name="division_agents",
-            joinColumns = {@JoinColumn(name="DivisionID")},
-            inverseJoinColumns= {@JoinColumn(name="AgentID")})
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "division")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Agent> getMembers()
     {
         return members;
@@ -285,6 +280,42 @@ public class Division extends DataModelObjBase implements java.io.Serializable
     public void setConservDescriptions(final Set<ConservDescription> conservDescriptions)
     {
         this.conservDescriptions = conservDescriptions;
+    }
+
+    /**
+     * @return the institution
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "InstitutionID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Institution getInstitution()
+    {
+        return institution;
+    }
+
+    /**
+     * @param institution the institution to set
+     */
+    public void setInstitution(Institution institution)
+    {
+        this.institution = institution;
+    }
+
+    /**
+     * @return the collectionTypes
+     */
+    @OneToMany(cascade = { }, fetch = FetchType.LAZY, mappedBy = "division")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<CollectionType> getCollectionTypes()
+    {
+        return collectionTypes;
+    }
+
+    /**
+     * @param collectionTypes the collectionTypes to set
+     */
+    public void setCollectionTypes(Set<CollectionType> collectionTypes)
+    {
+        this.collectionTypes = collectionTypes;
     }
 
     /* (non-Javadoc)

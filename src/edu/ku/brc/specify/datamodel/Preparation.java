@@ -86,7 +86,7 @@ public class Preparation extends DataModelObjBase implements AttachmentOwnerIFac
 
     protected PreparationAttributes       preparationAttributes;   // Specify 5 Attributes table
     protected Set<PreparationAttr>        preparationAttrs;        // Generic Expandable Attributes
-    private Set<PreparationAttachment>    preparationAttachments;
+    protected Set<PreparationAttachment>  preparationAttachments;
     
     // Constructors
 

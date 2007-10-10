@@ -62,7 +62,7 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable
 
     // Fields    
 
-    protected Integer              prepTypeId;
+    protected Integer           prepTypeId;
     protected String            name;
     protected Boolean           isLoanable;
     protected Set<Preparation>  preparations;

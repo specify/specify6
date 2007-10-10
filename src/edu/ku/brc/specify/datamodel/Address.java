@@ -56,7 +56,7 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
 
     // Fields
 
-    protected Integer              addressId;
+    protected Integer           addressId;
     protected String            address;
     protected String            address2;
     protected String            city;

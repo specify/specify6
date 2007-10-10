@@ -33,9 +33,11 @@ import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 
 /**
+ * This class gets all the L10N string from the database for a locale and populates the DBTableInfo etc structures.
+ * 
  * @author rods
  *
- * @code_status Alpha
+ * @code_status Beta
  *
  * Created Date: Oct 3, 2007
  *
@@ -48,24 +50,27 @@ public class SpecifySchemaI18NService extends SchemaI18NService
     protected Vector<Vector<String>> results  = new Vector<Vector<String>>();
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.SchemaI18NService#loadWithLocale(java.util.Locale)
+     * @see edu.ku.brc.af.core.SchemaI18NService#loadWithLocale(java.lang.Byte, int, edu.ku.brc.dbsupport.DBTableIdMgr, java.util.Locale)
      */
     @Override
-    public void loadWithLocale(Locale locale)
+    public void loadWithLocale(final Byte schemaType, 
+                               final int  collectionTypeId,
+                               final DBTableIdMgr mgr, 
+                               final Locale locale)
     {
         String sql = "SELECT splocalecontainer.Name, Text, IsHidden FROM splocalecontainer INNER JOIN splocaleitemstr ON " +
-        "splocalecontainer.SpLocaleContainerID = splocaleitemstr.SpLocaleContainerNameID where Language = '"+locale.getLanguage()+"'";
+                     "splocalecontainer.SpLocaleContainerID = splocaleitemstr.SpLocaleContainerNameID where Language = '"+locale.getLanguage()+"' AND " +
+                     "splocalecontainer.SchemaType = " + schemaType +" AND splocalecontainer.CollectionTypeID = " + collectionTypeId;
         
         retrieveString(sql);
         
-        DBTableIdMgr mgr = DBTableIdMgr.getInstance();
         for (Vector<String> p : results)
         {
             DBTableInfo ti = mgr.getInfoByTableName(p.get(0));
             if (ti != null)
             {
                 ti.setTitle(p.get(1));
-                ti.setHidden(p.get(2).equals("1"));
+                ti.setHidden(!p.get(2).equals("0"));
                 
             } else
             {
@@ -74,7 +79,8 @@ public class SpecifySchemaI18NService extends SchemaI18NService
         }
         
         sql = "SELECT splocalecontainer.Name,Text FROM splocalecontainer INNER JOIN splocaleitemstr ON " +
-        "splocalecontainer.SpLocaleContainerID = splocaleitemstr.SpLocaleContainerDescID where Language = '"+locale.getLanguage()+"'";
+              "splocalecontainer.SpLocaleContainerID = splocaleitemstr.SpLocaleContainerDescID where Language = '"+locale.getLanguage()+"' AND " +
+              "splocalecontainer.SchemaType = " + schemaType +" AND splocalecontainer.CollectionTypeID = " + collectionTypeId;
         
         retrieveString(sql);
         for (Vector<String> p : results)
@@ -91,7 +97,9 @@ public class SpecifySchemaI18NService extends SchemaI18NService
         
         sql = "SELECT splocalecontainer.Name,splocalecontaineritem.Name, splocaleitemstr.Text "+
               "FROM splocalecontainer INNER JOIN splocalecontaineritem ON splocalecontainer.SpLocaleContainerID = splocalecontaineritem.SpLocaleContainerID "+
-              "INNER JOIN splocaleitemstr ON splocalecontaineritem.SpLocaleContainerItemID = splocaleitemstr.SpLocaleContainerItemNameID order by splocalecontainer.Name";
+              "INNER JOIN splocaleitemstr ON splocalecontaineritem.SpLocaleContainerItemID = splocaleitemstr.SpLocaleContainerItemNameID "+
+              " where splocaleitemstr.Language = '"+locale.getLanguage()+"' AND " +
+              "splocalecontainer.SchemaType = " + schemaType +" AND splocalecontainer.CollectionTypeID = " + collectionTypeId + " order by splocalecontainer.Name";
         
         retrieveString(sql);
         
@@ -110,7 +118,7 @@ public class SpecifySchemaI18NService extends SchemaI18NService
                 DBInfoBase fi = ti.getItemByName(p.get(1));
                 if (fi != null)
                 {
-                    ti.setTitle(p.get(2));
+                    fi.setTitle(p.get(2));
                     
                 } else
                 {
@@ -125,7 +133,9 @@ public class SpecifySchemaI18NService extends SchemaI18NService
         
         sql = "SELECT splocalecontainer.Name, splocalecontaineritem.Name, splocaleitemstr.Text, splocalecontaineritem.IsHidden "+
               "FROM splocalecontainer INNER JOIN splocalecontaineritem ON splocalecontainer.SpLocaleContainerID = splocalecontaineritem.SpLocaleContainerID "+
-              "INNER JOIN splocaleitemstr ON splocalecontaineritem.SpLocaleContainerItemID = splocaleitemstr.SpLocaleContainerItemDescID order by splocalecontainer.Name";
+              "INNER JOIN splocaleitemstr ON splocalecontaineritem.SpLocaleContainerItemID = splocaleitemstr.SpLocaleContainerItemDescID "+
+              " where splocaleitemstr.Language = '"+locale.getLanguage()+"' AND " +
+              "splocalecontainer.SchemaType = " + schemaType +" AND splocalecontainer.CollectionTypeID = " + collectionTypeId + " order by splocalecontainer.Name";
         
         retrieveString(sql);
         
@@ -145,7 +155,7 @@ public class SpecifySchemaI18NService extends SchemaI18NService
                 if (fi != null)
                 {
                     fi.setDescription(p.get(2));
-                    fi.setHidden(p.get(3).equals("1"));
+                    fi.setHidden(!p.get(3).equals("0"));
                     
                 } else
                 {
@@ -162,9 +172,8 @@ public class SpecifySchemaI18NService extends SchemaI18NService
     }
     
     /**
-     * @param locale
-     * @param sql
-     * @param results
+     * Retrieves the results of the query and puts them into a Vector. The Vector for each row is either created new or grabbed from a recycler.
+     * @param sql the SQL to execute
      */
     protected void retrieveString(final String sql)
     {
@@ -173,6 +182,8 @@ public class SpecifySchemaI18NService extends SchemaI18NService
             recycler.addAll(results);
             results.clear();
         }
+        
+        log.debug(sql);
         
         Connection connection = null;
         Statement stmt        = null;
@@ -205,6 +216,16 @@ public class SpecifySchemaI18NService extends SchemaI18NService
                     }
                     results.add(p);
                     
+                    /* DEBUG
+                    if (p.get(0).toLowerCase().startsWith("coll"))
+                    {
+                        for (String s : p)
+                        {
+                            System.out.print(s+", ");
+                        }
+                        System.out.println("");
+                    }*/
+                    
                 } while (rs.next());
             }
             
@@ -234,15 +255,4 @@ public class SpecifySchemaI18NService extends SchemaI18NService
             }
         }
     }
-    
-    /**
-     * @param locale
-     */
-    protected void loadNames(@SuppressWarnings("unused")
-    final Locale locale)
-    {
-
-
-    }
-
 }

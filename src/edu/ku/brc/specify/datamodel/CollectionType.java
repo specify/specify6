@@ -80,8 +80,9 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     protected TaxonTreeDef              taxonTreeDef;
     protected LithoStratTreeDef         lithoStratTreeDef;
     protected Set<Locality>             localities;
-    protected Set<SpAppResourceDir> spAppResourceDirs;
+    protected Set<SpAppResourceDir>     spAppResourceDirs;
     protected Set<UserPermission>       userPermissions;
+    protected Division                  division;
     
     protected Set<SpLocaleContainer>    spLocaleContainers;
      
@@ -371,6 +372,24 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     public void setSpLocaleContainers(Set<SpLocaleContainer> spLocaleContainers)
     {
         this.spLocaleContainers = spLocaleContainers;
+    }
+
+    /**
+     * @return the division
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "DivisionID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Division getDivision()
+    {
+        return division;
+    }
+
+    /**
+     * @param division the division to set
+     */
+    public void setDivision(Division division)
+    {
+        this.division = division;
     }
 
     /* (non-Javadoc)

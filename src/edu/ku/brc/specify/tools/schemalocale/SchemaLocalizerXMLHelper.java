@@ -51,9 +51,12 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
 {
     private static final Logger log = Logger.getLogger(SchemaLocalizerXMLHelper.class);
     
-    protected static String    fileName   = "schema_localization.xml";
+    protected static String    fileName[]   = {"schema_localization.xml", "wbschema_localization.xml"};
     
-    protected static LocalizableStrFactory       localizableStrFactory;
+    protected static LocalizableStrFactory                 localizableStrFactory;
+    protected Byte                                         schemaType;
+    
+    protected DBTableIdMgr                                 tableMgr;
     
     protected Vector<SpLocaleContainer>                    tables     = new Vector<SpLocaleContainer>();
     protected Hashtable<String, LocalizableContainerIFace> tableHash  = new Hashtable<String, LocalizableContainerIFace>();
@@ -63,7 +66,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     
     protected Hashtable<LocalizableJListItem, Vector<LocalizableJListItem>> itemJListItemsHash = new Hashtable<LocalizableJListItem, Vector<LocalizableJListItem>>();
     
-    protected boolean changesMadeDuringStartup = false;
+    protected boolean                                      changesMadeDuringStartup = false;
     
     // Used for Caching the lists
     protected Vector<LocalizableStrIFace> namesList = new Vector<LocalizableStrIFace>();
@@ -75,11 +78,32 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     /**
      * 
      */
-    public SchemaLocalizerXMLHelper()
+    public SchemaLocalizerXMLHelper(final Byte         schemaType, 
+                                    final DBTableIdMgr tableMgr)
     {
-        
+        this.schemaType = schemaType;
+        this.tableMgr   = tableMgr;
     }
     
+    /**
+     * @return the localizableStrFactory
+     */
+    public static LocalizableStrFactory getLocalizableStrFactory()
+    {
+        return localizableStrFactory;
+    }
+
+    /**
+     * @param localizableStrFactory the localizableStrFactory to set
+     */
+    public static void setLocalizableStrFactory(LocalizableStrFactory localizableStrFactory)
+    {
+        SchemaLocalizerXMLHelper.localizableStrFactory = localizableStrFactory;
+    }
+
+    /**
+     * @return
+     */
     public Vector<SpLocaleContainer> getSpLocaleContainers()
     {
         return tables;
@@ -96,8 +120,11 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
         
         try
         {
-            File file = XMLHelper.getConfigDir(fileName);
-            tables = (Vector<SpLocaleContainer>)xstream.fromXML(new FileReader(file));
+            File file = XMLHelper.getConfigDir(fileName[schemaType]);
+            if (file.exists())
+            {
+                tables = (Vector<SpLocaleContainer>)xstream.fromXML(new FileReader(file));
+            }
             
             for (SpLocaleContainer ct : tables)
             {
@@ -109,7 +136,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                         hash.put(item.getName(), true);
                     } else
                     {
-                        System.out.println("Removing Duplicate["+item.getName()+"]");
+                        log.debug("Removing Duplicate["+item.getName()+"]");
                         ct.getItems().remove(item);
                     }
                 }
@@ -127,12 +154,11 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
             
             log.info("Syncing with Datamodel.... (ignore errors)");
             changesBuffer.append("<Center><table border=\"1\">");
-            DBTableIdMgr mgr = DBTableIdMgr.getInstance();
             
             String lang = Locale.getDefault().getLanguage();
             
             log.info("Adding New Tables and fields....");
-            for (DBTableInfo ti : mgr.getTables())
+            for (DBTableInfo ti : tableMgr.getTables())
             {
                 SpLocaleContainer container = (SpLocaleContainer)tableHash.get(ti.getName());
                 if (container == null)
@@ -153,6 +179,13 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                     changesBuffer.append("<td align=\"center\">");
                     changesBuffer.append(ti.getName());
                     changesBuffer.append("</td><td>&nbsp;</td></tr>");
+                    
+                    tableHash.put(container.getName(), container);
+                    tables.add(container);
+                    
+                    LocalizableJListItem jItem = new LocalizableJListItem(container.getName(), container.getId(), null);
+                    tableDisplayItems.add(jItem);
+                    tableDisplayItemsHash.put(container.getName(), jItem);
                                        
                     for (DBFieldInfo fi : ti.getFields())
                     {
@@ -161,7 +194,8 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                         item.setName(fi.getName());
                         nameStr = new SpLocaleItemStr();
                         nameStr.initialize();
-                        nameStr.setText(UIHelper.makeNamePretty(fi.getDataClass().getSimpleName()));
+                        //nameStr.setText(UIHelper.makeNamePretty(fi.getDataClass().getSimpleName()));
+                        nameStr.setText(UIHelper.makeNamePretty(fi.getName()));
                         nameStr.setLanguage(lang);
                         item.addName(nameStr);
                         log.info("  Adding Field ["+fi.getName()+"]");
@@ -169,6 +203,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                         changesBuffer.append("<td align=\"center\">&nbsp;</td><td align=\"center\">");
                         changesBuffer.append(fi.getName());
                         changesBuffer.append("</td></tr>");
+                        container.addItem(item);
                     }
                     
                     for (DBRelationshipInfo ri : ti.getRelationships())
@@ -181,6 +216,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                         changesBuffer.append("<td align=\"center\">&nbsp;</td><td align=\"center\">");
                         changesBuffer.append(ri.getName());
                         changesBuffer.append("</td></tr>");
+                        container.addItem(item);
                     }
                     
                 } else
@@ -237,7 +273,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
             log.info("Removing Old Tables and fields....");
             for (SpLocaleContainer container : new Vector<SpLocaleContainer>(tables))
             {
-                DBTableInfo ti = mgr.getInfoByTableName(container.getName());
+                DBTableInfo ti = tableMgr.getInfoByTableName(container.getName());
                 if (ti == null)
                 {
                     log.info("Removing Table ["+container.getName()+"] from Schema");
@@ -420,7 +456,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#save()
      */
-    public boolean save()
+    protected boolean save(final File outFile)
     {
         try
         {
@@ -430,14 +466,13 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                 return false;
             }
             
-            File file = XMLHelper.getConfigDir(fileName);
-            log.info("Writing descriptions to file: " + file.getAbsolutePath());
+            log.info("Writing descriptions to file: " + outFile.getAbsolutePath());
             
             XStream xstream = new XStream();
             
             configXStream(xstream);
             
-            FileUtils.writeStringToFile(file, xstream.toXML(tables));
+            FileUtils.writeStringToFile(outFile, xstream.toXML(tables));
             
             return true;
             
@@ -446,8 +481,16 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
             log.error("error writing writeTree", ex);
         }
         return false;
+
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#save()
+     */
+    public boolean save()
+    {
+        return save(XMLHelper.getConfigDir(fileName[schemaType]));
+    }
 
     /**
      * @param pw
@@ -769,7 +812,13 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
             }
         }
     }
-    
-    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#export(java.io.File)
+     */
+    public boolean export(File expportFile)
+    {
+        return save(expportFile);
+    }
 
 }

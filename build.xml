@@ -135,6 +135,18 @@
 	    </jar>
 	</target>
 
+	<target name="dist-jar-mac-ls" depends="">
+		
+		<jar destfile="${jar.name}.jar">
+			<fileset dir="${class.root}">
+				<include name="**/*.class" />
+				<include name="**/*.properties" />
+				<include name="**/*.xml" />
+				<exclude name="**/images/*.*" />
+			</fileset>
+	    </jar>
+	</target>
+
 	<!-- Jar Clean Up -->
 	<target name="clean-jar">
 		<delete file="${jar.name}.jar" />
@@ -400,6 +412,76 @@
 		<copy file="demo_files/workbench/JohsonCountyTrip.csv" todir="${dist-mac}/examples" />
 	    <copy file="demo_files/workbench/SaipanTrip.xls" todir="${dist-mac}/examples" />
 
+	</target>
+
+	<target name="dist-mac-sl" depends="">
+		
+		<property name="appdir" value="${dist-mac}/SpecifySchema.app" />
+		<property name="derby.data.path" value="${dist-mac}/DerbyDatabases" />
+		
+		<antcall target="clean-jar"/>
+		<antcall target="dist-jar-mac-ls"/>
+		<antcall target="dist-mac-clean"/>
+		
+		<!--
+		<antcall target="build-empty-derby-db"/>
+		-->
+		<mkdir dir="${dist-mac}" />
+		<mkdir dir="${appdir}" />
+		<mkdir dir="${appdir}/Contents" />
+		<mkdir dir="${appdir}/Contents/MacOS" />
+		<mkdir dir="${appdir}/Contents/Resources" />
+		<mkdir dir="${appdir}/Contents/Resources/Java" />
+		<mkdir dir="${appdir}/Contents/Resources/Java/config" />
+
+		<!-- Copy Application Stub Compile the java source of the project -->
+		<copy file="${packaging}/JavaApplicationStub" todir="${appdir}/Contents/MacOS" />
+		<exec command="chmod 755 ${appdir}/Contents/MacOS/JavaApplicationStub" />
+
+		<!-- Copy info list -->
+		<copy file="${packaging}/SLInfo.plist" todir="${appdir}/Contents" />
+		<rename src="${appdir}/Contents/SLInfo.plist" dest="${appdir}/Contents/Info.plist"/>
+		
+		<!-- Copy PkgInfo -->
+		<copy file="${packaging}/PkgInfo" todir="${appdir}/Contents" />
+
+		<!-- Copy config dir -->
+		<copy todir="${appdir}/Contents/Resources/Java/config">
+			<fileset dir="config">
+				<exclude name="**/*.svn" />
+				<exclude name="**/fish/*" />
+				<exclude name="**/birds/*" />
+				<exclude name="**/backstop/*" />
+				<exclude name="**/accessions/*" />
+				<exclude name="**/insect/*" />
+			</fileset>
+		</copy>
+		
+		<!-- Copy the main app jar -->
+		<copy file="${jar.name}.jar" todir="${appdir}/Contents/Resources/Java" />
+
+		<!-- Copy Icons -->
+		<copy file="${packaging}/specify.icns" todir="${appdir}/Contents/Resources" />
+
+		<copy todir="${appdir}/Contents/Resources/Java">
+			<fileset dir="libs">
+				<include name="*.jar" />
+				<exclude name="**/*.svn" />
+				<exclude name="**/ant.jar" />
+				<exclude name="**/derby.jar" />
+				<exclude name="**/jasperreports.jar" />
+				<exclude name="**/itext.jar" />
+				<exclude name="**/jfreechart.jar" />
+			</fileset>
+			<fileset dir="${hibernatelib.dir}">
+				<include name="**/dom4j.jar" />
+				<exclude name="**/*.svn" />
+			</fileset>
+		</copy>
+
+		<!-- Tell OS the dir is an App -->
+		<exec command="/Developer/Tools/SetFile -a B ${appdir}" />
+		
 	</target>
 
 		

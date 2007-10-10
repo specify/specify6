@@ -16,8 +16,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
 import java.awt.LayoutManager2;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,7 +25,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Stack;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -50,8 +47,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.dom4j.Element;
-import org.hibernate.Session;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -67,7 +64,6 @@ import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
-import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.ui.CommandAction;
@@ -87,6 +83,8 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class QueryBldrPane extends BaseSubPane
 {
+    protected static final Logger log = Logger.getLogger(QueryBldrPane.class);
+    
     protected JList                          tableList;
     protected Hashtable<DBTableInfo, Vector<TableFieldPair>> tableFieldList = new Hashtable<DBTableInfo, Vector<TableFieldPair>>();
     
@@ -102,6 +100,7 @@ public class QueryBldrPane extends BaseSubPane
     
     protected JPanel                         listBoxPanel;
     protected Vector<JList>                  listBoxList      = new Vector<JList>();
+    protected Vector<TableTree>              nodeList         = new Vector<TableTree>();
     protected JScrollPane                    scrollPane;
     protected Vector<JScrollPane>            spList           = new Vector<JScrollPane>();
     
@@ -174,6 +173,7 @@ public class QueryBldrPane extends BaseSubPane
                 //fieldList.setSelectedIndex(-1);
                 if (!e.getValueIsAdjusting())
                 {
+                    nodeList.clear();
                     fillNextList(tableList);
                 }
             }
@@ -225,21 +225,22 @@ public class QueryBldrPane extends BaseSubPane
         this.validate();
     }
     
+    /**
+     * @param fieldName
+     * @return
+     */
     public static String fixFieldName(final String fieldName)
     {
         return fieldName.substring(0, 1).toLowerCase() + fieldName.substring(1);
     }
     
     /**
-     * 
+     * Performs the Search by building the HQL String.
      */
     protected void doSearch()
     {
         if (queryFieldItems.size() > 0)
         {
-            QueryFieldPanel panel  = queryFieldItems.get(0);
-            FieldQRI        fqri   = panel.getFieldQRI();
-            
             StringBuilder fieldsStr = new StringBuilder();
             for (QueryFieldPanel qfi : queryFieldItems)
             {
@@ -247,51 +248,98 @@ public class QueryBldrPane extends BaseSubPane
                 {
                     if (fieldsStr.length() > 0) fieldsStr.append(", ");
                 }
-                fieldsStr.append(qfi.getFieldQRI().getParent().getTableTree().getAbbrev());
+                fieldsStr.append(qfi.getFieldInfo().getTableInfo().getAbbrev());
                 fieldsStr.append('.');
                 fieldsStr.append(qfi.getFieldInfo().getName());
             }
             
-            Stack<BaseQRI>  stack = new Stack<BaseQRI>();
+            Vector<BaseQRI> list = new Vector<BaseQRI>();
 
             StringBuilder criteriaStr = new StringBuilder();
             
-            ProcessNode root = new ProcessNode(null);
+            boolean     debug = true;
+            ProcessNode root  = new ProcessNode(null);
             for (QueryFieldPanel qfi : queryFieldItems)
             {
-                String criteria = qfi.getCriteriaFormula();
-                if (StringUtils.isEmpty(criteria))
+                FieldQRI pqri = qfi.getFieldQRI();
+                if (debug)
                 {
-                    continue;
+                    System.out.println("\nNode: "+qfi.getFieldName());
                 }
-                if (criteriaStr.length() > 0)
+                String  criteria      = qfi.getCriteriaFormula();
+                boolean isDisplayOnly = StringUtils.isEmpty(criteria);
+                
+                if (!isDisplayOnly)
                 {
-                    criteriaStr.append(" AND ");
+                    if (!isDisplayOnly && criteriaStr.length() > 0)
+                    {
+                        criteriaStr.append(" AND ");
+                    }
+                    criteriaStr.append(criteria);
                 }
-                criteriaStr.append(criteria);
                 //criteriaStr.append(' ');
 
+                // Create a Stack (list) of parent from 
+                // the current node up to the top
+                // basically we are creating a path of nodes
+                // to determine if we need to create a new node in the tree
                 BaseQRI parent = qfi.getFieldQRI();
-                stack.clear();
-                stack.push(fqri);
+                list.clear();
+                list.insertElementAt(pqri, 0);
                 while (parent.getParent() != null)
                 {
                     parent = parent.getParent();
-                    stack.push(parent);
+                    list.insertElementAt(parent, 0);
                 }
                 
-                ProcessNode parentNode = root;
-                for (int i=stack.size()-1;i>-1;i--)
+                if (debug)
                 {
-                    BaseQRI qri = stack.get(i);
+                    System.out.println("Path From Top Down:");
+                    for (BaseQRI qri : list)
+                    {
+                        System.out.println("  "+qri.getTitle());
+                    }
+                }
+
+                // Now walk the stack top (the top most parent)
+                // down and if the path form the top down doesn't
+                // exist then add a new node
+                System.out.println("\nBuilding Tree:");
+                ProcessNode parentNode = root;
+                for (BaseQRI qri : list)
+                {
+                    if (debug)
+                    {
+                        System.out.println("ProcessNode["+qri.getTitle()+"]");
+                    }
                     if (!parentNode.contains(qri))
                     {
                         ProcessNode newNode = new ProcessNode(qri);
                         parentNode.getKids().add(newNode);
+                        if (debug)
+                        {
+                            System.out.println("Adding new node["+newNode.getQri().getTitle()+"] to Node["+(parentNode.getQri() == null ? "root" : parentNode.getQri().getTitle())+"]");
+                        }
                         parentNode = newNode;
+                    } else
+                    {
+                        for (ProcessNode kidNode : parentNode.getKids())
+                        {
+                            if (!kidNode.contains(qri))
+                            {
+                                parentNode = kidNode;
+                            }
+                        }
                     }
                     //System.out.println(stack.get(i).getTitle());
                 }
+                
+                if (debug)
+                {
+                    System.out.println("Current Tree:");
+                    printTree(root, 0);
+                }
+
             }
             printTree(root, 0);
             
@@ -306,12 +354,17 @@ public class QueryBldrPane extends BaseSubPane
             sqlStr.append(criteriaStr);
             System.out.println(sqlStr.toString());
             
-            processSQL(sqlStr.toString());
+            processSQL(queryFieldItems, sqlStr.toString());
             
         }
         //processSQL("select CO.catalogNumber, DE.determinedDate from CollectionObject as CO JOIN CO.determinations DE");
     }
     
+    /**
+     * @param parent
+     * @param sqlStr
+     * @param level
+     */
     protected void processTree(final ProcessNode   parent, 
                                final StringBuilder sqlStr,
                                final int           level)
@@ -322,6 +375,7 @@ public class QueryBldrPane extends BaseSubPane
             TableTree tt = qri.getTableTree();
             if (tt != null)
             {
+                System.out.println("processTree "+tt.getName());
                 if (level == 1)
                 {
                     sqlStr.append(tt.getName());
@@ -348,92 +402,37 @@ public class QueryBldrPane extends BaseSubPane
         }
     }
     
-    protected void processSQL(final String sql)
+    /**
+     * @param queryFieldItems
+     * @param sql
+     */
+    protected void processSQL(final Vector<QueryFieldPanel> queryFieldItems, final String sql)
     {
-        
-        class MyQueryForIdResultsHQL extends QueryForIdResultsHQL
-        {
-        
-            public MyQueryForIdResultsHQL(final Color             bannerColor,
-                                          final String            searchTerm,
-                                          final List<?>           listOfIds)
-            {
-                super(null, bannerColor, searchTerm, listOfIds);
-            }
-            
-            public void setCaptions(List<ERTICaptionInfo> list)
-            {
-                this.captions = list;
-            }
-
-            /* (non-Javadoc)
-             * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL#getDisplayOrder()
-             */
-            @Override
-            public Integer getDisplayOrder()
-            {
-                return 0;
-            }
-
-            /* (non-Javadoc)
-             * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL#getIconName()
-             */
-            @Override
-            public String getIconName()
-            {
-                return CollectionObject.class.getSimpleName();
-            }
-
-            /* (non-Javadoc)
-             * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL#buildCaptions()
-             */
-            @Override
-            protected void buildCaptions()
-            {
-            }
-            
-            public String getTitle()
-            {
-                return "Hello";
-            }
-            
-            public int getTableId()
-            {
-                return 1;
-            }
-            
-        };
-        
         List<ERTICaptionInfo> captions = new Vector<ERTICaptionInfo>();
-        captions.add(new ERTICaptionInfo("de.remarks", "Remarks", true, null, 0));
-        captions.add(new ERTICaptionInfo("co.catalogNumber", "CatalogNumber", true, null, 0));
+        for (QueryFieldPanel qfp : queryFieldItems)
+        {
+            DBFieldInfo fi      = qfp.getFieldInfo();
+            DBTableInfo ti      = fi.getTableInfo();
+            String      colName = ti.getAbbrev() +'.' + fi.getColumn();
+            
+            if (qfp.isDisplayable())
+            {
+                captions.add(new ERTICaptionInfo(colName, fi.getTitle(), true, null, 0));
+            }
+        }
         
-        List<Integer> list = new Vector<Integer>();
-        //list.add(1);
-        //list.add(1);
-        MyQueryForIdResultsHQL qri = new MyQueryForIdResultsHQL(new Color(144, 30, 255), "XXX", list);
+        List<Integer>          list = new Vector<Integer>();
+        QBQueryForIdResultsHQL qri = new QBQueryForIdResultsHQL(new Color(144, 30, 255), 
+                                                                "Search Results",                       // XXX I18N
+                                                                CollectionObject.class.getSimpleName(), // Icon Name
+                                                                1,                                      // table id
+                                                                "",                                     // search term
+                                                                list);
         qri.setSQL(sql);
         qri.setCaptions(captions);
+        qri.setExpanded(true);
         
         CommandDispatcher.dispatch(new CommandAction("Express_Search", "HQL", qri));
-        
-        /*
-        Session session = HibernateUtil.getNewSession();
-        try
-        {
-            List<?> list = session.createQuery(sql).list();
-            for (Object obj : list)
-            {
-                System.out.println(obj);
-            }
-            
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-        } finally
-        {
-            session.close();
-        }*/
     }
     
     protected void printTree(ProcessNode pn, int lvl)
@@ -448,6 +447,10 @@ public class QueryBldrPane extends BaseSubPane
             printTree(kid, lvl+1);
         }
     }
+    
+    //-----------------------------------------------------------
+    //-- Inner Classes
+    //-----------------------------------------------------------
     
     class ProcessNode 
     {
@@ -480,9 +483,9 @@ public class QueryBldrPane extends BaseSubPane
         }
     }
     
-    protected TableTree findTableTree(final String name)
+    protected TableTree findTableTree(final TableTree parentTT, final String name)
     {
-        for (TableTree tt : tableTreeList)
+        for (TableTree tt : parentTT.getKids())
         {
             if (tt.getName().equals(name))
             {
@@ -501,7 +504,7 @@ public class QueryBldrPane extends BaseSubPane
 
             for (DBFieldInfo fi : tableTree.getTableInfo().getFields())
             {
-                if (fi.getColumn() != null && fieldsToSkipHash.get(fi.getColumn()) == null)
+                if (fi.getColumn() != null && fieldsToSkipHash.get(fi.getColumn()) == null && !fi.isHidden())
                 {
                     fldList.add(new FieldQRI(parentQRI, fi));
                 }
@@ -510,16 +513,19 @@ public class QueryBldrPane extends BaseSubPane
             {
                 for (DBRelationshipInfo ri : tableTree.getTableInfo().getRelationships())
                 {
-                    String clsName = StringUtils.substringAfterLast(ri.getClassName(), ".");
-                    if (clsName.equals(tt.getName()))
+                    if (!ri.isHidden())
                     {
-                        TableTree riTT = findTableTree(clsName);
-                        if (riTT == null)
+                        String clsName = StringUtils.substringAfterLast(ri.getClassName(), ".");
+                        if (clsName.equals(tt.getName()))
                         {
-                            riTT = tt;
+                            TableTree riTT = findTableTree(parentQRI.getTableTree(), clsName);
+                            if (riTT == null)
+                            {
+                                riTT = tt;
+                            }
+                            fldList.add(new RelQRI(parentQRI, riTT, ri));
+                            break;
                         }
-                        fldList.add(new RelQRI(parentQRI, riTT, ri));
-                        break;
                     }
                 }
             }
@@ -553,11 +559,12 @@ public class QueryBldrPane extends BaseSubPane
             {
                 listBoxPanel.remove(spList.get(i));
             }
+            
         } else
         {
             listBoxPanel.removeAll();
         }
-        System.out.println("cur "+curInx+"  cnt "+listBoxPanel.getComponentCount()+"  size "+listBoxList.size());
+        //System.out.println("cur "+curInx+"  cnt "+listBoxPanel.getComponentCount()+"  size "+listBoxList.size());
         
         QryListRendererIFace item = (QryListRendererIFace)parentList.getSelectedValue();
         if (!(item instanceof FieldQRI))
@@ -595,6 +602,7 @@ public class QueryBldrPane extends BaseSubPane
             {
                 model.clear();
                 TableQRI table = (TableQRI)item;
+                
                 createNewList((BaseQRI)item, table.getTableTree(), model);
                 
             } else if (item instanceof RelQRI)
@@ -682,7 +690,7 @@ public class QueryBldrPane extends BaseSubPane
     {
         if (fieldQRI != null)
         {
-            if (queryFieldItems.size() == 0)
+            if (queryFieldItems.size() == 0 && queryFieldsPanel.getComponentCount() == 0)
             {
                 QueryFieldPanel qfp = new QueryFieldPanel(true, fieldQRI, IconManager.IconSize.Std24);
                 queryFieldsPanel.add(qfp);                
@@ -709,7 +717,7 @@ public class QueryBldrPane extends BaseSubPane
                                      final Vector<TableTree> treeNodes)
     {
         TableTree treeNode = null;
-        String name = XMLHelper.getAttr(parent, "name", null);
+        String    name     = XMLHelper.getAttr(parent, "name", null);
         for (TableTree tt : treeNodes)
         {
             if (tt.getName().equals(name))
@@ -732,31 +740,69 @@ public class QueryBldrPane extends BaseSubPane
     
     protected void processForTables(final Element           parent, 
                                     final TableTree         parentTT,
-                                    final Vector<TableTree> kids,
-                                    final Hashtable<Element, TableTree> hash)
+                                    final Vector<TableTree> kids)
     {
-        String nm = XMLHelper.getAttr(parent, "name", null).toLowerCase();
-        if (nm.indexOf("collectingeventatt") > -1)
+        String      tableName = XMLHelper.getAttr(parent, "name", null);
+        DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByShortClassName(tableName);
+        if (!tableInfo.isHidden())
         {
-            int x = 0;
-            x++;
+            String fieldName = XMLHelper.getAttr(parent, "field", null);
+            if (StringUtils.isEmpty(fieldName))
+            {
+                fieldName = tableName.substring(0, 1).toLowerCase() + tableName.substring(1);
+            }
+            
+            TableTree newTreeNode = new TableTree(parentTT, tableName, fieldName, tableInfo);
+            kids.add(newTreeNode);
+            
+            for (Object kidObj : parent.selectNodes("table"))
+            {
+                Element kidElement = (Element)kidObj;
+                processForTables(kidElement, newTreeNode, newTreeNode.getKids());
+            }
+            
+            for (Object obj : parent.selectNodes("alias"))
+            {
+                Element kidElement = (Element)obj;
+                String  kidClassName = XMLHelper.getAttr(kidElement, "name", null);
+                tableInfo = DBTableIdMgr.getInstance().getByShortClassName(kidClassName);
+                if (!tableInfo.isHidden())
+                {
+                    TableTree aliasTreeNode = new TableTree(newTreeNode, kidClassName);
+                    aliasTreeNode.setAlias(true);
+                    newTreeNode.getKids().add(aliasTreeNode);
+                    aliasTreeNode.setParent(newTreeNode);
+                    //System.out.println(XMLHelper.getAttr(kidElement, "name", null)+"  "+parentTT);
+                    //hash.put(XMLHelper.getAttr(kidElement, "name", null), new Pair<TableTree, TableTree>(newTreeNode, newTreeNode));
+                }
+            }
         }
-        TableTree newTreeNode = new TableTree(parentTT, 
-                                              XMLHelper.getAttr(parent, "name", null),
-                                              XMLHelper.getAttr(parent, "abbrev", null),
-                                              XMLHelper.getAttr(parent, "field", null));
-        kids.add(newTreeNode);
+    }
+    
+    protected void fixAliases(final TableTree tableTree, Hashtable<String, TableTree> hash)
+    {
+        if (tableTree.isAlias())
+        {
+            TableTree tt = hash.get(tableTree.getName());
+            if (tt != null)
+            {
+                tableTree.setField(tt.getField());
+                tableTree.getKids().addAll(tt.getKids());
+                tableTree.setTableInfo(tt.getTableInfo());
+                tableTree.setAlias(false);
+                
+            } else
+            {
+                log.error("Couldn't find ["+tableTree.getName()+"] in the hash.");
+            }
+        } else
+        {
+            for (TableTree kidTable : tableTree.getKids())
+            {
+                fixAliases(kidTable, hash);
+            }
+        }
         
-        for (Object obj : parent.selectNodes("table"))
-        {
-            Element kidElement = (Element)obj;
-            processForTables(kidElement, newTreeNode, newTreeNode.getKids(), hash);
-        }
-        for (Object obj : parent.selectNodes("alias"))
-        {
-            Element kidElement = (Element)obj;
-            hash.put(kidElement, newTreeNode);
-        }
     }
     
     protected Vector<TableTree> readTables()
@@ -764,30 +810,25 @@ public class QueryBldrPane extends BaseSubPane
         Vector<TableTree> tables = null;
         try
         {
-            Hashtable<Element, TableTree> hash = new Hashtable<Element, TableTree>();
-            
             Element root       = XMLHelper.readDOMFromConfigDir("querybuilder.xml");
             List<?> tableNodes = root.selectNodes("/database/table");
             tables = new Vector<TableTree>(tableNodes.size());
             for (Object obj : tableNodes)
             {
                 Element tableElement = (Element)obj;
-                processForTables(tableElement, null, tables, hash);
+                processForTables(tableElement, null, tables);
             }
             
-            for (Element ele : hash.keySet())
+            Hashtable<String, TableTree> hash = new Hashtable<String, TableTree>();
+            for (TableTree tt : tables)
             {
-                TableTree tableTree = hash.get(ele);
-                
-                String name = XMLHelper.getAttr(ele, "name", null);
-                for (TableTree tt : tables)
-                {
-                    if (tt.getName().equals(name))
-                    {
-                        tableTree.getKids().add(tt);
-                        break;
-                    }
-                }
+               hash.put(tt.getName(), tt);
+               log.debug("Adding["+tt.getName()+"] to hash");
+            }
+            
+            for (TableTree tt : tables)
+            {
+                fixAliases(tt, hash);
             }
             
         } catch (Exception ex)
@@ -857,6 +898,9 @@ public class QueryBldrPane extends BaseSubPane
             return new String[] {"=", ">", "<", ">=", "<="};
         }
         
+        /**
+         * @return
+         */
         public String getCriteriaFormula()
         {
             String criteriaStr = criteria.getText();
@@ -865,12 +909,13 @@ public class QueryBldrPane extends BaseSubPane
                 StringBuilder str  = new StringBuilder();
                 String operStr     = operatorCBX.getSelectedItem().toString();
                 
-                System.out.println(fieldQRI.getFieldInfo().getDataClass().getSimpleName());
+                //System.out.println(fieldQRI.getFieldInfo().getDataClass().getSimpleName());
                 if (fieldQRI.getFieldInfo().getDataClass() == String.class)
                 {
                     if (operStr.equals("Like"))
                     {
-                        criteriaStr = "'%" + criteriaStr + "%'";
+                        //criteriaStr = "'%" + criteriaStr + "%'";
+                        criteriaStr = "'" + criteriaStr + "'";
                     } else
                     {
                         criteriaStr = "'" + criteriaStr + "'";
@@ -880,11 +925,19 @@ public class QueryBldrPane extends BaseSubPane
                 {
                     TableTree parentTree = fieldQRI.getParent().getTableTree();
                     str.append(parentTree.getAbbrev() + '.');
-                    str.append(QueryBldrPane.fixFieldName(getFieldName()));
+                    str.append(getFieldInfo().getName());
                     str.append(' ');
-                    str.append(isNotCheckbox.isSelected() ? "NOT" : "");
-                    str.append(' ');
-                    str.append(operStr);
+                    if (operStr.equals("="))
+                    {
+                        str.append(isNotCheckbox.isSelected() ? "!" : "");
+                        str.append(operStr);
+                        
+                    } else
+                    {
+                        str.append(isNotCheckbox.isSelected() ? "NOT" : "");
+                        str.append(' ');
+                        str.append(operStr);
+                    }
                     str.append(' ');
                     str.append(criteriaStr);
                     return str.toString();
@@ -904,7 +957,7 @@ public class QueryBldrPane extends BaseSubPane
         protected int[] buildControlLayout(final IconManager.IconSize iconSize, final boolean returnWidths)
         {
             iconLabel     = new JLabel(icon);
-            fieldLabel    = new JLabel(UIHelper.makeNamePretty(field.getColumn()));
+            fieldLabel    = new JLabel(field.getTitle());
             isNotCheckbox = new JCheckBox("");
             operatorCBX   = new JComboBox(comparators);
             criteria      = new JTextField();
@@ -1237,7 +1290,11 @@ public class QueryBldrPane extends BaseSubPane
             super(parent, tableTree);
             this.ti  = tableTree.getTableInfo();
             iconName = ti.getClassObj().getSimpleName();
-            title    = UIHelper.makeNamePretty(iconName);
+            title    = ti.getTitle();
+            if (StringUtils.isEmpty(title))
+            {
+                title    = UIHelper.makeNamePretty(iconName);
+            }
         }
         
         public DBTableInfo getTableInfo()
@@ -1254,7 +1311,7 @@ public class QueryBldrPane extends BaseSubPane
         {
             super(parent, null);
             this.fi  = fi;
-            title    = UIHelper.makeNamePretty(fi.getColumn());
+            title    = fi.getTitle();
             iconName = "BlankIcon";
         }
         
@@ -1281,7 +1338,11 @@ public class QueryBldrPane extends BaseSubPane
             try
             {
                 iconName = Class.forName(ri.getClassName()).getSimpleName();
-                title    = UIHelper.makeNamePretty(iconName);
+                title    = ri.getTitle();
+                if (StringUtils.isEmpty(title))
+                {
+                    title    = UIHelper.makeNamePretty(iconName);
+                }
                 
             } catch (Exception ex)
             {
@@ -1482,41 +1543,39 @@ public class QueryBldrPane extends BaseSubPane
         }
     }
     
-    class TableTree implements Comparable<TableTree>
+    class TableTree implements Cloneable, Comparable<TableTree>
     {
         protected String            name;
-        protected String            abbrev;
         protected String            field;
         protected TableTree         parent;
-        protected Vector<TableTree> kids     = new Vector<TableTree>();
+        protected Vector<TableTree> kids      = new Vector<TableTree>();
         protected DBTableInfo       tableInfo = null;
-        
+        protected boolean           isAlias   = false;
+
         public TableTree(final TableTree parent, 
-                         final String name,
-                         final String abbrev,
-                         final String field)
+                         final String name)
         {
             this.parent = parent;
             this.name   = name;
-            this.abbrev = abbrev;
+        }
+        
+        public TableTree(final TableTree parent, 
+                         final String name,
+                         final String field,
+                         final DBTableInfo tableInfo)
+        {
+            this.parent = parent;
+            this.name   = name;
             this.field  = field;
-            
-            try
-            {
-                //Class<?> classObj = Class.forName("edu.ku.brc.specify.datamodel."+name);
-                tableInfo = DBTableIdMgr.getInstance().getInfoByTableName(name.toLowerCase());
-                if (tableInfo == null)
-                {
-                    System.err.println("Can't find tableInfo with table name["+name.toLowerCase()+"]");
-                }
-            } catch (Exception ex)
-            {
-                if (tableInfo == null)
-                {
-                    System.err.println("Can't find tableInfo with table name["+name.toLowerCase()+"]");
-                }
-                ex.printStackTrace();
-            }
+            this.tableInfo  = tableInfo;
+        }
+
+        /**
+         * @param parent the parent to set
+         */
+        public void setParent(TableTree parent)
+        {
+            this.parent = parent;
         }
 
         /**
@@ -1532,7 +1591,11 @@ public class QueryBldrPane extends BaseSubPane
          */
         public String getAbbrev()
         {
-            return abbrev;
+            if (tableInfo != null)
+            {
+                return tableInfo.getAbbrev();
+            }
+            throw new RuntimeException("TableInfo is null for ["+name+"]");
         }
 
         /**
@@ -1567,6 +1630,22 @@ public class QueryBldrPane extends BaseSubPane
             return kids;
         }
 
+        /**
+         * @return the isAlias
+         */
+        public boolean isAlias()
+        {
+            return isAlias;
+        }
+
+        /**
+         * @param isAlias the isAlias to set
+         */
+        public void setAlias(boolean isAlias)
+        {
+            this.isAlias = isAlias;
+        }
+
         /* (non-Javadoc)
          * @see java.lang.Comparable#compareTo(java.lang.Object)
          */
@@ -1574,6 +1653,127 @@ public class QueryBldrPane extends BaseSubPane
         {
             return name.compareTo(o.name);
         }
+        
+        /**
+         * @param field the field to set
+         */
+        public void setField(String field)
+        {
+            this.field = field;
+        }
+
+        /**
+         * @param tableInfo the tableInfo to set
+         */
+        public void setTableInfo(DBTableInfo tableInfo)
+        {
+            this.tableInfo = tableInfo;
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
+         */
+        @Override
+        public Object clone() throws CloneNotSupportedException
+        {
+            TableTree obj = (TableTree)super.clone();
+            
+            obj.name      = name;
+            obj.field     = field;
+            obj.parent    = parent;
+            obj.kids      = new Vector<TableTree>();
+            for (TableTree tt : kids)
+            {
+                obj.kids.add(tt);
+            }
+            obj.tableInfo = tableInfo;
+            
+            return obj;
+        }
+
     }
     
+    //-----------------------------------------------
+    //
+    class QBQueryForIdResultsHQL extends QueryForIdResultsHQL
+    {
+        protected String title;
+        protected int    tableId;
+        protected String iconName;
+    
+        /**
+         * @param bannerColor
+         * @param title
+         * @param iconName
+         * @param tableId
+         * @param searchTerm
+         * @param listOfIds
+         */
+        public QBQueryForIdResultsHQL(final Color     bannerColor,
+                                      final String    title,
+                                      final String    iconName,
+                                      final int       tableId,
+                                      final String    searchTerm,
+                                      final List<?>   listOfIds)
+        {
+            super(null, bannerColor, searchTerm, listOfIds);
+            this.title    = title;
+            this.tableId  = tableId;
+            this.iconName = iconName;
+        }
+        
+        /**
+         * @param list
+         */
+        public void setCaptions(List<ERTICaptionInfo> list)
+        {
+            this.captions = list;
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL#getDisplayOrder()
+         */
+        @Override
+        public Integer getDisplayOrder()
+        {
+            return 0;
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL#getIconName()
+         */
+        @Override
+        public String getIconName()
+        {
+            return iconName;
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL#buildCaptions()
+         */
+        @Override
+        protected void buildCaptions()
+        {
+        }
+        
+        /* (non-Javadoc)
+         * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL#getTitle()
+         */
+        @Override
+        public String getTitle()
+        {
+            return title;
+        }
+        
+        /* (non-Javadoc)
+         * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL#getTableId()
+         */
+        @Override
+        public int getTableId()
+        {
+            return tableId;
+        }
+        
+    };
+
 }

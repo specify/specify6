@@ -34,6 +34,8 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.SchemaI18NService;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIRegistry;
@@ -48,24 +50,27 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class SchemaToolsDlg extends CustomDialog
 {
-    protected JButton editSchemaBtn      = new JButton(getResourceString("SL_EDIT_SCHEMA"));
-    protected JButton removeLocaleBtn    = new JButton(getResourceString("SL_REMOVE_SCHEMA_LOC"));
-    protected JButton exportSchemaLocBtn = new JButton(getResourceString("SL_EXPORT_SCHEMA_LOC"));
-    protected JButton importSchemaLocBtn = new JButton(getResourceString("SL_IMPORT_SCHEMA_LOC"));
-    protected JList   localeList;
+    protected JButton      editSchemaBtn      = new JButton(getResourceString("SL_EDIT_SCHEMA"));
+    protected JButton      removeLocaleBtn    = new JButton(getResourceString("SL_REMOVE_SCHEMA_LOC"));
+    protected JButton      exportSchemaLocBtn = new JButton(getResourceString("SL_EXPORT_SCHEMA_LOC"));
+    protected JButton      importSchemaLocBtn = new JButton(getResourceString("SL_IMPORT_SCHEMA_LOC"));
+    protected JList        localeList;
+    protected Byte         schemaType;
+    protected DBTableIdMgr tableMgr;
 
-    
     /**
      * @param frame
-     * @param title
-     * @param isModal
-     * @param whichBtns
-     * @param contentPanel
+     * @param schemaType
+     * @param tableMgr
      * @throws HeadlessException
      */
-    public SchemaToolsDlg(final Frame frame) throws HeadlessException
+    public SchemaToolsDlg(final Frame        frame, 
+                          final Byte         schemaType,
+                          final DBTableIdMgr tableMgr) throws HeadlessException
     {
         super(frame, getResourceString("SL_TOOLS_TITLE"), true, OKHELP, null);
+        this.schemaType = schemaType;
+        this.tableMgr   = tableMgr;
     }
 
     /* (non-Javadoc)
@@ -80,7 +85,7 @@ public class SchemaToolsDlg extends CustomDialog
         
 
         Vector<DisplayLocale> localeDisplays = new Vector<DisplayLocale>();
-        for (Locale locale : SchemaLocalizerDlg.getLocalesInUseInDB())
+        for (Locale locale : SchemaLocalizerDlg.getLocalesInUseInDB(schemaType))
         {
             localeDisplays.add(new DisplayLocale(locale));
         }
@@ -94,7 +99,7 @@ public class SchemaToolsDlg extends CustomDialog
         builder.addSeparator(getResourceString("SL_LOCALES_IN_USE"), cc.xywh(1, 1, 3, 1));
         builder.add(sp, cc.xywh(1,3,3,1));
         
-        builder.addSeparator(getResourceString(getResourceString("SL_TASKS")), cc.xywh(1, 5, 3, 1));
+        builder.addSeparator(getResourceString("SL_TASKS"), cc.xywh(1, 5, 3, 1));
         builder.add(editSchemaBtn,      cc.xy(1,7));
         builder.add(removeLocaleBtn,    cc.xy(3,7));
         builder.add(exportSchemaLocBtn, cc.xy(1,9));
@@ -200,8 +205,14 @@ public class SchemaToolsDlg extends CustomDialog
                 DisplayLocale dispLocale = (DisplayLocale)localeList.getSelectedValue();
                 if (dispLocale != null)
                 {
-                    SchemaLocalizerDlg dlg = new SchemaLocalizerDlg((Frame)UIRegistry.getTopWindow(), dispLocale.getLocale());
+                    Locale currLocale = SchemaI18NService.getCurrentLocale();
+                    
+                    SchemaI18NService.setCurrentLocale(dispLocale.getLocale());
+
+                    SchemaLocalizerDlg dlg = new SchemaLocalizerDlg((Frame)UIRegistry.getTopWindow(), schemaType, tableMgr); // MUST BE MODAL!
                     dlg.setVisible(true);
+                    
+                    SchemaI18NService.setCurrentLocale(currLocale);
                 }
             }
         });

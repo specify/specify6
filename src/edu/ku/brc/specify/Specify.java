@@ -19,7 +19,6 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GraphicsConfiguration;
@@ -72,18 +71,17 @@ import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MainPanel;
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.UsageTracker;
-import edu.ku.brc.af.core.expresssearch.ExpressSearchConfigDlg;
 import edu.ku.brc.af.core.expresssearch.ExpressSearchSQLAdjuster;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsEditor;
 import edu.ku.brc.af.prefs.PreferencesDlg;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
@@ -92,7 +90,6 @@ import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.LoggerDialog;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
-import edu.ku.brc.specify.config.SpecifySchemaI18NService;
 import edu.ku.brc.specify.datamodel.AccessionAttachment;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AgentAttachment;
@@ -100,6 +97,7 @@ import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.CollectingEventAttachment;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttachment;
+import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.ConservDescriptionAttachment;
 import edu.ku.brc.specify.datamodel.ConservEventAttachment;
@@ -108,13 +106,11 @@ import edu.ku.brc.specify.datamodel.LocalityAttachment;
 import edu.ku.brc.specify.datamodel.PermitAttachment;
 import edu.ku.brc.specify.datamodel.PreparationAttachment;
 import edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment;
+import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
-import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.specify.tests.SpecifyAppPrefs;
-import edu.ku.brc.specify.tools.schemalocale.DisplayLocale;
-import edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerDlg;
 import edu.ku.brc.specify.tools.schemalocale.SchemaToolsDlg;
 import edu.ku.brc.specify.ui.CollectorActionListener;
 import edu.ku.brc.specify.ui.HelpMgr;
@@ -666,7 +662,19 @@ public class Specify extends JPanel implements DatabaseLoginListener
                     {
                         public void actionPerformed(ActionEvent ae)
                         {
-                            doSchemaConfig();
+                            doSchemaConfig(SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
+                        }
+                    });
+
+            title = getResourceString("WBSCHEMA_CONFIG");
+            mi = UIHelper.createMenuItem(menu, title, getResourceString("WBSCHEMA_CONFIG_MNU"), title, true, null);
+            mi.addActionListener(new ActionListener()
+                    {
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            DBTableIdMgr schema = new DBTableIdMgr(false);
+                            schema.initialize(new File(XMLHelper.getConfigDirPath("specify_workbench_datamodel.xml")));
+                            doSchemaConfig(SpLocaleContainer.WORKBENCH_SCHEMA, schema);
                         }
                     });
 
@@ -829,7 +837,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     /**
      * 
      */
-    protected void doSchemaConfig()
+    protected void doSchemaConfig(final Byte schemaType, final DBTableIdMgr tableMgr)
     {
         UIRegistry.getStatusBar().setIndeterminate(true);
         UIRegistry.getStatusBar().setText(UIRegistry.getResourceString("LOADING_LOCALES"));
@@ -850,17 +858,13 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 UIRegistry.getStatusBar().setText("");
                 UIRegistry.getStatusBar().setIndeterminate(false);
                 
-                SchemaToolsDlg dlg = new SchemaToolsDlg((Frame)UIRegistry.getTopWindow());
+                SchemaToolsDlg dlg = new SchemaToolsDlg((Frame)UIRegistry.getTopWindow(), schemaType, tableMgr);
                 dlg.setVisible(true);
             }
         };
         
         // start the background task
         workerThread.start();
-        
-        
-        
-
     }
     
     /**
@@ -1056,6 +1060,11 @@ public class Specify extends JPanel implements DatabaseLoginListener
         //moved here because context needs to be set before loading prefs, we need to know the SpecifyUser
         AppContextMgr.CONTEXT_STATUS status = AppContextMgr.getInstance().setContext(databaseNameArg, userNameArg, startOver);
         SpecifyAppPrefs.initialPrefs();
+        
+        // XXX Get the current locale from prefs PREF
+        int colTypeId = CollectionType.getCurrentCollectionType().getCollectionTypeId();
+        SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, colTypeId, DBTableIdMgr.getInstance(), Locale.getDefault());
+        //SchemaI18NService.getInstance().loadWithLocale(new Locale("de", "", ""));
         
         //Collection.setCurrentCollection(null);
         //CollectionType.setCurrentCollectionType(null);
@@ -1268,8 +1277,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 throw new RuntimeException("The user ["+userName+"] could  not be located as a Specify user.");
             }
         }
-        
-        SchemaI18NService.getInstance().loadWithLocale(Locale.getDefault());
         
         restartApp(databaseName, userName, false, firstTime);
         

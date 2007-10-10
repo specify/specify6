@@ -114,7 +114,7 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
         String lenStr = f.getLength() > 0 ? Integer.toString(f.getLength()) : "";
         
         CellConstraints cc = new CellConstraints();
-        p.add(ERDVisualizer.mkLabel(font, f.getColumn(), SwingConstants.LEFT),   cc.xy(1,y));
+        p.add(ERDVisualizer.mkLabel(font, f.getTitle(), SwingConstants.LEFT),   cc.xy(1,y));
         p.add(ERDVisualizer.mkLabel(font, typ, SwingConstants.CENTER),           cc.xy(3,y));
         p.add(ERDVisualizer.mkLabel(font, lenStr, SwingConstants.CENTER),        cc.xy(5,y));
         
@@ -149,7 +149,7 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
     {
         CellConstraints cc = new CellConstraints();
         p.add(ERDVisualizer.mkLabel(font, StringUtils.substringAfterLast(r.getClassName(), "."), SwingConstants.LEFT), cc.xy(1,y));
-        p.add(ERDVisualizer.mkLabel(font, StringUtils.capitalize(r.getName()), SwingConstants.LEFT), cc.xy(3,y));
+        p.add(ERDVisualizer.mkLabel(font, StringUtils.capitalize(r.getTitle()), SwingConstants.LEFT), cc.xy(3,y));
         JComponent comp = ERDVisualizer.mkLabel(font, r.getType().toString(), SwingConstants.CENTER);
         p.add(comp, cc.xy(5,y));
         if (all)
@@ -160,6 +160,9 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
         return comp;
     }
     
+    /**
+     * @param font
+     */
     public void build(final Font font)
     {
         int numRows = 7;
@@ -176,8 +179,13 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
         PanelBuilder    pb     = new PanelBuilder(new FormLayout("f:p:g", UIHelper.createDuplicateJGoodiesDef("p", "2px", numRows)));
         CellConstraints cc     = new CellConstraints();
         
-        String titleStr = StringUtils.substringAfterLast(table.getClassName(), ".");
-        String tblName = titleStr.startsWith("Sp") ? titleStr : UIHelper.makeNamePretty(titleStr);
+        String      className = StringUtils.substringAfterLast(table.getClassName(), ".");
+        DBTableInfo tblInfo   = DBTableIdMgr.getInstance().getByShortClassName(className);
+        if (tblInfo == null)
+        {
+            throw new RuntimeException("Couldn't find table for className["+className+"]");
+        }
+        String tblName = tblInfo.getTitle();
         int y = 1;
         pb.add(ERDVisualizer.mkLabel(bold, tblName, SwingConstants.CENTER), cc.xy(1,y)); y += 2;
         
@@ -462,7 +470,7 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
     {
         
         ERDTable newTable = new ERDTable(table);
-        newTable.displayType = DisplayType.Title;
+        ERDTable.displayType = DisplayType.Title;
         newTable.build(font);
         
         newTable.relUIHash   = new Hashtable<DBRelationshipInfo, JComponent>(relUIHash);
@@ -472,9 +480,6 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
         newTable.ratio        = ratio;
         newTable.preferredRenderSize = new Dimension(preferredRenderSize);
         
-        //newTable.kids         = new Vector<ERDTable>();
-        //for (ERDTable : )
-
         return newTable;
     }
 

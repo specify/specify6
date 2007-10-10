@@ -50,9 +50,9 @@ public class CollectionObjectCitation extends DataModelObjBase implements java.i
 
     // Fields    
 
-     protected Integer collectionObjectCitationId;
-     protected String remarks;
-     protected ReferenceWork referenceWork;
+     protected Integer          collectionObjectCitationId;
+     protected String           remarks;
+     protected ReferenceWork    referenceWork;
      protected CollectionObject collectionObject;
 
 

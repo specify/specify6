@@ -9,6 +9,7 @@
  */
 package edu.ku.brc.specify.tools.schemalocale;
 
+import java.io.File;
 import java.util.Locale;
 import java.util.Vector;
 
@@ -44,6 +45,8 @@ public interface LocalizableIOIFace
     public abstract void copyLocale(Locale src, Locale dst);
     
     public abstract boolean save();
+    
+    public abstract boolean export(File expportFile);
     
     public boolean createResourceFiles();
     

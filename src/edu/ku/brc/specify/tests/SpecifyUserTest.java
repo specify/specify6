@@ -23,6 +23,8 @@ import static edu.ku.brc.specify.tests.SpecifyUserTestHelper.isUserPermissionInD
 import static edu.ku.brc.specify.utilapps.DataBuilder.createAgent;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectionType;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createDataType;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createDivision;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createInstitution;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createLithoStratTreeDef;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createSpecifyUser;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createTaxonTreeDef;
@@ -38,6 +40,8 @@ import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.DataType;
+import edu.ku.brc.specify.datamodel.Division;
+import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
@@ -306,7 +310,9 @@ public class SpecifyUserTest extends TestCase
             HibernateUtil.commitTransaction();
 
             log.info("createCollectionType");
-            CollectionType collectionType =  createCollectionType("fish", "fish", dataType, user, taxonTreeDef, null, null, null, lithoStratTreeDef);
+            Institution    institution    = createInstitution("Natural History Museum");
+            Division       division       = createDivision(institution, "Icthyology");
+            CollectionType collectionType = createCollectionType(division, "fish", "fish", dataType, user, taxonTreeDef, null, null, null, lithoStratTreeDef);
 
             //createCollectionType(dataType, testUser, "fish", "fish"); // creates TaxonTreeDef
 
@@ -361,7 +367,9 @@ public class SpecifyUserTest extends TestCase
             log.info("createSpecifyUser");
             SpecifyUser      user             = createSpecifyUser("admin", "admin@ku.edu", (short)0, userGroup, "CollectionManager");
 
-            CollectionType collectionType =  createCollectionType("fish", "fish", dataType, user, taxonTreeDef, null, null, null, lithoStratTreeDef);
+            Institution    institution    = createInstitution("Natural History Museum");
+            Division       division       = createDivision(institution, "Icthyology");
+            CollectionType collectionType = createCollectionType(division, "fish", "fish", dataType, user, taxonTreeDef, null, null, null, lithoStratTreeDef);
             
             UserPermission permission = createUserPermission(testUser, collectionType, true, true);
             assertNotNull("UserPermission is null", permission);

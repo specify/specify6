@@ -19,21 +19,50 @@ import javax.swing.ImageIcon;
 public interface TableListItemIFace
 {
 
-    public ImageIcon getIcon();
+    /**
+     * @return
+     */
+    public abstract ImageIcon getIcon();
     
-    public String getText();
+    /**
+     * @return
+     */
+    public abstract String getText();
     
+    //public abstract String getTitle();
+    
+    
+    //------------------------------
     // For Tables
-    public boolean isExpandable();
+    //------------------------------
+    /**
+     * @return
+     */
+    public abstract boolean isExpandable();
     
-    public boolean isExpanded();
+    /**
+     * @return
+     */
+    public abstract boolean isExpanded();
     
-    public void setExpanded(boolean expand);
+    /**
+     * @param expand
+     */
+    public abstract void setExpanded(boolean expand);
     
+    //------------------------------
     // For Fields
-    public boolean isChecked();
+    //------------------------------
     
-    public void setChecked(boolean checked);
+    /**
+     * @return
+     */
+    public abstract boolean isChecked();
+    
+    /**
+     * @param checked
+     */
+    public abstract void setChecked(boolean checked);
     
     
 }

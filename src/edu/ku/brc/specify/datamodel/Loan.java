@@ -98,7 +98,7 @@ public class Loan extends DataModelObjBase implements AttachmentOwnerIFace<LoanA
     protected Set<LoanPhysicalObject> loanPhysicalObjects;
     //protected Shipment shipment;
     protected Set<Shipment>           shipments;
-    private Set<LoanAttachment> loanAttachments;
+    private Set<LoanAttachment>       loanAttachments;
 
 
     // Constructors

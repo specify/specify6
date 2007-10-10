@@ -58,7 +58,8 @@ public class Institution extends DataModelObjBase implements java.io.Serializabl
      protected String     disclaimer;
      protected String     remarks;
      protected Set<Agent> technicalContacts;
-     protected Set<Agent> contentContacts;
+     protected Set<Agent>    contentContacts;
+     protected Set<Division> divisions;
 
 
     // Constructors
@@ -91,6 +92,7 @@ public class Institution extends DataModelObjBase implements java.io.Serializabl
         remarks           = null;
         technicalContacts = new HashSet<Agent>();
         contentContacts   = new HashSet<Agent>();
+        divisions         = new HashSet<Division>();
     }
     
     /**
@@ -334,6 +336,24 @@ public class Institution extends DataModelObjBase implements java.io.Serializabl
     public void setUri(String uri)
     {
         this.uri = uri;
+    }
+
+    /**
+     * @return the divisions
+     */
+    @OneToMany(cascade = { }, fetch = FetchType.LAZY, mappedBy = "institution")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<Division> getDivisions()
+    {
+        return divisions;
+    }
+
+    /**
+     * @param divisions the divisions to set
+     */
+    public void setDivisions(Set<Division> divisions)
+    {
+        this.divisions = divisions;
     }
 
     /* (non-Javadoc)

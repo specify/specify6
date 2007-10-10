@@ -24,62 +24,61 @@ public interface LocalizableItemIFace
     /**
      * @return
      */
-    public String getName();
+    public abstract String getName();
     
     /**
      * @param name
      */
-    public void setName(String name);
+    public abstract void setName(String name);
     
     /**
      * @return
      */
-    public String getType();
+    public abstract String getType();
     
     /**
      * @param type
      */
-    public void setType(String type);
+    public abstract void setType(String type);
     
     /**
      * @return
      */
-    public Boolean getIsHidden();
+    public abstract Boolean getIsHidden();
     
     /**
      * @param isHidden the isHidden to set
      */
-    public void setIsHidden(Boolean isHidden);
+    public abstract void setIsHidden(Boolean isHidden);
 
     /**
      * @param str
      */
-    public void addDesc(LocalizableStrIFace str);
+    public abstract void addDesc(LocalizableStrIFace str);
     
     /**
      * @param str
      */
-    public void removeDesc(LocalizableStrIFace str);
+    public abstract void removeDesc(LocalizableStrIFace str);
     
     /**
      * @param descs
      */
-    public void fillDescs(List<LocalizableStrIFace> descs);
+    public abstract void fillDescs(List<LocalizableStrIFace> descs);
 
     /**
      * @param str
      */
-    public void addName(LocalizableStrIFace str);
+    public abstract void addName(LocalizableStrIFace str);
     
     /**
      * @param str
      */
-    public void removeName(LocalizableStrIFace str);
+    public abstract void removeName(LocalizableStrIFace str);
     
     /**
      * @param names
      */
-    public void fillNames(List<LocalizableStrIFace> names);
-    
+    public abstract void fillNames(List<LocalizableStrIFace> names);
     
 }

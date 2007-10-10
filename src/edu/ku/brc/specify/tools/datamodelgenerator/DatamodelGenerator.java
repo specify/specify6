@@ -43,6 +43,7 @@ import org.dom4j.io.SAXReader;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.dbsupport.AttributeIFace;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
@@ -96,7 +97,7 @@ public class DatamodelGenerator
     {
         if (includeDesc)
         {
-            schemaLocalizer = new SchemaLocalizerXMLHelper();
+            schemaLocalizer = new SchemaLocalizerXMLHelper(SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
             includeDesc = schemaLocalizer.load();
             
             //descTableList = schemaLocalizer.getSpLocaleContainers();

@@ -38,10 +38,10 @@ public class BorrowAgent extends DataModelObjBase implements java.io.Serializabl
     // Fields    
 
      protected Integer borrowAgentId;
-     protected String role;
-     protected String remarks;
-     protected Agent agent;
-     protected Borrow borrow;
+     protected String  role;
+     protected String  remarks;
+     protected Agent   agent;
+     protected Borrow  borrow;
 
 
     // Constructors

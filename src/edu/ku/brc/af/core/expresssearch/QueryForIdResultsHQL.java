@@ -42,6 +42,7 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
     
     protected String                overrideSQL  = null;
     protected List<ERTICaptionInfo> captions     = null; 
+    protected boolean               isExpanded   = false;
     
     @SuppressWarnings("unchecked")
     public QueryForIdResultsHQL(final SearchTableConfig searchTableConfig,
@@ -175,6 +176,22 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
         return captions;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace#isExpanded()
+     */
+    public boolean isExpanded()
+    {
+        return isExpanded;
+    }
+
+    /**
+     * @param isExpanded the isExpanded to set
+     */
+    public void setExpanded(boolean isExpanded)
+    {
+        this.isExpanded = isExpanded;
+    }
+
     /**
      * 
      */

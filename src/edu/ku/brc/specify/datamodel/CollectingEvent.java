@@ -80,8 +80,8 @@ public class CollectingEvent extends DataModelObjBase implements AttachmentOwner
     protected Calendar              endDate;
     protected Short                 endDatePrecision;   // Accurate to Year, Month, Day
     protected String                endDateVerbatim;
-    protected Short                 startTime;
-    protected Short                 endTime;
+    protected Short                 startTime;          // Minutes in 24 hours
+    protected Short                 endTime;            // Minutes in 24 hours
     protected String                verbatimLocality;
     protected Integer               groupPermittedToView;
     protected String                remarks;

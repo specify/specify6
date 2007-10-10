@@ -40,7 +40,8 @@ import org.hibernate.annotations.CascadeType;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "collectingtrip")
-public class CollectingTrip extends DataModelObjBase implements java.io.Serializable {
+public class CollectingTrip extends DataModelObjBase implements java.io.Serializable
+{
 
     // Fields    
 

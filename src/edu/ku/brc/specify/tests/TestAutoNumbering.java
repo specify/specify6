@@ -17,6 +17,8 @@ import static edu.ku.brc.specify.utilapps.DataBuilder.createCollection;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectionObject;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectionType;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createDataType;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createDivision;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createInstitution;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createSpecifyUser;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createTaxonTreeDef;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createUserGroup;
@@ -49,6 +51,8 @@ import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.DataType;
+import edu.ku.brc.specify.datamodel.Division;
+import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
@@ -141,7 +145,9 @@ public class TestAutoNumbering extends TestCase
         TaxonTreeDef      taxonTreeDef      = createTaxonTreeDef("Sample Taxon Tree Def");
         LithoStratTreeDef lithoStratTreeDef = BuildSampleDatabase.createStandardLithoStratDefinitionAndItems();
         
-        CollectionType collectionType = createCollectionType(collTypeName, disciplineName, dataType, user, taxonTreeDef, null, null, null, lithoStratTreeDef);
+        Institution    institution    = createInstitution("Natural History Museum");
+        Division       division       = createDivision(institution, "Icthyology");
+        CollectionType collectionType = createCollectionType(division, collTypeName, disciplineName, dataType, user, taxonTreeDef, null, null, null, lithoStratTreeDef);
 
         SpecifyUser.setCurrentUser(user);
         user.setAgent(userAgent);

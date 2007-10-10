@@ -75,7 +75,7 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
     protected Agent              curator;
 
     protected Set<ConservEvent>  events;
-    private Set<ConservDescriptionAttachment> conservDescriptionAttachments;
+    protected Set<ConservDescriptionAttachment> conservDescriptionAttachments;
 
     // Constructors
 

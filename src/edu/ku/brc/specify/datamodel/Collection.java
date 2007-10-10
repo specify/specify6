@@ -50,22 +50,24 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     // Fields
     protected Integer                    collectionId;
     protected String                     collectionName;
-    protected String                     collectionPrefix;
+    protected String                     collectionPrefix; // Collection Acronym
     protected String                     remarks;
     protected CollectionType             collectionType;
-    protected Set<SpAppResourceDir>  spAppResourceDirs;
+    protected Set<SpAppResourceDir>      spAppResourceDirs;
     protected Set<CollectionObject>      collectionObjects;
     protected CatalogNumberingScheme     catalogNumberingScheme;
     
     // Constructors
 
     /** default constructor */
-    public Collection() {
+    public Collection() 
+    {
         //
     }
 
     /** constructor with id */
-    public Collection(Integer collectionId) {
+    public Collection(Integer collectionId) 
+    {
         this.collectionId = collectionId;
     }
 
@@ -119,7 +121,8 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     @Id
     @GeneratedValue
     @Column(name = "CollectionID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Integer getCollectionId() {
+    public Integer getCollectionId() 
+    {
         return this.collectionId;
     }
 

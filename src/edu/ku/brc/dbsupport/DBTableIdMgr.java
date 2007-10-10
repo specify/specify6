@@ -140,7 +140,7 @@ public class DBTableIdMgr
                     }
 					//log.debug("Populating hashtable ID["+tableId+"]for class: " + classname+" "+ inputFile.getName());
                     
-                    DBTableInfo tblInfo = new DBTableInfo(tableId, classname, tablename, primaryKeyField);
+                    DBTableInfo tblInfo = new DBTableInfo(tableId, classname, tablename, primaryKeyField, tableNode.attributeValue("abbrv"));
                     tblInfo.setIsSearchable(isSearchable);
                     tblInfo.setBusinessRule(XMLHelper.getAttr(tableNode, "businessrule", null));
                     

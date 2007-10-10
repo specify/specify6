@@ -21,11 +21,24 @@ import java.util.Collection;
  */
 public interface LocalizableContainerIFace extends LocalizableItemIFace, Comparable<LocalizableContainerIFace>
 {
-    public void addItem(LocalizableItemIFace item);
+    /**
+     * @param item
+     */
+    public abstract void addItem(LocalizableItemIFace item);
     
-    public void removeItem(LocalizableItemIFace item);
+    /**
+     * @param item
+     */
+    public abstract void removeItem(LocalizableItemIFace item);
     
-    public Collection<LocalizableItemIFace> getContainerItems();
+    /**
+     * @return
+     */
+    public abstract Collection<LocalizableItemIFace> getContainerItems();
     
+    /**
+     * @param name
+     * @return
+     */
     public abstract LocalizableItemIFace getItemByName(String name);
 }

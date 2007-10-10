@@ -7,7 +7,7 @@
  */
 package edu.ku.brc.specify.utilapps;
 
-import static edu.ku.brc.specify.utilapps.DataBuilder.createAccession;
+import static edu.ku.brc.specify.utilapps.DataBuilder.*;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createAccessionAgent;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createAddress;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createAgent;
@@ -91,6 +91,7 @@ import javax.swing.WindowConstants;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.derby.impl.sql.compile.CreateIndexNode;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
@@ -104,9 +105,11 @@ import com.jgoodies.looks.plastic.theme.DesertBlue;
 
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.AttributeIFace;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.Discipline;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
@@ -131,12 +134,14 @@ import edu.ku.brc.specify.datamodel.ConservRecommendation;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
+import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem;
+import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.Journal;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDefItem;
@@ -325,13 +330,21 @@ public class BuildSampleDatabase
         TaxonTreeDef      taxonTreeDef      = createTaxonTreeDef("Sample Taxon Tree Def");
         LithoStratTreeDef lithoStratTreeDef = createStandardLithoStratDefinitionAndItems();
         
-        CollectionType collectionType = createCollectionType(collTypeName, disciplineName, dataType, user, taxonTreeDef, null, null, null, lithoStratTreeDef);
+        Institution    institution    = createInstitution("Natural History Museum");
+        Division       division       = createDivision(institution, "Icthyology");
+        CollectionType collectionType = createCollectionType(division, collTypeName, disciplineName, dataType, user, taxonTreeDef, null, null, null, lithoStratTreeDef);
 
         startTx();
+        persist(institution);
+        persist(division);
         persist(collectionType);
         commitTx();
         
-        loadSchemaLocalization(collectionType);
+        loadSchemaLocalization(collectionType, SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
+        
+        DBTableIdMgr schema = new DBTableIdMgr(false);
+        schema.initialize(new File(XMLHelper.getConfigDirPath("specify_workbench_datamodel.xml")));
+        loadSchemaLocalization(collectionType, SpLocaleContainer.WORKBENCH_SCHEMA, schema);
         
         SpecifyUser.setCurrentUser(user);
         user.setAgent(userAgent);
@@ -480,13 +493,16 @@ public class BuildSampleDatabase
         System.out.println("Email:     "+email);
         System.out.println("UserType:  "+userType);
         
-        
+        Institution      institution      = createInstitution("Natural History Museum");
+        Division         division         = createDivision(institution, "Icthyology");
         Agent            userAgent        = createAgent(title, firstName, midInit, lastName, abbrev, email);
         UserGroup        userGroup        = createUserGroup(discipline.getTitle());
         
         
         startTx();
         persist(userGroup);
+        persist(institution);
+        persist(division);
         //commitTx();
         
         SpecifyUser      user             = createSpecifyUser(username, email, (short) 0, userGroup, userType);
@@ -503,14 +519,18 @@ public class BuildSampleDatabase
 
         LithoStratTreeDef lithoStratTreeDef = createStandardLithoStratDefinitionAndItems();
         
-        CollectionType collectionType = createCollectionType(discipline.getName(), discipline.getTitle(), dataType, user, taxonTreeDef, null, null, null, lithoStratTreeDef);
+        CollectionType collectionType = createCollectionType(division, discipline.getName(), discipline.getTitle(), dataType, user, taxonTreeDef, null, null, null, lithoStratTreeDef);
         List<Object> gtps = createSimpleGeologicTimePeriod(collectionType, "Geologic Time Period");
         
         //startTx();
         persist(collectionType);
         persist(userAgent);
         
-        loadSchemaLocalization(collectionType);
+        loadSchemaLocalization(collectionType, SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
+        
+        DBTableIdMgr schema = new DBTableIdMgr(false);
+        schema.initialize(new File(XMLHelper.getConfigDirPath("specify_workbench_datamodel.xml")));
+        loadSchemaLocalization(collectionType, SpLocaleContainer.WORKBENCH_SCHEMA, schema);
         
         //commitTx();
         
@@ -2657,9 +2677,14 @@ public class BuildSampleDatabase
         }
     }
     
-    protected void loadSchemaLocalization(final CollectionType collTyp)
+    /**
+     * @param collTyp
+     * @param schemaType
+     * @param tableMgr
+     */
+    protected void loadSchemaLocalization(final CollectionType collTyp, final Byte schemaType, final DBTableIdMgr tableMgr)
     {
-        SchemaLocalizerXMLHelper schemaLocalizer = new SchemaLocalizerXMLHelper();
+        SchemaLocalizerXMLHelper schemaLocalizer = new SchemaLocalizerXMLHelper(schemaType, tableMgr);
         schemaLocalizer.load();
         
         for (SpLocaleContainer table : schemaLocalizer.getSpLocaleContainers())
@@ -2668,6 +2693,7 @@ public class BuildSampleDatabase
             container.initialize();
             container.setName(table.getName());
             container.setType(table.getType());
+            container.setSchemaType(schemaType);
             
             loadLocalization(table, container);
             

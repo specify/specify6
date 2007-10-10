@@ -104,4 +104,9 @@ public interface QueryForIdResultsIFace
      */
     public abstract boolean isHQL();
     
+    /**
+     * @return indicates whether the results panel should be expanded at start up.
+     */
+    public abstract boolean isExpanded();
+    
 }

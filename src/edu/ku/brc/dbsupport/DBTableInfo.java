@@ -47,6 +47,7 @@ public class DBTableInfo extends DBInfoBase
     protected Class<?> classObj;
     protected boolean  isSearchable       = false;
     protected String   businessRule;
+    protected String   abbrev;
     
     // ID Fields
     protected String idColumnName;
@@ -71,13 +72,15 @@ public class DBTableInfo extends DBInfoBase
     public DBTableInfo(final int    tableId, 
                        final String className, 
                        final String tableName, 
-                       final String primaryKeyName)
+                       final String primaryKeyName,
+                       final String abbrev)
     {
         super(tableName);
         
-        this.tableId = tableId;
-        this.className = className;
+        this.tableId        = tableId;
+        this.className      = className;
         this.primaryKeyName = primaryKeyName;
+        this.abbrev         = abbrev;
         try
         {
             this.classObj = Class.forName(className);
@@ -243,6 +246,14 @@ public class DBTableInfo extends DBInfoBase
     public void setBusinessRule(String busniessRule)
     {
         this.businessRule = busniessRule;
+    }
+    
+    /**
+     * @return the abbrev
+     */
+    public String getAbbrev()
+    {
+        return abbrev;
     }
 
     /**

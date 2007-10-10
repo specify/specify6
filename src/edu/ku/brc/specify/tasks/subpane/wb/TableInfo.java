@@ -15,7 +15,7 @@ import edu.ku.brc.ui.IconManager;
 
 public class TableInfo implements TableListItemIFace, Comparable<TableInfo>
 {
-    protected DBTableInfo tableInfo;
+    protected DBTableInfo            tableInfo;
     protected Vector<FieldInfo>      fieldItems;
     protected boolean                isExpanded;
     protected ImageIcon              icon;
@@ -24,7 +24,7 @@ public class TableInfo implements TableListItemIFace, Comparable<TableInfo>
     {
         this.tableInfo = tableInfo;
         
-        icon = IconManager.getIcon(tableInfo.getTitle(), size);
+        icon = IconManager.getIcon(tableInfo.getName(), size);
     }
 
     /**
@@ -53,7 +53,7 @@ public class TableInfo implements TableListItemIFace, Comparable<TableInfo>
 
     public String getIconName()
     {
-        return tableInfo.getClassObj().getSimpleName();
+        return tableInfo.getName();
     }
     
     /**
@@ -85,7 +85,7 @@ public class TableInfo implements TableListItemIFace, Comparable<TableInfo>
      */
     public String getText()
     {
-        return tableInfo.toString();
+        return tableInfo.getTitle();
     }
 
     /* (non-Javadoc)

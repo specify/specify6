@@ -39,10 +39,12 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.helpers.SwingWorker;
-import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -76,7 +78,7 @@ public class ERDVisualizer extends JFrame
         
     public ERDVisualizer()
     {
-        boolean showTreeHierarchy = true;
+        boolean showTreeHierarchy = false;
         
         ERDTable.setDisplayType(showTreeHierarchy ? ERDTable.DisplayType.Title : ERDTable.DisplayType.All);
         
@@ -449,9 +451,8 @@ public class ERDVisualizer extends JFrame
             output.write("<LI><a href=\"CollectionOverview.html\">Schema Overview</a></LI>");
             for (ERDTable t : tblTracker.getList())
             {
-                String name  = StringUtils.substringAfterLast(t.getClassName(), ".");
-                String prettyName = UIHelper.makeNamePretty(name);
-                output.write("<LI><a href=\""+name+".html\">"+prettyName+"</a></LI>");
+                DBTableInfo ti = t.getTable();
+                output.write("<LI><a href=\""+ti.getShortClassName()+".html\">"+ti.getTitle()+"</a></LI>");
             }
             output.write("</UL>");
             output.write(mapTemplate.substring(inx+contentTag.length()+1, mapTemplate.length()));
@@ -591,16 +592,17 @@ public class ERDVisualizer extends JFrame
         Point p = new Point(0,0);
         calcLoc(p, getPanel().getMainTable(), stop);
         
-        String name  = StringUtils.substringAfterLast(getPanel().getMainTable().getClassName(), ".");
+        String      name    = StringUtils.substringAfterLast(getPanel().getMainTable().getClassName(), ".");
+        DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(name);
         String fName = schemaDir.getAbsolutePath() + File.separator + name;
         try
         {
-            File html = new File(fName + ".html");
+            File           html   = new File(fName + ".html");
             BufferedWriter output = new BufferedWriter( new FileWriter(html) );
             
-            int inx = mapTemplate.indexOf(contentTag);
+            int    inx        = mapTemplate.indexOf(contentTag);
             String subContent = mapTemplate.substring(0, inx);
-            output.write(StringUtils.replace(subContent, "<!-- Title -->", UIHelper.makeNamePretty(name)));
+            output.write(StringUtils.replace(subContent, "<!-- Title -->", tblInfo.getTitle()));
         
             File imgFile = new File(fName + ".png");
             output.write("<map name=\"schema\" id=\"schema\">\n");
@@ -805,14 +807,17 @@ public class ERDVisualizer extends JFrame
      */
     public static void main(String[] args)
     {
-
-        final ERDVisualizer frame = new ERDVisualizer();
-
+        System.setProperty(SchemaI18NService.factoryName, "edu.ku.brc.specify.config.SpecifySchemaI18NServiceXML");    // Needed for Localization and Schema
         
+        //SchemaI18NService.setCurrentLocale(new Locale("de", "", ""));
+        // Note: CollectionTypeId is not used so a '1' doesn't matter.
+        SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, 1, DBTableIdMgr.getInstance(), SchemaI18NService.getCurrentLocale());
+
         SwingUtilities.invokeLater(new Runnable()
         {
             public void run()
             {
+                ERDVisualizer frame = new ERDVisualizer();
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 frame.setBounds(0, 0, 800, 2000);
                 frame.setVisible(true);

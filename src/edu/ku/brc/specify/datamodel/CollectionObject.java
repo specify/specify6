@@ -119,7 +119,7 @@ public class CollectionObject extends DataModelObjBase implements AttachmentOwne
     protected PaleoContext                  paleoContext;
     
     protected Set<ConservDescription>       conservDescriptions;
-    private Set<CollectionObjectAttachment> collectionObjectAttachments;
+    protected Set<CollectionObjectAttachment> collectionObjectAttachments;
 
     // Constructors
 

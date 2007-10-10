@@ -314,7 +314,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                             final int                colIndex) throws SQLException
     {
         Object fieldDataObj = resultSet.getObject(colIndex + 1);
-        log.error("fieldName ["+fieldName+"] fieldClass ["+fieldClass.getSimpleName()+"] colIndex [" +  colIndex + "] fieldDataObj [" + fieldDataObj+"]");
+        //log.debug("fieldName ["+fieldName+"] fieldClass ["+fieldClass.getSimpleName()+"] colIndex [" +  colIndex + "] fieldDataObj [" + fieldDataObj+"]");
         if (fieldDataObj != null)
         {
             if (fieldClass == String.class)
@@ -412,7 +412,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                          
                      } else if (caption.getColInfoList() != null)
                      {
-                         // OK, now aggregation but we will be rolling up mulitple columns into a singel object for formatting
+                         // OK, now aggregation but we will be rolling up multiple columns into a single object for formatting
                          // We need to get the formatter to see what the Class is of the object
                          hasCompositeObj = true;
                          aggCaption      = caption;
@@ -459,10 +459,10 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                     if (StringUtils.isNotEmpty(ordColName))
                     {
                         String colName = StringUtils.substringAfterLast(ordColName, ".");
-                        System.out.println("colName ["+colName+"]");
+                        log.debug("colName ["+colName+"]");
                         for (int i=0;i<metaData.getColumnCount();i++)
                         {
-                            System.out.println("["+colName+"]["+metaData.getColumnName(i+1)+"]");
+                            log.debug("["+colName+"]["+metaData.getColumnName(i+1)+"]");
                             if (colName.equalsIgnoreCase(metaData.getColumnName(i+1)))
                             {
                                 aggCaption.setOrderColIndex(i);
@@ -480,10 +480,10 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                 
                 // Here is the tricky part.
                 // When we are doing a Composite we are just taking multiple columns and 
-                // essentially replace them with a single vale from the DataObjFormatter
+                // essentially replace them with a single value from the DataObjFormatter
                 //
                 // But when doing an Aggregation we taking several rows and rolling them up into a single value.
-                // so this code knows when it is doing an aggregation so it knows to only add a new row to the displable
+                // so this code knows when it is doing an aggregation, so it knows to only add a new row to the display-able
                 // results when primary id changes.
                 
                 Vector<Object> row       = null;
@@ -492,6 +492,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                 do 
                 {
                     int id = resultSet.getInt(1);
+                    
                     // Remember aggCaption is used by both a Aggregation and a Composite
                     if (aggCaption != null && !hasCompositeObj)
                     {
@@ -538,7 +539,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                     for (ERTICaptionInfo caption :  captions)
                     {
                         int posIndex = caption.getPosIndex();
-                        if (caption == aggCaption) // Checks to see if we need to take multipler columns and make one column
+                        if (caption == aggCaption) // Checks to see if we need to take multiplier columns and make one column
                         {
                             if (hasCompositeObj) // just doing a Composite
                             {
@@ -573,7 +574,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                                 aggList.add(aggObj);
 
                                 DataObjAggregator aggregator = DataObjFieldFormatMgr.getAggregator(aggCaption.getAggregatorName());
-                                System.out.println(" aggCaption.getOrderColIndex() "+ aggCaption.getOrderColIndex());
+                                //log.debug(" aggCaption.getOrderColIndex() "+ aggCaption.getOrderColIndex());
                                 
                                 //aggSetter.setFieldValue(aggObj, aggregator.getOrderFieldName(), resultSet.getObject(aggCaption.getOrderColIndex() + 1));
                                 
@@ -593,9 +594,9 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                                 }
                                 row.add("PlaceHolder");
                                 
-                            } else
+                            } else if (aggSetter == null || aggList == null)
                             {
-                                log.error("Aggregator is null! ["+aggCaption.getAggregatorName()+"] or row or aggList");
+                                log.error("Aggregator is null! ["+aggCaption.getAggregatorName()+"] or aggList["+aggList+"]");
                             }
                             
                         } else if (row != null)
@@ -607,6 +608,8 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                     
                 } while (resultSet.next());
                 
+                // We were always setting the rolled up data when the ID changed
+                // but on the last row we need to do it here manually (so to speak)
                 if (aggCaption != null && aggList != null && aggList.size() > 0 && row != null)
                 {
                     int aggInx = captions.indexOf(aggCaption);
@@ -667,10 +670,16 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                 for (Object rowObj : list)
                 {
                     Vector<Object> row = new Vector<Object>(list.size());
-                    for (Object colObj : (Object[])rowObj)
+                    if (rowObj.getClass().isArray())
                     {
-                        row.add(colObj);
-                    } 
+                        for (Object colObj : (Object[])rowObj)
+                        {
+                            row.add(colObj);
+                        }
+                    } else
+                    {
+                        row.add(rowObj);
+                    }
                     cache.add(row);
                 }                
             }

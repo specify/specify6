@@ -114,7 +114,7 @@ public abstract class SpLocaleBase extends DataModelObjBase
     @Column(name = "IsHidden", unique = false, nullable = false, insertable = true, updatable = true)
     public Boolean getIsHidden()
     {
-        return isHidden;
+        return isHidden == null ? false : isHidden;
     }
 
     /**
