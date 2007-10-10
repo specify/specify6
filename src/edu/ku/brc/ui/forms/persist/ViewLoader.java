@@ -534,9 +534,9 @@ public class ViewLoader
                             
                             Properties properties = UIHelper.parseProperties(initialize);
                             
-                            // XXX DEBUG ONLY PLease REMOVE LATER
                             if (StringUtils.isEmpty(uitypeStr))
                             {
+                                // XXX DEBUG ONLY PLease REMOVE LATER
                                 //log.debug("***************************************************************************");
                                 //log.debug("***** Cell Id["+cellId+"] Name["+cellName+"] uitype is empty and should be 'text'. (Please Fix!)");
                                 //log.debug("***************************************************************************");

@@ -234,19 +234,14 @@ public class SearchTableConfig implements DisplayOrderingIFace,
         DBTableInfo ti = getTableInfo();
         
         String primaryKey = ti.getIdFieldName();
-        if (idsOnly)
-        {
-            sqlStr.append(primaryKey);
-        }
+        sqlStr.append(primaryKey);
         
         if (!idsOnly)
         {
-            int cnt = 0;
             for (DisplayFieldConfig field : displayFields)
             {
-                if (cnt > 0) sqlStr.append(',');
+                sqlStr.append(',');
                 sqlStr.append(field.getFieldInfo().getName());
-                cnt++;
             }
         }
         

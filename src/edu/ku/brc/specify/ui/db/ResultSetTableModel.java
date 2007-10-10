@@ -84,7 +84,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     protected int startInx = 0;
     protected int endInx   = 0;
     
-    protected boolean useColOffset = false;
+    protected boolean useColOffset = true;
     
     /**
      * Construct with a QueryForIdResultsIFace
@@ -108,7 +108,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
         
         if (results.isHQL())
         {
-            useColOffset = false;
+            //useColOffset = false;
             
             List<ERTICaptionInfo> captions = results.getVisibleCaptionInfo();
             numColumns = captions.size();
@@ -260,9 +260,29 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
 
         if (ids == null)
         {
+            /*int ii = 0;
             for (Integer id : results.getRecIds())
             {
-                rs.addItem(id);
+                System.out.println(ii + "*** Id["+id+"]");
+                ii++;
+            }
+            Vector<Integer> resultsIds = results.getRecIds();
+            for (int inx : rows)
+            {
+                System.out.println("inx["+inx+"]   Id["+resultsIds.get(inx)+"]");
+                rs.addItem(resultsIds.get(inx));
+            }*/
+            
+            for (int inx : rows)
+            {
+                Vector<Object> row = cache.get(inx);
+                if (row != null)
+                {
+                    rs.addItem((Integer)row.get(column));
+                } else
+                {
+                    log.error("Cache row cannot be null for row index: "+inx);
+                }
             }
             
         } else
@@ -510,8 +530,9 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                             if (row != null && aggList != null)
                             {
                                 row.add(id);
-                                row.remove(aggInx);
-                                row.insertElementAt(DataObjFieldFormatMgr.aggregate(aggList, aggCaption.getAggClass()), aggInx);
+                                row.remove(aggInx+1);
+                                row.insertElementAt(DataObjFieldFormatMgr.aggregate(aggList, aggCaption.getAggClass()), aggInx+1);
+
                                 if (aggListRecycler != null)
                                 {
                                     aggListRecycler.addAll(aggList);
