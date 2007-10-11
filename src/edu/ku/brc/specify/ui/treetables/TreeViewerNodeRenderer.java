@@ -25,6 +25,8 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
+import javax.swing.UIDefaults;
+import javax.swing.UIManager;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
@@ -506,6 +508,13 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         
         private void drawNodeString(Graphics g)
         {
+            Color startingColor = g.getColor();
+            if (treeNode.getAcceptedParentFullName() != null)
+            {
+                UIDefaults uid = UIManager.getLookAndFeelDefaults();
+                Color disabledTextColor = uid.getColor("textInactiveText");
+                g.setColor(disabledTextColor);
+            }
             Graphics2D g2d = (Graphics2D)g;
             FontMetrics fm = g.getFontMetrics();
             int cellHeight = list.getFixedCellHeight();
@@ -525,6 +534,8 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
             
             String clippedName = GraphicsUtils.clipString(fm, name, stringLength);
             g.drawString(clippedName, stringStartX, stringY);
+            
+            g.setColor(startingColor);
         }
         
         private void drawParentageStrings(Graphics g)
