@@ -97,6 +97,6 @@ public class Pair<F,S> implements Serializable
 	@Override
 	public String toString()
 	{
-		return "{" + first.toString() + "," + second.toString() + "}";
+		return "{" + first + "," + second + "}";
 	}
 }
