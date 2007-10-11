@@ -28,10 +28,8 @@
  */
 package edu.ku.brc.specify.datamodel;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -42,6 +40,8 @@ import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 import edu.ku.brc.util.Orderable;
 
@@ -51,7 +51,7 @@ import edu.ku.brc.util.Orderable;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "collector", uniqueConstraints = { @UniqueConstraint(columnNames = { "OrderNumber", "CollectingEventID" }) })
+@Table(name = "collector", uniqueConstraints = { @UniqueConstraint(columnNames = {"OrderNumber", "CollectingEventID"}) })
 public class Collector extends DataModelObjBase implements java.io.Serializable, Orderable {
 
     // Fields    
@@ -97,7 +97,7 @@ public class Collector extends DataModelObjBase implements java.io.Serializable,
      */
     @Id
     @GeneratedValue
-    @Column(name = "CollectorID", unique = false, nullable = false, insertable = true, updatable = true)
+    @Column(name = "CollectorID")
     public Integer getCollectorId() 
     {
         return this.collectorId;
@@ -131,7 +131,7 @@ public class Collector extends DataModelObjBase implements java.io.Serializable,
     /**
      * 
      */
-    @Column(name = "OrderNumber", unique = false, nullable = false, insertable = true, updatable = true, length = 10)
+    @Column(name = "OrderNumber", nullable = false)
     public Integer getOrderNumber() {
         return this.orderNumber;
     }
@@ -144,7 +144,7 @@ public class Collector extends DataModelObjBase implements java.io.Serializable,
      * 
      */
     @Lob
-    @Column(name="Remarks", unique=false, nullable=true, updatable=true, insertable=true)
+    @Column(name="Remarks")
     public String getRemarks() {
         return this.remarks;
     }
@@ -156,8 +156,9 @@ public class Collector extends DataModelObjBase implements java.io.Serializable,
     /**
      *      * The CollectingEvent the agent participated in
      */
-    @ManyToOne(cascade = { CascadeType.PERSIST }, fetch = FetchType.LAZY)
-    @JoinColumn(name = "CollectingEventID", unique = false, nullable = false, insertable = true, updatable = true)
+    @ManyToOne
+    @JoinColumn(name = "CollectingEventID", nullable = false)
+    @Cascade( {CascadeType.SAVE_UPDATE} )
     public CollectingEvent getCollectingEvent() {
         return this.collectingEvent;
     }
@@ -169,8 +170,9 @@ public class Collector extends DataModelObjBase implements java.io.Serializable,
     /**
      *      * Link to Collector's record in Agent table
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "AgentID", unique = false, nullable = false, insertable = true, updatable = true)
+    @ManyToOne
+    @JoinColumn(name = "AgentID", nullable = false)
+    @Cascade( {CascadeType.SAVE_UPDATE} )
     public Agent getAgent() {
         return this.agent;
     }
