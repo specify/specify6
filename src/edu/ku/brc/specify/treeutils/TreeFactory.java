@@ -182,27 +182,57 @@ public class TreeFactory
     {
         if (parent instanceof Taxon)
         {
-            return "SELECT t.taxonId, t.name, t.nodeNumber, t.highestChildNodeNumber, t.rankId, t.acceptedTaxon.id FROM Taxon t WHERE t.parent=:PARENT ORDER BY t.rankId, t.name";
+            return "SELECT n.id, n.name, n.fullName, n.nodeNumber, n.highestChildNodeNumber, n.rankId, n2.id, n2.fullName FROM Taxon n LEFT OUTER JOIN n.acceptedTaxon n2 WHERE n.parent=:PARENT ORDER BY n.rankId, n.name";
         }
         
         if (parent instanceof Geography)
         {
-            return "SELECT geo.geographyId, geo.name, geo.nodeNumber, geo.highestChildNodeNumber, geo.rankId, geo.acceptedGeography.id FROM Geography geo WHERE geo.parent=:PARENT ORDER BY geo.rankId, geo.name";
+            return "SELECT n.id, n.name, n.fullName, n.nodeNumber, n.highestChildNodeNumber, n.rankId, n2.id, n2.fullName FROM Geography n LEFT OUTER JOIN n.acceptedGeography n2 WHERE n.parent=:PARENT ORDER BY n.rankId, n.name";
         }
         
         if (parent instanceof GeologicTimePeriod)
         {
-            return "SELECT gtp.geologicTimePeriodId, gtp.name, gtp.nodeNumber, gtp.highestChildNodeNumber, gtp.rankId, gtp.acceptedGeologicTimePeriod.id FROM GeologicTimePeriod gtp WHERE gtp.parent=:PARENT ORDER BY gtp.startPeriod, gtp.endPeriod, gtp.name";
+            return "SELECT n.id, n.name, n.fullName, n.nodeNumber, n.highestChildNodeNumber, n.rankId, n2.id, n2.fullName FROM GeologicTimePeriod n LEFT OUTER JOIN n.acceptedGeologicTimePeriod n2 WHERE n.parent=:PARENT ORDER BY n.startPeriod, n.endPeriod, n.name";
         }
         
         if (parent instanceof Location)
         {
-            return "SELECT l.locationId, l.name, l.nodeNumber, l.highestChildNodeNumber, l.rankId, l.acceptedLocation.id FROM Location l WHERE l.parent=:PARENT ORDER BY l.rankId, l.name";
+            return "SELECT n.id, n.name, n.fullName, n.nodeNumber, n.highestChildNodeNumber, n.rankId, n2.id, n2.fullName FROM Location n LEFT OUTER JOIN n.acceptedLocation n2 WHERE n.parent=:PARENT ORDER BY n.rankId, n.name";
         }
         
         if (parent instanceof LithoStrat)
         {
-            return "SELECT l.lithoStratId, l.name, l.nodeNumber, l.highestChildNodeNumber, l.rankId, l.acceptedLithoStrat.id FROM LithoStrat l WHERE l.parent=:PARENT ORDER BY l.rankId, l.name";
+            return "SELECT n.id, n.name, n.fullName, n.nodeNumber, n.highestChildNodeNumber, n.rankId, n2.id, n2.fullName FROM LithoStrat n LEFT OUTER JOIN n.acceptedLithoStrat n2 WHERE n.parent=:PARENT ORDER BY n.rankId, n.name";
+        }
+        
+        return null;
+    }
+    
+    public static String getSynonymQueryString(Class<?> clazz)
+    {
+        if (clazz.equals(Taxon.class))
+        {
+            return "SELECT n.id, n.fullName FROM " + clazz.getName() + " n WHERE n.acceptedTaxon.id=:NODEID";
+        }
+        
+        if (clazz.equals(Geography.class))
+        {
+            return "SELECT n.id, n.fullName FROM " + clazz.getName() + " n WHERE n.acceptedGeography.id=:NODEID";
+        }
+        
+        if (clazz.equals(GeologicTimePeriod.class))
+        {
+            return "SELECT n.id, n.fullName FROM " + clazz.getName() + " n WHERE n.acceptedGeologicTimePeriod.id=:NODEID";
+        }
+        
+        if (clazz.equals(Location.class))
+        {
+            return "SELECT n.id, n.fullName FROM " + clazz.getName() + " n WHERE n.acceptedLocation.id=:NODEID";
+        }
+        
+        if (clazz.equals(LithoStrat.class))
+        {
+            return "SELECT n.id, n.fullName FROM " + clazz.getName() + " n WHERE n.acceptedLithoStrat.id=:NODEID";
         }
         
         return null;

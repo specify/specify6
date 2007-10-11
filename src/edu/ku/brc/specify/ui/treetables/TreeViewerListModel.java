@@ -254,6 +254,11 @@ public class TreeViewerListModel extends AbstractListModel
     {
         log.debug("performing removeChildNodes( " + parent + ")");
      
+        if (parent == null)
+        {
+            return;
+        }
+        
         int startingSize = nodes.size();
         int parentIndex = nodes.indexOf(parent);
         

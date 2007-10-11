@@ -14,6 +14,7 @@ import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.ui.treetables.TreeNode;
+import edu.ku.brc.util.Pair;
 
 /**
  * This interface defines a session facade for all clients needing access to tree-structured data.
@@ -124,6 +125,10 @@ public interface TreeDataService <T extends Treeable<T,D,I>,
      * @return a localized, human-readable status message, or null
      */
     public String synonymize(T source, T destination);
+    
+    public Set<T> getSynonyms(T node);
+    
+    public Set<Pair<Integer,String>> getSynonymIdsAndNames(Class<?> clazz, Integer nodeId);
     
     /**
      * Initializes any data associated with the given node.

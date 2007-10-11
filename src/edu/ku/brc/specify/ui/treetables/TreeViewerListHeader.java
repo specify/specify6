@@ -23,6 +23,7 @@ import java.util.Map;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
@@ -211,7 +212,7 @@ public class TreeViewerListHeader extends JPanel implements ListDataListener
     }
 
 	@Override
-	protected void paintComponent(Graphics g)
+	protected synchronized void paintComponent(Graphics g)
 	{
 		Graphics2D g2 = (Graphics2D)g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);

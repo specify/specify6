@@ -7,6 +7,7 @@
 package edu.ku.brc.specify.treeutils;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -29,6 +30,7 @@ import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.dbsupport.HibernateDataProviderSession;
 import edu.ku.brc.specify.ui.treetables.TreeNode;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
+import edu.ku.brc.util.Pair;
 
 /**
  * An implementation of @see {@link TreeDataService} that uses Hibernate
@@ -119,7 +121,8 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         String childQueryString = TreeFactory.getChildQueryString(parent);
         Query getNodeInfoList = session.createQuery(childQueryString);
         getNodeInfoList.setParameter("PARENT", parent);
-        List<Object[]> nodeInfoList = getNodeInfoList.list();
+        List list = getNodeInfoList.list();
+        List<Object[]> nodeInfoList = list;
         session.close();
         
         Vector<TreeNode> treeNodes = new Vector<TreeNode>();
@@ -132,27 +135,41 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
     
     /**
      * Creates a {@link TreeNode} from the passed in {@link Object} array.  The array
-     * must contain the following objects, in order: {@link Integer} id, {@link String} name,
-     * {@link Integer} nodeNumber, {@link Integer} highestChildNodeNumber, {@link Integer} rankId,
-     * and {@link T} acceptedParent.  (The acceptedParent field will commonly be <code>null</code>.)
+     * must contain the following objects, in order: 
+     * <ol start="0">
+     * <li>{@link Integer} id
+     * <li>{@link String} name
+     * <li>{@link String} fullName
+     * <li>{@link Integer} nodeNumber
+     * <li>{@link Integer} highestChildNodeNumber
+     * <li>{@link Integer} rankId
+     * <li>{@link Integer} acceptedParent.rankId
+     * <li>{@link String} acceptedParent.fullName
+     * </ol>
+     * 
+     * (The acceptedParent fields will commonly be <code>null</code>.)
      * 
      * @param nodeInfo an object array containing the node info
      * @param parent the parent record
-     * @return a TreeNode object
+     * @return a {@link TreeNode} object
      */
     @SuppressWarnings("unchecked")
     private TreeNode createNode(Object[] nodeInfo, T parent)
     {
-        Integer id = (Integer)nodeInfo[0];
-        String nodeName = (String)nodeInfo[1];
-        Integer nodeNum   = (Integer)nodeInfo[2];
-        Integer highChild = (Integer)nodeInfo[3];
+        Integer id                     = (Integer) nodeInfo[0];
+        String  nodeName               = (String)  nodeInfo[1];
+        String  fullName               = (String)  nodeInfo[2];
+        Integer nodeNum                = (Integer) nodeInfo[3];
+        Integer highChild              = (Integer) nodeInfo[4];
+        int     rank                   = (Integer) nodeInfo[5];
+        Integer acceptedParentId       = (Integer) nodeInfo[6];
+        String  acceptedParentFullName = (String)  nodeInfo[7];
+        
         int descCount = 0;
         if (highChild != null && nodeNum != null)
         {
             descCount = highChild - nodeNum;
         }
-        int rank = (Integer)nodeInfo[4];
 
         int parentId;
         int parentRank;
@@ -169,9 +186,9 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
             parentRank = parentRecord.getRankId();
         }
         
-        Integer acceptedParentId = (Integer)nodeInfo[5];
+        Set<Pair<Integer,String>> synIdsAndNames = getSynonymIdsAndNames(parent.getClass(), id);
         
-        TreeNode node = new TreeNode(nodeName,id,parentId,rank,parentRank, (descCount != 0), acceptedParentId);
+        TreeNode node = new TreeNode(nodeName,fullName,id,parentId,rank,parentRank, (descCount != 0), acceptedParentId, acceptedParentFullName, synIdsAndNames);
         return node;
     }
 
@@ -719,6 +736,47 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
             statusMsg = "Failed to create node relationship.";
         }
         return statusMsg;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.treeutils.TreeDataService#getSynonyms(edu.ku.brc.specify.datamodel.Treeable)
+     */
+    public Set<T> getSynonyms(T node)
+    {
+        Session session = getNewSession(node);
+        Set<T> synonyms = node.getAcceptedChildren();
+        synonyms.size();
+        session.close();
+        return synonyms;
+    }
+    
+    public Set<T> getSynonyms(Class<? extends Treeable<?,?,?>> clazz, Integer id)
+    {
+        T node = getNodeById(clazz, id);
+        return getSynonyms(node);
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.treeutils.TreeDataService#getSynonymIdsAndNames(java.lang.Class, java.lang.Integer)
+     */
+    @SuppressWarnings("unchecked")
+    public Set<Pair<Integer,String>> getSynonymIdsAndNames(Class<?> clazz, Integer nodeId)
+    {
+        Set<Pair<Integer,String>> idsAndNames = new HashSet<Pair<Integer,String>>();
+        Session session = getNewSession();
+        String queryString = TreeFactory.getSynonymQueryString(clazz);
+        Query q = session.createQuery(queryString);
+        q.setParameter("NODEID", nodeId);
+        List<Object[]> results = q.list();
+        for (Object[] idAndName: results)
+        {
+            Integer id = (Integer)idAndName[0];
+            String name = (String)idAndName[1];
+            
+            idsAndNames.add(new Pair<Integer,String>(id,name));
+        }
+        session.close();
+        return idsAndNames;
     }
 
     /* (non-Javadoc)

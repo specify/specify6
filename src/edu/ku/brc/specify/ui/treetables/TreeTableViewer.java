@@ -324,7 +324,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         }
         
 		listHeaders[0] = new TreeViewerListHeader(lists[0],listModel,listCellRenderer,rankNamesMap);
-		listHeaders[1] = new TreeViewerListHeader(lists[0],listModel,listCellRenderer,rankNamesMap);
+		listHeaders[1] = new TreeViewerListHeader(lists[1],listModel,listCellRenderer,rankNamesMap);
 
 		scrollers[0] = new JScrollPane(lists[0]);
 		scrollers[0].setBackground(Color.WHITE);
@@ -942,6 +942,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         
         listModel.setVisibleRoot(parentNode);
         
+        // I doubled this call b/c Swing wasn't doing this unless I put it in here twice
         list.setSelectedValue(selectedNode, true);
         list.setSelectedValue(selectedNode, true);
     }
@@ -963,6 +964,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		
 		if( selection != null )
 		{
+		    // I doubled this call b/c Swing wasn't doing this unless I put it in here twice
             list.setSelectedValue(selection,true);
             list.setSelectedValue(selection,true);
 		}
@@ -1549,7 +1551,33 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		{
 			log.info("User requested new link be created between " + draggedNode.getName() + " and " + droppedOnNode.getName());
 			String statusMsg = dataService.synonymize(draggedRecord, droppedRecord);
-            draggedNode.setAcceptedParentId(droppedOnNode.getId());
+            //draggedNode.setAcceptedParentId(droppedOnNode.getId());
+            
+//            // hide the modified nodes, then reshow them
+//            T draggedRecordParent = draggedRecord.getParent();
+//            if (draggedRecordParent != null)
+//            {
+//                TreeNode parentNode = listModel.getNodeById(draggedRecordParent.getTreeId());
+//                if (parentNode != null)
+//                {
+//                    listModel.removeChildNodes(parentNode);
+//                    List<TreeNode> childNodes = dataService.getChildTreeNodes(draggedRecordParent);
+//                    listModel.showChildNodes(childNodes, parentNode);
+//                }
+//            }
+//
+//            T droppedRecordParent = droppedRecord.getParent();
+//            if (droppedRecordParent != null)
+//            {
+//                TreeNode parentNode = listModel.getNodeById(droppedRecordParent.getTreeId());
+//                if (parentNode != null)
+//                {
+//                    listModel.removeChildNodes(parentNode);
+//                    List<TreeNode> childNodes = dataService.getChildTreeNodes(droppedRecordParent);
+//                    listModel.showChildNodes(childNodes, parentNode);
+//                }
+//            }
+            
             repaint();
 			if (statusMsg != null)
 			{
@@ -1858,7 +1886,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         }
         catch (Exception e)
         {
-            log.error("Unknown error when trying to store the selected node id.", e);
+            log.error("Unknown error when trying to store the selected node id during tree viewer shutdown.", e);
         }
 		
 		return true;
@@ -1899,6 +1927,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     private TreeNode createNode(T dataRecord)
     {
         String nodeName = dataRecord.getName();
+        String fullName = dataRecord.getFullName();
         int id = dataRecord.getTreeId();
         int rank = dataRecord.getRankId();
         T acceptedParent = dataRecord.getAcceptedParent();
@@ -1919,7 +1948,22 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         }
         
         int descCount = dataService.getDescendantCount(dataRecord);
-        TreeNode node = new TreeNode(nodeName,id,parentId,rank,parentRank, (descCount != 0), (acceptedParent != null) ? acceptedParent.getTreeId() : null);
+        
+        Set<T> synonyms = dataService.getSynonyms(dataRecord);
+        Set<Integer> synIds = new HashSet<Integer>();
+        Set<String> synNames = new HashSet<String>();
+        for (T syn: synonyms)
+        {
+            synIds.add(syn.getTreeId());
+            synNames.add(syn.getFullName());
+        }
+        
+        Set<Pair<Integer,String>> synIdsAndNames = dataService.getSynonymIdsAndNames(dataRecord.getClass(), id);
+        
+        Integer acceptParentId      = (acceptedParent != null) ? acceptedParent.getTreeId() : null;
+        String acceptParentFullName = (acceptedParent != null) ? acceptedParent.getFullName() : null;
+        TreeNode node = new TreeNode(nodeName,fullName,id,parentId,rank,parentRank, (descCount != 0), acceptParentId, acceptParentFullName, synIdsAndNames);
+        
         return node;
     }
     

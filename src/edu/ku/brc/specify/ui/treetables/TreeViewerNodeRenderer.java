@@ -13,9 +13,11 @@ import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 import javax.swing.Icon;
@@ -48,7 +50,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
     protected TreeViewerListModel model;
     protected JList list;
     
-    protected TreeMap<Integer, Integer> columnWidths;
+    protected SortedMap<Integer, Integer> columnWidths;
     protected boolean widthsValid;
 
     protected Color bgs[];
@@ -59,8 +61,6 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
     protected TreeNodeUI nodeUI;
     
     protected boolean firstTime = true;
-    
-    protected int defaultColumnWidth;
     
     /**
      * 
@@ -79,7 +79,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         leadTextOffset = 24;
         tailTextOffset = 8;
         
-        columnWidths = new TreeMap<Integer, Integer>();
+        columnWidths = Collections.synchronizedSortedMap(new TreeMap<Integer, Integer>());
         widthsValid = false;
         
         model.addListDataListener(this);
@@ -109,13 +109,39 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         }
         
         TreeNode node = (TreeNode)value;
+        
         nodeUI.setNode(node);
         nodeUI.setSelected(isSelected);
         nodeUI.setHasFocus(cellHasFocus);
+        
+        // build up the tooltip from the synonym information
+        StringBuilder tooltipBuilder = new StringBuilder("<html><div style=\"font-family: sans-serif; font-size: 12pt\">");
+        tooltipBuilder.append(node.getFullName());
+        
+        Set<Pair<Integer,String>> idsAndNames = node.getSynonymIdsAndNames();
+        if (idsAndNames.size() > 0)
+        {
+            tooltipBuilder.append("<br><br>Synonyms:<ul>");
+            for (Pair<Integer,String> idAndName: idsAndNames)
+            {
+                tooltipBuilder.append("<li>");
+                tooltipBuilder.append(idAndName.second);
+                tooltipBuilder.append("</li>");
+            }
+            tooltipBuilder.append("</ul>");
+        }
+        if (node.getAcceptedParentFullName() != null)
+        {
+            tooltipBuilder.append("<br><br>Accepted: ");
+            tooltipBuilder.append(node.getAcceptedParentFullName());
+        }
+        tooltipBuilder.append("</div></html>");
+        nodeUI.setToolTipText(tooltipBuilder.toString());
+        
         return nodeUI;
     }
     
-    public Pair<Integer,Integer> getTextBoundsForRank(Integer rank)
+    public synchronized Pair<Integer,Integer> getTextBoundsForRank(Integer rank)
     {
         if( rank == null )
         {
@@ -135,7 +161,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         return textBounds;
     }
     
-    public Pair<Integer,Integer> getAnchorBoundsForRank(Integer rank)
+    public synchronized Pair<Integer,Integer> getAnchorBoundsForRank(Integer rank)
     {
         if( rank == null )
         {
@@ -155,7 +181,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         return anchorBounds;
     }
     
-    public Pair<Integer,Integer> getColumnBoundsForRank(Integer rank)
+    public synchronized Pair<Integer,Integer> getColumnBoundsForRank(Integer rank)
     {
         if( rank == null )
         {
@@ -184,14 +210,15 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         }
         
         colBounds.first = widthsOfLowerColumns;
-        colBounds.second = widthsOfLowerColumns + columnWidths.get(rank);
+        Integer colWidth = columnWidths.get(rank);
+        colBounds.second = widthsOfLowerColumns + colWidth;
         return colBounds;
     }        
     
-    protected void computeMissingColumnWidths( Graphics g )
+    public synchronized void computeMissingColumnWidths( Graphics g )
     {
         log.debug("Computing missing column widths");
-        defaultColumnWidth =  g.getFontMetrics().stringWidth("WWWWWWWWWWWWW");
+        int defaultColumnWidth =  g.getFontMetrics().stringWidth("WWWWWWWWWWWWW");
         for (Integer rank: model.getVisibleRanks())
         {
             if (!columnWidths.containsKey(rank))
@@ -202,7 +229,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         widthsValid = true;
     }
     
-    protected void removeUnusedColumnWidths()
+    public synchronized void removeUnusedColumnWidths()
     {
         Set<Integer> ranksWithWidths = new HashSet<Integer>();
         ranksWithWidths.addAll(columnWidths.keySet());
@@ -217,18 +244,18 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         }
     }
     
-    public int getColumnWidth(int rank)
+    public synchronized int getColumnWidth(int rank)
     {
         return columnWidths.get(rank);
     }
     
-    public void changeColumnWidth(int rank, int change)
+    public synchronized void changeColumnWidth(int rank, int change)
     {
         int width = columnWidths.get(rank);
         columnWidths.put(rank, width+change);
     }
     
-    protected int[] getRanksSurroundingPoint(int x)
+    protected synchronized int[] getRanksSurroundingPoint(int x)
     {
         int[] ranks = new int[] {-1,-1};
         boolean leftSet = false;
@@ -255,7 +282,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         return null;
     }
     
-    public int getSumOfColumnWidths()
+    public synchronized int getSumOfColumnWidths()
     {
         int width = 0;
         for (Integer w: columnWidths.values())
@@ -349,6 +376,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
             if( !widthsValid )
             {
                 computeMissingColumnWidths(list.getGraphics());
+                widthsValid = true;
             }
             
             GraphicsUtils.turnOnAntialiasedDrawing(g);
@@ -367,11 +395,13 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
             
             // draw the string name of the node
             drawNodeString(g);
-            
-            if (selected)
-            {
-                drawParentageStrings(g);
-            }
+
+            // TODO: if there is time, get group opinions on how to make this look much better
+            // then add this call back into the code
+//            if (selected)
+//            {
+//                drawParentageStrings(g);
+//            }
         }
         
         private void drawBackgroundColors(Graphics g)

@@ -1,8 +1,13 @@
 package edu.ku.brc.specify.ui.treetables;
 
+import java.util.Set;
+
+import edu.ku.brc.util.Pair;
+
 public class TreeNode
 {
     protected String name;
+    protected String fullName;
     protected boolean hasChildren;
     protected int id;
     protected int parentId;
@@ -10,17 +15,22 @@ public class TreeNode
     protected int rank;
     protected int parentRank;
     protected Integer acceptedParentId;
+    protected String acceptedParentFullName;
+    protected Set<Pair<Integer,String>> synonymIdsAndNames;
     
-    public TreeNode(String name, int id, int parentId, int rank, int parentRank, boolean hasChildren, Integer acceptedParentId)
+    public TreeNode(String name, String fullName, int id, int parentId, int rank, int parentRank, boolean hasChildren, Integer acceptedParentId, String acceptedParentFullName, Set<Pair<Integer,String>> synonymIdsAndNames)
     {
         super();
         this.name = name;
+        this.fullName = fullName;
         this.id = id;
         this.parentId = parentId;
         this.rank = rank;
         this.parentRank = parentRank;
         this.hasChildren = hasChildren;
         this.acceptedParentId = acceptedParentId;
+        this.acceptedParentFullName = acceptedParentFullName;
+        this.synonymIdsAndNames = synonymIdsAndNames;
     }
 
     public Class<?> getDataObjClass()
@@ -61,6 +71,16 @@ public class TreeNode
     public void setName(String name)
     {
         this.name = name;
+    }
+
+    public String getFullName()
+    {
+        return fullName;
+    }
+
+    public void setFullName(String fullName)
+    {
+        this.fullName = fullName;
     }
 
     /**
@@ -104,9 +124,29 @@ public class TreeNode
         return acceptedParentId;
     }
 
+    public String getAcceptedParentFullName()
+    {
+        return acceptedParentFullName;
+    }
+
+    public void setAcceptedParentFullName(String acceptedParentFullName)
+    {
+        this.acceptedParentFullName = acceptedParentFullName;
+    }
+
     public void setAcceptedParentId(Integer acceptedParentId)
     {
         this.acceptedParentId = acceptedParentId;
+    }
+
+    public Set<Pair<Integer, String>> getSynonymIdsAndNames()
+    {
+        return synonymIdsAndNames;
+    }
+
+    public void setSynonymIdsAndNames(Set<Pair<Integer, String>> synonymIdsAndNames)
+    {
+        this.synonymIdsAndNames = synonymIdsAndNames;
     }
 
     /* (non-Javadoc)
