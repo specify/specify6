@@ -36,6 +36,7 @@ import java.lang.reflect.Constructor;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Stack;
@@ -138,6 +139,7 @@ public class UIRegistry
     protected ResourceBundle       resourceBundle = null;
     protected Stack<ResBundleInfo> resBundleStack = new Stack<ResBundleInfo>();
     protected String               resourceName   = "resources";
+    protected Locale               resourceLocale = Locale.getDefault();
 
 
     protected ViewBasedDialogFactoryIFace viewbasedFactory = null;
@@ -231,8 +233,16 @@ public class UIRegistry
         ResourceBundle resBundle = null;
         try 
         {
-            // Get the resource bundle for the default locale
-            resBundle = ResourceBundle.getBundle(name);
+            // I know this seems like an odd think to check,
+            // but I want it to initialize itself at start up and also be able to set a new on later.
+            // this was the only way.
+            if (instance == null || instance.resourceLocale == null)
+            {
+                resBundle = ResourceBundle.getBundle(name);
+            } else
+            {
+                resBundle = ResourceBundle.getBundle(name, instance.resourceLocale);
+            }
 
         } catch (MissingResourceException ex) 
         {
@@ -241,6 +251,26 @@ public class UIRegistry
         return resBundle;
     }
     
+    /**
+     * @return the resourceLocale
+     */
+    public Locale getResourceLocale()
+    {
+        return resourceLocale;
+    }
+
+    /**
+     * @param resourceLocale the resourceLocale to set
+     */
+    public static void setResourceLocale(Locale resourceLocale)
+    {
+        if (!instance.resourceLocale.equals(resourceLocale))
+        {
+            instance.resourceLocale = resourceLocale;
+            instance.resourceBundle = getResourceBundle(instance.resourceName);
+        }
+    }
+
     /**
      * Pushes the Resource Info onto the stack (internal because of the 'new')
      * @param name the name of the resource

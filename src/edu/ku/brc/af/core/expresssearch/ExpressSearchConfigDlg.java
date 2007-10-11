@@ -129,6 +129,12 @@ public class ExpressSearchConfigDlg extends CustomDialog
     {
         super((Frame)UIRegistry.getTopWindow(), getResourceString("ExpressSearchConfig"), true, OKCANCELHELP, null);
         
+        /*
+        Locale german = new Locale("de", "", "");
+        SchemaI18NService.setCurrentLocale(german);
+        SchemaI18NService.getInstance().loadWithLocale((byte)0, 1, DBTableIdMgr.getInstance(), german); 
+        */
+
         config = searchConfigService.getSearchConfig();
     }
     
@@ -154,7 +160,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
             {
                 continue;
             }
-            int notSortedIndex = 1000;
+            int     notSortedIndex   = 1000;
             boolean hasIndexedFields = false;
             for (DBFieldInfo fi : ti.getFields())
             {
@@ -185,7 +191,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
             {
                 if (fi.isIndexed())
                 {
-                    // If found it sets inUse to true, otherwise it is false when craeted
+                    // If found it sets inUse to true, otherwise it is false when created
                     SearchFieldConfig sfc = config.findSearchField(stc, fi.getName(), true);
                     sfc.setFieldInfo(fi);
                     sfc.setStc(stc);
@@ -198,7 +204,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
                 
                 if (fi.isIndexed() || !fi.isHidden())
                 {
-                    // If found it sets inUse to true, otherwise it is false when craeted
+                    // If found it sets inUse to true, otherwise it is false when created
                     DisplayFieldConfig dfc = config.findDisplayField(stc, fi.getName(), true);
                     dfc.setFieldInfo(fi);
                     dfc.setStc(stc);

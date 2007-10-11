@@ -55,7 +55,7 @@ public class SpecifySchemaI18NServiceXML extends SchemaI18NService
     /**
      * 
      */
-    public SpecifySchemaI18NServiceXML(final Byte schemaType)
+    public SpecifySchemaI18NServiceXML()
     {
         
     }

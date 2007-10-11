@@ -94,31 +94,33 @@
  </table>
  
 <xsl:template match="/">
-<div><b>Contents</b><br/>
+<div><b>Inhalt</b><br/>
   <div>
-    <a href="#toc">Table of Contents</a><br/>
-    <a href="#descriptions">Table Descriptions</a><br/>
-    <a href="#indexes">Table Indexes</a><br/>
+    <a href="#toc">Inhaltsverzeichnis</a><br/>
+    <a href="#descriptions">Tabelle Beschreibungen</a><br/>
+    <a href="#indexes">Tabelle Indizes</a><br/>
     </div>
     <br/>
 </div>
 <div>
   <a name="toc"></a>
-  <H3>Table of Contents</H3>
+  <H3>Inhaltsverzeichnis</H3>
   <UL>
   <xsl:for-each select="//table">
   <xsl:sort select="nameDesc"/>
-    <LI><a href="#{@table}"><xsl:value-of select="nameDesc"/></a></LI>
+    <LI><a href="#{@table}">
+<xsl:value-of select="nameDesc"/>
+</a></LI>
   </xsl:for-each>
   </UL>
 
-     <H3>Table Definitions</H3>
+     <H3>Tabelle Definitionen</H3>
      <xsl:apply-templates select="database/table" mode="table">
        <xsl:sort select="@table" />
      </xsl:apply-templates>
 
      <a name="descriptions"></a>
-     <H3>Table Descriptions</H3>
+     <H3>Tabelle Beschreibungen</H3>
      <table class="tbl" border="0" cellspacing="0" cellpadding="2" width="75%">
      <xsl:apply-templates select="database/table" mode="tabledesc">
        <xsl:sort select="@table" />
@@ -126,7 +128,7 @@
 	</table>
 
        <a name="indexes"></a>
-       <H3>Table Indexes</H3>
+       <H3>Tabelle Indizes</H3>
      <table class="tbl" border="0" cellspacing="0" cellpadding="2" width="75%">
      <xsl:apply-templates select="database/table" mode="index">
        <xsl:sort select="@table" />
@@ -136,7 +138,7 @@
     </xsl:template>
     
 <br/>
-<span class="footer">Created: 2007-09-14</span>
+<span class="footer">Created: 2007-10-10</span>
 
      </body></html>
   </xsl:template>
@@ -153,11 +155,11 @@
 
        </td></tr>
         <tr>
-        <td class="hd">Field</td>
-        <td class="hd">Type</td>
-        <td class="hd">Length</td>
-        <td class="hd">Index Name</td>
-        <td class="hd">Description</td>
+        <td class="hd">Fangen Sie auf</td>
+        <td class="hd">Art</td>
+        <td class="hd">Länge</td>
+        <td class="hd">Index-Name</td>
+        <td class="hd">Beschreibung</td>
         </tr>
         
         <xsl:apply-templates select="id"/>
@@ -166,11 +168,11 @@
          <xsl:sort select="@column" />
        </xsl:apply-templates>
        
-       <tr><td colspan="5" class="subhead">Relationships</td></tr>
+       <tr><td colspan="5" class="subhead">Verhältnisse</td></tr>
        <tr>
-        <td class="hd" colspan="2">Type</td>
+        <td class="hd" colspan="2">Art</td>
         <td class="hd" colspan="2">Name</td>
-        <td class="hd" colspan="1">To Table</td>
+        <td class="hd" colspan="1">Zum Tabelle</td>
         </tr>
        
        <xsl:apply-templates select="relationship">

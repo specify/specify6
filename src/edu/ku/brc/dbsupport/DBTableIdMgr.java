@@ -25,9 +25,9 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
@@ -103,8 +103,11 @@ public class DBTableIdMgr
 			SAXReader       reader          = new SAXReader();
 			reader.setValidation(false);
             
-			Document doc          = reader.read(fileInputStream);
-			Element  databaseNode = doc.getRootElement();
+			//Document doc          = reader.read(fileInputStream);
+			//Element  databaseNode = doc.getRootElement();
+			String xmlStr = FileUtils.readFileToString(inputFile);
+	        Element  databaseNode = XMLHelper.readStrToDOM4J(xmlStr);
+
 
 			if (databaseNode != null)
 			{

@@ -23,8 +23,6 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
-import edu.ku.brc.ui.UIHelper;
-
 /**
  * @author rods
  *
@@ -202,7 +200,7 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
         for (DisplayFieldConfig dfc : searchTableConfig.getDisplayFields())
         {
             ERTICaptionInfo caption = new ERTICaptionInfo(dfc.getFieldInfo().getColumn(), 
-                                                          UIHelper.makeNamePretty(dfc.getFieldInfo().getColumn()), 
+                                                          dfc.getFieldInfo().getTitle(), 
                                                           true,
                                                           "", 
                                                           i+1);

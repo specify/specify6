@@ -19,11 +19,13 @@ import java.util.Locale;
 import java.util.Vector;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.thoughtworks.xstream.XStream;
 
+import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBInfoBase;
 import edu.ku.brc.dbsupport.DBRelationshipInfo;
@@ -155,7 +157,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
             log.info("Syncing with Datamodel.... (ignore errors)");
             changesBuffer.append("<Center><table border=\"1\">");
             
-            String lang = Locale.getDefault().getLanguage();
+            String lang = SchemaI18NService.getCurrentLocale().getLanguage();
             
             log.info("Adding New Tables and fields....");
             for (DBTableInfo ti : tableMgr.getTables())
@@ -338,6 +340,40 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     {
         return tableHash.get(name);
     }
+    
+    protected void escapeForXML()
+    {
+        Vector<LocalizableContainerIFace> containers = new Vector<LocalizableContainerIFace>();
+        
+        for (SpLocaleContainer ctr : tables)
+        {
+            ctr.setName(StringEscapeUtils.escapeXml(ctr.getName()));
+            for (SpLocaleItemStr str : ctr.getNames())
+            {
+                str.setText(StringEscapeUtils.escapeXml(str.getText()));
+            }
+            
+            for (SpLocaleItemStr str : ctr.getDescs())
+            {
+                str.setText(StringEscapeUtils.escapeXml(str.getText()));
+            }
+
+            for (SpLocaleContainerItem item : ctr.getItems())
+            {
+                item.setName(StringEscapeUtils.escapeXml(item.getName()));
+                for (SpLocaleItemStr str : item.getNames())
+                {
+                    str.setText(StringEscapeUtils.escapeXml(str.getText()));
+                }
+                
+                for (SpLocaleItemStr str : item.getDescs())
+                {
+                    str.setText(StringEscapeUtils.escapeXml(str.getText()));
+                }
+
+            }
+        }
+    }
 
     /*
     protected void dumpAsNew(Vector<LocalizableContainerIFace> contrs)
@@ -450,7 +486,6 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
         xstream.omitField(DataModelObjBase.class,  "timestampModified");
         xstream.omitField(DataModelObjBase.class,  "lastEditedBy");
         
-        
     }
     
     /* (non-Javadoc)
@@ -465,6 +500,8 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                 log.error("Datamodel information is null - datamodel file will not be written!!");
                 return false;
             }
+            
+            //escapeForXML();
             
             log.info("Writing descriptions to file: " + outFile.getAbsolutePath());
             

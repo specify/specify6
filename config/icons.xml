@@ -115,6 +115,33 @@
     <icon name="Repository Agreement"   alias="accession"/>
     <icon name="Reference Work"         alias="referencework"/>
     
+    <icon name="Agent"                  alias="agent"/>
+    <icon name="Determination"          alias="agent"/>
+    <icon name="AccessionAgent"         alias="agent"/>
+    <icon name="CollectionObject"       alias="collectionobject"/>
+    <icon name="Taxon"                  alias="taxon"/>
+    <icon name="Geography"              alias="geography"/>
+    <icon name="Locality"               alias="locality"/>
+    <icon name="ColObj"                 alias="colobj"/>
+    <icon name="Address"                alias="address"/>
+    <icon name="Location"               alias="location"/>
+    <icon name="CollectingEvent"        alias="collectingevent"/>
+    <icon name="Accession"              alias="accession"/>
+    <icon name="Permit"                 alias="permit"/>
+    <icon name="InfoRequest"            alias="inforequest"/>
+    <icon name="PrepType"               alias="preptype"/>
+    <icon name="Loan"                   alias="loan"/>
+    <icon name="Stratigraphy"           alias="stratigraphy"/>
+    <icon name="CollectingTrip"         alias="collectingtrip"/>
+    <icon name="Collection"             alias="collection"/>
+    <icon name="Journal"                alias="journal"/>
+    <icon name="CollectionObjectCitation" alias="collectionobjectcitation"/>
+    <icon name="Address"                alias="address"/>
+    <icon name="ReferenceWork"          alias="referencework"/>
+    <icon name="Author"                 alias="author"/>
+    <icon name="GeologicTimePeriod"     alias="geologictimeperiod"/>
+    <icon name="ColObjAttributes"       alias="colobjattributes"/>
+    
     <icon name="ShowMap"		        alias="LocalityMapper"/>
     
     <icon name="taxontreedef"              alias="taxon"/>

@@ -2,7 +2,7 @@
 <info primitiveTypes="element">
 	<element name="name" property="name">
 		<attribute name="country" property="country"/>
-		<attribute name="lang"    property="lang"/>
+		<attribute name="language" property="language"/>
 		<attribute name="variant" property="variant"/>
 		<text property='text'/>
 		<addDefaults/>

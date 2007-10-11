@@ -9,6 +9,8 @@
  */
 package edu.ku.brc.specify.utilapps;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -70,6 +72,7 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
     protected Vector<ERDTable>       kids         = new Vector<ERDTable>();
     protected Dimension              space        = new Dimension(0, 0);
     protected int                    shiftX       = 0;
+    protected String                 yesStr       = getResourceString("ERD_YES");
     
     public ERDTable(final DBTableInfo table)
     {
@@ -111,7 +114,7 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
             typ = f.getType();
         }
         
-        String lenStr = f.getLength() > 0 ? Integer.toString(f.getLength()) : "";
+        String lenStr = f.getLength() > 0  && f.getLength() < 65000 ? Integer.toString(f.getLength()) : "";
         
         CellConstraints cc = new CellConstraints();
         p.add(ERDVisualizer.mkLabel(font, f.getTitle(), SwingConstants.LEFT),   cc.xy(1,y));
@@ -120,8 +123,8 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
         
         if (all)
         {
-            p.add(ERDVisualizer.mkLabel(font, f.isRequired() ? "Yes" : "", SwingConstants.CENTER), cc.xy(7,y));
-            p.add(ERDVisualizer.mkLabel(font, f.isRequired() ? "Yes" : "",  SwingConstants.CENTER), cc.xy(9,y));
+            p.add(ERDVisualizer.mkLabel(font, f.isRequired() ? yesStr : "", SwingConstants.CENTER), cc.xy(7,y));
+            p.add(ERDVisualizer.mkLabel(font, f.isRequired() ? yesStr : "",  SwingConstants.CENTER), cc.xy(9,y));
         }
 
     }
@@ -139,8 +142,8 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
         p.add(ERDVisualizer.mkLabel(font, "", SwingConstants.CENTER),                    cc.xy(5,y));
         if (all)
         {
-            p.add(ERDVisualizer.mkLabel(font, "Yes", SwingConstants.CENTER), cc.xy(7,y));
-            p.add(ERDVisualizer.mkLabel(font, "Yes", SwingConstants.CENTER), cc.xy(9,y));
+            p.add(ERDVisualizer.mkLabel(font, yesStr, SwingConstants.CENTER), cc.xy(7,y));
+            p.add(ERDVisualizer.mkLabel(font, yesStr, SwingConstants.CENTER), cc.xy(9,y));
         }
 
     }
@@ -154,7 +157,7 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
         p.add(comp, cc.xy(5,y));
         if (all)
         {
-            comp = ERDVisualizer.mkLabel(font, r.isRequired() ? "Yes" : "", SwingConstants.CENTER);
+            comp = ERDVisualizer.mkLabel(font, r.isRequired() ? yesStr : "", SwingConstants.CENTER);
             p.add(comp, cc.xy(7,y));
         }
         return comp;
@@ -194,20 +197,20 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
         {
             pb.addSeparator("", cc.xy(1,y)); y += 2;
             
-            pb.add(ERDVisualizer.mkLabel(italic, "Fields", SwingConstants.CENTER), cc.xy(1,y)); y += 2;
+            pb.add(ERDVisualizer.mkLabel(italic, getResourceString("ERD_FIELDS"), SwingConstants.CENTER), cc.xy(1,y)); y += 2;
             
             String       colsDef = "p:g,4px,p:g,4px" + (doingAll ? ",p:g,4px,p:g,4px" : "") + ",f:p:g";
             PanelBuilder fieldsPB = new PanelBuilder(new FormLayout(colsDef, 
                                                      UIHelper.createDuplicateJGoodiesDef("p", "2px", table.getFields().size()+2)));
             int yy = 1;
     
-            fieldsPB.add(ERDVisualizer.mkLabel(italic, "Field", SwingConstants.LEFT), cc.xy(1,yy));
-            fieldsPB.add(ERDVisualizer.mkLabel(italic, "Type",  SwingConstants.CENTER), cc.xy(3,yy));
-            fieldsPB.add(ERDVisualizer.mkLabel(italic, "Length", SwingConstants.CENTER), cc.xy(5,yy));
+            fieldsPB.add(ERDVisualizer.mkLabel(italic, getResourceString("ERD_FIELD"), SwingConstants.LEFT), cc.xy(1,yy));
+            fieldsPB.add(ERDVisualizer.mkLabel(italic, getResourceString("ERD_TYPE"),  SwingConstants.CENTER), cc.xy(3,yy));
+            fieldsPB.add(ERDVisualizer.mkLabel(italic, getResourceString("ERD_LENGTH"), SwingConstants.CENTER), cc.xy(5,yy));
             if (doingAll)
             {
-                fieldsPB.add(ERDVisualizer.mkLabel(italic, "Required", SwingConstants.CENTER), cc.xy(7,yy));
-                fieldsPB.add(ERDVisualizer.mkLabel(italic, "Unique",  SwingConstants.CENTER), cc.xy(9,yy));
+                fieldsPB.add(ERDVisualizer.mkLabel(italic, getResourceString("ERD_REQUIRED"), SwingConstants.CENTER), cc.xy(7,yy));
+                fieldsPB.add(ERDVisualizer.mkLabel(italic, getResourceString("ERD_UNIQUE"),  SwingConstants.CENTER), cc.xy(9,yy));
             }
             yy += 2;
             
@@ -227,18 +230,18 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
         {
             pb.addSeparator("", cc.xy(1,y)); y += 2;
             
-            pb.add(ERDVisualizer.mkLabel(italic, "Relationships", SwingConstants.CENTER), cc.xy(1,y)); y += 2;
+            pb.add(ERDVisualizer.mkLabel(italic, getResourceString("ERD_RELATIONSHIPS"), SwingConstants.CENTER), cc.xy(1,y)); y += 2;
             
             String       colsDef = "p:g,4px,p:g,4px" + (doingAll ? ",p:g,4px," : "") + ",f:p:g";
             PanelBuilder relsPB = new PanelBuilder(new FormLayout(colsDef, UIHelper.createDuplicateJGoodiesDef("p", "2px", table.getRelationships().size()+1)));
             int yy = 1;
             
-            relsPB.add(ERDVisualizer.mkLabel(italic, "Table", SwingConstants.LEFT), cc.xy(1,yy));
-            relsPB.add(ERDVisualizer.mkLabel(italic, "Name",  SwingConstants.CENTER), cc.xy(3,yy));
-            relsPB.add(ERDVisualizer.mkLabel(italic, "Type", SwingConstants.CENTER), cc.xy(5,yy));
+            relsPB.add(ERDVisualizer.mkLabel(italic, getResourceString("ERD_TABLE"), SwingConstants.LEFT), cc.xy(1,yy));
+            relsPB.add(ERDVisualizer.mkLabel(italic, getResourceString("ERD_NAME"),  SwingConstants.CENTER), cc.xy(3,yy));
+            relsPB.add(ERDVisualizer.mkLabel(italic, getResourceString("ERD_TYPE"), SwingConstants.CENTER), cc.xy(5,yy));
             if (doingAll)
             {
-                relsPB.add(ERDVisualizer.mkLabel(italic, "Required", SwingConstants.CENTER), cc.xy(7,yy));
+                relsPB.add(ERDVisualizer.mkLabel(italic, getResourceString("ERD_REQUIRED"), SwingConstants.CENTER), cc.xy(7,yy));
             }
             yy += 2;
             

@@ -90,7 +90,7 @@ public abstract class SchemaI18NService
                  
             } catch (Exception e) 
             {
-                InternalError error = new InternalError("Can't instantiate AppContextMgr factory " + factoryNameStr);
+                InternalError error = new InternalError("Can't instantiate SchemaI18NService factory " + factoryNameStr);
                 error.initCause(e);
                 throw error;
             }

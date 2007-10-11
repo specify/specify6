@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.Vector;
 
@@ -42,6 +43,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
@@ -82,7 +84,9 @@ public class DatamodelGenerator
     protected SchemaLocalizerXMLHelper schemaLocalizer          = null;
     
     protected Hashtable<String, String> abbrvHash = new Hashtable<String, String>();
+    
     protected boolean      includeDesc = false;
+    protected boolean      doGerman    = false;
     
 
     /**
@@ -97,6 +101,11 @@ public class DatamodelGenerator
     {
         if (includeDesc)
         {
+            if (doGerman)
+            {
+                SchemaI18NService.setCurrentLocale(new Locale("de", "", ""));
+            }
+            
             schemaLocalizer = new SchemaLocalizerXMLHelper(SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
             includeDesc = schemaLocalizer.load();
             

@@ -31,7 +31,6 @@ import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.ui.DateWrapper;
-import edu.ku.brc.ui.UIHelper;
 
 /**
  * @author rods
@@ -371,7 +370,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
     @Override
     public String toString()
     {
-        return UIHelper.makeNamePretty(tableInfo.getClassObj().getSimpleName());
+        return tableInfo.getTitle();
     }
 
     /* (non-Javadoc)

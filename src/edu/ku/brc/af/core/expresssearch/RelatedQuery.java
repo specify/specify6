@@ -19,7 +19,6 @@ package edu.ku.brc.af.core.expresssearch;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
-import edu.ku.brc.ui.UIHelper;
 
 /**
  * @author rods
@@ -131,7 +130,7 @@ public class RelatedQuery implements DisplayOrderingIFace, TableNameRendererIFac
     @Override
     public String toString()
     {
-        return UIHelper.makeNamePretty(tableInfo.getClassObj().getSimpleName());
+        return tableInfo.getTitle();
     }
 
     /* (non-Javadoc)

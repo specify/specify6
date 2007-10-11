@@ -23,6 +23,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
@@ -37,6 +38,7 @@ import javax.swing.SwingUtilities;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.SchemaI18NService;
@@ -79,6 +81,14 @@ public class ERDVisualizer extends JFrame
     public ERDVisualizer()
     {
         boolean showTreeHierarchy = false;
+        boolean doGerman          = true;
+        
+        if (doGerman)
+        {
+            Locale german = new Locale("de", "", "");
+            Locale.setDefault(german);
+            UIRegistry.setResourceLocale(german);
+        }
         
         ERDTable.setDisplayType(showTreeHierarchy ? ERDTable.DisplayType.Title : ERDTable.DisplayType.All);
         
@@ -92,7 +102,7 @@ public class ERDVisualizer extends JFrame
         {
             try
             {
-                FileUtils.cleanDirectory(schemaDir);
+                //FileUtils.cleanDirectory(schemaDir);
                 
             } catch (Exception ex)
             {
@@ -426,7 +436,7 @@ public class ERDVisualizer extends JFrame
                     System.out.println("Done.");
                 }
             };
-            worker.start();
+            //worker.start();
         }
         
         createIndexFile();
@@ -452,7 +462,7 @@ public class ERDVisualizer extends JFrame
             for (ERDTable t : tblTracker.getList())
             {
                 DBTableInfo ti = t.getTable();
-                output.write("<LI><a href=\""+ti.getShortClassName()+".html\">"+ti.getTitle()+"</a></LI>");
+                output.write("<LI><a href=\""+ti.getShortClassName()+".html\">"+StringEscapeUtils.escapeHtml(ti.getTitle())+"</a></LI>");
             }
             output.write("</UL>");
             output.write(mapTemplate.substring(inx+contentTag.length()+1, mapTemplate.length()));
@@ -809,7 +819,7 @@ public class ERDVisualizer extends JFrame
     {
         System.setProperty(SchemaI18NService.factoryName, "edu.ku.brc.specify.config.SpecifySchemaI18NServiceXML");    // Needed for Localization and Schema
         
-        //SchemaI18NService.setCurrentLocale(new Locale("de", "", ""));
+        SchemaI18NService.setCurrentLocale(new Locale("de", "", ""));
         // Note: CollectionTypeId is not used so a '1' doesn't matter.
         SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, 1, DBTableIdMgr.getInstance(), SchemaI18NService.getCurrentLocale());
 

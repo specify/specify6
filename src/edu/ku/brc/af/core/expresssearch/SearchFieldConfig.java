@@ -18,8 +18,6 @@
 package edu.ku.brc.af.core.expresssearch;
 
 import edu.ku.brc.dbsupport.DBFieldInfo;
-import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.ui.UIHelper;
 
 /**
  * @author rods
@@ -203,7 +201,7 @@ public class SearchFieldConfig implements edu.ku.brc.af.core.expresssearch.Table
     @Override
     public String toString()
     {
-        return fieldInfo != null ? UIHelper.makeNamePretty(fieldInfo.getColumn()) : fieldName;
+        return fieldInfo != null ? fieldInfo.getTitle() : fieldName;
     }
     
     /* (non-Javadoc)
