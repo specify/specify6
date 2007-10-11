@@ -228,6 +228,11 @@ public class TreeViewerListHeader extends JPanel implements ListDataListener
 
 			// draw column background color
 			Pair<Integer,Integer> colBounds = cellRenderer.getColumnBoundsForRank(rank);
+            if (colBounds == null || colBounds.first == null || colBounds.second == null)
+            {
+                continue;
+            }
+            
 			g.setColor(bgs[i%2]);
             g.fillRect(colBounds.first,0,colBounds.second-colBounds.first,this.getHeight());
 			++i;

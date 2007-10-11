@@ -203,7 +203,8 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         {
             if (r < rank)
             {
-                widthsOfLowerColumns += columnWidths.get(r);
+                Integer colWidth = columnWidths.get(r);
+                widthsOfLowerColumns += colWidth;
             }
             else
             {
@@ -213,6 +214,11 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         
         colBounds.first = widthsOfLowerColumns;
         Integer colWidth = columnWidths.get(rank);
+        if (colWidth == null)
+        {
+            return null;
+        }
+        
         colBounds.second = widthsOfLowerColumns + colWidth;
         return colBounds;
     }        
@@ -297,16 +303,25 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
     public void intervalAdded(ListDataEvent e)
     {
         widthsValid = false;
+        if (list.getGraphics() != null)
+        {
+            computeMissingColumnWidths(list.getGraphics());
+        }
     }
 
     public void intervalRemoved(ListDataEvent e)
     {
+        widthsValid = false;
         removeUnusedColumnWidths();
     }
 
     public void contentsChanged(ListDataEvent e)
     {
         widthsValid = false;
+        if (list.getGraphics() != null)
+        {
+            computeMissingColumnWidths(list.getGraphics());
+        }
     }
     
     public class TreeNodeUI extends JPanel
