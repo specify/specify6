@@ -126,6 +126,7 @@ public class UIRegistry
 
     protected FileCache      longTermCache      = null;
     protected FileCache      shortTermCache     = null;
+    protected FileCache      formsCache         = null;
     protected JStatusBar     statusBar          = null;
 
     protected String         defaultWorkingPath = null;
@@ -947,20 +948,23 @@ public class UIRegistry
 	 */
 	public static FileCache getLongTermFileCache()
 	{
-        if (instance.longTermCache == null)
-        {
-            try
-            {
-                instance.longTermCache = new FileCache("longTerm.Cache");
-                // set the cache size to 20 MB
-                instance.longTermCache.setMaxCacheSize(20000);
-            } catch (Exception ex)
-            {
-                ex.printStackTrace();
-                log.error(ex);
-            }
-        }
-		return instance.longTermCache;
+	    synchronized(instance)
+	    {
+	        if (instance.longTermCache == null)
+	        {
+	            try
+	            {
+	                instance.longTermCache = new FileCache("longTerm.Cache");
+	                // set the cache size to 20 MB
+	                instance.longTermCache.setMaxCacheSize(20000);
+	            } catch (Exception ex)
+	            {
+	                ex.printStackTrace();
+	                log.error(ex);
+	            }
+	        }
+	    }
+	    return instance.longTermCache;
 	}
 
 	/**
@@ -978,18 +982,21 @@ public class UIRegistry
 	 */
 	public static FileCache getShortTermFileCache()
 	{
-        if (instance.shortTermCache == null)
-        {
-            try
-            {
-                instance.shortTermCache = new FileCache();
-            } catch (Exception ex)
-            {
-                ex.printStackTrace();
-                log.error(ex);
-            }
-        }
-		return instance.shortTermCache;
+	    synchronized(instance)
+	    {
+	        if (instance.shortTermCache == null)
+	        {
+	            try
+	            {
+	                instance.shortTermCache = new FileCache();
+	            } catch (Exception ex)
+	            {
+	                ex.printStackTrace();
+	                log.error(ex);
+	            }
+	        }
+	    }
+	    return instance.shortTermCache;
 	}
 
 	/**
@@ -1000,6 +1007,40 @@ public class UIRegistry
 	{
 		instance.shortTermCache = shortTermCache;
 	}
+
+    /**
+     * Returns the forms cache.
+     * @return the forms cache.
+     */
+    public static FileCache getFormsCache()
+    {
+        synchronized(instance)
+        {
+            if (instance.formsCache == null)
+            {
+                try
+                {
+                    instance.formsCache = new FileCache("forms.Cache");
+                    // turn off enforcement of the max cache size
+                    instance.formsCache.setEnforceMaxCacheSize(false);
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                    log.error(ex);
+                }
+            }
+        }
+        return instance.formsCache;
+    }
+
+    /**
+     * Sets the forms cache.
+     * @param formsCache The forms cache to set.
+     */
+    public static void setFormsCache(FileCache formsCache)
+    {
+        instance.formsCache = formsCache;
+    }
 
     /**
      * Creates the initial font mapping from the base font size to the other sizes.

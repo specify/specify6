@@ -302,10 +302,11 @@ public class Specify extends JPanel implements DatabaseLoginListener
         
         UIHelper.attachUnhandledException();
 
-        FileCache.setDefaultPath(UIRegistry.getAppDataDir()+ File.separator + "cache");
+        FileCache.setDefaultPath(UIRegistry.getAppDataDir() + File.separator + "cache");
 
         cacheManager.registerCache(UIRegistry.getLongTermFileCache());
         cacheManager.registerCache(UIRegistry.getShortTermFileCache());
+        cacheManager.registerCache(UIRegistry.getFormsCache());
         cacheManager.registerCache(JasperReportsCache.getInstance());
         
         
@@ -968,15 +969,26 @@ public class Specify extends JPanel implements DatabaseLoginListener
     			UIRegistry.getLongTermFileCache().saveCacheMapping();
     			log.info("Successfully saved long term cache mapping");
     		}
-    		catch( IOException e1 )
+    		catch( IOException ioe )
     		{
-    			log.warn("Error while saving long term cache mapping.",e1);
+    			log.warn("Error while saving long term cache mapping.",ioe);
     		}
             
             // clear the contents of the short term cache
             log.info("Clearing the short term cache");
             UIRegistry.getShortTermFileCache().clear();
     
+            // save the forms cache mapping info
+            try
+            {
+                UIRegistry.getFormsCache().saveCacheMapping();
+                log.info("Successfully saved forms cache mapping");
+            }
+            catch( IOException ioe )
+            {
+                log.warn("Error while saving forms cache mapping.",ioe);
+            }
+            
             if (topFrame != null)
             {
                 topFrame.setVisible(false);
