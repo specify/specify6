@@ -12,6 +12,7 @@ package edu.ku.brc.ui.forms;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collection;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
@@ -45,6 +46,19 @@ public final class FormHelper
         log.debug("updateLastEdittedInfo for [" + (dataObj != null ? dataObj.getClass() : "dataObj was null") + "]");
         if (dataObj != null)
         {
+            if (dataObj instanceof Collection<?>)
+            {
+                boolean retVal = false;
+                for (Object o: (Collection<?>)dataObj)
+                {
+                    if (updateLastEdittedInfo(o))
+                    {
+                        retVal = true;
+                    }
+                }
+                return retVal;
+            }
+            
             try
             {
                 DataObjectSettable setter  = DataObjectSettableFactory.get(dataObj.getClass().getName(), "edu.ku.brc.ui.forms.DataSetterForObj");

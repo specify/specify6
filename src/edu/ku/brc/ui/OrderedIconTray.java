@@ -23,7 +23,6 @@ import javax.swing.event.ListSelectionListener;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.util.FormDataObjComparator;
@@ -211,12 +210,11 @@ public class OrderedIconTray extends IconTray implements ActionListener, ListSel
             if (o instanceof Orderable)
             {
                 Orderable orderable = (Orderable)o;
+                int oldOrderIndex = orderable.getOrderIndex();
                 orderable.setOrderIndex(i);
-                o.setLastEditedBy(SpecifyUser.getCurrentUser().getName());
+                firePropertyChange("item order", oldOrderIndex, i);
             }
         }
-        
-        firePropertyChange("item order", true, false);
     }
     
     /* (non-Javadoc)

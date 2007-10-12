@@ -183,6 +183,7 @@ public class IconViewObj implements Viewable
                             {
                                 root = root.getMultiViewParent();
                             }
+                            FormHelper.updateLastEdittedInfo(dataSet);
                             validator.setHasChanged(true);
                             root.dataChanged(null, null, null);
                         }
@@ -289,6 +290,7 @@ public class IconViewObj implements Viewable
                         {
                             root = root.getMultiViewParent();
                         }
+                        FormHelper.updateLastEdittedInfo(selection);
                         validator.setHasChanged(true);
                         root.dataChanged(null, null, null);
                     }
@@ -357,6 +359,7 @@ public class IconViewObj implements Viewable
                         {
                             root = root.getMultiViewParent();
                         }
+                        FormHelper.updateLastEdittedInfo(newObject);
                         validator.setHasChanged(true);
                         root.dataChanged(null, null, null);
                     }
