@@ -330,13 +330,7 @@ public class FileCache implements DataCacheIFace
 		for( Object k: handleToFilenameHash.keySet() )
 		{
 			String key = (String)k;
-			String value = handleToAccessTimeHash.getProperty(key);
-			if( value == null )
-			{
-				// if we can't find an access time for this key, consider it the oldest
-				return key;
-			}
-			long time = Long.parseLong(value);
+            long time = getLastAccessTime(key);
 			if( time < lruAccessTime )
 			{
 				lruKey = key;
@@ -481,7 +475,9 @@ public class FileCache implements DataCacheIFace
 	 */
 	protected synchronized void cacheNewItem( String key, File item )
 	{
-		handleToAccessTimeHash.setProperty(key, Long.toString(System.currentTimeMillis()));
+        long currentTime = System.currentTimeMillis();
+		handleToAccessTimeHash.setProperty(key, Long.toString(currentTime));
+        log.debug("Caching " + key + " at " + currentTime);
 		Object oldValue = handleToFilenameHash.setProperty(key, item.getAbsolutePath());
 		if( oldValue != null )
 		{
@@ -642,6 +638,36 @@ public class FileCache implements DataCacheIFace
 		handleToFilenameHash.remove(key);
 		return null;
 	}
+    
+    /**
+     * Returns the last access time of the item cached under the given key.  The
+     * time returned is in milliseconds since January 1, 1970 UTC.  This uses
+     * {@link System#currentTimeMillis()} internally.  If the given key is not
+     * found in the cache, {@value Long#MIN_VALUE} is returned.
+     * 
+     * @param key the key for the cached item
+     * @return the last time the item was accessed
+     */
+    public long getLastAccessTime( String key )
+    {
+        String accessTimeString = handleToAccessTimeHash.getProperty(key);
+        if (accessTimeString == null)
+        {
+            return Long.MIN_VALUE;
+        }
+        
+        long accessTimeMillis;
+        try
+        {
+            accessTimeMillis = Long.parseLong(accessTimeString);
+        }
+        catch (NumberFormatException nfe)
+        {
+            log.error("Unable to parse access time for cache item: " + key, nfe);
+            accessTimeMillis = Long.MIN_VALUE;
+        }
+        return accessTimeMillis;
+    }
 
 	/**
 	 * Returns the current size (in bytes) of the cache.
@@ -675,12 +701,14 @@ public class FileCache implements DataCacheIFace
 //		log.info("Current cache size: " + fc.getCurrentCacheSize());
 //
 //		// a little File caching test
-//		File fileFile = fc.getCacheFile("kmloutput.kml");
+//        String filename = "/home/jstewart/Desktop/jds.asc";
+//		File fileFile = fc.getCacheFile(filename);
+//        String fileKey = null;
 //		if( fileFile == null )
 //		{
 //			log.info("Cached file not found.");
-//			String fileKey = fc.cacheFile(new File("/home/jstewart/Desktop/KML_Samples.kml"));
-//			log.info("Cached kmloutput.kml under key value " + fileKey);
+//			fileKey = fc.cacheFile(new File(filename));
+//			log.info("Cached " + filename + " under key value " + fileKey);
 //		}
 //		else
 //		{
@@ -690,11 +718,13 @@ public class FileCache implements DataCacheIFace
 //		log.info("Current cache size: " + fc.getCurrentCacheSize());
 //
 //		// a little web resource caching test
-//		File urlFile = fc.getCacheFile("http://www.google.com/");
+//        String httpUrl = "http://www.google.com/";
+//		File urlFile = fc.getCacheFile(httpUrl);
+//        String urlKey = null;
 //		if( urlFile == null )
 //		{
 //			log.info("Cached web resource not found.");
-//			String urlKey = fc.cacheWebResource("http://www.google.com/");
+//			urlKey = fc.cacheWebResource("http://www.google.com/");
 //			log.info("Cached http://www.google.com/ under key value " + urlKey);
 //		}
 //		else
@@ -706,6 +736,7 @@ public class FileCache implements DataCacheIFace
 //
 //		// a little data caching test
 //		File dataFile = fc.getCacheFile("31a55ff8-763b-4ee6-92e8-485c29f8a937");
+//        String dataKey = null;
 //		if( dataFile == null )
 //		{
 //			log.info("Cached data not found.");
@@ -716,7 +747,7 @@ public class FileCache implements DataCacheIFace
 //			{
 //				sb.append("X");
 //			}
-//			String dataKey = fc.cacheData(sb.toString().getBytes());
+//			dataKey = fc.cacheData(sb.toString().getBytes());
 //			log.info("Cached data bytes under key value " + dataKey);
 //		}
 //		else
@@ -726,6 +757,26 @@ public class FileCache implements DataCacheIFace
 //
 //		log.info("Current cache size: " + fc.getCurrentCacheSize());
 //        
+//        long fileTime = fc.getLastAccessTime(fileKey);
+//        long urlTime  = fc.getLastAccessTime(urlKey);
+//        long dataTime = fc.getLastAccessTime(dataKey);
+//        
+//        log.info("File was last accessed at " + fileTime);
+//        log.info("URL was last accessed at " + urlTime);
+//        log.info("Data was last accessed at " + dataTime);
+//
+//        log.info("Requesting cached web resource: " + urlKey);
+//        
+//        fc.getCacheFile(urlKey);
+//
+//        fileTime = fc.getLastAccessTime(fileKey);
+//        urlTime  = fc.getLastAccessTime(urlKey);
+//        dataTime = fc.getLastAccessTime(dataKey);
+//        
+//        log.info("File was last accessed at " + fileTime);
+//        log.info("URL was last accessed at " + urlTime);
+//        log.info("Data was last accessed at " + dataTime);
+//
 //        fc.clear();
 //        
 //        log.info("Current cache size: " + fc.getCurrentCacheSize());
