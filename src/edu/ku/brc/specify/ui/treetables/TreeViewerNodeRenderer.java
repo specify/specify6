@@ -7,6 +7,8 @@
 
 package edu.ku.brc.specify.ui.treetables;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -123,7 +125,9 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         Set<Pair<Integer,String>> idsAndNames = node.getSynonymIdsAndNames();
         if (idsAndNames.size() > 0)
         {
-            tooltipBuilder.append("<br><br>Synonyms:<ul>");
+            tooltipBuilder.append("<br><br>");
+            tooltipBuilder.append(getResourceString("TTV_SYNONYMS"));
+            tooltipBuilder.append("<ul>");
             for (Pair<Integer,String> idAndName: idsAndNames)
             {
                 tooltipBuilder.append("<li>");
@@ -134,7 +138,9 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         }
         if (node.getAcceptedParentFullName() != null)
         {
-            tooltipBuilder.append("<br><br>Accepted: ");
+            tooltipBuilder.append("<br><br>");
+            tooltipBuilder.append(getResourceString("TTV_CURRENT_NAME"));
+            tooltipBuilder.append(": ");
             tooltipBuilder.append(node.getAcceptedParentFullName());
         }
         tooltipBuilder.append("</div></html>");

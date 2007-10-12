@@ -86,11 +86,11 @@ import edu.ku.brc.util.Pair;
 
 /**
  * The TreeTableViewer is a SubPaneIface implementation that provides a
- * JTree-based view/editor for tree-based data tables.  It should work
+ * JTree-like view/editor for tree-based data tables.  It should work
  * with any tree of objects implementing the Treeable interface and defined
  * by an object implementing the TreeDefinitionIface interface.
  *
- * @code_status Beta
+ * @code_status Gamma
  * @author jstewart
  */
 @SuppressWarnings("serial")
@@ -1426,6 +1426,35 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	@SuppressWarnings("unchecked")
 	protected void newNodeSelected(final JList sourceList, final TreeNode selectedNode)
 	{
+        // clear the status bar if nothing is selected or show the fullname if a node is selected
+        String statusBarText = null;
+        if( selectedNode != null)
+        {
+            statusBarText = selectedNode.getFullName();
+        }
+        
+        setStatusBarText(statusBarText);
+        
+        // disable the buttons so the user can't click them until the background task verifies if they should be enabled
+        if (sourceList == lists[0])
+        {
+            newChild0.setEnabled(false);
+            deleteNode0.setEnabled(false);
+            
+            editNode0.setEnabled(false);
+            subtree0.setEnabled(false);
+            toParent0.setEnabled(false);
+        }
+        else
+        {
+            newChild1.setEnabled(false);
+            deleteNode1.setEnabled(false);
+            
+            editNode1.setEnabled(false);
+            subtree1.setEnabled(false);
+            toParent1.setEnabled(false);
+        }
+
         SwingWorker bgWork = new SwingWorker()
         {
             private T nodeRecord;
@@ -1486,34 +1515,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                     subtree1.setEnabled(enable);
                     toParent1.setEnabled(enable);
                 }
-                
-                // clear the status bar if nothing is selected or show the fullname if a node is selected
-                String statusBarText = null;
-                if( selectedNode != null  && nodeRecord != null)
-                {
-                    StringBuilder sbTextBuilder = new StringBuilder(nodeRecord.getFullName());
-                    if (nodeRecord.getAcceptedParent() != null)
-                    {
-                        sbTextBuilder.append("   ");
-                        sbTextBuilder.append(getResourceString("TTV_CURRENT_NAME"));
-                        sbTextBuilder.append(": ");
-                        sbTextBuilder.append(nodeRecord.getAcceptedParent().getFullName());
-                    }
-                    else if (nodeRecord.getAcceptedChildren().size() > 0)
-                    {
-                        sbTextBuilder.append("   ");
-                        sbTextBuilder.append(getResourceString("TTV_SYNONYMS"));
-                        sbTextBuilder.append(": ");
-                        for (T accChild: nodeRecord.getAcceptedChildren())
-                        {
-                            sbTextBuilder.append(accChild.getFullName() + ", ");
-                        }
-                        sbTextBuilder.deleteCharAt(sbTextBuilder.length()-2);
-                    }
-                    statusBarText = sbTextBuilder.toString();
-                }
-                
-                setStatusBarText(statusBarText);
             }            
         };
         
@@ -1551,7 +1552,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		{
 			log.info("User requested new link be created between " + draggedNode.getName() + " and " + droppedOnNode.getName());
 			String statusMsg = dataService.synonymize(draggedRecord, droppedRecord);
-            //draggedNode.setAcceptedParentId(droppedOnNode.getId());
+            draggedNode.setAcceptedParentId(droppedOnNode.getId());
+            draggedNode.setAcceptedParentFullName(droppedOnNode.getFullName());
+            droppedOnNode.getSynonymIdsAndNames().add(new Pair<Integer,String>(draggedNode.getId(),draggedNode.getFullName()));
             
 //            // hide the modified nodes, then reshow them
 //            T draggedRecordParent = draggedRecord.getParent();
