@@ -99,8 +99,11 @@ public class DraggableRecordIdentifier extends JComponent implements GhostAction
     public void paint(Graphics g)
     {
         super.paint(g);
-        
-        g.drawImage(imgIcon.getImage(), 0, 0, imgIcon.getIconWidth(), imgIcon.getIconHeight(), null);
+
+        if (imgIcon != null)
+        {
+            g.drawImage(imgIcon.getImage(), 0, 0, imgIcon.getIconWidth(), imgIcon.getIconHeight(), null);
+        }
     }
     
    /* (non-Javadoc)
