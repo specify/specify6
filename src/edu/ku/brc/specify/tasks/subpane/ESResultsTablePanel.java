@@ -459,7 +459,7 @@ public class ESResultsTablePanel extends JPanel implements Comparable<ESResultsT
             table.clearSelection();
             doReturnAll = true;
         }
-        RecordSetIFace rs = getRecordSet(rows, results.getRecordSetColumnInx(), doReturnAll);
+        RecordSetIFace rs = getRecordSet(rows, doReturnAll);
 
         if (doReturnAll)
         {
@@ -499,11 +499,11 @@ public class ESResultsTablePanel extends JPanel implements Comparable<ESResultsT
      * @param returnAll indicates whether all the records should be returned if nothing was selected
      * @return Returns a RecordSet object from the table
      */
-    public RecordSetIFace getRecordSet(final int[] rows, final int column, final boolean returnAll)
+    public RecordSetIFace getRecordSet(final int[] rows, final boolean returnAll)
     {
         ResultSetTableModel rsm = (ResultSetTableModel)table.getModel();
 
-        return rsm.getRecordSet(rows, column, returnAll);
+        return rsm.getRecordSet(rows, returnAll);
     }
 
     /**

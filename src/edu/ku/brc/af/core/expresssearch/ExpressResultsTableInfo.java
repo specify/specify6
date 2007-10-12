@@ -56,7 +56,6 @@ public class ExpressResultsTableInfo
     protected List<ERTICaptionInfo>     captionInfo;         
     protected List<ERTICaptionInfo>     visibleCaptionInfo;  
     
-    protected int                       recordSetColumnInx;
     protected Color                     color;
 
     /**
@@ -131,9 +130,6 @@ public class ExpressResultsTableInfo
             throw new RuntimeException("No Captions!");
         }
         
-        Element rsElement  = (Element)viewElement.selectSingleNode("recordset");
-        recordSetColumnInx = Integer.parseInt(rsElement.attributeValue("col"));
-
         List<?> joinColItems = tableElement.selectNodes("joins/join");
         if (joinColItems != null && joinColItems.size() > 0)
         {
@@ -242,11 +238,6 @@ public class ExpressResultsTableInfo
     public int getVisColCount()
     {
         return visibleCaptionInfo.size();
-    }
-
-    public int getRecordSetColumnInx()
-    {
-        return recordSetColumnInx;
     }
 
     public Color getColor()

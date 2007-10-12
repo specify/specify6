@@ -433,7 +433,7 @@ public class SpViewSetObj extends DataModelObjBase implements java.io.Serializab
     @Transient
     public String getDataAsString()
     {
-        log.debug("********* "+getFileName()+" size:"+spAppResourceDatas.size());
+        //log.debug("********* "+getFileName()+" size:"+spAppResourceDatas.size());
         
         getSpAppResourceDatas(); // Must call this before accessing it as a local data member
         

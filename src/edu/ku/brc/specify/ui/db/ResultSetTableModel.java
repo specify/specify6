@@ -70,13 +70,13 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     protected Vector<Class<?>>            classNames  = new Vector<Class<?>>();
     protected Vector<String>              colNames    = new Vector<String>();
     protected int                         currentRow  = 0;
-    protected int                         primaryKeyIndex = 0;
     protected QueryForIdResultsIFace      results;
     
     protected int                         numColumns  = 0;
-    protected Vector<Integer>             ids         = null;
+    protected Vector<Integer>             ids         = null;  // Must be initialized to null!
     protected Vector<Vector<Object>>      cache       = new Vector<Vector<Object>>();
-    protected  List<ERTICaptionInfo>      captionInfo = null;
+    protected List<ERTICaptionInfo>       captionInfo = null;
+    protected int[]                       columnIndexMapper = null;
     
     protected PropertyChangeListener      propertyListener = null;
     
@@ -84,7 +84,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     protected int startInx = 0;
     protected int endInx   = 0;
     
-    protected boolean useColOffset = true;
+    protected boolean useColOffset = false;
     
     /**
      * Construct with a QueryForIdResultsIFace
@@ -108,8 +108,6 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
         
         if (results.isHQL())
         {
-            //useColOffset = false;
-            
             List<ERTICaptionInfo> captions = results.getVisibleCaptionInfo();
             numColumns = captions.size();
             for (ERTICaptionInfo caption : captions)
@@ -128,7 +126,6 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
             
         } else
         {
-            useColOffset = true;
             SQLExecutionProcessor sqlProc = new SQLExecutionProcessor(this, results.getSQL(results.getSearchTerm(), ids));
             sqlProc.start();
         }
@@ -188,7 +185,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
             Vector<Object> rowArray = cache.get(row);
             if (column > -1 && column < rowArray.size())
             {
-                Object obj = rowArray.get(useColOffset ? column+1 : column );
+                Object obj = rowArray.get(column);
                 
                 if (obj instanceof Calendar)
                 {
@@ -242,13 +239,11 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     /**
      * Returns a RecordSet object from the table
      * @param rows the selected rows
-     * @param column the col that contains the ID
      * @param returnAll indicates whether all the records should be returned if nothing was selected
      * @return Returns a RecordSet object from the table
      */
-    public RecordSetIFace getRecordSet(final int[] rows, final int column, final boolean returnAll)
+    public RecordSetIFace getRecordSet(final int[] rows, final boolean returnAll)
     {
-
         RecordSet rs = new RecordSet();
         rs.initialize();
 
@@ -258,39 +253,9 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
             return rs;
         }
 
-        if (ids == null)
+        for (int inx : rows)
         {
-            /*int ii = 0;
-            for (Integer id : results.getRecIds())
-            {
-                System.out.println(ii + "*** Id["+id+"]");
-                ii++;
-            }
-            Vector<Integer> resultsIds = results.getRecIds();
-            for (int inx : rows)
-            {
-                System.out.println("inx["+inx+"]   Id["+resultsIds.get(inx)+"]");
-                rs.addItem(resultsIds.get(inx));
-            }*/
-            
-            for (int inx : rows)
-            {
-                Vector<Object> row = cache.get(inx);
-                if (row != null)
-                {
-                    rs.addItem((Integer)row.get(column));
-                } else
-                {
-                    log.error("Cache row cannot be null for row index: "+inx);
-                }
-            }
-            
-        } else
-        {
-            for (Integer id : ids)
-            {
-                rs.addItem(id);
-            }  
+            rs.addItem(ids.get(inx));
         }
 
         return rs;
@@ -326,6 +291,15 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
         this.propertyListener = propertyListener;
     }
     
+    /**
+     * @param setter
+     * @param parent
+     * @param fieldName
+     * @param fieldClass
+     * @param resultSet
+     * @param colIndex
+     * @throws SQLException
+     */
     protected void setField(final DataObjectSettable setter, 
                             final Object             parent, 
                             final String             fieldName, 
@@ -355,7 +329,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
             }
         } 
     }
-
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.SQLExecutionListener#exectionDone(edu.ku.brc.dbsupport.SQLExecutionProcessor, java.sql.ResultSet)
      */
@@ -379,7 +353,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
         
         try
         {
-            if (resultSet.first())
+            if (resultSet.next())
             {
                 ResultSetMetaData metaData = resultSet.getMetaData();
                 
@@ -496,7 +470,13 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                     }
                 }
                 
-                ids = new Vector<Integer>();
+                if (ids == null)
+                {
+                    ids = new Vector<Integer>();
+                } else
+                {
+                    ids.clear();
+                }
                 
                 // Here is the tricky part.
                 // When we are doing a Composite we are just taking multiple columns and 
@@ -522,16 +502,14 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                             row       = new Vector<Object>();
                             firstTime = false;
                             cache.add(row);
-                            row.add(id);
                             
                         } else if (id != prevId)
                         {
                             int aggInx = captions.indexOf(aggCaption);
                             if (row != null && aggList != null)
                             {
-                                row.add(id);
-                                row.remove(aggInx+1);
-                                row.insertElementAt(DataObjFieldFormatMgr.aggregate(aggList, aggCaption.getAggClass()), aggInx+1);
+                                row.remove(aggInx);
+                                row.insertElementAt(DataObjFieldFormatMgr.aggregate(aggList, aggCaption.getAggClass()), aggInx);
 
                                 if (aggListRecycler != null)
                                 {
@@ -545,16 +523,14 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                         {
                             row = new Vector<Object>();
                             cache.add(row);
-                            row.add(id);
                         }
                     } else
                     {
                         row = new Vector<Object>();
                         cache.add(row);
-                        row.add(id);
                     }
                     
-                    ids.add(resultSet.getInt(primaryKeyIndex+1));
+                    ids.add(id);
                     
                     // Now for each Caption column get a value
                     for (ERTICaptionInfo caption :  captions)
@@ -594,6 +570,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                                 Object aggSubObj = aggCaption.getSubClass() != null ? aggCaption.getSubClass().newInstance() : null;
                                 aggList.add(aggObj);
 
+                                @SuppressWarnings("unused")
                                 DataObjAggregator aggregator = DataObjFieldFormatMgr.getAggregator(aggCaption.getAggregatorName());
                                 //log.debug(" aggCaption.getOrderColIndex() "+ aggCaption.getOrderColIndex());
                                 
@@ -634,9 +611,9 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                 if (aggCaption != null && aggList != null && aggList.size() > 0 && row != null)
                 {
                     int aggInx = captions.indexOf(aggCaption);
-                    row.remove(aggInx+1);
+                    row.remove(aggInx);
                     String colStr = DataObjFieldFormatMgr.aggregate(aggList, aggCaption.getAggClass());
-                    row.insertElementAt(colStr, aggInx+1);
+                    row.insertElementAt(colStr, aggInx);
                     aggList.clear();
                     aggListRecycler.clear();
                 }
@@ -675,6 +652,14 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
         JPAQuery jpaQuery = (JPAQuery)customQuery;
         List<?> list      = jpaQuery.getDataObjects();
         
+        if (ids == null)
+        {
+            ids = new Vector<Integer>();
+        } else
+        {
+            ids.clear();
+        }
+        
         if (!jpaQuery.isInError() && list != null && list.size() > 0)
         {
             if (numColumns == 1)
@@ -693,9 +678,23 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                     Vector<Object> row = new Vector<Object>(list.size());
                     if (rowObj.getClass().isArray())
                     {
+                        int col = 0;
                         for (Object colObj : (Object[])rowObj)
                         {
-                            row.add(colObj);
+                            if (col == 0)
+                            {
+                                if (colObj instanceof Integer)
+                                {
+                                    ids.add((Integer)colObj);
+                                } else
+                                {
+                                    log.error("First Column must be Integer id! ["+colObj+"]");
+                                }
+                            } else
+                            {
+                                row.add(colObj);
+                            }
+                            col++;
                         }
                     } else
                     {

@@ -106,7 +106,7 @@ public class JPAQuery implements CustomQuery, Runnable
         {
             try
             {
-                System.out.println("["+sqlStr+"]");
+                log.debug("["+sqlStr+"]");
                 Query query = session.createQuery(sqlStr);
                 resultsList = query.list();
                 

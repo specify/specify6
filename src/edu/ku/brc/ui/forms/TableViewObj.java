@@ -225,7 +225,7 @@ public class TableViewObj implements Viewable,
         dataGetter       = altView.getViewDef().getDataGettable();
         this.formViewDef = (FormViewDefIFace)altView.getViewDef();
         
-        MultiView.printCreateOptions("Creating Form "+altView.getName(), options);
+        //MultiView.printCreateOptions("Creating Form "+altView.getName(), options);
 
 
         scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");

@@ -113,15 +113,6 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace#getRecordSetColumnInx()
-     */
-    //@Override
-    public int getRecordSetColumnInx()
-    {
-        return 0;
-    }
-
-    /* (non-Javadoc)
      * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace#getSQL(java.lang.String, java.util.Vector)
      */
     //@Override

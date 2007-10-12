@@ -196,15 +196,6 @@ public class QueryForIdResultsSQL implements QueryForIdResultsIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.ExpressSearchResultsIFace#getRecordSetColumnInx()
-     */
-    //@Override
-    public int getRecordSetColumnInx()
-    {
-        return tableInfo.getRecordSetColumnInx();
-    }
-
-    /* (non-Javadoc)
      * @see edu.ku.brc.af.core.ExpressSearchResultsIFace#getTableId()
      */
     //@Override

@@ -43,11 +43,6 @@ public interface QueryForIdResultsIFace
     public abstract String getTitle();
     
     /**
-     * @return which column contains the primary key (zero-based index)
-     */
-    public abstract int getRecordSetColumnInx();
-    
-    /**
      * @return the list of record Ids used to create the SQL Statment
      */
     public abstract Vector<Integer> getRecIds();

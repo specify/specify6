@@ -116,6 +116,7 @@
     <icon name="Reference Work"         alias="referencework"/>
     
     <icon name="Agent"                  alias="agent"/>
+    <icon name="Attachment"             alias="attachment"/>
     <icon name="Determination"          alias="agent"/>
     <icon name="AccessionAgent"         alias="agent"/>
     <icon name="CollectionObject"       alias="collectionobject"/>

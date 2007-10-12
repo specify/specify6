@@ -1194,7 +1194,7 @@ public class ViewFactory
                                 
                                 Color bgColor = getBackgroundColor(cellSubView.getProperties(), parent.getBackground());
                                 
-                                MultiView.printCreateOptions("SUBVIEW", options);
+                                //MultiView.printCreateOptions("SUBVIEW", options);
                                 MultiView multiView = new MultiView(parent, 
                                                                     cellSubView.getName(),
                                                                     subView,

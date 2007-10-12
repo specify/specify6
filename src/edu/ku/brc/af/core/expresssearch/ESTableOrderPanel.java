@@ -232,7 +232,7 @@ public class ESTableOrderPanel extends JPanel
         {
             if (rq.isInUse())
             {
-                System.out.println(rq.getDisplayOrder());
+                //System.out.println(rq.getDisplayOrder());
                 tblList.add(rq);
             } 
         }

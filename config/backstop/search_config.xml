@@ -5,7 +5,7 @@
     <!-- ************************************** -->
     <express>
     
-        <table id="1" tableid="9" indexed="false" name="CollObjToDeterminer" title="Determiner" priority="1" color="30, 144, 144">
+        <table id="1" tableid="4" indexed="false" name="CollObjToDeterminer" title="Determiner" priority="1" color="30, 144, 144">
             <joins>
                 <join tableid="5" primary="true">agent.AgentID</join>
                 <join tableid="1">collectionobject.CollectionObjectID</join>
@@ -16,7 +16,7 @@
             <detailView icon="Agent">
                 <sql>
                     <![CDATA[SELECT 
- agent.AgentID,
+ taxon.TaxonID,
  taxon.FullName,
  taxon.CommonName,
  agent.LastName,
@@ -33,7 +33,7 @@
  WHERE  determinationstatus.IsCurrent = 1 and %s]]>
                 </sql>
                 <captions>
-                    <caption col="CollectionObjectCatalogID" text="ID" visible="false"/>
+                    <caption col="taxon.TaxonID" text="ID" visible="false"/>
                     <caption col="TaxonName"  text="Taxon Name"/>
                     <caption col="CommonName" text="Common Name"/>
                     <caption text="Determiner" dataobjformatter="Agent">
@@ -44,11 +44,10 @@
                     </caption>
                     
                </captions>
-               <recordset tabletype="7" col="1"/>
             </detailView>
         </table>
     
-        <table id="2" tableid="10" indexed="false" name="CollObToLocality" title="Localities in Collecting Events" priority="1" color="30, 144, 144">
+        <table id="2" tableid="1" indexed="false" name="CollObToLocality" title="Localities in Collecting Events" priority="1" color="30, 144, 144">
             <joins>
                 <join tableid="1" primary="true">collectingevent.CollectingEventID</join>
                 <join tableid="2">locality.LocalityID</join>
@@ -76,7 +75,6 @@
                     <caption col="Latitude1"    text="Latitude1"/>
                     <caption col="Longitude1"   text="Longitude1"/>
                 </captions>
-                <recordset tabletype="8" col="6"/>
             </detailView>
         </table>
             
@@ -105,7 +103,6 @@
                     <caption col="CatalogedDate" text="Cataloged Date"/>
                     <caption col="FullName"      text="Taxon Name"/>
                 </captions>
-                <recordset tabletype="1" col="1"/>
             </detailView>
         </table>
         
@@ -145,7 +142,6 @@
                     <caption col="StartDate"      text="Collected Date"/>
                     <caption col="taxon.FullName" text="Taxon Name"/>
                 </captions>
-                <recordset tabletype="4" col="1"/>
             </detailView>
         </table>
 
@@ -194,7 +190,6 @@
                         <col name="agent.AgentType" field="agentType"/>                        
                     </caption>
                </captions>
-                <recordset tabletype="1" col="1"/>
             </detailView>
         </table>
         
@@ -223,7 +218,6 @@ address.State, address.PostalCode, address.Country FROM agent  Left Join address
                     <caption col="Postalcode" text="Zip"/>
                     <caption col="Country" text="Country"/>
                 </captions>
-                <recordset tabletype="5" col="1"/>
             </detailView>
         </table>
     
@@ -243,7 +237,6 @@ permit.EndDate,permit.RenewalDate,permit.Type FROM permit left Join agent ON per
                     <caption col="RenewalDate" text="Renewal Date"/>
                     <caption col="Type" text="Type"/>
                 </captions>
-                <recordset tabletype="6" col="1"/>
             </detailView>
         </table>
         
@@ -262,7 +255,6 @@ accession.DateAccessioned, accession.DateReceived FROM accession WHERE (%s)]]>
                     <caption col="DateAccessioned" text="Date Accessioned"/>
                     <caption col="DateReceived" text="Date Received"/>
                 </captions>
-                <recordset tabletype="6" col="1"/>
             </detailView>
         </table>  
               
@@ -276,7 +268,6 @@ accession.DateAccessioned, accession.DateReceived FROM accession WHERE (%s)]]>
                     <caption col="geography.Name" text="Name"/>
                     <caption col="geographytreedefitem.Name" text="Category"/>                    
                 </captions>
-                <recordset tabletype="3" col="1"/>
             </detailView>
         </table> 
         
@@ -290,7 +281,6 @@ accession.DateAccessioned, accession.DateReceived FROM accession WHERE (%s)]]>
                     <caption col="PrepTypeID" text="PrepTypeID"  visible="false"/>
                     <caption col="Name" text="Name"/>
                 </captions>
-                <recordset tabletype="65" col="1"/>
             </detailView>
         </table>
         
@@ -304,7 +294,6 @@ accession.DateAccessioned, accession.DateReceived FROM accession WHERE (%s)]]>
                     <caption col="Name" text="Name"/>
                     <caption col="Discipline" text="Discipline"/>
                 </captions>
-                <recordset tabletype="26" col="1"/>
             </detailView>
         </table>  
               
@@ -318,7 +307,6 @@ accession.DateAccessioned, accession.DateReceived FROM accession WHERE (%s)]]>
                     <caption col="SchemeName" text="Name"/>
                     <caption col="IsNumericOnly" text="Is Numeric"/>
                 </captions>
-                <recordset tabletype="97" col="1"/>
             </detailView>
         </table>  
        
@@ -332,7 +320,6 @@ accession.DateAccessioned, accession.DateReceived FROM accession WHERE (%s)]]>
                     <caption col="FullName" text="Name"/>
                     <caption col="CommonName" text="Common Name"/>
                 </captions>
-                <recordset tabletype="4" col="1"/>
             </detailView>
         </table>
         
@@ -347,7 +334,6 @@ accession.DateAccessioned, accession.DateReceived FROM accession WHERE (%s)]]>
                     <caption col="LastName" text="Last Name"/>
                     <caption col="MiddleInitial" text="Middle Initial"/>
                 </captions>
-                <recordset tabletype="5" col="1"/>
             </detailView>
         </table>
         
@@ -360,7 +346,6 @@ accession.DateAccessioned, accession.DateReceived FROM accession WHERE (%s)]]>
                     <caption col="LocationID" text="LocationID"  visible="false"/>
                     <caption col="FullName" text="Name"/>
                 </captions>
-                <recordset tabletype="58" col="1"/>
             </detailView>
         </table>
         
@@ -373,7 +358,6 @@ accession.DateAccessioned, accession.DateReceived FROM accession WHERE (%s)]]>
                     <caption col="GeologicTimePeriodID" text="GeologicTimePeriodID"  visible="false"/>
                     <caption col="FullName" text="Name"/>
                 </captions>
-                <recordset tabletype="46" col="1"/>
             </detailView>
         </table>
         
@@ -386,7 +370,6 @@ accession.DateAccessioned, accession.DateReceived FROM accession WHERE (%s)]]>
                     <caption col="LithoStratID" text="LithoStratID"  visible="false"/>
                     <caption col="FullName" text="Name"/>
                 </captions>
-                <recordset tabletype="100" col="1"/>
             </detailView>
         </table>
         
@@ -400,7 +383,6 @@ accession.DateAccessioned, accession.DateReceived FROM accession WHERE (%s)]]>
                     <caption col="Distance" text="Distance"/>
                     <caption col="DistanceUnits" text="Distance Units"/>
                 </captions>
-                <recordset tabletype="32" col="1"/>
             </detailView>
         </table>
         
@@ -423,22 +405,20 @@ accession.DateAccessioned, accession.DateReceived FROM accession WHERE (%s)]]>
                     <caption col="CurrentDueDate" text="Due Date"/>
                     <caption col="OriginalDueDate" text="Orig Due Date"/>
                 </captions>
-                <recordset tabletype="52" col="1"/>
             </detailView>
         </table>
         
         <table id="114" tableid="2" name="LocalitySearch" title="Locality" priority="1" color="30, 144, 255">
             <detailView icon="Locality">
                 <sql>
-                    <![CDATA[SELECT LocalityName,Latitude1,Longitude1, LocalityID FROM locality WHERE (%s)]]>
+                    <![CDATA[SELECT LocalityID, LocalityName,Latitude1,Longitude1  FROM locality WHERE (%s)]]>
                 </sql>
                 <captions>
+                    <caption col="LocalityID" text="ID" visible="false"/>
                     <caption col="LocalityName" text="Locality Name"/>
                     <caption col="Latitude1" text="Latitude"/>
                     <caption col="Longitude1" text="Longitude"/>
-                    <caption col="LocalityID" text="ID" visible="false"/>
                 </captions>
-                <recordset tabletype="2" col="4"/>
             </detailView>
         </table>
         

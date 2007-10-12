@@ -275,7 +275,7 @@ public class FormViewObj implements Viewable,
         
         formIsInNewDataMode = isNewObject;
         
-        MultiView.printCreateOptions("Creating Form "+altView.getName(), options);
+        //MultiView.printCreateOptions("Creating Form "+altView.getName(), options);
 
         setValidator(formValidator);
 

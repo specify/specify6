@@ -21,14 +21,21 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
 
+import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
+import javax.imageio.stream.ImageOutputStream;
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -40,6 +47,10 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+
+import com.sun.image.codec.jpeg.JPEGCodec;
+import com.sun.image.codec.jpeg.JPEGEncodeParam;
+import com.sun.image.codec.jpeg.JPEGImageEncoder;
 
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.dbsupport.DBRelationshipInfo;
@@ -74,6 +85,7 @@ public class ERDVisualizer extends JFrame
     protected String mapTemplate = "";
     protected File   schemaDir;
     protected Timer  timer;
+    protected boolean doPNG = false;
     
     // For Trees
     
@@ -81,7 +93,7 @@ public class ERDVisualizer extends JFrame
     public ERDVisualizer()
     {
         boolean showTreeHierarchy = false;
-        boolean doGerman          = true;
+        boolean doGerman          = false;
         
         if (doGerman)
         {
@@ -102,7 +114,7 @@ public class ERDVisualizer extends JFrame
         {
             try
             {
-                //FileUtils.cleanDirectory(schemaDir);
+                FileUtils.cleanDirectory(schemaDir);
                 
             } catch (Exception ex)
             {
@@ -436,7 +448,7 @@ public class ERDVisualizer extends JFrame
                     System.out.println("Done.");
                 }
             };
-            //worker.start();
+            worker.start();
         }
         
         createIndexFile();
@@ -590,8 +602,13 @@ public class ERDVisualizer extends JFrame
             return;
         }
         
-        BufferedImage bufImage = new BufferedImage(rect.width, rect.height, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage bufImage = new BufferedImage(rect.width, rect.height, (doPNG ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_INT_RGB));
         Graphics2D    g2       = bufImage.createGraphics();
+        if (!doPNG)
+        {
+            g2.setColor(Color.WHITE);
+            g2.fillRect(0, 0, rect.width, rect.height);
+        }
         g2.setRenderingHints(createTextRenderingHints());
         g2.setFont( tblTracker.getFont());
         getPanel().getParent().paint(g2);
@@ -614,7 +631,7 @@ public class ERDVisualizer extends JFrame
             String subContent = mapTemplate.substring(0, inx);
             output.write(StringUtils.replace(subContent, "<!-- Title -->", tblInfo.getTitle()));
         
-            File imgFile = new File(fName + ".png");
+            File imgFile = new File(fName + (doPNG ? ".png" : ".jpg"));
             output.write("<map name=\"schema\" id=\"schema\">\n");
             
             Vector<ERDTable> nList = mainPanel.isRoot() ? tblTracker.getTreeAsList(mainPanel.getMainTable()) : getPanel().getRelTables();
@@ -636,7 +653,13 @@ public class ERDVisualizer extends JFrame
 
             File oFile = new File(schemaDir + File.separator + imgFile.getName());
             System.out.println(oFile.getAbsolutePath());
-            ImageIO.write(bufImage, "PNG", oFile);
+            if (doPNG)
+            {
+                ImageIO.write(bufImage, "PNG", oFile);
+            } else
+            {
+                writeJPEG(oFile, bufImage, 0.75f);
+            }
             //ImageIO.write(bufImage, "JPG", new File(schemaDir + File.separator + imgFile.getName()+".jpg"));
             
         } catch (Exception e)
@@ -644,6 +667,61 @@ public class ERDVisualizer extends JFrame
             e.printStackTrace();
         }
     }
+    
+    public void writeJPEG(File outfile, BufferedImage bufferedImage, float compressionQuality)
+    {
+        try
+        {
+        
+            long start = System.currentTimeMillis();
+            boolean oldWay = true;
+            if (oldWay)
+            {
+
+                // Find a jpeg writer
+                ImageWriter writer = null;
+                Iterator<?> iter = ImageIO.getImageWritersByFormatName("jpg");
+                if (iter.hasNext())
+                {
+                    writer = (ImageWriter)iter.next();
+                }
+
+                // Prepare output file
+                ImageOutputStream ios = ImageIO.createImageOutputStream(outfile);
+                writer.setOutput(ios);
+
+                // Set the compression quality
+                ImageWriteParam iwparam = new MyImageWriteParam();
+                iwparam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT) ;
+                iwparam.setCompressionQuality(compressionQuality);
+
+                // Write the image
+                writer.write(null, new IIOImage(bufferedImage, null, null), null);
+
+                // Cleanup
+                ios.flush();
+                writer.dispose();
+                ios.close();
+
+            } else
+            {
+                FileOutputStream out  = new FileOutputStream(outfile);
+
+                JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
+                JPEGEncodeParam  param   = encoder.getDefaultJPEGEncodeParam(bufferedImage);
+                param.setQuality(0.75f, false);
+                encoder.setJPEGEncodeParam(param);
+                encoder.encode(bufferedImage);
+            }
+            System.out.println(System.currentTimeMillis() - start);
+
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+    }
+
     
     /**
      * @return
@@ -809,7 +887,28 @@ public class ERDVisualizer extends JFrame
         tblTracker.getUsedHash().put(table.getClassName(), true);
     }
 
-    
+    // This class overrides the setCompressionQuality() method to workaround
+    // a problem in compressing JPEG images using the javax.imageio package.
+    public class MyImageWriteParam extends JPEGImageWriteParam
+    {
+        public MyImageWriteParam()
+        {
+            super(Locale.getDefault());
+        }
+
+        // This method accepts quality levels between 0 (lowest) and 1 (highest) and simply converts
+        // it to a range between 0 and 256; this is not a correct conversion algorithm.
+        // However, a proper alternative is a lot more complicated.
+        // This should do until the bug is fixed.
+        public void setCompressionQuality(float quality)
+        {
+            if (quality < 0.0F || quality > 1.0F)
+            {
+                throw new IllegalArgumentException("Quality out-of-bounds!");
+            }
+            this.compressionQuality = 256 - (quality * 256);
+        }
+    }
 
     
     /**

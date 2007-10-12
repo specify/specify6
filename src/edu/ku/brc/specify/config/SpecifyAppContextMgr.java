@@ -102,7 +102,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
     protected AppResourceMgr backStopAppResMgr     = null;
     protected Agent          currentUserAgent      = null;
 
-
+    protected boolean        debug                 = false;
+    
     /**
      * Singleton Constructor.
      */
@@ -236,7 +237,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 {
                     Collection cs = (Collection)obj;
                     collectionHash.put(cs.getCollectionName(), cs);
-                    log.debug(cs.getCollectionName());
+                    if (debug) log.debug(cs.getCollectionName());
                 }
                 
                 if (collectionHash.size() == 1)
@@ -325,7 +326,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                                       final Collection     catSeries,
                                       final CollectionType collType)
     {
-        log.debug("finding AppResourceDefault");
+        if (debug) log.debug("finding AppResourceDefault");
+        
         for (Object obj : appResDefList)
         {
             SpAppResourceDir ard = (SpAppResourceDir)obj;
@@ -351,7 +353,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     protected SpAppResourceDir createAppResourceDefFromDir(final String viewSetMgrName, final File dir)
     {
-        log.debug("Creating AppResourceDef from Dir ["+dir.getAbsolutePath()+"]");
+        if (debug) log.debug("Creating AppResourceDef from Dir ["+dir.getAbsolutePath()+"]");
+        
         SpAppResourceDir appResDef = new SpAppResourceDir();
         appResDef.initialize();
 
@@ -410,7 +413,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
         strBuf.append(" COD["+(ct != null ? ct.getName() : "null") + "]");
         strBuf.append(" DSP["+appResDef.getDisciplineType() + "]");
         strBuf.append(" UTYP["+appResDef.getUserType() + "]");
-        log.debug("AppResDefAsString - "  + strBuf.toString());
+        
+        if (debug) log.debug("AppResDefAsString - "  + strBuf.toString());
+        
         return strBuf.toString();
     }
 
@@ -421,7 +426,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                                      final String  userName,
                                      final boolean startingOver)
     {
-        log.debug("setting context - databaseName: [" + databaseName + "] userName: [" + userName + "]");
+        if (debug)  log.debug("setting context - databaseName: [" + databaseName + "] userName: [" + userName + "]");
+        
         this.databaseName = databaseName;
         this.userName     = userName;
         
@@ -462,10 +468,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
         Hashtable<String, String> dispHash = new Hashtable<String, String>();
         
         String userType = user.getUserType();
-        log.debug("User["+user.getName()+"] Type["+userType+"]");
+        
+        if (debug) log.debug("User["+user.getName()+"] Type["+userType+"]");
 
         userType = StringUtils.replace(userType, " ", "").toLowerCase();
-        log.debug("Def Type["+userType+"]");
+        
+        if (debug) log.debug("Def Type["+userType+"]");
         
         spAppResourceList.clear();
         viewSetHash.clear();
@@ -476,16 +484,14 @@ public class SpecifyAppContextMgr extends AppContextMgr
         CollectionType.setCurrentCollectionType(ct);
     
             
-        log.debug("Adding AppResourceDefs from Collection and ColObjDefs");
-
-        log.debug("  ColObjDef["+ct.getName()+"]");
+        if (debug) log.debug("Adding AppResourceDefs from Collection and ColObjDefs ColObjDef["+ct.getName()+"]");
         
         dispHash.put(ct.getDiscipline(), ct.getDiscipline());
         
         SpAppResourceDir appResourceDef = find(appResDefList, user, collection, ct);
         if (appResourceDef != null)
         {
-            log.debug("Adding1 "+getSpAppResDefAsString(appResourceDef));
+            if (debug) log.debug("Adding1 "+getSpAppResDefAsString(appResourceDef));
             spAppResourceList.add(appResourceDef);
         }
 
@@ -493,7 +499,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         // Add Backstop for Discipline and User Type
         for (String discipline : dispHash.keySet())
         {
-            log.debug("****** Trying add Backstop for ["+discipline+"]["+userType+"]");
+            if (debug) log.debug("****** Trying add Backstop for ["+discipline+"]["+userType+"]");
 
             File dir = XMLHelper.getConfigDir(discipline.toLowerCase() + File.separator + userType);
             if (dir.exists())
@@ -505,19 +511,19 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 appResDef.setCollection(Collection.getCurrentCollection());
                 appResDef.setCollectionType(CollectionType.getCurrentCollectionType());
                 
-                log.debug("Adding2 "+getSpAppResDefAsString(appResDef));
+                if (debug) log.debug("Adding2 "+getSpAppResDefAsString(appResDef));
                 spAppResourceList.add(appResDef);
                 
             } else
             {
-                log.debug("***** Couldn't add Backstop for ["+discipline+"]["+userType+"] ["+dir.getAbsolutePath()+"]");
+                if (debug) log.debug("***** Couldn't add Backstop for ["+discipline+"]["+userType+"] ["+dir.getAbsolutePath()+"]");
             }
         }
 
         // Add Backstop for just the Discipline
         for (String discipline : dispHash.keySet())
         {
-            log.debug("***** Trying add Backstop for ["+discipline.toLowerCase()+"]");
+            if (debug) log.debug("***** Trying add Backstop for ["+discipline.toLowerCase()+"]");
             File dir = XMLHelper.getConfigDir(discipline.toLowerCase());
             if (dir.exists())
             {
@@ -528,12 +534,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 appResDef.setCollection(collection);
                 appResDef.setCollectionType(ct);
 
-                log.debug("Adding3 "+getSpAppResDefAsString(appResDef));
+                if (debug) log.debug("Adding3 "+getSpAppResDefAsString(appResDef));
                 spAppResourceList.add(appResDef);
                 
             } else
             {
-                log.debug("***** Couldn't add Backstop for ["+discipline+"] ["+dir.getAbsolutePath()+"]");
+                if (debug) log.debug("***** Couldn't add Backstop for ["+discipline+"] ["+dir.getAbsolutePath()+"]");
             }
         }
 
@@ -554,7 +560,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     protected List<ViewSetIFace> getViewSetList(final SpAppResourceDir appResDef)
     {
-        log.debug("Looking up["+appResDef.getUniqueIdentifer()+"]["+appResDef.getVerboseUniqueIdentifer()+"]");
+        if (debug) log.debug("Looking up["+appResDef.getUniqueIdentifer()+"]["+appResDef.getVerboseUniqueIdentifer()+"]");
         
         Boolean reloadViews = AppPreferences.getLocalPrefs().getBoolean("reload_views", false);
         if (reloadViews)
@@ -609,12 +615,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     public ViewIFace getView(final String viewName, final CollectionType collType)
     {
-        log.debug("Looking Up View ["+viewName+"] collType["+(collType != null ? collType.getName() : "null")+"]");
+        if (debug) log.debug("Looking Up View ["+viewName+"] collType["+(collType != null ? collType.getName() : "null")+"]");
         
         boolean fndColObjDef = false;
         for (SpAppResourceDir appResDef : spAppResourceList)
         {
-            log.debug("Looking["+(appResDef.getCollectionType() != null ? appResDef.getCollectionType().getName() : "null")+"]["+(collType != null ? collType.getName() : "null")+"]");
+            if (debug) log.debug("Looking["+(appResDef.getCollectionType() != null ? appResDef.getCollectionType().getName() : "null")+"]["+(collType != null ? collType.getName() : "null")+"]");
             
             if (appResDef.getCollectionType() != null && appResDef.getCollectionType() == collType)
             {
@@ -644,7 +650,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 String dType = appResDef.getDisciplineType();
                 String uType = appResDef.getUserType();
 
-                log.debug("appResDef's DisciplineType["+dType+"] appResDef's UserType["+uType+"] User's userType["+userType+"]");
+                if (debug) log.debug("appResDef's DisciplineType["+dType+"] appResDef's UserType["+uType+"] User's userType["+userType+"]");
                 
                 if ((dType != null && disciplineName != null && dType.equals(disciplineName) || 
                     (dType == null || disciplineName == null)) && (uType == null || uType.equals(userType)) ||
@@ -691,12 +697,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
         for (SpAppResourceDir appResDef : spAppResourceList)
         {
-            log.debug("getView "+getSpAppResDefAsString(appResDef)+"  ["+appResDef.getUniqueIdentifer()+"]");
-
+            if (debug) log.debug("getView "+getSpAppResDefAsString(appResDef)+"  ["+appResDef.getUniqueIdentifer()+"]");
+            
             for (ViewSetIFace vs : getViewSetList(appResDef))
             {
-                log.debug("VS  ["+vs.getName()+"]["+viewSetName+"]");
-
+                if (debug) log.debug("VS  ["+vs.getName()+"]["+viewSetName+"]");
+                
                 if (vs.getName().equals(viewSetName))
                 {
                     ViewIFace view = vs.getView(viewName);
@@ -1059,7 +1065,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
                                 appRes.setFileName(resFile.getAbsolutePath());
 
-                                log.debug("Adding ["+name+"] ["+resFile.getAbsolutePath()+"]");
+                                if (debug) log.debug("Adding ["+name+"] ["+resFile.getAbsolutePath()+"]");
                                 
                                 appResources.put(name, appRes);
 
