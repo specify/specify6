@@ -12,7 +12,7 @@ import java.util.List;
  * comparator, in that order.
  * 
  * @author jstewart
- * @code_status Code_Freeze
+ * @code_status Complete
  * @param <T> the type of objects being compared
  */
 public class ComparatorStack<T> implements Comparator<T>

@@ -210,10 +210,12 @@ public class OrderedIconTray extends IconTray implements ActionListener, ListSel
             if (o instanceof Orderable)
             {
                 Orderable orderable = (Orderable)o;
-                int oldOrderIndex = orderable.getOrderIndex();
                 orderable.setOrderIndex(i);
-                firePropertyChange("item order", oldOrderIndex, i);
             }
+            
+            // The values from this event should not be used for anything.
+            // However, if they are the same, the PropertyChange framework quietly drops this event.
+            firePropertyChange("item order", true, false);
         }
     }
     
