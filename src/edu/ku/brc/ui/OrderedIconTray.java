@@ -23,6 +23,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.util.FormDataObjComparator;
@@ -70,16 +71,16 @@ public class OrderedIconTray extends IconTray implements ActionListener, ListSel
         southPanel = new JPanel();
         southPanel.setLayout(new BoxLayout(southPanel,BoxLayout.LINE_AXIS));
     
-        toStartButton = new JButton(IconManager.getIcon("move_to_start", IconSize.Std16));
+        toStartButton = new JButton(IconManager.getIcon("FirstRec", IconSize.NonStd));
         toStartButton.setSize(20,20);
         toStartButton.setToolTipText("Move selection to first position");
-        moveLeftButton = new JButton(IconManager.getIcon("move_left", IconSize.Std16));
+        moveLeftButton = new JButton(IconManager.getIcon("PrevRec", IconSize.NonStd));
         moveLeftButton.setSize(20,20);
         moveLeftButton.setToolTipText("Move selection left one position");
-        moveRightButton = new JButton(IconManager.getIcon("move_right", IconSize.Std16));
+        moveRightButton = new JButton(IconManager.getIcon("NextRec", IconSize.NonStd));
         moveRightButton.setSize(20,20);
         moveRightButton.setToolTipText("Move selection right one position");
-        toEndButton = new JButton(IconManager.getIcon("move_to_end", IconSize.Std16));
+        toEndButton = new JButton(IconManager.getIcon("LastRec", IconSize.NonStd));
         toEndButton.setSize(20,20);
         toEndButton.setToolTipText("Move selection to last position");
         
@@ -106,6 +107,14 @@ public class OrderedIconTray extends IconTray implements ActionListener, ListSel
         
         this.add(southPanel,BorderLayout.SOUTH);
     }
+    
+    public void enableOrderButtons(boolean enable)
+    {
+        toStartButton.setEnabled(enable);
+        moveLeftButton.setEnabled(enable);
+        moveRightButton.setEnabled(enable);
+        toEndButton.setEnabled(enable);
+    }
 
     /* (non-Javadoc)
      * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
@@ -124,7 +133,10 @@ public class OrderedIconTray extends IconTray implements ActionListener, ListSel
             model.moveToStart(selection);
             iconListWidget.setSelectedIndex(0);
             Rectangle selRect = iconListWidget.getUI().getCellBounds(iconListWidget, selection-1, selection-1);
-            listScrollPane.scrollRectToVisible(selRect);
+            if (selRect != null)
+            {
+                listScrollPane.scrollRectToVisible(selRect);
+            }
             setOrderIndices();
             return;
         }
@@ -140,7 +152,10 @@ public class OrderedIconTray extends IconTray implements ActionListener, ListSel
             {
                 iconListWidget.setSelectedIndex(selection-1);
                 Rectangle selRect = iconListWidget.getUI().getCellBounds(iconListWidget, 0, 0);
-                listScrollPane.scrollRectToVisible(selRect);
+                if (selRect != null)
+                {
+                    listScrollPane.scrollRectToVisible(selRect);
+                }
             }
             setOrderIndices();
             return;
@@ -157,7 +172,10 @@ public class OrderedIconTray extends IconTray implements ActionListener, ListSel
             {
                 iconListWidget.setSelectedIndex(selection+1);
                 Rectangle selRect = iconListWidget.getUI().getCellBounds(iconListWidget, selection+1, selection+1);
-                listScrollPane.scrollRectToVisible(selRect);
+                if (selRect != null)
+                {
+                    listScrollPane.scrollRectToVisible(selRect);
+                }
             }
             setOrderIndices();
             return;
@@ -172,7 +190,10 @@ public class OrderedIconTray extends IconTray implements ActionListener, ListSel
             model.moveToEnd(selection);
             iconListWidget.setSelectedIndex(model.getSize()-1);
             Rectangle selRect = iconListWidget.getUI().getCellBounds(iconListWidget, model.getSize()-1, model.getSize()-1);
-            listScrollPane.scrollRectToVisible(selRect);
+            if (selRect != null)
+            {
+                listScrollPane.scrollRectToVisible(selRect);
+            }
             setOrderIndices();
             return;
         }
@@ -191,8 +212,11 @@ public class OrderedIconTray extends IconTray implements ActionListener, ListSel
             {
                 Orderable orderable = (Orderable)o;
                 orderable.setOrderIndex(i);
+                o.setLastEditedBy(SpecifyUser.getCurrentUser().getName());
             }
         }
+        
+        firePropertyChange("item order", true, false);
     }
     
     /* (non-Javadoc)
@@ -211,6 +235,17 @@ public class OrderedIconTray extends IconTray implements ActionListener, ListSel
             button.setEnabled(enable);
         }
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.IconTray#addItem(edu.ku.brc.ui.forms.FormDataObjIFace)
+     */
+    @Override
+    public synchronized void addItem(FormDataObjIFace item)
+    {
+        listModel.add(item);
+        setOrderIndices();
+    }
+
 
     /**
      * Sorts the set of {@link FormDataObjIFace} objects passed in during a call

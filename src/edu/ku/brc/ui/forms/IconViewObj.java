@@ -14,6 +14,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.HashSet;
 import java.util.List;
@@ -42,6 +44,7 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DefaultClassActionHandler;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.IconTray;
+import edu.ku.brc.ui.OrderedIconTray;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.persist.AltViewIFace;
@@ -51,6 +54,7 @@ import edu.ku.brc.ui.forms.persist.ViewDefIFace;
 import edu.ku.brc.ui.forms.persist.ViewIFace;
 import edu.ku.brc.ui.forms.persist.AltViewIFace.CreationMode;
 import edu.ku.brc.ui.forms.validation.FormValidator;
+import edu.ku.brc.util.Orderable;
 
 /**
  * A Viewable that will display a set of FormDataObjIFace objects in a file
@@ -66,11 +70,11 @@ public class IconViewObj implements Viewable
     // Data Members
     protected DataProviderSessionIFace      session;
     protected MultiView                     mvParent;
-    protected ViewIFace                          view;
-    protected AltViewIFace                       altView;
-    protected ViewDefIFace                       viewDef;
+    protected ViewIFace                     view;
+    protected AltViewIFace                  altView;
+    protected ViewDefIFace                  viewDef;
     protected String                        cellName;
-    protected Vector<AltViewIFace>               altViewsList;
+    protected Vector<AltViewIFace>          altViewsList;
     protected int                           viewOptions;
     
     protected FormDataObjIFace              parentDataObj;
@@ -80,19 +84,21 @@ public class IconViewObj implements Viewable
 
     // UI stuff
     protected IconTray                      iconTray;
-    protected JPanel mainComp;
-    protected JPanel southPanel;
-    protected JButton editButton;
-    protected JButton newButton;
-    protected JButton deleteButton;
+    protected JPanel                        mainComp;
+    protected JPanel                        southPanel;
+    protected JButton                       editButton;
+    protected JButton                       newButton;
+    protected JButton                       deleteButton;
     protected MenuSwitcherPanel             switcherUI;
     protected JButton                       validationInfoBtn;
     
-    protected boolean dataTypeError;
+    protected boolean                       dataTypeError;
     
-    protected FormValidator validator;
+    protected FormValidator                 validator;
     
     protected BusinessRulesIFace            businessRules;
+    
+    protected boolean                       orderableDataClass;
 
     /**
      * Constructor.
@@ -127,6 +133,21 @@ public class IconViewObj implements Viewable
         }
         validator.setName("IconViewObj validator");
         root.addFormValidator(validator);
+        
+        try
+        {
+            Class<?> dataClass = Class.forName(view.getClassName());
+            if (Orderable.class.isAssignableFrom(dataClass))
+            {
+                // this IconViewObj is showing Orderable objects
+                // so we should use an OrderedIconTray
+                orderableDataClass = true;
+            }
+        }
+        catch (ClassNotFoundException e)
+        {
+            log.error("Data class of view cannot be found", e);
+        }
     }
     
     public String getDataClassName()
@@ -145,9 +166,34 @@ public class IconViewObj implements Viewable
         
         validationInfoBtn = FormViewObj.createValidationIndicator(this);
 
-        
-        iconTray = new IconTray(IconTray.SINGLE_ROW);
-        //iconTray = new IconTray(IconTray.MULTIPLE_ROWS);
+        if (orderableDataClass && (viewOptions & MultiView.IS_EDITTING) == MultiView.IS_EDITTING)
+        {
+            iconTray = new OrderedIconTray(IconTray.SINGLE_ROW);
+            iconTray.addPropertyChangeListener(new PropertyChangeListener()
+            {
+                public void propertyChange(PropertyChangeEvent evt)
+                {
+                    if (evt.getPropertyName().equalsIgnoreCase("item order"))
+                    {
+                        // TODO: figure out how to enable the save button in the parent form
+                        if (mvParent != null)
+                        {
+                            MultiView root = mvParent;
+                            while (root.getMultiViewParent() != null)
+                            {
+                                root = root.getMultiViewParent();
+                            }
+                            validator.setHasChanged(true);
+                            root.dataChanged(null, null, null);
+                        }
+                    }
+                }
+            });
+        }
+        else // the data isn't Orderable or we're in view only mode
+        {
+            iconTray = new IconTray(IconTray.SINGLE_ROW);
+        }
         
         iconTray.addMouseListener(new MouseAdapter()
         {
