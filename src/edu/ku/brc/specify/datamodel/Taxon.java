@@ -252,7 +252,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
     }
 
     @Column(name = "CommonName", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
-    public String getCommonName()
+    public String getCommonName() 
     {
         return this.commonName;
     }
@@ -262,7 +262,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         this.commonName = commonName;
     }
 
-    @Column(name = "TaxonomicSerialNumber", unique = true, length = 50)
+    @Column(name = "TaxonomicSerialNumber", unique = false, nullable = true, length = 50)
 	public String getTaxonomicSerialNumber()
 	{
 		return this.taxonomicSerialNumber;

@@ -51,31 +51,41 @@ public class SpecifySchemaGenerator
                                             final String userName,
                                             final String password) throws SQLException
     {
+        log.debug("generateSchema hostname:" + hostname);
+        log.debug("generateSchema databaseName:" + databaseName);
+        log.debug("generateSchema userName:" + userName);
+        log.debug("generateSchema password:" + password);
         boolean isDerby = dbdriverInfo.getName().equals("Derby");
-        
+        boolean isSQLServer = dbdriverInfo.getName().equals("SQLServer");
         // Get the Create OR the Open String
         // Note: Derby local databases have a different connection string for creating verses opening.
         // So we need to get the Create string if it has one (Derby) or the open string if it doesn't
         // Also notice that Derby wants a database name for the initial connection and the others do not
-        String connectionStr = dbdriverInfo.getConnectionCreateOpenStr(hostname, isDerby ? databaseName : "");
+        String connectionStr = dbdriverInfo.getConnectionCreateOpenStr(hostname, isDerby ? databaseName : "", userName, password, dbdriverInfo.getName());
+        log.debug("generateSchema connectionStr: " + connectionStr);
         
         // For derby the Connection String includes the "create" indicator
         // so we must first drop (delete) the Derby Database
         if (isDerby)
         {
+            log.debug("database is derby database, running special drop method");
             dropDerbyDatabase(databaseName);
         }
 
+        log.debug("Creating database connection to: " + connectionStr);
         // Now connect to other databases and "create" the Derby database
         DBConnection dbConn = DBConnection.createInstance(dbdriverInfo.getDriverClassName(), dbdriverInfo.getDialectClassName(), databaseName, connectionStr, userName, password);
 
         // Once connected drop the non-Derby databases
         if (!isDerby)
         {
+            //log.debug("calling dropAndCreateDB(" + dbConn.toString() + ", " + databaseName +")");
             dropAndCreateDB(dbConn, databaseName);
             
-            connectionStr = dbdriverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostname, databaseName);
+            connectionStr = dbdriverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostname, databaseName, userName, password, dbdriverInfo.getName());
         }
+        
+        log.debug("Preparting to doGenSchema: " + connectionStr);
         
         // Generate the schema
         doGenSchema(dbdriverInfo,
@@ -88,7 +98,7 @@ public class SpecifySchemaGenerator
         {
             dbConn.close(); // Derby Only
             
-            connectionStr = dbdriverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostname, databaseName);
+            connectionStr = dbdriverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostname, databaseName, userName, password, dbdriverInfo.getName());
             
             dbConn = DBConnection.createInstance(dbdriverInfo.getDriverClassName(), dbdriverInfo.getDialectClassName(), databaseName, connectionStr, userName, password);
         }
@@ -126,7 +136,15 @@ public class SpecifySchemaGenerator
             throw new RuntimeException("JavaDB Path System property was null or empty and can't be!");
         }
     }
-    
+   
+//    /**
+//     * Drops (deletes the directory) for a local Derby Database.
+//     * @param databaseName the database name (which is really the directory name).
+//     */
+//    protected static void dropSQLServerDatabase(final String databaseName)
+//    {
+//
+//    }    
     /**
      * Drop the database via it's connection.
      * @param dbConnection the connection 
@@ -135,35 +153,56 @@ public class SpecifySchemaGenerator
      */
     protected static void dropAndCreateDB(final DBConnection dbConnection, final String dbName) throws SQLException
     {
+        dropDB(dbConnection,dbName );
+        createDB(dbConnection,dbName );
+    }
+    /**
+     * Drop the database via it's connection.
+     * @param dbConnection the connection 
+     * @param dbName the database name
+     * @throws SQLException if any DB errors occur
+     */
+    protected static void dropDB(final DBConnection dbConnection, final String dbName) throws SQLException
+    {
         Connection connection = dbConnection.createConnection();
         Statement  stmt       = connection.createStatement();
         try
         {
             log.info("Dropping database "+dbName);
-            
+            //String myStatemt
             stmt.execute("drop database "+ dbName);
             
             log.info("Dropped database "+dbName);
             
             stmt.close();
             
+            
         } catch (SQLException ex)
         {
-            log.info("Database ["+dbName+"] didn't exist.");
-        }
-
-        stmt = connection.createStatement();
-        
-        log.info("Creating database "+dbName);
-        
-        stmt.execute("create database "+ dbName);
-        
-        log.info("Created database "+dbName);
-        
+            log.error("SQLException could not drop database ["+dbName+"]:" + "\n" + ex.toString());
+            ex.toString();
+        }        
         stmt.close();
         connection.close();
-    }
+    } 
     
+    /**
+     * Drop the database via it's connection.
+     * @param dbConnection the connection 
+     * @param dbName the database name
+     * @throws SQLException if any DB errors occur
+     */
+    protected static void createDB(final DBConnection dbConnection, final String dbName) throws SQLException
+    {
+        Connection connection = dbConnection.createConnection();
+        Statement  stmt       = connection.createStatement();
+        log.info("Creating database "+dbName);        
+        stmt.execute("create database "+ dbName);        
+        log.info("Created database "+dbName);        
+        stmt.close();
+        connection.close();
+        //System.exit(0);
+    }
     /**
      * Creates a properties object with the necessary args for generating the schema.
      * @param driverInfo basic info about the DB driver to use
@@ -186,7 +225,7 @@ public class SpecifySchemaGenerator
         props.setProperty("hibernate.max_fetch_depth",         "3");
         props.setProperty("hibernate.connection.pool_size",    "5");
         props.setProperty("hibernate.format_sql",              "true");
-        
+        log.debug("Hibernate Propereties: " + props.toString());
         return props;
     }
 
@@ -213,7 +252,7 @@ public class SpecifySchemaGenerator
         schemaExporter.setDelimiter(";");
         
         log.info("Generating schema");
-        
+        //System.exit(0);
         boolean printToScreen = false;
         boolean exportToDb    = true;
         boolean justDrop      = false;
@@ -240,8 +279,10 @@ public class SpecifySchemaGenerator
      */
     public static void main(String[] args) throws SQLException
     {
-        DatabaseDriverInfo dbdriverInfo = DatabaseDriverInfo.getDriver("MySQL");
-
-        SpecifySchemaGenerator.generateSchema(dbdriverInfo, "localhost", "testdb", "rods", "rods");
+        DatabaseDriverInfo dbdriverInfo = DatabaseDriverInfo.getDriver("SQLServer");
+        SpecifySchemaGenerator.generateSchema(dbdriverInfo, "localhost", "Fish_sp6", "sa", "Re4a22jiu");
+   
+        //DatabaseDriverInfo dbdriverInfo = DatabaseDriverInfo.getDriver("MySQL");
+       // SpecifySchemaGenerator.generateSchema(dbdriverInfo, "localhost", "testdb", "rods", "rods");
     }
 }

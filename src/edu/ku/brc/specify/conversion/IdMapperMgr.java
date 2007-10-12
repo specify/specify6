@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import edu.ku.brc.ui.ProgressFrame;
 
 
@@ -36,6 +38,7 @@ import edu.ku.brc.ui.ProgressFrame;
  */
 public class IdMapperMgr
 {
+    protected static final Logger log = Logger.getLogger(IdMapperMgr.class);
     protected static IdMapperMgr              idMapperMgr = new IdMapperMgr();
     
     protected Connection                      oldConn = null;
@@ -78,6 +81,8 @@ public class IdMapperMgr
      */
     public IdTableMapper addTableMapper(final String tableName, final String idName, final String sql) throws SQLException
     {
+        log.debug("addTableMapper called for table: " + tableName);
+        log.debug("addTableMapper called for sql: " + sql);
         if (oldConn == null || newConn == null)
         {
             throw new RuntimeException("setDBs MUST be called on IdMapperMgr before using it! oldConn["+oldConn+"]  newConn["+newConn+"]");
@@ -86,7 +91,7 @@ public class IdMapperMgr
         String name = tableName.toLowerCase();
         
         List<String> fieldNames = new ArrayList<String>();
-        BasicSQLUtils.getFieldNamesFromSchema(oldConn, name, fieldNames);
+        BasicSQLUtils.getFieldNamesFromSchema(oldConn, name, fieldNames, BasicSQLUtils.mySourceServerType);
         if (!fieldNames.get(0).equals(idName))
         {
             throw new RuntimeException("Table["+name+"] doesn't have first column id["+idName+"]");

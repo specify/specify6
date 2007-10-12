@@ -134,7 +134,7 @@ public class TableStats
         
         public void readTables() throws SQLException
         {
-            Statement st = conn.createStatement();
+            Statement st = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
             ResultSet rs = st.executeQuery("show table status");
             rs.first();
             do

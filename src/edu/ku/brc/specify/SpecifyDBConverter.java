@@ -42,6 +42,7 @@ import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.ResultsPager;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
+import edu.ku.brc.specify.conversion.CustomDBConverterDlg;
 import edu.ku.brc.specify.conversion.CustomDBConverterPanel;
 import edu.ku.brc.specify.conversion.GenericDBConversion;
 import edu.ku.brc.specify.conversion.IdMapperMgr;
@@ -65,6 +66,7 @@ import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.db.DatabaseConnectionProperties;
 
 /**
  * Create more sample data, letting Hibernate persist it for us.
@@ -145,7 +147,22 @@ public class SpecifyDBConverter
                 
                 frame = new ProgressFrame("Converting");
                 old2NewDBNames = new Hashtable<String, String>();
-                String[] names = {"Fish", "sp4_fish", "Accessions", "sp4_accessions", "Cranbrook", "sp4_cranbrook", "Ento", "sp4_ento", "Custom", ""};
+                String[] names = {
+                        "Custom", "",
+                        //"Fish", "sp4_fish", 
+                        //"Accessions", "sp4_accessions", 
+                        //"Cranbrook", "sp4_cranbrook", 
+                        //"Ento", "sp4_ento", 
+                        "Bird_Deleware", "sp5_dmnhbird",
+                        "Ento_CAS", "sp5_cas_ento",
+                        "Fish_Kansas", "sp5_kufish",                        
+                        "Herbarium_NewHampshire","sp5_unhnhaherbarium",
+                        "Herps_Guatemala","sp5_uvgherps",
+                        "Invert_Alabama", "sp5_uamc_invert",
+                        "Mammals_SAfrica", "sp5_mmpemammals",
+                        "Multi_ChicagoAS", "sp5_chias_multi",
+                        "Paleo_Colorado", "sp5_cupaleo",
+                        };
                 for (int i=0;i<names.length;i++)
                 {
                     old2NewDBNames.put(names[i], names[++i]);
@@ -158,21 +175,47 @@ public class SpecifyDBConverter
                 if((dbNamesToConvert.size()>=1)&&(dbNamesToConvert.get(0).equals("Custom")))
                 {
                     log.debug("Running custom converter");
-                    CustomDBConverterPanel panel = converter.runCustomConverter();
+                    CustomDBConverterDlg dlg = converter.runCustomConverter();
+                    CustomDBConverterPanel panel = dlg.getCustomDBConverterPanel();
                     dbNamesToConvert = panel.getSelectedObjects();
                     log.debug("Source db: " + dbNamesToConvert.get(0));
                     log.debug("Dest db: " + dbNamesToConvert.get(1));
-                    //converter.processDB(t);
+                    log.debug(panel.getSourceDriverType());
+                    log.debug(panel.getSourceServerName());
+                    log.debug(panel.getSourceUserName());
+                    log.debug(panel.getSourcePassword());
+                    log.debug(panel.getDestDriverType());
+                    log.debug(panel.getDestServerName());
+                    log.debug(panel.getDestUserName());
+                    log.debug(panel.getDestPassword());
+                    
+                    //String driverType, String host, String userName, String password)
+                    //dlg.setVisible(false);
+                    currentIndex = 0;
+                    converter.processDB(true, 
+                            new DatabaseConnectionProperties(
+                                    panel.getSourceDriverType(),
+                                    panel.getSourceServerName(),
+                                    panel.getSourceUserName(),
+                                    panel.getSourcePassword()),
+                            new DatabaseConnectionProperties(
+                                    panel.getDestDriverType(),
+                                    panel.getDestServerName(),
+                                    panel.getDestUserName(),
+                                    panel.getDestPassword()));
                 }
                 else {
+                    log.debug("Running test case converter");
                     currentIndex = 0;
-                    converter.processDB(false);
+                    converter.processDB(false, null, null);
                 }
             }
         });
     }
     
-    protected  void processDB(final boolean isCustomConvert)
+    protected  void processDB(final boolean isCustomConvert, 
+                              final DatabaseConnectionProperties sourceDbProps, 
+                              final DatabaseConnectionProperties destDbProps)
     {
         
         if(!(isCustomConvert) && (dbNamesToConvert.size() > 0 && currentIndex < dbNamesToConvert.size()))
@@ -187,7 +230,8 @@ public class SpecifyDBConverter
                     {
                         String currentDBName = dbNamesToConvert.get(currentIndex++);
                         frame.setTitle("Converting "+currentDBName+"...");
-                        convertDB(old2NewDBNames.get(currentDBName), currentDBName.toLowerCase(), isCustomConvert);
+                        convertDB(old2NewDBNames.get(currentDBName), 
+                                  currentDBName.toLowerCase());
                         
                     } catch (Exception ex)
                     {
@@ -200,7 +244,7 @@ public class SpecifyDBConverter
                 @Override
                 public void finished()
                 {
-                    processDB(isCustomConvert);
+                    processDB(isCustomConvert, sourceDbProps, destDbProps);
                 }
             };
             worker.start();
@@ -214,9 +258,13 @@ public class SpecifyDBConverter
                 {
                     try
                     {
-                        String currentDBName = dbNamesToConvert.get(currentIndex++);
-                        frame.setTitle("Converting "+currentDBName+"...");
-                        convertDB(old2NewDBNames.get(currentDBName), currentDBName.toLowerCase(), isCustomConvert);
+                        //String currentDBName = dbNamesToConvert.get(currentIndex++);
+                        frame.setTitle("Converting "+dbNamesToConvert.get(0)+"...");
+                        convertDB(  dbNamesToConvert.get(0), 
+                                    dbNamesToConvert.get(1), 
+                                    isCustomConvert,
+                                    sourceDbProps,
+                                    destDbProps);
                         
                     } catch (Exception ex)
                     {
@@ -229,80 +277,163 @@ public class SpecifyDBConverter
                 @Override
                 public void finished()
                 {
-                    processDB(isCustomConvert);
+                    //processDB(isCustomConvert, sourceDbProps, destDbProps);
                 }
             };
             worker.start();        
         }
     }
+    
+    protected void convertDB(final String sourceDatabaseName, final String destDatabaseName)throws Exception
+    {
+        convertDB(sourceDatabaseName, destDatabaseName, false, null,  null);
+    }
 
     /**
      * Convert old Database to New 
-     * @param oldDatabaseName name of an old database
-     * @param databaseName name of new DB
+     * @param databaseNameSource name of an old database
+     * @param databaseNameDest name of new DB
      * @throws Exception xx
      */
-    protected  void convertDB(final String oldDatabaseName, final String databaseName, final boolean isCustomConvert) throws Exception
+    protected  void convertDB(final String databaseNameSource, 
+                              final String databaseNameDest, 
+                              final boolean isCustomConvert,
+                              final DatabaseConnectionProperties sourceDbProps,
+                              final DatabaseConnectionProperties destDbProps) throws Exception
     {
         boolean doAll            = true; 
         boolean startfromScratch = true; 
-
-        System.out.println("************************************************************");
-        System.out.println("From "+oldDatabaseName+" to "+databaseName);
-        System.out.println("************************************************************");
-
-        HibernateUtil.shutdown();
         
-        Properties initPrefs = BuildSampleDatabase.getInitializePrefs(databaseName);
-        
-        String userName     = initPrefs.getProperty("initializer.username", "rods");
-        String password     = initPrefs.getProperty("initializer.password", "rods");
-        String driverName   = initPrefs.getProperty("initializer.driver",   "MySQL");
-        String databaseHost = initPrefs.getProperty("initializer.host",     "localhost");
+        System.out.println("************************************************************");
+        System.out.println("From "+databaseNameSource+" to "+databaseNameDest);
+        System.out.println("************************************************************");
 
-        DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver(driverName);
-        if (driverInfo == null)
+        HibernateUtil.shutdown();    
+        
+        Properties initPrefs = BuildSampleDatabase.getInitializePrefs(databaseNameDest);
+        
+        String userNameSource    ="";
+        String passwordSource     = "";
+        String driverNameSource   = "";
+        String databaseHostSource = "";
+        DatabaseDriverInfo driverInfoSource = null;
+        
+        String userNameDest    ="";
+        String passwordDest     = "";
+        String driverNameDest   = "";
+        String databaseHostDest = "";
+        DatabaseDriverInfo driverInfoDest = null;
+        
+        if(isCustomConvert)
         {
-            throw new RuntimeException("Couldn't find driver by name ["+driverInfo+"] in driver list.");
+            log.debug("Running a custom convert");
+            userNameSource      = sourceDbProps.getUserName();
+            passwordSource      = sourceDbProps.getPassword();
+            driverNameSource    = sourceDbProps.getDriverType();
+            databaseHostSource  = sourceDbProps.getHost();
+            
+            userNameDest        = destDbProps.getUserName();
+            passwordDest        = destDbProps.getPassword();
+            driverNameDest      = destDbProps.getDriverType();
+            databaseHostDest    = destDbProps.getHost();
+        }
+        else
+        {
+            log.debug("Running an non-custom MySQL convert, using old default login creds");
+            userNameSource      = initPrefs.getProperty("initializer.username", "rods");
+            passwordSource      = initPrefs.getProperty("initializer.password", "rods");
+            driverNameSource    = initPrefs.getProperty("initializer.driver",   "MySQL");
+            databaseHostSource  = initPrefs.getProperty("initializer.host",     "localhost"); 
+            
+            userNameDest        = initPrefs.getProperty("initializer.username", "rods");
+            passwordDest        = initPrefs.getProperty("initializer.password", "rods");
+            driverNameDest      = initPrefs.getProperty("initializer.driver",   "MySQL");
+            databaseHostDest    = initPrefs.getProperty("initializer.host",     "localhost");  
         }
         
+        log.debug("Custom Convert Source Properties ----------------------");
+        log.debug("databaseNameSource: " + databaseNameSource);        
+        log.debug("userNameSource: " + userNameSource);
+        log.debug("passwordSource: " + passwordSource);
+        log.debug("driverNameSource: " + driverNameSource);
+        log.debug("databaseHostSource: " + databaseHostSource);
+        
+        log.debug("Custom Convert Destination Properties ----------------------");
+        log.debug("databaseNameDest: " + databaseNameDest);
+        log.debug("userNameDest: " + userNameDest);
+        log.debug("passwordDest: " + passwordDest);
+        log.debug("driverNameDest: " + driverNameDest);
+        log.debug("databaseHostDest: " + databaseHostDest);
+
+        driverInfoSource = DatabaseDriverInfo.getDriver(driverNameSource);
+        driverInfoDest = DatabaseDriverInfo.getDriver(driverNameDest);
+        
+        if (driverInfoSource == null)
+        {
+            throw new RuntimeException("Couldn't find Source DB driver by name ["+driverInfoSource+"] in driver list.");
+        }
+        if(driverInfoDest == null)
+        {
+            throw new RuntimeException("Couldn't find Destination driver by name ["+driverInfoDest+"] in driver list.");
+        }
+        
+        if(driverNameDest.equals("MySQL"))BasicSQLUtils.myDestinationServerType = BasicSQLUtils.SERVERTYPE.MySQL;
+        else if(driverNameDest.equals("Derby"))BasicSQLUtils.myDestinationServerType = BasicSQLUtils.SERVERTYPE.Derby;
+        else if(driverNameDest.equals("SQLServer"))BasicSQLUtils.myDestinationServerType = BasicSQLUtils.SERVERTYPE.MS_SQLServer;
+        
+        if(driverNameSource.equals("MySQL"))BasicSQLUtils.mySourceServerType = BasicSQLUtils.SERVERTYPE.MySQL;
+        else if(driverNameSource.equals("Derby"))BasicSQLUtils.mySourceServerType = BasicSQLUtils.SERVERTYPE.Derby;
+        else if(driverNameSource.equals("SQLServer"))BasicSQLUtils.mySourceServerType = BasicSQLUtils.SERVERTYPE.MS_SQLServer;
+        
+        else 
+        {
+            log.error("Error setting ServerType for destination database for conversion.  Could affect the"
+                    + " way that SQL string are generated and executed on differetn DB egnines");
+        }
+        String destConnectionString = driverInfoDest.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, databaseHostDest, "", userNameDest, passwordDest, driverNameDest);
+        log.debug("attempting login to destination: " + destConnectionString);
         // This will log us in and return true/false
         // This will connect without specifying a DB, which allows us to create the DB
-        if (!UIHelper.tryLogin(driverInfo.getDriverClassName(), 
-                driverInfo.getDialectClassName(), 
-                databaseName, 
-                driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, databaseHost, databaseName), 
-                userName, 
-                password))
+        if (!UIHelper.tryLogin(driverInfoDest.getDriverClassName(), 
+                driverInfoDest.getDialectClassName(), 
+                databaseNameDest, 
+                destConnectionString,
+                userNameDest, 
+                passwordDest))
         {
-            throw new RuntimeException("Couldn't login into ["+databaseName+"] "+DBConnection.getInstance().getErrorMsg());
+            log.error("Failed connection string: "  +driverInfoSource.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, databaseHostDest, databaseNameDest, userNameDest, passwordDest, driverNameDest) );
+            throw new RuntimeException("Couldn't login into ["+databaseNameDest+"] "+DBConnection.getInstance().getErrorMsg());
         }
         
-        DataBuilder.setSession(HibernateUtil.getNewSession());
+        //MEG WHY IS THIS COMMENTED OUT???
+        //DataBuilder.setSession(HibernateUtil.getNewSession());
         
-        System.out.println("Preparing new database");
+        log.debug("Preparing new database");
         
         if (startfromScratch)
         {
-            SpecifySchemaGenerator.generateSchema(driverInfo, databaseHost, databaseName, userName, password);
+            log.debug("Starting from scratch and generating the schema");
+            SpecifySchemaGenerator.generateSchema(driverInfoDest, databaseHostDest, databaseNameDest, userNameDest, passwordDest);
         }
         
-        System.out.println("Preparing new database: completed");
-        
-        String hostName = "localhost";
+        log.debug("Preparing new database: completed");
+
+        log.debug("DESTINATION driver class: " + driverInfoDest.getDriverClassName());
+        log.debug("DESTINATION dialect class: " + driverInfoDest.getDialectClassName());               
+        log.debug("DESTINATION Connection String: " + driverInfoDest.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, databaseHostDest, databaseNameDest, userNameDest, passwordDest, driverNameDest)); 
         
         // This will log us in and return true/false
-        if (!UIHelper.tryLogin("com.mysql.jdbc.Driver", 
-                "org.hibernate.dialect.MySQLDialect", 
-                databaseName, 
-                "jdbc:mysql://"+hostName+"/"+databaseName, 
-                "rods", 
-                "rods"))
+        if (!UIHelper.tryLogin(driverInfoDest.getDriverClassName(), 
+                driverInfoDest.getDialectClassName(), 
+                databaseNameDest, 
+                driverInfoDest.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, databaseHostDest, databaseNameDest, userNameDest, passwordDest, driverNameDest),                 
+                userNameDest, 
+                passwordDest))
         {
-            throw new RuntimeException("Couldn't login into ["+databaseName+"] "+DBConnection.getInstance().getErrorMsg());
+            throw new RuntimeException("Couldn't login into ["+databaseNameDest+"] "+DBConnection.getInstance().getErrorMsg());
         }
-
-        HibernateUtil.getCurrentSession();
+        DataBuilder.setSession(HibernateUtil.getNewSession());
+        HibernateUtil.getCurrentSession(); 
         IdMapperMgr idMapperMgr = null;
         try
         {
@@ -320,11 +451,16 @@ public class SpecifyDBConverter
             boolean doConvert = true;
             if (doConvert)
             {
-                GenericDBConversion conversion = new GenericDBConversion("com.mysql.jdbc.Driver",
-                                                                         oldDatabaseName,
-                                                                         "jdbc:mysql://localhost/"+oldDatabaseName,
-                                                                         "rods",
-                                                                         "rods");
+                log.debug("SOURCE driver class: " + driverInfoSource.getDriverClassName());
+                log.debug("SOURCE dialect class: " + driverInfoSource.getDialectClassName());       
+                log.debug("SOURCE Connection String: " + driverInfoSource.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, databaseHostSource, databaseNameSource, userNameSource, passwordSource, driverNameSource)); 
+          
+                GenericDBConversion conversion = new GenericDBConversion(driverInfoSource.getDriverClassName(),
+                                                                         databaseNameSource,
+                                                                        // "jdbc:mysql://"+databaseHostSource+ "/"+databaseNameSource,
+                                                                         driverInfoSource.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, databaseHostSource, databaseNameSource, userNameSource, passwordSource, driverNameSource),                                                                                          
+                                                                         userNameSource,
+                                                                         passwordSource);
 
                 conversion.setFrame(frame);
                 
@@ -352,6 +488,7 @@ public class SpecifyDBConverter
                 boolean copyAgentAddressTables = false;
                 if (copyAgentAddressTables || doAll)
                 {
+                    log.info("Calling - convertAgents");
                     conversion.convertAgents();
 
                 } else
@@ -390,7 +527,7 @@ public class SpecifyDBConverter
                                                                                 "TypeStatusNameID",  "ObservationMethodID",  "StatusID",
                                                                                 "TypeID",  "ShipmentMethodID", "RankID", "DirectParentRankID",
                                                                                 "RequiredParentRankID", "MediumID"});
-                    conversion.mapIds();
+                    conversion.mapIds();//MEG LOOK HERE
                     BasicSQLUtils.setFieldsToIgnoreWhenMappingIDs(null);
                 }
 
@@ -413,8 +550,8 @@ public class SpecifyDBConverter
                     String           email            = initPrefs.getProperty("useragent.email", "rods@ku.edu");
                     String           userType         = initPrefs.getProperty("useragent.usertype", "CollectionManager");   
                     
-                    BasicSQLUtils.deleteAllRecordsFromTable(newConn, "usergroup");
-                    BasicSQLUtils.deleteAllRecordsFromTable(newConn, "specifyuser");
+                    BasicSQLUtils.deleteAllRecordsFromTable(newConn, "usergroup", BasicSQLUtils.myDestinationServerType);
+                    BasicSQLUtils.deleteAllRecordsFromTable(newConn, "specifyuser", BasicSQLUtils.myDestinationServerType);
                     UserGroup userGroup = DataBuilder.createUserGroup("admin2");
                     
                     Criteria criteria = DataBuilder.getSession().createCriteria(Agent.class);
@@ -453,6 +590,7 @@ public class SpecifyDBConverter
                 {
                     conversion.convertUSYSTables();
                 }
+                conversion.convertDivision();
                 frame.incOverall();
 
                 frame.setDesc("Converting Determinations Records");
@@ -470,8 +608,8 @@ public class SpecifyDBConverter
                 }
                 frame.incOverall();
                 
-                frame.setDesc("Converting doLoanPhysicalObjects Records");
-                log.info("Converting doLoanPhysicalObjects Records");
+                frame.setDesc("Converting LoanPhysicalObjects Records");
+                log.info("Converting LoanPhysicalObjects Records");
                 boolean doLoanPhysicalObjects = false;
                 if (doLoanPhysicalObjects || doAll)
                 {
@@ -530,7 +668,7 @@ public class SpecifyDBConverter
                 frame.setDesc("Converting Geography");
                 log.info("Converting Geography");
                 boolean doGeography = false;
-                if (!databaseName.startsWith("accessions") && (doGeography || doAll))
+                if (!databaseNameDest.startsWith("accessions") && (doGeography || doAll))
                 {
                     GeographyTreeDef treeDef = conversion.createStandardGeographyDefinitionAndItems();
                     conversion.convertGeography(treeDef);
@@ -624,10 +762,10 @@ public class SpecifyDBConverter
                 if (doFurtherTesting)
                 {
 
-                    BasicSQLUtils.deleteAllRecordsFromTable("datatype");
-                    BasicSQLUtils.deleteAllRecordsFromTable("specifyuser");
-                    BasicSQLUtils.deleteAllRecordsFromTable("usergroup");
-                    BasicSQLUtils.deleteAllRecordsFromTable("collectiontype");
+                    BasicSQLUtils.deleteAllRecordsFromTable("datatype", BasicSQLUtils.myDestinationServerType);
+                    BasicSQLUtils.deleteAllRecordsFromTable("specifyuser", BasicSQLUtils.myDestinationServerType);
+                    BasicSQLUtils.deleteAllRecordsFromTable("usergroup", BasicSQLUtils.myDestinationServerType);
+                    BasicSQLUtils.deleteAllRecordsFromTable("collectiontype", BasicSQLUtils.myDestinationServerType);
 
                     DataType          dataType  = createDataType("Animal");
                     UserGroup         userGroup = createUserGroup("Fish");
@@ -642,7 +780,7 @@ public class SpecifyDBConverter
                     boolean doAddTissues = false;
                     if (doAddTissues)
                     {
-                        deleteAllRecordsFromTable("collection");
+                        deleteAllRecordsFromTable("collection", BasicSQLUtils.myDestinationServerType);
                         try
                         {
                             Session session = HibernateUtil.getCurrentSession();
@@ -706,9 +844,9 @@ public class SpecifyDBConverter
             {
                 idMapperMgr.cleanup();
             }
-            log.info("Done - " + databaseName);
-            frame.setDesc("Done - " + databaseName);
-            frame.setTitle("Done - " + databaseName);
+            log.info("Done - " + databaseNameDest);
+            frame.setDesc("Done - " + databaseNameDest);
+            frame.setTitle("Done - " + databaseNameDest);
             frame.incOverall();
             frame.processDone();
             
@@ -951,7 +1089,7 @@ public class SpecifyDBConverter
         return dlg.getSelectedObjects();
     }
     
-    public CustomDBConverterPanel runCustomConverter()
+    public CustomDBConverterDlg runCustomConverter()
     {       
         return UIHelper.doSpecifyConvert();
     }

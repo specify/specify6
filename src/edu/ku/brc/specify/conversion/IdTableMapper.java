@@ -62,9 +62,11 @@ public class IdTableMapper extends IdHashMapper
      * @throws SQLException any
      */
     public IdTableMapper(final String tableName, final String idName, final String sql) throws SQLException
-    {
+    {                                                                                                 
         this(tableName, idName);
         this.sql = sql;
+        log.debug("IdTableMapper created for table[" + tableName +"] idName[" + idName + "] ");
+        log.debug("IdTableMapper using sql: " + sql );
     }
 
     /**
@@ -73,17 +75,20 @@ public class IdTableMapper extends IdHashMapper
      */
     public void mapAllIds(final String sqlArg)
     {
+        log.debug("mapAllIds with sql: " + sqlArg) ;
         this.sql = sqlArg;
 
-        BasicSQLUtils.deleteAllRecordsFromTable(mapTableName);
+        BasicSQLUtils.deleteAllRecordsFromTable(mapTableName, BasicSQLUtils.myDestinationServerType);
         if (frame != null)
         {
             frame.setDesc("Mapping "+mapTableName);
+            log.debug("Mapping "+mapTableName);
         }
         
         try
         {
-            Statement stmtOld = oldConn.createStatement();
+            log.debug("Executing: "+sql);
+            Statement stmtOld = oldConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
             ResultSet rs      = stmtOld.executeQuery(sql);
             
             if (rs.last())
@@ -100,6 +105,7 @@ public class IdTableMapper extends IdHashMapper
                 do
                 {
                     int oldIndex = rs.getInt(1);
+                    //log.debug("map "+mapTableName+" old[" + oldIndex + "] new [" + newIndex +"]");
                     put(oldIndex, newIndex++);
                     
                     if (frame != null)

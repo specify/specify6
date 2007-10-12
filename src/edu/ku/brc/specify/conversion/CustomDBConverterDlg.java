@@ -58,7 +58,7 @@ public class CustomDBConverterDlg extends JDialog implements CustomDBConverterLi
 
         setTitle(getResourceString("logintitle"));
 
-        dbConverterPanel = new CustomDBConverterPanel(this, true);
+        dbConverterPanel = new CustomDBConverterPanel(this, this, true);
         setContentPane(dbConverterPanel);
 
         setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));

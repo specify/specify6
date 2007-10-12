@@ -99,29 +99,43 @@ public class IdHashMapper implements IdMapperIFace
             if (GenericDBConversion.shouldCreateMapTables())
             {
                 Statement stmtNew = newConn.createStatement();
-                String str  = "DROP TABLE `"+mapTableName+"`";
+                //String str  = "DROP TABLE `"+mapTableName+"`";
+                String str  = "DROP TABLE "+mapTableName  ;
                 try
                 {
+                    log.info(str);
                     stmtNew.executeUpdate(str);
-                } catch (SQLException ex){};
+                } catch (SQLException ex){
+                   //log.info("table does not exist, cannot drop: " + mapTableName); 
+                    log.warn(ex);
+                    ///ex.printStackTrace();
+                };
 
                 str = "CREATE TABLE `"+mapTableName+"` ("+
                                     "`OldID` int(11) NOT NULL default '0', "+
                                     "`NewID` int(11) NOT NULL default '0', "+
                                     " PRIMARY KEY (`OldID`) ) ENGINE=InnoDB DEFAULT CHARSET=latin1";
-                //log.info(str);
+                log.info("orig sql: " + str);
+                str = BasicSQLUtils.getServerTypeSpecificSQL(str, BasicSQLUtils.myDestinationServerType);
+                log.info("sql standard query: " + str);
                 stmtNew.executeUpdate(str);
-
-                stmtNew.executeUpdate("alter table "+mapTableName+" add index INX_"+mapTableName+" (NewID)");
-
+                
+                
+                String str2 = "alter table "+mapTableName+" add index INX_"+mapTableName+" (NewID)";
+                log.info("orig sql: " + str2);
+                str2 =  BasicSQLUtils.createIndexFieldStatment(mapTableName, BasicSQLUtils.myDestinationServerType) ;
+                log.info("sql standard query: " + str2);
+                stmtNew.executeUpdate(str2);
+                
                 stmtNew.clearBatch();
                 stmtNew.close();
             }
 
         } catch (SQLException ex)
         {
-            ex.printStackTrace();
+            //
             log.error(ex);
+            ex.printStackTrace();
         }
 
     }
@@ -139,7 +153,7 @@ public class IdHashMapper implements IdMapperIFace
             
         }
 
-        BasicSQLUtils.deleteAllRecordsFromTable(mapTableName);
+        BasicSQLUtils.deleteAllRecordsFromTable(mapTableName, BasicSQLUtils.myDestinationServerType);
         
         
         if (frame != null)
@@ -153,7 +167,7 @@ public class IdHashMapper implements IdMapperIFace
             {
                frame.setProcess(0, 0); 
             }
-            Statement stmtOld = oldConn.createStatement();
+            Statement stmtOld = oldConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
             ResultSet rs      = stmtOld.executeQuery(sql);
             if (rs.last())
             {
@@ -205,8 +219,10 @@ public class IdHashMapper implements IdMapperIFace
 
         } catch (SQLException ex)
         {
-            ex.printStackTrace();
+            log.error("trying to execute:" + sql);
             log.error(ex);
+            ex.printStackTrace();
+            
             throw new RuntimeException(ex);
         }
         
@@ -244,7 +260,7 @@ public class IdHashMapper implements IdMapperIFace
     	{
 	        try
 	        {
-	            Statement stmtNew = newConn.createStatement();
+	            Statement stmtNew = newConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
 	            stmtNew.executeUpdate("DROP TABLE `"+mapTableName+"`");
 	            stmtNew.close();
 	            
@@ -305,7 +321,7 @@ public class IdHashMapper implements IdMapperIFace
         try
         {
             Integer   newId = null;
-            Statement stmtNew = newConn.createStatement();
+            Statement stmtNew = newConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
             ResultSet rs      = stmtNew.executeQuery("select NewID from "+mapTableName+" where OldID = " + oldId);
             if (rs.first())
             {

@@ -15,7 +15,9 @@
 
 package edu.ku.brc.specify.conversion;
 
+import java.io.BufferedReader;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -27,13 +29,18 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import net.sourceforge.jtds.jdbc.ClobImpl;
+
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+
+import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.ui.ProgressFrame;
@@ -50,6 +57,10 @@ import edu.ku.brc.ui.UIHelper;
 public class BasicSQLUtils
 {
     protected static final Logger           log               = Logger.getLogger(BasicSQLUtils.class);
+    
+    public static enum SERVERTYPE {MySQL, Derby, MS_SQLServer};
+    public static SERVERTYPE myDestinationServerType = SERVERTYPE.MySQL;
+    public static SERVERTYPE mySourceServerType = SERVERTYPE.MySQL;
     
     // These are the configuration Options for a View
     public static final int HIDE_ALL_ERRORS         = 0;  // Hhow no errors (Silent)
@@ -74,6 +85,8 @@ public class BasicSQLUtils
     protected static Connection dbConn = null;  // (it may be shared so don't close)
     
     protected static ProgressFrame   frame = null;
+    
+    protected static boolean ignoreMySQLduplicates = true;
 
     /**
      * Singleton
@@ -198,6 +211,47 @@ public class BasicSQLUtils
         ignoreMappingFieldIDs = configureIgnoreMap(fieldNames, ignoreMappingFieldIDs);
     }
 
+//    /**
+//     * Executes an SQL Update command
+//     * @param stmt Statement object to execute the SQL
+//     * @param cmdStr the SQL string to execute
+//     * @return the return code from the executeUpdate call
+//     */
+//    public static int exeUpdateCmd(Connection conn, String cmdStr)
+//    {
+//        try
+//        {   log.debug("---- exeUpdateCmd (PS)" + cmdStr);
+//            PreparedStatement pstmt = conn.prepareStatement(cmdStr);
+//            
+//            return pstmt.executeUpdate();
+//
+//        } 
+////        catch (java.sql.SQLException ex)
+////        {
+////            //e.printStackTrace();
+////            ex.getMessage()
+////            log.error(ex.getStackTrace().toString());
+////            log.error(cmdStr+"\n");
+////            ex.printStackTrace();
+////            throw new RuntimeException(ex);      
+////        }
+//        catch (Exception ex)
+//        {
+//            //TODO: Problem encountered with the CUPaleo database when converting the AccessionAgent 
+//            //We (Rod?) need to go in an create a hashtable that
+//            if(ex instanceof MySQLIntegrityConstraintViolationException)
+//            {
+//                log.error("ignoring a record because it makes a MySQLIntegrityConstraintViolation: " + ex.getStackTrace().toString() );
+//                return 0;
+//            }
+//            log.error(ex.getStackTrace().toString());
+//            log.error(cmdStr+"\n");
+//            ex.printStackTrace();
+//            throw new RuntimeException(ex);
+//        }
+//        //return -1;
+//    }
+    
     /**
      * Executes an SQL Update command
      * @param stmt Statement object to execute the SQL
@@ -206,28 +260,87 @@ public class BasicSQLUtils
      */
     public static int exeUpdateCmd(Statement stmt, String cmdStr)
     {
+
         try
         {
-            //log.info(cmdStr);
+            //log.debug("---- exeUpdateCmd" + cmdStr);
+            stmt.setEscapeProcessing(true);
             return stmt.executeUpdate(cmdStr);
-
-        } catch (Exception ex)
+        } 
+        catch (Exception ex)
         {
-            //e.printStackTrace();
-            log.error(ex.getStackTrace().toString());
-            log.error(cmdStr+"\n");
-            ex.printStackTrace();
-            throw new RuntimeException(ex);
+            //TODO: Problem encountered with the CUPaleo database when converting the AccessionAgent 
+            //We (Rod?) need to go in an create a hashtable that
+            if((ex instanceof MySQLIntegrityConstraintViolationException)&&(cmdStr.contains("INSERT INTO accessionagent")))
+            {
+                log.error("ignoring a record because it makes a MySQLIntegrityConstraintViolation: " + ex.getStackTrace().toString() );
+                log.error(cmdStr+"\n");
+                ex.printStackTrace();
+                return 0;
+            }
+            else if(cmdStr.contains("INSERT INTO accessionagent"))
+            {
+                log.error("ignoring a record because it makes a uncatchable SQL Exception: " + ex.getStackTrace().toString() );
+                log.error(cmdStr+"\n");
+                ex.printStackTrace();
+                return 0;  
+            }
+            else 
+            {
+                //e.printStackTrace();
+                log.error(ex.getStackTrace().toString());
+                log.error(cmdStr+"\n");
+                ex.printStackTrace();
+                //ex.getStackTrace().
+                throw new RuntimeException(ex);  
+            }
         }
         //return -1;
     }
+    
+    /**
+     * Executes an SQL Update command
+     * @param stmt Statement object to execute the SQL
+     * @param cmdStr the SQL string to execute
+     * @return the return code from the executeUpdate call
+     */
+//    public static int exeUpdateCmd(Statement stmt, String cmdStr)
+//    {
+//        log.debug("exeUpdateCmd" + cmdStr);
+//        if (cmdStr.equals("SET FOREIGN_KEY_CHECKS = 0")
+//                && (myDestinationServerType != myDestinationServerType.MS_SQLServer))
+//        {
+//            try
+//            {
+//                // log.info(cmdStr);
+//                return stmt.executeUpdate(cmdStr);
+//
+//            } catch (Exception ex)
+//            {
+//                // e.printStackTrace();
+//                log.error(ex.getStackTrace().toString());
+//                log.error(cmdStr + "\n");
+//                ex.printStackTrace();
+//                throw new RuntimeException(ex);
+//            }
+//        } else try
+//        {
+//            return removeForeignKeyConstraints(stmt.getConnection());
+//        } catch (SQLException e)
+//        {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+//        return -1;
+//    }
 
     /**
      * Deletes all the records from a table
      * @param tableName the name of the table
      * @return the return value from the SQL update statment (or -1 on an exception)
      */
-    public static int deleteAllRecordsFromTable(final String tableName)
+    public static int deleteAllRecordsFromTable(final String tableName,
+                                                SERVERTYPE currentServerType)
     {
         int count = 0;
 
@@ -235,7 +348,7 @@ public class BasicSQLUtils
         {
             Connection connection = dbConn != null ? dbConn : DBConnection.getInstance().createConnection();
 
-            count = deleteAllRecordsFromTable(connection, tableName);
+            count = deleteAllRecordsFromTable(connection, tableName,currentServerType);
 
             if (dbConn == null)
             {
@@ -256,22 +369,29 @@ public class BasicSQLUtils
      * @param tableName the name of the table
      * @return the return value from the SQL update statment (or -1 on an exception)
      */
-    public static int deleteAllRecordsFromTable(final Connection connection, final String tableName)
+    public static int deleteAllRecordsFromTable(final Connection connection, final String tableName,
+                                                SERVERTYPE currentServerType)
     {
         try
         {
             int count = 0;
-            Statement cntStmt = connection.createStatement();
+            //REQUIRED for SQL SERVER to use rs.first();
+            //ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY
+            Statement cntStmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
             ResultSet rs      = cntStmt.executeQuery("select count(*) from "+tableName);
-            if (rs.first())
+            if (rs.first())//MEG CHANGED b/c first not supported by sql server driver
             {
                 count = rs.getInt(1);
             }
             rs.close();
             cntStmt.close();
 
-            Statement stmt = connection.createStatement();
-            exeUpdateCmd(stmt, "SET FOREIGN_KEY_CHECKS = 0");
+            Statement stmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+            //exeUpdateCmd(stmt, "SET FOREIGN_KEY_CHECKS = 0");
+            if (currentServerType != SERVERTYPE.MS_SQLServer)
+            {
+                removeForeignKeyConstraints(stmt.getConnection(), currentServerType);
+            }
             int retVal = exeUpdateCmd(stmt, "delete from "+tableName);
             stmt.clearBatch();
             stmt.close();
@@ -292,13 +412,13 @@ public class BasicSQLUtils
     /**
      * Removes all the records from all the tables from the current DBConnection
      */
-    public static void cleanAllTables()
+    public static void cleanAllTables(SERVERTYPE currentServerType)
     {
         try
         {
             Connection connection = dbConn != null ? dbConn : DBConnection.getInstance().createConnection();
 
-            cleanAllTables(connection);
+            cleanAllTables(connection, currentServerType);
 
             if (dbConn == null)
             {
@@ -311,22 +431,55 @@ public class BasicSQLUtils
             log.error(ex);
         }
     }
+    
+    public static String getDatabaseName(final Connection connection)
+    {
+       // List<String> names = new Vector<String>();
+        String databaseName = null;
+        try
+        {
+            Statement  stmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+            
+            //ResultSet rs1 = stmt.executeQuery("select name from sysfiles");
+            
+            //if (rs1.first())
+            //{
+                databaseName = connection.getCatalog();
+                //log.debug("GETTING db NAME: " + databaseName);
+                return  databaseName;
+            //}
+
+        } catch (SQLException ex)
+        {
+            log.error(ex);
+            ex.printStackTrace();
+        }
+        return  databaseName;
+    }
 
     /**
      * Removes all the records from all the tables
      */
-    public static List<String> getTableNames(final Connection connection)
+    public static List<String> getTableNames(final Connection connection,
+            SERVERTYPE currentServerType)
     {
+        //log.debug("getTableNames");// on database: " + connection.getCatalog());
         List<String> names = new Vector<String>();
         try
         {
-            Statement  stmt = connection.createStatement();
-
-            ResultSet rs = stmt.executeQuery("show tables");
+            //log.debug("getTableNames on database: " + connection.getCatalog());
+            Statement  stmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+            
+            
+            String str = generateShowTablesCommand(getDatabaseName(connection), currentServerType) ;
+            //log.debug("Executing show tables command: " + str);
+            ResultSet rs = stmt.executeQuery(str);
+            //log.debug("Number of table found: " + rs.getS);
             if (rs.first())
             {
                 do
                 {
+                    //log.debug("---------------------------------------------------TABLE: "+ rs.getString(1));
                     names.add(rs.getString(1));
                 } while (rs.next());
             }
@@ -346,11 +499,12 @@ public class BasicSQLUtils
     /**
      * Removes all the records from all the tables
      */
-    public static void cleanAllTables(final Connection connection)
+    public static void cleanAllTables(final Connection connection,
+                                      SERVERTYPE currentServerType)
     {
         try
         {
-            Statement  stmt = connection.createStatement();
+            Statement  stmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
 
             ResultSet rs = stmt.executeQuery("show tables");
             if (rs.first())
@@ -359,7 +513,7 @@ public class BasicSQLUtils
                 {
                     String tableName = rs.getString(1);
                     //System.out.println("Deleting Records from "+tableName);
-                    deleteAllRecordsFromTable(connection, tableName);
+                    deleteAllRecordsFromTable(connection, tableName,currentServerType);
                 } while (rs.next());
             }
             rs.close();
@@ -386,7 +540,77 @@ public class BasicSQLUtils
 
 
     /**
-     * Returns a valid String value for an Object, meaning it will put quotes around Strings and ate etc.
+     * Returns a valid String value for an Boolean, meaning convert true to 1 and false to 0
+     * @param Boolean value to convert
+     * @return the string representation
+     */
+    public static String getStrValue(Boolean val)
+    {
+        return Integer.toString(val == false? 0 : 1);
+        //return getStrValue(obj, null);
+    }
+    
+    // MEG NEEDS TO FIX THIS!!!!!!! IT IS NOT CORRECT, BUT I WANTED TO MOVE ON
+    public static String escapeStringLiterals(String s)
+    {
+//        if(s.indexOf("\r\n")>= 0)
+//                {
+//            log.error("slash r slash n: newline encountered");
+//                }
+//
+//        for(int i = 0; i < s.length(); i++)
+//        {
+//            char c = s.charAt(i);
+//            //Character c1 = (Character)c;
+//            if(Character.isWhitespace(c))
+//            {
+//                log.error("Character is whitespace");
+//            }
+//            
+//            log.error("Char: " + c );
+//            log.error("Unicode: " + Character.getNumericValue(c));
+//        }
+//        if(s.indexOf("\r")>= 0)
+//        {
+//            log.error("return encountered");
+//        }
+//                
+       // log.debug("escaping string literal:" + s);
+        if (s.indexOf("\\") >= 0)
+        {
+
+            // s = s.replaceAll("\\","\\\\\\");
+            // s = s.replaceAll("\\", "\\\\");
+            if (myDestinationServerType != SERVERTYPE.MS_SQLServer)
+            {
+                s = s.replaceAll("\\\\", "\\\\\\\\");
+                //log.debug("escaping !M$ backslash:" + s);
+            }
+            // s = StringEscapeUtils.escapeJava(s);
+           // log.debug("backslash:" + s);
+        }
+        if (s.indexOf("\"") >= 0)
+        {
+            s = s.replaceAll("\"", "\\\"\"");
+            // s = s.replaceAll("\"","\\\"");
+            //log.debug("escaped double quotes:" + s);
+        }
+        if ((s.indexOf("\'") >= 0))
+        {
+            if (myDestinationServerType == SERVERTYPE.MS_SQLServer)
+            {
+                s = s.replaceAll("\'", "\'\'");
+            }
+            // s = s.replaceAll("\'","\\\'\'");
+            // s = s.replaceAll("\'","\\\'");
+            // log.debug("single quotes:" + s);
+        }
+        return s;
+    }
+
+    /**
+     * Returns a valid String value for an Object, meaning it will put quotes around Strings and ate
+     * etc.
      * @param obj the object to convert
      * @return the string representation
      */
@@ -396,14 +620,46 @@ public class BasicSQLUtils
         {
             return "NULL";
 
-        } else if (obj instanceof String)
+        } 
+        else if(obj instanceof net.sourceforge.jtds.jdbc.ClobImpl )
+        {
+            //log.debug("instance of Clob");
+            String str = "";
+            ClobImpl clob = (ClobImpl)obj;
+            //log.debug("tyring to get clob");
+            try
+            {
+                str =  clob.getSubString(1, (int) clob.length());
+                str = escapeStringLiterals(str);
+                return '"'+str+'"';
+            } catch (SQLException e)
+            {
+                log.error("error occurred trying to get string from clob for SQL Server driver");
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                System.exit(0);
+            }
+            //return getStrValue(obj, null);    
+            return obj.toString();
+        }
+        else if (obj instanceof String)
         {
             String str = (String)obj;
-            if (str.indexOf('"') > -1 || str.indexOf('\\') > -1)
+            if (str.indexOf('"') > -1 || str.indexOf('\\') > -1 || str.indexOf('\'') > -1)
             {
-                str = StringEscapeUtils.escapeJava(str);
+                str = escapeStringLiterals(str);
             }
             return '"'+str+'"';
+//            String str = (String)obj;
+//            if (str.indexOf('"') > -1 || str.indexOf('\\') > -1)
+//            {
+//                log.debug("ran into char worth escaping" + str);
+//                str = StringEscapeUtils.escapeSql(str);
+//                log.debug("ran into char worth escaping (escaped for SQL)" + str);
+//                //str = StringEscapeUtils.escapeJava(str);
+//                //log.debug("ran into char worth escaping (escaped for java)" + str);
+//            }
+//            return '"'+str+'"';
 
         } else if (obj instanceof Integer)
         {
@@ -415,6 +671,15 @@ public class BasicSQLUtils
                     return dateObj == null ? "NULL" : '"'+dateFormatter.format(dateObj) + '"';
 
                 }
+                //Meg dropped the (1) from the newFieldType check, field metadata didn't include the (1) values
+                else if (newFieldType.equalsIgnoreCase("bit") || newFieldType.equalsIgnoreCase("tinyint"))
+                //else if (newFieldType.equalsIgnoreCase("bit(1)") || newFieldType.equalsIgnoreCase("tinyint(1)"))
+                {
+                    int val = ((Integer)obj).intValue();
+                    return Integer.toString(val == 0? 0 : 1);
+                }
+                ////Meg dropped the (1) from the newFieldType check, field metadata didn't include the (1) values
+                //else if (newFieldType.equalsIgnoreCase("bit") || newFieldType.equalsIgnoreCase("tinyint"))
                 else if (newFieldType.equalsIgnoreCase("bit(1)") || newFieldType.equalsIgnoreCase("tinyint(1)"))
                 {
                     int val = ((Integer)obj).intValue();
@@ -441,9 +706,69 @@ public class BasicSQLUtils
             return '"'+((Character)obj).toString()+'"';
         } else
         {
+            //log.debug("not sure the type");
             return obj.toString();
         }
     }
+//    /**
+//     * Returns a valid String value for an Object, meaning it will put quotes around Strings and ate etc.
+//     * @param obj the object to convert
+//     * @return the string representation
+//     */
+//    public static String getStrValue2(final Object obj, final String newFieldType)
+//    {
+//        if (obj == null)
+//        {
+//            return "NULL";
+//
+//        } else if (obj instanceof String)
+//        {
+//            String str = (String)obj;
+//            if (str.indexOf('"') > -1 || str.indexOf('\\') > -1 || str.indexOf('\'') > -1 )
+//            {
+//                str = StringEscapeUtils.escapeJava(str);
+//            }
+//            return '\''+str+'\'';
+//
+//        } else if (obj instanceof Integer)
+//        {
+//            if (newFieldType != null)
+//            {
+//                if (newFieldType.indexOf("date") ==  0)
+//                {
+//                    Date dateObj = UIHelper.convertIntToDate((Integer)obj);                   
+//                    return dateObj == null ? "NULL" : '\''+dateFormatter.format(dateObj) + '\'';
+//
+//                }
+//                else if (newFieldType.equalsIgnoreCase("bit(1)") || newFieldType.equalsIgnoreCase("tinyint(1)"))
+//                {
+//                    int val = ((Integer)obj).intValue();
+//                    return Integer.toString(val == 0? 0 : 1);
+//                }
+//                return ((Integer)obj).toString();
+//            }
+//            return ((Integer)obj).toString();
+//
+//        } else if (obj instanceof Date)
+//        {
+//            return '\''+dateTimeFormatter.format((Date)obj) + '\'';
+//
+//        } else if (obj instanceof Float)
+//        {
+//            return ((Float)obj).toString();
+//
+//        } else if (obj instanceof Double)
+//        {
+//            return ((Double)obj).toString();
+//
+//        } else if (obj instanceof Character)
+//        {
+//            return '\''+((Character)obj).toString()+'\'';
+//        } else
+//        {
+//            return obj.toString();
+//        }
+//    }
 
    /**
      * Fills the list with all the names of the table
@@ -453,15 +778,25 @@ public class BasicSQLUtils
      */
     public static void getFieldNamesFromSchema(final Connection connection,
                                                final String tableName,
-                                               final List<String> list)
+                                               final List<String> list,
+                                               SERVERTYPE currentServerType)
     {
         try
         {
-            Statement stmt = connection.createStatement();
-            ResultSet rs   = stmt.executeQuery("describe "+tableName);
+            Statement stmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+            //String sldkfjl = connection.getMetaData().getDriverName();
+            //log.debug("DRIVERNAME: " + sldkfjl);
+            String dbName = getDatabaseName(connection) ;
+            String str = generateDescribeTableCommand( tableName, dbName, currentServerType) ;
+            //log.debug("Databasename:" + connection.getMetaData().getDriverName());
+            //log.debug("attempting to desribe statement:" + str);
+            ResultSet rs = stmt.executeQuery(str);
+            //ResultSet rs   = stmt.executeQuery("describe "+tableName);
             while (rs.next())
             {
-                list.add(rs.getString(1));
+                String s = rs.getString(1);
+                //log.debug(s);
+                list.add(s);
             }
             rs.close();
             stmt.close();
@@ -480,12 +815,23 @@ public class BasicSQLUtils
      */
     public static void getFieldMetaDataFromSchema(final Connection          connection,
                                                   final String              tableName,
-                                                  final List<FieldMetaData> fieldList)
+                                                  final List<FieldMetaData> fieldList,
+                                                  SERVERTYPE currentServerType)
     {
         try
         {
-            Statement stmt = connection.createStatement();
-            ResultSet rs   = stmt.executeQuery("describe "+tableName);
+            Statement stmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+            //need to address following statment for sQl server
+            
+            
+            String dbName = getDatabaseName(connection) ;
+            String str = generateDescribeTableCommand( tableName, dbName, currentServerType) ;
+            //log.debug("Databasename:" + connection.getMetaData().getDriverName());
+            log.debug("attempting to desribe statement:" + str);
+            ResultSet rs = stmt.executeQuery(str);
+            
+            
+            //ResultSet rs   = stmt.executeQuery("describe "+tableName);
             while (rs.next())
             {
                 fieldList.add(basicSQLUtils.new FieldMetaData(rs.getString(1), rs.getString(2)));
@@ -587,9 +933,11 @@ public class BasicSQLUtils
                                     final Connection toConn,
                                     final String     tableName,
                                     final Map<String, String> colNewToOldMap,
-                                    final Map<String, String> verbatimDateMapper)
+                                    final Map<String, String> verbatimDateMapper,                                   
+                                    final SERVERTYPE sourceServerType,
+                                    final SERVERTYPE destServerType)
     {
-        return copyTable(fromConn, toConn, "select * from " + tableName, tableName, tableName, colNewToOldMap, verbatimDateMapper);
+        return copyTable(fromConn, toConn, "select * from " + tableName, tableName, tableName, colNewToOldMap, verbatimDateMapper,sourceServerType,destServerType);
     }
     /**
      * Copies a table to a new table of a different name (same schema) within the same DB Connection
@@ -605,9 +953,11 @@ public class BasicSQLUtils
                                     final String     fromTableName,
                                     final String     toTableName,
                                     final Map<String, String> colNewToOldMap,
-                                    final Map<String, String> verbatimDateMapper)
+                                    final Map<String, String> verbatimDateMapper,                                   
+                                    final SERVERTYPE sourceServerType,
+                                    final SERVERTYPE destServerType)
     {
-        return copyTable(fromConn, toConn, "select * from " + fromTableName, fromTableName, toTableName, colNewToOldMap, verbatimDateMapper);
+        return copyTable(fromConn, toConn, "select * from " + fromTableName, fromTableName, toTableName, colNewToOldMap, verbatimDateMapper,sourceServerType,destServerType);
     }
     
     /**
@@ -623,9 +973,11 @@ public class BasicSQLUtils
                                     final String     fromTableName,
                                     final String     toTableName,
                                     final Map<String, String> colNewToOldMap,
-                                    final Map<String, String> verbatimDateMapper)
+                                    final Map<String, String> verbatimDateMapper,                                   
+                                    final SERVERTYPE sourceServerType,
+                                    final SERVERTYPE destServerType)
     {
-        return copyTable(conn, conn, "select * from " + fromTableName, fromTableName, toTableName, colNewToOldMap, verbatimDateMapper);
+        return copyTable(conn, conn, "select * from " + fromTableName, fromTableName, toTableName, colNewToOldMap, verbatimDateMapper,sourceServerType,destServerType);
     }
 
     /**
@@ -647,9 +999,11 @@ public class BasicSQLUtils
                                     final String     fromTableName,
                                     final String     toTableName,
                                     final Map<String, String> colNewToOldMap,
-                                    final Map<String, String> verbatimDateMapper)
+                                    final Map<String, String> verbatimDateMapper,                                   
+                                    final SERVERTYPE sourceServerType,
+                                    final SERVERTYPE destServerType)
     {
-        return copyTable(fromConn,toConn,sql,fromTableName,toTableName,colNewToOldMap,verbatimDateMapper,null);
+        return copyTable(fromConn,toConn,sql,fromTableName,toTableName,colNewToOldMap,verbatimDateMapper,null,sourceServerType,destServerType);
     }
 
     public static boolean copyTable(final Connection fromConn,
@@ -659,7 +1013,9 @@ public class BasicSQLUtils
                                     final String     toTableName,
                                     final Map<String, String> colNewToOldMap,
                                     final Map<String, String> verbatimDateMapper,
-                                    final Map<String, String> newColDefValues)
+                                    final Map<String, String> newColDefValues,
+                                    final SERVERTYPE sourceServerType,
+                                    final SERVERTYPE destServerType)
     {
         Timestamp now = new Timestamp(System.currentTimeMillis());
 
@@ -669,21 +1025,22 @@ public class BasicSQLUtils
         {
             frame.setDesc("Copying Table "+fromTableName);
         }
+        log.debug("Copying Table "+fromTableName);
 
         List<String> fromFieldNameList = new ArrayList<String>();
-        getFieldNamesFromSchema(fromConn, fromTableName, fromFieldNameList);
+        getFieldNamesFromSchema(fromConn, fromTableName, fromFieldNameList, sourceServerType);
 
         String sqlStr = sql + " order by " +  fromTableName + "." + fromFieldNameList.get(0);
-        
+        log.debug(sqlStr);
         setProcess(0, getNumRecords(fromConn, fromTableName));
 
         String id = "";
         try
         {
-            List<FieldMetaData> colMetaData = new ArrayList<FieldMetaData>();
-            getFieldMetaDataFromSchema(toConn, toTableName, colMetaData);
+            List<FieldMetaData> newFieldMetaData = new ArrayList<FieldMetaData>();
+            getFieldMetaDataFromSchema(toConn, toTableName, newFieldMetaData,destServerType);
 
-            Statement         stmt = fromConn.createStatement();
+            Statement         stmt = fromConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
             ResultSet         rs   = stmt.executeQuery(sqlStr);
             ResultSetMetaData rsmd = rs.getMetaData();
 
@@ -719,11 +1076,11 @@ public class BasicSQLUtils
 
                         if (columnIndex == null)
                         {
-                            log.error("Couldn't find new column for old column for date for Table[" + fromTableName + "] Col Name[" + colMetaData.get(i).getName() + "]");
+                            log.error("Couldn't find new column for old column for date for Table[" + fromTableName + "] Col Name[" + newFieldMetaData.get(i).getName() + "]");
                             continue;
                         }
 
-                        String newColName = colMetaData.get(columnIndex).getName();
+                        String newColName = newFieldMetaData.get(columnIndex).getName();
 
                         Object dataObj = rs.getObject(i);
                         if (dataObj instanceof Integer && newColName.toLowerCase().indexOf("date") ==  0)
@@ -736,14 +1093,13 @@ public class BasicSQLUtils
                                 vertbatimDateMap.put(newColName, verbatimDateStr.toString());
                             } else
                             {
-                                log.error("No Verbatim Date Mapper for Table[" + fromTableName + "] Col Name[" + colMetaData.get(i).getName() + "]");
+                                log.error("No Verbatim Date Mapper for Table[" + fromTableName + "] Col Name[" + newFieldMetaData.get(i).getName() + "]");
                             }
                         }
                     }
                 }
 
-                str.setLength(0);
-                str.append("INSERT INTO " + toTableName + " VALUES (");
+
                 
                 // OK here we make sure that both the created dated ad modified date are not null
                 // and we copy the date if one has a value and the other does not.
@@ -788,14 +1144,29 @@ public class BasicSQLUtils
                     }
                 }
                     
-
+                StringBuffer fieldList = new StringBuffer();
+                fieldList.append("( ");
+                for (int i = 0; i< newFieldMetaData.size();i++)
+                {
+                    if ((i > 0) &&  (i < newFieldMetaData.size()))
+                    {
+                        fieldList.append(", ");
+                    }
+                    String newFieldName = newFieldMetaData.get(i).getName();
+                    fieldList.append(newFieldName + " ");
+                }
+                fieldList.append(")");
+                
+                str.setLength(0);
+                str.append("INSERT INTO " + toTableName + " "+ fieldList+ " VALUES (");
+                
                 id = rs.getString(1);
 
                 // For each column in the new DB table...
-                for (int i = 0; i < colMetaData.size(); i++)
+                for (int i = 0; i < newFieldMetaData.size(); i++)
                 {
-                    FieldMetaData fieldMetaData = colMetaData.get(i);
-                    String colName          = fieldMetaData.getName();
+                    FieldMetaData newFieldName = newFieldMetaData.get(i);
+                    String colName          = newFieldName.getName();
                     String oldMappedColName = null;
 
                     // Get the Old Column Index from the New Name
@@ -877,7 +1248,7 @@ public class BasicSQLUtils
                         // First check to see if it is null
                         if (dataObj == null)
                         {
-                            if (fieldMetaData.getName().equals("TimestampCreated"))
+                            if (newFieldName.getName().equals("TimestampCreated"))
                             {
                                 if (timestampCreatedInx != null)
                                 {
@@ -887,15 +1258,15 @@ public class BasicSQLUtils
     
                                     } else
                                     {
-                                        str.append(getStrValue(timestampCreatedCached, fieldMetaData.getType()));
+                                        str.append(getStrValue(timestampCreatedCached, newFieldName.getType()));
                                     }
     
                                 } else
                                 {
-                                    str.append(getStrValue(timestampCreatedCached, fieldMetaData.getType()));
+                                    str.append(getStrValue(timestampCreatedCached, newFieldName.getType()));
                                 }
     
-                            } else if (fieldMetaData.getName().equals("TimestampModified"))
+                            } else if (newFieldName.getName().equals("TimestampModified"))
                             {
                                 if (timestampModifiedInx != null)
                                 {
@@ -905,12 +1276,12 @@ public class BasicSQLUtils
     
                                     } else
                                     {
-                                        str.append(getStrValue(timestampModifiedCached, fieldMetaData.getType()));
+                                        str.append(getStrValue(timestampModifiedCached, newFieldName.getType()));
                                     }
     
                                 } else
                                 {
-                                    str.append(getStrValue(timestampModifiedCached, fieldMetaData.getType()));
+                                    str.append(getStrValue(timestampModifiedCached, newFieldName.getType()));
                                 }
                             } else
                             {
@@ -934,7 +1305,7 @@ public class BasicSQLUtils
 
                         } else 
                         {
-                            str.append(getStrValue(dataObj, fieldMetaData.getType()));
+                            str.append(getStrValue(dataObj, newFieldName.getType()));
                         }
 
                     } else if (idMapperMgr != null && colName.endsWith("ID") && oneToOneIDHash != null && oneToOneIDHash.get(colName) != null)
@@ -999,8 +1370,24 @@ public class BasicSQLUtils
                         log.info(toTableName + " processed: " + count);
                     }                        
                 }
-                Statement updateStatement = toConn.createStatement();
-                exeUpdateCmd(updateStatement, "SET FOREIGN_KEY_CHECKS = 0");
+                Statement updateStatement = toConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+                if(BasicSQLUtils.myDestinationServerType != BasicSQLUtils.SERVERTYPE.MS_SQLServer) 
+                {
+                    BasicSQLUtils.removeForeignKeyConstraints(toConn, BasicSQLUtils.myDestinationServerType);
+                
+                }
+                //setQuotedIdentifierOFFForSQLServer(toConn, BasicSQLUtils.myDestinationServerType);
+                //exeUpdateCmd(updateStatement, "SET FOREIGN_KEY_CHECKS = 0");
+                if (str.toString().toLowerCase().contains("insert into locality"))
+                {
+                    //log.debug(str.toString());
+                }
+
+                //String str2 = "SET QUOTED_IDENTIFIER ON";
+                //log.debug("executing: " + str);
+                //updateStatement.execute(str2);
+               // updateStatement.close();
+                
                 int retVal = exeUpdateCmd(updateStatement, str.toString());
                 updateStatement.clearBatch();
                 updateStatement.close();
@@ -1114,7 +1501,7 @@ public class BasicSQLUtils
         try
         {
             int count = 0;
-            Statement cntStmt = connection.createStatement();
+            Statement cntStmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
             ResultSet rs      = cntStmt.executeQuery("select count(*) from "+tableName);
             if (rs.first())
             {
@@ -1143,7 +1530,7 @@ public class BasicSQLUtils
     {
         try
         {
-            Statement cntStmt = connection.createStatement();
+            Statement cntStmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
             ResultSet rs      = cntStmt.executeQuery("select "+idColName+" from "+tableName+" order by "+idColName+" asc");
             int id = 0;
             if (rs.last())
@@ -1169,7 +1556,211 @@ public class BasicSQLUtils
     {
         return (showErrors & opt) == opt;
     }
+    
+    public static String getServerTypeSpecificSQL(String mySQLFormatedString, SERVERTYPE currentServerType)
+    {
+        //if((myDestinationServerType == myDestinationServerType.MySQL) || (myDestinationServerType == myDestinationServerType.Derby))
+        //{
+        //    return mySQLFormatedString;
+        //}
+         if(currentServerType == SERVERTYPE.MS_SQLServer)
+        {
+            mySQLFormatedString = stripSingleQuotes(mySQLFormatedString);
+            mySQLFormatedString = stripEngineCharSet(mySQLFormatedString);
+            mySQLFormatedString = stripIntSize(mySQLFormatedString);
+        }
+        return mySQLFormatedString;
+    }
+    
+    private static String stripSingleQuotes(String str)
+    {
+        return str.replace("`", "");
+    }
+    
+    private static String stripEngineCharSet(String str)
+    {
+        str = str.replaceAll("ENGINE=InnoDB", "");
+        str = str.replaceAll("DEFAULT CHARSET=latin1", "");
+        return str;
+    }
+    
+    private static String stripIntSize(String str)
+    {
+        str = str.replaceAll("\\(11\\)", "");
+        return str;  
+    }
+    
+    public static String createIndexFieldStatment(String name, SERVERTYPE currentServerType) 
+    {
+        if(currentServerType == SERVERTYPE.MS_SQLServer)
+        {
+            return "create INDEX INX_"+name+" ON " + name + " (NewID)";
+        }
+        else if((currentServerType == SERVERTYPE.MySQL)|| (currentServerType == SERVERTYPE.Derby))
+        {
+            return "alter table "+name+" add index INX_"+name+" (NewID)";
+        }
+        return "alter table "+name+" add index INX_"+name+" (NewID)";
+    }
+    
+    public static void setIdentityInsertONCommandForSQLServer(Connection connection, String tableName,
+                                                              SERVERTYPE currentServerType) 
+    {
+        setIdentityInserCommandForSQLServer(connection, tableName, "ON", currentServerType); 
+    }
+    
+    public static void setIdentityInsertOFFCommandForSQLServer(Connection connection, String tableName,
+                                                               SERVERTYPE currentServerType) 
+    {
+        setIdentityInserCommandForSQLServer(connection, tableName, "OFF", currentServerType); 
+    }   
+    
+    public static void setIdentityInserCommandForSQLServer(Connection connection,
+                                                           String tableName,
+                                                           String mySwitch,
+                                                           SERVERTYPE currentServerType)
+    {
+        //REQUIRED FOR SQL SERVER IN ORDER TO PROGRAMMATICALLY SET DEFAULT VALUES
+        if (currentServerType == SERVERTYPE.MS_SQLServer)
+        {
+            try
+            {
+                Statement cntStmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+                String str = "SET IDENTITY_INSERT " + tableName + " " + mySwitch;
+                cntStmt.execute(str);
+                str = "SET QUOTED_IDENTIFIER OFF";
+                cntStmt.execute(str);
+                cntStmt.close();
 
+            } catch (SQLException ex)
+            {
+                log.error(ex);
+                ex.printStackTrace();
+                System.exit(0);
+            }
+        }
+    }
+    
+//    public static void setQuotedIdentifierOFFForSQLServer(Connection connection,
+//                                                           SERVERTYPE currentServerType)
+//    {
+//        //      REQUIRED FOR SQL SERVER IN ORDER TO PROGRAMMATICALLY SET DEFAULT VALUES
+//        if (currentServerType == SERVERTYPE.MS_SQLServer)
+//        {
+//            try
+//            {
+//                Statement cntStmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+//
+//                String str = "SET QUOTED_IDENTIFIER OFF";
+//                log.debug("executing: " + str);
+//                cntStmt.execute(str);
+//                cntStmt.close();
+//
+//            } catch (SQLException ex)
+//            {
+//                log.error(ex);
+//                ex.printStackTrace();
+//                System.exit(0);
+//            }
+//        }
+//    }
+    public static void removeForeignKeyConstraints(Connection connection,
+                                                   String tableName,
+                                                   SERVERTYPE currentServerType)
+    {
+        if (currentServerType == SERVERTYPE.MS_SQLServer)
+        {
+            try
+            {
+                Statement cntStmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+                        ResultSet.CONCUR_READ_ONLY);
+                String str = "ALTER TABLE " + tableName + " NOCHECK CONSTRAINT ALL";
+                cntStmt.execute(str);
+                cntStmt.close();
+            } catch (SQLException ex)
+            {
+                log.error("Error encountered trying to turn off foreign key constraints on database");
+                log.error(ex);
+            }
+        } else
+        {
+            try
+            {
+                Statement cntStmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+                        ResultSet.CONCUR_READ_ONLY);
+                String str = "SET FOREIGN_KEY_CHECKS = 0";
+                cntStmt.execute(str);
+                cntStmt.close();
+            } catch (SQLException ex)
+            {
+                log
+                        .error("Error encountered trying to turn off foreign key constraints on database");
+                log.error(ex);
+            }
+        }
+    }
+    
+    public static void removeForeignKeyConstraints(Connection connection,
+                                                   SERVERTYPE currentServerType)
+    {
+        if(currentServerType == SERVERTYPE.MS_SQLServer) 
+        {
+            List<String> myTables = getTableNames(connection, currentServerType);       
+            for (Iterator<String> i = myTables.iterator( ); i.hasNext( ); ) 
+            {
+                String s = i.next( );
+                try
+                {
+                    Statement cntStmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+                    String str = "ALTER TABLE "+s+" NOCHECK CONSTRAINT ALL";
+                    cntStmt.execute(str);
+                    cntStmt.close();
+                } catch (SQLException ex)
+                {
+                    log.error(ex);
+                }                
+            }
+        }
+        else
+        {
+            try
+            {
+                Statement cntStmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+                String str = "SET FOREIGN_KEY_CHECKS = 0";
+                cntStmt.execute(str);
+                cntStmt.close();
+            } catch (SQLException ex)
+            {
+                log.error(ex);
+            }
+        }
+    }
+    
+    public static String generateShowTablesCommand(String databaseName,
+                                                   SERVERTYPE currentServerType) 
+    {
+        if(currentServerType == SERVERTYPE.MS_SQLServer) 
+        {
+            return "SELECT TABLE_NAME FROM  "+databaseName+".INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = "
+                    + "\'BASE TABLE\' ";//AND TABLE_SCHEMA = \'"+ databaseName + "\'";
+        }
+        else
+            return "show tables";
+        
+    }
+
+    public static String generateDescribeTableCommand(String tableName, String databaseName,
+                                                      SERVERTYPE currentServerType) 
+    {
+        if(currentServerType == SERVERTYPE.MS_SQLServer) 
+        {
+            return "SELECT COLUMN_NAME, DATA_TYPE FROM "+databaseName+".INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = \'"+tableName+"\' ";
+                    //+"AND TABLE_SCHEMA = \'"+ databaseName + "\'";
+        }
+        else
+            return "describe "+tableName;
+    }
+    
     //-----------------------------------------------------------------------
     //-- Inner Classes
     //-----------------------------------------------------------------------
@@ -1194,5 +1785,4 @@ public class BasicSQLUtils
             return type;
         }
     }
-
 }

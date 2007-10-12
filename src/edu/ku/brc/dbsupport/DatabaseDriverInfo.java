@@ -99,6 +99,40 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
         }
         return null;
     }
+    /**
+     * Returns the connection string might return null if connection type doesn't exist.
+     * @param server the server (machine name or IP addr)
+     * @param database the database name
+     * @return the full connection string
+     */
+    public String getConnectionStr(final ConnectionType type, final String server, final String database, final String username, final String password, final String serverType)
+    {
+        String connStr = connectionFormats.get(type);
+        if (connStr != null)
+        {
+            if (serverType.equals("SQLServer"))
+            {
+                if(StringUtils.isNotEmpty(database))
+                {
+                        connStr = connStr.replaceFirst("DATABASE",  database);
+                }
+                else
+                {
+                    connStr = connStr.replaceFirst("DATABASE", "");
+                }
+                connStr = connStr.replaceFirst("USERNAME", username);
+                connStr = connStr.replaceFirst("PASSWORD", password);
+                return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server): connStr;
+            } else
+            {
+                connStr = connStr.replaceFirst("DATABASE", database);
+                connStr = connStr.replaceFirst("USERNAME", username);
+                connStr = connStr.replaceFirst("PASSWORD", password);
+                return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server): connStr;
+            }
+        }
+        return null;
+    }
 
     /**
      * Returns the Create connection string and if that doesn't exist then it returns the "Open" connection string which is the default.
@@ -106,7 +140,7 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
      * @param database the database name
      * @return the full connection string
      */
-    public String getConnectionCreateOpenStr(final String server, final String database)
+    public String getConnectionCreateOpenStr(final String server, final String database, final String username, final String password, final String serverType)
     {
         String connStr = connectionFormats.get(ConnectionType.Create);
         if (connStr == null)
@@ -116,13 +150,53 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
         
         if (connStr != null)
         {
-            connStr = connStr.replaceFirst("DATABASE", database);
-            return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server) : connStr;
-        }
-        
+            if (serverType.equals("SQLServer"))
+            {
+                if(StringUtils.isNotEmpty(database))
+                {
+                        connStr = connStr.replaceFirst("DATABASE", database);
+                }
+                else
+                {
+                    connStr = connStr.replaceFirst("DATABASE", "");
+                }
+                connStr = connStr.replaceFirst("USERNAME", username);
+                connStr = connStr.replaceFirst("PASSWORD", password);
+                return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server): connStr;
+            } else
+            {
+                connStr = connStr.replaceFirst("DATABASE", database);
+                connStr = connStr.replaceFirst("USERNAME", username);
+                connStr = connStr.replaceFirst("PASSWORD", password);
+                return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server): connStr;
+            }
+        }        
         return null;
     }
+    
 
+//    /**
+//     * Returns the Create connection string and if that doesn't exist then it returns the "Open" connection string which is the default.
+//     * @param server the server (machine name or IP addr)
+//     * @param database the database name
+//     * @return the full connection string
+//     */
+//    public String getConnectionCreateOpenStr(final String server, final String database)
+//    {
+//        String connStr = connectionFormats.get(ConnectionType.Create);
+//        if (connStr == null)
+//        {
+//            connStr = connectionFormats.get(ConnectionType.Open);
+//        }
+//        
+//        if (connStr != null)
+//        {
+//            connStr = connStr.replaceFirst("DATABASE", database);
+//            return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server) : connStr;
+//        }
+//        
+//        return null;
+//    }
     /**
      * Returns the dialect for Hibernate
      * @return the dialect for Hibernate
@@ -254,8 +328,9 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
                             drv.addFormat(type, connFormat);
                         }
                         
-                        if (drv.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, " ", " ") == null)
+                        if (drv.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, " ", " ", " ", " ", " ") == null)
                         {
+                            log.error("Meg might've screwed up generating connection strings, contact her if you get this error");
                             throw new RuntimeException("Dialect ["+name+"] has no 'Open' connection type!");
                         }
                         

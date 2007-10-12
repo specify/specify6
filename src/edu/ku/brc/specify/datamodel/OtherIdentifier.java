@@ -79,6 +79,7 @@ public class OtherIdentifier extends DataModelObjBase implements java.io.Seriali
         super.init();
         otherIdentifierId = null;
         identifier = null;
+        institution = null;
         remarks = null;
         collectionObject = null;
     }
@@ -180,7 +181,7 @@ public class OtherIdentifier extends DataModelObjBase implements java.io.Seriali
     /**
      * @return the institution
      */
-    @Column(name = "Institution", unique = false, nullable = false, insertable = true, updatable = true, length = 64)
+    @Column(name = "Institution", unique = false, insertable = true, updatable = true, length = 64)
     public String getInstitution()
     {
         return this.institution;

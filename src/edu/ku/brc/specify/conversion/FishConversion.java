@@ -68,8 +68,8 @@ public class FishConversion
         
         if (cleanTables) 
         {
-            deleteAllRecordsFromTable("attrsdef");
-            deleteAllRecordsFromTable("prepattr");
+            deleteAllRecordsFromTable("attrsdef", BasicSQLUtils.myDestinationServerType);
+            deleteAllRecordsFromTable("prepattr", BasicSQLUtils.myDestinationServerType);
         }
 
         //------------------------------
@@ -357,7 +357,7 @@ public class FishConversion
     {        
         try 
         {
-            Statement stmt = oldDBConn.createStatement();
+            Statement stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
             
             StringBuilder sqlStr = new StringBuilder("Select collectionobject.CollectionObjectID, determination.Confidence, determination.Text1");
             sqlStr.append(" From collectionobject Inner Join collectionobjectcatalog ON collectionobject.CollectionObjectID = collectionobjectcatalog.CollectionObjectCatalogID Inner Join determination ON determination.BiologicalObjectID = collectionobjectcatalog.CollectionObjectCatalogID Where collectionobject.DerivedFromID Is Null");
@@ -373,9 +373,12 @@ public class FishConversion
             while (rs.next()) 
             {
                
-                Statement updateStatement = newDBConn.createStatement();
-                BasicSQLUtils.exeUpdateCmd(updateStatement, "SET FOREIGN_KEY_CHECKS = 0");
-                
+                Statement updateStatement = newDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+                //BasicSQLUtils.exeUpdateCmd(updateStatement, "SET FOREIGN_KEY_CHECKS = 0");
+                if (BasicSQLUtils.myDestinationServerType != BasicSQLUtils.SERVERTYPE.MS_SQLServer)
+                {
+                    BasicSQLUtils.removeForeignKeyConstraints(newDBConn, BasicSQLUtils.myDestinationServerType);
+                }
                 String sex  = rs.getString(2); // sex
                 String size = rs.getString(3); // size
                 

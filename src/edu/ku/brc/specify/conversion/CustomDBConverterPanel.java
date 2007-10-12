@@ -100,18 +100,19 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
     protected JTextField                 usernameSource;
     protected JPasswordField             passwordSource;
 
-    protected JEditComboBox              databasesSource;
-    protected JEditComboBox              serversSource;
+
 
     protected JCheckBox                  rememberUsernameSourceCBX;
     protected JCheckBox                  rememberPasswordSourceCBX;
-    protected JCheckBox                  autoLoginSourceCBX;
+    //protected JCheckBox                  autoLoginSourceCBX;
 
     protected JTextField                 usernameDest;
     protected JPasswordField             passwordDest;
 
     protected JEditComboBox              databasesDest;
-    protected JEditComboBox              serversDest;
+    protected JEditComboBox              databasesSource;
+    protected JEditComboBox              serversDest;    
+    protected JEditComboBox              serversSource;
 
     protected JCheckBox                  rememberUsernameDestCBX;
     protected JCheckBox                  rememberPasswordDestCBX;
@@ -120,7 +121,7 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
     protected JButton                    cancelBtn;
     protected JButton                    loginBtn;
     protected JButton                    helpBtn;
-    //protected JCheckBox                  moreBtn;
+    
     protected ImageIcon                  forwardImgIcon;
     protected ImageIcon                  downImgIcon;
 
@@ -136,7 +137,8 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
     protected boolean                    isLoggingIn    = false;
     protected boolean                    isAutoClose    = false;
 
-    protected CustomDBConverterListener      dbConverterListener;
+    protected CustomDBConverterListener  dbConverterListener;
+    protected CustomDBConverterDlg       dbConverterDlg;
     protected Window                     window;
 
     protected Vector<DatabaseDriverInfo> dbDrivers      = new Vector<DatabaseDriverInfo>();
@@ -153,12 +155,11 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
      * @param dbConverterListener dbConverterListener to the panel (usually the frame or dialog)
      * @param isDlg whether the parent is a dialog (false mean JFrame)
      */
-    public CustomDBConverterPanel(final CustomDBConverterListener dbConverterListener, final boolean isDlg)
+    public CustomDBConverterPanel(final CustomDBConverterListener dbConverterListener, final CustomDBConverterDlg dlg, final boolean isDlg)
     {
         this.dbConverterListener = dbConverterListener;
-
+        this.dbConverterDlg = dlg;
         createUI(isDlg);
-
     }
 
     /**
@@ -249,9 +250,6 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
      */
     protected void createUI(final boolean isDlg)
     {
-
-        // First create the controls and hook up listeners
-
         PropertiesPickListAdapter dbPickList = new PropertiesPickListAdapter("convert.databasesSource");
         PropertiesPickListAdapter svPickList = new PropertiesPickListAdapter("convert.serversSource");
         
@@ -276,7 +274,7 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
         dbDestPickList.setComboBox(databasesDest);
         svDestPickList.setComboBox(serversDest);
 
-        autoLoginSourceCBX = new JCheckBox(getResourceString("autologin"));
+       // autoLoginSourceCBX = new JCheckBox(getResourceString("autologin"));
         rememberUsernameSourceCBX = new JCheckBox(getResourceString("rememberuser"));
         rememberPasswordSourceCBX = new JCheckBox(getResourceString("rememberpassword"));
         
@@ -355,7 +353,7 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
             addKeyListenerFor(loginBtn, true);
         }
 
-        autoLoginSourceCBX.setSelected(AppPreferences.getLocalPrefs().getBoolean("convert.autologin", false));
+        //autoLoginSourceCBX.setSelected(AppPreferences.getLocalPrefs().getBoolean("convert.autologin", false));
         rememberUsernameSourceCBX.setSelected(AppPreferences.getLocalPrefs().getBoolean("convert.rememberuserSource", false));
         rememberPasswordSourceCBX.setSelected(AppPreferences.getLocalPrefs().getBoolean("convert.rememberpasswordSource", false));
 
@@ -363,15 +361,15 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
         rememberUsernameDestCBX.setSelected(AppPreferences.getLocalPrefs().getBoolean("convert.rememberuserDest", false));
         rememberPasswordDestCBX.setSelected(AppPreferences.getLocalPrefs().getBoolean("convert.rememberpasswordDest", false));
         
-        if (autoLoginSourceCBX.isSelected())
-        {
-            usernameSource.setText(AppPreferences.getLocalPrefs().get("convert.usernameSource", ""));
-            passwordSource.setText(Encryption.decrypt(AppPreferences.getLocalPrefs().get(
-                    "convert.passwordSource", "")));
-            usernameSource.requestFocus();
-
-        } else
-        {
+//        if (autoLoginSourceCBX.isSelected())
+//        {
+//            usernameSource.setText(AppPreferences.getLocalPrefs().get("convert.usernameSource", ""));
+//            passwordSource.setText(Encryption.decrypt(AppPreferences.getLocalPrefs().get(
+//                    "convert.passwordSource", "")));
+//            usernameSource.requestFocus();
+//
+//        } else
+//        {
             if (rememberUsernameSourceCBX.isSelected())
             {
                 usernameSource.setText(AppPreferences.getLocalPrefs().get("convert.usernameSource", ""));
@@ -398,7 +396,7 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
                 });
 
             }
-        }
+        //}
 
         if (autoLoginDestCBX.isSelected())
         {
@@ -458,19 +456,19 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
         //HelpManager.registerComponent(helpBtn, "login");
         HelpMgr.registerComponent(helpBtn, "convert");
 
-        autoLoginSourceCBX.addChangeListener(new ChangeListener()
-        {
-            public void stateChanged(ChangeEvent e)
-            {
-                if (autoLoginSourceCBX.isSelected())
-                {
-                    rememberUsernameSourceCBX.setSelected(true);
-                    rememberPasswordSourceCBX.setSelected(true);
-                }
-                updateUIControls();
-            }
-
-        });
+//        autoLoginSourceCBX.addChangeListener(new ChangeListener()
+//        {
+//            public void stateChanged(ChangeEvent e)
+//            {
+//                if (autoLoginSourceCBX.isSelected())
+//                {
+//                    rememberUsernameSourceCBX.setSelected(true);
+//                    rememberPasswordSourceCBX.setSelected(true);
+//                }
+//                updateUIControls();
+//            }
+//
+//        });
 
 //        moreBtn.addActionListener(new ActionListener()
 //        {
@@ -537,7 +535,7 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
         y = addLine("driver", dbDriverCBX, formBuilder, cc, y);
         y = addLine(null, rememberUsernameSourceCBX, formBuilder, cc, y);
         y = addLine(null, rememberPasswordSourceCBX, formBuilder, cc, y);
-        y = addLine(null, autoLoginSourceCBX, formBuilder, cc, y);
+        //y = addLine(null, autoLoginSourceCBX, formBuilder, cc, y);
 
         int x = 5;
         formBuilder.addSeparator(getResourceString("DEST_DB"), cc.xywh(x, 1, 3, 1));
@@ -658,7 +656,7 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
      */
     protected void updateUIControls()
     {
-        log.error("need to update this with new fields");
+        //log.error("need to update this with new fields");//XXX TODO
         if (extraPanel == null || isLoggingIn)
             return; // if this is null then we should skip all the checks because nothing is created
 
@@ -691,8 +689,8 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
         }
         loginBtn.setEnabled(shouldEnable);
 
-        rememberUsernameSourceCBX.setEnabled(!autoLoginSourceCBX.isSelected());
-        rememberPasswordSourceCBX.setEnabled(!autoLoginSourceCBX.isSelected());
+        //rememberUsernameSourceCBX.setEnabled(!autoLoginSourceCBX.isSelected());
+        //rememberPasswordSourceCBX.setEnabled(!autoLoginSourceCBX.isSelected());
 
         if (shouldEnable)
         {
@@ -733,15 +731,17 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
         AppPreferences.getLocalPrefs().putBoolean("convert.rememberuserDest", rememberUsernameDestCBX.isSelected());
         AppPreferences.getLocalPrefs().putBoolean("convert.rememberpasswordDest", rememberPasswordDestCBX.isSelected());
         
-        AppPreferences.getLocalPrefs().putBoolean("convert.autologin", autoLoginSourceCBX.isSelected());
+        //AppPreferences.getLocalPrefs().putBoolean("convert.autologin", autoLoginSourceCBX.isSelected());
 
-        if (autoLoginSourceCBX.isSelected())
-        {
-            AppPreferences.getLocalPrefs().put("convert.usernameSource", usernameSource.getText());
-            AppPreferences.getLocalPrefs().put("convert.passwordSource", Encryption.encrypt(new String(passwordSource.getPassword())));
 
-        } else
-        {
+        
+        //if (autoLoginSourceCBX.isSelected())
+        //{
+        //    AppPreferences.getLocalPrefs().put("convert.usernameSource", usernameSource.getText());
+        //    AppPreferences.getLocalPrefs().put("convert.passwordSource", Encryption.encrypt(new String(passwordSource.getPassword())));
+
+        //} else
+        //{
             if (rememberUsernameSourceCBX.isSelected())
             {
                 AppPreferences.getLocalPrefs().put("convert.usernameSource", usernameSource.getText());
@@ -759,15 +759,15 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
             {
                 AppPreferences.getLocalPrefs().remove("convert.passwordSource");
             }
-        }
+        //}
         
-        if (autoLoginDestCBX.isSelected())
-        {
-            AppPreferences.getLocalPrefs().put("convert.usernameDest", usernameDest.getText());
-            AppPreferences.getLocalPrefs().put("convert.passwordDest", Encryption.encrypt(new String(passwordDest.getPassword())));
-
-        } else
-        {
+//        if (autoLoginDestCBX.isSelected())
+//        {
+//            AppPreferences.getLocalPrefs().put("convert.usernameDest", usernameDest.getText());
+//            AppPreferences.getLocalPrefs().put("convert.passwordDest", Encryption.encrypt(new String(passwordDest.getPassword())));
+//
+//        } else
+//        {
             if (rememberUsernameDestCBX.isSelected())
             {
                 AppPreferences.getLocalPrefs().put("convert.usernameDest", usernameDest.getText());
@@ -785,9 +785,19 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
             {
                 AppPreferences.getLocalPrefs().remove("convert.passwordDest");
             }
-        }
-        AppPreferences.getLocalPrefs().put("convert.dbdriverSource_selected", dbDrivers.get(dbDriverCBX.getSelectedIndex()).getName());
-        AppPreferences.getLocalPrefs().put("convert.dbdriverDest_selected", dbDrivers.get(dbDriverCBX2.getSelectedIndex()).getName());
+        //}
+        
+//        protected JEditComboBox              databasesDest;
+//        protected JEditComboBox              databasesSource;
+//        protected JEditComboBox              serversDest;    
+//        protected JEditComboBox              serversSource;
+
+       // AppPreferences.getLocalPrefs().put("convert.dbdriverSource_selected", dbDrivers.get(dbDriverCBX.getSelectedIndex()).getName());
+       // AppPreferences.getLocalPrefs().put("convert.dbdriverDest_selected", dbDrivers.get(dbDriverCBX2.getSelectedIndex()).getName());
+        
+        //databasesSource.getSelectedIndex()
+        //AppPreferences.getLocalPrefs().put("convert.databasesSource_selected", databasesDest.getTextField().getText());
+        //AppPreferences.getLocalPrefs().put("convert.databasesDest_selected", databasesSource.getTextField().getText());
     }
 
     /**
@@ -836,7 +846,7 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
         rememberUsernameDestCBX.setEnabled(enable);
         rememberPasswordDestCBX.setEnabled(enable);
         
-        autoLoginSourceCBX.setEnabled(enable);
+        //autoLoginSourceCBX.setEnabled(enable);
         //moreBtn.setEnabled(enable);
     }
 
@@ -851,8 +861,13 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
 
         save();
 
-        statusBar.setIndeterminate(true);
+        //statusBar.setIndeterminate(true);
         enableUI(false);
+        //this.setVisible(false);
+        this.getDbConverterDlg().setVisible(false);
+        //this.getRootPane().disable();
+        //this.di
+        //this.do
 
        // setMessage(String
         //        .format(getResourceString("LoggingIn"), new Object[] { getDatabaseName() }), false);
@@ -996,7 +1011,13 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
     {
         return serversSource.getTextField().getText();
     }
-
+    /**
+     * @return the server name
+     */
+    public String getDestServerName()
+    {
+        return serversDest.getTextField().getText();
+    }
     /**
      * @return the database name
      */
@@ -1020,7 +1041,14 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
     {
         return usernameSource.getText();
     }
-
+    /**
+     * 
+     * @return the usernameDest
+     */
+    public String getDestUserName()
+    {
+        return usernameDest.getText();
+    }
     /**
      * @return the passwordSource string
      */
@@ -1028,7 +1056,13 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
     {
         return new String(passwordSource.getPassword());
     }
-
+    /**
+     * @return the passwordSource string
+     */
+    public String getDestPassword()
+    {
+        return new String(passwordDest.getPassword());
+    }
     /**
      * @return the formatted connection string
      */
@@ -1036,12 +1070,35 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
     {
         if (dbDriverCBX.getSelectedIndex() > -1) 
         { 
-            return dbDrivers.get(dbDriverCBX.getSelectedIndex()).getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, getSourceServerName(), getSourceDatabaseName());
+            return dbDrivers.get(dbDriverCBX.getSelectedIndex()).getConnectionStr(
+                                    DatabaseDriverInfo.ConnectionType.Open, 
+                                    getSourceServerName(), 
+                                    getSourceDatabaseName(), 
+                                    this.getSourceUserName(),
+                                    this.getSourcePassword(),
+                                    this.getSourceDriverType());
+        }
+        return null; // we should never get here
+    }
+
+    /**
+     * @return the formatted connection string
+     */
+    public String getDestConnectionStr()
+    {
+        if (dbDriverCBX2.getSelectedIndex() > -1) 
+        { 
+            return dbDrivers.get(dbDriverCBX2.getSelectedIndex()).getConnectionStr(
+                                    DatabaseDriverInfo.ConnectionType.Open, 
+                                    getDestServerName(), 
+                                    getDestDatabaseName(), 
+                                    this.getDestUserName(),
+                                    this.getDestPassword(),
+                                    this.getDestDriverType());
         }
         // else
         return null; // we should never get here
     }
-
     /**
      * @return dialect clas name
      */
@@ -1056,6 +1113,18 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
     }
 
     /**
+     * @return dialect clas name
+     */
+    public String getDestDialectClassName()
+    {
+        if (dbDriverCBX2.getSelectedIndex() > -1) 
+        { 
+            return dbDrivers.get( dbDriverCBX2.getSelectedIndex()).getDialectClassName();
+        }
+        // else
+        return null; // we should never get here
+    }    
+    /**
      * @return the driver class name
      */
     public String getSourceDriverClassName()
@@ -1067,7 +1136,37 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
         // else
         return null; // we should never get here
     }
-
+    /**
+     * @return the driver class name
+     */
+    public String getDestDriverClassName()
+    {
+        if (dbDriverCBX2.getSelectedIndex() > -1) 
+        { 
+            return dbDrivers.get( dbDriverCBX2.getSelectedIndex()).getDriverClassName();
+        }
+        // else
+        return null; // we should never get here
+    }  
+    
+    public String getSourceDriverType()
+    {
+        if (dbDriverCBX.getSelectedIndex() > -1) 
+        { 
+            return dbDrivers.get( dbDriverCBX.getSelectedIndex()).getName();
+        }       
+        return null; // we should never get here      
+    }
+    
+    public String getDestDriverType()
+    {
+        if (dbDriverCBX2.getSelectedIndex() > -1) 
+        { 
+            return dbDrivers.get( dbDriverCBX2.getSelectedIndex()).getName();
+        }
+        return null; // we should never get here      
+    }
+    
     /**
      * Returns true if doing auto login
      * @return true if doing auto login
@@ -1152,7 +1251,7 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
      */
     public void cancelled()
     {
-        System.exit(0);
+        
     }
     
     /**
@@ -1169,5 +1268,21 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
             selectedItems.add(getDestDatabaseName());
        // }
         return selectedItems;
+    }
+
+    /**
+     * @return the dbConverterDlg
+     */
+    public CustomDBConverterDlg getDbConverterDlg()
+    {
+        return dbConverterDlg;
+    }
+
+    /**
+     * @param dbConverterDlg the dbConverterDlg to set
+     */
+    public void setDbConverterDlg(CustomDBConverterDlg dbConverterDlg)
+    {
+        this.dbConverterDlg = dbConverterDlg;
     }
 }

@@ -1212,76 +1212,18 @@ public final class UIHelper
      * @param useDialog use a Dialog or a Frame
      * @param listener a listener for when it is logged in or fails
      */
-    public static CustomDBConverterPanel doSpecifyConvert()
+    public static CustomDBConverterDlg doSpecifyConvert()
     {
         log.debug("doSpecifyConvert");
         CustomDBConverter converter = new CustomDBConverter();
         converter.setUpSystemProperties();
-        converter.setUpPreferrences();  
-        
+        converter.setUpPreferrences();
         final CustomDBConverterListener listener = converter;
-//        boolean doAutoLoginNow = doAutoLogin && AppPreferences.getLocalPrefs().getBoolean("login.autologin", false);
-//
-       // if (useDialog)
-       // {
-            JDialog.setDefaultLookAndFeelDecorated(false); 
-            CustomDBConverterDlg dlg = new CustomDBConverterDlg((Frame)UIRegistry.getTopWindow(), listener);
-            JDialog.setDefaultLookAndFeelDecorated(true); 
-            //dlg.setDoAutoLogin(doAutoLoginNow);
-           // dlg.setDoAutoClose(doAutoClose);
-            UIHelper.centerAndShow(dlg);
-
-            return dlg.getCustomDBConverterPanel();
-
-      //  }
-//        // else
-//        class DBConverterListener implements CustomDBConverterListener
-//        {
-//            protected JFrame                frame;
-//            protected CustomDBConverterListener frameDBListener;
-//           // protected boolean               doAutoCloseOfListener;
-//
-//            public DBConverterListener(JFrame frame, CustomDBConverterListener frameDBListener)
-//            {
-//                this.frame                 = frame;
-//                this.frameDBListener       = frameDBListener;
-//                //this.doAutoCloseOfListener = doAutoCloseOfListener;
-//            }
-//            
-//            public void loggedIn(final String databaseName, final String userName)
-//            {
-//               // if (doAutoCloseOfListener)
-//                //{
-//                //    frame.setVisible(false);
-//                //}
-//                frameDBListener.loggedIn(databaseName, userName);
-//            }
-//
-//            public void cancelled()
-//            {
-//                frame.setVisible(false);
-//                frameDBListener.cancelled();
-//            }
-//        }
-//        JFrame.setDefaultLookAndFeelDecorated(false);
-//
-//        JFrame frame = new JFrame(getResourceString("CONVERTER_TITLE"));
-//        CustomDBConverterPanel panel = new CustomDBConverterPanel(new DBConverterListener(frame, listener), false);
-//        //panel.setAutoClose(doAutoClose);
-//        panel.setWindow(frame);
-//        frame.setContentPane(panel);
-//        //frame.setIconImage(IconManager.getIcon("AppIcon", IconManager.IconSize.Std16).getImage());
-//        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-//
-//        frame.pack();
-//
-////        if (doAutoLoginNow)
-////        {
-////            panel.doLogin();
-////        }
-//        UIHelper.centerAndShow(frame);
-//
-//        return panel;
+        JDialog.setDefaultLookAndFeelDecorated(false);
+        CustomDBConverterDlg dlg = new CustomDBConverterDlg((Frame)UIRegistry.getTopWindow(), listener);
+        JDialog.setDefaultLookAndFeelDecorated(true);
+        UIHelper.centerAndShow(dlg);
+        return dlg;
     }
     /**
      * Creates an UnhandledException dialog.
