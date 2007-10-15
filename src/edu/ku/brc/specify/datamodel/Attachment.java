@@ -13,7 +13,6 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -24,6 +23,9 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
@@ -226,7 +228,8 @@ public class Attachment extends DataModelObjBase implements Serializable
         this.visibilitySetBy = visibilitySetBy;
     }
 
-    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "attachment")
+    @OneToMany(mappedBy = "attachment")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<AttachmentMetadata> getMetadata()
     {
         return this.metadata;
@@ -237,7 +240,8 @@ public class Attachment extends DataModelObjBase implements Serializable
         this.metadata = metadata;
     }
     
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "attachment")
+    @OneToMany(mappedBy = "attachment")
+    @Cascade( {CascadeType.ALL} )
     public Set<AccessionAttachment> getAccessionAttachments()
     {
         return accessionAttachments;
@@ -248,7 +252,8 @@ public class Attachment extends DataModelObjBase implements Serializable
         this.accessionAttachments = accessionAttachments;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "attachment")
+    @OneToMany(mappedBy = "attachment")
+    @Cascade( {CascadeType.ALL} )
     public Set<AgentAttachment> getAgentAttachments()
     {
         return agentAttachments;
@@ -259,7 +264,8 @@ public class Attachment extends DataModelObjBase implements Serializable
         this.agentAttachments = agentAttachments;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "attachment")
+    @OneToMany(mappedBy = "attachment")
+    @Cascade( {CascadeType.ALL} )
     public Set<CollectingEventAttachment> getCollectingEventAttachments()
     {
         return collectingEventAttachments;
@@ -270,7 +276,8 @@ public class Attachment extends DataModelObjBase implements Serializable
         this.collectingEventAttachments = collectingEventAttachments;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "attachment")
+    @OneToMany(mappedBy = "attachment")
+    @Cascade( {CascadeType.ALL} )
     public Set<CollectionObjectAttachment> getCollectionObjectAttachments()
     {
         return collectionObjectAttachments;
@@ -281,7 +288,8 @@ public class Attachment extends DataModelObjBase implements Serializable
         this.collectionObjectAttachments = collectionObjectAttachments;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "attachment")
+    @OneToMany(mappedBy = "attachment")
+    @Cascade( {CascadeType.ALL} )
     public Set<ConservDescriptionAttachment> getConservDescriptionAttachments()
     {
         return conservDescriptionAttachments;
@@ -292,7 +300,8 @@ public class Attachment extends DataModelObjBase implements Serializable
         this.conservDescriptionAttachments = conservDescriptionAttachments;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "attachment")
+    @OneToMany(mappedBy = "attachment")
+    @Cascade( {CascadeType.ALL} )
     public Set<ConservEventAttachment> getConservEventAttachments()
     {
         return conservEventAttachments;
@@ -303,7 +312,8 @@ public class Attachment extends DataModelObjBase implements Serializable
         this.conservEventAttachments = conservEventAttachments;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "attachment")
+    @OneToMany(mappedBy = "attachment")
+    @Cascade( {CascadeType.ALL} )
     public Set<LoanAttachment> getLoanAttachments()
     {
         return loanAttachments;
@@ -314,7 +324,8 @@ public class Attachment extends DataModelObjBase implements Serializable
         this.loanAttachments = loanAttachments;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "attachment")
+    @OneToMany(mappedBy = "attachment")
+    @Cascade( {CascadeType.ALL} )
     public Set<LocalityAttachment> getLocalityAttachments()
     {
         return localityAttachments;
@@ -325,22 +336,11 @@ public class Attachment extends DataModelObjBase implements Serializable
         this.localityAttachments = localityAttachments;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "attachment")
+    @OneToMany(mappedBy = "attachment")
+    @Cascade( {CascadeType.ALL} )
     public Set<PreparationAttachment> getPreparationAttachments()
     {
         return preparationAttachments;
-    }
-
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "attachment")
-    public Set<PermitAttachment> getPermitAttachments()
-    {
-        return permitAttachments;
-    }
-
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "attachment")
-    public void setPermitAttachments(Set<PermitAttachment> permitAttachments)
-    {
-        this.permitAttachments = permitAttachments;
     }
 
     public void setPreparationAttachments(Set<PreparationAttachment> preparationAttachments)
@@ -348,7 +348,20 @@ public class Attachment extends DataModelObjBase implements Serializable
         this.preparationAttachments = preparationAttachments;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "attachment")
+    @OneToMany(mappedBy = "attachment")
+    @Cascade( {CascadeType.ALL} )
+    public Set<PermitAttachment> getPermitAttachments()
+    {
+        return permitAttachments;
+    }
+
+    public void setPermitAttachments(Set<PermitAttachment> permitAttachments)
+    {
+        this.permitAttachments = permitAttachments;
+    }
+
+    @OneToMany(mappedBy = "attachment")
+    @Cascade( {CascadeType.ALL} )
     public Set<RepositoryAgreementAttachment> getRepositoryAgreementAttachments()
     {
         return repositoryAgreementAttachments;
@@ -359,7 +372,8 @@ public class Attachment extends DataModelObjBase implements Serializable
         this.repositoryAgreementAttachments = repositoryAgreementAttachments;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "attachment")
+    @OneToMany(mappedBy = "attachment")
+    @Cascade( {CascadeType.ALL} )
     public Set<TaxonAttachment> getTaxonAttachments()
     {
         return taxonAttachments;

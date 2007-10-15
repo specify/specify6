@@ -96,7 +96,7 @@ public class AttachmentMetadata extends DataModelObjBase implements java.io.Seri
     /**
      * 
      */
-    @Column(name = "Value", length = 64)
+    @Column(name = "Value", length = 128)
     public String getValue()
     {
         return this.value;
