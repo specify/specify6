@@ -102,7 +102,7 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
      */
     @Id
     @GeneratedValue
-    @Column(name = "WorkbenchDataItemID", unique = false, nullable = false, insertable = true, updatable = true)
+    @Column(name = "WorkbenchDataItemID")
     public Integer getWorkbenchDataItemId()
     {
         return this.workbenchDataItemId;
@@ -139,7 +139,7 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
     /**
      * 
      */
-    @Column(name = "CellData", length=512, unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "CellData", length=512)
     public String getCellData()
     {
         return this.cellData;
@@ -153,7 +153,7 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
     /**
      * 
      */
-    @Column(name = "RowNumber", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "RowNumber")
     public Short getRowNumber()
     {
     
@@ -174,7 +174,7 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
         return getWorkbenchTemplateMappingItem().getViewOrder();
     }
 
-    @Column(name = "ValidationStatus", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "ValidationStatus")
     public Short getValidationStatus()
     {
         return validationStatus;
@@ -188,8 +188,8 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
     /**
      * 
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "WorkbenchRowID", unique = false, nullable = false, insertable = true, updatable = true)
+    @ManyToOne
+    @JoinColumn(name = "WorkbenchRowID", nullable = false)
     public WorkbenchRow getWorkbenchRow()
     {
         return this.workbenchRow;
@@ -203,7 +203,7 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
     /**
      * 
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "WorkbenchTemplateMappingItemID", nullable = false)
     public WorkbenchTemplateMappingItem getWorkbenchTemplateMappingItem()
     {
