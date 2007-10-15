@@ -33,7 +33,6 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -116,7 +115,7 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
      */
     @Id
     @GeneratedValue
-    @Column(name = "WorkbenchTemplateID", unique = false, nullable = false, insertable = true, updatable = true)
+    @Column(name = "WorkbenchTemplateID")
     public Integer getWorkbenchTemplateId() {
         return this.workbenchTemplateId;
     }
@@ -149,7 +148,7 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
     /**
      * 
      */
-    @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    @Column(name = "Name", length = 64)
     public String getName() {
         return this.name;
     }
@@ -162,7 +161,7 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
      * Returns the path to the original File.
      * @return the path to the original File.
      */
-    @Column(name = "SrcFilePath", unique = false, nullable = true, insertable = true, updatable = true, length = 255)
+    @Column(name = "SrcFilePath", length = 255)
     public String getSrcFilePath()
     {
         return srcFilePath;
@@ -181,7 +180,7 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
      * 
      */
     @Lob
-    @Column(name="Remarks", unique=false, nullable=true, updatable=true, insertable=true)
+    @Column(name="Remarks")
     public String getRemarks() {
         return this.remarks;
     }
@@ -193,8 +192,8 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
     /**
      * 
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "workbenchTemplate")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OneToMany(mappedBy = "workbenchTemplate")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<Workbench> getWorkbenches() {
         return this.workbenches;
     }
@@ -207,8 +206,8 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
      * 
      */
 
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "workbenchTemplate")
-    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    @OneToMany(mappedBy = "workbenchTemplate")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<WorkbenchTemplateMappingItem> getWorkbenchTemplateMappingItems() 
     {
         return this.workbenchTemplateMappingItems;
@@ -222,8 +221,8 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
     /**
      * 
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "SpecifyUserID", unique = false, nullable = false, insertable = true, updatable = true)
+    @ManyToOne
+    @JoinColumn(name = "SpecifyUserID", nullable = false)
     public SpecifyUser getSpecifyUser() {
         return this.specifyUser;
     }
@@ -324,6 +323,7 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
     /* (non-Javadoc)
      * @see java.lang.Object#clone()
      */
+    @Override
     public Object clone() throws CloneNotSupportedException
     {
         WorkbenchTemplate wbt = (WorkbenchTemplate)super.clone();
