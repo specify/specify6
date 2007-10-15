@@ -107,6 +107,7 @@ public class XLSImport extends DataImport implements DataImportIFace
                 Vector<WorkbenchTemplateMappingItem> wbtmiList = new Vector<WorkbenchTemplateMappingItem>();
                 NumberFormat nf = NumberFormat.getInstance();
                 nf.setMinimumFractionDigits(0);
+                nf.setMaximumFractionDigits(20);
                 nf.setGroupingUsed(false); //gets rid of commas
                 
                 wbtmiList.addAll(wbtmiSet);
@@ -135,7 +136,14 @@ public class XLSImport extends DataImport implements DataImportIFace
                         short cellNum = wbtmi.getOrigImportColumnIndex().shortValue();
                         if (cellNum == -1)
                         {
-                            continue;
+                            if (wbtmi.getViewOrder() != null)
+                            {
+                                cellNum = wbtmi.getViewOrder().shortValue();
+                                if (cellNum == -1)
+                                {
+                                    continue;
+                                }
+                            }
                         }
                         HSSFCell cell    = row.getCell(cellNum);
                         if (cell == null)

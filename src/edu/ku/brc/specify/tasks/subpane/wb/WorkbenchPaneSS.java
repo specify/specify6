@@ -33,6 +33,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -68,6 +70,7 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
@@ -78,6 +81,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -100,7 +104,9 @@ import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
+import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
@@ -227,7 +233,7 @@ public class WorkbenchPaneSS extends BaseSubPane
      * 
      * @param name the name of the pane
      * @param task the owning task
-     * @param workbench the workbench to be editted
+     * @param workbench the workbench to be edited
      * @param showImageView shows image window when first showing the window
      */
     public WorkbenchPaneSS(final String    name,
@@ -271,7 +277,9 @@ public class WorkbenchPaneSS extends BaseSubPane
         UIRegistry.getLaunchFindReplaceAction().setSearchReplacePanel(findPanel);
         
         spreadSheet.setShowGrid(true);
-        spreadSheet.getTableHeader().setReorderingAllowed(false); // Turn Off column dragging
+        JTableHeader header = spreadSheet.getTableHeader();
+        header.addMouseListener(new ColumnHeaderListener());
+        header.setReorderingAllowed(false); // Turn Off column dragging
 
         // Put the model in image mode, and never change it.
         // Now we're showing/hiding the image column using JXTable's column hiding features.
@@ -366,6 +374,8 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             public void actionPerformed(ActionEvent ae)
             {
+                spreadSheet.clearSorter();
+
                 if (spreadSheet.getCellEditor() != null)
                 {
                     spreadSheet.getCellEditor().stopCellEditing();
@@ -434,6 +444,8 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             public void actionPerformed(ActionEvent ae)
             {
+                spreadSheet.clearSorter();
+                
                 AppPreferences remotePrefs = AppPreferences.getRemote();
                 String tool = remotePrefs.get("georef_tool", "");
                 if (tool.equalsIgnoreCase("geolocate"))
@@ -753,6 +765,11 @@ public class WorkbenchPaneSS extends BaseSubPane
                     return;
                 }
                 
+                if (spreadSheet.getCellEditor() != null)
+                {
+                    spreadSheet.getCellEditor().stopCellEditing();
+                }
+                
                 // check to make sure the selection actually changed
                 int newSelectionIndex = spreadSheet.getSelectedRow();
                 if (newSelectionIndex != previouslySelectedRowIndex)
@@ -785,6 +802,8 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     public void addRowAfter()
     {
+        spreadSheet.clearSorter();
+        
         checkCurrentEditState();
         
         int curSelInx = getCurrentIndexFromFormOrSS();
@@ -841,6 +860,8 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected void deleteRows()
     {
+        spreadSheet.clearSorter();
+
         checkCurrentEditState();
         int[] rows;
         if (currentPanelType == PanelType.Spreadsheet)
@@ -1154,6 +1175,11 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     public void setImageFrameVisible(boolean visible)
     {
+        if (visible == imageFrame.isVisible())
+        {
+            return;
+        }
+        
         if (spreadSheet.getCellEditor() != null)
         {
             spreadSheet.getCellEditor().stopCellEditing();
@@ -1164,7 +1190,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             // hide the image window
             
-            // turn off alwaysOnTop for Swing repaint reasons
+            // turn off alwaysOnTop for Swing repaint reasons (prevents a lock up)
             if (imageFrame.isAlwaysOnTop())
             {
                 imageFrame.setAlwaysOnTop(false);
@@ -1275,7 +1301,14 @@ public class WorkbenchPaneSS extends BaseSubPane
                 }
                 return true;
             }
-            JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow(), 
+
+            
+            // turn off alwaysOnTop for Swing repaint reasons (prevents a lock up)
+            if (imageFrame != null)
+            {
+                imageFrame.setAlwaysOnTop(false);
+            }
+            JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow(),
                                           String.format(getResourceString("WB_WRONG_IMAGE_TYPE"), 
                                                   new Object[] {FilenameUtils.getExtension(fullPath)}),
                                           UIRegistry.getResourceString("Warning"), 
@@ -1297,25 +1330,6 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             statusBar.setErrorMessage(getResourceString("NoGeoRefColumns"));
             return;
-        }
-
-        int[] selection = spreadSheet.getSelectedRowModelIndexes();
-        if (selection.length==0)
-        {
-            // if none are selected, map all of them
-            int rowCnt = spreadSheet.getRowCount();
-            selection = new int[rowCnt];
-            for (int i = 0; i < rowCnt; ++i)
-            {
-                selection[i]=spreadSheet.convertRowIndexToModel(i);
-            }
-        }
-        
-        // since Arrays.copyOf() isn't in Java SE 5...
-        final int[] selRows = new int[selection.length];
-        for (int i = 0; i < selection.length; ++i)
-        {
-            selRows[i] = selection[i];
         }
 
         List<String> outputFormats = new Vector<String>();
@@ -1356,7 +1370,28 @@ public class WorkbenchPaneSS extends BaseSubPane
             protected void okButtonPressed()
             {
                 checkCurrentEditState();
+
+                // figure out which rows the user is working with
+                int[] selection = spreadSheet.getSelectedRowModelIndexes();
+                if (selection.length==0)
+                {
+                    // if none are selected, map all of them
+                    int rowCnt = spreadSheet.getRowCount();
+                    selection = new int[rowCnt];
+                    for (int i = 0; i < rowCnt; ++i)
+                    {
+                        selection[i]=spreadSheet.convertRowIndexToModel(i);
+                    }
+                }
                 
+                // since Arrays.copyOf() isn't in Java SE 5...
+                int[] selRows = new int[selection.length];
+                for (int i = 0; i < selection.length; ++i)
+                {
+                    selRows[i] = selection[i];
+                }
+
+
                 // don't call super.okButtonPressed() b/c it will close the window
                 isCancelled = false;
                 btnPressed  = OK_BTN;
@@ -1491,11 +1526,12 @@ public class WorkbenchPaneSS extends BaseSubPane
                 String errorMsg = null;
                 if (e instanceof ConnectException)
                 {
-                    errorMsg = "Error connecting to mapping service";
+                    errorMsg = getResourceString("WB_MAP_SERVICE_CONNECTION_FAILURE");
                 }
                 else
                 {
-                    errorMsg = "Failed to get map from service";
+                    // in the future, we may want a different message for non-connection exceptions
+                    errorMsg = getResourceString("WB_MAP_SERVICE_CONNECTION_FAILURE");
                 }
                 JStatusBar statusBar = UIRegistry.getStatusBar();
                 statusBar.setErrorMessage(errorMsg,e);
@@ -1541,7 +1577,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             int wd = map.getIconWidth();
             if (ht < 20 && wd > 100 || ht > 100 && wd < 20)
             {
-                statusBar.setWarningMessage("Resulting map is thin.  May not display well.");
+                statusBar.setWarningMessage("WB_THIN_MAP_WARNING");
             }
         }
     }
@@ -1555,6 +1591,8 @@ public class WorkbenchPaneSS extends BaseSubPane
      */
     protected void convertColumnContents(int columnIndex, int[] rows, StringConverter converter, String outputFormat, int backupColIndex)
     {
+        final int[] selectedRows = spreadSheet.getSelectedRows();
+        final int[] selectedCols = spreadSheet.getSelectedColumns();
         for (int index = 0; index < rows.length; ++index)
         {
             int rowIndex = rows[index];
@@ -1595,6 +1633,23 @@ public class WorkbenchPaneSS extends BaseSubPane
                 setChanged(true);
             }
         }
+        
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            public void run()
+            {
+                ListSelectionModel selModel = spreadSheet.getSelectionModel();
+                for (int rowIndex: selectedRows)
+                {
+                    selModel.addSelectionInterval(rowIndex, rowIndex);
+                }
+                ListSelectionModel colSelModel = spreadSheet.getColumnModel().getSelectionModel();
+                for (int colIndex: selectedCols)
+                {
+                    colSelModel.addSelectionInterval(colIndex, colIndex);
+                }
+            }
+        });
     }
     
     /**
@@ -1727,7 +1782,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 //            command.setProperty("iconURL", iconUrl);
 //        }
         JStatusBar statusBar = UIRegistry.getStatusBar();
-        statusBar.setText("Opening Google Earth");  // XXX I18N
+        statusBar.setText("WB_OPENING_GOOGLE_EARTH");
         CommandDispatcher.dispatch(command);
      }
     
@@ -1767,15 +1822,15 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         if (workbench.getColumnIndex(localityTableId, "localityName") == -1)
         {
-            missingCols.add("localityName");
+            missingCols.add("Locality Name");  // i18n
         }
         if (workbench.getColumnIndex(localityTableId, "latitude1") == -1)
         {
-            missingCols.add("latitude1");
+            missingCols.add("Latitude 1"); // i18n
         }
         if (workbench.getColumnIndex(localityTableId, "longitude1") == -1)
         {
-            missingCols.add("longitude1");
+            missingCols.add("Longitude 1"); // i18n
         }
         
         // check the geography fields
@@ -1783,15 +1838,15 @@ public class WorkbenchPaneSS extends BaseSubPane
 
         if (workbench.getColumnIndex(geographyTableId, "country") == -1)
         {
-            missingCols.add("country");
+            missingCols.add("Country"); // i18n
         }
         if (workbench.getColumnIndex(geographyTableId, "state") == -1)
         {
-            missingCols.add("state");
+            missingCols.add("State"); // i18n
         }
         if (workbench.getColumnIndex(geographyTableId, "county") == -1)
         {
-            missingCols.add("county");
+            missingCols.add("County"); // i18n
         }
         
         // convert to a String[]  (toArray() converts to a Object[])
@@ -1813,11 +1868,11 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         if (workbench.getColumnIndex(localityTableId, "latitude1") == -1)
         {
-            missingCols.add("latitude1");
+            missingCols.add("Latitude 1"); // i18n
         }
         if (workbench.getColumnIndex(localityTableId, "longitude1") == -1)
         {
-            missingCols.add("longitude1");
+            missingCols.add("Longitude 1"); // i18n
         }
         
         // convert to a String[]  (toArray() converts to a Object[])
@@ -1963,6 +2018,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         // this thread simply gets the 'waiting for all results' part off of the Swing thread
         final Thread waitingForExecutors = new Thread(new Runnable()
         {
+            @SuppressWarnings("synthetic-access")
             public void run()
             {
                 // a big list of the query results
@@ -1979,14 +2035,14 @@ public class WorkbenchPaneSS extends BaseSubPane
                     catch (InterruptedException e)
                     {
                         // ignore this query since results were not available
-                        System.err.println("Process cancelled by user");
+                        log.warn("Process cancelled by user",e);
                         mapGrabExecServ.shutdown();
                         return;
                     }
                     catch (ExecutionException e)
                     {
                         // ignore this query since results were not available
-                        System.err.println(completedQuery.toString() + " had an execution error");
+                        log.error(completedQuery.toString() + " had an execution error",e);
                     }
                 }
                 
@@ -2049,6 +2105,11 @@ public class WorkbenchPaneSS extends BaseSubPane
             return;
         }
         
+        // turn off alwaysOnTop for Swing repaint reasons (prevents a lock up)
+        if (imageFrame != null)
+        {
+            imageFrame.setAlwaysOnTop(false);
+        }
         // ask the user if they want to review the results
         // TODO: i18n
         // XXX: i18n
@@ -2134,7 +2195,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             @Override
             public Object construct()
             {
-                // TODO: perform the BG web service call ON all rows, storing results in the rows
+                // perform the BG web service call ON all rows, storing results in the rows
                 
                 int progress = 0;
 
@@ -2163,7 +2224,8 @@ public class WorkbenchPaneSS extends BaseSubPane
                     }
                     catch (IOException ex1)
                     {
-                        statusBar.setWarningMessage("Network error while contacting BioGeomancer", ex1);
+                        String warning = getResourceString("WB_BIOGEOMANCER_UNAVAILABLE");
+                        statusBar.setWarningMessage(warning, ex1);
                         log.error("A network error occurred while contacting the BioGeomancer service", ex1);
                         
                         // update the progress bar UI and move on
@@ -2172,7 +2234,10 @@ public class WorkbenchPaneSS extends BaseSubPane
                     }
                     catch (Exception ex2)
                     {
-                        statusBar.setWarningMessage("Error while parsing BioGeomancer results", ex2);
+                        // right now we'll simply blame this on BG
+                        // in the future we might get more specific about this error
+                        String warning = getResourceString("WB_BIOGEOMANCER_UNAVAILABLE");
+                        statusBar.setWarningMessage(warning, ex2);
                         log.warn("Failed to get result count from BioGeomancer respsonse", ex2);
                         
                         // update the progress bar UI and move on
@@ -2212,7 +2277,11 @@ public class WorkbenchPaneSS extends BaseSubPane
                     {
                         // everything must have worked and returned at least 1 result
                         // TEMP FIX FOR BUG 4562 RELEASE 
+                    	// For now, all calls the setBioGeomancerResults() and getBioGeomancerResults() have been converted
+                    	// to calls to setTmpBgResults() and getTmpBgResults() to allow for continued use of the BG features
+                    	// without causing Hibernate to store the results to the DB, throwing the BUG 4562.
                         //row.setBioGeomancerResults(bgResults);
+                    	row.setTmpBgResults(bgResults);
                         setChanged(true);
                     }
                     
@@ -2235,7 +2304,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                     List<WorkbenchRow> rowsWithResults = new Vector<WorkbenchRow>();
                     for (WorkbenchRow row : selectedRows)
                     {
-                        if (row.getBioGeomancerResults() != null)
+                        if (row.getTmpBgResults() != null)
                         {
                             rowsWithResults.add(row);
                         }
@@ -2252,6 +2321,12 @@ public class WorkbenchPaneSS extends BaseSubPane
                         return;
                     }
 
+                    // turn off alwaysOnTop for Swing repaint reasons (prevents a lock up)
+                    if (imageFrame != null)
+                    {
+                        imageFrame.setAlwaysOnTop(false);
+                    }
+                    
                     // ask the user if they want to review the results
                     // TODO: i18n
                     // XXX: i18n
@@ -2394,10 +2469,34 @@ public class WorkbenchPaneSS extends BaseSubPane
         wbtmis.addAll(workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems());
         Collections.sort(wbtmis);
         
+        DBTableIdMgr databaseSchema = WorkbenchTask.getDatabaseSchema();
+        
         for (int i = 0; i < tableArg.getColumnCount(); i++) 
         {
             WorkbenchTemplateMappingItem wbtmi = wbtmis.elementAt(i);
-            GridCellEditor cellEditor = new GridCellEditor(new JTextField(), wbtmi.getCaption(), wbtmi.getDataFieldLength(), theSaveBtn);
+            
+            // Now go retrieve the data length
+            int fieldWidth = WorkbenchDataItem.cellDataLength;
+            DBTableInfo ti = databaseSchema.getInfoById(wbtmi.getSrcTableId());
+            if (ti != null)
+            {
+                DBFieldInfo fi = ti.getFieldByName(wbtmi.getFieldName());
+                if (fi != null)
+                {
+                    //System.out.println(fi.getName()+"  "+fi.getLength()+"  "+fi.getType());
+                    if (fi.getLength() > 0)
+                    {
+                        fieldWidth = Math.min(fi.getLength(), WorkbenchDataItem.cellDataLength);
+                    }
+                } else
+                {
+                    log.error("Can't find field with name ["+wbtmi.getFieldName()+"]");
+                }
+            } else
+            {
+                log.error("Can't find table ["+wbtmi.getSrcTableId()+"]");
+            }
+            GridCellEditor cellEditor = new GridCellEditor(new JTextField(), wbtmi.getCaption(), fieldWidth, theSaveBtn);
             
             column = tableArg.getColumnModel().getColumn(i);
 
@@ -2450,6 +2549,9 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         }
         
+        // turn off alwaysOnTop for Swing repaint reasons (prevents a lock up)
+        imageFrame.setAlwaysOnTop(false);
+        
         Collections.sort(items);
         ToggleButtonChooserDlg<WorkbenchTemplateMappingItem> dlg = new ToggleButtonChooserDlg<WorkbenchTemplateMappingItem>((Frame)UIRegistry.get(UIRegistry.FRAME),
                                                                         "WB_CARRYFORWARD",
@@ -2463,6 +2565,8 @@ public class WorkbenchPaneSS extends BaseSubPane
         dlg.setAddSelectAll(true);
         dlg.setSelectedObjects(selectedObjects);
         dlg.setModal(true);
+        dlg.setAlwaysOnTop(true);
+        dlg.setUseScrollPane(true);
         dlg.setVisible(true);  
         
         if (!dlg.isCancelled())
@@ -2550,6 +2654,10 @@ public class WorkbenchPaneSS extends BaseSubPane
             
             model.setWorkbench(workbench);
             formPane.setWorkbench(workbench);
+            if (imageFrame != null)
+            {
+                imageFrame.setWorkbench(workbench);
+            }
             
             log.info("Session Saved[ and Flushed "+session.hashCode()+"]");
            
@@ -2599,9 +2707,16 @@ public class WorkbenchPaneSS extends BaseSubPane
     {
         if (hasChanged)
         {
+            // turn off alwaysOnTop for Swing repaint reasons (prevents a lock up)
+            if (imageFrame != null)
+            {
+                imageFrame.setAlwaysOnTop(false);
+            }
+            String msg = String.format(getResourceString("SaveChanges"), getTitle());
             JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
+
             int rv = JOptionPane.showConfirmDialog(topFrame,
-                        getResourceString("SaveChanges"),
+                        msg,
                         getResourceString("SaveChangesTitle"),
                         JOptionPane.YES_NO_CANCEL_OPTION);
 
@@ -2670,9 +2785,17 @@ public class WorkbenchPaneSS extends BaseSubPane
         boolean retStatus = true;
         if (hasChanged)
         {
+
+            // turn off alwaysOnTop for Swing repaint reasons (prevents a lock up)
+            if (imageFrame != null)
+            {
+                imageFrame.setAlwaysOnTop(false);
+            }
+            String msg = String.format(getResourceString("SaveChanges"), getTitle());
             JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
+
             int rv = JOptionPane.showConfirmDialog(topFrame,
-                                                   getResourceString("SaveChanges"),
+                                                   msg,
                                                    getResourceString("SaveChangesTitle"),
                                                    JOptionPane.YES_NO_CANCEL_OPTION);
             if (rv == JOptionPane.YES_OPTION)
@@ -3102,6 +3225,52 @@ public class WorkbenchPaneSS extends BaseSubPane
                 setBorder(null);
             }
             return this;
+        }
+    }
+    
+    public class ColumnHeaderListener extends MouseAdapter
+    {
+        public void mousePressed(MouseEvent evt)
+        {
+            if (spreadSheet != null && spreadSheet.getCellEditor() != null)
+            {  
+                spreadSheet.getCellEditor().stopCellEditing();
+            }
+            /* this code shows how to get what column was clicked on
+             * 
+            JTable table = ((JTableHeader) evt.getSource()).getTable();
+            TableColumnModel colModel = table.getColumnModel();
+
+            // The index of the column whose header was clicked
+            int vColIndex = colModel.getColumnIndexAtX(evt.getX());
+            int mColIndex = table.convertColumnIndexToModel(vColIndex);
+
+            // Return if not clicked on any column header
+            if (vColIndex == -1) { return; }
+
+            // Determine if mouse was clicked between column heads
+            Rectangle headerRect = table.getTableHeader().getHeaderRect(vColIndex);
+            if (vColIndex == 0)
+            {
+                headerRect.width -= 3; // Hard-coded constant
+            } else
+            {
+                headerRect.grow(-3, 0); // Hard-coded constant
+            }
+            if (!headerRect.contains(evt.getX(), evt.getY()))
+            {
+                // Mouse was clicked between column heads
+                // vColIndex is the column head closest to the click
+
+                // vLeftColIndex is the column head to the left of the click
+                int vLeftColIndex = vColIndex;
+                if (evt.getX() < headerRect.x)
+                {
+                    vLeftColIndex--;
+                }
+                spreadSheet.getCellEditor().stopCellEditing();
+                System.out.println(vLeftColIndex);
+            }*/
         }
     }
 }

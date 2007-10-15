@@ -90,6 +90,11 @@ public class SearchableJXTable  extends JXTable
         //setSearchableJXTableProperties();
     }
     
+    public void clearSorter()
+    {
+        this.resetSorter();
+    }
+    
 //    public void setSearchableJXTableProperties()
 //    {
 //    	log.debug("setSearchableJXTableProperties");

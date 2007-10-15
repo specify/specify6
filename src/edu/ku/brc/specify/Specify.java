@@ -177,7 +177,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
     
     private String               appName             = "Specify";
     private String               appVersion          = "6.0";
-    private String               appBuildVersion     = "200709270931 (SVN: 2763)";
+
+    private String               appBuildVersion     = "200710040700 (SVN: 2811)";
     
     protected static CacheManager cacheManager        = new CacheManager();
 
@@ -938,7 +939,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 "funded by the Biological Databases<br>"+
                 "and Informatics Program of the<br>"+
                 "U.S. National Science Foundation <br>(Award DBI-0446544)</P><br>" +
-                "Build: " + appBuildVersion + 
+                "Build: " + appBuildVersion + "<br>Java Version: "+System.getProperty("java.version") +
                 "</html>"), BorderLayout.EAST);
         panel.setBorder(BorderFactory.createEmptyBorder(6,6,0,6));
         CustomDialog aboutDlg = new CustomDialog(topFrame, getResourceString("About") + " " +appName, true, CustomDialog.OK_BTN, panel);
@@ -957,13 +958,13 @@ public class Specify extends JPanel implements DatabaseLoginListener
             AttachmentUtils.getAttachmentManager().cleanup();
         }
         
-        AppPreferences.shutdownLocalPrefs();
-        
         if (SubPaneMgr.getInstance().aboutToShutdown())
         {
     		log.info("Application shutdown");
     
-    		// save the long term cache mapping info
+            AppPreferences.shutdownLocalPrefs();
+            
+     		// save the long term cache mapping info
     		try
     		{
     			UIRegistry.getLongTermFileCache().saveCacheMapping();
@@ -1071,6 +1072,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         AppPreferences.shutdownRemotePrefs();
         //moved here because context needs to be set before loading prefs, we need to know the SpecifyUser
         AppContextMgr.CONTEXT_STATUS status = AppContextMgr.getInstance().setContext(databaseNameArg, userNameArg, startOver);
+       // AppContextMgr.getInstance().
         SpecifyAppPrefs.initialPrefs();
         
         // XXX Get the current locale from prefs PREF

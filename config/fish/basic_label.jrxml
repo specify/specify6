@@ -14,16 +14,16 @@
 	<parameter name="DATASOURCE" class="java.lang.Object" isForPrompting="false">	</parameter>
 	<parameter name="footer" class="java.lang.String" isForPrompting="false">	</parameter>
 	<field name="commonName" class="java.lang.String">	</field>
-	<field name="County" class="java.lang.String">	</field>
-	<field name="Family" class="java.lang.String">	</field>
+	<field name="family" class="java.lang.String">	</field>
 	<field name="startDate" class="java.lang.String">	</field>
 	<field name="latitude1" class="java.lang.String">	</field>
 	<field name="fieldNumber" class="java.lang.String">	</field>
 	<field name="localityName" class="java.lang.String">	</field>
 	<field name="longitude1" class="java.lang.String">	</field>
 	<field name="minElevation" class="java.lang.String">	</field>
-	<field name="Collector1" class="java.lang.String">	</field>
-	<field name="remarks" class="java.lang.String">	</field>
+	<field name="collectorFirstName1" class="java.lang.String">	</field>
+	<field name="collectorLastName1" class="java.lang.String">	</field>
+	<field name="localityRemarks" class="java.lang.String">	</field>
 	<field name="genus1" class="java.lang.String">	</field>
 	<field name="species1" class="java.lang.String">	</field>
 	<field name="speciesAuthorFirstName1" class="java.lang.String">	</field>
@@ -64,7 +64,7 @@
 				<textElement>
 					<font fontName="Times New Roman" size="10" isBold="true" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{Family}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{family}]]></textFieldExpression>
 			</textField>
 		 	<textField isStretchWithOverflow="true">
 				<reportElement key="textField" x="0" y="56" width="283" height="12"/>
@@ -98,7 +98,7 @@
 				<textElement>
 					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{remarks}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{localityRemarks}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement key="textField" positionType="Float" x="0" y="122" width="77" height="12"/>
@@ -130,7 +130,7 @@
 				<textElement verticalAlignment="Bottom">
 					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{Collector1}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{collectorLastName1} + ", " + $F{collectorFirstName1}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement key="textField" positionType="Float" x="114" y="144" width="82" height="12"/>

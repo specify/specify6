@@ -83,6 +83,10 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     protected Exception                                      loadException = null;
     protected ImageIcon                                      imgIcon       = null;
     
+    // A temporary storage location for results from BG.  These results ARE NOT stored into the DB
+    // unless they are also set into 'bioGeomancerResults'.
+    protected String tmpBgResults;
+    
     /**
      * Constructor (for JPA).
      */
@@ -110,6 +114,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         workbench          = null;
         rowNumber          = null;
         workbenchDataItems = new HashSet<WorkbenchDataItem>();
+        workbenchRowImages = new HashSet<WorkbenchRowImage>();
     }
     // End Initializer
     
@@ -683,4 +688,15 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     {
         return workbench.getColumnIndex(Geography.class, "County");
     }
+
+    @Transient
+	public String getTmpBgResults()
+	{
+		return tmpBgResults;
+	}
+
+	public void setTmpBgResults(String tmpBgResults)
+	{
+		this.tmpBgResults = tmpBgResults;
+	}
 }

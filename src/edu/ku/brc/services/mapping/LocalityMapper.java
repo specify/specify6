@@ -841,7 +841,8 @@ public class LocalityMapper implements TimingTarget
 	 */
     protected void createBoundingBoxBufferRegion()
     {
-        double minSpread = .025;
+        //double minSpread = .025;
+        double minSpread = .032;
         double latSpread = maxLat-minLat;
         if( latSpread < minSpread )
         {
@@ -1116,68 +1117,72 @@ public class LocalityMapper implements TimingTarget
 	 * @throws HttpException a network error occurred while grabbing the map from the service
 	 * @throws IOException a network error occurred while grabbing the map from the service
 	 */
-	protected Icon grabNewMap() throws HttpException, IOException
-	{
+    protected Icon grabNewMap() throws HttpException, IOException
+    {
         recalculateBoundingBox();
         
-		if( !cacheValid )
-		{
-            Image mapImage = getMapFromService("mapus.jpl.nasa.gov",
-                    "/wms.cgi?request=GetMap&srs=EPSG:4326&format=image/png&styles=visual",
-                    "global_mosaic",
+        if( !cacheValid )
+        {
+//            Image mapImage = getMapFromService("mapus.jpl.nasa.gov",
+//                    "/wms.cgi?request=GetMap&srs=EPSG:4326&format=image/png&styles=visual",
+//                    "global_mosaic",
+//                    mapMinLat, mapMinLong, mapMaxLat, mapMaxLong, maxMapHeight, maxMapWidth);
+//
+//            Image overlayImage = getMapFromService("129.237.201.132",
+//                    "/cgi-bin/mapserv?map=/var/www/maps/specify.map&service=WMS&request=GetMap&srs=EPSG:4326&version=1.3.1&format=image/png&transparent=true",
+//                    "states,rivers",
+//                    mapMinLat, mapMinLong, mapMaxLat, mapMaxLong, maxMapHeight, maxMapWidth);
+
+            Image mapImage = getMapFromService("lifemapper.org",
+                    "/pymod/sdl.py/ogc?map=specify.map&service=WMS&request=GetMap&srs=EPSG:4326&version=1.0.0&format=image/png&transparent=TRUE",
+                    "global_mosaic,states,rivers",
                     mapMinLat, mapMinLong, mapMaxLat, mapMaxLong, maxMapHeight, maxMapWidth);
 
-            Image overlayImage = getMapFromService("129.237.201.132",
-                    //"/cgi-bin/ogc.cgi/specify?service=WMS&request=GetMap&srs=EPSG:4326&version=1.3.1&format=image/png&transparent=true",
-                    "/cgi-bin/mapserv?map=/var/www/maps/specify.map&service=WMS&request=GetMap&srs=EPSG:4326&version=1.3.1&format=image/png&transparent=true",
-                    "states,rivers",
-                    mapMinLat, mapMinLong, mapMaxLat, mapMaxLong, maxMapHeight, maxMapWidth);
+            mapIcon     = new ImageIcon(mapImage);
+//            overlayIcon = new ImageIcon(overlayImage);
+            cacheValid  = true;
 
-			mapIcon     = new ImageIcon(mapImage);
-            overlayIcon = new ImageIcon(overlayImage);
-			cacheValid  = true;
-
-			mapWidth = mapIcon.getIconWidth();
-			mapHeight = mapIcon.getIconHeight();
+            mapWidth = mapIcon.getIconWidth();
+            mapHeight = mapIcon.getIconHeight();
             
             if (mapWidth < 0 || mapHeight < 0)
             {
                 throw new IOException("Request for map failed.  Received map has negative width or height.");
             }
 
-			mapLatRange = mapMaxLat-mapMinLat;
-			mapLongRange = mapMaxLong-mapMinLong;
+            mapLatRange = mapMaxLat-mapMinLat;
+            mapLongRange = mapMaxLong-mapMinLong;
 
-			pixelPerLatRatio = mapHeight/mapLatRange;
-			pixelPerLongRatio = mapWidth/mapLongRange;
+            pixelPerLatRatio = mapHeight/mapLatRange;
+            pixelPerLongRatio = mapWidth/mapLongRange;
 
-			for( int i = 0; i<mapLocations.size(); ++i )
-			{
-				MapLocationIFace loc = mapLocations.get(i);
-				Point iconLoc = determinePixelCoordsOfMapLocationIFace(loc);
-				markerLocations.set(i,iconLoc);
-			}
+            for( int i = 0; i<mapLocations.size(); ++i )
+            {
+                MapLocationIFace loc = mapLocations.get(i);
+                Point iconLoc = determinePixelCoordsOfMapLocationIFace(loc);
+                markerLocations.set(i,iconLoc);
+            }
             
             cacheValid = true;
-		}
+        }
         
-		Icon icon = new Icon()
-		{
-			public void paintIcon(Component c, Graphics g, int x, int y)
-			{
-				// this helps keep the labels inside the map
-				g.setClip(x,y,mapWidth,mapHeight);
-				// log the x and y for the MouseMotionListener
-				mostRecentPaintedX = x;
-				mostRecentPaintedY = y;
-				Point currentLocPoint = null;
-				if( currentLoc!=null )
-				{
-					currentLocPoint = determinePixelCoordsOfMapLocationIFace(currentLoc);
-				}
+        Icon icon = new Icon()
+        {
+            public void paintIcon(Component c, Graphics g, int x, int y)
+            {
+                // this helps keep the labels inside the map
+                g.setClip(x,y,mapWidth,mapHeight);
+                // log the x and y for the MouseMotionListener
+                mostRecentPaintedX = x;
+                mostRecentPaintedY = y;
+                Point currentLocPoint = null;
+                if( currentLoc!=null )
+                {
+                    currentLocPoint = determinePixelCoordsOfMapLocationIFace(currentLoc);
+                }
 
-				mapIcon.paintIcon(c,g,x,y);
-                overlayIcon.paintIcon(c, g, x, y);
+                mapIcon.paintIcon(c,g,x,y);
+//                overlayIcon.paintIcon(c, g, x, y);
 
 				Point lastLoc = null;
 				for( int i = 0; i<mapLocations.size(); ++i )

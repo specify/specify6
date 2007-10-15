@@ -384,6 +384,10 @@ public class MapGrabber
 			}
 			//image = Toolkit.getDefaultToolkit().getImage(imageFile.getAbsolutePath());
             image = ImageIO.read(imageFile);
+            if (image == null)
+            {
+                imageCache.refreshCachedWebResource(urlStr);
+            }
             ImageIcon mapIcon = new ImageIcon(image);
             if (mapIcon.getIconHeight() < 0 || mapIcon.getIconWidth() < 0)
             {

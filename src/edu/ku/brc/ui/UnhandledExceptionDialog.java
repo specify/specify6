@@ -90,7 +90,10 @@ public class UnhandledExceptionDialog extends JDialog
      */
     protected void createUI(final String message, final Throwable throwable)
     {
-        setDefaultCloseOperation(HIDE_ON_CLOSE);
+        //meg fixed merge from WB
+        //setDefaultCloseOperation(HIDE_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
         this.setModal(false);
 
         int          height  = 100;

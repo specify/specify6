@@ -263,7 +263,9 @@ public class BioGeomancerResultsDisplay extends JPanel implements MapperListener
      */
     public void exceptionOccurred(Exception e)
     {
-        mapLabel.setText("Error while grabbing map."); // XXX i18n
+        // blame this on the map service
+        String errorMsg = getResourceString("WB_MAP_SERVICE_CONNECTION_FAILURE");
+        mapLabel.setText(errorMsg);
     }
 
     /* (non-Javadoc)

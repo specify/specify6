@@ -13,21 +13,21 @@
   <li>Changes made to the data in the WorkBench will not be reflected in the original CSV file.</li>
   <li> The WorkBench has a 2000 record maximum. Import files that include more than 2000 records will not import. </li>
 </ul>
-<p align="center"><img src="../images/importdialog.png" ></p>
-<p align="center" class="imgcaption">Import from MS Excel </p>
+<p align="center"><img src="../images/importerror.png" alt="Import Error"></p>
+<p align="center" class="imgcaption">Import Error </p>
 <p align="center" class="imgcaption">&nbsp;</p>
 <p>To begin, click on the Import Data action on the Sidebar and choose the import file in the file dialog. </p>
 <p>The following information dialog will open: </p>
-<p align="center"><img src="../images/badcsvimport.png" alt="Bad Import"></p>
-<p align="center" class="imgcaption">Incorrect Import Options </p>
+<p align="center"><img src="../images/csvimport.png" alt="CSV Import"></p>
+<p align="center" class="imgcaption">Import from CSV </p>
 <p>&nbsp;</p>
 <p>This dialog enables  the WorkBench to properly import the file by allowing the user to set data import options. </p>
-<p>The Data Preview window reads and displays a sample of the column headings and data from the import file. If the file does not contain column headings the columns will be labelled in  numerical order (Column 1, Column 2, etc.). </p>
+<p>The Data Preview window reads and displays a sample of the column headings and data from the import file. If the file does not contain column headings the columns will be labelled in numerical order (Column 1, Column 2, etc.). </p>
 <p>Incorrect import options will be visible in the Data Preview window and will also have a warning icon and message displayed. </p>
-<p>To correct the information displayed,   choose different selections  in the 'Data Import Options' section of the dialog. When the 'Data Import Options' are correct the 'Data Preview' window will display the CSV file correctly and the warning icon will disappear. The corrected dialog is shown below: </p>
-<p align="center"><img src="../images/gooddelimiters.png" alt="Good Delimiters"></p>
-<p align="center" class="imgcaption">Correct Import Options </p>
-<p>&nbsp;</p>
+<p align="center"><img src="../images/badcsvimport.png" alt="Bad Import"></p>
+<p align="center">Incorrect Import Options </p>
+<p align="center">&nbsp;</p>
+<p>To correct the information displayed, choose different selections  in the 'Data Import Options' section of the dialog. When the 'Data Import Options' are correct the 'Data Preview' window will display the CSV file correctly and the warning icon will disappear. When the dialog is correct the warning will disapper and the dialog will look like the '<em>Import from CSV</em>' dialog above. </p>
 <p>The next step in the import process is to 'map' the  column headings from the import file to  Specify fields. </p>
 <p>&nbsp;</p>
 <h3><u>File includes  Column Headings </u> </h3>
@@ -44,25 +44,26 @@
 <p>The column headings from the import file appear under 'Data Set Columns' on the right side of the dialog and are mapped to 'Specify Fields'  on the left. </p>
 <p>Column headings that map to Specify fields are identifed by a <img src="../images/linked.png" alt="Linked" > (linked) icon. </p>
 <p>Column headings that have not been automapped will have 'To Be Discarded' displayed under 'Specify fields'. Unmapped column headings will be deleted if they are not mapped to a Specify field before clicking 'OK'.</p>
-<p>The buttons in the dialog enable columns to be mapped, unmapped, added, deleted and reordered . </p><br>
+<p>The buttons in the dialog enable columns to be mapped, unmapped, added, deleted and reordered.
+</p>
 <table width="75%" border="1" cellspacing="1" cellpadding="6">
   <tr>
-    <td width="8%"><img src="../images/Map16x16.png" alt="map" width="16" height="16"></td>
+    <td width="8%"><img src="../images/Map16x16.png" alt="map"></td>
     <td width="14%"><span class="index">Map</span></td>
     <td width="78%">Adds the field to the column list </td>
   </tr>
   <tr>
-    <td><img src="../images/Unmap16x16.png" alt="unmap" width="16" height="16"></td>
+    <td><img src="../images/Unmap16x16.png" alt="unmap"></td>
     <td><span class="index">Unmap</span></td>
     <td>Removes the field from the list of columns </td>
   </tr>
   <tr>
-    <td><img src="../images/ReorderUp16x16.png" alt="reorderup" width="16" height="16"></td>
+    <td><img src="../images/ReorderUp16x16.png" alt="reorderup"></td>
     <td><span class="index">Reorder up</span></td>
     <td>Moves the selected field up </td>
   </tr>
   <tr>
-    <td><img src="../images/ReorderDown16x16.png" alt="reorderdown" width="16" height="16"></td>
+    <td><img src="../images/ReorderDown16x16.png" alt="reorderdown"></td>
     <td><span class="index">Reorder down</span></td>
     <td>Moves the selected field down </td>
   </tr>
@@ -73,20 +74,20 @@
   <li>Click on the column in the right hand window to select it</li>
   <li>Click on the Data Type to display the associated fields in the 'Specify Fields' window </li>
   <li>Click on the required Specify field to select it</li>
-  <li>Click the <img src="../images/Map16x16.png" alt="map" width="16" height="16"> (map) button </li>
+  <li>Click the <img src="../images/Map16x16.png" alt="map"> (map) button </li>
 </ol>
 <p>To  unmap a column from a field:</p>
 <ol>
   <li>Click on the column in the right hand window to select it </li>
-  <li>Click the <img src="../images/Unmap16x16.png" alt="unmap" width="16" height="16"> (unmap) button </li>
+  <li>Click the <img src="../images/Unmap16x16.png" alt="unmap" > (unmap) button </li>
 </ol>
 <p>To add a column </p>
 <ol>
   <li>Click on the Data Type to show the Specify fields in the 'Fields' window </li>
   <li>Click on the Specify field</li>
-  <li>Click the <img src="../images/Map16x16.png" alt="map" width="16" height="16"> (map) button</li>
+  <li>Click the <img src="../images/Map16x16.png" alt="map"> (map) button</li>
 </ol>
-<p>A <img src="../images/linked_right.png" alt="link" width="32" height="16"> (link) icon confirms that the column and field are the same heading. </p>
+<p>A <img src="../images/linked_right.png" alt="link"> (link) icon confirms that the column and field are the same heading. </p>
 <p><em><strong>Note:</strong></em> A field may only map once. Specify fields that are mapped display a green check mark next to their name in the Specify field list confirming that they are in use. </p>
 <p>&nbsp;</p>
 <p>When all the Columns are mapped and ordered correctly click the 'OK' button. </p>
@@ -104,22 +105,22 @@
 <p>The buttons in the dialog enable columns to be mapped, unmapped, added, deleted and reordered . The function of each button is described below:</p><br>
 <table width="75%" border="1" cellspacing="1" cellpadding="6">
   <tr>
-    <td width="8%"><img src="../images/Map16x16.png" alt="map" width="16" height="16"></td>
+    <td width="8%"><img src="../images/Map16x16.png" alt="map"></td>
     <td width="14%">map</td>
     <td width="78%">adds the field to the column list </td>
   </tr>
   <tr>
-    <td><img src="../images/Unmap16x16.png" alt="unmap" width="16" height="16"></td>
+    <td><img src="../images/Unmap16x16.png" alt="unmap"></td>
     <td>unmap</td>
     <td>removes the field from the list of columns </td>
   </tr>
   <tr>
-    <td><img src="../images/ReorderUp16x16.png" alt="reorderup" width="16" height="16"></td>
+    <td><img src="../images/ReorderUp16x16.png" alt="reorderup" ></td>
     <td>reorder up </td>
     <td>moves the selected field up </td>
   </tr>
   <tr>
-    <td><img src="../images/ReorderDown16x16.png" alt="reorderdown" width="16" height="16"></td>
+    <td><img src="../images/ReorderDown16x16.png" alt="reorderdown"></td>
     <td>reorder down </td>
     <td>moves the selected field down </td>
   </tr>
@@ -130,20 +131,20 @@
   <li>Click on the column in the right hand window to select it</li>
   <li>Click on the Data Type to display the associated fields in the 'Specify Fields' window </li>
   <li>Click on the required Specify field to select it</li>
-  <li>Click the <img src="../images/Map16x16.png" alt="map" width="16" height="16"> (map) button </li>
+  <li>Click the <img src="../images/Map16x16.png" alt="map"> (map) button </li>
 </ol>
 <p>To  unmap a column from a field:</p>
 <ol>
   <li>Click on the column in the right hand window to select it </li>
-  <li>Click the <img src="../images/Unmap16x16.png" alt="unmap" width="16" height="16"> (unmap) button </li>
+  <li>Click the <img src="../images/Unmap16x16.png" alt="unmap" > (unmap) button </li>
 </ol>
 <p>To add a column </p>
 <ol>
   <li>Click on the Data Type to show the Specify fields in the 'Fields' window </li>
   <li>Click on the Specify field</li>
-  <li>Click the <img src="../images/Map16x16.png" alt="map" width="16" height="16"> (map) button</li>
+  <li>Click the <img src="../images/Map16x16.png" alt="map"> (map) button</li>
 </ol>
-<p>A <img src="../images/linked_right.png" alt="link" width="32" height="16"> (link) icon confirms that the column and field are the same heading. </p>
+<p>A <img src="../images/linked_right.png" alt="link" > (link) icon confirms that the column and field are the same heading. </p>
 <p><em><strong>Note:</strong></em> A field may only map once. Specify fields that are mapped display a green check mark next to their name in the Specify field list confirming that they are in use. </p>
 <p>&nbsp;</p>
 <p>When all the columns are mapped and ordered correctly click the 'OK' button. </p>
@@ -156,7 +157,8 @@
 <h3><u>Bad Imports </u></h3>
 <p>CSV files that are corrupt or have not been saved correctly will not import correctly into the WorkBench. A bad file may appear in the Data Set Mapping Editor with partial or no column headings, or  display a warning at the bottom of the WorkBench window: </p>
 <p>&nbsp;</p>
-<p><img src="../images/wrongfilewarning.png" alt="Wrong File Warning" ></p>
+<p align="center"><img src="../images/wrongfilewarning.png" alt="Wrong File Warning" ></p>
+<p align="center" class="imgcaption">Bad File Warning </p>
 <br><br><br>
 </body>
 

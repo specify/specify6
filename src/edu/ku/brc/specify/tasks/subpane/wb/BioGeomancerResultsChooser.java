@@ -152,12 +152,12 @@ public class BioGeomancerResultsChooser extends CustomDialog
         
         try
         {
-            resultsDisplayPanel.setBioGeomancerResultsData(rows.get(rowIndex).getBioGeomancerResults());
+            resultsDisplayPanel.setBioGeomancerResultsData(rows.get(rowIndex).getTmpBgResults());
             resultsDisplayPanel.setSelectedResult(0);
         }
         catch (Exception e)
         {
-            UIRegistry.getStatusBar().setErrorMessage("Error while displaying BioGeomancer results", e);
+            UIRegistry.getStatusBar().setErrorMessage("Error while displaying BioGeomancer results", e); // i18n
             super.setVisible(false);
         }
     }

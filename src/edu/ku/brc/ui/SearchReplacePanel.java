@@ -384,9 +384,9 @@ public class SearchReplacePanel extends JPanel
      * replaces the contents of cell where part of the cell contains the string found with the string
      * that is provided for replacement.
      */
-    private void replace()
+    private void replaceCellValue()
     {
-        log.debug("replace called");
+        log.debug("replaceCellValue()  called");
         if (!isTableValid())
         {
             return;
@@ -406,7 +406,7 @@ public class SearchReplacePanel extends JPanel
         {
             if (!(o instanceof Boolean) && !(o instanceof Integer))
             {
-                log.info("The value at row=[" + selectedRow + "] col=[" + selectedCol+ "] is not a String and cannot be replaced");
+                log.info("replaceCellValue () The value at row=[" + selectedRow + "] col=[" + selectedCol+ "] is not a String and cannot be replaced");
                 return;
             }
 
@@ -417,21 +417,27 @@ public class SearchReplacePanel extends JPanel
         String myNewStr = "";
         String myFindValue = findField.getText();
 
-        TableSearcher as = new TableSearcher();
-        TableSearcherCell cell = as.cellContains(myFindValue, table,  selectedRow, selectedCol,getMatchCaseFlag());
+        log.debug("replaceCellValue() creating a TableSearcher()");
+        TableSearcher tableSearch = new TableSearcher();
+        TableSearcherCell cell = tableSearch.checkCellForMatch(myFindValue, table,  selectedRow, selectedCol,getMatchCaseFlag());
         boolean found = cell.isFound();
         if (found)
         {
             if (getMatchCaseFlag())
             {
+                 log.debug("replaceCellValue() Creating replace value");
                  myNewStr = Pattern.compile(myFindValue).matcher(myStrToReplaceValueIn).replaceAll(myReplaceValue);
+                 log.debug("replaceCellValue()New value is: " + myNewStr);
             }
             else
             {
-                log.debug("Need to implement case insensitivity");
+                log.debug("replaceCellValue() Need to implement case insensitivity");
+                log.debug("replaceCellValue() Creating replace value");
                 myNewStr = Pattern.compile(myFindValue, Pattern.CASE_INSENSITIVE).matcher(myStrToReplaceValueIn).replaceAll(myReplaceValue);
+                log.debug("replaceCellValue()New value is: " + myNewStr);
             }  
             
+            log.debug("replaceCellValue()Setting value["+ myNewStr+"] at Row[" + selectedRow +"] Col[" + selectedCol +"]" );
             table.setValueAt(myNewStr, selectedRow, selectedCol);   
             
             ListSelectionModel rsm = table.getSelectionModel();
@@ -444,7 +450,8 @@ public class SearchReplacePanel extends JPanel
             setStatusLabelWithFailedFind(); 
         }
         setCheckAndSetWrapOption();
-        find();
+        log.debug("replaceCellValue()calling findNext()");
+        findNext();
     }
     
     /**
@@ -460,19 +467,23 @@ public class SearchReplacePanel extends JPanel
         stopTableEditing();
         
         String str = findField.getText();
-        log.debug("replaceAll() - FindValue[" + str + "] SearchingDown[" + isSearchDown + "]");
+        log.debug("replaceAll() called - Search Value[" + str + "]");// SearchingDown[" + isSearchDown + "]");
 
         int curRow = 0;
         int curCol = 0;
 
         isSearchDown = true;
 
-        TableSearcher as = new TableSearcher();
-        TableSearcherCell cell = as.findCellInTable(str, table,  curRow, curCol,getMatchCaseFlag(), isSearchDown, getWrapSearchFlag());
+        log.debug("replaceAll() creating TableSearcher()");
+        TableSearcher tableSearch = new TableSearcher();
+        TableSearcherCell cell = tableSearch.searchTableForMatchingCell(str, table,  curRow, curCol,getMatchCaseFlag(), isSearchDown, getWrapSearchFlag());
         boolean found = cell.isFound();  
         if (!found)
         {
           log.debug("repalceall() found nothing");
+          //searching down
+          //wrap is not on & end of table reached
+          //next button disable, previous button enabled
           if (isSearchDown)
           {
               isFinishedSearchingDown = true;
@@ -483,27 +494,31 @@ public class SearchReplacePanel extends JPanel
               }
               setStatusLabelWithFailedFind();
           } 
+          //searching up
+          //wrap is not on & top of table reached
+          //next button enabled, previous button disabled
           else
           {
               isFinishedSearchingUp = true;
               if (!wrapSearchButton.isSelected())
               {
-                  previousButton.setEnabled(false);
-                  nextButton.setEnabled(true);                
+                  nextButton.setEnabled(true);       
+                  previousButton.setEnabled(false);                          
               }
               setStatusLabelWithFailedFind();
           }      
         }
         while (found)
-        {
-            log.debug("repalceall() found value");
+        {           
             curRow = cell.getRow();
             curCol = cell.getCol();
+            log.debug("replaceall() found value at row[" + curRow +"] curCol[" + curCol +"]");
             ListSelectionModel rsm = table.getSelectionModel();
             ListSelectionModel csm = table.getColumnModel().getSelectionModel();
             rsm.setSelectionInterval(curRow, curRow);
             csm.setSelectionInterval(curCol, curCol);
-            replace();
+            log.debug("replaceall() getting ready to call replaceCellValue()");
+            replaceCellValue();
             
             if(curCol >= (table.getColumnModel().getColumnCount()-1)) 
             {
@@ -511,9 +526,18 @@ public class SearchReplacePanel extends JPanel
                 curCol = -1;
             }
             curCol++;
-            cell = as.findCellInTable(str, table, curRow, curCol,getMatchCaseFlag(), isSearchDown, false);
+            log.debug("replaceall() calling tableSearcher again, incremented row and column");
+            cell = tableSearch.searchTableForMatchingCell(str, table, curRow, curCol, getMatchCaseFlag(), isSearchDown, false);
+            
             found = cell.isFound();
-
+            if(found) 
+            {
+                log.debug("replaceall() value was found");
+            }
+            else
+            {
+                log.debug("replaceall()  value was NOT found");
+            }
         }  
         nextButton.setEnabled(false);
         previousButton.setEnabled(false);
@@ -551,7 +575,7 @@ public class SearchReplacePanel extends JPanel
      * performs a search/find on a particular string.
      * @return
      */
-    private void find()
+    private void findNext()
     {   
         if (!isTableValid())
         {
@@ -561,8 +585,7 @@ public class SearchReplacePanel extends JPanel
         String str = findField.getText();        
         int curRow = table.getSelectedRow();
         int curCol = table.getSelectedColumn();
-        log.debug("find() - FindValue[" + str + "] SearchingDown[" + isSearchDown+ "]"
-                +"curRow[" + curRow + "] curCol[" + curCol+ "]");
+        log.debug("findNext() - FindValue[" + str + "] curRow[" + curRow + "] curCol[" + curCol+ "] SearchingDown[" + isSearchDown+ "]");
 
         if (isSearchDown){
             if (curRow == -1) 
@@ -598,7 +621,7 @@ public class SearchReplacePanel extends JPanel
         
         
         TableSearcher as = new TableSearcher();
-        TableSearcherCell cell = as.findCellInTable(str, table, curRow, curCol, getMatchCaseFlag(),isSearchDown, getWrapSearchFlag() );
+        TableSearcherCell cell = as.searchTableForMatchingCell(str, table, curRow, curCol, getMatchCaseFlag(),isSearchDown, getWrapSearchFlag() );
         boolean found = cell.isFound();
         
         if (found)
@@ -631,7 +654,7 @@ public class SearchReplacePanel extends JPanel
         }
         else
         {
-            log.debug("find() found nothing");
+            log.debug("findNext() found nothing");
             if (isSearchDown)
             {
                 isFinishedSearchingDown = true;
@@ -771,7 +794,9 @@ public class SearchReplacePanel extends JPanel
                 replaceAll();
                 UsageTracker.incrUsageCount("WB.ReplaceAllButton");
             }
-            replace();
+            else {
+                replaceCellValue();
+            }
             UsageTracker.incrUsageCount("WB.ReplaceButton");
         }
     }
@@ -816,7 +841,7 @@ public class SearchReplacePanel extends JPanel
 
             UsageTracker.incrUsageCount("WB.FindButton");
             setCheckAndSetWrapOption();
-            find(); 
+            findNext(); 
         }
     }
 

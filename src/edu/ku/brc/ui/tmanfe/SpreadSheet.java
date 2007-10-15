@@ -185,28 +185,33 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
                         ss.getEditorComponent().requestFocus();
                         
                         final JTextComponent txtComp = (JTextComponent)ss.getEditorComponent();
-                        String         txt     = txtComp.getText();
-                        FontMetrics    fm      = txtComp.getFontMetrics(txtComp.getFont());
-                        int x = e.getPoint().x - ss.getEditorComponent().getBounds().x;
+                        String         txt       = txtComp.getText();
+                        FontMetrics    fm        = txtComp.getFontMetrics(txtComp.getFont());
+                        int            x         = e.getPoint().x - ss.getEditorComponent().getBounds().x - 1;
+                        int            prevWidth = 0;
                         for (int i=0;i<txt.length();i++)
                         {
-                            int width = fm.stringWidth(txt.substring(0, i));
-                            //System.out.println(x + " " + width);
-                            if (width > x)
+                            
+                            int width        = fm.stringWidth(txt.substring(0, i));
+                            int basePlusHalf = prevWidth + (int)(((width - prevWidth) / 2) + 0.5);
+                            //System.out.println(prevWidth + " X[" + x + "] " + width+" ["+txt.substring(0, i)+"] " + i + " " + basePlusHalf);
+                            //System.out.println(" X[" + x + "] " + prevWidth + " - "+ basePlusHalf+" - " + width+" ["+txt.substring(0, i)+"] " + i);
+                            if (x < width)
                             {
                                 // Clearing the selection is needed for Window for some reason
-                                final int inx = i;
+                                final int inx = i + (x <= basePlusHalf ? -1 : 0);
                                 SwingUtilities.invokeLater(new Runnable() {
                                     @SuppressWarnings("synthetic-access")
                                     public void run()
                                     {
                                         txtComp.setSelectionStart(0);
                                         txtComp.setSelectionEnd(0);
-                                        txtComp.setCaretPosition(inx);
+                                        txtComp.setCaretPosition(inx > 0 ? inx : 0);
                                     }
                                 });
                                 break;
                             }
+                            prevWidth = width;
                         }
                     }
                 }
@@ -566,6 +571,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         mouseDown = type == MouseEvent.MOUSE_PRESSED;
         
         // XXX For Java 5 Bug
+        // I am not sure if we still need this
         if (mouseDown && UIHelper.getOSType() == UIHelper.OSTYPE.MacOSX)
         {
             int rowIndexStart = rowAtPoint(ev.getPoint());
@@ -581,27 +587,59 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
 
         if (ev.isPopupTrigger())
         {
+            // No matter what, stop editing if we are editing
+            if (isEditing())
+            {
+                getCellEditor().stopCellEditing();
+            }
             
+            // Now check to see if we right clicked on a different rowor column
+            boolean isOnSelectedCell = false;
+            int     rowIndexStart = rowAtPoint(ev.getPoint());
+            int     colIndexStart = columnAtPoint(ev.getPoint());
+            
+            // Check to see if we are in the selection of mulitple rows and cols
             if (getSelectedRowCount() > 0)
             {
-                if (popupMenu != null)
+                int[] cols = getSelectedColumns();
+                for (int r : getSelectedRows())
                 {
-                    popupMenu.setVisible(false);
+                    if (r == rowIndexStart)
+                    {
+                        for (int c : cols)
+                        {
+                            if (c == colIndexStart)
+                            {
+                                isOnSelectedCell = true;
+                                break;
+                            }
+                        }
+                    }
                 }
+            }
+            if (!isOnSelectedCell)
+            {
+                setRowSelectionInterval(rowIndexStart, rowIndexStart);
+                setColumnSelectionInterval(colIndexStart, colIndexStart);
+            }
+            
+            if (popupMenu != null)
+            {
+                popupMenu.setVisible(false);
+            }
 
-                popupMenu = createMenuForSelection(ev.getPoint());
+            popupMenu = createMenuForSelection(ev.getPoint());
 
-                if (popupMenu.isVisible())
-                {
-                    popupMenu.setVisible(false);
-                    
-                } else
-                {
-                    //popupMenu.setTargetCells(_selection);
-                    Point p = getLocationOnScreen();
-                    popupMenu.setLocation(p.x + ev.getX() + 1, p.y + ev.getY() + 1);
-                    popupMenu.setVisible(true);
-                }
+            if (popupMenu.isVisible())
+            {
+                popupMenu.setVisible(false);
+                
+            } else
+            {
+                //popupMenu.setTargetCells(_selection);
+                Point p = getLocationOnScreen();
+                popupMenu.setLocation(p.x + ev.getX() + 1, p.y + ev.getY() + 1);
+                popupMenu.setVisible(true);
             }
         }
         super.processMouseEvent(ev);
@@ -999,6 +1037,11 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
             log.debug("anchor: " + selAnchor);
             log.debug("lead   :" + selLead);
             
+            if (isEditing())
+            {
+                getCellEditor().stopCellEditing();
+            }
+            
             RowHeaderLabel lbl = (RowHeaderLabel)e.getSource();
             int            row = lbl.getRowNum()-1;
             
@@ -1053,6 +1096,9 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
 
                 table.setColumnSelectionInterval(0, table.getColumnCount()-1);
                 selAnchor = selLead = row;
+                
+                prevRowSelInx = getSelectedRow();
+                prevColSelInx = 0;
             }
             
             rowSelectionStarted = true;

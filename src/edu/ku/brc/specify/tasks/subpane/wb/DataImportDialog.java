@@ -404,7 +404,20 @@ public class DataImportDialog extends JDialog implements ActionListener
         });
 
         getRootPane().setDefaultButton(okBtn);
-        HelpMgr.registerComponent(helpBtn, "WorkbenchImportCSV");
+        
+        if (config instanceof ConfigureCSV)
+        {
+            HelpMgr.registerComponent(helpBtn, "WorkbenchImportCSV");
+        }
+        else if (config instanceof ConfigureXLS)
+        {
+            HelpMgr.registerComponent(helpBtn, "WorkbenchImportXLS");
+        }
+        else
+        {
+            HelpMgr.registerComponent(helpBtn, "WorkbenchImportData");
+        }
+       
         return  ButtonBarFactory.buildOKCancelHelpBar(okBtn, cancelBtn, helpBtn);
     }
     
@@ -779,6 +792,7 @@ public class DataImportDialog extends JDialog implements ActionListener
             //quick fix to prevent ".0" at end of catalog numbers etc
             NumberFormat nf = NumberFormat.getInstance();
             nf.setMinimumFractionDigits(0);
+            nf.setMaximumFractionDigits(20);
             nf.setGroupingUsed(false); //gets rid of commas
             
             // Iterate over each row in the sheet

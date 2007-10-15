@@ -245,6 +245,19 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      */
     public boolean removePane(final SubPaneIFace pane)
     {
+        return removePane(pane, true);
+    }
+
+
+    /**
+     * Asks the pane if it can be closed via a call to aboutToShutdown and it it returns true
+     * then the pane is closed and removed.
+     * @param pane the pane to be removed
+     * @param askForSave can override asking whether it should be saved
+     * @return true if the pane was removed false if the user decided it shouldn't via a call to aboutToShutdown.
+     */
+    public boolean removePane(final SubPaneIFace pane, final boolean askForSave)
+    {
         UIRegistry.getStatusBar().setText("");
         
         if (currentPane == pane)
@@ -253,7 +266,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             currentPane = null;
         }
         
-        if (!pane.aboutToShutdown())
+        if (askForSave && !pane.aboutToShutdown())
         {
             return false;
         }
@@ -351,8 +364,12 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             if (!ok)
             {
                 return false;
+            } else
+            {
+                removePane(sp, false); // overrides asking to be saved.
             }
         }
+        
         return true;
     }
 

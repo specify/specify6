@@ -467,6 +467,7 @@
     <field column="Superfamily" name="superfamily" type="java.lang.String" length="64"/>
     <field column="Family" name="family" type="java.lang.String" length="64"/>
     <field column="Subfamily" name="subfamily" type="java.lang.String" length="64"/>
+    <field column="CommonName" name="commonName" type="java.lang.String" length="128"/>
     <!--
     <field column="Tribe" name="tribe" type="java.lang.String" length="64"/>
     <field column="Subtribe" name="subtribe" type="java.lang.String" length="64"/>

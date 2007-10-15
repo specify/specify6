@@ -3,41 +3,61 @@
 <head>
  <link href="../../main.css" rel="stylesheet" type="text/css" media="screen"></link>
 <title>BioGiomancer</title>
+<style>
+table.box { border-top: 1px solid gray; border-left: 1px solid gray }
+table.box td { border-bottom: 1px solid gray; border-right: 1px solid gray }
+</style>
 </head>
 
 <body>
 <h2>BioGeomancer</h2>
 <hr>
 <p>The WorkBench uses the BioGeomancer web service to calculate the latitude and longitude positions from a textual locality description and three geography fields. 
-The WorkBench processes all the selected rows and caches the information, enabling the results to be stepped through one row at a time and the appropriate Latitude / Longitude 
-can be selected, or skipped. For more information about the BioGeomancer tool visit their Web Site: www.biogeomancer.org</p>
+The WorkBench processes all the selected rows and caches the information, enabling the results to be stepped through  and the appropriate Latitude / Longitude 
+to be either selected or skipped. For more information about the BioGeomancer tool visit their Web Site: www.biogeomancer.org</p>
 <p><em><strong>Notes: </strong></em></p>
 <ul>
   <li>If BioGeomancer results are accepted, they will overwrite any existing  data in the corresponding Data Set columns.</li>
-  <li>The WorkBench is not responsible for any of the results returned by BioGeomancer, the WorkBench is integrated with the the BioGeomancer. </li>
+  <li>The WorkBench is not responsible for any of the results returned by BioGeomancer, the WorkBench is integrated with the BioGeomancer web service. </li>
 </ul>
-<h3><u>Requirements</u></h3>
-<ul type="disc">
-  <li>Locality Name</li>
-  <li>Latitude1</li>
-  <li>Longitude1</li>
-  <li>Country</li>
-  <li>State</li>
-  <li>County</li>
-</ul>
-<p>The BioGeomancer tool uses the data present in the Locality Name, Country, State and County fields to query the BioGeomancer service.&nbsp; These fields must contain data in order for the service to work.&nbsp; The Latitude 1 and Longitude 1 fields may contain data or be empty.&nbsp; If BioGeomancer is able to obtain results for any of the records, a dialog is presented, displaying results for each Data Set record one at a time.&nbsp; The BioGeomancer Results Chooser dialog displays the number of records with results in the title bar.</p>
+<p><strong><u>Requirements:</u></strong></p>
+<table class="box" border="1" cellspacing="0" cellpadding="4">
+
+<tr>
+  <td><u><strong>Column Heading</strong> </u></td>
+  <td><u><strong>Data Needed </strong></u></td>
+</tr>
+<tr><td width="124">Locality Name</td>
+<td width="197">Yes</td>
+</tr>
+<tr><td>Country</td>
+  <td>Yes</td>
+</tr>
+<tr><td>State</td>
+  <td>Yes</td>
+</tr>
+<tr><td>County</td>
+  <td>Yes</td>
+</tr>
+<tr><td>Latitude1</td>
+  <td>No (this is a results column) </td>
+</tr>
+<tr><td>Longitude1</td>
+  <td>No (this is a results column)</td>
+</tr>
+</table>
+<p>The BioGeomancer tool uses the data present in the Locality Name, Country, State and County colunns to query the BioGeomancer service.&nbsp;The service will not work without data in all of the columns.&nbsp; The Latitude 1 and Longitude 1 columns are needed to accept the data returned by the BioGeomancer service.&nbsp; If BioGeomancer is able to obtain results for any of the records, the BioGeomancer Results Chooser dialog will display results for each Data Set record.&nbsp;</p>
 <p align="center"><img src="../images/biogeomancerresults.png" alt="Biogeo"></p>
 <p align="center" class="imgcaption">BioGeomancer Results Chooser </p>
 <p>&nbsp;</p>
 
-<p>The BioGeomancer Results Chooser dialog allows the results to be viewed through the BioGeomancer's web service and selected.&nbsp; </p>
+<p>The number of records with results displays in the dialog title bar. The dialog itself displays results,  through the BioGeomancer web service, and and allows them to be selected.&nbsp; </p>
 <p>The upper left portion of the dialog (ID, Country, Adm 1 or State, Adm 2 or County and Locality) displays the details about the query sent to BioGeomancer from the Data Set.&nbsp; </p>
 <p>The map displays a graphical representation of the result(s) using  a pair of map servers, one hosted by NASA and one hosted at the University of Kansas.&nbsp; </p>
 <p>The lower portion of the dialog displays the resulting matches returned by BioGeomancer.&nbsp; Often, if the locality description is specific enough, BioGeomancer will provide only one result.&nbsp; At times, the service provides numerous results.&nbsp; </p>
 <p>To choose a result,  select  the row that corresponds with the correct coordinates of the Data Set record from the lower table.&nbsp; </p>
-<p>To deselect an already selected row, either select a different row or hold the Control key while clicking on the currently selected row.&nbsp; Deselecting all rows and clicking &ldquo;Done&rdquo; can be used to dismiss the dialog without making any changes to the data or accept only those changes made so far.&nbsp; </p>
-<p>The buttons at the bottom of the dialog offer the following functionality: </p>
-<br>
+<p>To deselect a row, either select a different row or hold the Control key while clicking on the currently selected row. </p>
+<p>The buttons at the bottom of the dialog offer the following functionality:</p>
 <table width="75%" border="1" cellspacing="1" cellpadding="6">
   <tr>
     <td width="11%">Help</td>
@@ -45,7 +65,7 @@ can be selected, or skipped. For more information about the BioGeomancer tool vi
   </tr>
   <tr>
     <td>Accept</td>
-    <td>Stores the latitude and longitude values in the appropriate cells of the record corresponding to the query.</td>
+    <td>Stores the latitude and longitude values in the appropriate cells of the Data Set record corresponding to the query.</td>
   </tr>
   <tr>
     <td>Skip</td>
@@ -57,7 +77,7 @@ can be selected, or skipped. For more information about the BioGeomancer tool vi
   </tr>
 </table>
 <p>&nbsp;</p>
-<p> Once all the records have been displayed, the dialog will close. Results that were accepted will be written in the latitude and longitude columns of the record.&nbsp; Be aware that if these fields already contain data BioGeomancer will overwrite the existing fields with the BioGeomancer results.&nbsp; </p>
+<p>  The dialog will close when all the records have been displayed. Results that were accepted will be written in the Latitude 1 and Longitude 1 columns of the record.&nbsp; Any data already in these columns will be overwritten. </p>
 <p>The WorkBench also stores all ancillary metadata returned by BioGeomancer in the following fields:</p>
 <ul type="disc">
   <li>Country Bounding Box</li>

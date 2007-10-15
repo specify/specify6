@@ -158,12 +158,6 @@ public class GridTableModel extends SpreadSheetModel
      */
     public Object getValueAt(int row, int column)
     {
-        if (row == 1 && column == 0)
-        {
-            int x = 0;
-            x++;
-        }
-        
         // if this is the image column...
         if (isInImageMode && column == headers.size() - 1)
         {

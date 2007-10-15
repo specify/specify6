@@ -24,6 +24,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
@@ -47,6 +49,7 @@ import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JRadioButtonMenuItem;
@@ -92,7 +95,7 @@ import edu.ku.brc.util.thumbnails.ImageThumbnailGenerator;
  *
  * @code_status Beta
  */
-public class ImageFrame extends JFrame
+public class ImageFrame extends JFrame implements PropertyChangeListener
 {
     private static final Logger log                        = Logger.getLogger(ImageFrame.class);
             
@@ -160,8 +163,7 @@ public class ImageFrame extends JFrame
             {
                 if (allowCloseWindow)
                 {
-                    setVisible(false);
-                    wbPane.setImageFrameVisible(false);
+                    wbPane.toggleImageFrameVisible();
                 }
             }
         });
@@ -234,7 +236,7 @@ public class ImageFrame extends JFrame
         
         JMenuBar  menuBar   = new JMenuBar();
         JMenu     fileMenu  = UIHelper.createMenu(menuBar, "File", "FileMneu");
-        JMenuItem importImagesMI  = UIHelper.createMenuItem(fileMenu, getResourceString("WB_IMPORT_CARDS"), getResourceString("WB_IMPORT_CARDS_MNEU"), "", true, null);
+        JMenuItem importImagesMI  = UIHelper.createMenuItem(fileMenu, getResourceString("WB_IMPORT_CARDS_TO_DATASET"), getResourceString("WB_IMPORT_CARDS_MNEU"), "", true, null);
         
         closeMI = UIHelper.createMenuItem(fileMenu, getResourceString("Close"), getResourceString("CloseMneu"), "", true, null);
         closeMI.addActionListener(new ActionListener()
@@ -295,6 +297,8 @@ public class ImageFrame extends JFrame
             }
         });
         
+        addPropertyChangeListener("alwaysOnTop", this);
+        
         importImagesMI.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
@@ -329,9 +333,9 @@ public class ImageFrame extends JFrame
         };
         
         imageMenu = UIHelper.createMenu(menuBar, "Image", "ImageMneu");
-        deleteMI   = UIHelper.createMenuItem(imageMenu, getResourceString("WB_DEL_IMG_LINK"), getResourceString("WB_DEL_IMG_LINK_MNEU"), "", true, deleteImg);
-        replaceMI = UIHelper.createMenuItem(imageMenu, getResourceString("WB_REPLACE_IMG"), getResourceString("WB_REPLACE_IMG_MNEU"), "", true, replaceImg);
         addMI     = UIHelper.createMenuItem(imageMenu, getResourceString("WB_ADD_IMG"), getResourceString("WB_ADD_IMG_MNEM"), "", true, addImg);
+        replaceMI = UIHelper.createMenuItem(imageMenu, getResourceString("WB_REPLACE_IMG"), getResourceString("WB_REPLACE_IMG_MNEU"), "", true, replaceImg);
+        deleteMI   = UIHelper.createMenuItem(imageMenu, getResourceString("WB_DEL_IMG_LINK"), getResourceString("WB_DEL_IMG_LINK_MNEU"), "", true, deleteImg);
         
         loadImgBtn.addActionListener(addImg);
         
@@ -344,9 +348,26 @@ public class ImageFrame extends JFrame
         
         pack();
         
-        //HelpMgr.setHelpID(this, "OnRampImageWindow");
+        HelpMgr.setHelpID(this, "WorkbenchWorkingWithImages");
     }
     
+    public void propertyChange(PropertyChangeEvent evt)
+    {
+        if (evt.getPropertyName().equals("alwaysOnTop") && evt.getSource() == this)
+        {
+            // the alwaysOnTop bahavior of the window changed... update the menu item
+            alwaysOnTopMI.setSelected(this.isAlwaysOnTop());
+        }
+    }
+
+    /**
+     * @param workbench the workbench to set
+     */
+    public void setWorkbench(Workbench workbench)
+    {
+        this.workbench = workbench;
+    }
+
     /**
      * NOTE (IMPORTANT): This line of code needs to be in it's own method because it was causing a memory leak
      * by referencing one of the two data members. Couldn't figure out why the Garbage Collector
@@ -528,6 +549,17 @@ public class ImageFrame extends JFrame
         reduceMI.setEnabled(enable);
     }
     
+    public static boolean testImageFile(String fullPath)
+    {
+        ImageIcon testIcon = new ImageIcon(fullPath);
+        if (testIcon.getIconHeight() == -1 || testIcon.getIconWidth() == -1)
+        {
+            // this image file is corrupted or a format that we cannot display
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Adds a new image to the current {@link WorkbenchRow}.
      */
@@ -541,6 +573,17 @@ public class ImageFrame extends JFrame
         if (imageFiles == null || imageFiles.length == 0)
         {
             return;
+        }
+        for (File f: imageFiles)
+        {
+            if (!testImageFile(f.getAbsolutePath()))
+            {
+                JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow(),
+                                            String.format(getResourceString("WB_WRONG_IMAGE_TYPE_OR_CORRUPTED_IMAGE"), new Object[] {f.getAbsolutePath()}),
+                                            UIRegistry.getResourceString("Warning"), 
+                                            JOptionPane.ERROR_MESSAGE);
+                return;
+            }
         }
         
         allowCloseWindow = false;
@@ -628,6 +671,12 @@ public class ImageFrame extends JFrame
     {
         UsageTracker.incrUsageCount("WB.EditWBRowImage");
         File imageFile = askUserForImageFile();
+        if (imageFile == null)
+        {
+            // user cancelled
+            return;
+        }
+        
         log.debug("replaceImage: " + ((imageFile!=null) ? imageFile.getAbsolutePath() : "NULL"));
         try
         {
@@ -686,7 +735,7 @@ public class ImageFrame extends JFrame
             }
         }
         
-        // if for any reason we got to this point...
+        // if for any reason (user cancelled) we got to this point...
         return null;
     }
     

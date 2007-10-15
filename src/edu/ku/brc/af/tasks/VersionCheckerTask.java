@@ -4,6 +4,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.Vector;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.WindowConstants;
 import javax.swing.event.HyperlinkEvent;
@@ -242,7 +244,21 @@ public class VersionCheckerTask extends BaseTask
                         // show an error popup if the user requested this update check through the menu item
                         if (isUserInitiatedUpdateCheck)
                         {
-                            showErrorPopup();
+                            // there are only three types of errors that can occur
+                            // 1. a connection error
+                            // 2. an error parsing the reply
+                            // 3. an error parsing or finding the local install_info.xml file
+                            // We treat #2 and #3 as the same type of error
+                            String errorString = null;
+                            if (retVal instanceof ConnectionException)
+                            {
+                                errorString = getResourceString("ConnectionError");
+                            }
+                            else
+                            {
+                                errorString = getResourceString("UpdateCheckParseError");
+                            }
+                            showErrorPopup(errorString);
                         }
                         
                         return;
@@ -289,7 +305,14 @@ public class VersionCheckerTask extends BaseTask
         postMethod.setRequestBody(postParams);
         
         // connect to the server
-        httpClient.executeMethod(postMethod);
+        try
+        {
+            httpClient.executeMethod(postMethod);
+        }
+        catch (Exception e)
+        {
+            throw new ConnectionException(e);
+        }
         
         // TODO: bypass this code if this connection was ONLY for sending usage stats
         // get the server response
@@ -353,11 +376,10 @@ public class VersionCheckerTask extends BaseTask
     /**
      * Shows a {@link JOptionPane} containing an message stating that an error occurred while checking for updates.
      */
-    protected void showErrorPopup()
+    protected void showErrorPopup(String localizedErrorString)
     {
-        String updateError = getResourceString("UpdateError");
         JOptionPane.showMessageDialog(UIRegistry.getTopWindow(),
-                                      updateError,
+                                      localizedErrorString,
                                       getResourceString("Error"),
                                       JOptionPane.ERROR_MESSAGE);
         return;
@@ -406,7 +428,7 @@ public class VersionCheckerTask extends BaseTask
             
             String latestVersion = ((Element)latestModVersionNode).attributeValue("version");
             
-            if (!installedVersion.toLowerCase().equals(latestVersion))
+            if (!installedVersion.equalsIgnoreCase(latestVersion))
             {
                 // there is a new version available
                 availUpdates.add(instModName);
@@ -425,7 +447,16 @@ public class VersionCheckerTask extends BaseTask
         updatesPopup.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         updatesPopup.setAvailableUpdates(availableUpdates);
         updatesPopup.setAlwaysOnTop(true);
-        updatesPopup.setSize(300,100);
+        if (availableUpdates == null || availableUpdates.size() == 0)
+        {
+            updatesPopup.setSize(300,125);
+        }
+        else
+        {
+            int height = 150 + availableUpdates.size()*20;
+            updatesPopup.setSize(450,height);
+        }
+        //updatesPopup.pack();
         updatesPopup.setVisible(true);
     }
     
@@ -449,8 +480,10 @@ public class VersionCheckerTask extends BaseTask
             content.setContentType("text/html");
             content.setEditable(false);
             content.setOpaque(false);
-            setContentPanel(content);
-            
+            JScrollPane scroller = new JScrollPane(content);
+            scroller.setBorder(null);
+            setContentPanel(scroller);
+
             content.addHyperlinkListener(new HyperlinkListener()
             {
                 @SuppressWarnings("synthetic-access")
@@ -485,29 +518,34 @@ public class VersionCheckerTask extends BaseTask
          */
         public void setAvailableUpdates(List<String> availableUpdates)
         {
-            String popupMessage = new String("<html>");
-            
+            StringBuilder popupMessage = new StringBuilder("<html><div style=\"font-family: sans-serif; font-size: 12pt\"><table width=\"100%\" border=\"0\">");
             if (availableUpdates.size() == 0)
             {
                 // no updates available
-                popupMessage += "<center>" + getResourceString("NO_UPDATES_AVAILABLE") + "</center>";
+                popupMessage.append("<tr><td align=\"center\"><br>" + getResourceString("NO_UPDATES_AVAILABLE") + "<br></td></tr>");
             }
             else
             {
-                popupMessage += "Update versions are available for the following modules:<ul>";
+                popupMessage.append("<tr><td>Update versions are available for the following modules:<ul>");
                 for (String update: availableUpdates)
                 {
-                    popupMessage += "<li>" + update + "</li>";
+                    popupMessage.append("<li>" + update + "</li>");;
                 }
-                popupMessage += "</ul><br>";
-                
+                popupMessage.append("</ul><br>");
                 String downloadSiteURL = getResourceString("DOWNLOAD_SITE_URL");
-                popupMessage += "<a href=\"" + downloadSiteURL + "\">" + downloadSiteURL + "</a>";
-                
-                popupMessage += "</html>";
+                popupMessage.append("<a href=\"" + downloadSiteURL + "\">" + downloadSiteURL + "</a>");
+                popupMessage.append("<br></td</tr>");
             }
-            
-            content.setText(popupMessage);
+            popupMessage.append("</table></div></html>");
+            content.setText(popupMessage.toString());
+        } 
+    }
+    
+    public static class ConnectionException extends IOException
+    {
+        public ConnectionException(Throwable e)
+        {
+            super();
         }
     }
 }

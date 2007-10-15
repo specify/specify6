@@ -101,6 +101,13 @@ public class CSVImport extends DataImport implements DataImportIFace
                         {
                             colHash.put(wbtmi.getOrigImportColumnIndex(), wbtmi);
                         }
+                        else if (wbtmi.getViewOrder() != null)
+                        {
+                            if (wbtmi.getViewOrder() != -1)
+                            {
+                                colHash.put(wbtmi.getViewOrder(), wbtmi);
+                            }
+                        }
                     }
                     
                     int row = config.getFirstRowHasHeaders() ? 1 : 0;

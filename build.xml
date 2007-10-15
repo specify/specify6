@@ -24,7 +24,7 @@
 	<property name="data.dir" value="data" />
 
 	<!-- Needed for building help search index -->
-	<property name ="javahelp-home" value="/home/timbo/installs/javahelp/jh2.0" /> 
+	<property name ="javahelp-home" value="/home/timbo/installs/jh2.0" />
 	
 	<!-- Needed for Packing on the Mac -->
 	<property name="packaging" value="packaging" />
@@ -528,14 +528,14 @@
 	</target>
 
 	<target name="build-help-fulltext-linux">
-	  <java jar="${javahelp-home}/javahelp/bin/jhindexer.jar" fork="true">
+	  <java jar="${javahelp-home}/javahelp/bin/jhindexer.jar" fork="true" dir="${appdir}/help/">
 	  	<!-- if definitions for dist-linux,dist-mac, or dist-win change then
 	  		contents of xxxSearchConfig.txt files will need to be changed accordingly -->
 	  	<arg value="-c" />
-	  	<arg value="${appdir}/help/${dist-linux}SearchConfig.txt"/>
+	  	<arg value="${dist-linux}SearchConfig.txt"/>
 	  	<arg value="-db" />
-	  	<arg value="${appdir}/help/SpecifyHelpSearchIndex"/>
-	    <arg value="${appdir}/help/SpecifyHelp/Workbench"/>
+	  	<arg value="SpecifyHelpSearchIndex"/>
+	    <arg value="SpecifyHelp/Workbench"/>
 	  </java>
 		<antcall target="delete-config-files"/>
 	</target>
@@ -547,21 +547,22 @@
 	  	<arg value="-c" />
 	  	<arg value="${appdir}/help/${dist-mac}SearchConfig.txt"/>
 	  	<arg value="-db" />
-	  	<arg value="${appdir}/help/SpecifyHelpSearchIndex"/>
-	    <arg value="${appdir}/help/SpecifyHelp/Workbench"/>
+	  	<arg value="${appdir}/Contents/Resources/Java/help/SpecifyHelpSearchIndex"/>
+	    <arg value="${appdir}/Contents/Resources/Java/help/SpecifyHelp"/>
+
 	  </java>
 		<antcall target="delete-config-files"/>
 	</target>
 	
 	<target name="build-help-fulltext-win">
-	  <java jar="${javahelp-home}/javahelp/bin/jhindexer.jar" fork="true">
+	  <java jar="${javahelp-home}/javahelp/bin/jhindexer.jar" fork="true" dir="${appdir}/help/">
 	  	<!-- if definitions for dist-linux,dist-mac, or dist-win change then
 	  		contents of xxxSearchConfig.txt files will need to be changed accordingly -->
 	  	<arg value="-c" />
-	  	<arg value="${appdir}/help/${dist-win}SearchConfig.txt"/>
+	  	<arg value="${dist-win}SearchConfig.txt"/>
 	  	<arg value="-db" />
-	  	<arg value="${appdir}/help/SpecifyHelpSearchIndex"/>
-	    <arg value="${appdir}/help/SpecifyHelp/Workbench"/>
+	  	<arg value="SpecifyHelpSearchIndex"/>
+	    <arg value="SpecifyHelp/Workbench"/>
 	  </java>
 		<antcall target="delete-config-files"/>
 	</target>

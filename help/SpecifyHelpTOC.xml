@@ -47,7 +47,7 @@
           	</tocitem>  
           <tocitem text="Reports" target="WorkbenchReporting">
           		<tocitem text="Data Set Summary" target="WorkbenchDataSetSummary"/>
-          		<!-- <tocitem text="Basic Label" target="WorkbenchBasicLabel"/> -->
+          		<tocitem text="Basic Label" target="WorkbenchBasicLabel"/>
           		<tocitem text="Chart" target="WorkbenchChart"/>
           		<tocitem text="Top 10" target="WorkbenchTop10"/>
           </tocitem>		

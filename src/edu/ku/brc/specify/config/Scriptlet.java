@@ -39,6 +39,8 @@ import java.util.Vector;
 import net.sf.jasperreports.engine.JRDefaultScriptlet;
 import net.sf.jasperreports.engine.JRScriptletException;
 
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -51,15 +53,12 @@ import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 /*
  * @code_status Unknown (auto-generated)
  **
- * Example code taken from Teodor Danciu (teodord@users.sourceforge.net)
- * updated and modified by our project.
+ * @author Teodor Danciu (teodord@users.sourceforge.net)
+ * @version $Id: Scriptlet.java,v 1.7 2005/04/04 15:18:41 teodord Exp $
  */
 public class Scriptlet extends JRDefaultScriptlet
 {
     private static final Logger log = Logger.getLogger(Scriptlet.class);
-    
-    private static final String STYLE_START = "<style isItalic=\"true\">";
-    
 
     /**
      * beforeReportInit.
@@ -69,7 +68,6 @@ public class Scriptlet extends JRDefaultScriptlet
         //System.out.println("call beforeReportInit");
     }
 
-
     /**
      * afterReportInit.
      */
@@ -78,42 +76,37 @@ public class Scriptlet extends JRDefaultScriptlet
         //System.out.println("call afterReportInit");
     }
 
-
     /**
      * beforePageInit.
      */
     public void beforePageInit() throws JRScriptletException
     {
-       //System.out.println("call   beforePageInit : PAGE_NUMBER = " + this.getVariableValue("PAGE_NUMBER"));
+        //System.out.println("call   beforePageInit : PAGE_NUMBER = " + this.getVariableValue("PAGE_NUMBER"));
     }
-
 
     /**
      *
      */
     public void afterPageInit() throws JRScriptletException
     {
-       //System.out.println("call   afterPageInit  : PAGE_NUMBER = " + this.getVariableValue("PAGE_NUMBER"));
+        //System.out.println("call   afterPageInit  : PAGE_NUMBER = " + this.getVariableValue("PAGE_NUMBER"));
     }
-
 
     /**
      *
      */
     public void beforeColumnInit() throws JRScriptletException
     {
-       //System.out.println("call     beforeColumnInit");
+        //System.out.println("call     beforeColumnInit");
     }
-
 
     /**
      * afterColumnInit.
      */
     public void afterColumnInit() throws JRScriptletException
     {
-       //System.out.println("call     afterColumnInit");
+        //System.out.println("call     afterColumnInit");
     }
-
 
     /**
      * beforeGroupInit.
@@ -125,7 +118,6 @@ public class Scriptlet extends JRDefaultScriptlet
             System.out.println("call       beforeGroupInit : City = " + this.getFieldValue("City"));
         }*/
     }
-
 
     /**
      * afterGroupInit.
@@ -151,15 +143,13 @@ public class Scriptlet extends JRDefaultScriptlet
         }*/
     }
 
-
     /**
      * beforeDetailEval.
      */
     public void beforeDetailEval() throws JRScriptletException
     {
-       //System.out.println("        detail");
+        //System.out.println("        detail");
     }
-
 
     /**
      * afterDetailEval.
@@ -168,21 +158,17 @@ public class Scriptlet extends JRDefaultScriptlet
     {
     }
 
-
     /**
      * Formats a String to a float to a String.
      * @param floatStr the string with a Float value
      * @return Formats a String to a float to a String
      * @throws JRScriptletException xxx
      */
-    public String formatCatNo(String floatStr)
+    public String formatCatNo(String floatStr) throws JRScriptletException
     {
-        if (floatStr == null)
-        {
-            return "";
-        }
-        float num = Float.parseFloat(floatStr); 
-        return String.format("%.0f", new Object[] {num});
+        if (floatStr == null) { return ""; }
+        float num = Float.parseFloat(floatStr);
+        return String.format("%.0f", new Object[] { num });
     }
 
     /*
@@ -201,12 +187,9 @@ public class Scriptlet extends JRDefaultScriptlet
      * @return Formats a float to a string
      * @throws JRScriptletException
      */
-    public String format(Float floatVar)
+    public String format(Float floatVar) throws JRScriptletException
     {
-        if (floatVar == null)
-        {
-            return "";
-        }
+        if (floatVar == null) { return ""; }
 
         DecimalFormat df = new DecimalFormat("#.####");
         return df.format(floatVar.floatValue());
@@ -220,17 +203,12 @@ public class Scriptlet extends JRDefaultScriptlet
      */
     public String getDirChar(Float floatVal, boolean isLat)
     {
-        if (floatVal == null)
-        {
-            return "";
-        }
+        if (floatVal == null) { return ""; }
 
         if (isLat)
-        {
             return floatVal.floatValue() > 0.0 ? "N" : "S";
-        }
-        // else
-        return floatVal.floatValue() > 0.0 ? "E" : "W";
+        else return floatVal.floatValue() > 0.0 ? "E" : "W";
+
     }
 
     /**
@@ -241,10 +219,7 @@ public class Scriptlet extends JRDefaultScriptlet
      */
     public String getDirChar(String floatVal, boolean isLat)
     {
-        if (floatVal == null)
-        {
-            return "";
-        }
+        if (floatVal == null) { return ""; }
         return getDirChar(new Float(Float.parseFloat(floatVal)), isLat);
     }
 
@@ -255,19 +230,15 @@ public class Scriptlet extends JRDefaultScriptlet
      * @return Formats a float string into a lat/lon with "N","S","E", "W"
      * @throws JRScriptletException
      */
-    public String degrees(Float floatStr, boolean isLat)
+    public String degrees(Float floatStr, boolean isLat) throws JRScriptletException
     {
-        if (floatStr == null)
-        {
-            return "";
-        }
+        if (floatStr == null) { return ""; }
         float coord = floatStr.floatValue();
         DecimalFormat df = new DecimalFormat("#.####");
         String dir = "";
         if (isLat)
             dir = coord > 0.0 ? "N" : "S";
-        else
-            dir = coord > 0.0 ? "E" : "W";
+        else dir = coord > 0.0 ? "E" : "W";
         /*String str = "";
         for (int i=150;i<190;i++)
         {
@@ -292,11 +263,10 @@ public class Scriptlet extends JRDefaultScriptlet
      * @return Formats a String with a float value as a degrees
      * @throws JRScriptletException XXX
      */
-    public String degrees(String floatStr, boolean isLat)
+    public String degrees(String floatStr, boolean isLat) throws JRScriptletException
     {
         return degrees(new Float(Float.parseFloat(floatStr)), isLat);
     }
-
 
     /**
      * Formats a Lat,Lon into a single string where the values are separated by a comma.
@@ -306,16 +276,16 @@ public class Scriptlet extends JRDefaultScriptlet
      * @return Formats a Lat,Lon into a single string where the values are separated by a comma
      * @throws JRScriptletException XXX
      */
-    public String locality(Object desc, Float lat, Float lon)
+    public String locality(Object desc, Float lat, Float lon) throws JRScriptletException
     {
 
         StringBuffer strBuf = new StringBuffer();
         if (desc instanceof String)
         {
-            strBuf.append(((String)desc));
+            strBuf.append(((String) desc));
         } else if (desc instanceof byte[])
         {
-            strBuf.append(new String((byte[])desc));
+            strBuf.append(new String((byte[]) desc));
         }
         strBuf.append(" ");
         strBuf.append(degrees(lat, true));
@@ -341,14 +311,15 @@ public class Scriptlet extends JRDefaultScriptlet
      */
     public String loanCategory(Boolean isGift)
     {
-        if(isGift)
+        if (isGift)
         {
             return "GIFT";
+        } else
+        {
+            return "LOAN";
         }
-        // else
-        return "LOAN";
     }
-    
+
     /**
      * Builds the shipped to agent's name string.
      * @param firstName
@@ -364,7 +335,7 @@ public class Scriptlet extends JRDefaultScriptlet
         }
         return name;
     }
-    
+
     /**
      * Builds the locality string.
      * @param geoName - the geography place name (country, state)
@@ -403,7 +374,7 @@ public class Scriptlet extends JRDefaultScriptlet
 
         return locality;
     }
-    
+
     /**
      * Create a string representing the difference between two dates.
      * @param startDate the start date
@@ -431,23 +402,23 @@ public class Scriptlet extends JRDefaultScriptlet
         }
         return loanLength;
     }
-    
+
     /**
      * Returns a list of collectors
      * @param colEvId
      * @return
      */
-    public String getCollectors(final Integer colEvId)
+    public String getCollectors(final Long colEvId)
     {
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         //System.out.println(colEvId);
-        
-        //DBTableInfo tblInfo = DBTableIdMgr.getInstance().lookupByClassName(CollectingEvent.class.getName());
+
+        //DBTableIdMgr.TableInfo tblInfo = DBTableIdMgr.getInstance().lookupByClassName(CollectingEvent.class.getName());
         String collectorsStr = "N/A"; // XXX I18N
         List<?> list = session.getDataList(CollectingEvent.class, "collectingEventId", colEvId);
         if (list.size() > 0)
         {
-            CollectingEvent ce = (CollectingEvent)list.get(0);
+            CollectingEvent ce = (CollectingEvent) list.get(0);
             Set<Collector> collectors = ce.getCollectors();
             if (collectors.size() > 0)
             {
@@ -456,17 +427,17 @@ public class Scriptlet extends JRDefaultScriptlet
             {
                 collectorsStr = "No Collectors"; // XXX I18N
             }
-            
+
         } else
         {
-            log.error("Couldn't locate CollecingEventID ["+colEvId+"]");
+            log.error("Couldn't locate CollecingEventID [" + colEvId + "]");
         }
-        
+
         session.close();
-        
+
         return collectorsStr;
     }
-    
+
     /**
      * Converts Integer object to int nul -> 0.
      * @param val the value
@@ -476,7 +447,7 @@ public class Scriptlet extends JRDefaultScriptlet
     {
         return val == null ? 0 : val.intValue();
     }
-    
+
     /**
      * Returns the count minus quantityReturned minus quantityResolved to see if any are available.
      * @param countArg the count of preps
@@ -484,24 +455,26 @@ public class Scriptlet extends JRDefaultScriptlet
      * @param QuantityResolvedArg the ones remaining
      * @return
      */
-    public Integer calcLoanQuantity(final Integer countArg, final Integer QuantityReturnedArg, final Integer QuantityResolvedArg)
+    public Integer calcLoanQuantity(final Integer countArg,
+                                    final Integer QuantityReturnedArg,
+                                    final Integer QuantityResolvedArg)
     {
-        int count            = convertInt(countArg);
+        int count = convertInt(countArg);
         int quantityReturned = convertInt(QuantityReturnedArg);
         int quantityResolved = convertInt(QuantityResolvedArg);
         return count - quantityReturned - quantityResolved;
     }
-      
-   /**
-    * Creates a formated label from a given datasource
-    * @param dataSource the WorkbenchJRDataSource
-    * @return label string value
-    */
-   public String formatDetermination(final Object dataSource)
+
+    /**
+     * Creates a formated label from a given datasource
+     * @param dataSource the WorkbenchJRDataSource
+     * @return label string value
+     */
+    public String formatDetermination(Object dataSource)
     {
 
-        String label     = new String();
-        String data      = new String();
+        String label = new String();
+        String data = new String();
         String styleInfo = new String();
 
         if (dataSource instanceof WorkbenchJRDataSource)
@@ -510,28 +483,29 @@ public class Scriptlet extends JRDefaultScriptlet
             String isCurrent1 = rowDataSource.getFieldValue("isCurrent1").toString();
             String isCurrent2 = rowDataSource.getFieldValue("isCurrent2").toString();
 
-            // assume 1 if isCurrent has no value
+            //assume 1 if isCurrent has no value
             if ((isCurrent1.equals("true")) || ( (isCurrent1.equals("")) && (isCurrent2.equals("")) ))
             {
 
                 Vector<String> labelNames = isCurrent1Labels();
 
-                // create label
+                //create label
                 for (Enumeration<?> e = labelNames.elements(); e.hasMoreElements();)
                 {
                     data = rowDataSource.getFieldValue((String) e.nextElement()).toString();
 
                     try
                     {
-                        if (data.length() > 0)
+
+                        if (StringUtils.isNotEmpty(data))
                         {
                             styleInfo = (String) e.nextElement();
-                            // if there is specific style info
+                            //if there is specific style info
                             if (styleInfo.startsWith("<style"))
                             {
-                                label = label.concat(styleInfo + data + " </style>");
+                                label = label.concat(styleInfo + StringEscapeUtils.escapeHtml(data) + " </style>");
                             } else
-                            // no style
+                            //no style
                             {
                                 label = label.concat(styleInfo + data + " ");
                             }
@@ -545,27 +519,28 @@ public class Scriptlet extends JRDefaultScriptlet
 
                 }
 
-            } else if (isCurrent2.equals("true"))// use isCurrent 2 values
+            } else if (isCurrent2.equals("true"))//use isCurrent 2 values
             {
 
                 Vector<String> labelNames = isCurrent2Labels();
 
-                // create label
-                for (Enumeration<?> e = labelNames.elements(); e.hasMoreElements();)
+                //create label
+                for (Enumeration e = labelNames.elements(); e.hasMoreElements();)
                 {
                     data = rowDataSource.getFieldValue((String) e.nextElement()).toString();
 
                     try
                     {
-                        if (data.length() > 0)
+
+                        if (StringUtils.isNotEmpty(data))
                         {
                             styleInfo = (String) e.nextElement();
-                            // if there is specific style info
+                            //if there is specific style info
                             if (styleInfo.startsWith("<style"))
                             {
                                 label = label.concat(styleInfo + data + " </style>");
                             } else
-                            // no style
+                            //no style
                             {
                                 label = label.concat(styleInfo + data + " ");
                             }
@@ -580,74 +555,70 @@ public class Scriptlet extends JRDefaultScriptlet
                 }
             }
         }
-        // else
+        //else
         return label;
     }
-   
-    /**
-     * Create the order and style information of the label.
-     * Add the determiner name first, followed by its style information.
-     * @return
-     */
+
+    //create the order and style information of the label.
+    //add the determiner name first, followed by its style information.
     public Vector<String> isCurrent1Labels()
     {
-        Vector<String> labelNames = new Vector<String>(); 
-        labelNames.add("genus1");                  labelNames.add(STYLE_START);
-        labelNames.add("speciesQualifier1");       labelNames.add("");
-        labelNames.add("species1");                labelNames.add(STYLE_START);
-        labelNames.add("speciesAuthorFirstName1"); labelNames.add("");
-        labelNames.add("speciesAuthorLastName1");  labelNames.add("");
-        labelNames.add("subspeciesQualifier1");    labelNames.add("");
-        labelNames.add("subspecies1");             labelNames.add(STYLE_START);
-        labelNames.add("infraAuthorFirstName1");   labelNames.add("");
-        labelNames.add("infraAuthorLastName1");    labelNames.add("");
-        labelNames.add("varietyQualifier1");       labelNames.add("var.");
-        labelNames.add("variety1");                labelNames.add(STYLE_START);
-          
+        Vector<String> labelNames = new Vector<String>();
+        labelNames.add("genus1");
+        labelNames.add("<style isItalic=\"true\">");
+        labelNames.add("speciesQualifier1");
+        labelNames.add("");
+        labelNames.add("species1");
+        labelNames.add("<style isItalic=\"true\">");
+        labelNames.add("speciesAuthorFirstName1");
+        labelNames.add("");
+        labelNames.add("speciesAuthorLastName1");
+        labelNames.add("");
+        labelNames.add("subspeciesQualifier1");
+        labelNames.add("");
+        labelNames.add("subspecies1");
+        labelNames.add("<style isItalic=\"true\">");
+        labelNames.add("infraAuthorFirstName1");
+        labelNames.add("");
+        labelNames.add("infraAuthorLastName1");
+        labelNames.add("");
+        labelNames.add("varietyQualifier1");
+        labelNames.add("var.");
+        labelNames.add("variety1");
+        labelNames.add("<style isItalic=\"true\">");
+
         return labelNames;
     }
-   
+
     // create the order and style information of the label.
     //add the determiner name first, followed by its style information.
     public Vector<String> isCurrent2Labels()
     {
-        Vector<String> labelNames = new Vector<String>(); 
-        labelNames.add("genus2");                  labelNames.add(STYLE_START);
-        labelNames.add("speciesQualifier2");       labelNames.add("");
-        labelNames.add("species2");                labelNames.add(STYLE_START);
-        labelNames.add("speciesAuthorFirstName2"); labelNames.add("");
-        labelNames.add("speciesAuthorLastName2");  labelNames.add("");
-        labelNames.add("subspeciesQualifier2");    labelNames.add("");
-        labelNames.add("subspecies2");             labelNames.add(STYLE_START);
-        labelNames.add("infraAuthorFirstName2");   labelNames.add("");
-        labelNames.add("infraAuthorLastName2");    labelNames.add("");
-        labelNames.add("varietyQualifier2");       labelNames.add("var.");
-        labelNames.add("variety2");                labelNames.add(STYLE_START);
-          
+        Vector<String> labelNames = new Vector<String>();
+        labelNames.add("genus2");
+        labelNames.add("<style isItalic=\"true\">");
+        labelNames.add("speciesQualifier2");
+        labelNames.add("");
+        labelNames.add("species2");
+        labelNames.add("<style isItalic=\"true\">");
+        labelNames.add("speciesAuthorFirstName2");
+        labelNames.add("");
+        labelNames.add("speciesAuthorLastName2");
+        labelNames.add("");
+        labelNames.add("subspeciesQualifier2");
+        labelNames.add("");
+        labelNames.add("subspecies2");
+        labelNames.add("<style isItalic=\"true\">");
+        labelNames.add("infraAuthorFirstName2");
+        labelNames.add("");
+        labelNames.add("infraAuthorLastName2");
+        labelNames.add("");
+        labelNames.add("varietyQualifier2");
+        labelNames.add("var.");
+        labelNames.add("variety2");
+        labelNames.add("<style isItalic=\"true\">");
+
         return labelNames;
-   }
-   
+    }
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
