@@ -23,10 +23,8 @@ import java.util.Hashtable;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -41,6 +39,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.ui.GraphicsUtils;
@@ -136,7 +135,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     
     @Id
     @GeneratedValue
-    @Column(name = "WorkbenchRowID", nullable = false)
+    @Column(name = "WorkbenchRowID")
     public Integer getWorkbenchRowId()
     {
         return workbenchRowId;
@@ -467,7 +466,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     /**
      * 
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "WorkbenchID", nullable = false)
     public Workbench getWorkbench()
     {
@@ -479,9 +478,8 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         this.workbench = workbench;
     }
 
-    @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "workbenchRow")
-    // @Cascade( { org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.LOCK })
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OneToMany(mappedBy = "workbenchRow")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<WorkbenchDataItem> getWorkbenchDataItems()
     {
         return workbenchDataItems;
@@ -492,8 +490,8 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         this.workbenchDataItems = workbenchDataItems;
     }
 
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "workbenchRow")
-    @Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OneToMany(mappedBy = "workbenchRow")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<WorkbenchRowImage> getWorkbenchRowImages()
     {
         return workbenchRowImages;
