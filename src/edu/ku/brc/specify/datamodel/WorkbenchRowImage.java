@@ -116,8 +116,8 @@ public class WorkbenchRowImage implements java.io.Serializable, Comparable<Workb
         this.imageOrder = imageOrder;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "WorkbenchRowID", unique = false, nullable = false, insertable = true, updatable = true)
+    @ManyToOne
+    @JoinColumn(name = "WorkbenchRowID", nullable = false)
     public WorkbenchRow getWorkbenchRow()
     {
         return workbenchRow;
