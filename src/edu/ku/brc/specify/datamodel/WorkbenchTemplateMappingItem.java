@@ -17,10 +17,8 @@ import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -28,6 +26,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 /**
  * Items are sorted by ViewOrder
@@ -124,7 +125,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
      */
     @Id
     @GeneratedValue
-    @Column(name = "WorkbenchTemplateMappingItemID", unique = false, nullable = false, insertable = true, updatable = true)
+    @Column(name = "WorkbenchTemplateMappingItemID")
     public Integer getWorkbenchTemplateMappingItemId()
     {
         return this.workbenchTemplateMappingItemId;
@@ -162,7 +163,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     /**
      * 
      */
-    @Column(name = "TableName", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    @Column(name = "TableName", length = 64)
     public String getTableName()
     {
         return this.tableName;
@@ -176,7 +177,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     /**
      * 
      */
-    @Column(name = "TableId", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    @Column(name = "TableId", length = 64)
     public Integer getSrcTableId()
     {
         return this.srcTableId;
@@ -190,7 +191,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     /**
      * 
      */
-    @Column(name = "FieldName", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "FieldName")
     public String getFieldName()
     {
         return this.fieldName;
@@ -205,7 +206,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     /**
      * @return the importedColName
      */
-    @Column(name = "ImportedColName", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "ImportedColName")
     public String getImportedColName()
     {
         return importedColName;
@@ -222,7 +223,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     /**
      * 
      */
-    @Column(name = "Caption", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    @Column(name = "Caption", length = 64)
     public String getCaption()
     {
         return this.caption;
@@ -236,7 +237,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     /**
      * 
      */
-    @Column(name = "ViewOrder", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "ViewOrder")
     public Short getViewOrder()
     {
         return this.viewOrder;
@@ -250,7 +251,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     /**
      * 
      */
-    @Column(name = "DataColumnIndex", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "DataColumnIndex")
     public Short getOrigImportColumnIndex()
     {
         return this.origImportColumnIndex;
@@ -264,7 +265,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     /**
      * @return the dataFieldLength
      */
-    @Column(name = "DataFieldLength", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "DataFieldLength")
     public Short getDataFieldLength()
     {
         return dataFieldLength;
@@ -281,7 +282,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     /**
      * @return the fieldType
      */
-    @Column(name = "FieldType", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "FieldType")
     public Short getFieldType()
     {
         return fieldType;
@@ -295,7 +296,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
         this.fieldType = fieldType;
     }
     
-    @Column(name = "MetaData", length=128, unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "MetaData", length=128)
     public String getMetaData()
     {
         return metaData;
@@ -306,7 +307,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
         this.metaData = metaData;
     }
 
-    @Column(name = "XCoord", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "XCoord")
     public Short getXCoord()
     {
         return xCoord;
@@ -317,7 +318,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
         xCoord = coord;
     }
 
-    @Column(name = "YCoord", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "YCoord")
    public Short getYCoord()
     {
         return yCoord;
@@ -328,7 +329,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
         yCoord = coord;
     }
 
-    @Column(name="CarryForward",unique=false,nullable=true,updatable=true,insertable=true)
+    @Column(name="CarryForward")
     public Boolean getCarryForward()
     {
         return carryForward;
@@ -339,7 +340,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
         this.carryForward = carryForward;
     }
 
-    @Column(name="IsExportableToContent",unique=false,nullable=true,updatable=true,insertable=true)
+    @Column(name="IsExportableToContent")
     public Boolean getIsExportableToContent()
     {
         return isExportableToContent;
@@ -350,7 +351,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
         this.isExportableToContent = isExportableToContent;
     }
 
-    @Column(name="IsIncludedInTitle",unique=false,nullable=true,updatable=true,insertable=true)
+    @Column(name="IsIncludedInTitle")
     public Boolean getIsIncludedInTitle()
     {
         return isIncludedInTitle;
@@ -361,7 +362,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
         this.isIncludedInTitle = isIncludedInTitle;
     }
 
-    @Column(name="IsRequired",unique=false,nullable=true,updatable=true,insertable=true)
+    @Column(name="IsRequired")
     public Boolean getIsRequired()
     {
         return isRequired;
@@ -375,8 +376,8 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     /**
      * 
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "WorkbenchTemplateID", unique = false, nullable = false, insertable = true, updatable = true)
+    @ManyToOne
+    @JoinColumn(name = "WorkbenchTemplateID", nullable = false)
     public WorkbenchTemplate getWorkbenchTemplate()
     {
         return this.workbenchTemplate;
@@ -388,8 +389,8 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     }
     
     
-    @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "workbenchTemplateMappingItem")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OneToMany(mappedBy = "workbenchTemplateMappingItem")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<WorkbenchDataItem> getWorkbenchDataItems() 
     {
         return this.workbenchDataItems;
@@ -432,6 +433,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     /* (non-Javadoc)
      * @see java.lang.Object#clone()
      */
+    @Override
     public Object clone() throws CloneNotSupportedException
     {
         WorkbenchTemplateMappingItem wbtmi = (WorkbenchTemplateMappingItem)super.clone();
