@@ -34,10 +34,8 @@ import java.util.Hashtable;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -48,6 +46,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
@@ -150,7 +149,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
      */
     @Id
     @GeneratedValue
-    @Column(name = "WorkbenchID", unique = false, nullable = false, insertable = true, updatable = true)
+    @Column(name = "WorkbenchID")
     public Integer getWorkbenchId() {
         return this.workbenchId;
     }
@@ -183,7 +182,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
     /**
      *      * Name of workbench
      */
-    @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    @Column(name = "Name", length = 64)
     public String getName() {
         return this.name;
     }
@@ -195,7 +194,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
     /**
      * 
      */
-    @Column(name = "TableID", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "TableID")
     public Integer getDbTableId() {
         return this.dbTableId;
     }
@@ -208,7 +207,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
      * 
      */
     @Lob
-    @Column(name="Remarks", unique=false, nullable=true, updatable=true, insertable=true)
+    @Column(name="Remarks")
     public String getRemarks() {
         return this.remarks;
     }
@@ -220,7 +219,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
     /**
      * 
      */
-    @Column(name = "FormId", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "FormId")
     public Integer getFormId() {
         return this.formId;
     }
@@ -232,7 +231,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
     /**
      Name of Institution being exported from
      */
-    @Column(name = "ExportInstitutionName", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Column(name = "ExportInstitutionName", length = 128)
     public String getExportInstitutionName() {
         return this.exportInstitutionName;
     }
@@ -246,7 +245,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
      * Returns the path to the original File.
      * @return the path to the original File.
      */
-    @Column(name = "SrcFilePath", unique = false, nullable = true, insertable = true, updatable = true, length = 255)
+    @Column(name = "SrcFilePath", length = 255)
     public String getSrcFilePath()
     {
         return srcFilePath;
@@ -263,7 +262,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
     /**
      * 
      */
-    @Column(name = "OwnerPermissionLevel", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "OwnerPermissionLevel")
     public Integer getOwnerPermissionLevel() {
         return this.ownerPermissionLevel;
     }
@@ -275,7 +274,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
     /**
      * 
      */
-    @Column(name = "GroupPermissionLevel", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "GroupPermissionLevel")
     public Integer getGroupPermissionLevel() {
         return this.groupPermissionLevel;
     }
@@ -287,7 +286,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
     /**
      * 
      */
-    @Column(name = "AllPermissionLevel", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "AllPermissionLevel")
     public Integer getAllPermissionLevel() {
         return this.allPermissionLevel;
     }
@@ -298,9 +297,9 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
     /**
      * 
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( {org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.LOCK} )
-    @JoinColumn(name = "WorkbenchTemplateID", unique = false, nullable = false, insertable = true, updatable = true)
+    @ManyToOne
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
+    @JoinColumn(name = "WorkbenchTemplateID", nullable = false)
     public WorkbenchTemplate getWorkbenchTemplate() {
         return this.workbenchTemplate;
     }
@@ -312,9 +311,8 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
     /**
      * 
      */
-    @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "workbench")
-    // @Cascade( { org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.LOCK })
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OneToMany(mappedBy = "workbench")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<WorkbenchRow> getWorkbenchRows() 
     {
         if (rows == null)
@@ -336,8 +334,8 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
     /**
      * 
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "SpecifyUserID", unique = false, nullable = false, insertable = true, updatable = true)
+    @ManyToOne
+    @JoinColumn(name = "SpecifyUserID", nullable = false)
     public SpecifyUser getSpecifyUser() {
         return this.specifyUser;
     }
@@ -349,8 +347,8 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
     /**
      * 
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "UserGroupID", unique = false, nullable = true, insertable = true, updatable = true)
+    @ManyToOne
+    @JoinColumn(name = "UserGroupID")
     public UserGroup getGroup() {
         return this.group;
     }
