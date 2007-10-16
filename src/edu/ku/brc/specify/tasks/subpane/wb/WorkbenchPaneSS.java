@@ -2601,7 +2601,6 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         checkCurrentEditState();
         
-        
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
@@ -2635,7 +2634,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 }
             }*/
             
-            Object dObj = session.merge(workbench);
+            Workbench dObj = session.merge(workbench);
             
             /*// DEBUG
             for (WorkbenchRow row : ((Workbench)dObj).getWorkbenchRowsAsList())
@@ -2649,7 +2648,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             session.commit();
             session.flush();
 
-            workbench = (Workbench)dObj;
+            workbench = dObj;
             workbench.forceLoad();
             
             model.setWorkbench(workbench);
