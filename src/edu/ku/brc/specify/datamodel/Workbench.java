@@ -67,7 +67,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
 
     // Fields    
 
-    protected Integer                   workbenchId;
+    protected Integer                workbenchId;
     protected String                 name;
     protected Integer                dbTableId;
     protected String                 remarks;
@@ -298,7 +298,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
      * 
      */
     @ManyToOne
-    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     @JoinColumn(name = "WorkbenchTemplateID", nullable = false)
     public WorkbenchTemplate getWorkbenchTemplate() {
         return this.workbenchTemplate;
@@ -322,13 +322,13 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
         return this.workbenchRows;
     }
     
-    public void setWorkbenchRows(Set<WorkbenchRow> workbenchDataItems) 
+    public void setWorkbenchRows(Set<WorkbenchRow> workbenchRows) 
     {
         if (rows == null)
         {
             rows = new Vector<WorkbenchRow>();
         }
-        this.workbenchRows = workbenchDataItems;
+        this.workbenchRows = workbenchRows;
     }
     
     /**
@@ -356,38 +356,6 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
     public void setGroup(UserGroup group) {
         this.group = group;
     }
-    
-    public void addWorkbenchDataItem(WorkbenchRow item)
-    {
-        workbenchRows.add(item);
-        item.setWorkbench(this);
-        
-        if (rows == null)
-        {
-            rows = new Vector<WorkbenchRow>();
-        }
-        rows.add(item);
-        Collections.sort(rows);
-    }
-    
-    /**
-     * @param item - 
-     * void
-     */
-    public void removeWorkbenchDataItem(final WorkbenchRow item)
-    {
-        this.workbenchRows.remove(item);
-        item.setWorkbench(null);
-        
-        if (rows != null)
-        {
-            rows.remove(item);
-        } else
-        {
-            throw new RuntimeException("Why isn't this object in the list?");
-        }
-        
-    }  
     
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
@@ -476,6 +444,12 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
     {
         return name;
     }
+    
+    @Transient
+    public String getDebugInfo()
+    {
+        return "Name: " + name + " | id: " + workbenchId + " | hash: 0x" + Integer.toHexString(hashCode()) + " | version: " + timestampModified;
+    }
 
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
@@ -535,6 +509,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
         }
         rows.insertElementAt(workbenchRow, rowIndex);
         workbenchRows.add(workbenchRow);
+        workbenchRow.setWorkbench(this);
         return workbenchRow;
     }
     
@@ -563,6 +538,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
         }
         deletedRows.add(wbRow);
         workbenchRows.remove(wbRow);
+        wbRow.setWorkbench(null);
         return wbRow;
     }
 
