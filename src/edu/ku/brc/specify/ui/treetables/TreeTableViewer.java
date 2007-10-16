@@ -1909,6 +1909,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		if(lists[0] == list || lists[1] == list )
 		{
 			TreeNode node = (TreeNode)list.getSelectedValue();
+            if (node == null)
+            {
+                return null;
+            }
+            
             return getRecordForNode(node);
 		}
 		throw new IllegalArgumentException("Provided JList must be one of the TTV display lists");
