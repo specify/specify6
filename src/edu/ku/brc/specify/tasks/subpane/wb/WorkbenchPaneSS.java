@@ -269,7 +269,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         } 
         
-        model       = new GridTableModel(workbench, headers);
+        model       = new GridTableModel(workbench);
         spreadSheet = new SpreadSheet(model);
         model.setSpreadSheet(spreadSheet);
         
@@ -2606,6 +2606,8 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             FormHelper.updateLastEdittedInfo(workbench);
             
+            // the CascadeType.DELETE_ORPHAN should take care of these, but we'll look into that later
+            
             // Delete the cached Items
             Vector<WorkbenchRow> deletedItems = workbench.getDeletedRows();
             if (deletedItems != null && deletedItems.size() > 0)
@@ -2633,8 +2635,11 @@ public class WorkbenchPaneSS extends BaseSubPane
                     System.out.println("["+item.getCellData()+"]");
                 }
             }*/
-            
+            log.debug("Original (before merge): " + workbench.getDebugInfo());
+            log.debug("PERFORMING MERGE");
             Workbench dObj = session.merge(workbench);
+            log.debug("Original (after merge): " + workbench.getDebugInfo());
+            log.debug("Merged   (after merge): " + dObj.getDebugInfo());
             
             /*// DEBUG
             for (WorkbenchRow row : ((Workbench)dObj).getWorkbenchRowsAsList())
@@ -2645,9 +2650,13 @@ public class WorkbenchPaneSS extends BaseSubPane
                 }
             }*/
             session.saveOrUpdate(dObj);
+            log.debug("PERFORMING COMMIT");
             session.commit();
-            session.flush();
-
+            //session.flush();
+            
+            log.debug("Original (after commit): " + workbench.getDebugInfo());
+            log.debug("Merged   (after commit): " + dObj.getDebugInfo());
+            
             workbench = dObj;
             workbench.forceLoad();
             
@@ -2668,6 +2677,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 
         } catch (StaleObjectException ex) // was StaleObjectStateException
         {
+            log.debug("Original (after exception): " + workbench.getDebugInfo());
             session.rollback();
             
             // 
@@ -2695,68 +2705,8 @@ public class WorkbenchPaneSS extends BaseSubPane
 
         session.close();
         session = null;
-        
     }
     
-    /**
-     * Checks to see if the current item has changed and asks if it should be saved
-     * @return true to continue false to stop
-     */
-    public boolean checkForChanges()
-    {
-        if (hasChanged)
-        {
-            // turn off alwaysOnTop for Swing repaint reasons (prevents a lock up)
-            if (imageFrame != null)
-            {
-                imageFrame.setAlwaysOnTop(false);
-            }
-            String msg = String.format(getResourceString("SaveChanges"), getTitle());
-            JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
-
-            int rv = JOptionPane.showConfirmDialog(topFrame,
-                        msg,
-                        getResourceString("SaveChangesTitle"),
-                        JOptionPane.YES_NO_CANCEL_OPTION);
-
-            if (rv == JOptionPane.YES_OPTION)
-            {
-                saveObject();
-
-            } else if (rv == JOptionPane.CANCEL_OPTION)
-            {
-                return false;
-                
-            } else if (rv == JOptionPane.NO_OPTION)
-            {
-                // Check to see if we are cancelling a new object or a previously saved object
-                // if the object is part of this Session then anychanges were already saved.
-                // If it is NOT part of this session then some of the object may not have been save.
-                
-                /* XYZ THIS NEEDS TO BE REWORKED
-                if (!session.contains(dataObj))
-                {
-                    if (businessRules != null)
-                    {
-                        List<BusinessRulesDataItem> dataToSaveList = businessRules.getStandAloneDataItems(dataObj);
-                        if (dataToSaveList.size() > 0)
-                        {
-                            ToggleButtonChooserDlg<BusinessRulesDataItem> dlg = new ToggleButtonChooserDlg<BusinessRulesDataItem>("Save", "Check the items you would like to have saved.", dataToSaveList);
-                            UIHelper.centerAndShow(dlg);
-                            dataToSaveList = dlg.getSelectedObjects();
-                            for (BusinessRulesDataItem item : dataToSaveList)
-                            {
-                                item.setChecked(true);
-                            }
-                            businessRules.saveStandAloneData(dataObj, dataToSaveList);
-                        }
-                    }
-                }*/
-            }
-        }
-        return true;
-    }
-
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.subpane.BaseSubPane#aboutToShutdown()
      */
@@ -3229,6 +3179,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     
     public class ColumnHeaderListener extends MouseAdapter
     {
+        @Override
         public void mousePressed(MouseEvent evt)
         {
             if (spreadSheet != null && spreadSheet.getCellEditor() != null)

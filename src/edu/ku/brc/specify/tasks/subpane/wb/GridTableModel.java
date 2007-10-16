@@ -46,12 +46,10 @@ public class GridTableModel extends SpreadSheetModel
     protected Vector<WorkbenchTemplateMappingItem> headers          = new Vector<WorkbenchTemplateMappingItem>();
     protected WorkbenchTemplateMappingItem         imageMappingItem = null;
 
-    public GridTableModel(final Workbench    workbench, 
-                          final Vector<WorkbenchTemplateMappingItem> headers)
+    public GridTableModel(final Workbench    workbench)
     {
         super();
-        this.workbench   = workbench;
-        this.headers     = headers;
+        setWorkbench(workbench);
     }
     
     /**
