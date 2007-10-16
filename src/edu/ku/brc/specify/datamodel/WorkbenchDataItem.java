@@ -33,12 +33,12 @@ import org.hibernate.annotations.Index;
  */
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert = true, dynamicUpdate = true)
+@org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "workbenchdataitem")
 @org.hibernate.annotations.Table(appliesTo="workbenchdataitem", indexes =
     {   
         @Index (name="DataItemRowNumberIDX", columnNames={"rowNumber"})
     })
-@org.hibernate.annotations.Proxy(lazy = false)
 public class WorkbenchDataItem implements java.io.Serializable, Comparable<WorkbenchDataItem>
 {
     public static final int VAL_NONE   = 0;

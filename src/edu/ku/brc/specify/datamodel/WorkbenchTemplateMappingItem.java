@@ -35,8 +35,8 @@ import org.hibernate.annotations.CascadeType;
  */
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert = true, dynamicUpdate = true)
-@Table(name = "workbenchtemplatemappingitem")
 @org.hibernate.annotations.Proxy(lazy = false)
+@Table(name = "workbenchtemplatemappingitem")
 public class WorkbenchTemplateMappingItem extends DataModelObjBase implements java.io.Serializable, Comparable<WorkbenchTemplateMappingItem>
 {
     public final static short UNKNOWN   = 0;

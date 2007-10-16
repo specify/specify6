@@ -49,15 +49,15 @@ import org.hibernate.annotations.CascadeType;
 
  */
 @Entity
-@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
-@Table(name = "workbenchtemplate")
+@org.hibernate.annotations.Entity(dynamicInsert = true, dynamicUpdate = true)
 @org.hibernate.annotations.Proxy(lazy = false)
+@Table(name = "workbenchtemplate")
 public class WorkbenchTemplate extends DataModelObjBase implements java.io.Serializable, Comparable<WorkbenchTemplate>
 {
 
      // Fields    
 
-     protected Integer                              workbenchTemplateId;
+     protected Integer                           workbenchTemplateId;
      protected String                            name;
      protected String                            remarks;
      protected Set<Workbench>                    workbenches;
@@ -193,7 +193,7 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
      * 
      */
     @OneToMany(mappedBy = "workbenchTemplate")
-    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
+    //@Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<Workbench> getWorkbenches() {
         return this.workbenches;
     }

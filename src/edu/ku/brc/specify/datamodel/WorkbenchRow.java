@@ -48,13 +48,13 @@ import edu.ku.brc.ui.GraphicsUtils;
  * WorkbenchRow generated rods
  */
 @Entity
-@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
+@org.hibernate.annotations.Entity(dynamicInsert = true, dynamicUpdate = true)
+@org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "workbenchrow")
 @org.hibernate.annotations.Table(appliesTo="workbenchrow", indexes =
     {   
         @Index (name="RowNumberIDX", columnNames={"RowNumber"})
     })
-@org.hibernate.annotations.Proxy(lazy = false)
 public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchRow>
 {
     private static final Logger log = Logger.getLogger(WorkbenchRow.class);

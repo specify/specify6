@@ -10,7 +10,6 @@ import java.lang.ref.WeakReference;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -29,9 +28,9 @@ import javax.swing.ImageIcon;
  * @code_status Alpha
  */
 @Entity
-@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
-@Table(name = "workbenchrowimage")
+@org.hibernate.annotations.Entity(dynamicInsert = true, dynamicUpdate = true)
 @org.hibernate.annotations.Proxy(lazy = false)
+@Table(name = "workbenchrowimage")
 public class WorkbenchRowImage implements java.io.Serializable, Comparable<WorkbenchRowImage>
 {
     protected Integer         workbenchRowImageId;
