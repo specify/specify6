@@ -94,20 +94,20 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
     public void initialize()
     {
         super.init();
-        spAppResourceDirId  = null;
-        collection            = null;
-        collectionType        = null;
-        specifyUser           = null;
+        
+        spAppResourceDirId      = null;
+        collection              = null;
+        collectionType          = null;
+        specifyUser             = null;
         
         spPersistedAppResources = new HashSet<SpAppResource>();
         spPersistedViewSets     = new HashSet<SpViewSetObj>();
 
-        userType              = null;
-        disciplineType        = null;
+        userType                = null;
+        disciplineType          = null;
         
         spAppResources          = null;//new HashSet<AppResource>();
         spViewSets              = new HashSet<SpViewSetObj>();
-
     }
     // End Initializer
 

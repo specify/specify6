@@ -118,20 +118,21 @@ public class SpAppResource extends DataModelObjBase implements java.io.Serializa
     public void initialize()
     {
         super.init();
-        spAppResourceId     = null;
-        level               = null;
-        name                = null;
-        description         = null;
-        mimeType            = null;
-        metaData            = null;
+        spAppResourceId      = null;
+        level                = null;
+        name                 = null;
+        description          = null;
+        mimeType             = null;
+        metaData             = null;
         ownerPermissionLevel = null;
         groupPermissionLevel = null;
-        allPermissionLevel = null;
-        spAppResourceDirs = new HashSet<SpAppResourceDir>();
-        spAppResourceDatas    = new HashSet<SpAppResourceData>();
-        specifyUser = null;
-        group = null;       
-        fileName = null;
+        allPermissionLevel   = null;
+        spAppResourceDirs    = new HashSet<SpAppResourceDir>();
+        spAppResourceDatas   = new HashSet<SpAppResourceData>();
+        specifyUser          = null;
+        group                = null;       
+        fileName             = null;
+        //timestampModified    = new Timestamp(System.currentTimeMillis());
     }
     // End Initializer
 

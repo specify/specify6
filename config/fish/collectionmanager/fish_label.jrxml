@@ -221,7 +221,7 @@ where preptype.Name = "EtOH" && determination.DeterminationStatusID = 1 && colle
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="Helvetica" size="11" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$F{cat_no}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[((edu.ku.brc.specify.config.Scriptlet)$P{REPORT_SCRIPTLET}).formatCatNo($F{cat_no})]]></textFieldExpression>
 				</textField>
 				<line direction="TopDown">
 					<reportElement
@@ -298,7 +298,7 @@ where preptype.Name = "EtOH" && determination.DeterminationStatusID = 1 && colle
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="Left" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$F{cat_no}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[((edu.ku.brc.specify.config.Scriptlet)$P{REPORT_SCRIPTLET}).formatCatNo($F{cat_no})]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
@@ -315,7 +315,7 @@ where preptype.Name = "EtOH" && determination.DeterminationStatusID = 1 && colle
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="Left" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$F{cat_no}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[((edu.ku.brc.specify.config.Scriptlet)$P{REPORT_SCRIPTLET}).formatCatNo($F{cat_no})]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement

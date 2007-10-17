@@ -182,7 +182,8 @@ public class JasperReportsCache implements DataCacheIFace
             } else
             {
                 Date fileDate = new Date(file.lastModified());
-                updateCache = fileDate.getTime() < ap.getTimestampModified().getTime();
+                boolean hasNoTimestamp = ap.getTimestampModified() == null;
+                updateCache = hasNoTimestamp || fileDate.getTime() < ap.getTimestampModified().getTime();
             }
             
             log.debug("Report Cache File["+ap.getName()+"]  updateCache["+updateCache+"]");
@@ -241,8 +242,8 @@ public class JasperReportsCache implements DataCacheIFace
         // call "compileComplete" directly to have it start filling the labels
         // otherswise create the compiler runnable and have it be compiled 
         // asynchronously
-        boolean needsCompiling = compiledPath.exists() && 
-                                 appRes.getTimestampModified().getTime() < compiledPath.lastModified();
+        boolean needsCompiling = appRes.getTimestampModified() == null || 
+                                 (compiledPath.exists() && appRes.getTimestampModified().getTime() < compiledPath.lastModified());
         
         return new ReportCompileInfo(reportPath, compiledPath, needsCompiling);
     }

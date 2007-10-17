@@ -49,6 +49,8 @@ import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchJRDataSource;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 
 /*
  * @code_status Unknown (auto-generated)
@@ -59,6 +61,8 @@ import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 public class Scriptlet extends JRDefaultScriptlet
 {
     private static final Logger log = Logger.getLogger(Scriptlet.class);
+    
+    protected UIFieldFormatterIFace catalogFormatter = UIFieldFormatterMgr.getFormatter("CatalogNumber");
 
     /**
      * beforeReportInit.
@@ -164,11 +168,14 @@ public class Scriptlet extends JRDefaultScriptlet
      * @return Formats a String to a float to a String
      * @throws JRScriptletException xxx
      */
-    public String formatCatNo(String floatStr) throws JRScriptletException
+    public String formatCatNo(String catalogNumber) throws JRScriptletException
     {
-        if (floatStr == null) { return ""; }
-        float num = Float.parseFloat(floatStr);
-        return String.format("%.0f", new Object[] { num });
+        log.debug("********* Catalog Formatter["+catalogFormatter+"]["+(catalogFormatter != null ? catalogFormatter.isOutBoundFormatter() : "")+"]["+catalogNumber+"]");
+        if (catalogFormatter != null && catalogFormatter.isInBoundFormatter())
+        {
+            return catalogFormatter.formatInBound(catalogNumber).toString();
+        }
+        return catalogNumber;
     }
 
     /*

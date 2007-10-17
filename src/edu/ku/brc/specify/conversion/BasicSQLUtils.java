@@ -15,9 +15,7 @@
 
 package edu.ku.brc.specify.conversion;
 
-import java.io.BufferedReader;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -36,7 +34,6 @@ import java.util.Vector;
 
 import net.sourceforge.jtds.jdbc.ClobImpl;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -58,7 +55,7 @@ public class BasicSQLUtils
 {
     protected static final Logger           log               = Logger.getLogger(BasicSQLUtils.class);
     
-    public static enum SERVERTYPE {MySQL, Derby, MS_SQLServer};
+    public static enum SERVERTYPE {MySQL, Derby, MS_SQLServer}
     public static SERVERTYPE myDestinationServerType = SERVERTYPE.MySQL;
     public static SERVERTYPE mySourceServerType = SERVERTYPE.MySQL;
     
@@ -438,7 +435,7 @@ public class BasicSQLUtils
         String databaseName = null;
         try
         {
-            Statement  stmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+            //Statement  stmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
             
             //ResultSet rs1 = stmt.executeQuery("select name from sysfiles");
             
@@ -551,7 +548,7 @@ public class BasicSQLUtils
     }
     
     // MEG NEEDS TO FIX THIS!!!!!!! IT IS NOT CORRECT, BUT I WANTED TO MOVE ON
-    public static String escapeStringLiterals(String s)
+    public static String escapeStringLiterals(String str)
     {
 //        if(s.indexOf("\r\n")>= 0)
 //                {
@@ -576,6 +573,7 @@ public class BasicSQLUtils
 //        }
 //                
        // log.debug("escaping string literal:" + s);
+        String s = str;
         if (s.indexOf("\\") >= 0)
         {
 
@@ -1557,12 +1555,13 @@ public class BasicSQLUtils
         return (showErrors & opt) == opt;
     }
     
-    public static String getServerTypeSpecificSQL(String mySQLFormatedString, SERVERTYPE currentServerType)
+    public static String getServerTypeSpecificSQL(final String mySQLFormatedStr, final SERVERTYPE currentServerType)
     {
         //if((myDestinationServerType == myDestinationServerType.MySQL) || (myDestinationServerType == myDestinationServerType.Derby))
         //{
         //    return mySQLFormatedString;
         //}
+        String mySQLFormatedString = mySQLFormatedStr;
          if(currentServerType == SERVERTYPE.MS_SQLServer)
         {
             mySQLFormatedString = stripSingleQuotes(mySQLFormatedString);
@@ -1572,25 +1571,25 @@ public class BasicSQLUtils
         return mySQLFormatedString;
     }
     
-    private static String stripSingleQuotes(String str)
+    private static String stripSingleQuotes(final String str)
     {
         return str.replace("`", "");
     }
     
-    private static String stripEngineCharSet(String str)
+    private static String stripEngineCharSet(final String strArg)
     {
+        String str = strArg;
         str = str.replaceAll("ENGINE=InnoDB", "");
         str = str.replaceAll("DEFAULT CHARSET=latin1", "");
         return str;
     }
     
-    private static String stripIntSize(String str)
+    private static String stripIntSize(final String str)
     {
-        str = str.replaceAll("\\(11\\)", "");
-        return str;  
+        return str.replaceAll("\\(11\\)", "");  
     }
     
-    public static String createIndexFieldStatment(String name, SERVERTYPE currentServerType) 
+    public static String createIndexFieldStatment(final String name, final SERVERTYPE currentServerType) 
     {
         if(currentServerType == SERVERTYPE.MS_SQLServer)
         {
@@ -1603,22 +1602,24 @@ public class BasicSQLUtils
         return "alter table "+name+" add index INX_"+name+" (NewID)";
     }
     
-    public static void setIdentityInsertONCommandForSQLServer(Connection connection, String tableName,
-                                                              SERVERTYPE currentServerType) 
+    public static void setIdentityInsertONCommandForSQLServer(final Connection connection, 
+                                                              final String tableName,
+                                                              final SERVERTYPE currentServerType) 
     {
         setIdentityInserCommandForSQLServer(connection, tableName, "ON", currentServerType); 
     }
     
-    public static void setIdentityInsertOFFCommandForSQLServer(Connection connection, String tableName,
-                                                               SERVERTYPE currentServerType) 
+    public static void setIdentityInsertOFFCommandForSQLServer(final Connection connection, 
+                                                               final String tableName,
+                                                               final SERVERTYPE currentServerType) 
     {
         setIdentityInserCommandForSQLServer(connection, tableName, "OFF", currentServerType); 
     }   
     
-    public static void setIdentityInserCommandForSQLServer(Connection connection,
-                                                           String tableName,
-                                                           String mySwitch,
-                                                           SERVERTYPE currentServerType)
+    public static void setIdentityInserCommandForSQLServer(final Connection connection,
+                                                           final String tableName,
+                                                           final String mySwitch,
+                                                           final SERVERTYPE currentServerType)
     {
         //REQUIRED FOR SQL SERVER IN ORDER TO PROGRAMMATICALLY SET DEFAULT VALUES
         if (currentServerType == SERVERTYPE.MS_SQLServer)
@@ -1664,101 +1665,88 @@ public class BasicSQLUtils
 //            }
 //        }
 //    }
-    public static void removeForeignKeyConstraints(Connection connection,
-                                                   String tableName,
-                                                   SERVERTYPE currentServerType)
+    public static void removeForeignKeyConstraints(final Connection connection,
+                                                   final String tableName,
+                                                   final SERVERTYPE currentServerType)
     {
-        if (currentServerType == SERVERTYPE.MS_SQLServer)
+        try
         {
-            try
+            if (currentServerType == SERVERTYPE.MS_SQLServer)
             {
-                Statement cntStmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-                        ResultSet.CONCUR_READ_ONLY);
+                Statement cntStmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                 String str = "ALTER TABLE " + tableName + " NOCHECK CONSTRAINT ALL";
                 cntStmt.execute(str);
                 cntStmt.close();
-            } catch (SQLException ex)
-            {
-                log.error("Error encountered trying to turn off foreign key constraints on database");
-                log.error(ex);
-            }
-        } else
-        {
-            try
+                    
+            } else
             {
                 Statement cntStmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
                         ResultSet.CONCUR_READ_ONLY);
                 String str = "SET FOREIGN_KEY_CHECKS = 0";
                 cntStmt.execute(str);
                 cntStmt.close();
-            } catch (SQLException ex)
-            {
-                log
-                        .error("Error encountered trying to turn off foreign key constraints on database");
-                log.error(ex);
+
             }
-        }
+        } catch (SQLException ex)
+        {
+            log
+                    .error("Error encountered trying to turn off foreign key constraints on database");
+            log.error(ex);
+        }  
     }
     
-    public static void removeForeignKeyConstraints(Connection connection,
-                                                   SERVERTYPE currentServerType)
+    public static void removeForeignKeyConstraints(final Connection connection,
+                                                   final SERVERTYPE currentServerType)
     {
-        if(currentServerType == SERVERTYPE.MS_SQLServer) 
+        try
         {
-            List<String> myTables = getTableNames(connection, currentServerType);       
-            for (Iterator<String> i = myTables.iterator( ); i.hasNext( ); ) 
+            if(currentServerType == SERVERTYPE.MS_SQLServer) 
             {
-                String s = i.next( );
-                try
+                List<String> myTables = getTableNames(connection, currentServerType);       
+                for (Iterator<String> i = myTables.iterator( ); i.hasNext( ); ) 
                 {
+                    String s = i.next( );
+    
                     Statement cntStmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
                     String str = "ALTER TABLE "+s+" NOCHECK CONSTRAINT ALL";
                     cntStmt.execute(str);
                     cntStmt.close();
-                } catch (SQLException ex)
-                {
-                    log.error(ex);
-                }                
+                }
             }
-        }
-        else
-        {
-            try
+            else
             {
                 Statement cntStmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
                 String str = "SET FOREIGN_KEY_CHECKS = 0";
                 cntStmt.execute(str);
                 cntStmt.close();
-            } catch (SQLException ex)
-            {
-                log.error(ex);
             }
-        }
+        } catch (SQLException ex)
+        {
+            log.error(ex);
+        } 
     }
     
-    public static String generateShowTablesCommand(String databaseName,
-                                                   SERVERTYPE currentServerType) 
+    public static String generateShowTablesCommand(final String databaseName,
+                                                   final SERVERTYPE currentServerType) 
     {
         if(currentServerType == SERVERTYPE.MS_SQLServer) 
         {
             return "SELECT TABLE_NAME FROM  "+databaseName+".INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = "
                     + "\'BASE TABLE\' ";//AND TABLE_SCHEMA = \'"+ databaseName + "\'";
         }
-        else
-            return "show tables";
+        return "show tables";
         
     }
 
-    public static String generateDescribeTableCommand(String tableName, String databaseName,
-                                                      SERVERTYPE currentServerType) 
+    public static String generateDescribeTableCommand(final String tableName, String databaseName,
+                                                      final SERVERTYPE currentServerType) 
     {
         if(currentServerType == SERVERTYPE.MS_SQLServer) 
         {
             return "SELECT COLUMN_NAME, DATA_TYPE FROM "+databaseName+".INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = \'"+tableName+"\' ";
                     //+"AND TABLE_SCHEMA = \'"+ databaseName + "\'";
         }
-        else
-            return "describe "+tableName;
+        return "describe "+tableName;
     }
     
     //-----------------------------------------------------------------------
