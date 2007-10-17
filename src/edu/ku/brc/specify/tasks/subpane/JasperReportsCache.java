@@ -117,8 +117,7 @@ public class JasperReportsCache implements DataCacheIFace
         // XXX isNewJavaVersionAtAppStart should be moved to a more generic place
         if (SpecifyAppContextMgr.isNewJavaVersionAtAppStart() && !reportsCacheWasCleared)
         {
-            // XXX WORKBENCH RELEASE Related to Bug 4442
-            //clearJasperFilesOnly(path);
+            clearJasperFilesOnly(path);
             
             reportsCacheWasCleared = true;
         }
@@ -172,27 +171,33 @@ public class JasperReportsCache implements DataCacheIFace
         
         for (AppResourceIFace ap : AppContextMgr.getInstance().getResourceByMimeType(mimeType))
         {
-            
+            // Check to see if the resource or file has changed.
             boolean updateCache = false;
-            File file = hash.get(ap.getName());
-            if (file == null)
+            File fileFromJasperCache = hash.get(ap.getName());
+            if (fileFromJasperCache == null)
             {
                 updateCache = true;
                 
             } else
             {
-                Date fileDate = new Date(file.lastModified());
-                boolean hasNoTimestamp = ap.getTimestampModified() == null;
-                updateCache = hasNoTimestamp || fileDate.getTime() < ap.getTimestampModified().getTime();
+                Date fileDate = new Date(fileFromJasperCache.lastModified());
+                updateCache   = ap.getTimestampModified() == null || fileDate.getTime() < ap.getTimestampModified().getTime();
             }
             
-            log.debug("Report Cache File["+ap.getName()+"]  updateCache["+updateCache+"]");
+            // If it has changed then copy the contents into the cache and delete the compiled file
+            // so it forces it to be recompiled.
             if (updateCache)
             {
                 File localFilePath = new File(cachePath.getAbsoluteFile() + File.separator + ap.getName());
                 try
                 {
                     XMLHelper.setContents(localFilePath, ap.getDataAsString());
+                    
+                    File compiledFile = getCompiledFile(localFilePath);
+                    if (compiledFile.exists())
+                    {
+                        compiledFile.delete();
+                    }
                     
                 } catch (Exception ex)
                 {
@@ -202,6 +207,16 @@ public class JasperReportsCache implements DataCacheIFace
         }
     }
     
+    /**
+     * @param file the jrxml file
+     * @return the xxxx.jasper file name (the compiled name)
+     */
+    protected static File getCompiledFile(final File file)
+    {
+        String fileName     = file.getName();
+        String compiledName = FilenameUtils.getBaseName(fileName) + ".jasper";
+        return new File(getCachePath().getAbsoluteFile() + File.separator + compiledName);
+    }
     
     /**
      * @return the reportsCacheWasCleared
@@ -221,31 +236,24 @@ public class JasperReportsCache implements DataCacheIFace
     {
         File   cachePath    = getCachePath();
         String fileName     = file.getName();
-        String compiledName = FilenameUtils.getBaseName(fileName) + ".jasper";
-        File   compiledPath = new File(cachePath.getAbsoluteFile() + File.separator + compiledName);
+        File   compiledPath = getCompiledFile(file);
 
         AppResourceIFace appRes = AppContextMgr.getInstance().getResource(fileName);
 
-        File reportPath = new File(cachePath.getAbsoluteFile() + File.separator + fileName);
-        try
-        {
-            XMLHelper.setContents(reportPath, appRes.getDataAsString());
-            
-        } catch (Exception ex)
-        {
-            log.error(ex);
-            throw new RuntimeException(ex);
-        }
-       
+        File reportFileFromCache = new File(cachePath.getAbsoluteFile() + File.separator + fileName);
 
         // Check to see if it needs to be recompiled, if it doesn't need compiling then
         // call "compileComplete" directly to have it start filling the labels
         // otherswise create the compiler runnable and have it be compiled 
         // asynchronously
         boolean needsCompiling = appRes.getTimestampModified() == null || 
-                                 (compiledPath.exists() && appRes.getTimestampModified().getTime() < compiledPath.lastModified());
+                                 !compiledPath.exists() || 
+                                 appRes.getTimestampModified().getTime() > reportFileFromCache.lastModified();
         
-        return new ReportCompileInfo(reportPath, compiledPath, needsCompiling);
+        //log.debug(appRes.getTimestampModified().getTime()+" > "+reportFileFromCache.lastModified() +"  "+(appRes.getTimestampModified().getTime() > reportFileFromCache.lastModified()));
+        //log.debug(compiledPath.exists());
+        //log.debug("needsCompiling "+needsCompiling);
+        return new ReportCompileInfo(reportFileFromCache, compiledPath, needsCompiling);
     }
     
     //------------------------------------------------------

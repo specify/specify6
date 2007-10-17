@@ -38,7 +38,7 @@ public class ReportCompileInfo
 
     public boolean isCompiled()
     {
-        return needsCompiled;
+        return !needsCompiled;
     }
 
     public File getReportFile()

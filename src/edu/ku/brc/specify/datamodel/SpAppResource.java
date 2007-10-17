@@ -132,7 +132,6 @@ public class SpAppResource extends DataModelObjBase implements java.io.Serializa
         specifyUser          = null;
         group                = null;       
         fileName             = null;
-        //timestampModified    = new Timestamp(System.currentTimeMillis());
     }
     // End Initializer
 
@@ -545,5 +544,19 @@ public class SpAppResource extends DataModelObjBase implements java.io.Serializa
         obj.spAppResourceDatas     = new HashSet<SpAppResourceData>();
         
         return obj;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getTimestampModified()
+     */
+    @Override
+    @Transient
+    public Timestamp getTimestampModified()
+    {
+        if (spAppResourceId == null && StringUtils.isNotEmpty(fileName))
+        {
+            return new Timestamp(new File(fileName).lastModified());
+        }
+        return super.getTimestampModified();
     }
 }

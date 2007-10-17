@@ -1061,6 +1061,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                                 appRes.setDescription(desc);
                                 appRes.setMetaData(metaData);
                                 appRes.setSpecifyUser(user);//added to fix not-null constraint issue
+                                
+                                appRes.setTimestampModified(new Timestamp(System.currentTimeMillis()));
 
                                 appRes.setFileName(resFile.getAbsolutePath());
 

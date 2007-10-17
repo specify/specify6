@@ -54,7 +54,7 @@ where preptype.Name = 'EtOH' and DT.DeterminationStatusID = 1 and collectionobje
 	<field name="species" class="java.lang.String"/>
 	<field name="prepname" class="java.lang.String"/>
 	<field name="prepcount" class="java.lang.Integer"/>
-	<field name="colEvId" class="java.lang.Long"/>
+	<field name="colEvId" class="java.lang.Integer"/>
 
 		<background>
 			<band height="0"  isSplitAllowed="true" >
