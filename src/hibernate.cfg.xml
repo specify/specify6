@@ -5,16 +5,6 @@
 <hibernate-configuration>
 	<session-factory>
 
-		<!-- Don't forget to copy your JDBC driver to the lib/ directory! -->
-
-	    <!--
-	    <property name="hibernate.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</property>
-        <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
-	    <property name="hibernate.connection.url">jdbc:mysql://localhost/fish</property> 
-		<property name="hibernate.connection.username">rods</property>
-	    <property name="hibernate.connection.password">rods</property>
-	    -->
-	    
 		<property name="hibernate.use_identifer_rollback">true</property>
 		
         <!-- Use JTA for Transactions -->
@@ -39,10 +29,10 @@
 	    <property name="hibernate.c3p0.min_size">2</property>
 		<property name="hibernate.c3p0.max_size">100</property>
 		<property name="hibernate.c3p0.initialPoolSize">3</property>
+		<property name="hibernate.c3p0.idleConnectionTestPeriod">60</property>
 		<!--
 		<property name="hibernate.c3p0.maxIdleTime">60</property> 
 		-->
-		<property name="hibernate.c3p0.idleConnectionTestPeriod">60</property>
 		
 		<!-- Specify mapping files. -->
 		<mapping class="edu.ku.brc.specify.datamodel.Accession"/>
@@ -176,17 +166,6 @@
 		<mapping class="edu.ku.brc.specify.datamodel.WorkbenchTemplate"/>
 		<mapping class="edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem"/>
 		
-        <!-- Settings for the second-level cache -->
-        <!--
-        <class-cache class="org.hibernate.auction.model.Item" usage="read-write"/>
-        <class-cache class="org.hibernate.auction.model.Category" usage="read-write"/>
-        <class-cache class="org.hibernate.auction.model.User" usage="read-write"/>
-        <class-cache class="org.hibernate.auction.model.Bid" usage="read-only"/>
-        <class-cache class="org.hibernate.auction.model.BillingDetails" usage="read-write"/>
-        <collection-cache collection="org.hibernate.auction.model.Category.items" usage="read-write"/>
-        <collection-cache collection="org.hibernate.auction.model.Item.bids" usage="read-write"/>
-        -->
-		
 		<!--
 		<event type="post-commit-update">
 			<listener class="edu.ku.brc.specify.dbsupport.DBFlushEventListener"/>
@@ -194,9 +173,9 @@
 		-->
 		
 	    <!--     
-	    <listener type="save" class="edu.ku.brc.specify.dbsupport.DBSaveEventListener" />
-	    <listener type="save-update" class="edu.ku.brc.specify.dbsupport.DBSaveEventListener" />
-	    <listener type="flush" class="edu.ku.brc.specify.dbsupport.DBFlushEventListener" />
+	    <listener type="save"        class="edu.ku.brc.specify.dbsupport.DBSaveEventListener"  />
+	    <listener type="save-update" class="edu.ku.brc.specify.dbsupport.DBSaveEventListener"  />
+	    <listener type="flush"       class="edu.ku.brc.specify.dbsupport.DBFlushEventListener" />
 	    -->
 	    
 	    <!-- 
@@ -206,11 +185,10 @@
 		-->
 		
 		<!--
-		<listener type="post-commit-update" class="edu.ku.brc.specify.dbsupport.DBSaveEventListener" />
-		<listener type="post-commit-insert" class="edu.ku.brc.specify.dbsupport.DBSaveEventListener" />
+		<listener type="post-commit-update" class="edu.ku.brc.specify.dbsupport.DBSaveEventListener"  />
+		<listener type="post-commit-insert" class="edu.ku.brc.specify.dbsupport.DBSaveEventListener"  />
 		<listener type="post-commit-delete" class="edu.ku.brc.specify.dbsupport.DBFlushEventListener" /> 
 		 -->
-		
 		
 	</session-factory>
 
