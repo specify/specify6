@@ -459,7 +459,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
         
         wbtmi.timestampCreated      = new Timestamp(System.currentTimeMillis());
         wbtmi.timestampModified     = null;
-        wbtmi.lastEditedBy          = null;
+        wbtmi.modifiedByAgent          = null;
 
         return wbtmi;
     }

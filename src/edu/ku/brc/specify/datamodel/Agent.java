@@ -84,6 +84,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     protected String                        interests;
     protected String                        abbreviation;
     protected String                        name;
+    protected String                        initials;
     protected String                        remarks;
     protected Integer                       visibility;
     protected String                        visibilitySetBy;
@@ -110,7 +111,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     protected Set<Collector>                collectors;
     protected Set<ExchangeOut>              exchangeOutCatalogedBys;
     protected Set<RepositoryAgreement>      repositoryAgreements;
-    protected Set<Locality>                 localities;
+    protected Set<GeoCoordDetail>           geoCoordDetail;
     protected Set<CollectionObject>         catalogers;
     
     
@@ -143,6 +144,13 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     
     protected Set<AgentVariant>             variants;
     protected Set<AgentAttachment>          agentAttachments;
+    protected Set<Collection>               collectionContacts;
+    protected Set<Collection>               collectionCurators;
+    
+    protected Set<FieldNotebook>            fieldNotebookOwners;
+    protected Set<DNASequence>              dnaSequencers;
+    protected Set<FieldNotebookPageSet>     pageSetSourceAgents;
+    protected Set<DataModelObjBase>         lastEditedBys;
 
     
     protected static Agent                  currentUserAgent = null;
@@ -167,72 +175,80 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     public void initialize()
     {
         super.init();
-        agentId = null;
-        agentType = null;
-        firstName = null;
-        lastName = null;
-        middleInitial = null;
-        title = null;
-        interests = null;
-        abbreviation = null;
-        name = null;
-        remarks = null;
-        visibility = null;
-        labelName = null;
-        authorName = null;
-        collectorName = null;
-        guid = null;
-        authors = new HashSet<Author>();
+        agentId                   = null;
+        agentType                 = null;
+        firstName                 = null;
+        lastName                  = null;
+        middleInitial             = null;
+        title                     = null;
+        interests                 = null;
+        abbreviation              = null;
+        name                      = null;
+        initials                  = null;
+        remarks                   = null;
+        visibility                = null;
+        labelName                 = null;
+        authorName                = null;
+        collectorName             = null;
+        guid                      = null;
+        authors                   = new HashSet<Author>();
         loanReturnPhysicalObjects = new HashSet<LoanReturnPhysicalObject>();
-        borrowReturnMaterials = new HashSet<BorrowReturnMaterial>();
-        exchangeInCatalogedBys = new HashSet<ExchangeIn>();
-        orgMembers = new HashSet<Agent>();
-        organization = null;
-        projects = new HashSet<Project>();
-        preparations = new HashSet<Preparation>();
-        groups = new HashSet<GroupPerson>();
-        members = new HashSet<GroupPerson>();
-        determinations = new HashSet<Determination>();
-        shipments = new HashSet<Shipment>();
-        collectors = new HashSet<Collector>();
-        exchangeOutCatalogedBys = new HashSet<ExchangeOut>();
-        repositoryAgreements = new HashSet<RepositoryAgreement>();
-        localities = new HashSet<Locality>();
-        catalogers = new HashSet<CollectionObject>();
+        borrowReturnMaterials     = new HashSet<BorrowReturnMaterial>();
+        exchangeInCatalogedBys    = new HashSet<ExchangeIn>();
+        orgMembers                = new HashSet<Agent>();
+        organization              = null;
+        projects                  = new HashSet<Project>();
+        preparations              = new HashSet<Preparation>();
+        groups                    = new HashSet<GroupPerson>();
+        members                   = new HashSet<GroupPerson>();
+        determinations            = new HashSet<Determination>();
+        shipments                 = new HashSet<Shipment>();
+        collectors                = new HashSet<Collector>();
+        exchangeOutCatalogedBys   = new HashSet<ExchangeOut>();
+        repositoryAgreements      = new HashSet<RepositoryAgreement>();
+        geoCoordDetail            = new HashSet<GeoCoordDetail>();
+        catalogers                = new HashSet<CollectionObject>();
         
-        division           = null;
-        instTechContact    = null;
-        instContentContact = null;
+        division                  = null;
+        instTechContact           = null;
+        instContentContact        = null;
         
         // Agent
-        jobTitle = null;
-        email = null;
-        url = null;
-        remarks = null;
-        addresses = new HashSet<Address>();
-        loanAgents = new HashSet<LoanAgent>();
-        shipmentsByShipper = new HashSet<Shipment>();
-        shipmentsByShippedTo = new HashSet<Shipment>();
-        deaccessionAgents = new HashSet<DeaccessionAgent>();
-        exchangeInFromOrganizations = new HashSet<ExchangeIn>();
-        permitsIssuedTo = new HashSet<Permit>();
-        permitsIssuedBy = new HashSet<Permit>();
-        borrowAgents = new HashSet<BorrowAgent>();
-        accessionAgents = new HashSet<AccessionAgent>();
+        jobTitle                       = null;
+        email                          = null;
+        url                            = null;
+        remarks                        = null;
+        addresses                      = new HashSet<Address>();
+        loanAgents                     = new HashSet<LoanAgent>();
+        shipmentsByShipper             = new HashSet<Shipment>();
+        shipmentsByShippedTo           = new HashSet<Shipment>();
+        deaccessionAgents              = new HashSet<DeaccessionAgent>();
+        exchangeInFromOrganizations    = new HashSet<ExchangeIn>();
+        permitsIssuedTo                = new HashSet<Permit>();
+        permitsIssuedBy                = new HashSet<Permit>();
+        borrowAgents                   = new HashSet<BorrowAgent>();
+        accessionAgents                = new HashSet<AccessionAgent>();
         exchangeOutSentToOrganizations = new HashSet<ExchangeOut>();
-        organization = null;
+        organization                   = null;
         
-        infoRequests                  = new HashSet<InfoRequest>();
-        examinedByAgentConservEvents  = new HashSet<ConservEvent>();
-        treatedByAgentConservEvents   = new HashSet<ConservEvent>();
+        infoRequests                   = new HashSet<InfoRequest>();
+        examinedByAgentConservEvents   = new HashSet<ConservEvent>();
+        treatedByAgentConservEvents    = new HashSet<ConservEvent>();
         
-        conservDescriptions           = new HashSet<ConservDescription>();
+        conservDescriptions            = new HashSet<ConservDescription>();
         
-        variants                      = new HashSet<AgentVariant>();
+        variants                       = new HashSet<AgentVariant>();
         
-        agentAttachments              = new HashSet<AgentAttachment>();
+        agentAttachments               = new HashSet<AgentAttachment>();
         
-        specifyUsers                  = new HashSet<SpecifyUser>();
+        specifyUsers                   = new HashSet<SpecifyUser>();
+        
+        collectionContacts             = new HashSet<Collection>();
+        collectionCurators             = new HashSet<Collection>();
+        fieldNotebookOwners            = new HashSet<FieldNotebook>();
+        dnaSequencers                  = new HashSet<DNASequence>();
+        pageSetSourceAgents            = new HashSet<FieldNotebookPageSet>();
+        lastEditedBys                  = new HashSet<DataModelObjBase>();
     }
     // End Initializer
 
@@ -367,6 +383,23 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
 
     public void setAbbreviation(String abbreviation) {
         this.abbreviation = abbreviation;
+    }
+
+    /**
+     * @return the initials
+     */
+    @Column(name = "Initials", unique = false, nullable = true, insertable = true, updatable = true, length = 8)
+    public String getInitials()
+    {
+        return initials;
+    }
+
+    /**
+     * @param initials the initials to set
+     */
+    public void setInitials(String initials)
+    {
+        this.initials = initials;
     }
 
     /**
@@ -588,19 +621,19 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
    }
 
    /**
-   *
-   */
-  @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "geoRefDetBy")
-  @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-  public Set<Locality> getLocalities() 
-  {
-      return this.localities;
-  }
+    *
+    */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "geoRefDetBy")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<GeoCoordDetail> getGeoCoordDetail() 
+    {
+        return this.geoCoordDetail;
+    }
 
-  public void setLocalities(Set<Locality> localities) 
-  {
-      this.localities = localities;
-  }
+    public void setGeoCoordDetail(Set<GeoCoordDetail> geoCoordDetail) 
+    {
+        this.geoCoordDetail = geoCoordDetail;
+    }
 
     /**
      *
@@ -1050,6 +1083,115 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         return variants;
     }
     
+    /**
+     * @return the collectionContacts
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "contactAgent")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    public Set<Collection> getCollectionContacts()
+    {
+        return collectionContacts;
+    }
+
+    /**
+     * @param collectionContacts the collectionContacts to set
+     */
+    public void setCollectionContacts(Set<Collection> collectionContacts)
+    {
+        this.collectionContacts = collectionContacts;
+    }
+
+    /**
+     * @return the collectionCurators
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "curatorAgent")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    public Set<Collection> getCollectionCurators()
+    {
+        return collectionCurators;
+    }
+
+    /**
+     * @param collectionCurators the collectionCurators to set
+     */
+    public void setCollectionCurators(Set<Collection> collectionCurators)
+    {
+        this.collectionCurators = collectionCurators;
+    }
+
+    /**
+     * @return the fieldNotebookOwners
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "ownerAgent")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    public Set<FieldNotebook> getFieldNotebookOwners()
+    {
+        return fieldNotebookOwners;
+    }
+
+    /**
+     * @param fieldNotebookOwners the fieldNotebookOwners to set
+     */
+    public void setFieldNotebookOwners(Set<FieldNotebook> fieldNotebookOwners)
+    {
+        this.fieldNotebookOwners = fieldNotebookOwners;
+    }
+
+    /**
+     * @return the dnaSequencers
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "sequencer")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    public Set<DNASequence> getDnaSequencers()
+    {
+        return dnaSequencers;
+    }
+
+    /**
+     * @param dnaSequencers the dnaSequencers to set
+     */
+    public void setDnaSequencers(Set<DNASequence> dnaSequencers)
+    {
+        this.dnaSequencers = dnaSequencers;
+    }
+
+    /**
+     * @return the pageSetSourceAgents
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "sourceAgent")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    public Set<FieldNotebookPageSet> getPageSetSourceAgents()
+    {
+        return pageSetSourceAgents;
+    }
+
+    /**
+     * @param pageSetSourceAgents the pageSetSourceAgents to set
+     */
+    public void setPageSetSourceAgents(Set<FieldNotebookPageSet> pageSetSourceAgents)
+    {
+        this.pageSetSourceAgents = pageSetSourceAgents;
+    }
+
+    /**
+     * @return the lastEditedBys
+     */
+    //@OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "lastEditedBy")
+    //@Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    @Transient
+    public Set<DataModelObjBase> getLastEditedBys()
+    {
+        return lastEditedBys;
+    }
+
+    /**
+     * @param lastEditedBys the lastEditedBys to set
+     */
+    public void setLastEditedBys(Set<DataModelObjBase> lastEditedBys)
+    {
+        this.lastEditedBys = lastEditedBys;
+    }
+
     /**
      * @param variants the variants to set
      */

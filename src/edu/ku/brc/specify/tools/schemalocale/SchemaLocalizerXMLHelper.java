@@ -284,7 +284,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                     changesMadeDuringStartup = true;
                     changesBuffer.append("<tr><td align=\"center\">Removed</td>");
                     changesBuffer.append("<td align=\"center\">");
-                    changesBuffer.append(ti.getName());
+                    changesBuffer.append(container.getName());
                     changesBuffer.append("</td><td>&nbsp;</td></tr>");
                     
                 } else

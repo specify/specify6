@@ -662,7 +662,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
         
         if (!jpaQuery.isInError() && list != null && list.size() > 0)
         {
-            if (numColumns == 1)
+            /*if (numColumns == 1)
             {
                 for (Object rowObj : list)
                 {
@@ -671,7 +671,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                     cache.add(row);
                 }
                 
-            } else
+            } else*/
             {
                 for (Object rowObj : list)
                 {

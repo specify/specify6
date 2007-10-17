@@ -52,6 +52,7 @@ public class CollectionObjectCitation extends DataModelObjBase implements java.i
 
      protected Integer          collectionObjectCitationId;
      protected String           remarks;
+     protected Boolean          isFigured;
      protected ReferenceWork    referenceWork;
      protected CollectionObject collectionObject;
 
@@ -93,6 +94,23 @@ public class CollectionObjectCitation extends DataModelObjBase implements java.i
     @Column(name = "CollectionObjectCitationID", unique = false, nullable = false, insertable = true, updatable = true)
     public Integer getCollectionObjectCitationId() {
         return this.collectionObjectCitationId;
+    }
+
+    /**
+     * @return the isFigured
+     */
+    @Column(name = "IsFigured", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getIsFigured()
+    {
+        return isFigured;
+    }
+
+    /**
+     * @param isFigured the isFigured to set
+     */
+    public void setIsFigured(Boolean isFigured)
+    {
+        this.isFigured = isFigured;
     }
 
     /**

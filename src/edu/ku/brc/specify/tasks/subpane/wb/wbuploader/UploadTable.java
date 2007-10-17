@@ -34,6 +34,7 @@ import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Preparation;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Relationship;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader.ParentTableEntry;
@@ -1308,7 +1309,7 @@ public class UploadTable implements Comparable<UploadTable>
                     setFields(rec, seq);
                     setRequiredFldDefaults(rec);
                     setParents(rec, recNum);
-                    rec.setLastEditedBy(Uploader.getCurrentUpload().getIdentifier());
+                    rec.setModifiedByAgent(SpecifyUser.getCurrentUser().getAgent());
                     setRelatedDefaults(rec);
                     finalizeWrite(rec, recNum);
                     doWrite(rec, recNum);

@@ -210,6 +210,8 @@
     
     <icon name="Close"         file="close.gif" sizes="NonStd"/>
     <icon name="CloseHover"    file="closeHover.gif" sizes="NonStd"/>
+    <icon name="Print"         file="printer.gif" sizes="all"/>
+    
     <!-- <icon name="BGImage"  file="frogs_bg.gif" sizes="NonStd"/> -->
     
     <icon name="ValidationValid"   file="validation-valid.gif"    sizes="all"/>

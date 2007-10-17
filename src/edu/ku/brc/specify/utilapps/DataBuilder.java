@@ -60,6 +60,7 @@ import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
 import edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.LocalityCitation;
+import edu.ku.brc.specify.datamodel.LocalityDetail;
 import edu.ku.brc.specify.datamodel.Location;
 import edu.ku.brc.specify.datamodel.LocationTreeDef;
 import edu.ku.brc.specify.datamodel.LocationTreeDefItem;
@@ -71,7 +72,6 @@ import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.PreparationAttr;
 import edu.ku.brc.specify.datamodel.Project;
-import edu.ku.brc.specify.datamodel.ProjectCollectionObject;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.ReferenceWork;
 import edu.ku.brc.specify.datamodel.RepositoryAgreement;
@@ -229,7 +229,7 @@ public class DataBuilder
         Collection collection = new Collection();
         collection.initialize();
         collection.setCollectionPrefix(prefix);
-        collection.setLastEditedBy(null);
+        collection.setModifiedByAgent(null);
         collection.setRemarks("These are the remarks");
         collection.setCollectionName(name);
         collection.setCatalogNumberingScheme(catalogNumberingScheme);
@@ -390,7 +390,7 @@ public class DataBuilder
         collector.initialize();
 
         collector.setAgent(agent);
-        collector.setLastEditedBy(null);
+        collector.setModifiedByAgent(null);
         collector.setOrderNumber(orderNum);
         collector.setRemarks("");
         collector.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
@@ -421,7 +421,7 @@ public class DataBuilder
         colObj.setCollectingEvent(collectingEvent);
         colObj.setCountAmt(count);
         colObj.setFieldNumber(fieldNumber);
-        colObj.setLastEditedBy(lastEditedBy);
+        colObj.setModifiedByAgent(cataloger);
         colObj.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
         //colObj.setTimestampModified(new Timestamp(System.currentTimeMillis()));
 
@@ -972,7 +972,7 @@ public class DataBuilder
 
         prep.setCollectionObject(colObj);
         prep.setCount(count);
-        prep.setLastEditedBy(null);
+        prep.setModifiedByAgent(null);
         prep.setLocation(location);
         prep.setPreparedByAgent(preparedBy);
         prep.setPreparedDate(preparedDate);
@@ -1088,7 +1088,7 @@ public class DataBuilder
     {
         Accession accession = new Accession();
         accession.initialize();
-        accession.setNumber(number);
+        accession.setAccessionNumber(number);
         accession.setVerbatimDate(verbatimDate);
         accession.setDateAccessioned(dateAccessioned);
         accession.setDateReceived(dateReceived);
@@ -1686,7 +1686,7 @@ public class DataBuilder
         loan.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
         //loan.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         //loan.setShipment(shipment);
-        loan.addShipment(shipment);
+        loan.addReference(shipment, "shipments");
         loan.setOriginalDueDate(originalDueDate);
         loan.setDateClosed(dateClosed);
         loan.setCurrentDueDate(currentDueDate);
@@ -1748,8 +1748,6 @@ public class DataBuilder
     {
         LoanReturnPhysicalObject loanreturnphysicalobject = new LoanReturnPhysicalObject();
         loanreturnphysicalobject.initialize();
-        loanreturnphysicalobject.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        //loanreturnphysicalobject.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         loanreturnphysicalobject.setReceivedBy(agent);
         loanreturnphysicalobject.setReturnedDate(returnedDate);
         loanreturnphysicalobject.setQuantity(quantity);
@@ -1798,19 +1796,10 @@ public class DataBuilder
     {
         Locality locality = new Locality();
         locality.initialize();
-        locality.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        //locality.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         locality.setGroupPermittedToView(groupPermittedToView);
         locality.setNamedPlace(namedPlace);
         locality.setRelationToNamedPlace(relationToNamedPlace);
         locality.setLocalityName(localityName);
-        locality.setBaseMeridian(baseMeridian);
-        locality.setRange(range);
-        locality.setRangeDirection(rangeDirection);
-        locality.setTownship(township);
-        locality.setTownshipDirection(townshipDirection);
-        locality.setSection(section);
-        locality.setSectionPart(sectionPart);
         locality.setVerbatimElevation(verbatimElevation);
         locality.setOriginalElevationUnit(originalElevationUnit);
         locality.setMinElevation(minElevation);
@@ -1830,13 +1819,28 @@ public class DataBuilder
         locality.setLat2text(lat2text);
         locality.setLong1text(long1text);
         locality.setLong2text(long2text);
-        locality.setNationalParkName(nationalParkName);
-        locality.setIslandGroup(islandGroup);
-        locality.setIsland(island);
-        locality.setWaterBody(waterBody);
-        locality.setDrainage(drainage);
         locality.setGeography(geography);
+        
+        LocalityDetail localityDetail = new LocalityDetail();
+        localityDetail.initialize();
+        
+        localityDetail.setBaseMeridian(baseMeridian);
+        localityDetail.setRange(range);
+        localityDetail.setRangeDirection(rangeDirection);
+        localityDetail.setTownship(township);
+        localityDetail.setTownshipDirection(townshipDirection);
+        localityDetail.setSection(section);
+        localityDetail.setSectionPart(sectionPart);
+        localityDetail.setNationalParkName(nationalParkName);
+        localityDetail.setIslandGroup(islandGroup);
+        localityDetail.setIsland(island);
+        localityDetail.setWaterBody(waterBody);
+        localityDetail.setDrainage(drainage);
+
+        locality.addReference(localityDetail, "localityDetails");
+        
         persist(locality);
+        
         return locality;
     }
 
@@ -1932,19 +1936,6 @@ public class DataBuilder
         project.setProjectDescription(projectDescription);
         persist(project);
         return project;
-    }
-
-    public static ProjectCollectionObject createProjectCollectionObject(final CollectionObject collectionObject,
-                                                                        final Project project)
-    {
-        ProjectCollectionObject projectcollectionobject = new ProjectCollectionObject();
-        projectcollectionobject.initialize();
-        projectcollectionobject.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        //projectcollectionobject.setTimestampModified(new Timestamp(System.currentTimeMillis()));
-        projectcollectionobject.setCollectionObject(collectionObject);
-        projectcollectionobject.setProject(project);
-        persist(projectcollectionobject);
-        return projectcollectionobject;
     }
 
     public static RecordSetIFace createRecordSet(final Integer recordSetID, final String name, final SpecifyUser owner)

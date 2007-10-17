@@ -90,7 +90,7 @@ public class SpAppResource extends DataModelObjBase implements java.io.Serializa
      protected Integer                   groupPermissionLevel;
      protected Integer                   allPermissionLevel;
      protected Set<SpAppResourceData>    spAppResourceDatas;
-     protected Set<SpAppResourceDir> spAppResourceDirs;
+     protected Set<SpAppResourceDir>     spAppResourceDirs;
      protected SpecifyUser               specifyUser;
      protected UserGroup                 group;
      

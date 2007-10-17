@@ -29,6 +29,8 @@
 package edu.ku.brc.specify.datamodel;
 
 import java.util.Calendar;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -38,12 +40,15 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 /**
 
@@ -74,19 +79,26 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
     protected String            roomOrBuilding;
      
     // New Fields
+    protected String            typeOfAddr;    // most likely value is "of record" this describes what the address was used for.
+    protected Boolean           isCurrent;
+    protected Boolean           isShipping;
     protected Calendar          startDate;
     protected Calendar          endDate;
-    protected String            positionHeld;
+    protected String            positionHeld;  // their previous position held
+    protected Set<Institution>  insitutions;
+    protected Set<Division>     divisions;
 
     // Constructors
 
     /** default constructor */
-    public Address() {
+    public Address() 
+    {
         //
     }
 
     /** constructor with id */
-    public Address(Integer addressId) {
+    public Address(Integer addressId) 
+    {
         this.addressId = addressId;
     }
 
@@ -116,6 +128,11 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
         startDate = null;
         endDate = null;
         positionHeld = null;
+        isCurrent = null;
+        isShipping = null;
+        typeOfAddr = null;
+        insitutions = new HashSet<Institution>();
+        divisions   = new HashSet<Division>();
         
     }
     // End Initializer
@@ -384,6 +401,93 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
         }
     }
     
+    /**
+     * @return the typeOfAddr
+     */
+    @Column(name = "TypeOfAddr", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    public String getTypeOfAddr()
+    {
+        return typeOfAddr;
+    }
+
+    /**
+     * @param typeOfAddr the typeOfAddr to set
+     */
+    public void setTypeOfAddr(String typeOfAddr)
+    {
+        this.typeOfAddr = typeOfAddr;
+    }
+
+    /**
+     * @return the isCurrent
+     */
+    @Column(name = "IsCurrent", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getIsCurrent()
+    {
+        return isCurrent;
+    }
+
+    /**
+     * @param isCurrent the isCurrent to set
+     */
+    public void setIsCurrent(Boolean isCurrent)
+    {
+        this.isCurrent = isCurrent;
+    }
+
+    /**
+     * @return the isShipping
+     */
+    @Column(name = "IsShipping", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getIsShipping()
+    {
+        return isShipping;
+    }
+
+    /**
+     * @param isShipping the isShipping to set
+     */
+    public void setIsShipping(Boolean isShipping)
+    {
+        this.isShipping = isShipping;
+    }
+    
+    /**
+     * @return the insitutions
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "address")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    public Set<Institution> getInsitutions()
+    {
+        return insitutions;
+    }
+
+    /**
+     * @param insitutions the insitutions to set
+     */
+    public void setInsitutions(Set<Institution> insitutions)
+    {
+        this.insitutions = insitutions;
+    }
+
+    /**
+     * @return the divisions
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "address")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    public Set<Division> getDivisions()
+    {
+        return divisions;
+    }
+
+    /**
+     * @param divisions the divisions to set
+     */
+    public void setDivisions(Set<Division> divisions)
+    {
+        this.divisions = divisions;
+    }
+
     @Override
     @Transient
     public String getIdentityTitle()

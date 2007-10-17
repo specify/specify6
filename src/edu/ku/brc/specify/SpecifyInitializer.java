@@ -244,7 +244,7 @@ public class SpecifyInitializer
 
         
         /**
-         * Checks all the textfeilds to see if they have text
+         * Checks all the textfields to see if they have text
          * @return true of all fields have text
          */
         protected boolean isUIValid()
@@ -529,7 +529,7 @@ public class SpecifyInitializer
                 public void removeUpdate(DocumentEvent e) {updateBtnUI();}
                 public void changedUpdate(DocumentEvent e) {updateBtnUI();}
             });
-            browse = new BrowseBtnPanel(filePath, true);
+            browse = new BrowseBtnPanel(filePath, true, true);
             browse.setEnabled(false);
 
             JLabel       lbl     = new JLabel(header.toString());

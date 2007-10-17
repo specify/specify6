@@ -44,6 +44,13 @@ public class TableModel2Excel
 {
     private static final Logger log = Logger.getLogger(TableModel2Excel.class);
     
+    protected static TableModel2Excel instance = new TableModel2Excel();
+    
+    public TableModel2Excel()
+    {
+        // no op
+    }
+    
     /**
      * Returns just the name part with the path or the extension.
      * @param path the fill path with file name and extension
@@ -85,7 +92,19 @@ public class TableModel2Excel
         return convertToExcel(getTempExcelName(), title, tableModel);
     }
     
-    
+    protected static void setBordersOnStyle(final HSSFCellStyle style, 
+                                            final short colorIndex, 
+                                            final short borderStyle)
+    {
+        style.setBorderBottom(borderStyle);
+        style.setBottomBorderColor(colorIndex);
+        style.setBorderLeft(borderStyle);
+        style.setLeftBorderColor(colorIndex);
+        style.setBorderRight(borderStyle);
+        style.setRightBorderColor(colorIndex);
+        style.setBorderTop(borderStyle);
+        style.setTopBorderColor(colorIndex);
+    }
 
     /**
      * Converts a tableModel to an Excel Spreadsheet.
@@ -120,7 +139,8 @@ public class TableModel2Excel
                 HSSFCellStyle headerStyle = wb.createCellStyle();
                 headerStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
                 headerStyle.setFont(headerFont);
-                
+                setBordersOnStyle(headerStyle, HSSFColor.GREY_25_PERCENT.index, HSSFCellStyle.BORDER_THIN);
+
                 short numColumns = (short)tableModel.getColumnCount();
                 
                 HSSFRow  headerRow  = sheet.createRow(0);
@@ -142,6 +162,9 @@ public class TableModel2Excel
                 HSSFCellStyle oddCellStyle  = wb.createCellStyle();
                 HSSFCellStyle evenCellStyle = wb.createCellStyle();
                 
+                setBordersOnStyle(oddCellStyle, HSSFColor.GREY_25_PERCENT.index, HSSFCellStyle.BORDER_THIN);
+                setBordersOnStyle(evenCellStyle, HSSFColor.GREY_25_PERCENT.index, HSSFCellStyle.BORDER_THIN);
+                
                 // create 2 fonts objects
                 HSSFFont cellFont  = wb.createFont();
                 //set font 1 to 12 point type
@@ -153,7 +176,7 @@ public class TableModel2Excel
                 oddCellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
                 
                 oddCellStyle.setFillForegroundColor(HSSFColor.WHITE.index);
-                evenCellStyle.setFillForegroundColor(HSSFColor.GREY_25_PERCENT.index);
+                evenCellStyle.setFillForegroundColor(HSSFColor.LIGHT_CORNFLOWER_BLUE.index);
                 
                 oddCellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
                 evenCellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
@@ -188,9 +211,7 @@ public class TableModel2Excel
                 log.error("convertToExcel", ex);
             }
         }
-        
         return toFile;
-        
     }
 
     /**
@@ -235,5 +256,19 @@ public class TableModel2Excel
         return strBuilder;
         
     }
+    
+    /*
+    public class TableModel2ExcelSetup
+    {
+        protected boolean isOddEven;
+        protected boolean oodColor;
+        protected boolean evenColor;
+        protected boolean headerFontSize;
+        
+        public TableModel2ExcelSetup()
+        {
+            
+        }
+    }*/
 
 }

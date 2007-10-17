@@ -75,6 +75,7 @@ import edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Shipment;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.ui.LoanReturnDlg;
 import edu.ku.brc.specify.ui.LoanSelectPrepsDlg;
 import edu.ku.brc.specify.ui.LoanReturnDlg.LoanReturnInfo;
@@ -92,7 +93,6 @@ import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.dnd.Trash;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
-import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.TableViewObj;
@@ -528,7 +528,7 @@ public class InteractionsTask extends BaseTask
                             shipment.setShippedTo(infoRequest.getAgent());
                         }
                         
-                        loan.addShipment(shipment);
+                        loan.addReference(shipment, "shipments");
                         
                         for (Preparation prep : prepsHash.keySet())
                         {
@@ -946,7 +946,7 @@ public class InteractionsTask extends BaseTask
                     lrpo.initialize();
                     //lrpo.setAgent(agent);
                     lrpo.setReceivedBy(agent);
-                    lrpo.setLastEditedBy(FormHelper.getCurrentUserEditStr());
+                    lrpo.setModifiedByAgent(SpecifyUser.getCurrentUser().getAgent());
                     lrpo.setReturnedDate(Calendar.getInstance());
                     lrpo.setQuantity(lri.getQuantity());
                     lrpo.setRemarks(lri.getRemarks());

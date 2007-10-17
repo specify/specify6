@@ -41,9 +41,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -86,6 +85,14 @@ public class Loan extends DataModelObjBase implements AttachmentOwnerIFace<LoanA
     protected Calendar                originalDueDate;
     protected Calendar                dateClosed;
     protected Boolean                 isGift;
+    
+    protected String                  receivedComments;
+    protected String                  specialConditions;
+    protected String                  financialResponsibility;
+    protected String                  purposeOfLoan;
+    protected Calendar                overdueNotiSentDate;
+    protected Calendar                dateReceived;
+    
     protected String                  remarks;
     protected String                  text1;
     protected String                  text2;
@@ -94,11 +101,14 @@ public class Loan extends DataModelObjBase implements AttachmentOwnerIFace<LoanA
     protected Boolean                 isClosed;
     protected Boolean                 yesNo1;
     protected Boolean                 yesNo2;
+    
     protected Set<LoanAgent>          loanAgents;
     protected Set<LoanPhysicalObject> loanPhysicalObjects;
     //protected Shipment shipment;
     protected Set<Shipment>           shipments;
     private Set<LoanAttachment>       loanAttachments;
+    
+    protected Division                division;
 
 
     // Constructors
@@ -127,6 +137,14 @@ public class Loan extends DataModelObjBase implements AttachmentOwnerIFace<LoanA
 
         dateClosed      = null;
         isGift          = null;
+        
+        receivedComments    = null;
+        specialConditions   = null;
+        financialResponsibility = null;
+        purposeOfLoan       = null;
+        overdueNotiSentDate = null;
+        dateReceived        = null;
+        
         remarks         = null;
         text1           = null;
         text2           = null;
@@ -142,6 +160,7 @@ public class Loan extends DataModelObjBase implements AttachmentOwnerIFace<LoanA
         shipments           = new HashSet<Shipment>();
         
         loanAttachments = new HashSet<LoanAttachment>();
+        division        = null;
         
         if (true)
         {
@@ -362,7 +381,7 @@ public class Loan extends DataModelObjBase implements AttachmentOwnerIFace<LoanA
     /**
      *      * User definable
      */
-    @Column(name="YesNo1",unique=false,nullable=true,updatable=true,insertable=true)
+    @Column(name="YesNo1", unique = false, nullable = true, updatable = true, insertable = true)
     public Boolean getYesNo1() {
         return this.yesNo1;
     }
@@ -374,13 +393,136 @@ public class Loan extends DataModelObjBase implements AttachmentOwnerIFace<LoanA
     /**
      *      * User definable
      */
-    @Column(name="YesNo2",unique=false,nullable=true,updatable=true,insertable=true)
+    @Column(name="YesNo2", unique = false, nullable = true, updatable = true, insertable = true)
     public Boolean getYesNo2() {
         return this.yesNo2;
     }
     
     public void setYesNo2(Boolean yesNo2) {
         this.yesNo2 = yesNo2;
+    }
+
+    /**
+     * @return the receivedComments
+     */
+    @Column(name = "ReceivedComments", unique = false, nullable = true, insertable = true, updatable = true, length = 255)
+    public String getReceivedComments()
+    {
+        return receivedComments;
+    }
+
+    /**
+     * @param receivedComments the receivedComments to set
+     */
+    public void setReceivedComments(String receivedComments)
+    {
+        this.receivedComments = receivedComments;
+    }
+
+    /**
+     * @return the specialConditions
+     */
+    @Lob
+    @Column(name = "SpecialConditions", unique = false, nullable = true, insertable = true, updatable = true, length = 2048)
+    public String getSpecialConditions()
+    {
+        return specialConditions;
+    }
+
+    /**
+     * @param specialConditions the specialConditions to set
+     */
+    public void setSpecialConditions(String specialConditions)
+    {
+        this.specialConditions = specialConditions;
+    }
+
+    /**
+     * @return the financialResponsibility
+     */
+    @Column(name = "FinancialResponsibility", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    public String getFinancialResponsibility()
+    {
+        return financialResponsibility;
+    }
+
+    /**
+     * @param financialResponsibility the financialResponsibility to set
+     */
+    public void setFinancialResponsibility(String financialResponsibility)
+    {
+        this.financialResponsibility = financialResponsibility;
+    }
+
+    /**
+     * @return the purposeOfLoan
+     */
+    @Column(name = "PurposeOfLoan", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    public String getPurposeOfLoan()
+    {
+        return purposeOfLoan;
+    }
+
+    /**
+     * @param purposeOfLoan the purposeOfLoan to set
+     */
+    public void setPurposeOfLoan(String purposeOfLoan)
+    {
+        this.purposeOfLoan = purposeOfLoan;
+    }
+
+    /**
+     * @return the overdueNotiSentDate
+     */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "OverdueNotiSetDate", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getOverdueNotiSentDate()
+    {
+        return overdueNotiSentDate;
+    }
+
+    /**
+     * @param overdueNotiSentDate the overdueNotiSentDate to set
+     */
+    public void setOverdueNotiSentDate(Calendar overdueNotiSentDate)
+    {
+        this.overdueNotiSentDate = overdueNotiSentDate;
+    }
+
+    /**
+     * @return the dateReceived
+     */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "DateReceived", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getDateReceived()
+    {
+        return dateReceived;
+    }
+
+    /**
+     * @param dateReceived the dateReceived to set
+     */
+    public void setDateReceived(Calendar dateReceived)
+    {
+        this.dateReceived = dateReceived;
+    }
+
+    /**
+     * @return the division
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "DivisionID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Division getDivision()
+    {
+        return division;
+    }
+
+    /**
+     * @param division the division to set
+     */
+    public void setDivision(Division division)
+    {
+        this.division = division;
     }
 
     /**
@@ -412,12 +554,8 @@ public class Loan extends DataModelObjBase implements AttachmentOwnerIFace<LoanA
     /**
      * 
      */
-    @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
-    @JoinTable(
-            name="loan_shipment",
-            joinColumns = {@JoinColumn(name="LoanID")},
-            inverseJoinColumns= {@JoinColumn(name="ShipmentID")})
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "loan")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<Shipment> getShipments() {
         return this.shipments;
     }
@@ -436,50 +574,6 @@ public class Loan extends DataModelObjBase implements AttachmentOwnerIFace<LoanA
     {
         this.loanAttachments = loanAttachments;
     }
-
-    public void addLoanAgent(final LoanAgent loanAgent)
-    {
-        this.loanAgents.add(loanAgent);
-        loanAgent.setLoan(this);
-    }
-
-    public void addLoanPhysicalObjects(final LoanPhysicalObject loanPhysicalObject)
-    {
-        this.loanPhysicalObjects.add(loanPhysicalObject);
-        loanPhysicalObject.setLoan(this);
-    }
-
-
-    // Done Add Methods
-
-    // Delete Methods
-    public void removeShipment(final Shipment shipment)
-    {
-        if(shipment==null)return;
-        this.shipments.remove(shipment);
-        shipment.removeLoan(this);
-    }
-    public void removeLoanAgent(final LoanAgent loanAgent)
-    {
-        this.loanAgents.remove(loanAgent);
-        loanAgent.setLoan(null);
-    }
-
-    public void removeLoanPhysicalObjects(final LoanPhysicalObject loanPhysicalObject)
-    {
-        this.loanPhysicalObjects.remove(loanPhysicalObject);
-        loanPhysicalObject.setLoan(null);
-    }
-
-    // Delete Add Methods
-    public void addShipment(final Shipment shipment)
-    {
-        if (shipment != null)
-        {
-            this.shipments.add(shipment);
-            shipment.getLoans().add(this);
-        }
-    } 
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()

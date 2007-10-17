@@ -51,11 +51,16 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     protected Integer                    collectionId;
     protected String                     collectionName;
     protected String                     collectionPrefix; // Collection Acronym
+    protected String                     description;
     protected String                     remarks;
+    
     protected CollectionType             collectionType;
     protected Set<SpAppResourceDir>      spAppResourceDirs;
+    protected Set<FieldNotebook>         fieldNoteBooks;
     protected Set<CollectionObject>      collectionObjects;
     protected CatalogNumberingScheme     catalogNumberingScheme;
+    protected Agent                      contactAgent;
+    protected Agent                      curatorAgent;
     
     // Constructors
 
@@ -105,11 +110,15 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
         collectionId           = null;
         collectionName         = null;
         collectionPrefix       = null;
+        description            = null;
         remarks                = null;
         collectionType         = null;
-        spAppResourceDirs    = new HashSet<SpAppResourceDir>();
+        spAppResourceDirs      = new HashSet<SpAppResourceDir>();
         collectionObjects      = new HashSet<CollectionObject>();
+        fieldNoteBooks         = new HashSet<FieldNotebook>();
         catalogNumberingScheme = null;
+        contactAgent           = null;
+        curatorAgent           = null;
     }
     // End Initializer
 
@@ -187,6 +196,24 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     }
 
     /**
+     * @return the description
+     */
+    @Lob
+    @Column(name = "Description", unique = false, nullable = true, insertable = true, updatable = true, length = 2048)
+    public String getDescription()
+    {
+        return description;
+    }
+
+    /**
+     * @param description the description to set
+     */
+    public void setDescription(String description)
+    {
+        this.description = description;
+    }
+
+    /**
      *
      */
     @Lob
@@ -248,7 +275,64 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     {
         this.collectionObjects = collectionObjects;
     }
+    
+    /**
+     * @return the fieldNoteBooks
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collection")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<FieldNotebook> getFieldNoteBooks()
+    {
+        return fieldNoteBooks;
+    }
 
+    /**
+     * @param fieldNoteBooks the fieldNoteBooks to set
+     */
+    public void setFieldNoteBooks(Set<FieldNotebook> fieldNoteBooks)
+    {
+        this.fieldNoteBooks = fieldNoteBooks;
+    }
+
+    /**
+     * @return the contactAgent
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "ContactID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Agent getContactAgent()
+    {
+        return contactAgent;
+    }
+
+    /**
+     * @param contactAgent the contactAgent to set
+     */
+    public void setContactAgent(Agent contactAgent)
+    {
+        this.contactAgent = contactAgent;
+    }
+
+    /**
+     * @return the curatorAgent
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "CuratorID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Agent getCuratorAgent()
+    {
+        return curatorAgent;
+    }
+
+    /**
+     * @param curatorAgent the curatorAgent to set
+     */
+    public void setCuratorAgent(Agent curatorAgent)
+    {
+        this.curatorAgent = curatorAgent;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
     @Override
     public String toString()
     {

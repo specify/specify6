@@ -179,8 +179,8 @@ public interface Treeable<N extends Treeable<N,D,I>,
 	public Timestamp getTimestampModified();
 	//public void setTimestampModified(Date modified);
 	
-	public String getLastEditedBy();
-	public void setLastEditedBy(String user);
+	public Agent getModifiedByAgent();
+	public void setModifiedByAgent(Agent user);
 	
 	public int getFullNameDirection();
 	public String getFullNameSeparator();

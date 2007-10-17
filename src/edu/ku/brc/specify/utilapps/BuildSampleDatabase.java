@@ -7,7 +7,58 @@
  */
 package edu.ku.brc.specify.utilapps;
 
-import static edu.ku.brc.specify.utilapps.DataBuilder.*;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createAccession;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createAccessionAgent;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createAddress;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createAgent;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createAttachment;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createAttributeDef;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createCatalogNumberingScheme;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectingEvent;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectingEventAttr;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectingTrip;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createCollection;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectionObject;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectionObjectAttr;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectionType;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createCollector;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createDataType;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createDetermination;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createDeterminationStatus;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createDivision;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createGeography;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createGeographyChildren;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createGeographyTreeDef;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createGeographyTreeDefItem;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createGeologicTimePeriod;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createGeologicTimePeriodTreeDef;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createGeologicTimePeriodTreeDefItem;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createInstitution;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createJournal;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createLoan;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createLoanAgent;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createLoanPhysicalObject;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createLoanReturnPhysicalObject;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createLocality;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createLocation;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createLocationTreeDef;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createLocationTreeDefItem;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createPermit;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createPickList;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createPrepType;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createPreparation;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createReferenceWork;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createShipment;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createSpecifyUser;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createTaxon;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createTaxonChildren;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createTaxonTreeDef;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createTaxonTreeDefItem;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createUserGroup;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createWorkbench;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createWorkbenchDataItem;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createWorkbenchMappingItem;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createWorkbenchTemplate;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -442,8 +493,10 @@ public class BuildSampleDatabase
         System.out.println("Email:     "+email);
         System.out.println("UserType:  "+userType);
         
+        
         Institution      institution      = createInstitution("Natural History Museum");
         Division         division         = createDivision(institution, "Icthyology");
+        
         Agent            userAgent        = createAgent(title, firstName, midInit, lastName, abbrev, email);
         UserGroup        userGroup        = createUserGroup(discipline.getTitle());
         

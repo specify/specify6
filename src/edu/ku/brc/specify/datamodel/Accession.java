@@ -45,7 +45,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -64,7 +63,7 @@ import org.hibernate.annotations.Index;
 //@Table(name = "accession", uniqueConstraints = { @UniqueConstraint(columnNames = { "RepositoryAgreementID" }) })
 @Table(name = "accession")
 @org.hibernate.annotations.Table(appliesTo="accession", indexes =
-    {   @Index (name="AccessionNumberIDX", columnNames={"Number"}),
+    {   @Index (name="AccessionNumberIDX", columnNames={"AccessionNumber"}),
         @Index (name="AccessionDateIDX", columnNames={"DateAccessioned"})
     })
 public class Accession extends DataModelObjBase implements java.io.Serializable, AttachmentOwnerIFace<AccessionAttachment> {
@@ -74,10 +73,14 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
     protected Integer                     accessionId;
     protected String                      type;
     protected String                      status;
-    protected String                      number;
+    protected String                      accessionNumber;
     protected String                      verbatimDate;
     protected Calendar                    dateAccessioned;
     protected Calendar                    dateReceived;
+    protected Calendar                    dateAcknowledged;
+    protected String                      accessionCondition;
+    protected String                      aphisStatus;
+    
     protected String                      text1;
     protected String                      text2;
     protected String                      text3;
@@ -86,13 +89,16 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
     protected String                      remarks;
     protected Boolean                     yesNo1;
     protected Boolean                     yesNo2;
+    
     protected RepositoryAgreement         repositoryAgreement;
     protected Set<CollectionObject>       collectionObjects;
     protected Set<AccessionAuthorization> accessionAuthorizations;
     protected Set<AccessionAgent>         accessionAgents;
     protected Set<AccessionAttachment>    accessionAttachments;
     protected Set<ConservDescription>     conservDescriptions;
-
+    protected Appraisal                   appraisal;
+    protected Set<TreatmentEvent>         treatmentEvents;
+    protected Set<Ipm>                    ipms;
 
     // Constructors
 
@@ -116,10 +122,12 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
         accessionId = null;
         type = null;
         status = null;
-        number = null;
+        accessionNumber = null;
         verbatimDate = null;
         dateAccessioned = null;
         dateReceived = null;
+        accessionCondition = null;
+        aphisStatus        = null;
         text1 = null;
         text2 = null;
         text3 = null;
@@ -134,6 +142,11 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
         repositoryAgreement     = null;
         accessionAttachments    = new HashSet<AccessionAttachment>();
         conservDescriptions     = new HashSet<ConservDescription>();
+        appraisal               = null;
+        treatmentEvents         = new HashSet<TreatmentEvent>();
+        ipms                    = new HashSet<Ipm>();
+
+        
     }
     // End Initializer
 
@@ -200,19 +213,54 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
     /**
      * A user-visible identifier of the Accession. Typically an integer, but may include alphanumeric characters as prefix, suffix, and separators
      */
-    @Column(name = "Number", unique = false, nullable = false, insertable = true, updatable = true, length = 60)
-    public String getNumber() {
-        return this.number;
+    @Column(name = "AccessionNumber", unique = true, nullable = false, insertable = true, updatable = true, length = 60)
+    public String getAccessionNumber() {
+        return this.accessionNumber;
     }
 
-    public void setNumber(final String number) 
+    public void setAccessionNumber(final String accessionNumber) 
     {
-        firePropertyChange("Number", this.number, number);
-        this.number = number;
+        firePropertyChange("accessionNumber", this.accessionNumber, accessionNumber);
+        this.accessionNumber = accessionNumber;
     }
 
     /**
-     *      * accomodates historical accessions.
+     * @return the dateAcknowledged
+     */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "DateAcknowledged", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getDateAcknowledged()
+    {
+        return dateAcknowledged;
+    }
+
+    /**
+     * @param dateAcknowledged the dateAcknowledged to set
+     */
+    public void setDateAcknowledged(Calendar dateAcknowledged)
+    {
+        this.dateAcknowledged = dateAcknowledged;
+    }
+
+    /**
+     * @return the condition
+     */
+    @Column(name = "AccessionCondition", unique = false, nullable = true, insertable = true, updatable = true, length = 255)
+    public String getAccessionCondition()
+    {
+        return accessionCondition;
+    }
+
+    /**
+     * @param condition the condition to set
+     */
+    public void setAccessionCondition(String accessionCondition)
+    {
+        this.accessionCondition = accessionCondition;
+    }
+
+    /**
+     * accomodates historical accessions.
      */
     @Column(name = "VerbatimDate", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getVerbatimDate() {
@@ -247,6 +295,23 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
 
     public void setDateReceived(Calendar dateReceived) {
         this.dateReceived = dateReceived;
+    }
+
+    /**
+     * @return the aphisStatus
+     */
+    @Column(name = "AphisStatus", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    public String getAphisStatus()
+    {
+        return aphisStatus;
+    }
+
+    /**
+     * @param aphisStatus the aphisStatus to set
+     */
+    public void setAphisStatus(String aphisStatus)
+    {
+        this.aphisStatus = aphisStatus;
     }
 
     /**
@@ -425,6 +490,61 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
         this.conservDescriptions = conservDescriptions;
     }
 
+    /**
+     * @return the appraisal
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    @JoinColumn(name = "AppraisalID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Appraisal getAppraisal()
+    {
+        return appraisal;
+    }
+
+    /**
+     * @param appraisal the appraisal to set
+     */
+    public void setAppraisal(Appraisal appraisal)
+    {
+        this.appraisal = appraisal;
+    }
+
+
+    /**
+     * @return the treatmentEvents
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectionObject")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<TreatmentEvent> getTreatmentEvents()
+    {
+        return treatmentEvents;
+    }
+
+    /**
+     * @param treatmentEvents the treatmentEvents to set
+     */
+    public void setTreatmentEvents(Set<TreatmentEvent> treatmentEvents)
+    {
+        this.treatmentEvents = treatmentEvents;
+    }
+
+    /**
+     * @return the ipms
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectionObject")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<Ipm> getIpms()
+    {
+        return ipms;
+    }
+
+    /**
+     * @param ipms the ipms to set
+     */
+    public void setIpms(Set<Ipm> ipms)
+    {
+        this.ipms = ipms;
+    }
 
     //---------------------------------------------------------------------------
     // Overrides DataModelObjBase
@@ -437,7 +557,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
     @Transient
     public String getIdentityTitle()
     {
-        return number != null ? number : super.getIdentityTitle();
+        return accessionNumber != null ? accessionNumber : super.getIdentityTitle();
     }
     
     /* (non-Javadoc)

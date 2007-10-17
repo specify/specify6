@@ -77,6 +77,15 @@ public class Preparation extends DataModelObjBase implements AttachmentOwnerIFac
     protected String                      storageLocation;
     protected String                      remarks;
     protected Calendar                    preparedDate;
+    protected String                      status;
+    protected String                      sampleNumber;
+    
+    protected Float                       number1;
+    protected Float                       number2;
+    protected Boolean                     yesNo1;
+    protected Boolean                     yesNo2;
+    protected Boolean                     yesNo3;
+    
     protected Set<LoanPhysicalObject>     loanPhysicalObjects;
     protected PrepType                    prepType;
     protected CollectionObject            collectionObject;
@@ -116,6 +125,15 @@ public class Preparation extends DataModelObjBase implements AttachmentOwnerIFac
         storageLocation = null;
         remarks = null;
         preparedDate = null;
+        status = null;
+        sampleNumber = null;
+        
+        number1      = null;
+        number2      = null;
+        yesNo1       = null;
+        yesNo2       = null;
+        yesNo3       = null;
+        
         loanPhysicalObjects = new HashSet<LoanPhysicalObject>();
         prepType = null;
         collectionObject = null;
@@ -263,6 +281,125 @@ public class Preparation extends DataModelObjBase implements AttachmentOwnerIFac
     }
 
     /**
+     * @return the status
+     */
+    @Column(name = "Status", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    public String getStatus()
+    {
+        return status;
+    }
+
+    /**
+     * @param status the status to set
+     */
+    public void setStatus(String status)
+    {
+        this.status = status;
+    }
+
+    /**
+     * @return the sampleNumber
+     */
+    @Column(name = "SampleNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    public String getSampleNumber()
+    {
+        return sampleNumber;
+    }
+
+    /**
+     * @param sampleNumber the sampleNumber to set
+     */
+    public void setSampleNumber(String sampleNumber)
+    {
+        this.sampleNumber = sampleNumber;
+    }
+
+    /**
+     * @return the number1
+     */
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true)
+    public Float getNumber1()
+    {
+        return number1;
+    }
+
+    /**
+     * @param number1 the number1 to set
+     */
+    public void setNumber1(Float number1)
+    {
+        this.number1 = number1;
+    }
+
+    /**
+     * @return the number2
+     */
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true)
+    public Float getNumber2()
+    {
+        return number2;
+    }
+
+    /**
+     * @param number2 the number2 to set
+     */
+    public void setNumber2(Float number2)
+    {
+        this.number2 = number2;
+    }
+
+    /**
+     * @return the yesNo1
+     */
+    @Column(name = "Yesno1", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getYesNo1()
+    {
+        return yesNo1;
+    }
+
+    /**
+     * @param yesNo1 the yesNo1 to set
+     */
+    public void setYesNo1(Boolean yesNo1)
+    {
+        this.yesNo1 = yesNo1;
+    }
+
+    /**
+     * @return the yesNo2
+     */
+    @Column(name = "YesNo2", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getYesNo2()
+    {
+        return yesNo2;
+    }
+
+    /**
+     * @param yesNo2 the yesNo2 to set
+     */
+    public void setYesNo2(Boolean yesNo2)
+    {
+        this.yesNo2 = yesNo2;
+    }
+
+    /**
+     * @return the yesNo3
+     */
+    @Column(name = "YesNo3", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getYesNo3()
+    {
+        return yesNo3;
+    }
+
+    /**
+     * @param yesNo3 the yesNo3 to set
+     */
+    public void setYesNo3(Boolean yesNo3)
+    {
+        this.yesNo3 = yesNo3;
+    }
+
+    /**
      * 
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "preparation")
@@ -278,8 +415,7 @@ public class Preparation extends DataModelObjBase implements AttachmentOwnerIFac
    /**
      * @return the preparationAttrs
      */
-    @OneToMany(targetEntity=PreparationAttr.class,
-            cascade = {}, fetch = FetchType.LAZY, mappedBy="preparation")
+    @OneToMany(targetEntity=PreparationAttr.class, cascade = {}, fetch = FetchType.LAZY, mappedBy="preparation")
     @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<PreparationAttr> getPreparationAttrs()
     {

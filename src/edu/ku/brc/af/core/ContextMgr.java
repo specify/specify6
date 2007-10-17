@@ -49,6 +49,8 @@ public class ContextMgr
     protected Hashtable<String, ServiceInfo>        services        = new Hashtable<String, ServiceInfo>();
     protected Hashtable<Integer, List<ServiceInfo>> servicesByTable = new Hashtable<Integer, List<ServiceInfo>>();
 
+    protected Vector<ServiceInfo>                   genericService  = new Vector<ServiceInfo>();
+    
     /**
      * Protected Constructor of Singleton
      *
@@ -179,14 +181,21 @@ public class ContextMgr
                                               final String        tooltip)
     {
         ServiceInfo serviceInfo = new ServiceInfo(serviceName, tableId, command, task, iconName, tooltip);
-        instance.services.put(serviceInfo.getHashKey(), serviceInfo);
-        List<ServiceInfo> serviceList = instance.servicesByTable.get(tableId);
-        if (serviceList == null)
+        if (tableId == -1)
         {
-            serviceList = new ArrayList<ServiceInfo>();
-            instance.servicesByTable.put(tableId, serviceList);
+            instance.genericService.add(serviceInfo);
+            
+        } else
+        {
+            instance.services.put(serviceInfo.getHashKey(), serviceInfo);
+            List<ServiceInfo> serviceList = instance.servicesByTable.get(tableId);
+            if (serviceList == null)
+            {
+                serviceList = new ArrayList<ServiceInfo>();
+                instance.servicesByTable.put(tableId, serviceList);
+            }
+            serviceList.add(serviceInfo);
         }
-        serviceList.add(serviceInfo);
         return serviceInfo;
     }
     
@@ -209,13 +218,21 @@ public class ContextMgr
         
         for (Collection<ServiceInfo> srvList : instance.servicesByTable.values())
         {
-            Vector<ServiceInfo> tmpList = new Vector<ServiceInfo>(srvList);
-            for (ServiceInfo srv : tmpList)
+            for (ServiceInfo srv : new Vector<ServiceInfo>(srvList))
             {
                 if (srv.getTask() == task)
                 {
                     srvList.remove(srv);
                 }
+            }
+        }
+        
+        // Remove from generic List
+        for (ServiceInfo srvInfo : new Vector<ServiceInfo>(instance.genericService))
+        {
+            if (srvInfo.getTask() == task)
+            {
+                instance.genericService.remove(srvInfo);
             }
         }
     }
@@ -241,7 +258,15 @@ public class ContextMgr
         List<ServiceInfo> serviceList = instance.servicesByTable.get(tableId);
         if (serviceList == null)
         {
-            return new ArrayList<ServiceInfo>();
+            serviceList = new ArrayList<ServiceInfo>();
+        }
+        
+        for (ServiceInfo srvInfo : instance.genericService)
+        {
+            if (!serviceList.contains(srvInfo))
+            {
+                serviceList.add(srvInfo);
+            }
         }
         return serviceList;
     }

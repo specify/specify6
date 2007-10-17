@@ -39,6 +39,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -80,12 +81,17 @@ public class CollectionObject extends DataModelObjBase implements AttachmentOwne
     protected Integer                       collectionObjectId;
     protected String                        fieldNumber;
     protected String                        description;
+    protected String                        projectNumber;
     protected String                        text1;
     protected String                        text2;
     protected Float                         number1;
     protected Float                         number2;
     protected Boolean                       yesNo1;
     protected Boolean                       yesNo2;
+    protected Boolean                       yesNo3;
+    protected Boolean                       yesNo4;
+    protected Boolean                       yesNo5;
+    protected Boolean                       yesNo6;
     protected Integer                       countAmt;
     protected String                        remarks;
     protected String                        name;
@@ -98,13 +104,22 @@ public class CollectionObject extends DataModelObjBase implements AttachmentOwne
     protected Integer                       groupPermittedToView;
     protected Boolean                       deaccessioned;
     protected String                        catalogNumber;
+    protected Calendar                      inventoryDate;
+    protected String                        objectCondition;
+    protected String                        availability;
+    protected String                        restrictions;
+    protected String                        notifications;
+    
+    // Security
     protected Integer                       visibility;
     protected String                        visibilitySetBy;
+    
+    // Relationships
     protected CollectingEvent               collectingEvent;
     protected Set<CollectionObjectCitation> collectionObjectCitations;
     protected Set<Preparation>              preparations;
     protected Set<Determination>            determinations;
-    protected Set<ProjectCollectionObject>  projectCollectionObjects;
+    protected Set<Project>  projects;
     // protected Set<DeaccessionPreparation> deaccessionPreparations;
     protected Set<OtherIdentifier>          otherIdentifiers;
     protected Collection                    collection;
@@ -112,13 +127,18 @@ public class CollectionObject extends DataModelObjBase implements AttachmentOwne
     protected Agent                         cataloger;
     protected Container                     container;
     protected Container                     containerOwner;
+    protected Appraisal                     appraisal;
     protected ColObjAttributes              colObjAttributes;      // Specify 5 Attributes table
     protected Set<CollectionObjectAttr>     collectionObjectAttrs; // Generic Expandable Attributes
     protected Set<CollectionRelationship>   leftSideRels;
     protected Set<CollectionRelationship>   rightSideRels;
     protected PaleoContext                  paleoContext;
+    protected DNASequence                   dnaSequence;
+    protected FieldNotebookPage             fieldNotebookPage;
     
-    protected Set<ConservDescription>       conservDescriptions;
+    protected Set<ConservDescription>         conservDescriptions;
+    protected Set<TreatmentEvent>             treatmentEvents;
+    protected Set<Ipm>                        ipms;
     protected Set<CollectionObjectAttachment> collectionObjectAttachments;
 
     // Constructors
@@ -151,6 +171,10 @@ public class CollectionObject extends DataModelObjBase implements AttachmentOwne
         number2               = null;
         yesNo1                = null;
         yesNo2                = null;
+        yesNo3                = null;
+        yesNo4                = null;
+        yesNo5                = null;
+        yesNo6                = null;
         countAmt              = null;
         remarks               = null;
         name                  = null;
@@ -162,26 +186,38 @@ public class CollectionObject extends DataModelObjBase implements AttachmentOwne
         groupPermittedToView  = null;
         deaccessioned         = null;
         catalogNumber         = null;
+        objectCondition       = null;
+        availability          = null;
+        restrictions          = null;
+        notifications         = null;
         visibility            = null;
         visibilitySetBy       = null; 
+        
         collectingEvent       = null;
+        appraisal             = null;
         collectionObjectCitations = new HashSet<CollectionObjectCitation>();
         collectionObjectAttrs = new HashSet<CollectionObjectAttr>();
         preparations          = new HashSet<Preparation>();
         determinations        = new HashSet<Determination>();
-        projectCollectionObjects = new HashSet<ProjectCollectionObject>();
+        projects = new HashSet<Project>();
         //deaccessionPreparations = new HashSet<DeaccessionPreparation>();
         otherIdentifiers      = new HashSet<OtherIdentifier>();
         collection            = null;
         accession             = null;
         cataloger             = null;
         container             = null;
-        containerOwner         = null;
+        containerOwner        = null;
+        appraisal             = null;
+        paleoContext          = null;
+        dnaSequence           = null;
+        fieldNotebookPage     = null;
         
         leftSideRels          = new HashSet<CollectionRelationship>();
         rightSideRels         = new HashSet<CollectionRelationship>();
         
-        conservDescriptions   = new HashSet<ConservDescription>();
+        conservDescriptions         = new HashSet<ConservDescription>();
+        treatmentEvents             = new HashSet<TreatmentEvent>();
+        ipms                        = new HashSet<Ipm>();
         collectionObjectAttachments = new HashSet<CollectionObjectAttachment>();
     }
     // End Initializer
@@ -239,18 +275,20 @@ public class CollectionObject extends DataModelObjBase implements AttachmentOwne
      *      * BiologicalObject (Bird, Fish, etc)
      */
     @Column(name = "FieldNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
-    public String getFieldNumber() {
+    public String getFieldNumber()
+    {
         return this.fieldNumber;
     }
 
-    public void setFieldNumber(String fieldNumber) {
+    public void setFieldNumber(String fieldNumber)
+    {
         this.fieldNumber = fieldNumber;
     }
 
     /**
      *      * Image, Sound, Preparation, Container(Container Label?)
      */
-    @Column(name = "Description", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "Description", unique = false, nullable = true, insertable = true, updatable = true, length = 255)
     public String getDescription() {
         return this.description;
     }
@@ -332,6 +370,74 @@ public class CollectionObject extends DataModelObjBase implements AttachmentOwne
     }
 
     /**
+     * @return the yesNo3
+     */
+    @Column(name="YesNo3",unique=false,nullable=true,updatable=true,insertable=true)
+    public Boolean getYesNo3()
+    {
+        return yesNo3;
+    }
+
+    /**
+     * @param yesNo3 the yesNo3 to set
+     */
+    public void setYesNo3(Boolean yesNo3)
+    {
+        this.yesNo3 = yesNo3;
+    }
+
+    /**
+     * @return the yesNo4
+     */
+    @Column(name="YesNo4",unique=false,nullable=true,updatable=true,insertable=true)
+    public Boolean getYesNo4()
+    {
+        return yesNo4;
+    }
+
+    /**
+     * @param yesNo4 the yesNo4 to set
+     */
+    public void setYesNo4(Boolean yesNo4)
+    {
+        this.yesNo4 = yesNo4;
+    }
+
+    /**
+     * @return the yesNo5
+     */
+    @Column(name="YesNo5",unique=false,nullable=true,updatable=true,insertable=true)
+    public Boolean getYesNo5()
+    {
+        return yesNo5;
+    }
+
+    /**
+     * @param yesNo5 the yesNo5 to set
+     */
+    public void setYesNo5(Boolean yesNo5)
+    {
+        this.yesNo5 = yesNo5;
+    }
+
+    /**
+     * @return the yesNo6
+     */
+    @Column(name="YesNo6",unique=false,nullable=true,updatable=true,insertable=true)
+    public Boolean getYesNo6()
+    {
+        return yesNo6;
+    }
+
+    /**
+     * @param yesNo6 the yesNo6 to set
+     */
+    public void setYesNo6(Boolean yesNo6)
+    {
+        this.yesNo6 = yesNo6;
+    }
+
+    /**
      *
      */
     @Column(name = "CountAmt", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
@@ -396,7 +502,7 @@ public class CollectionObject extends DataModelObjBase implements AttachmentOwne
     /**
      *
      */
-    @Column(name = "CatalogedDateVerbatim", length=32, unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "CatalogedDateVerbatim", length = 32, unique = false, nullable = true, insertable = true, updatable = true)
     public String getCatalogedDateVerbatim() {
         return this.catalogedDateVerbatim;
     }
@@ -455,7 +561,7 @@ public class CollectionObject extends DataModelObjBase implements AttachmentOwne
     /**
      *
      */
-    @Column(name = "CatalogNumber", unique = false, nullable = true, insertable = true, updatable = true, length=32)
+    @Column(name = "CatalogNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
     public String getCatalogNumber() {
         return this.catalogNumber;
     }
@@ -465,7 +571,127 @@ public class CollectionObject extends DataModelObjBase implements AttachmentOwne
     }
     
     /**
-     *      * Indicates whether this record can be viewed - by owner, by instituion, or by all
+     * @return the catalogedDatePrecision
+     */
+    @Column(name = "CatalogedDatePrecision", unique = false, nullable = true, insertable = true, updatable = true)
+    public Short getCatalogedDatePrecision()
+    {
+        return catalogedDatePrecision;
+    }
+
+    /**
+     * @param catalogedDatePrecision the catalogedDatePrecision to set
+     */
+    public void setCatalogedDatePrecision(Short catalogedDatePrecision)
+    {
+        this.catalogedDatePrecision = catalogedDatePrecision;
+    }
+
+    /**
+     * @return the inventoryDate
+     */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "InventoryDate", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getInventoryDate()
+    {
+        return inventoryDate;
+    }
+
+    /**
+     * @param inventoryDate the inventoryDate to set
+     */
+    public void setInventoryDate(Calendar inventoryDate)
+    {
+        this.inventoryDate = inventoryDate;
+    }
+
+    /**
+     * @return the condition
+     */
+    @Column(name = "ObjectCondition", unique = false, nullable = true, insertable = true, updatable = true, length=64)
+    public String getObjectCondition()
+    {
+        return objectCondition;
+    }
+
+    /**
+     * @param condition the condition to set
+     */
+    public void setObjectCondition(String objectCondition)
+    {
+        this.objectCondition = objectCondition;
+    }
+
+    /**
+     * @return the availability
+     */
+    @Column(name = "Availability", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    public String getAvailability()
+    {
+        return availability;
+    }
+
+    /**
+     * @param availability the availability to set
+     */
+    public void setAvailability(String availability)
+    {
+        this.availability = availability;
+    }
+
+    /**
+     * @return the restrictions
+     */
+    @Column(name = "Restrictions", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    public String getRestrictions()
+    {
+        return restrictions;
+    }
+
+    /**
+     * @param restrictions the restrictions to set
+     */
+    public void setRestrictions(String restrictions)
+    {
+        this.restrictions = restrictions;
+    }
+
+    /**
+     * @return the notifications
+     */
+    @Column(name = "Notifications", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    public String getNotifications()
+    {
+        return notifications;
+    }
+
+    /**
+     * @param notifications the notifications to set
+     */
+    public void setNotifications(String notifications)
+    {
+        this.notifications = notifications;
+    }
+
+    /**
+     * @return the projectNumber
+     */
+    @Column(name = "ProjectNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    public String getProjectNumber()
+    {
+        return projectNumber;
+    }
+
+    /**
+     * @param projectNumber the projectNumber to set
+     */
+    public void setProjectNumber(String projectNumber)
+    {
+        this.projectNumber = projectNumber;
+    }
+
+    /**
+     *      * Indicates whether this record can be viewed - by owner, by institution, or by all
      */
     @Column(name = "Visibility", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
     public Integer getVisibility() {
@@ -476,6 +702,9 @@ public class CollectionObject extends DataModelObjBase implements AttachmentOwne
         this.visibility = visibility;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#isRestrictable()
+     */
     @Transient
     @Override
     public boolean isRestrictable()
@@ -506,6 +735,25 @@ public class CollectionObject extends DataModelObjBase implements AttachmentOwne
 
     public void setCollectingEvent(CollectingEvent collectingEvent) {
         this.collectingEvent = collectingEvent;
+    }
+
+    /**
+     * @return the appraisal
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    @JoinColumn(name = "AppraisalID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Appraisal getAppraisal()
+    {
+        return appraisal;
+    }
+
+    /**
+     * @param appraisal the appraisal to set
+     */
+    public void setAppraisal(Appraisal appraisal)
+    {
+        this.appraisal = appraisal;
     }
 
     /**
@@ -592,25 +840,29 @@ public class CollectionObject extends DataModelObjBase implements AttachmentOwne
      */
     @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "collectionObject")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<Determination> getDeterminations() {
+    public Set<Determination> getDeterminations() 
+    {
         return this.determinations;
     }
 
-    public void setDeterminations(Set<Determination> determinations) {
+    public void setDeterminations(Set<Determination> determinations) 
+    {
         this.determinations = determinations;
     }
 
     /**
      *
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectionObject")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<ProjectCollectionObject> getProjectCollectionObjects() {
-        return this.projectCollectionObjects;
+    @ManyToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="collectionObjects")
+    @Cascade( {CascadeType.SAVE_UPDATE} )
+    public Set<Project> getProjects() 
+    {
+        return this.projects;
     }
 
-    public void setProjectCollectionObjects(Set<ProjectCollectionObject> projectCollectionObjects) {
-        this.projectCollectionObjects = projectCollectionObjects;
+    public void setProjects(Set<Project> projects) 
+    {
+        this.projects = projects;
     }
     
     /**
@@ -618,11 +870,13 @@ public class CollectionObject extends DataModelObjBase implements AttachmentOwne
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "PaleoContextID", unique = false, nullable = true, insertable = true, updatable = true)
-    public PaleoContext getPaleoContext() {
+    public PaleoContext getPaleoContext()
+    {
         return this.paleoContext;
     }
 
-    public void setPaleoContext(PaleoContext paleoContext) {
+    public void setPaleoContext(PaleoContext paleoContext)
+    {
         this.paleoContext = paleoContext;
     }
 
@@ -637,6 +891,78 @@ public class CollectionObject extends DataModelObjBase implements AttachmentOwne
 //    public void setDeaccessionPreparations(Set<DeaccessionPreparation> deaccessionPreparations) {
 //        this.deaccessionPreparations = deaccessionPreparations;
 //    }
+
+    /**
+     * @return the dnaSequence
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "DNASequenceID", unique = false, nullable = true, insertable = true, updatable = true)
+    public DNASequence getDnaSequence()
+    {
+        return dnaSequence;
+    }
+
+    /**
+     * @param dnaSequence the dnaSequence to set
+     */
+    public void setDnaSequence(DNASequence dnaSequence)
+    {
+        this.dnaSequence = dnaSequence;
+    }
+
+    /**
+     * @return the fieldNotebookPage
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "FieldNotebookPageID", unique = false, nullable = true, insertable = true, updatable = true)
+    public FieldNotebookPage getFieldNotebookPage()
+    {
+        return fieldNotebookPage;
+    }
+
+    /**
+     * @param fieldNotebookPage the fieldNotebookPage to set
+     */
+    public void setFieldNotebookPage(FieldNotebookPage fieldNotebookPage)
+    {
+        this.fieldNotebookPage = fieldNotebookPage;
+    }
+
+    /**
+     * @return the treatmentEvents
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectionObject")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<TreatmentEvent> getTreatmentEvents()
+    {
+        return treatmentEvents;
+    }
+
+    /**
+     * @param treatmentEvents the treatmentEvents to set
+     */
+    public void setTreatmentEvents(Set<TreatmentEvent> treatmentEvents)
+    {
+        this.treatmentEvents = treatmentEvents;
+    }
+
+    /**
+     * @return the ipms
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectionObject")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<Ipm> getIpms()
+    {
+        return ipms;
+    }
+
+    /**
+     * @param ipms the ipms to set
+     */
+    public void setIpms(Set<Ipm> ipms)
+    {
+        this.ipms = ipms;
+    }
 
     /**
      *

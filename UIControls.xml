@@ -240,6 +240,9 @@
                 <param name="dirsonly" type="boolean" required="true" default="false">
                     <desc>Specifies whether it should show only directories in the File Dialog.</desc>
                 </param>                
+                <param name="forinput" type="boolean" required="true" default="true">
+                    <desc>Specifies whether it should be for selecting a file (true), or for saving a file (false).</desc>
+                </param>                
             </subcontrol>
             
             <subcontrol type="list" dsp="list">

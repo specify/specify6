@@ -57,7 +57,6 @@ import edu.ku.brc.ui.ToggleButtonChooserPanel.Type;
 import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
-import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.ViewSetMgr;
 import edu.ku.brc.ui.forms.persist.ViewIFace;
 import edu.ku.brc.ui.forms.persist.ViewSet;
@@ -928,7 +927,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                             session.save(appResourceDef);
                         }
                         appRes.setTimestampModified(new Timestamp(System.currentTimeMillis()));
-                        appRes.setLastEditedBy(FormHelper.getCurrentUserEditStr());
+                        appRes.setModifiedByAgent(SpecifyUser.getCurrentUser().getAgent());
                         appRes.setDataAsString(xmlStr);
                         session.save(appRes);
                         session.commit();

@@ -53,6 +53,7 @@
 		<mapping class="edu.ku.brc.specify.datamodel.Agent"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AgentAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AgentVariant"/>
+		<mapping class="edu.ku.brc.specify.datamodel.Appraisal"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Attachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AttachmentMetadata"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AttributeDef"/>
@@ -92,8 +93,13 @@
 		<mapping class="edu.ku.brc.specify.datamodel.Determination"/>
 		<mapping class="edu.ku.brc.specify.datamodel.DeterminationStatus"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Division"/>
+		<mapping class="edu.ku.brc.specify.datamodel.DNASequence"/>
 		<mapping class="edu.ku.brc.specify.datamodel.ExchangeIn"/>
 		<mapping class="edu.ku.brc.specify.datamodel.ExchangeOut"/>
+		<mapping class="edu.ku.brc.specify.datamodel.FieldNotebook"/>
+		<mapping class="edu.ku.brc.specify.datamodel.FieldNotebookPageSet"/>
+		<mapping class="edu.ku.brc.specify.datamodel.FieldNotebookPage"/>
+		<mapping class="edu.ku.brc.specify.datamodel.GeoCoordDetail"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Geography"/>
 		<mapping class="edu.ku.brc.specify.datamodel.GeographyTreeDef"/>
 		<mapping class="edu.ku.brc.specify.datamodel.GeographyTreeDefItem"/>
@@ -104,6 +110,7 @@
 		<mapping class="edu.ku.brc.specify.datamodel.HabitatAttributes"/>
 		<mapping class="edu.ku.brc.specify.datamodel.InfoRequest"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Institution"/>
+		<mapping class="edu.ku.brc.specify.datamodel.Ipm"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Journal"/>
 		<mapping class="edu.ku.brc.specify.datamodel.LithoStrat"/>
 		<mapping class="edu.ku.brc.specify.datamodel.LithoStratTreeDef"/>
@@ -115,6 +122,7 @@
 		<mapping class="edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject"/>
 		<mapping class="edu.ku.brc.specify.datamodel.LocalityCitation"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Locality"/>
+		<mapping class="edu.ku.brc.specify.datamodel.LocalityDetail"/>
 		<mapping class="edu.ku.brc.specify.datamodel.LocalityAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.LocalityNameAlias"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Location"/>
@@ -131,7 +139,6 @@
 		<mapping class="edu.ku.brc.specify.datamodel.PreparationAttributes"/>
 		<mapping class="edu.ku.brc.specify.datamodel.PreparationAttr"/>
 		<mapping class="edu.ku.brc.specify.datamodel.PrepType"/>
-		<mapping class="edu.ku.brc.specify.datamodel.ProjectCollectionObject"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Project"/>
 		<mapping class="edu.ku.brc.specify.datamodel.RecordSet"/>
 		<mapping class="edu.ku.brc.specify.datamodel.RecordSetItem"/>
@@ -159,6 +166,7 @@
 		<mapping class="edu.ku.brc.specify.datamodel.TaxonCitation"/>
 		<mapping class="edu.ku.brc.specify.datamodel.TaxonTreeDef"/>
 		<mapping class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem"/>
+		<mapping class="edu.ku.brc.specify.datamodel.TreatmentEvent"/>
 		<mapping class="edu.ku.brc.specify.datamodel.UserGroup"/>
 		<mapping class="edu.ku.brc.specify.datamodel.UserPermission"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Workbench"/>

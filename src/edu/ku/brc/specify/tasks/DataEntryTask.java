@@ -384,7 +384,7 @@ public class DataEntryTask extends BaseTask
                         if (view != null)
                         {
                             DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
-                            System.out.println(view.getClassName()+" "+ti);
+                            //System.out.println(view.getClassName()+" "+ti);
                             if (ti != null)
                             {
                                 CommandAction cmdAction = new CommandAction(DATA_ENTRY, EDIT_DATA);

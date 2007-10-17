@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Timer;
@@ -81,11 +82,11 @@ public class ERDVisualizer extends JFrame
     protected TableTracker              tblTracker;
     protected ERDPanel                  mainPanel;
     
-    protected int    inx = 0;
-    protected String mapTemplate = "";
-    protected File   schemaDir;
-    protected Timer  timer;
-    protected boolean doPNG = false;
+    protected int     inx = 0;
+    protected String  mapTemplate = "";
+    protected File    schemaDir;
+    protected Timer   timer;
+    protected boolean doPNG = true;
     
     // For Trees
     
@@ -193,7 +194,7 @@ public class ERDVisualizer extends JFrame
             //this.tblTracker.setFont(this.tblTracker.getFont().deriveFont((float)10.0));
             ERDTable root = null;
             
-            boolean doCollectionSchema = false;
+            boolean doCollectionSchema = true;
             
             if (doCollectionSchema)
             {
@@ -207,16 +208,16 @@ public class ERDVisualizer extends JFrame
                 tblTracker.addNodeInfo("Attachment",              true,  true,        true,       false,         null);
                 tblTracker.addNodeInfo("AttributeDef",            true,  true,        true,       false,         null);
                 tblTracker.addNodeInfo("UserPermission",          true,  true,        true,       false,         null);
-                tblTracker.addNodeInfo("SpAppResourceDir",    true,  true,        true,       false,         null);
+                tblTracker.addNodeInfo("SpAppResourceDir",        true,  true,        true,       false,         null);
                 tblTracker.addNodeInfo("SpLocaleContainer",       true,  true,        true,       false,         null);
                 tblTracker.addNodeInfo("DeaccessionPreparation",  true,  true,        true,       false,         null);
                 tblTracker.addNodeInfo("OtherIdentifier",         true,  true,        true,       false,         null);
                 tblTracker.addNodeInfo("CollectionRelationship",  true,  true,        true,       false,         null);
                 tblTracker.addNodeInfo("ProjectCollectionObject", true,  true,        true,       false,         null);
                 tblTracker.addNodeInfo("CollectionObjectAttr",    true,  true,        true,       false,         null);
-                tblTracker.addNodeInfo("CollectionObjectAttachment", true,   true,     true,       false,         null);
-                tblTracker.addNodeInfo("ConservDescriptionAttachment", true, true,     true,       false,         null);
-                tblTracker.addNodeInfo("ConservEventAttachment", true, true,     true,       false,         null);
+                tblTracker.addNodeInfo("CollectionObjectAttachment", true,   true,    true,       false,         null);
+                tblTracker.addNodeInfo("ConservDescriptionAttachment", true, true,    true,       false,         null);
+                tblTracker.addNodeInfo("ConservEventAttachment",  true, true,         true,       false,         null);
                 
                 // No Kids
                 tblTracker.addNodeInfo("Taxon",                  false, false, true,  false, null);
@@ -240,6 +241,13 @@ public class ERDVisualizer extends JFrame
                 tblTracker.addNodeInfo("PrepType",               false, false, true,  false, null);
                 tblTracker.addNodeInfo("RepositoryAgreement",    false, false, true,  false, null);
                 tblTracker.addNodeInfo("ConservEvent",           false, false, true,  false, null);
+                
+                tblTracker.addNodeInfo("DNASequence",            false, false, true,  false, null);
+                tblTracker.addNodeInfo("TreatmentEvent",         false, false, true,  false, null);
+                tblTracker.addNodeInfo("Ipm",                    false, false, true,  false, null);
+                tblTracker.addNodeInfo("FieldNotebook",          false, false, true,  false, null);
+                tblTracker.addNodeInfo("FieldNotebookPageSet",   false, false, true,  false, null);
+                tblTracker.addNodeInfo("FieldNotebookPage",      false, false, true,  false, null);
                 
                 NodeInfo det = tblTracker.getNodeInfo("Determination");
                 det.addKid(tblTracker.getTable("Taxon"));
@@ -271,6 +279,9 @@ public class ERDVisualizer extends JFrame
                 ni.addKid(tblTracker.getTable("CollectingEvent"));
                 ni.addKid(tblTracker.getTable("PaleoContext"));
                 ni.addKid(tblTracker.getTable("Accession"));
+                ni.addKid(tblTracker.getTable("DNASequence"));
+                ni.addKid(tblTracker.getTable("TreatmentEvent"));
+                ni.addKid(tblTracker.getTable("Ipm"));
                 
                 ni = tblTracker.getNodeInfo("Locality");
                 ni.addKid(tblTracker.getTable("Geography"));
@@ -294,6 +305,12 @@ public class ERDVisualizer extends JFrame
                 
                 ni = tblTracker.getNodeInfo("ConservEvent");
                 ni.addKid(tblTracker.getTable("ConservRecommendation"));
+                
+                ni = tblTracker.getNodeInfo("FieldNotebook");
+                ni.addKid(tblTracker.getTable("FieldNotebookPageSet"));
+                
+                ni = tblTracker.getNodeInfo("FieldNotebookPageSet");
+                ni.addKid(tblTracker.getTable("FieldNotebookPage"));
                 
                 
             } else
@@ -776,9 +793,14 @@ public class ERDVisualizer extends JFrame
         }
     }
 
+    /**
+     * @param table
+     * @param level
+     */
     protected void processAsTree(final ERDTable table, final int level)
     {
         System.out.println("["+table.getClassName()+"]");
+        
         if (table.getClassName().indexOf("Paleo") > -1)
         {
             int x = 0;
@@ -827,6 +849,7 @@ public class ERDVisualizer extends JFrame
         
         if (ni.isProcessKids() || ni.getKids().size() > 0)
         {
+            Hashtable<String, Boolean> usedRelClasses = new Hashtable<String, Boolean>();
             for (DBRelationshipInfo r : table.getTable().getRelationships())
             {
                 ERDTable rTable = tblTracker.getHash().get(r.getClassName());
@@ -834,6 +857,12 @@ public class ERDVisualizer extends JFrame
                 {
                     continue;
                 }
+                
+                if (usedRelClasses.get(r.getClassName()) != null)
+                {
+                    continue;
+                }
+                usedRelClasses.put(r.getClassName(), true);
                 
                 NodeInfo kni = tblTracker.getNodeInfo(rTable);
                 
@@ -867,6 +896,12 @@ public class ERDVisualizer extends JFrame
                 if (kidOK && (override || r.getType() == DBRelationshipInfo.RelationshipType.OneToMany))
                 {
                     System.out.println("    ["+rTable.getClassName()+"]");
+                    
+                    if (rTable.getClassName().indexOf("FieldNote") > -1)
+                    {
+                        int x= 0;
+                        x++;
+                    }
 
                     if (table.addKid(rTable))
                     {
@@ -874,8 +909,8 @@ public class ERDVisualizer extends JFrame
                         processAsTree(rTable, level+1);
                         
                         Dimension size = rTable.getSpace();
-                        maxWidth  += size.width;
-                        maxHeight = Math.max(maxHeight, size.height);
+                        maxWidth  += size.width + 10;
+                        maxHeight = Math.max(maxHeight, size.height+VGAP);
                     }
                 }
             }
@@ -884,6 +919,7 @@ public class ERDVisualizer extends JFrame
         //System.out.println(level+"   mw "+maxWidth+"  mh "+ maxHeight+ "  " + table.getKids().size());
         table.getSpace().width  = Math.max(tableSize.width, maxWidth);
         table.getSpace().height = tableSize.height + maxHeight;
+        System.out.println("Table "+table.getClassName()+" " + table.getSpace().width + " "+table.getSpace().height);
         tblTracker.getUsedHash().put(table.getClassName(), true);
     }
 
@@ -918,7 +954,7 @@ public class ERDVisualizer extends JFrame
     {
         System.setProperty(SchemaI18NService.factoryName, "edu.ku.brc.specify.config.SpecifySchemaI18NServiceXML");    // Needed for Localization and Schema
         
-        SchemaI18NService.setCurrentLocale(new Locale("de", "", ""));
+        //SchemaI18NService.setCurrentLocale(new Locale("de", "", ""));
         // Note: CollectionTypeId is not used so a '1' doesn't matter.
         SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, 1, DBTableIdMgr.getInstance(), SchemaI18NService.getCurrentLocale());
 

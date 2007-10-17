@@ -79,7 +79,7 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules
         }
         
         Accession accession       = (Accession)dataObj;
-        String    accessionNumber = accession.getNumber();
+        String    accessionNumber = accession.getAccessionNumber();
         if (StringUtils.isNotEmpty(accessionNumber))
         {
             // Start by checking to see if the permit number has changed
@@ -92,8 +92,8 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules
                 if (accessions.size() == 1)
                 {
                     Accession oldAccession       = (Accession)accessions.get(0);
-                    String    oldAccessionNumber = oldAccession.getNumber();
-                    if (oldAccessionNumber.equals(accession.getNumber()))
+                    String    oldAccessionNumber = oldAccession.getAccessionNumber();
+                    if (oldAccessionNumber.equals(accession.getAccessionNumber()))
                     {
                         checkAccessionNumberForDuplicates = false;
                     }
@@ -183,7 +183,7 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules
     {
         if (dataObj instanceof Accession)
         {
-            return getLocalizedMessage("ACCESSION_DELETED", ((Accession)dataObj).getNumber());
+            return getLocalizedMessage("ACCESSION_DELETED", ((Accession)dataObj).getAccessionNumber());
         }
         // else
         return super.getDeleteMsg(dataObj);
@@ -203,7 +203,7 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules
         {
             Accession accession = (Accession)dataObj;
             
-            draggableIcon.setLabel(accession.getNumber());
+            draggableIcon.setLabel(accession.getAccessionNumber());
             
             Object data = draggableIcon.getData();
             if (data == null)

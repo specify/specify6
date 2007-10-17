@@ -30,7 +30,6 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DBRelationshipInfo;
-import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -43,6 +42,11 @@ import edu.ku.brc.ui.UIHelper;
  */
 class ERDPanel extends JPanel
 {
+    
+    protected Color[] colors = {Color.BLACK, Color.GREEN, Color.BLUE, Color.YELLOW, Color.BLUE.darker(), Color.MAGENTA, Color.MAGENTA.darker(), Color.ORANGE, Color.RED, Color.CYAN, Color.PINK};
+    protected int     colorInx     = 0;
+    protected boolean doDebugBoxes = false;
+
     protected  TableTracker tableTracker;
     
     protected  Vector<ERDTable>            tables   = new Vector<ERDTable>();
@@ -97,11 +101,17 @@ class ERDPanel extends JPanel
         return relTables;
     }
     
+    /**
+     * @return
+     */
     public boolean isRoot()
     {
         return root != null;
     }
 
+    /**
+     * 
+     */
     public void clear()
     {
         for (ERDTable t : tblHash.values())
@@ -132,9 +142,13 @@ class ERDPanel extends JPanel
         this.ignorePaint = ignorePaint;
     }
 
+    /**
+     * @param numTables
+     */
     public void setup(int numTables)
     {
-        outer   = new PanelBuilder(new FormLayout("p,120px,p", "t:p:g"), this);
+        int gapWidth = (numTables * 6) + 20;
+        outer   = new PanelBuilder(new FormLayout("p,"+gapWidth+"px,p", "t:p:g"), this);
         leftPB  = new PanelBuilder(new FormLayout("p", "t:p"));
         rightPB = new PanelBuilder(new FormLayout("p", UIHelper.createDuplicateJGoodiesDef("p:g", "10px", numTables)));
         
@@ -147,6 +161,9 @@ class ERDPanel extends JPanel
         rightPB.getPanel().setBackground(Color.WHITE);
     }
     
+    /**
+     * @param table
+     */
     public synchronized void addTable(final ERDTable table)
     {
         if (table == null)
@@ -172,6 +189,9 @@ class ERDPanel extends JPanel
 
     }
     
+    /**
+     * 
+     */
     public void initTables()
     {
         relTables.clear();
@@ -209,11 +229,10 @@ class ERDPanel extends JPanel
         }
     }
     
-    /* DEBUG
-    Color[] colors = {Color.BLACK, Color.GREEN, Color.BLUE, Color.YELLOW, Color.BLUE.darker(), Color.MAGENTA, Color.MAGENTA.darker(), Color.ORANGE, Color.RED, Color.CYAN, Color.PINK};
-    int colorInx = 0;
-    */
-    
+    /**
+     * @param pNode
+     * @param g
+     */
     protected void drawTreeLines(final ERDTable pNode, Graphics g)
     {
         Rectangle r = pNode.getBounds();
@@ -230,12 +249,13 @@ class ERDPanel extends JPanel
             drawTreeLines(k, g);
         }
         
-        /* DEBUG 
-        g.setColor(colors[colorInx % colors.length]);
-        g.drawRect(pNode.getShiftX(), r.y, pNode.getSpace().width, pNode.getSpace().height);
-        g.drawString(pNode.getTable().getTableName(), x, y+20);
-        colorInx++;
-        */
+        if (doDebugBoxes)
+        {
+            g.setColor(colors[colorInx % colors.length]);
+            g.drawRect(pNode.getShiftX(), r.y, pNode.getSpace().width, pNode.getSpace().height);
+            g.drawString(pNode.getTable().getName(), x, y+20);
+            colorInx++;
+        }
     }
     
     /* (non-Javadoc)

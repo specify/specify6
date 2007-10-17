@@ -53,7 +53,8 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "journal")
 @org.hibernate.annotations.Table(appliesTo="journal", indexes =
-    {   @Index (name="JournalNameIDX", columnNames={"JournalName"})
+    {   @Index (name="JournalNameIDX", columnNames={"JournalName"}),
+        @Index (name="JournalGUIDIDX", columnNames={"GUID"}),
     })
 public class Journal extends DataModelObjBase implements java.io.Serializable 
 {
@@ -63,6 +64,7 @@ public class Journal extends DataModelObjBase implements java.io.Serializable
      protected Integer journalId;
      protected String  journalName;
      protected String  journalAbbreviation;
+     protected String  guid;
      protected String  remarks;
      protected Set<ReferenceWork> referenceWorks;
 
@@ -90,6 +92,7 @@ public class Journal extends DataModelObjBase implements java.io.Serializable
         journalId = null;
         journalName = null;
         journalAbbreviation = null;
+        guid = null;
         remarks = null;
         referenceWorks = new HashSet<ReferenceWork>();
     }
@@ -154,6 +157,23 @@ public class Journal extends DataModelObjBase implements java.io.Serializable
     
     public void setJournalAbbreviation(String journalAbbreviation) {
         this.journalAbbreviation = journalAbbreviation;
+    }
+
+    /**
+     * @return the guid
+     */
+    @Column(name = "Guid", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    public String getGuid()
+    {
+        return guid;
+    }
+
+    /**
+     * @param guid the guid to set
+     */
+    public void setGuid(String guid)
+    {
+        this.guid = guid;
     }
 
     /**

@@ -2,9 +2,7 @@
 
 <!-- 
 
-    Last Used Id is 120 or 516
-    
-    83,84,85,86 is Not used
+    Last Used Id is 122 or 516
     
     PLEASE Keep this file in alphabetical order! 
 
@@ -38,6 +36,7 @@
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.AgentVariant" abbrev="av" id="107" workbench="false" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.Appraisal" abbrev="aps" id="67" workbench="false" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.Attachment" abbrev="att" id="41" searchable="true">
         	<display objtitle="Attachment" view="AttachmentsForm" newobjdlg="AttachmentsForm"/>
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentBusRules</businessrule>
@@ -122,8 +121,13 @@
         <table name="edu.ku.brc.specify.datamodel.Division" abbrev="dv" id="96" searchable="true">
             <display view="Division"/>
         </table>
+        <table name="edu.ku.brc.specify.datamodel.DNASequence" abbrev="dna" id="121" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.ExchangeIn" abbrev="exi" id="39" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.ExchangeOut" abbrev="exo" id="40" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.FieldNotebook" abbrev="fnb" id="83" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.FieldNotebookPageSet" abbrev="fnbps" id="84" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.FieldNotebookPage" abbrev="fnbp" id="85" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.GeoCoordDetail" abbrev="gcd" id="123" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.Geography" abbrev="geo" id="3" workbench="true" searchable="true">
             <display objtitle="Geography" view="Geography" dataobjformatter="Geography" searchdlg="GeographySearch" newobjdlg="GeographyDisplay"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.GeographyBusRules</businessrule>          
@@ -151,6 +155,7 @@
         <table name="edu.ku.brc.specify.datamodel.Journal" abbrev="jn" id="51" searchable="true">
             <display view="Journal"/>
         </table>
+        <table name="edu.ku.brc.specify.datamodel.Ipm" abbrev="i" id="86" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.LithoStrat" abbrev="ls" id="100" workbench="true" searchable="true">
             <display objtitle="Lithostratigraphy" view="LithoStrat" dataobjformatter="" searchdlg="LithoStratSearch" newobjdlg="LithoStratDisplay"/>
         </table>
@@ -173,6 +178,7 @@
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.LocalityBusRules</businessrule>
             <display objtitle="Locality" view="Locality" dataobjformatter="Locality" searchdlg="LocalitySearch" newobjdlg="LocalityDisplay"/>
         </table>
+        <table name="edu.ku.brc.specify.datamodel.LocalityDetail" abbrev="lcd" id="124" workbench="true" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.LocalityAttachment" abbrev="locat" id="115" searchable="true">
             <display view="LocalityAttachment" newobjdlg="LocalityAttachmentDisplay" searchable="true"/>
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
@@ -219,7 +225,6 @@
             <businessrule>edu.ku.brc.specify.datamodel.busrules.PrepTypeBusRules</businessrule>                        
         </table>
         <table name="edu.ku.brc.specify.datamodel.Project" abbrev="prj" id="66" searchable="true"/>
-        <table name="edu.ku.brc.specify.datamodel.ProjectCollectionObject" abbrev="pco" id="67" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.RecordSet" abbrev="rs" id="68"/>
         <table name="edu.ku.brc.specify.datamodel.RecordSetItem" abbrev="rsi" id="502"/>
         <table name="edu.ku.brc.specify.datamodel.ReferenceWork" abbrev="rw" id="69" searchable="true">
@@ -268,6 +273,7 @@
             <display objtitle="TaxonTreeDefItem" view="TaxonTreeDefItem" dataobjformatter="" searchdlg="TaxonTreeDefItemSearch" newobjdlg="TaxonTreeDefItemDisplay"/>
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.TaxonBusRules</businessrule>
         </table>
+        <table name="edu.ku.brc.specify.datamodel.TreatmentEvent" abbrev="te" id="122"/>
         <table name="edu.ku.brc.specify.datamodel.UserGroup" abbrev="spug" id="78"/>
         <table name="edu.ku.brc.specify.datamodel.UserPermission" abbrev="spup" id="89"/>
         <table name="edu.ku.brc.specify.datamodel.Workbench" abbrev="wb" id="79"/>

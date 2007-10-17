@@ -28,6 +28,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
+import javax.swing.WindowConstants;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -197,6 +198,8 @@ public class CustomDialog extends JDialog
      */
     public void createUI()
     {
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+
         mainPanel = createMainPanel();
         mainPanel.setBorder(BorderFactory.createEmptyBorder(0, 2, 5, 2));
 

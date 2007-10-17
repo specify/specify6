@@ -48,13 +48,13 @@ public class CollectingTrip extends DataModelObjBase implements java.io.Serializ
      private Integer  collectingTripId;
      private String   remarks;
      private Calendar startDate;
-     private Short    startDatePrecision;
      private String   startDateVerbatim;
      private Calendar endDate;
-     private Short    endDatePrecision;
      private String   endDateVerbatim;
      private Short    startTime;
      private Short    endTime;
+     private String   collectingTripName;
+     private String   sponsor;
      private Set<CollectingEvent> collectingEvents;
 
 
@@ -80,13 +80,13 @@ public class CollectingTrip extends DataModelObjBase implements java.io.Serializ
         collectingTripId = null;
         remarks = null;
         startDate = null;
-        startDatePrecision = null;
         startDateVerbatim = null;
         endDate = null;
-        endDatePrecision = null;
         endDateVerbatim = null;
         startTime = null;
         endTime = null;
+        collectingTripName = null;
+        sponsor = null;
         collectingEvents = new HashSet<CollectingEvent>();
     }
 
@@ -154,18 +154,6 @@ public class CollectingTrip extends DataModelObjBase implements java.io.Serializ
     /**
      * 
      */
-    @Column(name = "StartDatePrecision", unique = false, nullable = true, insertable = true, updatable = true)
-    public Short getStartDatePrecision() {
-        return this.startDatePrecision;
-    }
-    
-    public void setStartDatePrecision(Short startDatePrecision) {
-        this.startDatePrecision = startDatePrecision;
-    }
-
-    /**
-     * 
-     */
     @Column(name = "StartDateVerbatim", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
     public String getStartDateVerbatim() {
         return this.startDateVerbatim;
@@ -186,18 +174,6 @@ public class CollectingTrip extends DataModelObjBase implements java.io.Serializ
     
     public void setEndDate(Calendar endDate) {
         this.endDate = endDate;
-    }
-
-    /**
-     * 
-     */
-    @Column(name = "EndDatePrecision", unique = false, nullable = true, insertable = true, updatable = true)
-    public Short getEndDatePrecision() {
-        return this.endDatePrecision;
-    }
-    
-    public void setEndDatePrecision(Short endDatePrecision) {
-        this.endDatePrecision = endDatePrecision;
     }
 
     /**
@@ -234,6 +210,40 @@ public class CollectingTrip extends DataModelObjBase implements java.io.Serializ
     
     public void setEndTime(Short endTime) {
         this.endTime = endTime;
+    }
+
+    /**
+     * @return the collectingTripName
+     */
+    @Column(name = "CollectingTripName", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    public String getCollectingTripName()
+    {
+        return collectingTripName;
+    }
+
+    /**
+     * @param name the collectingTripName to set
+     */
+    public void setCollectingTripName(String collectingTripName)
+    {
+        this.collectingTripName = collectingTripName;
+    }
+
+    /**
+     * @return the sponsor
+     */
+    @Column(name = "Sponsor", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    public String getSponsor()
+    {
+        return sponsor;
+    }
+
+    /**
+     * @param sponsor the sponsor to set
+     */
+    public void setSponsor(String sponsor)
+    {
+        this.sponsor = sponsor;
     }
 
     /**

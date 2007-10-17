@@ -59,11 +59,14 @@ public class Division extends DataModelObjBase implements java.io.Serializable
      protected String                  iconURI;
      protected String                  discipline;
      protected String                  remarks;
+     
+     protected Address                 address;
      protected Institution             institution;
      protected Set<CollectionType>     collectionTypes;
      
      protected Set<Agent>              members;
      protected Set<ConservDescription> conservDescriptions;
+     protected Set<Loan>               loans;
      
 
     // Constructors
@@ -95,7 +98,9 @@ public class Division extends DataModelObjBase implements java.io.Serializable
         remarks             = null;
         members             = new HashSet<Agent>();
         conservDescriptions = new HashSet<ConservDescription>();
+        loans               = new HashSet<Loan>();
         institution         = null;
+        address             = null;
     }
     
     /**
@@ -270,7 +275,7 @@ public class Division extends DataModelObjBase implements java.io.Serializable
     /**
      *
      */
-    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "division")
+    @OneToMany(cascade = { }, fetch = FetchType.LAZY, mappedBy = "division")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<ConservDescription> getConservDescriptions()
     {
@@ -298,6 +303,42 @@ public class Division extends DataModelObjBase implements java.io.Serializable
     public void setInstitution(Institution institution)
     {
         this.institution = institution;
+    }
+
+    /**
+     * @return the address
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "AgentID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Address getAddress()
+    {
+        return address;
+    }
+
+    /**
+     * @param address the address to set
+     */
+    public void setAddress(Address address)
+    {
+        this.address = address;
+    }
+
+    /**
+     * @return the loans
+     */
+    @OneToMany(cascade = { }, fetch = FetchType.LAZY, mappedBy = "division")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<Loan> getLoans()
+    {
+        return loans;
+    }
+
+    /**
+     * @param loans the loans to set
+     */
+    public void setLoans(Set<Loan> loans)
+    {
+        this.loans = loans;
     }
 
     /**

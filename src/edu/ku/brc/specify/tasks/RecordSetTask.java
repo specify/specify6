@@ -405,7 +405,7 @@ public class RecordSetTask extends BaseTask
                 {
                     RecordSet rs = (RecordSet)data;
                     rs.setName(rsName);
-                    rs.setLastEditedBy(FormHelper.getCurrentUserEditStr());
+                    rs.setModifiedByAgent(SpecifyUser.getCurrentUser().getAgent());
                     saveNewRecordSet(rs);
                 }
             }

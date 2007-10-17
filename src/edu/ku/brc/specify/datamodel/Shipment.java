@@ -29,8 +29,6 @@
 package edu.ku.brc.specify.datamodel;
 
 import java.util.Calendar;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -39,15 +37,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 @Entity
@@ -80,21 +75,22 @@ public class Shipment extends DataModelObjBase implements java.io.Serializable
     protected Agent            shipper;
     protected Agent            shippedTo;
     protected Agent            shippedBy;
-    // protected Set<BorrowShipment> borrowShipments;
-    protected Set<Borrow>      borrows;
-    protected Set<Loan>        loans;
-    protected Set<ExchangeOut> exchangeOuts;
+    protected Borrow           borrow;
+    protected Loan             loan;
+    protected ExchangeOut      exchangeOut;
 
 
     // Constructors
 
     /** default constructor */
-    public Shipment() {
+    public Shipment() 
+    {
         //
     }
     
     /** constructor with id */
-    public Shipment(Integer shipmentId) {
+    public Shipment(Integer shipmentId) 
+    {
         this.shipmentId = shipmentId;
     }
    
@@ -124,9 +120,9 @@ public class Shipment extends DataModelObjBase implements java.io.Serializable
         shippedTo = null;
         shippedBy = null;
         //borrowShipments = new HashSet<BorrowShipment>();
-        borrows = new HashSet<Borrow>();
-        loans = new HashSet<Loan>();
-        exchangeOuts = new HashSet<ExchangeOut>();
+        borrow      = null;
+        loan        = null;
+        exchangeOut = null;
     }
     // End Initializer
 
@@ -367,104 +363,40 @@ public class Shipment extends DataModelObjBase implements java.io.Serializable
     /**
      * 
      */
-//    public Set<BorrowShipment> getBorrowShipments() {
-//        return this.borrowShipments;
-//    }
-//    
-//    public void setBorrowShipments(Set<BorrowShipment> borrowShipments) {
-//        this.borrowShipments = borrowShipments;
-//    }
-    /**
-     * 
-     */
-    @ManyToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy="shipments")
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    public Set<Borrow> getBorrows() {
-        return this.borrows;
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "BorrowID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Borrow getBorrow() {
+        return this.borrow;
     }
     
-    public void setBorrows(Set<Borrow> borrows) {
-        this.borrows = borrows;
+    public void setBorrow(Borrow borrow) {
+        this.borrow = borrow;
     }
     /**
      * 
      */
-    @ManyToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy="shipments")
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    public Set<Loan> getLoans() {
-        return this.loans;
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "LoanID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Loan getLoan() {
+        return this.loan;
     }
     
-    public void setLoans(Set<Loan> loans) {
-        this.loans = loans;
+    public void setLoan(Loan loan) 
+    {
+        this.loan = loan;
     }
 
     /**
      * 
      */
-    @ManyToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy="shipments")
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    public Set<ExchangeOut> getExchangeOuts() {
-        return this.exchangeOuts;
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "ExchangeOutID", unique = false, nullable = true, insertable = true, updatable = true)
+    public ExchangeOut getExchangeOut() {
+        return this.exchangeOut;
     }
     
-    public void setExchangeOuts(Set<ExchangeOut> exchangeOuts) {
-        this.exchangeOuts = exchangeOuts;
-    }
-
-
-
-
-
-    // Add Methods
-
-//    public void addBorrowShipments(final BorrowShipment borrowShipment)
-//    {
-//        this.borrowShipments.add(borrowShipment);
-//        borrowShipment.setShipment(this);
-//    }
-  public void addBorrows(final Borrow borrow)
-  {
-      this.borrows.add(borrow);
-      borrow.getShipments().add(this);
-  }
-    public void addLoans(final Loan loan)
-    {
-        this.loans.add(loan);
-        loan.getShipments().add(this);
-    }
-
-    public void addExchangeOuts(final ExchangeOut exchangeOut)
-    {
-        this.exchangeOuts.add(exchangeOut);
-        //exchangeOut.setShipments(this);
-        exchangeOut.getShipments().add(this);
-    }
-
-    // Done Add Methods
-
-    // Delete Methods
-
-//    public void removeBorrowShipments(final BorrowShipment borrowShipment)
-//    {
-//        this.borrowShipments.remove(borrowShipment);
-//        borrowShipment.setShipment(null);
-//    }
-  public void removeBorrow(final Borrow borrow)
-  {
-      this.borrows.remove(borrow);
-      borrow.removeShipment(this);
-  }
-    public void removeLoan(final Loan loan)
-    {
-        this.loans.remove(loan);
-        loan.removeShipment(this);
-    }
-
-    public void removeExchangeOuts(final ExchangeOut exchangeOut)
-    {
-        this.exchangeOuts.remove(exchangeOut);
-        exchangeOut.setShipments(null);
+    public void setExchangeOut(ExchangeOut exchangeOut) {
+        this.exchangeOut = exchangeOut;
     }
 
     /* (non-Javadoc)

@@ -9,6 +9,8 @@ package edu.ku.brc.ui.forms;
 import java.beans.PropertyChangeListener;
 import java.sql.Timestamp;
 
+import edu.ku.brc.specify.datamodel.Agent;
+
 /**
  * Interface that all Data Model class MUST implement to play nice in the form system.
  * 
@@ -62,16 +64,22 @@ public interface FormDataObjIFace
 //    public void setTimestampModified(Timestamp timestampModified);
     
     /**
-     * Returns lastEditedBy.
-     * @return lastEditedBy
+     * Returns modifiedByAgent.
+     * @return modifiedByAgent
      */
-    public String getLastEditedBy();
+    public Agent getModifiedByAgent();
 
     /**
-     * Sets lastEditedBy.
-     * @param lastEditedBy the text string usually the user name
+     * Sets modifiedByAgent.
+     * @param modifiedByAgent the agent who changed the data object
      */
-    public void setLastEditedBy(String lastEditedBy);
+    public void setModifiedByAgent(Agent modifiedByAgent);
+    
+    /**
+     * Sets modifiedByAgent.
+     * @param modifiedByAgent the agent who changed the data object
+     */
+    public void setCreatedByAgent(Agent createdByAgent);
     
     /**
      * Add a new foreign key reference to this object.  This method provides

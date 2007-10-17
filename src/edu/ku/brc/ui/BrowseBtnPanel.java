@@ -45,6 +45,7 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
 {
     protected JTextField textField;
     protected JButton    browseBtn;
+    protected boolean    isForInput;
 
     /**
      * Constructor.
@@ -53,31 +54,36 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
      */
     public BrowseBtnPanel(final Object  value,
                           final int     cols,
-                          final boolean doDirsOnly)
+                          final boolean doDirsOnly,
+                          final boolean isForInput)
     {
         super(new BorderLayout());
-
-        createUI(value, cols, doDirsOnly);
+        
+        this.isForInput = isForInput;
+        
+        createUI(value, cols, doDirsOnly, isForInput);
     }
 
     /**
      * Constructor.
      * @param textField the text field to use (most likely is a ValTextField)
      */
-    public BrowseBtnPanel(final JTextField textField, final boolean doDirsOnly)
+    public BrowseBtnPanel(final JTextField textField, final boolean doDirsOnly, final boolean isForInput)
     {
         super(new BorderLayout());
         this.textField = textField;
 
-        createUI(null, -1, doDirsOnly);
+        createUI(null, -1, doDirsOnly, isForInput);
    }
 
     /**
      * Creates the UI and figures out whether it needs to create a JTextField or use the one it was given.
      * @param value the value for the new TextField
      * @param cols the number of columns for the new TextField
+     * @param doDirsOnly
+     * @param isForInput
      */
-    protected void createUI(final Object value, final int cols, final boolean doDirsOnly)
+    protected void createUI(final Object value, final int cols, final boolean doDirsOnly, final boolean isForInput)
     {
         PanelBuilder panelBuilder = new PanelBuilder(new FormLayout("f:p:g, 2dlu, r:p", "p"));
         CellConstraints cc = new CellConstraints();
@@ -89,7 +95,7 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
         panelBuilder.add(textField, cc.xy(1,1));
 
         browseBtn = new JButton(getResourceString("Browse"));
-        browseBtn.addActionListener(new BrowseAction(textField, doDirsOnly));
+        browseBtn.addActionListener(new BrowseAction(textField, doDirsOnly, isForInput));
         panelBuilder.add(browseBtn, cc.xy(3,1));
 
         add(panelBuilder.getPanel(), BorderLayout.CENTER);
@@ -154,18 +160,22 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
      */
     public class BrowseAction implements ActionListener
     {
-        private JTextField txtField;
-        private JFileChooser chooser;
+        private JTextField   txtField;
+        private JFileChooser chooser = null;
+        private boolean      dirsOnly;
+        private boolean      isForInput;
 
         /**
          * Constructor with CommandAction.
          * @param textField the text control of the Browse Action
          */
-        public BrowseAction(final JTextField textField, final boolean dirsOnly)
+        public BrowseAction(final JTextField textField, 
+                            final boolean dirsOnly, 
+                            final boolean isForInput)
         {
-            this.txtField = textField;
-            this.chooser = new JFileChooser();
-            this.chooser.setFileSelectionMode(dirsOnly ? JFileChooser.DIRECTORIES_ONLY : JFileChooser.FILES_ONLY);
+            this.txtField   = textField;
+            this.dirsOnly   = dirsOnly;
+            this.isForInput = isForInput;
         }
 
         /* (non-Javadoc)
@@ -173,7 +183,21 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
          */
         public void actionPerformed(ActionEvent e)
         {
-            int returnVal = chooser.showOpenDialog(UIRegistry.getTopWindow());
+            if (chooser == null)
+            {
+                this.chooser    = new JFileChooser();
+                this.chooser.setFileSelectionMode(dirsOnly ? JFileChooser.DIRECTORIES_ONLY : JFileChooser.FILES_ONLY);
+            }
+
+            int returnVal;
+            if (isForInput)
+            {
+                returnVal = chooser.showOpenDialog(UIRegistry.getTopWindow());
+            } else
+            {
+                returnVal = chooser.showSaveDialog(UIRegistry.getTopWindow());
+            }
+            
             if (returnVal == JFileChooser.APPROVE_OPTION)
             {
                 txtField.setText(chooser.getSelectedFile().getAbsolutePath());

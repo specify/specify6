@@ -16,12 +16,17 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.Component;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.print.PrinterException;
 import java.util.List;
 import java.util.Vector;
 
-import org.apache.commons.lang.StringUtils;
+import javax.swing.JLabel;
+import javax.swing.JTable;
+import javax.swing.table.TableCellRenderer;
 
+import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxAction;
 import edu.ku.brc.af.core.SubPaneIFace;
@@ -43,6 +48,8 @@ import edu.ku.brc.ui.ToolBarDropDownBtn;
 @SuppressWarnings("serial")
 public class LabelsTask extends ReportsBaseTask
 {
+    protected static final String PRINT_TABLE = "PrintTable";
+    
     /**
      * Constructor.
      */
@@ -70,6 +77,20 @@ public class LabelsTask extends ReportsBaseTask
         actionNavBox.add(NavBox.createBtnWithTT(getResourceString("LabelEditor"),  "EditIcon", getResourceString("EDIT_LABEL_TT"), IconManager.IconSize.Std16, new NavBoxAction(name, OPEN_EDITOR))); // I18N
 
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.ReportsBaseTask#initialize()
+     */
+    @Override
+    public void initialize()
+    {
+        super.initialize();
+        
+        CommandAction cmdAction = new CommandAction(REPORTS, PRINT_TABLE);
+        ContextMgr.registerService(PRINT_TABLE, -1, cmdAction, this, "Print", getResourceString("PRINT_GRID_TT"));
+
+    }
+
 
     /**
      * Adds a WorkbenchTemplate to the Left Pane NavBox
@@ -138,7 +159,6 @@ public class LabelsTask extends ReportsBaseTask
         return this.getClass();
     }
 
-
     //-------------------------------------------------------
     // CommandListener Interface
     //-------------------------------------------------------
@@ -148,10 +168,106 @@ public class LabelsTask extends ReportsBaseTask
      */
     public void doCommand(final CommandAction cmdAction)
     {
-        String taskName = cmdAction.getPropertyAsString("task name");
-        if (StringUtils.isNotEmpty(taskName) && taskName.equals(getName()))
+        // String taskName = cmdAction.getPropertyAsString("task name");
+        //if (StringUtils.isNotEmpty(taskName) && taskName.equals(getName()))
+        if (cmdAction.isType(REPORTS))
         {
-            super.doCommand(cmdAction);
+            if (cmdAction.isAction(PRINT_TABLE))
+            {
+                
+                JTable table = (JTable)cmdAction.getProperty("jtable");
+                if (table != null)
+                {
+                    try
+                    {
+                        
+                        table.print();
+                        /*
+                        JFrame      frame    = new JFrame();
+                        JTable      prtTable = new JTable(table.getModel());
+                        
+                        MyTableCellRenderer cellRenderer = new MyTableCellRenderer();
+                        TableColumnModel    colModel     = prtTable.getColumnModel();
+                        for (int i=0;i<colModel.getColumnCount();i++)
+                        {
+                            colModel.getColumn(i).setCellRenderer(cellRenderer);
+                            colModel.getColumn(i).setHeaderRenderer(cellRenderer);
+                        }
+                        JScrollPane sp = new JScrollPane(prtTable);
+                        frame.setContentPane(sp);
+                        frame.pack();
+                        frame.setSize(1500, 768);
+                        prtTable.setShowGrid(true);
+                        prtTable.print();
+                        /*boolean horzLines = table.getShowHorizontalLines();
+                        boolean vertLines = table.getShowVerticalLines();
+                        table.setShowHorizontalLines(true);
+                        table.setShowVerticalLines(true);
+                        table.validate();*/
+                        //table.print();
+                        
+                        /*table.setShowHorizontalLines(horzLines);
+                        table.setShowVerticalLines(vertLines);
+                        table.validate();
+                        */
+
+                    } catch (PrinterException ex)
+                    {
+                        System.err.println(ex);
+                        ex.printStackTrace(); 
+                    }
+                }
+            } else
+            {
+                /*super.doCommand(cmdAction);
+                
+                if (cmdAction.isType(APP_CMD_TYPE) && cmdAction.isAction(APP_RESTART_ACT))
+                {
+                    ContextMgr.removeServicesByTask(this);
+                    ContextMgr.registerService(PRINT_TABLE, -1, cmdAction, this, "Print", "");
+                }*/
+            }
         }
+        
+    }
+    
+    public class MyTableCellRenderer extends JLabel implements TableCellRenderer 
+    {
+        public MyTableCellRenderer()
+        {
+            super();
+            setFont(getFont().deriveFont(8.0f));
+        }
+        
+        // This method is called each time a cell in a column
+        // using this renderer needs to be rendered.
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus, int rowIndex, int vColIndex) {
+            // 'value' is value contained in the cell located at
+            // (rowIndex, vColIndex)
+    
+            if (isSelected) {
+                // cell (and perhaps other cells) are selected
+            }
+    
+            if (hasFocus) {
+                // this cell is the anchor and the table has the focus
+            }
+    
+            // Configure the component with the specified value
+            setText(value.toString());
+    
+            // Set tool tip if desired
+            setToolTipText((String)value);
+    
+            // Since the renderer is a component, return itself
+            return this;
+        }
+    
+        // The following methods override the defaults for performance reasons
+        public void validate() {}
+        public void revalidate() {}
+        protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {}
+        public void firePropertyChange(String propertyName, boolean oldValue, boolean newValue) {}
     }
 }

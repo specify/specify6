@@ -57,6 +57,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 
+import edu.ku.brc.specify.datamodel.Appraisal;
 import edu.ku.brc.specify.datamodel.ConservDescription;
 import edu.ku.brc.specify.datamodel.ConservEvent;
 import edu.ku.brc.ui.UIHelper;
@@ -75,7 +76,7 @@ public class DataModelClassGenerator extends JFrame
     
     private Hashtable<String, Boolean> baseClassHash = new Hashtable<String, Boolean>();
     
-    protected Class dataClass;
+    protected Class<?> dataClass;
     
     protected JTextArea  logArea;
     protected JTextField tableIdTxt;
@@ -88,12 +89,12 @@ public class DataModelClassGenerator extends JFrame
      * @param dataClass
      * @param tableId
      */
-    public DataModelClassGenerator(final Class dataClass)
+    public DataModelClassGenerator(final Class<?> dataClass)
     {
         this.dataClass = dataClass;
         
         Class<?>[] baseClasses = {Boolean.class, Integer.class, Double.class, String.class, Float.class,
-                Character.class, Short.class, Byte.class, BigDecimal.class, Date.class, Calendar.class};
+                                  Character.class, Short.class, Byte.class, BigDecimal.class, Date.class, Calendar.class};
         for (Class<?> cls : baseClasses)
         {
             baseClassHash.put(cls.getSimpleName(), true);
@@ -287,7 +288,7 @@ public class DataModelClassGenerator extends JFrame
                 x++;
             }
             
-            String checkClass = "";
+            //String checkClass = "";
             if (!isSet)
             {
                 // Check to see if the field is a basic Java type we should ignore 
@@ -568,7 +569,7 @@ public class DataModelClassGenerator extends JFrame
                 {
                     //log.error("Can't change L&F: ", e);
                 }
-                DataModelClassGenerator dmcg = new DataModelClassGenerator(ConservDescription.class);
+                DataModelClassGenerator dmcg = new DataModelClassGenerator(Appraisal.class);
                 UIHelper.centerAndShow(dmcg);
 
             }

@@ -396,8 +396,8 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
         
         String fullStrSql = sqlStr;
         
-        System.out.println("\n1["+sqlStr+"]");
-        System.out.println("2["+strBuf+"]");
+        //System.out.println("\n1["+sqlStr+"]");
+        //System.out.println("2["+strBuf+"]");
         
         String fullSQL = fullStrSql.replace("%s", strBuf.toString());
         log.info(fullSQL);

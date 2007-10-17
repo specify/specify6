@@ -85,7 +85,7 @@ public class DatamodelGenerator
     
     protected Hashtable<String, String> abbrvHash = new Hashtable<String, String>();
     
-    protected boolean      includeDesc = true;
+    protected boolean      includeDesc = false;
     protected boolean      doGerman    = false;
     
 
@@ -1149,7 +1149,7 @@ public class DatamodelGenerator
                 log.debug("Reading    " + file.getAbsolutePath());
                 List<?> lines = FileUtils.readLines(file);
                 count++;
-                log.debug("Processing " + count + " of " + lines.size() + "  " + file.getAbsolutePath());
+                log.debug("Processing " + count + " of " + files.length + "  " + file.getAbsolutePath());
 
                 String  className   = null;
                 

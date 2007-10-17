@@ -17,6 +17,8 @@ package edu.ku.brc.af.core;
 import java.sql.Timestamp;
 import java.util.Map;
 
+import edu.ku.brc.specify.datamodel.Agent;
+
 /**
  * Represents a resource that the application needs to run and the format is specified by a mime type. This is typically an XML
  * "blob", but it doesn't have to be.
@@ -61,9 +63,9 @@ public interface AppResourceIFace
 
     //public abstract void setTimestampModified(Date timestampModified);
 
-    public abstract String getLastEditedBy();
+    public abstract Agent getModifiedByAgent();
 
-    public abstract void setLastEditedBy(String lastEditedBy);
+    public abstract void setModifiedByAgent(Agent lastEditedBy);
     
     public String getMetaData();
     

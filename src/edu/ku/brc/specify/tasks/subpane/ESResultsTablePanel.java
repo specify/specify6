@@ -28,6 +28,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -444,7 +445,7 @@ public class ESResultsTablePanel extends JPanel implements Comparable<ESResultsT
      */
     public RecordSetIFace getRecordSet(final boolean returnAll)
     {
-        log.debug("Indexes: "+table.getSelectedRows().length+" Index["+results.getTableId()+"]");
+        //log.debug("Indexes: "+table.getSelectedRows().length+" Index["+results.getTableId()+"]");
         for (int v : table.getSelectedRows())
         {
         	log.debug("["+v+"]");
@@ -552,17 +553,20 @@ public class ESResultsTablePanel extends JPanel implements Comparable<ESResultsT
         protected CommandAction           cmd;
         protected RecordSetIFace          recordSet;
         protected JTable                  estTable;
-
+        protected Properties              props = new Properties();
+        
         public ESTableAction(final CommandAction cmd,
                              final JTable estTable)
         {
             this.cmd          = cmd;
             this.estTable     = estTable;
+            this.props.put("jtable", estTable);
         }
 
         public void actionPerformed(ActionEvent e)
         {
             cmd.setData(getRecordSet(false));
+            cmd.addProperties(props);
             CommandDispatcher.dispatch(cmd);
 
             // always reset the consumed flag and set the data to null

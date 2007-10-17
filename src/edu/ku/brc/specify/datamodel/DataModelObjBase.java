@@ -29,6 +29,9 @@ import java.sql.Timestamp;
 import java.util.Collection;
 
 import javax.persistence.Column;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 import javax.persistence.Version;
@@ -55,7 +58,9 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
     
     protected Timestamp timestampCreated;
     protected Timestamp timestampModified;
-    protected String    lastEditedBy;
+    
+    protected Agent     createdByAgent;
+    protected Agent     modifiedByAgent;
     
     
     /* (non-Javadoc)
@@ -72,7 +77,8 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
         Timestamp now     = new Timestamp(System.currentTimeMillis());
         timestampCreated  = now;
         timestampModified = null;
-        lastEditedBy      = null;
+        createdByAgent    = SpecifyUser.getCurrentUser() != null ? SpecifyUser.getCurrentUser().getAgent() : null;
+        modifiedByAgent   = null;
     }
     
     /* (non-Javadoc)
@@ -98,7 +104,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTimestampCreated()
      */
-    @Column(name = "TimestampCreated", unique = false, nullable = false, insertable = true, updatable = false, length = 23)
+    @Column(name = "TimestampCreated", unique = false, nullable = false, insertable = true, updatable = false)
     public Timestamp getTimestampCreated()
     {
         return this.timestampCreated;
@@ -131,22 +137,41 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getLastEditedBy()
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getModifiedByAgent()
      */
-    @Column(name = "LastEditedBy", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
-    public String getLastEditedBy()
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "ModifiedByAgentID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Agent getModifiedByAgent()
     {
-        return this.lastEditedBy;
+        return this.modifiedByAgent;
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.FormDataObjIFace#setLastEditedBy(java.lang.String)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#setModifiedByAgent(edu.ku.brc.specify.datamodel.Agent)
      */
-    public void setLastEditedBy(String lastEditedBy)
+    public void setModifiedByAgent(Agent lastEditedBy)
     {
-        this.lastEditedBy = lastEditedBy;
+        this.modifiedByAgent = lastEditedBy;
     }
     
+    /**
+     * @return the createdByAgent
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "CreatedByAgentID", unique = false, nullable = true, insertable = true, updatable = false)
+    public Agent getCreatedByAgent()
+    {
+        return createdByAgent;
+    }
+
+    /**
+     * @param createdByAgent the createdByAgent to set
+     */
+    public void setCreatedByAgent(Agent createdByAgent)
+    {
+        this.createdByAgent = createdByAgent;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#isRestrictable()
      */
@@ -275,58 +300,61 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
      */
     public void addReference(FormDataObjIFace ref, String fieldName)
     {
-        DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(getTableId());
-        if (tblInfo != null)
+        if (ref != null)
         {
-            DBRelationshipInfo rel = tblInfo.getRelationshipByName(fieldName);
-            if (rel != null)
+            DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(getTableId());
+            if (tblInfo != null)
             {
-                //String fieldName = rel.getName();
-                String otherSide = rel.getOtherSide();
-                
-                Field   fld           = null;
-                boolean isACollection = false;
-                try
+                DBRelationshipInfo rel = tblInfo.getRelationshipByName(fieldName);
+                if (rel != null)
                 {
-                    fld = getClass().getDeclaredField(fieldName);
-                    if (fld != null)
+                    //String fieldName = rel.getName();
+                    String otherSide = rel.getOtherSide();
+                    
+                    Field   fld           = null;
+                    boolean isACollection = false;
+                    try
                     {
-                        isACollection = Collection.class.isAssignableFrom(fld.getType());
-                    } else
+                        fld = getClass().getDeclaredField(fieldName);
+                        if (fld != null)
+                        {
+                            isACollection = Collection.class.isAssignableFrom(fld.getType());
+                        } else
+                        {
+                            log.error("Couldn't find field ["+fieldName+"] in class ["+getClass().getSimpleName()+"]");
+                        }
+                        
+                    } catch (Exception ex)
                     {
-                        log.error("Couldn't find field ["+fieldName+"] in class ["+getClass().getSimpleName()+"]");
+                        ex.printStackTrace();
                     }
                     
-                } catch (Exception ex)
-                {
-                    ex.printStackTrace();
-                }
-                
-                if (fld != null)
-                {
-                    if (isACollection)
+                    if (fld != null)
                     {
-                        addToCollection(this, fieldName, ref);
-                        DataObjectSettable setter = DataObjectSettableFactory.get(ref.getClass().getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
-                        setter.setFieldValue(ref, otherSide, this);
-
+                        if (isACollection)
+                        {
+                            addToCollection(this, fieldName, ref);
+                            DataObjectSettable setter = DataObjectSettableFactory.get(ref.getClass().getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
+                            setter.setFieldValue(ref, otherSide, this);
+    
+                        } else
+                        {
+                            addToCollection(ref, otherSide, this);
+                            DataObjectSettable setter = DataObjectSettableFactory.get(ref.getClass().getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
+                            setter.setFieldValue(this, fieldName, ref);
+                        }
                     } else
                     {
-                        addToCollection(ref, otherSide, this);
-                        DataObjectSettable setter = DataObjectSettableFactory.get(ref.getClass().getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
-                        setter.setFieldValue(this, fieldName, ref);
+                        log.error("Could not find field["+fieldName+"] in class["+getClass().getSimpleName()+"]");
                     }
                 } else
                 {
-                    log.error("Could not find field["+fieldName+"] in class["+getClass().getSimpleName()+"]");
+                    log.error("Couldn't find relationship["+fieldName+"] For Table["+ref.getTableId()+"]");
                 }
             } else
             {
-                log.error("Couldn't find relationship["+fieldName+"] For Table["+ref.getTableId()+"]");
+                log.error("Couldn't find TableInfo ["+ref.getTableId()+"]");
             }
-        } else
-        {
-            log.error("Couldn't find TableInfo ["+ref.getTableId()+"]");
         }
     }
     
@@ -559,7 +587,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
         DataModelObjBase obj = (DataModelObjBase)super.clone();
         obj.timestampCreated  = timestampCreated;
         obj.timestampModified = timestampModified;
-        obj.lastEditedBy      = lastEditedBy;
+        obj.modifiedByAgent      = modifiedByAgent;
         return obj;
     }
     

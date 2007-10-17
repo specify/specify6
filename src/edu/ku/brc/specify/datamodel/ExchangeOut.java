@@ -38,10 +38,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -306,12 +305,8 @@ public class ExchangeOut extends DataModelObjBase implements java.io.Serializabl
     /**
      *      * Shipment information for the exchange
      */
-    @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
-    @JoinTable(
-            name="exchangeout_shipment",
-            joinColumns = {@JoinColumn(name="ExchangeOutID")},
-            inverseJoinColumns= {@JoinColumn(name="ShipmentID")})
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "exchangeOut")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<Shipment> getShipments() {
         return this.shipments;
     }

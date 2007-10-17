@@ -37,10 +37,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -340,12 +337,8 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
-    @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
-    @JoinTable(
-            name="borrow_shipment",
-            joinColumns = {@JoinColumn(name="BorrowID")},
-            inverseJoinColumns= {@JoinColumn(name="ShipmentID")})
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "borrow")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<Shipment> getShipments() {
         return this.shipments;
     }
@@ -377,63 +370,6 @@ public class Borrow extends DataModelObjBase implements java.io.Serializable {
     
     public void setBorrowMaterials(Set<BorrowMaterial> borrowMaterials) {
         this.borrowMaterials = borrowMaterials;
-    }
-
-
-
-
-
-    // Add Methods
-
-//    public void addBorrowShipments(final BorrowShipment borrowShipment)
-//    {
-//        this.borrowShipments.add(borrowShipment);
-//        borrowShipment.setBorrow(this);
-//    }
-    public void addShipment(final Shipment shipment)
-    {
-        if(shipment==null)return;
-        this.shipments.add(shipment);
-        shipment.getBorrows().add(this);
-    } 
-    
-    public void addBorrowAgent(final BorrowAgent borrowAgent)
-    {
-        this.borrowAgents.add(borrowAgent);
-        borrowAgent.setBorrow(this);
-    }
-
-    public void addBorrowMaterials(final BorrowMaterial borrowMaterial)
-    {
-        this.borrowMaterials.add(borrowMaterial);
-        borrowMaterial.setBorrow(this);
-    }
-
-    // Done Add Methods
-
-    // Delete Methods
-
-//    public void removeBorrowShipments(final BorrowShipment borrowShipment)
-//    {
-//        this.borrowShipments.remove(borrowShipment);
-//        borrowShipment.setBorrow(null);
-//    }
-  public void removeShipment(final Shipment shipment)
-  {
-      if(shipment==null)return;
-      this.shipments.remove(shipment);
-      shipment.removeBorrow(this);
-  }
-    public void removeBorrowAgent(final BorrowAgent borrowAgent)
-    {
-        this.borrowAgents.remove(borrowAgent);
-        borrowAgent.setBorrow(null);
-    }
-
-    public void removeBorrowMaterials(final BorrowMaterial borrowMaterial)
-    {
-        this.borrowMaterials.remove(borrowMaterial);
-        borrowMaterial.setBorrow(null);
     }
 
     /* (non-Javadoc)

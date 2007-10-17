@@ -293,7 +293,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     }
     
     /**
-     * Traverses the individual result record ifs and maps them into the result tables.
+     * Traverses the individual result record ids and maps them into the result tables.
      * @param searchIdStr the ID of the Express Search definition
      * @param recId the record Id
      * @param idToTableInfoMap the TableInfo mapped by ID
@@ -323,12 +323,19 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             String tableIdAsStr = Integer.toString(qfir.getTableId());
             
             //log.debug("Find any Joins for TableID ["+tblInfo.getTableId()+"]");
+            
+            // Start by getting the List of next round of 'view' queries 
+            // Before getting here we have constrcuted list of the queries that will need to be run
+            // when we get a hit from the current table against one of the joins in the view query
+            // 
             List<ExpressResultsTableInfo> list = joinIdToTableInfoMap.get(tableIdAsStr);
             if (list != null)
             {
+                // Now loop through each of the view queries
                 for (ExpressResultsTableInfo erti : list)
                 {
                     //log.debug("Checking up["+tblInfo.getTableId()+"]");
+                    
                     QueryForIdResultsSQL results = resultsForJoinsMap.get(erti.getId());
                     if (results == null)
                     {
@@ -351,11 +358,6 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                         }
                         Integer displayOrder = SearchConfigService.getInstance().getSearchConfig().getOrderForRelatedQueryId(erti.getId());
                         log.debug("ExpressSearchResults erti.getId()["+erti.getId()+"] joinColTableId["+joinColTableId+"] displayOrder["+displayOrder+"]");
-                        if (erti.getId().equals("3"))
-                        {
-                            int x= 0;
-                            x++;
-                        }
                         results = new QueryForIdResultsSQL(erti.getId(), joinColTableId, erti, displayOrder, qfir.getSearchTerm());
                         resultsForJoinsMap.put(erti.getId(), results);
                     }
@@ -669,7 +671,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 
                 try
                 {
-                    if (resultSet.first())
+                    if (resultSet.next())
                     {
                         String                  searchIdStr = Integer.toString(searchTableConfig.getTableInfo().getTableId());
                         ExpressResultsTableInfo tblInfo = idToTableInfoMap.get(searchIdStr);
@@ -677,7 +679,9 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                         {
                             throw new RuntimeException("Bad id from search["+searchIdStr+"]");
                         }
+                        
                         QueryForIdResultsSQL queryResults = new QueryForIdResultsSQL(searchIdStr, null, tblInfo, searchTableConfig.getDisplayOrder(), searchTerm);
+                        
                         do
                         {
                             collectResults(queryResults, resultSet, null, joinIdToTableInfoMap, resultsForJoinsMap);

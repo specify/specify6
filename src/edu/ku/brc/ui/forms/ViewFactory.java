@@ -1007,7 +1007,8 @@ public class ViewFactory
                         
                         case browse:
                             BrowseBtnPanel bbp = new BrowseBtnPanel(createTextField(validator, cellField, null), 
-                                                                    cellField.getPropertyAsBoolean("dirsonly", false));
+                                                                    cellField.getPropertyAsBoolean("dirsonly", false), 
+                                                                    cellField.getPropertyAsBoolean("forinput", true));
                             compToAdd = bbp;
                             break;
                             

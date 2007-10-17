@@ -38,16 +38,15 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 /**
@@ -58,7 +57,8 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "project")
 @org.hibernate.annotations.Table(appliesTo="project", indexes =
-    {   @Index (name="ProjectNameIDX", columnNames={"ProjectName"})
+    {   @Index (name="ProjectNameIDX", columnNames={"ProjectName"}),
+        @Index (name="ProjectNumberIDX", columnNames={"ProjectNumber"}) 
     })
 public class Project extends DataModelObjBase implements java.io.Serializable {
 
@@ -66,7 +66,10 @@ public class Project extends DataModelObjBase implements java.io.Serializable {
 
     protected Integer                      projectId;
     protected String                       projectName;
+    protected String                       projectNumber;
     protected String                       projectDescription;
+    protected String                       grantNumber;
+    protected String                       grantAgency;
     protected String                       url;
     protected Calendar                     startDate;
     protected Calendar                     endDate;
@@ -77,8 +80,9 @@ public class Project extends DataModelObjBase implements java.io.Serializable {
     protected Float                        number2;
     protected Boolean                      yesNo1;
     protected Boolean                      yesNo2;
+    
     protected Agent                        agent;
-    protected Set<ProjectCollectionObject> projectCollectionObjects;
+    protected Set<CollectionObject>        collectionObjects;
 
 
     // Constructors
@@ -101,9 +105,12 @@ public class Project extends DataModelObjBase implements java.io.Serializable {
     public void initialize()
     {
         super.init();
-        projectId = null;
-        projectName = null;
-        projectDescription = null;
+        projectId             = null;
+        projectName           = null;
+        projectNumber         = null;
+        grantAgency           = null;
+        grantNumber           = null;
+        projectDescription    = null;
         url = null;
         startDate = null;
         endDate = null;
@@ -115,7 +122,7 @@ public class Project extends DataModelObjBase implements java.io.Serializable {
         yesNo1 = null;
         yesNo2 = null;
         agent = null;
-        projectCollectionObjects = new HashSet<ProjectCollectionObject>();
+        collectionObjects = new HashSet<CollectionObject>();
     }
     // End Initializer
 
@@ -178,6 +185,57 @@ public class Project extends DataModelObjBase implements java.io.Serializable {
     
     public void setProjectDescription(String projectDescription) {
         this.projectDescription = projectDescription;
+    }
+
+    /**
+     * @return the grantNumber
+     */
+    @Column(name = "GrantNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    public String getGrantNumber()
+    {
+        return grantNumber;
+    }
+
+    /**
+     * @param grantNumber the grantNumber to set
+     */
+    public void setGrantNumber(String grantNumber)
+    {
+        this.grantNumber = grantNumber;
+    }
+
+    /**
+     * @param projectNumber the projectNumber to set
+     */
+    public void setProjectNumber(String projectNumber)
+    {
+        this.projectNumber = projectNumber;
+    }
+    
+    /**
+     * @return the projectNumber
+     */
+    @Column(name = "ProjectNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    public String getProjectNumber()
+    {
+        return projectNumber;
+    }
+
+    /**
+     * @return the grantAgency
+     */
+    @Column(name = "GrantAgency", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    public String getGrantAgency()
+    {
+        return grantAgency;
+    }
+
+    /**
+     * @param grantAgency the grantAgency to set
+     */
+    public void setGrantAgency(String grantAgency)
+    {
+        this.grantAgency = grantAgency;
     }
 
     /**
@@ -319,36 +377,18 @@ public class Project extends DataModelObjBase implements java.io.Serializable {
     /**
      * 
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "project")
-    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<ProjectCollectionObject> getProjectCollectionObjects() {
-        return this.projectCollectionObjects;
+    @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
+    @JoinTable(name = "project_colobj", 
+            joinColumns = { @JoinColumn(name = "ProjectID", unique = false, nullable = false, insertable = true, updatable = false) }, 
+            inverseJoinColumns = { @JoinColumn(name = "CollectionObjectID", unique = false, nullable = false, insertable = true, updatable = false) })
+    public Set<CollectionObject> getCollectionObjects() 
+    {
+        return this.collectionObjects;
     }
     
-    public void setProjectCollectionObjects(Set<ProjectCollectionObject> projectCollectionObjects) {
-        this.projectCollectionObjects = projectCollectionObjects;
-    }
-
-
-
-
-
-    // Add Methods
-
-    public void addProjectCollectionObjects(final ProjectCollectionObject projectCollectionObject)
+    public void setCollectionObjects(Set<CollectionObject> projectCollectionObjects) 
     {
-        this.projectCollectionObjects.add(projectCollectionObject);
-        projectCollectionObject.setProject(this);
-    }
-
-    // Done Add Methods
-
-    // Delete Methods
-
-    public void removeProjectCollectionObjects(final ProjectCollectionObject projectCollectionObject)
-    {
-        this.projectCollectionObjects.remove(projectCollectionObject);
-        projectCollectionObject.setProject(null);
+        this.collectionObjects = projectCollectionObjects;
     }
 
     /* (non-Javadoc)

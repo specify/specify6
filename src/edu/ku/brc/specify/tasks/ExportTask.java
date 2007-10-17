@@ -8,10 +8,15 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
+import java.io.File;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
+
+import javax.swing.JTable;
 
 import org.apache.log4j.Logger;
 
@@ -25,6 +30,7 @@ import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.HtmlDescPane;
 import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.dbsupport.TableModel2Excel;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.exporters.DiGIRExporter;
 import edu.ku.brc.specify.exporters.ExportToFile;
@@ -36,6 +42,8 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
+import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 
 /**
  * A task to handle RecordSet data exporting.  This task provides a pluggable
@@ -55,8 +63,9 @@ public class ExportTask extends BaseTask
     public static final String EXPORT = "Export";
 
     //public static final String DOLABELS_ACTION     = "DoLabels";
-    public static final String EXPORT_RS = "ExportRecordSet";
-    public static final String EXPORT_LIST = "ExportList";
+    public static final String EXPORT_RS     = "ExportRecordSet";
+    public static final String EXPORT_LIST   = "ExportList";
+    public static final String EXPORT_JTABLE = "ExportJTable";
     //public static final String PRINT_LABEL         = "PrintLabel";
 
     // Data Members
@@ -96,6 +105,9 @@ public class ExportTask extends BaseTask
         {
             super.initialize(); // sets isInitialized to false
             
+            CommandAction cmdAction = new CommandAction(EXPORT, EXPORT_JTABLE);
+            ContextMgr.registerService(EXPORT_JTABLE, -1, cmdAction, this, "ExportExcel16", getResourceString("EXPORT_GRID_TT"));
+            
             readExporterRegistry();
 
             // create an instance of each registered exporter
@@ -123,7 +135,7 @@ public class ExportTask extends BaseTask
                 // for each registered exporter, create a TaskCommandDef for it
                 for (RecordSetExporter exporter: loadedExporters)
                 {
-                    CommandAction cmdAction = new CommandAction(EXPORT, EXPORT_RS);
+                    cmdAction = new CommandAction(EXPORT, EXPORT_RS);
                     cmdAction.setProperty("exporter",exporter);
                     exportersList.add(makeDnDNavBtn(navBox, exporter.getName(), exporter.getIconName(), cmdAction, null, true, false));// true means make it draggable
                 }
@@ -211,6 +223,30 @@ public class ExportTask extends BaseTask
             statusBar.setErrorMessage(e.getLocalizedMessage(), e);
         }
     }
+    
+
+    /**
+     * @param table
+     */
+    protected void exportTable(final JTable table)
+    {
+        Hashtable<String, String> values = new Hashtable<String, String>();
+        ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame) UIRegistry.getTopWindow(), "SystemSetup", "ExcelExportInfo", null,
+                 getResourceString("EXCEL_EXPORT_INFO_TITLE"), getResourceString("Export"), null, // className,
+                 null, // idFieldName,
+                 true, // isEdit,
+                 0);
+         dlg.setData(values);
+         dlg.setModal(true);
+         dlg.setVisible(true);
+         if (dlg.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
+         {
+             dlg.getMultiView().getDataFromUI();
+             File file = new File(values.get("FilePath"));
+             TableModel2Excel.convertToExcel(file, values.get("Title"), table.getModel());
+         }
+    }
+
 
     //-------------------------------------------------------
     // Taskable
@@ -343,13 +379,24 @@ public class ExportTask extends BaseTask
     @Override
     public void doCommand(final CommandAction cmdAction)
     {
-        if (cmdAction.isType(EXPORT) && cmdAction.isAction(EXPORT_RS))
+        if (cmdAction.isType(EXPORT))
         {
-        	processExportRecordSet(cmdAction);
-        }
-        else if (cmdAction.isType(EXPORT) && cmdAction.isAction(EXPORT_LIST))
-        {
-            processExportList(cmdAction);
+            if (cmdAction.isAction(EXPORT_RS))
+            {
+            	processExportRecordSet(cmdAction);
+            }
+            else if (cmdAction.isAction(EXPORT_LIST))
+            {
+                processExportList(cmdAction);
+                
+            } else if (cmdAction.isAction(EXPORT_JTABLE))
+            {
+                JTable table = (JTable)cmdAction.getProperty("jtable");
+                if (table != null)
+                {
+                    exportTable(table);
+                }
+            }
         }
     }
 }

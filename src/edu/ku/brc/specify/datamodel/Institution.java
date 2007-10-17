@@ -22,7 +22,9 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -57,7 +59,9 @@ public class Institution extends DataModelObjBase implements java.io.Serializabl
      protected String     termsOfUse;
      protected String     disclaimer;
      protected String     remarks;
-     protected Set<Agent> technicalContacts;
+     
+     protected Address       address;
+     protected Set<Agent>    technicalContacts;
      protected Set<Agent>    contentContacts;
      protected Set<Division> divisions;
 
@@ -90,6 +94,7 @@ public class Institution extends DataModelObjBase implements java.io.Serializabl
         termsOfUse        = null;
         disclaimer        = null;
         remarks           = null;
+        address           = null;
         technicalContacts = new HashSet<Agent>();
         contentContacts   = new HashSet<Agent>();
         divisions         = new HashSet<Division>();
@@ -336,6 +341,24 @@ public class Institution extends DataModelObjBase implements java.io.Serializabl
     public void setUri(String uri)
     {
         this.uri = uri;
+    }
+
+    /**
+     * @return the address
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "AgentID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Address getAddress()
+    {
+        return address;
+    }
+
+    /**
+     * @param address the address to set
+     */
+    public void setAddress(Address address)
+    {
+        this.address = address;
     }
 
     /**
