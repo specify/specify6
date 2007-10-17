@@ -885,7 +885,7 @@
             <desc><![CDATA[The Collection Object form.]]></desc>
             <enableRules/>
 
-            <columnDef>120px,2px,p,2px,100px,2px,p,2px,p,2px,p,p:g</columnDef>
+            <columnDef>120px,2px,p,2px,100px,2px,p,2px,p,2px,p,p:g,p,p</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
     		<rows>
     		    <row>
@@ -926,6 +926,7 @@
     		    <row>
     		        <!-- <cell type="subview" viewname="Locality" id="7" name="collectingEvent.locality" colspan="12"/> -->
     		        <cell type="field" id="7" name="collectingEvent.locality" uitype="querycbx" initialize="name=Locality;title=Locality" colspan="12"/>
+    		        <cell type="field" id="23" name="this" uitype="plugin" initialize="class=edu.ku.brc.specify.plugins.LocalityGoogleEarthPlugin;name=GoogleEarth;title=Google Earth" colspan="1"/>
     		    </row>
     		    
     			<row>
