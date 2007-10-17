@@ -62,7 +62,6 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
     protected Agent     createdByAgent;
     protected Agent     modifiedByAgent;
     
-    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#initialize()
      */
@@ -104,7 +103,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTimestampCreated()
      */
-    @Column(name = "TimestampCreated", unique = false, nullable = false, insertable = true, updatable = false)
+    @Column(name = "TimestampCreated", nullable = false, updatable = false)
     public Timestamp getTimestampCreated()
     {
         return this.timestampCreated;
@@ -122,7 +121,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTimestampModified()
      */
     @Version
-    @Column(name = "TimestampModified", unique = false, nullable = false, insertable = true, updatable = true)
+    @Column(name = "TimestampModified", nullable = false)
     public Timestamp getTimestampModified()
     {
         return this.timestampModified;
@@ -358,7 +357,6 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
         }
     }
     
-    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#removeReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
      */
@@ -419,7 +417,6 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
     {
         throw new RuntimeException(this.getClass() + "MUST override getReferenceValue()");
     }
-
 
     public void onDelete()
     {
@@ -591,5 +588,10 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
         return obj;
     }
     
+    @Override
+    public String toString()
+    {
+        return super.toString() + " : " + timestampModified;
+    }
     
 }
