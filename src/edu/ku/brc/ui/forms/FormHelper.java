@@ -19,6 +19,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 
@@ -73,10 +74,10 @@ public final class FormHelper
                         foundOne = true;
                     }
                     
-                    descr = PropertyUtils.getPropertyDescriptor(dataObj, "lastEditedBy");
+                    descr = PropertyUtils.getPropertyDescriptor(dataObj, "modifiedByAgent");
                     if (descr != null)
                     {
-                        setter.setFieldValue(dataObj, "lastEditedBy", currentUserEditStr);
+                        setter.setFieldValue(dataObj, "modifiedByAgent", SpecifyUser.getCurrentUser().getAgent());
                         foundOne = true;
                     }
                     return foundOne;
@@ -198,12 +199,13 @@ public final class FormHelper
             {
                 String methodName = "add" + newDataObj.getClass().getSimpleName();
                 
-                log.debug("Invoking method["+methodName+"] on Object "+(parentDataObj != null ? parentDataObj.getClass().getSimpleName() : " parent is null"));
+                log.debug("Invoking method["+methodName+"] on Object "+(parentDataObj.getClass().getSimpleName()));
         
                 Method method = parentDataObj.getClass().getMethod(methodName, new Class<?>[] {newDataObj.getClass()});
                 method.invoke(parentDataObj, new Object[] {newDataObj});
+                
                 log.debug("Adding ["+newDataObj+"] to parent Set["+parentDataObj+"]");
-        
+                
                 return true;
         
             } catch (NoSuchMethodException ex)
@@ -218,6 +220,9 @@ public final class FormHelper
             {
                 ex.printStackTrace();
             }
+        } else
+        {
+            log.error("parentDataObj was null");
         }
         return false;
     }

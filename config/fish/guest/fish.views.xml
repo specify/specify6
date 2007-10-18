@@ -282,11 +282,11 @@
     				<cell type="separator" label="" colspan="12"/>
     			</row>
     			<row>
-                    <cell type="label" labelfor="10" label="Edited By"/>
-    			    <cell type="field" id="10" name="lastEditedBy" readonly="true"/>
-
-                    <cell type="label" labelfor="11" label="Last Edited"/>
-    			    <cell type="field" id="11" name="timestampModified" readonly="true" cols="20" colspan="2"/>
+    			    <cell type="label" labelfor="10" label="Edited By"/>
+    			    <cell type="field" id="10" name="modifiedByAgent" uitype="label" readonly="true"  uifieldformatter="Agent"/>
+    			    
+    			    <cell type="label" labelfor="11" label="Last Edited"/>
+    			    <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true" cols="20" colspan="2"/>
     			</row>
     		</rows>
     	</viewdef>
@@ -471,10 +471,10 @@
                 
                 <row>
                     <cell type="label" labelfor="10" label="Edited By"/>
-                    <cell type="field" id="10" name="lastEditedBy" readonly="true"/>
-
+                    <cell type="field" id="10" name="modifiedByAgent" uitype="label" readonly="true"  uifieldformatter="Agent"/>
+                    
                     <cell type="label" labelfor="11" label="Last Edited"/>
-                    <cell type="field" id="11" name="timestampModified" readonly="true" cols="20" colspan="2"/>
+                    <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true" cols="20" colspan="2"/>
                 </row>
             </rows>
         </viewdef>

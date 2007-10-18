@@ -151,7 +151,7 @@ public class FormViewObj implements Viewable,
     protected String                        cellName;
     protected Component                     formComp       = null;
     protected List<MultiView>               kids           = new ArrayList<MultiView>();
-    protected Vector<AltViewIFace>               altViewsList   = null;
+    protected Vector<AltViewIFace>          altViewsList   = null;
 
     protected Hashtable<String, FieldInfo>  controlsById   = new Hashtable<String, FieldInfo>();
     protected Hashtable<String, FieldInfo>  controlsByName = new Hashtable<String, FieldInfo>();
@@ -900,6 +900,33 @@ public class FormViewObj implements Viewable,
             }
         }
     }
+    
+    /**
+     * Sets the parent MultiView and all of its children. The last argument indicates whether
+     * it should have the children walk there children (a deep recurse).
+     * that the form is new
+     * @param parentMV the parent MultiView
+     * @param isNewForm wheather the form is now in "new data input" mode
+     * @param traverseKids whether the MultiView should traverse into the children MultiViews (deep recurse)
+     */
+    protected void traverseToSetModified(final MultiView parentMV)
+    {
+        for (Viewable v : parentMV.getViewables())
+        {
+            FormValidator fv = v.getValidator();
+            if (fv != null && fv.hasChanged())
+            {
+                //System.out.println(parentMV.getData().getClass().getSimpleName());
+                FormHelper.updateLastEdittedInfo(parentMV.getData());
+            }
+        }
+        
+        // if traverseKids is true then the kids have already been walked
+        for (MultiView mv : parentMV.getKids())
+        {
+            traverseToSetModified(mv);
+        }
+    }
 
     /**
      * Checks to see if the current item has changed and asks if it should be saved
@@ -1109,7 +1136,8 @@ public class FormViewObj implements Viewable,
                 }
                 
                 // XXX RELEASE - Need to walk the form tree and set them manually
-                FormHelper.updateLastEdittedInfo(dataObjArg);
+                //FormHelper.updateLastEdittedInfo(dataObjArg);
+                traverseToSetModified(getMVParent());
                 
                 if (numTries == 1)
                 {
@@ -2418,7 +2446,7 @@ public class FormViewObj implements Viewable,
                     log.debug(fieldInfo.getName()+"  "+fieldInfo.getFormCell().getName());
 
                     String id = fieldInfo.getFormCell().getIdent();
-                    if (hasFormControlChanged(id))
+                    if (!isReadOnly && hasFormControlChanged(id))
                     {
                         // this ends up calling the getData on the GetSetValueIFace 
                         // which enables the control to set data into the data object

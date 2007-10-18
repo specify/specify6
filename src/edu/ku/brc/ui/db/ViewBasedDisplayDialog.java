@@ -25,6 +25,7 @@ import javax.swing.JButton;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.MultiView;
 
 /**
@@ -171,6 +172,11 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
      */
     public void actionPerformed(ActionEvent e)
     {
+        if (e.getSource() == okBtn)
+        {
+            FormHelper.updateLastEdittedInfo(viewBasedPanel.getMultiView().getData());
+        }
+        
         if (vbdaa != null)
         {
             if (e.getSource() == okBtn)
