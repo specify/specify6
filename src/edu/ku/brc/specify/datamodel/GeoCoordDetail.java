@@ -73,6 +73,8 @@ public class GeoCoordDetail extends DataModelObjBase
     @Override
     public void initialize()
     {
+        super.init();
+        
         // Manis Fields
         geoCoordDetailId      = null;
         namedPlaceExtent      = null;

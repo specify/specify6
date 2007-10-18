@@ -103,7 +103,7 @@ public class SearchReplacePanel extends JPanel
     /**
      * Constructor for the Find/Replace panel, takes a SearchableJXTable (extended from JXTable)
      * 
-     * @param table - a SearchableJXTable table
+     * @param query - a SearchableJXTable table
      */
     public SearchReplacePanel(final SpreadSheet mytable)
     {

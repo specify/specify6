@@ -9,6 +9,8 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.math.BigDecimal;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -50,6 +52,27 @@ public class LocalityDetail extends DataModelObjBase
     protected String                island;
     protected String                waterBody;
     protected String                drainage;
+    
+    protected String                hucCode;
+    
+    protected String                text1;
+    protected String                text2;
+    protected Double                number1;
+    protected Double                number2;
+    protected Boolean               yesNo1;
+    protected Boolean               yesNo2;
+
+    
+    // UTM Fields
+    protected Float                 utmEasting;
+    protected Float                 utmNorthing;
+    protected Integer               utmFalseEasting;
+    protected Integer               utmFalseNorthing;
+    protected String                utmDatum;
+    protected Short                 utmZone;
+    protected BigDecimal            utmOrigLatitude;
+    protected BigDecimal            utmOrigLongitude;
+    protected String                utmScale;
      
     protected Locality              locality;
 
@@ -89,6 +112,23 @@ public class LocalityDetail extends DataModelObjBase
         waterBody   = null;
         drainage    = null;
         locality    = null;
+        
+        utmEasting       = null;
+        utmNorthing      = null;
+        utmFalseEasting  = null;
+        utmFalseNorthing = null;
+        utmDatum         = null;
+        utmZone          = null;
+        utmOrigLatitude  = null;
+        utmOrigLongitude = null;
+        utmScale         = null;
+        
+        text1 = null;
+        text2 = null;
+        number1 = null;
+        number2 = null;
+        yesNo1 = null;
+        yesNo2 = null;
     }
     // End Initializer
 
@@ -291,6 +331,90 @@ public class LocalityDetail extends DataModelObjBase
     
     public void setDrainage(String drainage) {
         this.drainage = drainage;
+    }
+
+    /**
+     * * User definable
+     */
+    @Column(name = "Text1", length = 300, unique = false, nullable = true, insertable = true, updatable = true)
+    public String getText1()
+    {
+        return this.text1;
+    }
+
+    public void setText1(String text1)
+    {
+        this.text1 = text1;
+    }
+
+    /**
+     * * User definable
+     */
+    @Column(name = "Text2", length = 300, unique = false, nullable = true, insertable = true, updatable = true)
+    public String getText2()
+    {
+        return this.text2;
+    }
+
+    public void setText2(String text2)
+    {
+        this.text2 = text2;
+    }
+
+    /**
+     * * User definable
+     */
+    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true)
+    public Double getNumber1()
+    {
+        return this.number1;
+    }
+
+    public void setNumber1(Double number1)
+    {
+        this.number1 = number1;
+    }
+
+    /**
+     * * User definable
+     */
+    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true)
+    public Double getNumber2()
+    {
+        return this.number2;
+    }
+
+    public void setNumber2(Double number2)
+    {
+        this.number2 = number2;
+    }
+
+    /**
+     * * User definable
+     */
+    @Column(name = "YesNo1", unique = false, nullable = true, updatable = true, insertable = true)
+    public Boolean getYesNo1()
+    {
+        return this.yesNo1;
+    }
+
+    public void setYesNo1(Boolean yesNo1)
+    {
+        this.yesNo1 = yesNo1;
+    }
+
+    /**
+     * * User definable
+     */
+    @Column(name = "YesNo2", unique = false, nullable = true, updatable = true, insertable = true)
+    public Boolean getYesNo2()
+    {
+        return this.yesNo2;
+    }
+
+    public void setYesNo2(Boolean yesNo2)
+    {
+        this.yesNo2 = yesNo2;
     }
     
     /* (non-Javadoc)

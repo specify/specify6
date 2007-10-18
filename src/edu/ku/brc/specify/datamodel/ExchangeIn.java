@@ -70,8 +70,10 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
      protected Float number2;
      protected Boolean yesNo1;
      protected Boolean yesNo2;
-     protected Agent agentReceivedFrom;
-     protected Agent agentCatalogedBy;
+     
+     protected AddressOfRecord addressOfRecord;
+     protected Agent           agentReceivedFrom;
+     protected Agent           agentCatalogedBy;
 
 
     // Constructors
@@ -106,7 +108,9 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
         yesNo1 = null;
         yesNo2 = null;
         agentReceivedFrom = null;
-        agentCatalogedBy = null;
+        agentCatalogedBy  = null;
+        addressOfRecord   = null;
+
     }
     // End Initializer
 
@@ -294,6 +298,24 @@ public class ExchangeIn extends DataModelObjBase implements java.io.Serializable
     
     public void setAgentCatalogedBy(Agent agentCatalogedBy) {
         this.agentCatalogedBy = agentCatalogedBy;
+    }
+
+    /**
+     * @return the addressOfRecord
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "AddressOfRecordID", unique = false, nullable = true, insertable = true, updatable = true)
+    public AddressOfRecord getAddressOfRecord()
+    {
+        return addressOfRecord;
+    }
+
+    /**
+     * @param addressOfRecord the addressOfRecord to set
+     */
+    public void setAddressOfRecord(AddressOfRecord addressOfRecord)
+    {
+        this.addressOfRecord = addressOfRecord;
     }
 
     /* (non-Javadoc)

@@ -34,7 +34,6 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -50,24 +49,12 @@ import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.af.core.AppResourceIFace;
-import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.ui.forms.persist.AltViewIFace;
-import edu.ku.brc.ui.forms.persist.FormCellIFace;
-import edu.ku.brc.ui.forms.persist.FormColumnIFace;
-import edu.ku.brc.ui.forms.persist.FormRowIFace;
-import edu.ku.brc.ui.forms.persist.FormViewDefIFace;
-import edu.ku.brc.ui.forms.persist.TableViewDefIFace;
-import edu.ku.brc.ui.forms.persist.ViewDefIFace;
-import edu.ku.brc.ui.forms.persist.ViewIFace;
-import edu.ku.brc.ui.forms.persist.ViewSetIFace;
 
 /**
  * @author rod
@@ -80,11 +67,11 @@ import edu.ku.brc.ui.forms.persist.ViewSetIFace;
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "spviewsetobj")
 @org.hibernate.annotations.Table(appliesTo="spviewsetobj", indexes =
-    {   @Index (name="SpViewObjNameIDX", columnNames={"name"})
+    {   @Index (name="SpViewObjNameIDX", columnNames={"Name"})
     })
 public class SpViewSetObj extends DataModelObjBase implements java.io.Serializable, AppResourceIFace 
 {
-     private static final Logger  log       = Logger.getLogger(SpViewSetObj.class);
+     //private static final Logger  log       = Logger.getLogger(SpViewSetObj.class);
             
      // Fields    
 
@@ -96,7 +83,7 @@ public class SpViewSetObj extends DataModelObjBase implements java.io.Serializab
      protected Set<SpAppResourceData>    spAppResourceDatas;
      protected Set<SpAppResourceDir>     spAppResourceDirs;
      
-     protected Set<SpUIViewSet>          spViewSets;
+     //protected Set<SpUIViewSet>          spViewSets;
 
      // Non Persisted Fields
      protected String                    fileName     = null;
@@ -129,7 +116,7 @@ public class SpViewSetObj extends DataModelObjBase implements java.io.Serializab
         metaData            = null;
         spAppResourceDirs = new HashSet<SpAppResourceDir>();
         spAppResourceDatas    = new HashSet<SpAppResourceData>();
-        spViewSets            = new HashSet<SpUIViewSet>();
+        //spViewSets            = new HashSet<SpUIViewSet>();
         
         fileName = null;
     }
@@ -322,23 +309,23 @@ public class SpViewSetObj extends DataModelObjBase implements java.io.Serializab
         }
     }
     
-    /**
-     * @return the viewSets
-     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "spViewSetObj")
-    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<SpUIViewSet> getSpViewSets()
-    {
-        return spViewSets;
-    }
-
-    /**
-     * @param viewSets the viewSets to set
-     */
-    public void setSpViewSets(Set<SpUIViewSet> viewSets)
-    {
-        this.spViewSets = viewSets;
-    }
+//    /**
+//     * @return the viewSets
+//     */
+//    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "spViewSetObj")
+//    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+//    public Set<SpUIViewSet> getSpViewSets()
+//    {
+//        return spViewSets;
+//    }
+//
+//    /**
+//     * @param viewSets the viewSets to set
+//     */
+//    public void setSpViewSets(Set<SpUIViewSet> viewSets)
+//    {
+//        this.spViewSets = viewSets;
+//    }
 
     /**
      * @return
@@ -379,7 +366,7 @@ public class SpViewSetObj extends DataModelObjBase implements java.io.Serializab
     /**
      * @return
      */
-    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "spViewSetObj")
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "spViewSetObj")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<SpAppResourceData> getSpAppResourceDatas() 
     {
@@ -483,180 +470,177 @@ public class SpViewSetObj extends DataModelObjBase implements java.io.Serializab
     }
     
     
-    /**
-     * Converts a ViewIFace to a SpUIView object.
-     * @param srcView the source
-     * @return the new SpUIView object
-     */
-    protected SpUIView convertFromXML(final ViewIFace srcView,
-                                      final Hashtable<AltViewIFace, SpUIAltView> oldToNewAltView)
-    {
-        SpUIView spView = new SpUIView();
-        spView.initialize();
-        spView.copyInto(srcView);
-        
-        for (AltViewIFace av : srcView.getAltViews())
-        {
-            SpUIAltView spAltView = new SpUIAltView();
-            spAltView.initialize();
-            
-            spAltView.copyInto(av);
-            
-            spAltView.setSpView(spView);
-            spView.getSpAltViews().add(spAltView);
-            
-            oldToNewAltView.put(av, spAltView);
-        }
-        
-        return spView;
-    }
-    
-    /**
-     * Converts a ViewDefIFace to a SpUIView object.
-     * @param srcViewDef the source
-     * @return the new SpUIViewDef object
-     */
-    protected SpUIViewDef convertFromXML(final ViewDefIFace srcViewDef)
-    {
-        SpUIViewDef spViewDef = new SpUIViewDef();
-        spViewDef.initialize();
-        
-        spViewDef.copyInto(srcViewDef);
-        
-        if (srcViewDef instanceof FormViewDefIFace)
-        {
-            FormViewDefIFace formVD = (FormViewDefIFace)srcViewDef;
-            short rowNum = 0;
-            for (FormRowIFace row : formVD.getRows())
-            {
-                SpUIRow spRow = new SpUIRow();
-                spRow.initialize();
-                spRow.setRowNum(rowNum++);
-                spRow.setSpViewDef(spViewDef);
-                spViewDef.getSpRows().add(spRow);
-                
-                for (FormCellIFace cell : row.getCells())
-                {
-                    SpUICell spCell = new SpUICell();
-                    spCell.initialize();
-                    
-                    spCell.copyInto(cell);
-                    spRow.getSpCells().add(spCell);
-                    spCell.setSpRow(spRow);
-                }
-            }
-        }
-        
-        if (srcViewDef instanceof TableViewDefIFace)
-        {
-            TableViewDefIFace tableVD = (TableViewDefIFace)srcViewDef;
-            int order = 0;
-            for (FormColumnIFace col : tableVD.getColumns())
-            {
-                SpUIColumn spCol = new SpUIColumn();
-                spCol.initialize();
-                spCol.copyInto(col);
-                spCol.setColOrder(order++);
-                spCol.setSpViewDef(spViewDef);
-                spViewDef.getSpCols().add(spCol);
-            }
-        }        
-        
-        return spViewDef;
-    }
-    
-    /**
-     * Copies an entire ViewSet (the Views and ViewDefs) into persistable classes.
-     * @param viewSet the source
-     */
-    public void copyViewSet(final ViewSetIFace viewSet)
-    {
-        Hashtable<ViewDefIFace, SpUIViewDef> oldToNewViewDef = new Hashtable<ViewDefIFace, SpUIViewDef>();
-        
-        Hashtable<ViewIFace, Hashtable<AltViewIFace, SpUIAltView>> oldToNewViewAltViewMap = new Hashtable<ViewIFace, Hashtable<AltViewIFace,SpUIAltView>>();
-        
-        Vector<SpUIView>    newViews    = new Vector<SpUIView>();
-        Vector<SpUIViewDef> newViewDefs = new Vector<SpUIViewDef>();
-        
-        SpUIViewSet spViewSet = new SpUIViewSet();
-        spViewSet.initialize();
-
-        for (ViewIFace vs : viewSet.getViews().values())
-        {
-            Hashtable<AltViewIFace, SpUIAltView> oldToNewAltView = new Hashtable<AltViewIFace, SpUIAltView>();
-            oldToNewViewAltViewMap.put(vs, oldToNewAltView);
-            SpUIView newView = convertFromXML(vs, oldToNewAltView);
-            newViews.add(newView);
-            
-            newView.setSpViewSet(spViewSet);
-            spViewSet.getSpViews().add(newView);
-        }
-        
-        for (ViewDefIFace vd : viewSet.getViewDefs().values())
-        {
-            SpUIViewDef newViewDef = convertFromXML(vd);
-            oldToNewViewDef.put(vd, newViewDef);
-            newViewDefs.add(newViewDef);
-            
-            newViewDef.setSpViewSet(spViewSet);
-            spViewSet.getSpViewDefs().add(newViewDef);
-        }
-        
-        // Hook up all the AltViews to their ViewDef
-        for (ViewIFace oldView : viewSet.getViews().values())
-        {
-            Hashtable<AltViewIFace, SpUIAltView> oldToNewAltView = oldToNewViewAltViewMap.get(oldView);
-            for (AltViewIFace av : oldView.getAltViews())
-            {
-                ViewDefIFace oldViewDef = av.getViewDef();
-                SpUIViewDef  spViewDef  = oldToNewViewDef.get(oldViewDef);
-                if (spViewDef == null)
-                {
-                    log.error("spViewDef can't be null!");
-                }
-                
-                SpUIAltView  spAltView  = oldToNewAltView.get(av);
-                if (spAltView == null)
-                {
-                    log.error("spAltView can't be null!");
-                }
-                
-                spViewDef.getSpAltViews().add(spAltView);
-                spAltView.setSpViewDef(spViewDef);
-            }
-        }
-        
-        spViewSet.setFileName(viewSet.getFileName() != null ? viewSet.getFileName() : " ");
-        spViewSet.setName(viewSet.getName());
-        spViewSet.setTitle(viewSet.getTitle() != null ? viewSet.getTitle() : " ");
-        spViewSet.setViewType(viewSet.getType() == ViewSetIFace.Type.System ? SpUIViewSet.SYSTEM_TYPE : SpUIViewSet.USER_TYPE);
-        spViewSet.setSpViewDefs(new HashSet<SpUIViewDef>(newViewDefs));
-        spViewSet.setSpViews(new HashSet<SpUIView>(newViews));
-        
-        spViewSet.setSpViewSetObj(this);
-        spViewSets.add(spViewSet);
-        
-        // Testing 
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        try
-        {
-            session.beginTransaction();
-            
-            session.saveOrUpdate(this);
-
-            session.commit();
-            
-        } catch (Exception ex)
-        {
-            
-            ex.printStackTrace();
-            
-        } finally
-        {
-            session.close();
-        }
-
-        int x = 0;
-        x++;
-    }
+//    /**
+//     * Converts a ViewIFace to a SpUIView object.
+//     * @param srcView the source
+//     * @return the new SpUIView object
+//     */
+//    protected SpUIView convertFromXML(final ViewIFace srcView,
+//                                      final Hashtable<AltViewIFace, SpUIAltView> oldToNewAltView)
+//    {
+//        SpUIView spView = new SpUIView();
+//        spView.initialize();
+//        spView.copyInto(srcView);
+//        
+//        for (AltViewIFace av : srcView.getAltViews())
+//        {
+//            SpUIAltView spAltView = new SpUIAltView();
+//            spAltView.initialize();
+//            
+//            spAltView.copyInto(av);
+//            
+//            spAltView.setSpView(spView);
+//            spView.getSpAltViews().add(spAltView);
+//            
+//            oldToNewAltView.put(av, spAltView);
+//        }
+//        
+//        return spView;
+//    }
+//    
+//    /**
+//     * Converts a ViewDefIFace to a SpUIView object.
+//     * @param srcViewDef the source
+//     * @return the new SpUIViewDef object
+//     */
+//    protected SpUIViewDef convertFromXML(final ViewDefIFace srcViewDef)
+//    {
+//        SpUIViewDef spViewDef = new SpUIViewDef();
+//        spViewDef.initialize();
+//        
+//        spViewDef.copyInto(srcViewDef);
+//        
+//        if (srcViewDef instanceof FormViewDefIFace)
+//        {
+//            FormViewDefIFace formVD = (FormViewDefIFace)srcViewDef;
+//            short rowNum = 0;
+//            for (FormRowIFace row : formVD.getRows())
+//            {
+//                SpUIRow spRow = new SpUIRow();
+//                spRow.initialize();
+//                spRow.setRowNum(rowNum++);
+//                spRow.setSpViewDef(spViewDef);
+//                spViewDef.getSpRows().add(spRow);
+//                
+//                for (FormCellIFace cell : row.getCells())
+//                {
+//                    SpUICell spCell = new SpUICell();
+//                    spCell.initialize();
+//                    
+//                    spCell.copyInto(cell);
+//                    spRow.getSpCells().add(spCell);
+//                    spCell.setSpRow(spRow);
+//                }
+//            }
+//        }
+//        
+//        if (srcViewDef instanceof TableViewDefIFace)
+//        {
+//            TableViewDefIFace tableVD = (TableViewDefIFace)srcViewDef;
+//            int order = 0;
+//            for (FormColumnIFace col : tableVD.getColumns())
+//            {
+//                SpUIColumn spCol = new SpUIColumn();
+//                spCol.initialize();
+//                spCol.copyInto(col);
+//                spCol.setColOrder(order++);
+//                spCol.setSpViewDef(spViewDef);
+//                spViewDef.getSpCols().add(spCol);
+//            }
+//        }        
+//        
+//        return spViewDef;
+//    }
+//    
+//    /**
+//     * Copies an entire ViewSet (the Views and ViewDefs) into persistable classes.
+//     * @param viewSet the source
+//     */
+//    public void copyViewSet(final ViewSetIFace viewSet)
+//    {
+//        Hashtable<ViewDefIFace, SpUIViewDef> oldToNewViewDef = new Hashtable<ViewDefIFace, SpUIViewDef>();
+//        
+//        Hashtable<ViewIFace, Hashtable<AltViewIFace, SpUIAltView>> oldToNewViewAltViewMap = new Hashtable<ViewIFace, Hashtable<AltViewIFace,SpUIAltView>>();
+//        
+//        Vector<SpUIView>    newViews    = new Vector<SpUIView>();
+//        Vector<SpUIViewDef> newViewDefs = new Vector<SpUIViewDef>();
+//        
+//        SpUIViewSet spViewSet = new SpUIViewSet();
+//        spViewSet.initialize();
+//
+//        for (ViewIFace vs : viewSet.getViews().values())
+//        {
+//            Hashtable<AltViewIFace, SpUIAltView> oldToNewAltView = new Hashtable<AltViewIFace, SpUIAltView>();
+//            oldToNewViewAltViewMap.put(vs, oldToNewAltView);
+//            SpUIView newView = convertFromXML(vs, oldToNewAltView);
+//            newViews.add(newView);
+//            
+//            newView.setSpViewSet(spViewSet);
+//            spViewSet.getSpViews().add(newView);
+//        }
+//        
+//        for (ViewDefIFace vd : viewSet.getViewDefs().values())
+//        {
+//            SpUIViewDef newViewDef = convertFromXML(vd);
+//            oldToNewViewDef.put(vd, newViewDef);
+//            newViewDefs.add(newViewDef);
+//            
+//            newViewDef.setSpViewSet(spViewSet);
+//            spViewSet.getSpViewDefs().add(newViewDef);
+//        }
+//        
+//        // Hook up all the AltViews to their ViewDef
+//        for (ViewIFace oldView : viewSet.getViews().values())
+//        {
+//            Hashtable<AltViewIFace, SpUIAltView> oldToNewAltView = oldToNewViewAltViewMap.get(oldView);
+//            for (AltViewIFace av : oldView.getAltViews())
+//            {
+//                ViewDefIFace oldViewDef = av.getViewDef();
+//                SpUIViewDef  spViewDef  = oldToNewViewDef.get(oldViewDef);
+//                if (spViewDef == null)
+//                {
+//                    log.error("spViewDef can't be null!");
+//                }
+//                
+//                SpUIAltView  spAltView  = oldToNewAltView.get(av);
+//                if (spAltView == null)
+//                {
+//                    log.error("spAltView can't be null!");
+//                }
+//                
+//                spViewDef.getSpAltViews().add(spAltView);
+//                spAltView.setSpViewDef(spViewDef);
+//            }
+//        }
+//        
+//        spViewSet.setFileName(viewSet.getFileName() != null ? viewSet.getFileName() : " ");
+//        spViewSet.setName(viewSet.getName());
+//        spViewSet.setTitle(viewSet.getTitle() != null ? viewSet.getTitle() : " ");
+//        spViewSet.setViewType(viewSet.getType() == ViewSetIFace.Type.System ? SpUIViewSet.SYSTEM_TYPE : SpUIViewSet.USER_TYPE);
+//        spViewSet.setSpViewDefs(new HashSet<SpUIViewDef>(newViewDefs));
+//        spViewSet.setSpViews(new HashSet<SpUIView>(newViews));
+//        
+//        spViewSet.setSpViewSetObj(this);
+//        spViewSets.add(spViewSet);
+//        
+//        // Testing 
+//        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+//        try
+//        {
+//            session.beginTransaction();
+//            
+//            session.saveOrUpdate(this);
+//
+//            session.commit();
+//            
+//        } catch (Exception ex)
+//        {
+//            
+//            ex.printStackTrace();
+//            
+//        } finally
+//        {
+//            session.close();
+//        }
+//    }
 }

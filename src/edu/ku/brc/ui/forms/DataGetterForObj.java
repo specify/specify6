@@ -123,8 +123,11 @@ public class DataGetterForObj implements DataObjectGettable
                     try
                     {
                         String methodName = fieldName.substring(1, fieldName.length()).trim();
-                        Method method = dataObj.getClass().getMethod(methodName, new Class<?>[] {});
-                        value = method.invoke(dataObj, new Object[] {});
+                        Method method     = dataObj.getClass().getMethod(methodName, new Class<?>[] {});
+                        if (method != null)
+                        {
+                            value = method.invoke(dataObj, new Object[] {});
+                        }
 
                     } catch (NoSuchMethodException ex)
                     {

@@ -70,23 +70,23 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
      */
     protected static final Logger log = Logger.getLogger(GeologicTimePeriod.class);
 
-	protected Integer						geologicTimePeriodId;
-	protected Integer						rankId;
-	protected String						name;
-	protected String						fullName;
-	protected String						remarks;
-	protected String                        guid;
-	protected Integer						nodeNumber;
-	protected Integer						highestChildNodeNumber;
-	protected String						standard;
-	protected Float							startPeriod;
-	protected Float							startUncertainty;
-	protected Float							endPeriod;
-	protected Float							endUncertainty;
-	private GeologicTimePeriodTreeDef		definition;
-	private GeologicTimePeriodTreeDefItem	definitionItem;
-	private GeologicTimePeriod				parent;
-	protected Set<GeologicTimePeriod>		children;
+    protected Integer                       geologicTimePeriodId;
+    protected Integer                       rankId;
+    protected String                        name;
+    protected String                        fullName;
+    protected String                        remarks;
+    protected String                        guid;
+    protected Integer                       nodeNumber;
+    protected Integer                       highestChildNodeNumber;
+    protected String                        standard;
+    protected Float                         startPeriod;
+    protected Float                         startUncertainty;
+    protected Float                         endPeriod;
+    protected Float                         endUncertainty;
+    protected GeologicTimePeriodTreeDef     definition;
+    protected GeologicTimePeriodTreeDefItem definitionItem;
+    protected GeologicTimePeriod            parent;
+    protected Set<GeologicTimePeriod>       children;
     
     protected Set<PaleoContext>             bioStratsPaleoContext;
     protected Set<PaleoContext>             chronosStratsPaleoContext;
@@ -96,59 +96,59 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
     protected GeologicTimePeriod            acceptedGeologicTimePeriod;
     protected Set<GeologicTimePeriod>       acceptedChildren;
 
-	// Constructors
+    // Constructors
 
-	/** default constructor */
-	public GeologicTimePeriod()
-	{
-		// do nothing
-	}
+    /** default constructor */
+    public GeologicTimePeriod()
+    {
+        // do nothing
+    }
 
-	/** constructor with id */
-	public GeologicTimePeriod(Integer geologicTimePeriodId)
-	{
-		this.geologicTimePeriodId = geologicTimePeriodId;
-	}
+    /** constructor with id */
+    public GeologicTimePeriod(Integer geologicTimePeriodId)
+    {
+        this.geologicTimePeriodId = geologicTimePeriodId;
+    }
 
-	// Initializer
-	@Override
+    // Initializer
+    @Override
     public void initialize()
-	{
+    {
         super.init();
-		geologicTimePeriodId = null;
-		rankId = null;
-		name = null;
-		remarks = null;
-		guid = null;
-		nodeNumber = null;
-		highestChildNodeNumber = null;
-		standard = null;
-		startPeriod = null;
-		startUncertainty = null;
-		endPeriod = null;
-		endUncertainty = null;
-		definition = null;
-		definitionItem = null;
-		parent = null;
-		children                  = new HashSet<GeologicTimePeriod>();
+        geologicTimePeriodId = null;
+        rankId = null;
+        name = null;
+        remarks = null;
+        guid = null;
+        nodeNumber = null;
+        highestChildNodeNumber = null;
+        standard = null;
+        startPeriod = null;
+        startUncertainty = null;
+        endPeriod = null;
+        endUncertainty = null;
+        definition = null;
+        definitionItem = null;
+        parent = null;
+        children                  = new HashSet<GeologicTimePeriod>();
         bioStratsPaleoContext     = new HashSet<PaleoContext>();
         chronosStratsPaleoContext = new HashSet<PaleoContext>();
-	}
+    }
 
-	// End Initializer
+    // End Initializer
 
-	// Property accessors
+    // Property accessors
 
-	/**
-	 * 
-	 */
+    /**
+     * 
+     */
     @Id
     @GeneratedValue
     @Column(name = "GeologicTimePeriodID", unique = false, nullable = false, insertable = true, updatable = true)
-	public Integer getGeologicTimePeriodId()
-	{
-		return this.geologicTimePeriodId;
-	}
+    public Integer getGeologicTimePeriodId()
+    {
+        return this.geologicTimePeriodId;
+    }
 
     /**
      * Generic Getter for the ID Property.
@@ -171,157 +171,157 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
         return GeologicTimePeriod.class;
     }
 
-	public void setGeologicTimePeriodId(Integer geologicTimePeriodId)
-	{
-		this.geologicTimePeriodId = geologicTimePeriodId;
-	}
+    public void setGeologicTimePeriodId(Integer geologicTimePeriodId)
+    {
+        this.geologicTimePeriodId = geologicTimePeriodId;
+    }
 
-	/**
-	 * 
-	 */
+    /**
+     * 
+     */
     @Column(name = "RankID")
-	public Integer getRankId()
-	{
-		return this.rankId;
-	}
+    public Integer getRankId()
+    {
+        return this.rankId;
+    }
 
-	public void setRankId(Integer rankId)
-	{
-		this.rankId = rankId;
-	}
+    public void setRankId(Integer rankId)
+    {
+        this.rankId = rankId;
+    }
 
-	/**
-	 * 
-	 */
+    /**
+     * 
+     */
     @Column(name = "Name", length = 64)
-	public String getName()
-	{
-		return this.name;
-	}
+    public String getName()
+    {
+        return this.name;
+    }
 
-	public void setName(String name)
-	{
-		this.name = name;
-	}
+    public void setName(String name)
+    {
+        this.name = name;
+    }
 
-	/**
-	 * @return the fullName
-	 */
+    /**
+     * @return the fullName
+     */
     @Column(name = "FullName")
-	public String getFullName()
-	{
-		return fullName;
-	}
+    public String getFullName()
+    {
+        return fullName;
+    }
 
-	/**
-	 * @param fullName the fullName to set
-	 */
-	public void setFullName(String fullName)
-	{
-		this.fullName = fullName;
-	}
+    /**
+     * @param fullName the fullName to set
+     */
+    public void setFullName(String fullName)
+    {
+        this.fullName = fullName;
+    }
 
-	/**
-	 * 
-	 */
+    /**
+     * 
+     */
     @Column(name = "NodeNumber", updatable = false)
-	public Integer getNodeNumber()
-	{
-		return this.nodeNumber;
-	}
+    public Integer getNodeNumber()
+    {
+        return this.nodeNumber;
+    }
 
-	public void setNodeNumber(Integer nodeNumber)
-	{
-		this.nodeNumber = nodeNumber;
-	}
+    public void setNodeNumber(Integer nodeNumber)
+    {
+        this.nodeNumber = nodeNumber;
+    }
 
-	/**
-	 * 
-	 */
+    /**
+     * 
+     */
     @Column(name = "HighestChildNodeNumber", updatable = false)
-	public Integer getHighestChildNodeNumber()
-	{
-		return this.highestChildNodeNumber;
-	}
+    public Integer getHighestChildNodeNumber()
+    {
+        return this.highestChildNodeNumber;
+    }
 
-	public void setHighestChildNodeNumber(Integer highestChildNodeNumber)
-	{
-		this.highestChildNodeNumber = highestChildNodeNumber;
-	}
+    public void setHighestChildNodeNumber(Integer highestChildNodeNumber)
+    {
+        this.highestChildNodeNumber = highestChildNodeNumber;
+    }
 
-	/**
-	 * 
-	 */
+    /**
+     * 
+     */
     @Column(name = "Standard", length = 64)
-	public String getStandard()
-	{
-		return this.standard;
-	}
+    public String getStandard()
+    {
+        return this.standard;
+    }
 
-	public void setStandard(String standard)
-	{
-		this.standard = standard;
-	}
+    public void setStandard(String standard)
+    {
+        this.standard = standard;
+    }
 
     @Column(name = "EndPeriod")
-	public Float getEndPeriod()
-	{
-		return endPeriod;
-	}
+    public Float getEndPeriod()
+    {
+        return endPeriod;
+    }
 
-	public void setEndPeriod(Float end)
-	{
-		this.endPeriod = end;
-	}
+    public void setEndPeriod(Float end)
+    {
+        this.endPeriod = end;
+    }
 
     @Column(name = "EndUncertainty")
-	public Float getEndUncertainty()
-	{
-		return endUncertainty;
-	}
+    public Float getEndUncertainty()
+    {
+        return endUncertainty;
+    }
 
-	public void setEndUncertainty(Float endUncertainty)
-	{
-		this.endUncertainty = endUncertainty;
-	}
+    public void setEndUncertainty(Float endUncertainty)
+    {
+        this.endUncertainty = endUncertainty;
+    }
 
     @Column(name = "StartPeriod")
-	public Float getStartPeriod()
-	{
-		return startPeriod;
-	}
+    public Float getStartPeriod()
+    {
+        return startPeriod;
+    }
 
-	public void setStartPeriod(Float start)
-	{
-		this.startPeriod = start;
-	}
+    public void setStartPeriod(Float start)
+    {
+        this.startPeriod = start;
+    }
 
     @Column(name = "StartUncertainty")
-	public Float getStartUncertainty()
-	{
-		return startUncertainty;
-	}
+    public Float getStartUncertainty()
+    {
+        return startUncertainty;
+    }
 
-	public void setStartUncertainty(Float startUncertainty)
-	{
-		this.startUncertainty = startUncertainty;
-	}
+    public void setStartUncertainty(Float startUncertainty)
+    {
+        this.startUncertainty = startUncertainty;
+    }
 
-	/**
-	 * 
-	 */
+    /**
+     * 
+     */
     @Lob
     @Column(name="Remarks")
-	public String getRemarks()
-	{
-		return this.remarks;
-	}
+    public String getRemarks()
+    {
+        return this.remarks;
+    }
 
-	public void setRemarks(String remarks)
-	{
-		this.remarks = remarks;
-	}
-	
+    public void setRemarks(String remarks)
+    {
+        this.remarks = remarks;
+    }
+    
     /**
      *
      */
@@ -380,65 +380,65 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
         setAcceptedGeologicTimePeriod(acceptedParent);
     }
 
-	/**
-	 * 
-	 */
+    /**
+     * 
+     */
     @ManyToOne
     @JoinColumn(name = "GeologicTimePeriodTreeDefID", nullable = false)
-	public GeologicTimePeriodTreeDef getDefinition()
-	{
-		return this.definition;
-	}
+    public GeologicTimePeriodTreeDef getDefinition()
+    {
+        return this.definition;
+    }
 
-	public void setDefinition(GeologicTimePeriodTreeDef definition)
-	{
-		this.definition = definition;
-	}
+    public void setDefinition(GeologicTimePeriodTreeDef definition)
+    {
+        this.definition = definition;
+    }
 
-	/**
-	 * 
-	 */
+    /**
+     * 
+     */
     @ManyToOne
     @JoinColumn(name = "GeologicTimePeriodTreeDefItemID", nullable = false)
-	public GeologicTimePeriodTreeDefItem getDefinitionItem()
-	{
-		return this.definitionItem;
-	}
+    public GeologicTimePeriodTreeDefItem getDefinitionItem()
+    {
+        return this.definitionItem;
+    }
 
-	public void setDefinitionItem(GeologicTimePeriodTreeDefItem definitionItem)
-	{
+    public void setDefinitionItem(GeologicTimePeriodTreeDefItem definitionItem)
+    {
         this.definitionItem = definitionItem;
         if (definitionItem!=null && definitionItem.getRankId()!=null)
         {
             this.rankId = this.definitionItem.getRankId();
         }
-	}
+    }
 
-	/**
-	 * 
-	 */
+    /**
+     * 
+     */
     @ManyToOne
     @JoinColumn(name = "ParentID")
-	public GeologicTimePeriod getParent()
-	{
-		return this.parent;
-	}
+    public GeologicTimePeriod getParent()
+    {
+        return this.parent;
+    }
 
-	public void setParent(GeologicTimePeriod parent)
-	{
-		this.parent = parent;
-	}
+    public void setParent(GeologicTimePeriod parent)
+    {
+        this.parent = parent;
+    }
 
     @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, fetch = FetchType.LAZY, mappedBy = "parent")
-	public Set<GeologicTimePeriod> getChildren()
-	{
-		return this.children;
-	}
+    public Set<GeologicTimePeriod> getChildren()
+    {
+        return this.children;
+    }
 
-	public void setChildren(Set<GeologicTimePeriod> children)
-	{
-		this.children = children;
-	}
+    public void setChildren(Set<GeologicTimePeriod> children)
+    {
+        this.children = children;
+    }
 
     /**
      * @return the bioStratsPaleoContext
@@ -459,7 +459,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
     }
 
 
-	/* Code added in order to implement Treeable */
+    /* Code added in order to implement Treeable */
 
     /**
      * @return the chronosStratsPaleoContext
@@ -480,33 +480,33 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
     }
 
     @Transient
-	public Integer getTreeId()
-	{
-		return getGeologicTimePeriodId();
-	}
+    public Integer getTreeId()
+    {
+        return getGeologicTimePeriodId();
+    }
 
-	public void setTreeId(Integer id)
-	{
-		setGeologicTimePeriodId(id);
-	}
+    public void setTreeId(Integer id)
+    {
+        setGeologicTimePeriodId(id);
+    }
 
-	public void addChild(GeologicTimePeriod child)
-	{
-		GeologicTimePeriod oldParent = child.getParent();
-		if( oldParent!=null )
-		{
-			oldParent.removeChild(child);
-		}
+    public void addChild(GeologicTimePeriod child)
+    {
+        GeologicTimePeriod oldParent = child.getParent();
+        if( oldParent!=null )
+        {
+            oldParent.removeChild(child);
+        }
 
-		children.add(child);
-		child.setParent(this);
-	}
+        children.add(child);
+        child.setParent(this);
+    }
 
-	public void removeChild(GeologicTimePeriod child)
-	{
-		children.remove(child);
-		child.setParent(null);
-	}
+    public void removeChild(GeologicTimePeriod child)
+    {
+        children.remove(child);
+        child.setParent(null);
+    }
 
     @Override
     public String toString()
@@ -514,7 +514,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
         return (fullName!=null) ? fullName : super.toString();
     }
 
-	// methods to complete implementation of AbstractTreeable
+    // methods to complete implementation of AbstractTreeable
 
     @Transient
     public int getFullNameDirection()
@@ -528,15 +528,15 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
         return definitionItem.getFullNameSeparator();
     }
 
-	/**
-	 * Generates the 'full name' of a node using the <code>IsInFullName</code> field from the tree
-	 * definition items and following the parent pointer until we hit the root node.  Also used
-	 * in the process is a "direction indicator" for the tree determining whether the name
-	 * should start with the higher nodes and work down to the given node or vice versa.
-	 * 
-	 * @param node the node to get the full name for
-	 * @return the full name
-	 */
+    /**
+     * Generates the 'full name' of a node using the <code>IsInFullName</code> field from the tree
+     * definition items and following the parent pointer until we hit the root node.  Also used
+     * in the process is a "direction indicator" for the tree determining whether the name
+     * should start with the higher nodes and work down to the given node or vice versa.
+     * 
+     * @param node the node to get the full name for
+     * @return the full name
+     */
     public String fixFullName()
     {
         Vector<GeologicTimePeriod> parts = new Vector<GeologicTimePeriod>();
@@ -615,98 +615,98 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
         
         return fullNameBuilder.toString().trim();
     }
-	
-	/**
-	 * Returns the number of proper descendants for node.
-	 * 
-	 * @param node the node to count descendants for
-	 * @return the number of proper descendants
-	 */
+    
+    /**
+     * Returns the number of proper descendants for node.
+     * 
+     * @param node the node to count descendants for
+     * @return the number of proper descendants
+     */
     @Transient
-	public int getDescendantCount()
-	{
-		int totalDescendants = 0;
-		for( GeologicTimePeriod child: getChildren() )
-		{
-			totalDescendants += 1 + child.getDescendantCount();
-		}
-		return totalDescendants;
-	}
-	
-	/**
-	 * Determines if children are allowed for the given node.
-	 * 
-	 * @param item the node to examine
-	 * @return <code>true</code> if children are allowed as defined by the node's tree definition, false otherwise
-	 */
-	public boolean childrenAllowed()
-	{
-		if( definitionItem == null || definitionItem.getChild() == null )
-		{
-			return false;
-		}
-		return true;
-	}
+    public int getDescendantCount()
+    {
+        int totalDescendants = 0;
+        for( GeologicTimePeriod child: getChildren() )
+        {
+            totalDescendants += 1 + child.getDescendantCount();
+        }
+        return totalDescendants;
+    }
+    
+    /**
+     * Determines if children are allowed for the given node.
+     * 
+     * @param item the node to examine
+     * @return <code>true</code> if children are allowed as defined by the node's tree definition, false otherwise
+     */
+    public boolean childrenAllowed()
+    {
+        if( definitionItem == null || definitionItem.getChild() == null )
+        {
+            return false;
+        }
+        return true;
+    }
 
-	/**
-	 * Returns a <code>List</code> of all descendants of the called <code>node</code>.
-	 * 
-	 * @return all descendants of <code>node</code>
-	 */
+    /**
+     * Returns a <code>List</code> of all descendants of the called <code>node</code>.
+     * 
+     * @return all descendants of <code>node</code>
+     */
     @Transient
-	public List<GeologicTimePeriod> getAllDescendants()
-	{
-		Vector<GeologicTimePeriod> descendants = new Vector<GeologicTimePeriod>();
-		for( GeologicTimePeriod child: getChildren() )
-		{
-			descendants.add(child);
-			descendants.addAll(child.getAllDescendants());
-		}
-		return descendants;
-	}
-	
+    public List<GeologicTimePeriod> getAllDescendants()
+    {
+        Vector<GeologicTimePeriod> descendants = new Vector<GeologicTimePeriod>();
+        for( GeologicTimePeriod child: getChildren() )
+        {
+            descendants.add(child);
+            descendants.addAll(child.getAllDescendants());
+        }
+        return descendants;
+    }
+    
     @Transient
-	public List<GeologicTimePeriod> getAllAncestors()
-	{
-		Vector<GeologicTimePeriod> ancestors = new Vector<GeologicTimePeriod>();
-		GeologicTimePeriod parentNode = parent;
-		while(parentNode != null)
-		{
-			ancestors.add(0,parentNode);
-			parentNode = parentNode.getParent();
-		}
-		
-		return ancestors;
-	}
+    public List<GeologicTimePeriod> getAllAncestors()
+    {
+        Vector<GeologicTimePeriod> ancestors = new Vector<GeologicTimePeriod>();
+        GeologicTimePeriod parentNode = parent;
+        while(parentNode != null)
+        {
+            ancestors.add(0,parentNode);
+            parentNode = parentNode.getParent();
+        }
+        
+        return ancestors;
+    }
 
-	public boolean isDescendantOf(GeologicTimePeriod node)
-	{
-		if( node==null )
-		{
-			throw new NullPointerException();
-		}
-		
-		GeologicTimePeriod i = getParent();
-		while( i != null )
-		{
-			if( i.getId() == getId() )
-			{
-				return true;
-			}
-			
-			i = i.getParent();
-		}
-		return false;
-	}
-	
+    public boolean isDescendantOf(GeologicTimePeriod node)
+    {
+        if( node==null )
+        {
+            throw new NullPointerException();
+        }
+        
+        GeologicTimePeriod i = getParent();
+        while( i != null )
+        {
+            if( i.getId() == getId() )
+            {
+                return true;
+            }
+            
+            i = i.getParent();
+        }
+        return false;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.Treeable#getComparator()
      */
     @Transient
-	public Comparator<? super GeologicTimePeriod> getComparator()
-	{
-		return new GeologicTimePeriodComparator();
-	}
+    public Comparator<? super GeologicTimePeriod> getComparator()
+    {
+        return new GeologicTimePeriodComparator();
+    }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()

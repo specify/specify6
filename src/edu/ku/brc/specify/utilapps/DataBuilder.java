@@ -76,6 +76,8 @@ import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.ReferenceWork;
 import edu.ku.brc.specify.datamodel.RepositoryAgreement;
 import edu.ku.brc.specify.datamodel.Shipment;
+import edu.ku.brc.specify.datamodel.SpQuery;
+import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonCitation;
@@ -172,6 +174,48 @@ public class DataBuilder
         attachment.setMimeType(mimeType);
         persist(attachment);
         return attachment;
+    }
+    
+    public static SpQuery createQuery(final String      name, 
+                                      final String      contextName, 
+                                      final int         contextTableId,
+                                      final SpecifyUser owner)
+    {
+        SpQuery query = new SpQuery();
+        query.initialize();
+        query.setName(name);
+        query.setContextName(contextName);
+        query.setContextTableId((short)contextTableId);
+        query.setCreatedByAgent(owner.getAgent());
+        query.setSpecifyUser(owner);
+        return query;
+        
+    }
+    
+    public static SpQueryField createQueryField(final SpQuery query,
+                                                final String  fieldName, 
+                                                final Boolean isNot,
+                                                final Byte    operStart,
+                                                final Byte    operEnd,
+                                                final String  startValue,
+                                                final String  endValue,
+                                                final Byte    sortType,
+                                                final Boolean isDisplay,
+                                                final String  tableList)
+    {
+        SpQueryField field = new SpQueryField();
+        field.initialize();
+        field.setFieldName(fieldName);
+        field.setOperStart(operStart);
+        field.setOperEnd(operEnd);
+        field.setEndValue(endValue);
+        field.setIsDisplay(isDisplay);
+        field.setIsNot(isNot);
+        field.setSortType(sortType);
+        field.setStartValue(startValue);
+        field.setTableList(tableList);
+        query.addReference(field, "fields");
+        return field;
     }
                                               
     public static AttributeDef createAttributeDef(final AttributeIFace.FieldType type,
@@ -1705,8 +1749,8 @@ public class DataBuilder
         loanAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
         //loanAgent.setTimestampModified(new Timestamp(System.currentTimeMillis()));
         loanAgent.setRole(role);
-        loanAgent.setAgent(agent);
-        agent.getLoanAgents().add(loanAgent);
+        loanAgent.addReference(agent, "agent");
+        //agent.getLoanAgents().add(loanAgent);
         loanAgent.setLoan(loan);
         persist(loanAgent);
         return loanAgent;

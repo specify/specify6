@@ -119,7 +119,7 @@ public class RecordSetTask extends BaseTask
         {
             super.initialize(); // sets isInitialized to false
 
-            // TODO Search for the the users or group's RecordSets!
+            // TODO RELEASE Search for the the users or group's RecordSets!
             DataProviderSessionIFace session    = DataProviderFactory.getInstance().createSession();
             List<?>                     recordSets = session.getDataList(RecordSet.class);
 
@@ -141,8 +141,9 @@ public class RecordSetTask extends BaseTask
     }
     
     /**
-     * Adds a WorkbenchTemplate to the Left Pane NavBox
-     * @param workbench the workbench to be added
+     * Adds a RecordSet to the Left Pane NavBox
+     * @param recordSet the recordset to be added
+     * @return the nav box
      */
     protected NavBoxItemIFace addToNavBox(final RecordSetIFace recordSet)
     {
@@ -169,8 +170,6 @@ public class RecordSetTask extends BaseTask
         
         addDraggableDataFlavors(nbi);
         addDroppableDataFlavors(nbi);
-        
-
         
         return nbi;
     }
@@ -256,8 +255,6 @@ public class RecordSetTask extends BaseTask
             log.error(ex);
         }
         session.close();
-
-
     }
 
     /**

@@ -47,6 +47,8 @@ import static edu.ku.brc.specify.utilapps.DataBuilder.createPermit;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createPickList;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createPrepType;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createPreparation;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createQuery;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createQueryField;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createReferenceWork;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createShipment;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createSpecifyUser;
@@ -163,6 +165,8 @@ import edu.ku.brc.specify.datamodel.Shipment;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpLocaleContainerItem;
 import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
+import edu.ku.brc.specify.datamodel.SpQuery;
+import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonCitation;
@@ -305,6 +309,23 @@ public class BuildSampleDatabase
         defItems.add(bed);
         
         return def;
+    }
+    
+    protected void standardQueries(final Vector<Object> dataObjects)
+    {
+        //Byte greaterThan = SpQueryField.OperatorType.GREATERTHAN.getOrdinal();
+        //Byte lessThan    = SpQueryField.OperatorType.LESSTHAN.getOrdinal();
+        //Byte equals      = SpQueryField.OperatorType.EQUALS.getOrdinal();
+        Byte greq        = SpQueryField.OperatorType.GREATERTHANEQUALS.getOrdinal();
+        Byte lteq        = SpQueryField.OperatorType.LESSTHANEQUALS.getOrdinal();
+        
+        //Byte none        = SpQueryField.SortType.NONE.getOrdinal();
+        Byte asc         = SpQueryField.SortType.ASC.getOrdinal();
+        //Byte desc        = SpQueryField.SortType.DESC.getOrdinal();
+        
+        SpQuery query = createQuery("Collection Objects", "CollectionObject", 1, SpecifyUser.getCurrentUser());
+        createQueryField(query, "catalogNumber", false, greq, lteq, "102", "103", asc, true, "1,1");
+        dataObjects.add(query);
     }
 
     /**
@@ -522,7 +543,7 @@ public class BuildSampleDatabase
         LithoStratTreeDef lithoStratTreeDef = createStandardLithoStratDefinitionAndItems();
         
         CollectionType collectionType = createCollectionType(division, discipline.getName(), discipline.getTitle(), dataType, user, taxonTreeDef, null, null, null, lithoStratTreeDef);
-        List<Object> gtps = createSimpleGeologicTimePeriod(collectionType, "Geologic Time Period");
+        List<Object>   gtps           = createSimpleGeologicTimePeriod(collectionType, "Geologic Time Period");
         
         //startTx();
         persist(collectionType);
@@ -573,6 +594,11 @@ public class BuildSampleDatabase
         int tableFieldType = PickListDBAdapterIFace.Type.TableField.ordinal();
         
         Vector<Object> dataObjects = new Vector<Object>();
+        
+        
+        standardQueries(dataObjects);
+        persist(dataObjects);
+        dataObjects.clear();
 
         //                                 Name                Type           Table Name           Field       Formatter          R/O  Size
         dataObjects.add(createPickList("DeterminationStatus", tableType,      "determinationstatus", null, "DeterminationStatus", true, -1));

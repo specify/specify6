@@ -391,7 +391,7 @@ public class TableViewObj implements Viewable,
     
     /**
      * Sizes the table to number of rows using getRowHeight
-     * @param table the table to be sized
+     * @param query the table to be sized
      * @param rows the number of rows
      */
     public void setVisibleRowCount(int rows)
@@ -406,7 +406,7 @@ public class TableViewObj implements Viewable,
     
     /**
      * Sizes the table to number of rows using the height of actual rows.
-     * @param table the table to be sized
+     * @param query the table to be sized
      * @param rows the number of rows
      */
     public void setVisibleRowCountForHeight(int rows)

@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last Used Id is 122 or 516
+    Last Used Id is 125 or 518
     
     PLEASE Keep this file in alphabetical order! 
 
@@ -25,6 +25,9 @@
             <display objtitle="Accession Authorization" dataobjformatter="AccessionAuthorization"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.Address" abbrev="ad" id="8" workbench="false" searchable="true">
+            <display objtitle="Address" view="Address"/>
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.AddressOfRecord" abbrev="aor" id="125" workbench="false" searchable="true">
             <display objtitle="Address" view="Address"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.Agent" abbrev="ag" id="5" workbench="true" searchable="true">
@@ -249,6 +252,10 @@
         <table name="edu.ku.brc.specify.datamodel.SpLocaleContainer" abbrev="splc" id="503"/>
         <table name="edu.ku.brc.specify.datamodel.SpLocaleContainerItem" abbrev="splci" id="504"/>
         <table name="edu.ku.brc.specify.datamodel.SpLocaleItemStr" abbrev="splis" id="505"/>
+        
+        <table name="edu.ku.brc.specify.datamodel.SpQuery" abbrev="sq" id="517"/>
+        <table name="edu.ku.brc.specify.datamodel.SpQueryField" abbrev="sqf" id="518"/>
+        <!-- 
         <table name="edu.ku.brc.specify.datamodel.SpUIAltView" abbrev="spav" id="507"/>
         <table name="edu.ku.brc.specify.datamodel.SpUICell" abbrev="spc" id="509"/>
         <table name="edu.ku.brc.specify.datamodel.SpUIColumn" abbrev="spcl" id="512"/>
@@ -256,7 +263,9 @@
         <table name="edu.ku.brc.specify.datamodel.SpUIView" abbrev="spv" id="506"/>
         <table name="edu.ku.brc.specify.datamodel.SpUIViewDef" abbrev="spvd" id="508"/>
         <table name="edu.ku.brc.specify.datamodel.SpUIViewSet" abbrev="spvs" id="511"/>
+         -->
         <table name="edu.ku.brc.specify.datamodel.SpViewSetObj" abbrev="spvso" id="513"/>
+         
         <!--  Done Internal Specify Tables -->
         
         <table name="edu.ku.brc.specify.datamodel.Taxon" abbrev="tx" id="4" workbench="true" searchable="true">

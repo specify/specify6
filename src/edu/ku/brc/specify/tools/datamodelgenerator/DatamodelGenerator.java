@@ -1175,7 +1175,10 @@ public class DatamodelGenerator
                 
                 if (className != null)
                 {
-                    processClass(className, tableList);
+                    if (!StringUtils.contains(className, "SpUI"))
+                    {
+                        processClass(className, tableList);
+                    }
                     
                     // These were used for correcting Cascading rules
                     // Eventually these can be removed along with the methods.

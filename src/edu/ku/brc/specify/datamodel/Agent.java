@@ -125,6 +125,8 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     protected String                        url;
      
     protected Set<Address>                  addresses;
+    
+    /*
     protected Set<LoanAgent>                loanAgents;
     protected Set<Shipment>                 shipmentsByShipper;
     protected Set<Shipment>                 shipmentsByShippedTo;
@@ -143,7 +145,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     protected Set<ConservDescription>       conservDescriptions;
     
     protected Set<AgentVariant>             variants;
-    protected Set<AgentAttachment>          agentAttachments;
     protected Set<Collection>               collectionContacts;
     protected Set<Collection>               collectionCurators;
     
@@ -151,7 +152,9 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     protected Set<DNASequence>              dnaSequencers;
     protected Set<FieldNotebookPageSet>     pageSetSourceAgents;
     protected Set<DataModelObjBase>         lastEditedBys;
+    */
 
+    protected Set<AgentAttachment>          agentAttachments;
     
     protected static Agent                  currentUserAgent = null;
 
@@ -218,7 +221,11 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         email                          = null;
         url                            = null;
         remarks                        = null;
+        organization                   = null;
         addresses                      = new HashSet<Address>();
+        agentAttachments               = new HashSet<AgentAttachment>();
+        
+        /*
         loanAgents                     = new HashSet<LoanAgent>();
         shipmentsByShipper             = new HashSet<Shipment>();
         shipmentsByShippedTo           = new HashSet<Shipment>();
@@ -229,7 +236,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         borrowAgents                   = new HashSet<BorrowAgent>();
         accessionAgents                = new HashSet<AccessionAgent>();
         exchangeOutSentToOrganizations = new HashSet<ExchangeOut>();
-        organization                   = null;
         
         infoRequests                   = new HashSet<InfoRequest>();
         examinedByAgentConservEvents   = new HashSet<ConservEvent>();
@@ -239,7 +245,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         
         variants                       = new HashSet<AgentVariant>();
         
-        agentAttachments               = new HashSet<AgentAttachment>();
         
         specifyUsers                   = new HashSet<SpecifyUser>();
         
@@ -249,6 +254,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         dnaSequencers                  = new HashSet<DNASequence>();
         pageSetSourceAgents            = new HashSet<FieldNotebookPageSet>();
         lastEditedBys                  = new HashSet<DataModelObjBase>();
+        */
     }
     // End Initializer
 
@@ -845,136 +851,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     }
 
     /**
-     *
-     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<LoanAgent> getLoanAgents() {
-        return this.loanAgents;
-    }
-
-    public void setLoanAgents(Set<LoanAgent> loanAgents) {
-        this.loanAgents = loanAgents;
-    }
-
-    /**
-     *
-     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "shipper")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<Shipment> getShipmentsByShipper() {
-        return this.shipmentsByShipper;
-    }
-
-    public void setShipmentsByShipper(Set<Shipment> shipmentsByShipper) {
-        this.shipmentsByShipper = shipmentsByShipper;
-    }
-
-    /**
-     *
-     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "shippedTo")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<Shipment> getShipmentsByShippedTo() {
-        return this.shipmentsByShippedTo;
-    }
-
-    public void setShipmentsByShippedTo(Set<Shipment> shipmentsByShippedTo) {
-        this.shipmentsByShippedTo = shipmentsByShippedTo;
-    }
-
-    /**
-     *
-     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<DeaccessionAgent> getDeaccessionAgents() {
-        return this.deaccessionAgents;
-    }
-
-    public void setDeaccessionAgents(Set<DeaccessionAgent> deaccessionAgents) {
-        this.deaccessionAgents = deaccessionAgents;
-    }
-
-    /**
-     *
-     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agentReceivedFrom")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<ExchangeIn> getExchangeInFromOrganizations() {
-        return this.exchangeInFromOrganizations;
-    }
-
-    public void setExchangeInFromOrganizations(Set<ExchangeIn> exchangeInFromOrganizations) {
-        this.exchangeInFromOrganizations = exchangeInFromOrganizations;
-    }
-
-    /**
-     *
-     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "issuedTo")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<Permit> getPermitsIssuedTo() {
-        return this.permitsIssuedTo;
-    }
-
-    public void setPermitsIssuedTo(Set<Permit> permitsIssuedTo) {
-        this.permitsIssuedTo = permitsIssuedTo;
-    }
-
-    /**
-     *
-     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "issuedBy")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<Permit> getPermitsIssuedBy() {
-        return this.permitsIssuedBy;
-    }
-
-    public void setPermitsIssuedBy(Set<Permit> permitsByIssuer) {
-        this.permitsIssuedBy = permitsByIssuer;
-    }
-
-    /**
-     *
-     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<BorrowAgent> getBorrowAgents() {
-        return this.borrowAgents;
-    }
-
-    public void setBorrowAgents(Set<BorrowAgent> borrowAgents) {
-        this.borrowAgents = borrowAgents;
-    }
-
-    /**
-     *
-     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<AccessionAgent> getAccessionAgents() {
-        return this.accessionAgents;
-    }
-
-    public void setAccessionAgents(Set<AccessionAgent> accessionAgents) {
-        this.accessionAgents = accessionAgents;
-    }
-
-    /**
-     *
-     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agentSentTo")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<ExchangeOut> getExchangeOutSentToOrganizations() {
-        return this.exchangeOutSentToOrganizations;
-    }
-
-    public void setExchangeOutSentToOrganizations(Set<ExchangeOut> exchangeOutSentToOrganizations) {
-        this.exchangeOutSentToOrganizations = exchangeOutSentToOrganizations;
-    }
-
-    /**
      *      * Associated record in Address table
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
@@ -986,80 +862,8 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     public void setAddresses(Set<Address> addresses) {
         this.addresses = addresses;
     }
-    /**
-     * 
-     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
-    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<SpecifyUser> getSpecifyUsers() {
-        return this.specifyUsers;
-    }
+
     
-    public void setSpecifyUsers(Set<SpecifyUser> specifyUser) {
-        this.specifyUsers = specifyUser;
-    } 
-    
-    /**
-    *
-    */
-   @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
-   @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-   public Set<InfoRequest> getInfoRequests()
-   {
-       return this.infoRequests;
-   }
-
-   public void setInfoRequests(final Set<InfoRequest> infoRequests)
-   {
-       this.infoRequests = infoRequests;
-   }
-
-    /**
-    *
-    */
-   @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "examinedByAgent")
-   @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-   public Set<ConservEvent> getExaminedByAgentConservEvents()
-   {
-       return this.examinedByAgentConservEvents;
-   }
-
-   public void setExaminedByAgentConservEvents(final Set<ConservEvent> examinedByAgentConservEvents)
-   {
-       this.examinedByAgentConservEvents = examinedByAgentConservEvents;
-   }
-
-   /**
-    *
-    */
-   @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "treatedByAgent")
-   @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-   public Set<ConservEvent> getTreatedByAgentConservEvents()
-   {
-       return this.treatedByAgentConservEvents;
-   }
-
-   public void setTreatedByAgentConservEvents(final Set<ConservEvent> treatedByAgentConservEvents)
-   {
-       this.treatedByAgentConservEvents = treatedByAgentConservEvents;
-   }
-   
-
-    /**
-     *
-     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "curator")
-    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<ConservDescription> getConservDescriptions()
-    {
-        return this.conservDescriptions;
-    }
-
-    public void setConservDescriptions(final Set<ConservDescription> conservDescriptions)
-    {
-        this.conservDescriptions = conservDescriptions;
-    }
-
     @OneToMany(mappedBy = "agent")
     @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK, CascadeType.DELETE} )
     @OrderBy("ordinal ASC")
@@ -1073,132 +877,337 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         this.agentAttachments = agentAttachments;
     }
 
-    /**
-     * @return the variants
-     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
-    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<AgentVariant> getVariants()
-    {
-        return variants;
-    }
-    
-    /**
-     * @return the collectionContacts
-     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "contactAgent")
-    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<Collection> getCollectionContacts()
-    {
-        return collectionContacts;
-    }
-
-    /**
-     * @param collectionContacts the collectionContacts to set
-     */
-    public void setCollectionContacts(Set<Collection> collectionContacts)
-    {
-        this.collectionContacts = collectionContacts;
-    }
-
-    /**
-     * @return the collectionCurators
-     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "curatorAgent")
-    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<Collection> getCollectionCurators()
-    {
-        return collectionCurators;
-    }
-
-    /**
-     * @param collectionCurators the collectionCurators to set
-     */
-    public void setCollectionCurators(Set<Collection> collectionCurators)
-    {
-        this.collectionCurators = collectionCurators;
-    }
-
-    /**
-     * @return the fieldNotebookOwners
-     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "ownerAgent")
-    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<FieldNotebook> getFieldNotebookOwners()
-    {
-        return fieldNotebookOwners;
-    }
-
-    /**
-     * @param fieldNotebookOwners the fieldNotebookOwners to set
-     */
-    public void setFieldNotebookOwners(Set<FieldNotebook> fieldNotebookOwners)
-    {
-        this.fieldNotebookOwners = fieldNotebookOwners;
-    }
-
-    /**
-     * @return the dnaSequencers
-     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "sequencer")
-    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<DNASequence> getDnaSequencers()
-    {
-        return dnaSequencers;
-    }
-
-    /**
-     * @param dnaSequencers the dnaSequencers to set
-     */
-    public void setDnaSequencers(Set<DNASequence> dnaSequencers)
-    {
-        this.dnaSequencers = dnaSequencers;
-    }
-
-    /**
-     * @return the pageSetSourceAgents
-     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "sourceAgent")
-    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<FieldNotebookPageSet> getPageSetSourceAgents()
-    {
-        return pageSetSourceAgents;
-    }
-
-    /**
-     * @param pageSetSourceAgents the pageSetSourceAgents to set
-     */
-    public void setPageSetSourceAgents(Set<FieldNotebookPageSet> pageSetSourceAgents)
-    {
-        this.pageSetSourceAgents = pageSetSourceAgents;
-    }
-
-    /**
-     * @return the lastEditedBys
-     */
-    //@OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "lastEditedBy")
-    //@Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    @Transient
-    public Set<DataModelObjBase> getLastEditedBys()
-    {
-        return lastEditedBys;
-    }
-
-    /**
-     * @param lastEditedBys the lastEditedBys to set
-     */
-    public void setLastEditedBys(Set<DataModelObjBase> lastEditedBys)
-    {
-        this.lastEditedBys = lastEditedBys;
-    }
-
-    /**
-     * @param variants the variants to set
-     */
-    public void setVariants(Set<AgentVariant> variants)
-    {
-        this.variants = variants;
-    }
+//
+//    /**
+//     *
+//     */
+//    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
+//    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+//    public Set<LoanAgent> getLoanAgents() {
+//        return this.loanAgents;
+//    }
+//
+//    public void setLoanAgents(Set<LoanAgent> loanAgents) {
+//        this.loanAgents = loanAgents;
+//    }
+//
+//    /**
+//     *
+//     */
+//    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "shipper")
+//    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+//    public Set<Shipment> getShipmentsByShipper() {
+//        return this.shipmentsByShipper;
+//    }
+//
+//    public void setShipmentsByShipper(Set<Shipment> shipmentsByShipper) {
+//        this.shipmentsByShipper = shipmentsByShipper;
+//    }
+//
+//    /**
+//     *
+//     */
+//    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "shippedTo")
+//    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+//    public Set<Shipment> getShipmentsByShippedTo() {
+//        return this.shipmentsByShippedTo;
+//    }
+//
+//    public void setShipmentsByShippedTo(Set<Shipment> shipmentsByShippedTo) {
+//        this.shipmentsByShippedTo = shipmentsByShippedTo;
+//    }
+//
+//    /**
+//     *
+//     */
+//    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
+//    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+//    public Set<DeaccessionAgent> getDeaccessionAgents() {
+//        return this.deaccessionAgents;
+//    }
+//
+//    public void setDeaccessionAgents(Set<DeaccessionAgent> deaccessionAgents) {
+//        this.deaccessionAgents = deaccessionAgents;
+//    }
+//
+//    /**
+//     *
+//     */
+//    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agentReceivedFrom")
+//    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+//    public Set<ExchangeIn> getExchangeInFromOrganizations() {
+//        return this.exchangeInFromOrganizations;
+//    }
+//
+//    public void setExchangeInFromOrganizations(Set<ExchangeIn> exchangeInFromOrganizations) {
+//        this.exchangeInFromOrganizations = exchangeInFromOrganizations;
+//    }
+//
+//    /**
+//     *
+//     */
+//    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "issuedTo")
+//    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+//    public Set<Permit> getPermitsIssuedTo() {
+//        return this.permitsIssuedTo;
+//    }
+//
+//    public void setPermitsIssuedTo(Set<Permit> permitsIssuedTo) {
+//        this.permitsIssuedTo = permitsIssuedTo;
+//    }
+//
+//    /**
+//     *
+//     */
+//    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "issuedBy")
+//    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+//    public Set<Permit> getPermitsIssuedBy() {
+//        return this.permitsIssuedBy;
+//    }
+//
+//    public void setPermitsIssuedBy(Set<Permit> permitsByIssuer) {
+//        this.permitsIssuedBy = permitsByIssuer;
+//    }
+//
+//    /**
+//     *
+//     */
+//    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
+//    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+//    public Set<BorrowAgent> getBorrowAgents() {
+//        return this.borrowAgents;
+//    }
+//
+//    public void setBorrowAgents(Set<BorrowAgent> borrowAgents) {
+//        this.borrowAgents = borrowAgents;
+//    }
+//
+//    /**
+//     *
+//     */
+//    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
+//    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+//    public Set<AccessionAgent> getAccessionAgents() {
+//        return this.accessionAgents;
+//    }
+//
+//    public void setAccessionAgents(Set<AccessionAgent> accessionAgents) {
+//        this.accessionAgents = accessionAgents;
+//    }
+//
+//    /**
+//     *
+//     */
+//    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agentSentTo")
+//    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+//    public Set<ExchangeOut> getExchangeOutSentToOrganizations() {
+//        return this.exchangeOutSentToOrganizations;
+//    }
+//
+//    public void setExchangeOutSentToOrganizations(Set<ExchangeOut> exchangeOutSentToOrganizations) {
+//        this.exchangeOutSentToOrganizations = exchangeOutSentToOrganizations;
+//    }
+//    /**
+//     * 
+//     */
+//    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
+//    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+//    public Set<SpecifyUser> getSpecifyUsers() {
+//        return this.specifyUsers;
+//    }
+//    
+//    public void setSpecifyUsers(Set<SpecifyUser> specifyUser) {
+//        this.specifyUsers = specifyUser;
+//    } 
+//    
+//    /**
+//    *
+//    */
+//   @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
+//   @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+//   public Set<InfoRequest> getInfoRequests()
+//   {
+//       return this.infoRequests;
+//   }
+//
+//   public void setInfoRequests(final Set<InfoRequest> infoRequests)
+//   {
+//       this.infoRequests = infoRequests;
+//   }
+//
+//    /**
+//    *
+//    */
+//   @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "examinedByAgent")
+//   @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+//   public Set<ConservEvent> getExaminedByAgentConservEvents()
+//   {
+//       return this.examinedByAgentConservEvents;
+//   }
+//
+//   public void setExaminedByAgentConservEvents(final Set<ConservEvent> examinedByAgentConservEvents)
+//   {
+//       this.examinedByAgentConservEvents = examinedByAgentConservEvents;
+//   }
+//
+//   /**
+//    *
+//    */
+//   @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "treatedByAgent")
+//   @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+//   public Set<ConservEvent> getTreatedByAgentConservEvents()
+//   {
+//       return this.treatedByAgentConservEvents;
+//   }
+//
+//   public void setTreatedByAgentConservEvents(final Set<ConservEvent> treatedByAgentConservEvents)
+//   {
+//       this.treatedByAgentConservEvents = treatedByAgentConservEvents;
+//   }
+//   
+//
+//    /**
+//     *
+//     */
+//    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "curator")
+//    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+//    public Set<ConservDescription> getConservDescriptions()
+//    {
+//        return this.conservDescriptions;
+//    }
+//
+//    public void setConservDescriptions(final Set<ConservDescription> conservDescriptions)
+//    {
+//        this.conservDescriptions = conservDescriptions;
+//    }
+//
+//
+//    /**
+//     * @return the variants
+//     */
+//    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
+//    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+//    public Set<AgentVariant> getVariants()
+//    {
+//        return variants;
+//    }
+//    
+//    /**
+//     * @return the collectionContacts
+//     */
+//    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "contactAgent")
+//    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+//    public Set<Collection> getCollectionContacts()
+//    {
+//        return collectionContacts;
+//    }
+//
+//    /**
+//     * @param collectionContacts the collectionContacts to set
+//     */
+//    public void setCollectionContacts(Set<Collection> collectionContacts)
+//    {
+//        this.collectionContacts = collectionContacts;
+//    }
+//
+//    /**
+//     * @return the collectionCurators
+//     */
+//    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "curatorAgent")
+//    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+//    public Set<Collection> getCollectionCurators()
+//    {
+//        return collectionCurators;
+//    }
+//
+//    /**
+//     * @param collectionCurators the collectionCurators to set
+//     */
+//    public void setCollectionCurators(Set<Collection> collectionCurators)
+//    {
+//        this.collectionCurators = collectionCurators;
+//    }
+//
+//    /**
+//     * @return the fieldNotebookOwners
+//     */
+//    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "ownerAgent")
+//    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+//    public Set<FieldNotebook> getFieldNotebookOwners()
+//    {
+//        return fieldNotebookOwners;
+//    }
+//
+//    /**
+//     * @param fieldNotebookOwners the fieldNotebookOwners to set
+//     */
+//    public void setFieldNotebookOwners(Set<FieldNotebook> fieldNotebookOwners)
+//    {
+//        this.fieldNotebookOwners = fieldNotebookOwners;
+//    }
+//
+//    /**
+//     * @return the dnaSequencers
+//     */
+//    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "sequencer")
+//    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+//    public Set<DNASequence> getDnaSequencers()
+//    {
+//        return dnaSequencers;
+//    }
+//
+//    /**
+//     * @param dnaSequencers the dnaSequencers to set
+//     */
+//    public void setDnaSequencers(Set<DNASequence> dnaSequencers)
+//    {
+//        this.dnaSequencers = dnaSequencers;
+//    }
+//
+//    /**
+//     * @return the pageSetSourceAgents
+//     */
+//    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "sourceAgent")
+//    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+//    public Set<FieldNotebookPageSet> getPageSetSourceAgents()
+//    {
+//        return pageSetSourceAgents;
+//    }
+//
+//    /**
+//     * @param pageSetSourceAgents the pageSetSourceAgents to set
+//     */
+//    public void setPageSetSourceAgents(Set<FieldNotebookPageSet> pageSetSourceAgents)
+//    {
+//        this.pageSetSourceAgents = pageSetSourceAgents;
+//    }
+//
+//    /**
+//     * @return the lastEditedBys
+//     */
+//    //@OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "lastEditedBy")
+//    //@Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+//    @Transient
+//    public Set<DataModelObjBase> getLastEditedBys()
+//    {
+//        return lastEditedBys;
+//    }
+//
+//    /**
+//     * @param lastEditedBys the lastEditedBys to set
+//     */
+//    public void setLastEditedBys(Set<DataModelObjBase> lastEditedBys)
+//    {
+//        this.lastEditedBys = lastEditedBys;
+//    }
+//
+//    /**
+//     * @param variants the variants to set
+//     */
+//    public void setVariants(Set<AgentVariant> variants)
+//    {
+//        this.variants = variants;
+//    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()

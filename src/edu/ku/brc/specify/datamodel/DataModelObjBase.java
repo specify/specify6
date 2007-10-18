@@ -338,7 +338,10 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
     
                         } else
                         {
-                            addToCollection(ref, otherSide, this);
+                            if (otherSide != null)
+                            {
+                                addToCollection(ref, otherSide, this);
+                            }
                             DataObjectSettable setter = DataObjectSettableFactory.get(ref.getClass().getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
                             setter.setFieldValue(this, fieldName, ref);
                         }

@@ -73,6 +73,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     protected Set<UserGroup>            userGroups;
     protected Set<SpAppResourceDir>     spAppResourceDirs;
     protected Set<UserPermission>       userPermissions;
+    protected Set<SpQuery>              spQuerys;
     protected Agent                     agent;
 
     // Constructors
@@ -115,19 +116,21 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     public void initialize()
     {
         super.init();
-        specifyUserId = null;
-        name = null;
-        email = null;
-        privLevel = null;
-        collectionTypes = new HashSet<CollectionType>();
-        recordSets = new HashSet<RecordSet>();
-        workbenches = new HashSet<Workbench>();
+        
+        specifyUserId      = null;
+        name               = null;
+        email              = null;
+        privLevel          = null;
+        collectionTypes    = new HashSet<CollectionType>();
+        recordSets         = new HashSet<RecordSet>();
+        workbenches        = new HashSet<Workbench>();
         workbenchTemplates = new HashSet<WorkbenchTemplate>();
-        spAppResources = new HashSet<SpAppResource>();
-        userGroups = new HashSet<UserGroup>();
-        spAppResourceDirs = new HashSet<SpAppResourceDir>();
-        userPermissions = new HashSet<UserPermission>();
-        agent = null;
+        spAppResources     = new HashSet<SpAppResource>();
+        userGroups         = new HashSet<UserGroup>();
+        spAppResourceDirs  = new HashSet<SpAppResourceDir>();
+        userPermissions    = new HashSet<UserPermission>();
+        spQuerys           = new HashSet<SpQuery>();
+
     }
 
     // End Initializer
@@ -440,134 +443,29 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     {
         this.userGroups.add(userGroupArg);
         userGroupArg.getSpecifyUsers().add(this);
-
-    }
-
-    /**
-     * @param collectionTypeArg - 
-     * void
-     */
-    public void addCollectionTypes(final CollectionType collectionTypeArg)
-    {
-        this.collectionTypes.add(collectionTypeArg);
-        collectionTypeArg.setSpecifyUser(this);
-    }
-
-    /**
-     * @param recordSet - 
-     * void
-     */
-    public void addRecordSets(final RecordSet recordSet)
-    {
-        this.recordSets.add(recordSet);
-        recordSet.setSpecifyUser(this);
-    }
-
-    /**
-     * @param userPermission - 
-     * void
-     */
-    public void addUserPermissions(final UserPermission userPermission)
-    {
-        this.userPermissions.add(userPermission);
-        userPermission.setSpecifyUser(this);
-    }
-    
-    public void addWorkbenches(final Workbench workbench)
-    {
-        this.workbenches.add(workbench);
-        workbench.setSpecifyUser(this);
-    }
-    /**
-     * @param spAppResource - 
-     * void
-     */
-    public void addAppResource(final SpAppResource spAppResource)
-    {
-        this.spAppResources.add(spAppResource);
-        spAppResource.setSpecifyUser(this);
     }
     
     /**
-     * @param spAppResourceDir - 
-     * void
+     * @return the spQuerys
      */
-    public void addSpAppResourceDirs(final SpAppResourceDir spAppResourceDir)
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "specifyUser")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<SpQuery> getSpQuerys()
     {
-        this.spAppResourceDirs.add(spAppResourceDir);
-        spAppResourceDir.setSpecifyUser(this);
-    }
-
-    // Done Add Methods
-
-    // Delete Methods
-
-    /**
-     * @param userGroupArg - 
-     * void
-     */
-    public void removeUserGroups(final UserGroup userGroupArg)
-    {
-        this.userGroups.remove(userGroupArg);
-        userGroupArg.getSpecifyUsers().remove(this);
+        return spQuerys;
     }
 
     /**
-     * @param collectionTypeArg - 
-     * void
+     * @param spQuerys the spQuerys to set
      */
-    public void removeCollectionTypes(final CollectionType collectionTypeArg)
+    public void setSpQuerys(Set<SpQuery> spQuerys)
     {
-        this.collectionTypes.remove(collectionTypeArg);
-        collectionTypeArg.setSpecifyUser(null);
-    }
-
-    /**
-     * @param recordSet - 
-     * void
-     */
-    public void removeRecordSets(final RecordSet recordSet)
-    {
-        this.recordSets.remove(recordSet);
-        recordSet.setSpecifyUser(null);
+        this.spQuerys = spQuerys;
     }
     
-    /**
-     * @param workbench - 
-     * void
-     */
-    public void removeWorkbench(final Workbench workbench)
-    {
-        this.workbenches.remove(workbench);
-        workbench.setSpecifyUser(null);
-    }
-    /**
-     * @param spAppResource - 
-     * void
-     */
-    public void removeSpAppResource(final SpAppResource spAppResource)
-    {
-        this.spAppResources.remove(spAppResource);
-        spAppResource.setSpecifyUser(null);
-    }    
-    /**
-     * @param userPermission - 
-     * void
-     */
-    public void removeUserPermission(final UserPermission userPermission)
-    {
-        this.userPermissions.remove(userPermission);
-        userPermission.setSpecifyUser(null);
-    }    
-    /**
-     * @param spAppResourceDir - 
-     * void
-     */
-    public void removeSpAppResourceDirs(final SpAppResourceDir spAppResourceDir)
-    {
-        this.spAppResourceDirs.remove(spAppResourceDir);
-        spAppResourceDir.setSpecifyUser(null);
-    }
+    //-------------------------------------------------------------------------
+    //-- FormDataObjIFace
+    //-------------------------------------------------------------------------
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
@@ -598,6 +496,9 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
         return super.getIdentityTitle();
     }
     
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
     @Override
     public String toString()
     {

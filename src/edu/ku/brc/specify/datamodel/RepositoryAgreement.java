@@ -80,12 +80,13 @@ public class RepositoryAgreement extends DataModelObjBase implements AttachmentO
     protected String                      remarks;
     protected Boolean                     yesNo1;
     protected Boolean                     yesNo2;
+    
     protected Set<AccessionAuthorization> repositoryAgreementAuthorizations;
     protected Set<AccessionAgent>         repositoryAgreementAgents;
     protected Set<Accession>              accessions;
     protected Agent                       originator;
-    private Set<RepositoryAgreementAttachment> repositoryAgreementAttachments;
-
+    protected Set<RepositoryAgreementAttachment> repositoryAgreementAttachments;
+    protected AddressOfRecord             addressOfRecord;
 
     // Constructors
 
@@ -125,7 +126,8 @@ public class RepositoryAgreement extends DataModelObjBase implements AttachmentO
         repositoryAgreementAgents         = new HashSet<AccessionAgent>();
         accessions                        = new HashSet<Accession>();
         repositoryAgreementAttachments    = new HashSet<RepositoryAgreementAttachment>();
-        originator = null;
+        originator                        = null;
+        addressOfRecord                   = null;
     }
     // End Initializer
 
@@ -388,7 +390,25 @@ public class RepositoryAgreement extends DataModelObjBase implements AttachmentO
     public void setAccessions(Set<Accession> accessions) {
         this.accessions = accessions;
     }
-    
+
+    /**
+     * @return the addressOfRecord
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "AddressOfRecordID", unique = false, nullable = true, insertable = true, updatable = true)
+    public AddressOfRecord getAddressOfRecord()
+    {
+        return addressOfRecord;
+    }
+
+    /**
+     * @param addressOfRecord the addressOfRecord to set
+     */
+    public void setAddressOfRecord(AddressOfRecord addressOfRecord)
+    {
+        this.addressOfRecord = addressOfRecord;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */

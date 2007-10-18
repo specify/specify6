@@ -1,0 +1,437 @@
+/*
+ * Copyright (C) 2007  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ *
+ */
+
+package edu.ku.brc.specify.datamodel;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.apache.commons.lang.StringUtils;
+
+/**
+ * @author rod
+ *
+ * @code_status Alpha
+ *
+ * Oct 17, 2007
+ *
+ */
+@Entity
+@org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
+@org.hibernate.annotations.Proxy(lazy = false)
+@Table(name = "spqueryfield")
+public class SpQueryField extends DataModelObjBase
+{
+    public static final Byte SORT_NONE = 0;
+    public static final Byte SORT_ASC  = 1;
+    public static final Byte SORT_DESC = 2;
+    
+    public enum SortType 
+    {
+        NONE(0),
+        ASC(1),
+        DESC(2);
+        
+        SortType(final int ord)
+        { 
+            this.ord = (byte)ord;
+        }
+        private byte ord;
+        public  byte getOrdinal()         { return ord; }
+        public  void set(final byte  ord) { this.ord = ord; }
+        public  static String getString(final byte ord)
+        {
+            String[] names = {"None", "Ascending", "Descending"};
+            return names[ord];
+        }
+        public static SortType valueOf(Byte ord) { return SortType.valueOf(ord.toString()); } 
+    }
+    
+    public enum OperatorType 
+    {
+        LIKE(0),
+        EQUALS(1),
+        GREATERTHAN(2),
+        LESSTHAN(3),
+        GREATERTHANEQUALS(4),
+        LESSTHANEQUALS(5);
+        
+        OperatorType(final int ord)
+        { 
+            this.ord = (byte)ord;
+        }
+        private byte ord;
+        public  byte getOrdinal()         { return ord; }
+        public  void set(final byte  ord) { this.ord = ord; }
+        public  static String getString(final byte ord)
+        {
+            String[] names = {"Like", "=", ">", "<", ">=", "<="};
+            return names[ord];
+        }
+        public static OperatorType valueOf(Byte ord) { return OperatorType.valueOf(ord.toString()); }
+    }
+    
+    protected Integer      spQueryFieldId;
+    protected String       fieldName;
+    protected Boolean      isNot;
+    protected Boolean      isDisplay;
+    
+    protected Byte         operStart;
+    protected Byte         operEnd;
+    protected String       startValue;
+    protected String       endValue;
+    protected Byte         sortType;
+    
+    protected String       tableList;
+    
+    protected SpQuery      query;
+    
+    // Transient
+    protected int[]        tableIds = null;
+
+    /**
+     * 
+     */
+    public SpQueryField()
+    {
+        // no op
+    }
+
+    /**
+     * @param spQueryItemId the spQueryItemId to set
+     */
+    public void setSpQueryFieldId(Integer spQueryFieldId)
+    {
+        this.spQueryFieldId = spQueryFieldId;
+    }
+
+    /**
+     * @param fieldName the fieldName to set
+     */
+    public void setFieldName(String fieldName)
+    {
+        this.fieldName = fieldName;
+    }
+
+    /**
+     * @param isNot the isNot to set
+     */
+    public void setIsNot(Boolean isNot)
+    {
+        this.isNot = isNot;
+    }
+
+    /**
+     * @param isDisplay the isDisplay to set
+     */
+    public void setIsDisplay(Boolean isDisplay)
+    {
+        this.isDisplay = isDisplay;
+    }
+
+    /**
+     * @param operStart the operStart to set
+     */
+    public void setOperStart(Byte operStart)
+    {
+        this.operStart = operStart;
+    }
+
+    /**
+     * @param operEnd the operEnd to set
+     */
+    public void setOperEnd(Byte operEnd)
+    {
+        this.operEnd = operEnd;
+    }
+
+    /**
+     * @param startValue the startValue to set
+     */
+    public void setStartValue(String startValue)
+    {
+        this.startValue = startValue;
+    }
+
+    /**
+     * @param endValue the endValue to set
+     */
+    public void setEndValue(String endValue)
+    {
+        this.endValue = endValue;
+    }
+
+    /**
+     * @param sortType the sortType to set
+     */
+    public void setSortType(Byte sortType)
+    {
+        this.sortType = sortType;
+    }
+
+    /**
+     * @param table the table to set
+     */
+    public void setQuery(SpQuery query)
+    {
+        this.query = query;
+    }
+
+    /**
+     * @param tableList the tableList to set
+     */
+    public void setTableList(String tableList)
+    {
+        this.tableIds  = null;
+        this.tableList = tableList;
+    }
+
+    /**
+     * @return the spQueryItemId
+     */
+    @Id
+    @GeneratedValue
+    @Column(name = "SpQueryFieldID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Integer getSpQueryFieldId()
+    {
+        return spQueryFieldId;
+    }
+
+    /**
+     * @return the fieldName
+     */
+    @Column(name = "FieldName", unique = false, nullable = false, insertable = true, updatable = true, length = 32)
+    public String getFieldName()
+    {
+        return fieldName;
+    }
+
+    /**
+     * @return the isNot
+     */
+    @Column(name = "IsNot", unique = false, nullable = false, insertable = true, updatable = true)
+    public Boolean getIsNot()
+    {
+        return isNot;
+    }
+
+    /**
+     * @return the isDisplay
+     */
+    @Column(name = "IsDisplay", unique = false, nullable = false, insertable = true, updatable = true)
+    public Boolean getIsDisplay()
+    {
+        return isDisplay;
+    }
+
+    /**
+     * @return the operStart
+     */
+    @Column(name = "OperStart", unique = false, nullable = false, insertable = true, updatable = true)
+    public Byte getOperStart()
+    {
+        return operStart;
+    }
+
+    /**
+     * @return the operEnd
+     */
+    @Column(name = "OperEnd", unique = false, nullable = true, insertable = true, updatable = true)
+    public Byte getOperEnd()
+    {
+        return operEnd;
+    }
+
+    /**
+     * @return the startValue
+     */
+    @Column(name = "StartValue", unique = false, nullable = false, insertable = true, updatable = true, length = 64)
+    public String getStartValue()
+    {
+        return startValue;
+    }
+
+    /**
+     * @return the endValue
+     */
+    @Column(name = "EndValue", unique = false, nullable = false, insertable = true, updatable = true, length = 64)
+    public String getEndValue()
+    {
+        return endValue;
+    }
+
+    /**
+     * @return the sortType
+     */
+    @Column(name = "SortType", unique = false, nullable = false, insertable = true, updatable = true)
+    public Byte getSortType()
+    {
+        return sortType;
+    }
+
+    /**
+     * @return the table
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "SpQueryID", unique = false, nullable = true, insertable = true, updatable = true)
+    public SpQuery getQuery()
+    {
+        return query;
+    }
+    
+    /**
+     * @return the tableList
+     */
+    @Column(name = "TableList", unique = false, nullable = false, insertable = true, updatable = true, length = 255)
+    public String getTableList()
+    {
+        return tableList;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#initialize()
+     */
+    @Override
+    public void initialize()
+    {
+        super.init();
+        
+        spQueryFieldId = null;
+        fieldName     = null;
+        isNot         = null;
+        isDisplay     = null;
+        operStart     = null;
+        operEnd       = null;
+        startValue    = null;
+        endValue      = null;
+        sortType      = null;
+        query         = null;
+        tableList     = null;
+    }
+
+    @Transient
+    public OperatorType getStartOperator()
+    {
+        return OperatorType.valueOf(operStart);
+    }
+    
+    @Transient
+    public OperatorType getEndOperator()
+    {
+        return OperatorType.valueOf(operEnd);
+    }
+    
+    @Transient
+    public SortType getSort()
+    {
+        return SortType.valueOf(sortType);
+    }
+    
+    public void setStartOper(OperatorType oper)
+    {
+        operStart = oper.getOrdinal();
+    }
+    
+    public void setEndOper(OperatorType oper)
+    {
+        operEnd = oper.getOrdinal();
+    }
+    
+    public void setSort(SortType sortType)
+    {
+        this.sortType = sortType.getOrdinal();
+    }
+    
+    /**
+     * @return
+     */
+    @Transient
+    public int[] getTableIds()
+    {
+        if (tableIds == null)
+        {
+            if (StringUtils.isNotEmpty(tableList))
+            {
+                String[] toks = StringUtils.split(tableList, ',');
+                tableIds = new int[toks.length];
+                int i = 0;
+                for (String tok : StringUtils.split(tableList, ','))
+                {
+                    tableIds[i++] = Integer.parseInt(tok);
+                }
+            }
+        }
+        return tableIds;
+    }
+    
+    /**
+     * @param tablesIds
+     */
+    public void setTableIds(final int[] tablesIds)
+    {
+        this.tableIds = tablesIds;
+        if (tablesIds != null && tablesIds.length > 0)
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int id : tablesIds)
+            {
+                if (sb.length() > 0) sb.append(",");
+                sb.append(id);
+            }
+            tableList = sb.toString();
+        }
+    }
+    
+    //-------------------------------------------------------------------------
+    //-- DataModelObjBase
+    //-------------------------------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getDataClass()
+     */
+    @Override
+    @Transient
+    public Class<?> getDataClass()
+    {
+        return SpQueryField.class;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getId()
+     */
+    @Override
+    @Transient
+    public Integer getId()
+    {
+        return spQueryFieldId;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
+     */
+    @Override
+    @Transient
+    public int getTableId()
+    {
+        return getClassTableId();
+    }
+    
+    /**
+     * @return the Table ID for the class.
+     */
+    public static int getClassTableId()
+    {
+        return 518;
+    }
+}

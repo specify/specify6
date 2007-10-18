@@ -90,6 +90,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
     protected Boolean                     yesNo1;
     protected Boolean                     yesNo2;
     
+    protected AddressOfRecord             addressOfRecord;
     protected RepositoryAgreement         repositoryAgreement;
     protected Set<CollectionObject>       collectionObjects;
     protected Set<AccessionAuthorization> accessionAuthorizations;
@@ -136,6 +137,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
         remarks = null;
         yesNo1 = null;
         yesNo2 = null;
+        addressOfRecord         = null;
         collectionObjects       = new HashSet<CollectionObject>();
         accessionAuthorizations = new HashSet<AccessionAuthorization>();
         accessionAgents         = new HashSet<AccessionAgent>();
@@ -544,6 +546,24 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
     public void setIpms(Set<Ipm> ipms)
     {
         this.ipms = ipms;
+    }
+
+    /**
+     * @return the addressOfRecord
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "AddressOfRecordID", unique = false, nullable = true, insertable = true, updatable = true)
+    public AddressOfRecord getAddressOfRecord()
+    {
+        return addressOfRecord;
+    }
+
+    /**
+     * @param addressOfRecord the addressOfRecord to set
+     */
+    public void setAddressOfRecord(AddressOfRecord addressOfRecord)
+    {
+        this.addressOfRecord = addressOfRecord;
     }
 
     //---------------------------------------------------------------------------

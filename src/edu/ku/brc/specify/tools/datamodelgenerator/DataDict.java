@@ -146,7 +146,7 @@ public class DataDict
     }
     
     /**
-     * @param table
+     * @param query
      */
     @SuppressWarnings("unchecked")
     public void processSpecify5Schema()

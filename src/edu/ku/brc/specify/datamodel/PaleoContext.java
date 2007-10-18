@@ -55,6 +55,11 @@ public class PaleoContext extends DataModelObjBase
     protected String  direction;     // "up" or "down"
     protected String  positionState; // float or in-situ
     
+    protected String  text1;
+    protected String  text2;
+    protected Boolean yesNo1;
+    protected Boolean yesNo2;
+    
     protected Set<CollectionObject> collectionObjects;
     
     protected LithoStrat            lithoStrat;
@@ -103,6 +108,11 @@ public class PaleoContext extends DataModelObjBase
         distanceUnits  = null;
         direction      = null;
         positionState  = null;
+        
+        text1          = null;
+        text2          = null;
+        yesNo1         = null;
+        yesNo2         = null;
         
         collectionObjects = new HashSet<CollectionObject>();
 
@@ -192,22 +202,90 @@ public class PaleoContext extends DataModelObjBase
     {
         this.positionState = positionState;
     }
+
+    public void setCollectionObjects(Set<CollectionObject> collectionObjects) 
+    {
+        this.collectionObjects = collectionObjects;
+    }
+
+    /**
+     * @return the text1
+     */
+    @Column(name="Text1", unique=false, nullable=true, insertable=true, updatable=true, length=32)
+    public String getText1()
+    {
+        return text1;
+    }
+
+    /**
+     * @param text1 the text1 to set
+     */
+    public void setText1(String text1)
+    {
+        this.text1 = text1;
+    }
+
+    /**
+     * @return the text2
+     */
+    @Column(name="Text2", unique=false, nullable=true, insertable=true, updatable=true, length=32)
+    public String getText2()
+    {
+        return text2;
+    }
+
+    /**
+     * @param text2 the text2 to set
+     */
+    public void setText2(String text2)
+    {
+        this.text2 = text2;
+    }
+
+    /**
+     * @return the yesNo1
+     */
+    @Column(name="YesNo1", unique=false, nullable=true, insertable=true, updatable=true)
+    public Boolean getYesNo1()
+    {
+        return yesNo1;
+    }
+
+    /**
+     * @param yesNo1 the yesNo1 to set
+     */
+    public void setYesNo1(Boolean yesNo1)
+    {
+        this.yesNo1 = yesNo1;
+    }
+
+    /**
+     * @return the yesNo2
+     */
+    @Column(name="YesNo2", unique=false, nullable=true, insertable=true, updatable=true)
+    public Boolean getYesNo2()
+    {
+        return yesNo2;
+    }
+
+    /**
+     * @param yesNo2 the yesNo2 to set
+     */
+    public void setYesNo2(Boolean yesNo2)
+    {
+        this.yesNo2 = yesNo2;
+    }
     
     /**
-    *
-    */
-   @OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="paleoContext")
-   @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
-   public Set<CollectionObject> getCollectionObjects() {
-       return this.collectionObjects;
-   }
+     *
+     */
+    @OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="paleoContext")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
+    public Set<CollectionObject> getCollectionObjects() 
+    {
+        return this.collectionObjects;
+    }
 
-   public void setCollectionObjects(Set<CollectionObject> collectionObjects) {
-       this.collectionObjects = collectionObjects;
-   }
-
-   
-   
     /**
      * @return the bioStrat
      */

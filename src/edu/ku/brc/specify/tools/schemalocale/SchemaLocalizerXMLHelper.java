@@ -234,7 +234,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                             item.setName(fi.getName());
                             SpLocaleItemStr nameStr = new SpLocaleItemStr();
                             nameStr.initialize();
-                            nameStr.setText(UIHelper.makeNamePretty(fi.getDataClass().getSimpleName()));
+                            nameStr.setText(UIHelper.makeNamePretty(fi.getName()));
                             nameStr.setLanguage(lang);
                             item.addName(nameStr);
                             container.addItem(item);
@@ -244,6 +244,17 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                             changesBuffer.append("<td align=\"center\">"+ti.getName()+"</td><td align=\"center\">");
                             changesBuffer.append(fi.getName());
                             changesBuffer.append("</td></tr>");
+                        } else
+                        {
+                            /*String name = UIHelper.makeNamePretty(fi.getDataClass().getSimpleName());
+                            for (SpLocaleItemStr str : item.getNames())
+                            {
+                                if (name.equals(str.getText()))
+                                {
+                                    str.setText(UIHelper.makeNamePretty(fi.getName()));
+                                }
+                            }*/
+                            
                         }
                     }
                     

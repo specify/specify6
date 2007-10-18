@@ -102,11 +102,11 @@ public class Loan extends DataModelObjBase implements AttachmentOwnerIFace<LoanA
     protected Boolean                 yesNo1;
     protected Boolean                 yesNo2;
     
+    protected AddressOfRecord         addressOfRecord;
     protected Set<LoanAgent>          loanAgents;
     protected Set<LoanPhysicalObject> loanPhysicalObjects;
-    //protected Shipment shipment;
     protected Set<Shipment>           shipments;
-    private Set<LoanAttachment>       loanAttachments;
+    protected Set<LoanAttachment>     loanAttachments;
     
     protected Division                division;
 
@@ -161,7 +161,8 @@ public class Loan extends DataModelObjBase implements AttachmentOwnerIFace<LoanA
         
         loanAttachments = new HashSet<LoanAttachment>();
         division        = null;
-        
+        addressOfRecord = null;
+
         if (true)
         {
             // XXX For Demo
@@ -523,6 +524,24 @@ public class Loan extends DataModelObjBase implements AttachmentOwnerIFace<LoanA
     public void setDivision(Division division)
     {
         this.division = division;
+    }
+
+    /**
+     * @return the addressOfRecord
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "AddressOfRecordID", unique = false, nullable = true, insertable = true, updatable = true)
+    public AddressOfRecord getAddressOfRecord()
+    {
+        return addressOfRecord;
+    }
+
+    /**
+     * @param addressOfRecord the addressOfRecord to set
+     */
+    public void setAddressOfRecord(AddressOfRecord addressOfRecord)
+    {
+        this.addressOfRecord = addressOfRecord;
     }
 
     /**

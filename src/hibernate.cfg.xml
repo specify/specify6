@@ -40,6 +40,7 @@
 		<mapping class="edu.ku.brc.specify.datamodel.AccessionAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AccessionAuthorization"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Address"/>
+		<mapping class="edu.ku.brc.specify.datamodel.AddressOfRecord"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Agent"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AgentAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AgentVariant"/>
@@ -143,6 +144,7 @@
 		<mapping class="edu.ku.brc.specify.datamodel.SpLocaleContainer"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpLocaleContainerItem"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpLocaleItemStr"/>
+		<!--
 		<mapping class="edu.ku.brc.specify.datamodel.SpUIAltView"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpUICell"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpUIColumn"/>
@@ -150,6 +152,9 @@
 		<mapping class="edu.ku.brc.specify.datamodel.SpUIView"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpUIViewDef"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpUIViewSet"/>
+		  -->
+		<mapping class="edu.ku.brc.specify.datamodel.SpQuery"/>
+		<mapping class="edu.ku.brc.specify.datamodel.SpQueryField"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpViewSetObj"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Taxon"/>
 		<mapping class="edu.ku.brc.specify.datamodel.TaxonAttachment"/>

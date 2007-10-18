@@ -11,7 +11,6 @@ package edu.ku.brc.af.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
-import java.awt.BorderLayout;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
@@ -20,32 +19,17 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 
-import org.dom4j.Element;
-
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
-import edu.ku.brc.af.tasks.subpane.ViewViewSetEditorPanel;
-import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.config.SpecifyAppContextMgr;
-import edu.ku.brc.specify.datamodel.SpAppResource;
-import edu.ku.brc.specify.datamodel.SpAppResourceDir;
-import edu.ku.brc.specify.datamodel.SpUIView;
-import edu.ku.brc.specify.datamodel.SpUIViewSet;
-import edu.ku.brc.specify.datamodel.SpViewSetObj;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
-import edu.ku.brc.ui.forms.ViewSetMgr;
-import edu.ku.brc.ui.forms.persist.ViewSet;
 import edu.ku.brc.ui.forms.persist.ViewSetIFace;
 
 /**
@@ -108,6 +92,8 @@ public class EditorTask extends BaseTask
     public SubPaneIFace getStarterPane()
     {
         SimpleDescPane pane = new SimpleDescPane(name, this, "Editor");
+        
+        /*
         pane.removeAll();
         pane.setLayout(new BorderLayout());
         
@@ -123,6 +109,7 @@ public class EditorTask extends BaseTask
                 System.out.println(vso.getName());
             }
         }
+        
         
         // Get the Top Most AppDef
         SpAppResourceDir     appResDef = spMgr.getSpAppResourceList().get(0);
@@ -164,6 +151,7 @@ public class EditorTask extends BaseTask
 
         
         pane.add(new ViewViewSetEditorPanel(list.get(0)), BorderLayout.CENTER);
+        */
         return pane;
     }
 
