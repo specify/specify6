@@ -27,9 +27,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-
 /**
  * Items are sorted by ViewOrder
  */
@@ -390,7 +387,6 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     
     
     @OneToMany(mappedBy = "workbenchTemplateMappingItem")
-    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<WorkbenchDataItem> getWorkbenchDataItems() 
     {
         return this.workbenchDataItems;
@@ -479,5 +475,4 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     {
         return importedColNameMaxLength;
     }
-
 }

@@ -88,7 +88,6 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
     
     protected Hashtable<Short, WorkbenchTemplateMappingItem> wbtmiItems    = new Hashtable<Short, WorkbenchTemplateMappingItem>();
 
-     
     // Constructors
 
     /** default constructor */
@@ -336,6 +335,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
      */
     @ManyToOne
     @JoinColumn(name = "SpecifyUserID", nullable = false)
+    @Cascade( {CascadeType.MERGE, CascadeType.LOCK} )
     public SpecifyUser getSpecifyUser() {
         return this.specifyUser;
     }
@@ -349,6 +349,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
      */
     @ManyToOne
     @JoinColumn(name = "UserGroupID")
+    @Cascade( {CascadeType.MERGE, CascadeType.LOCK} )
     public UserGroup getGroup() {
         return this.group;
     }
@@ -538,7 +539,6 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
         }
         deletedRows.add(wbRow);
         workbenchRows.remove(wbRow);
-        wbRow.setWorkbench(null);
         return wbRow;
     }
 
@@ -636,5 +636,4 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
         int tableId = DBTableIdMgr.getInstance().getIdByClassName(dataClass.getName());
         return getColumnIndex(tableId,fieldNameOrCaption);
     }
-
 }

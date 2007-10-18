@@ -177,7 +177,7 @@ public interface Treeable<N extends Treeable<N,D,I>,
 	public void setTimestampCreated(Timestamp created);
 	
 	public Timestamp getTimestampModified();
-	//public void setTimestampModified(Date modified);
+	public void setTimestampModified(Timestamp modified);
 	
 	public Agent getModifiedByAgent();
 	public void setModifiedByAgent(Agent user);

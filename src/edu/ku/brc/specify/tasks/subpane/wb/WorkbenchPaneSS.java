@@ -2613,13 +2613,12 @@ public class WorkbenchPaneSS extends BaseSubPane
             if (deletedItems != null && deletedItems.size() > 0)
             {
                 session.beginTransaction();
-                for (Object obj : deletedItems)
+                for (WorkbenchRow row : deletedItems)
                 {
-                    session.delete(obj);
+                    session.delete(row);
                 }
                 deletedItems.clear();
                 session.commit();
-                session.flush();
                 session.close();
                 
                 session = DataProviderFactory.getInstance().createSession();
@@ -2635,11 +2634,9 @@ public class WorkbenchPaneSS extends BaseSubPane
                     System.out.println("["+item.getCellData()+"]");
                 }
             }*/
-            log.debug("Original (before merge): " + workbench.getDebugInfo());
-            log.debug("PERFORMING MERGE");
+            
             Workbench dObj = session.merge(workbench);
-            log.debug("Original (after merge): " + workbench.getDebugInfo());
-            log.debug("Merged   (after merge): " + dObj.getDebugInfo());
+            
             
             /*// DEBUG
             for (WorkbenchRow row : ((Workbench)dObj).getWorkbenchRowsAsList())
@@ -2650,13 +2647,8 @@ public class WorkbenchPaneSS extends BaseSubPane
                 }
             }*/
             session.saveOrUpdate(dObj);
-            log.debug("PERFORMING COMMIT");
             session.commit();
-            //session.flush();
-            
-            log.debug("Original (after commit): " + workbench.getDebugInfo());
-            log.debug("Merged   (after commit): " + dObj.getDebugInfo());
-            
+
             workbench = dObj;
             workbench.forceLoad();
             
@@ -2673,20 +2665,18 @@ public class WorkbenchPaneSS extends BaseSubPane
             
             String msg = String.format(getResourceString("WB_SAVED"), new Object[] { workbench.getName()} );
             UIRegistry.getStatusBar().setText(msg);
-
-
-        } catch (StaleObjectException ex) // was StaleObjectStateException
+        }
+        catch (StaleObjectException ex) // was StaleObjectStateException
         {
-            log.debug("Original (after exception): " + workbench.getDebugInfo());
             session.rollback();
             
-            // 
             //recoverFromStaleObject("UPDATE_DATA_STALE");
             UIRegistry.getStatusBar().setErrorMessage(getResourceString("WB_ERROR_SAVING"), ex);
             UnhandledExceptionDialog dlg = new UnhandledExceptionDialog(ex);
             dlg.setVisible(true);
             
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             log.error("******* " + ex);
             ex.printStackTrace();

@@ -193,7 +193,6 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
      * 
      */
     @OneToMany(mappedBy = "workbenchTemplate")
-    //@Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<Workbench> getWorkbenches() {
         return this.workbenches;
     }
@@ -250,17 +249,6 @@ public class WorkbenchTemplate extends DataModelObjBase implements java.io.Seria
     {
         this.workbenches.remove(workbench);
         workbench.setWorkbenchTemplate(null);
-    }
-    
-    public boolean exactMatch(final WorkbenchTemplate template)
-    {
-        if (workbenchTemplateMappingItems != null && 
-            template.workbenchTemplateMappingItems != null &&
-            workbenchTemplateMappingItems.size() == template.workbenchTemplateMappingItems.size())
-        {
-            
-        }
-        return false;
     }
     
     /**

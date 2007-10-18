@@ -39,6 +39,7 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -478,6 +479,10 @@ public final class UIHelper
             return getCalendar(dataStr, scrDateFormat);
             
         } else if (cls == Date.class)
+        {
+            return getDate(dataStr, scrDateFormat);
+            
+        } else if (cls == Timestamp.class)
         {
             return getDate(dataStr, scrDateFormat);
             

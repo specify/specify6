@@ -19,6 +19,7 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -138,7 +139,7 @@ public class PickListProcessor implements FormProcessor
                         @SuppressWarnings("unchecked")
                         public void actionPerformed(ActionEvent ae)
                         {
-                            PickListItem pli = new PickListItem(title.getText(), null, new Date());
+                            PickListItem pli = new PickListItem(title.getText(), null, new Timestamp(System.currentTimeMillis()));
                             pickList.getItems().add(pli);
                             pli.setPickList(pickList);
                             title.setText("");

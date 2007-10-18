@@ -57,11 +57,11 @@ public interface FormDataObjIFace
      */
     public Timestamp getTimestampModified();
 
-//    /**
-//     * Sets the Timestamp Modified.
-//     * @param timestampModified the new timestamp 
-//     */
-//    public void setTimestampModified(Timestamp timestampModified);
+    /**
+     * Sets the Timestamp Modified.
+     * @param timestampModified the new timestamp 
+     */
+    public void setTimestampModified(Timestamp timestampModified);
     
     /**
      * Returns modifiedByAgent.

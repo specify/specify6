@@ -1493,10 +1493,10 @@ public class GenericDBConversion
                 //adding DivisioniID
                 strBuf2.append("INSERT INTO collectiontype (CollectionTypeID, TimestampModified, Discipline, Name, TimestampCreated, LastEditedBy, DataTypeID, SpecifyUserID, GeographyTreeDefID, GeologicTimePeriodTreeDefID, LocationTreeDefID, TaxonTreeDefID, DivisionID) VALUES (");
                 strBuf2.append(taxonomyTypeMapper.get(taxonomyTypeID)+","); 
-                strBuf2.append("'"+dateFormatter.format(new Date())+"',"); // TimestampModified
+                strBuf2.append("'"+dateFormatter.format(now)+"',"); // TimestampModified
                 strBuf2.append("'"+discipline.getName()+"',");
                 strBuf2.append("'"+discipline.getTitle()+"',");
-                strBuf2.append("'"+dateFormatter.format(new Date())+"',");  // TimestampCreated
+                strBuf2.append("'"+dateFormatter.format(now)+"',");  // TimestampCreated
                 strBuf2.append("NULL,"); // lastEditedBy
                 strBuf2.append(dataTypeId+",");
                 strBuf2.append(specifyUserId+",");
@@ -1591,8 +1591,8 @@ public class GenericDBConversion
                      strBuf.append(getStrValue(remarks)+",");
                      strBuf.append(catNumSchemeId.toString()+",");
                      strBuf.append(getStrValue(lastEditBy)+",");
-                     strBuf.append("'"+dateFormatter.format(new Date())+"',"); // TimestampModified
-                     strBuf.append("'"+dateFormatter.format(new Date())+"'");  // TimestampCreated
+                     strBuf.append("'"+dateFormatter.format(now)+"',"); // TimestampModified
+                     strBuf.append("'"+dateFormatter.format(now)+"'");  // TimestampCreated
                      strBuf.append(")");
     
                      System.out.println(strBuf.toString());
@@ -1704,7 +1704,7 @@ public class GenericDBConversion
                     PickListItem pli = new PickListItem();
                     pli.setTitle(typeStr);
                     pli.setValue(typeStr);
-                    pli.setTimestampCreated(new Date());
+                    pli.setTimestampCreated(now);
                     items.add(pli);
                     pli.setPickList(pl);
                     count++;
@@ -2400,10 +2400,9 @@ public class GenericDBConversion
                         attrDef.setDataType(dataType);
                         attrDef.setCollectionType(collType);
                         attrDef.setTableType(GenericDBConversion.TableType.CollectionObject.getType());
+                        attrDef.setTimestampCreated(now);
 
                         attrDefs.put(md.getName(), attrDef);
-                        //attrDefs.setTimestampCreated(new Date());
-                        //attrDefs.setTimestampModified(new Date());
 
                         try
                         {
@@ -2476,8 +2475,7 @@ public class GenericDBConversion
                                 CollectionObjectAttr colObjAttr = new CollectionObjectAttr();
                                 colObjAttr.setCollectionObject(colObj);
                                 colObjAttr.setDefinition(attrDef);
-                                colObjAttr.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-                                //colObjAttr.setTimestampModified(new Date());
+                                colObjAttr.setTimestampCreated(now);
 
                                 //String oldName = newNameToOldNameMap.get(attrDef.getFieldName());
                                 //System.out.println("["+attrDef.getFieldName()+"]["+oldName+"]");
@@ -2518,7 +2516,6 @@ public class GenericDBConversion
                                 countVerify[inx - 2]++;
 
                                 strBufInner.setLength(0);
-                                Date date = new Date();
                                 strBufInner.append("INSERT INTO collectionobjectattr VALUES (");
                                 strBufInner.append("NULL");//Integer.toString(recordCount));
                                 strBufInner.append(",");
@@ -2526,9 +2523,9 @@ public class GenericDBConversion
                                 strBufInner.append(",");
                                 strBufInner.append(getStrValue(isStr ? null : data));
                                 strBufInner.append(",");
-                                strBufInner.append(getStrValue(date));
+                                strBufInner.append(getStrValue(now));
                                 strBufInner.append(",");
-                                strBufInner.append(getStrValue(date));
+                                strBufInner.append(getStrValue(now));
                                 strBufInner.append(",");
                                 strBufInner.append(newRecId.intValue());
                                 strBufInner.append(",");
@@ -5319,7 +5316,6 @@ public class GenericDBConversion
     	allTime.setEndPeriod(0f);
     	allTime.setEndUncertainty(0f);
     	allTime.setTimestampCreated(now);
-    	//allTime.setTimestampModified(now);
     	++count;
     	newItems.add(allTime);
     	
@@ -5341,8 +5337,8 @@ public class GenericDBConversion
             
             if (modT == null && creT == null)
             {
-                creT = new Timestamp(System.currentTimeMillis());
-                modT = new Timestamp(System.currentTimeMillis());
+                creT = now;
+                modT = now;
                 
             } else if (modT == null && creT != null)
             {
@@ -5368,7 +5364,7 @@ public class GenericDBConversion
     		gtp.setStandard(std);
     		gtp.setRemarks(rem);
     		gtp.setTimestampCreated(creT);
-    		//gtp.setTimestampModified(modT);
+    		gtp.setTimestampModified(modT);
 
     		newItems.add(gtp);
 

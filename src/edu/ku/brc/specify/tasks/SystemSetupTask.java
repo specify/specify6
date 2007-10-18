@@ -383,8 +383,7 @@ public class SystemSetupTask extends BaseTask
       */
     public void savePickList(final PickList pickList)
     {
-
-        //pickList.setTimestampModified(Calendar.getInstance().getTime());
+        pickList.setTimestampModified(new Timestamp(System.currentTimeMillis()));
 
         // save to database
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();

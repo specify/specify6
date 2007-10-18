@@ -28,7 +28,7 @@
  */
 package edu.ku.brc.specify.datamodel;
 
-import java.util.Date;
+import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -304,7 +304,7 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
      */
     public PickListItemIFace addPickListItem(final String title, final String value)
     {
-        PickListItem pli = new PickListItem(title, value, new Date());
+        PickListItem pli = new PickListItem(title, value, new Timestamp(System.currentTimeMillis()));
         items.add(pli);
         pli.setPickList(this);
         return pli;
@@ -315,7 +315,7 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
      */
     public PickListItemIFace addPickListItem(final String title, final Object value)
     {
-        PickListItem pli = new PickListItem(title, value, new Date());
+        PickListItem pli = new PickListItem(title, value, new Timestamp(System.currentTimeMillis()));
         items.add(pli);
         pli.setPickList(this);
         return pli;

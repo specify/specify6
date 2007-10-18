@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.specify.ui.db;
 
+import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Vector;
@@ -173,7 +174,7 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
                 pickList.getItems().remove(oldest);
             }
             
-            PickListItem item = new PickListItem(title, value, new Date());
+            PickListItem item = new PickListItem(title, value, new Timestamp(System.currentTimeMillis()));
             items.add(item);
             Collections.sort(items);
             

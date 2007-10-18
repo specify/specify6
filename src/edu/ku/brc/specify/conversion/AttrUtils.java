@@ -156,8 +156,8 @@ public class AttrUtils
             prepAttr.setDblValue(dblValue);
             prepAttr.setPreparation(null);
             prepAttr.setStrValue(strValue);
-            prepAttr.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-            //prepAttr.setTimestampModified(new Date());
+            Timestamp now = new Timestamp(System.currentTimeMillis());
+            prepAttr.setTimestampCreated(now);
             
             session.save(prepAttr);
             

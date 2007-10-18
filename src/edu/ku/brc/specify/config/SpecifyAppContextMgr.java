@@ -879,6 +879,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                         appResourceDef.setDisciplineType(CollectionType.getCurrentCollectionType().getDiscipline());
                         appResourceDef.setSpecifyUser(SpecifyUser.getCurrentUser());
                         appResourceDef.setUserType(SpecifyUser.getCurrentUser().getUserType());
+                        appResourceDef.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
                     }
                     
                     if (appResource instanceof SpAppResource)
@@ -1060,9 +1061,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
                                 appRes.setMimeType(mimeType);
                                 appRes.setDescription(desc);
                                 appRes.setMetaData(metaData);
-                                appRes.setSpecifyUser(user);//added to fix not-null constraint issue
+                                appRes.setSpecifyUser(user); //added to fix not-null constraint issue
                                 
-                                appRes.setTimestampModified(new Timestamp(System.currentTimeMillis()));
+                                appRes.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
 
                                 appRes.setFileName(resFile.getAbsolutePath());
 

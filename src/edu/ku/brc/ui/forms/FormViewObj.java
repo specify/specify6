@@ -1159,11 +1159,6 @@ public class FormViewObj implements Viewable,
     
                 session.beginTransaction();
     
-                if (businessRules != null)
-                {
-                    businessRules.beforeSave(dataObjArg,session);
-                }
-                
                 //if (dataObjArg != null && ((FormDataObjIFace)dataObjArg).getId() != null)
                 //{
                     dObj = session.merge(dataObjArg);
@@ -1173,10 +1168,15 @@ public class FormViewObj implements Viewable,
                 //}
                 log.debug("CurrentDO "+(dataObjArg != null ? dataObjArg.getClass().getSimpleName()+" "+dataObjArg.hashCode() : "N/A")+"  Merged: "+dObj.getClass().getSimpleName()+" "+dObj.hashCode());
 
+                if (businessRules != null)
+                {
+                    businessRules.beforeSave(dObj,session);
+                }
+
                 session.saveOrUpdate(dObj);
                 if (businessRules != null)
                 {
-                    if (!businessRules.beforeSaveCommit(dataObjArg,session))
+                    if (!businessRules.beforeSaveCommit(dObj,session))
                     {
                         throw new Exception("Business rules processing failed");
                     }

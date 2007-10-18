@@ -29,7 +29,6 @@ import java.sql.Timestamp;
 import java.util.Collection;
 
 import javax.persistence.Column;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
@@ -61,6 +60,8 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
     
     protected Agent     createdByAgent;
     protected Agent     modifiedByAgent;
+    
+    protected int       version;
     
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#initialize()
@@ -120,8 +121,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTimestampModified()
      */
-    @Version
-    @Column(name = "TimestampModified", nullable = false)
+    @Column(name = "TimestampModified")
     public Timestamp getTimestampModified()
     {
         return this.timestampModified;
@@ -135,11 +135,23 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
         this.timestampModified = timestampModified;
     }
 
+    @Version
+    @Column(name="Version")
+    public int getVersion()
+    {
+        return version;
+    }
+
+    public void setVersion(int version)
+    {
+        this.version = version;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getModifiedByAgent()
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "ModifiedByAgentID", unique = false, nullable = true, insertable = true, updatable = true)
+    @ManyToOne
+    @JoinColumn(name = "ModifiedByAgentID")
     public Agent getModifiedByAgent()
     {
         return this.modifiedByAgent;
@@ -156,8 +168,8 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
     /**
      * @return the createdByAgent
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "CreatedByAgentID", unique = false, nullable = true, insertable = true, updatable = false)
+    @ManyToOne
+    @JoinColumn(name = "CreatedByAgentID", updatable = false)
     public Agent getCreatedByAgent()
     {
         return createdByAgent;

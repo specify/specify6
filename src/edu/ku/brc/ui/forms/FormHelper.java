@@ -12,6 +12,7 @@ package edu.ku.brc.ui.forms;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.Timestamp;
 import java.util.Collection;
 
 import org.apache.commons.beanutils.PropertyUtils;
@@ -65,14 +66,14 @@ public final class FormHelper
                 if (setter != null)
                 {
                     boolean foundOne = false;
-                    //PropertyDescriptor descr = PropertyUtils.getPropertyDescriptor(dataObj, "timestampModified");
-                    //if (descr != null)
-                    //{
-                    //    setter.setFieldValue(dataObj, "timestampModified", new Date());
-                    //    foundOne = true;
-                    //}
+                    PropertyDescriptor descr = PropertyUtils.getPropertyDescriptor(dataObj, "timestampModified");
+                    if (descr != null)
+                    {
+                        setter.setFieldValue(dataObj, "timestampModified", new Timestamp(System.currentTimeMillis()));
+                        foundOne = true;
+                    }
                     
-                    PropertyDescriptor descr = PropertyUtils.getPropertyDescriptor(dataObj, "lastEditedBy");
+                    descr = PropertyUtils.getPropertyDescriptor(dataObj, "lastEditedBy");
                     if (descr != null)
                     {
                         setter.setFieldValue(dataObj, "lastEditedBy", currentUserEditStr);

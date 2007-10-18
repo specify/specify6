@@ -28,11 +28,10 @@
  */
 package edu.ku.brc.specify.datamodel;
 
-import java.util.Date;
+import java.sql.Timestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -61,7 +60,7 @@ public class PickListItem implements PickListItemIFace, java.io.Serializable
     protected Integer pickListItemId;
     private String title;
     private String value;
-    private Date   timestampCreated;
+    private Timestamp timestampCreated;
     protected PickList pickList;
     
     // Non-Persisted Value as an Object
@@ -75,7 +74,7 @@ public class PickListItem implements PickListItemIFace, java.io.Serializable
         // do nothing
     }
 
-    public PickListItem(final String title, final String value, final Date timestampCreated)
+    public PickListItem(final String title, final String value, final Timestamp timestampCreated)
     {
         super();
         this.title = title;
@@ -83,7 +82,7 @@ public class PickListItem implements PickListItemIFace, java.io.Serializable
         this.timestampCreated = timestampCreated;
     }
 
-    public PickListItem(final String title, final Object valueObject, final Date timestampCreated)
+    public PickListItem(final String title, final Object valueObject, final Timestamp timestampCreated)
     {
         super();
         this.title       = title;
@@ -94,7 +93,7 @@ public class PickListItem implements PickListItemIFace, java.io.Serializable
 
     @Id
     @GeneratedValue
-    @Column(name = "PickListItemID", unique = false, nullable = false, insertable = true, updatable = true)
+    @Column(name = "PickListItemID")
     protected Integer getPickListItemId()
     {
         return pickListItemId;
@@ -108,7 +107,7 @@ public class PickListItem implements PickListItemIFace, java.io.Serializable
     /**
      * 
      */
-    @Column(name = "Title", unique = false, nullable = false, insertable = true, updatable = true, length = 64)
+    @Column(name = "Title", nullable = false, length = 64)
     public String getTitle()
     {
         return this.title;
@@ -119,9 +118,9 @@ public class PickListItem implements PickListItemIFace, java.io.Serializable
         this.title = title;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    @JoinColumn(name = "PickListID", unique = false, nullable = false, insertable = true, updatable = true)
+    @JoinColumn(name = "PickListID", nullable = false)
     public PickList getPickList()
     {
         return pickList;
@@ -140,7 +139,7 @@ public class PickListItem implements PickListItemIFace, java.io.Serializable
     /**
      * 
      */
-    @Column(name = "Value", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    @Column(name = "Value", length = 64)
     public String getValue()
     {
         return this.value == null ? title : value;
@@ -174,13 +173,13 @@ public class PickListItem implements PickListItemIFace, java.io.Serializable
     /**
      * 
      */
-    @Column(name = "TimestampCreated", unique = false, nullable = false, insertable = true, updatable = true)
-    public Date getTimestampCreated()
+    @Column(name = "TimestampCreated", nullable = false)
+    public Timestamp getTimestampCreated()
     {
         return this.timestampCreated;
     }
 
-    public void setTimestampCreated(Date createdDate)
+    public void setTimestampCreated(Timestamp createdDate)
     {
         this.timestampCreated = createdDate;
     }

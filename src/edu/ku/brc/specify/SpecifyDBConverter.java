@@ -792,7 +792,6 @@ public class SpecifyDBConverter
                                 voucherSeries = new Collection();
                                // voucherSeries.setIsTissueSeries(false);
                                 voucherSeries.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-                                //voucherSeries.setTimestampModified(new Timestamp(System.currentTimeMillis()));
                                 voucherSeries.setCollectionId(100);
                                 voucherSeries.setCollectionPrefix("KUFISH");
                                 voucherSeries.setCollectionName("Fish Collection");
@@ -808,7 +807,6 @@ public class SpecifyDBConverter
                                 Collection tissueSeries = new Collection();
                                // tissueSeries.setIsTissueSeries(true);
                                 tissueSeries.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-                                //tissueSeries.setTimestampModified(new Timestamp(System.currentTimeMillis()));
                                 tissueSeries.setCollectionId(101);
                                 tissueSeries.setCollectionPrefix("KUTIS");
                                 tissueSeries.setCollectionName("Fish Tissue");

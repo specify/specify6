@@ -149,11 +149,11 @@ public interface AttributeIFace
      */
     public Timestamp getTimestampModified();
     
-//    /**
-//     * Sets the timestamp.
-//     * @param timestampModified the timestamp value
-//     */
-//    public void setTimestampModified(Date timestampModified);
+    /**
+     * Sets the timestamp.
+     * @param timestampModified the timestamp value
+     */
+    public void setTimestampModified(Timestamp timestampModified);
 
 
     /**

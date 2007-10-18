@@ -726,7 +726,6 @@ public class BuildSampleDatabase
         ku.setName("University of Kansas");
         ku.setEmail("webadmin@ku.edu");
         ku.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        //ku.setTimestampModified(ku.getTimestampCreated());
         agents.add(ku);
         agents.get(0).setOrganization(ku);
         agents.get(1).setOrganization(ku);

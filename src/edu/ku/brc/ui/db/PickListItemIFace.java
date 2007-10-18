@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.ui.db;
 
-import java.util.Date;
+import java.sql.Timestamp;
 
 /**
  * Represents a PickListItem.
@@ -40,9 +40,9 @@ public interface PickListItemIFace extends Comparable<PickListItemIFace>
 
     public void setValue(String value);
     
-    public Date getTimestampCreated();
+    public Timestamp getTimestampCreated();
 
-    public void setTimestampCreated(Date createdDate);
+    public void setTimestampCreated(Timestamp createdDate);
     
     // Non-Presisted Field
     

@@ -699,7 +699,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         {
             try
             {
-                boolean retVal = busRules.beforeSaveCommit(node, sessionWrapper);
+                boolean retVal = busRules.beforeSaveCommit(mergedNode, sessionWrapper);
                 if (retVal == false)
                 {
                     tx.rollback();
@@ -715,7 +715,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         boolean success = commitTransaction(session, tx);
         if (busRules != null)
         {
-            success &= busRules.afterSaveCommit(node);
+            success &= busRules.afterSaveCommit(mergedNode);
         }
         
         return success;

@@ -166,8 +166,9 @@ public class InfoRequestTask extends BaseTask
     {
         addInfoRequest(infoRequest);
 
-        infoRequest.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        //infoRequest.setTimestampModified(Calendar.getInstance().getTime());
+        
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        infoRequest.setTimestampCreated(now);
         
         // save to database
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();

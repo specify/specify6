@@ -61,7 +61,7 @@ public interface AppResourceIFace
 
     public abstract Timestamp getTimestampModified();
 
-    //public abstract void setTimestampModified(Date timestampModified);
+    public abstract void setTimestampModified(Timestamp timestampModified);
 
     public abstract Agent getModifiedByAgent();
 
