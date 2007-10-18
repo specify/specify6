@@ -119,6 +119,7 @@ import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AgentAttachment;
 import edu.ku.brc.specify.datamodel.Attachment;
+import edu.ku.brc.specify.datamodel.AttachmentMetadata;
 import edu.ku.brc.specify.datamodel.AttributeDef;
 import edu.ku.brc.specify.datamodel.CatalogNumberingScheme;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
@@ -1439,6 +1440,15 @@ public class BuildSampleDatabase
                             agentAttach.setOrderIndex(0);
                             dataObjects.add(photoAttachment);
                             dataObjects.add(agentAttach);
+                            
+                            AttachmentMetadata metadata = new AttachmentMetadata();
+                            metadata.initialize();
+                            metadata.setName("Copyright");
+                            metadata.setValue("2006");
+                            photoAttachment.getMetadata().add(metadata);
+                            metadata.setAttachment(photoAttachment);
+                            dataObjects.add(metadata);
+                            
                             AttachmentUtils.getAttachmentManager().setStorageLocationIntoAttachment(photoAttachment);
                             photoAttachment.storeFile();
                         }
