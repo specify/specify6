@@ -4301,7 +4301,21 @@ public class GenericDBConversion
 
     	// Ignore new fields
         // These were added for supporting the new security model and hybrids
-    	String[] ignoredFields = {"GUID", "Visibility", "VisibilitySetBy", "IsHybrid", "HybridParent1ID", "HybridParent2ID"};
+    	String[] ignoredFields = {"GUID",
+                                  "Visibility",
+                                  "VisibilitySetBy",
+                                  "IsHybrid",
+                                  "HybridParent1ID",
+                                  "HybridParent2ID",
+                                  "EsaStatus",
+                                  "CitesStatus",
+                                  "UsfwsCode",
+                                  "IsisNumber",
+                                  "Text1",
+                                  "Text2",
+                                  "NcbiTaxonNumber",
+                                  "Number1",
+                                  "Number2"};
     	
         BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
         

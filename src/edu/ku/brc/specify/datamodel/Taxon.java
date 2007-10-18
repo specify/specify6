@@ -74,6 +74,12 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 	protected String               unitInd4;
 	protected String               unitName4;
 	
+    protected String               esaStatus;
+    protected String               citesStatus;
+    protected String               usfwsCode;
+    protected String               isisNumber;
+    protected String               ncbiTaxonNumber;
+    
 	// reference info
 	protected String               author;
 	protected String               source;
@@ -98,6 +104,11 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
     protected Set<Taxon>           children;
     protected TaxonTreeDef         definition;
     protected TaxonTreeDefItem     definitionItem;
+    
+    protected String               text1;
+    protected String               text2;
+    protected Integer              number1;
+    protected Integer              number2;
     
     // relationships with other tables
 	protected Set<Determination>   determinations;
@@ -416,6 +427,105 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 	{
 		this.environmentalProtectionStatus = environmentalProtectionStatus;
 	}
+
+    @Column(name="CitesStatus", length = 32)
+    public String getCitesStatus()
+    {
+        return citesStatus;
+    }
+
+    public void setCitesStatus(String citesStatus)
+    {
+        this.citesStatus = citesStatus;
+    }
+
+    @Column(name="EsaStatus", length = 64)
+    public String getEsaStatus()
+    {
+        return esaStatus;
+    }
+
+    public void setEsaStatus(String esaStatus)
+    {
+        this.esaStatus = esaStatus;
+    }
+
+    @Column(name="IsisNumber", length = 16)
+    public String getIsisNumber()
+    {
+        return isisNumber;
+    }
+
+    public void setIsisNumber(String isisNumber)
+    {
+        this.isisNumber = isisNumber;
+    }
+
+    @Column(name="NcbiTaxonNumber", length = 8)
+    public String getNcbiTaxonNumber()
+    {
+        return ncbiTaxonNumber;
+    }
+
+    public void setNcbiTaxonNumber(String ncbiTaxonNumber)
+    {
+        this.ncbiTaxonNumber = ncbiTaxonNumber;
+    }
+
+    @Column(name="Number1")
+    public Integer getNumber1()
+    {
+        return number1;
+    }
+
+    public void setNumber1(Integer number1)
+    {
+        this.number1 = number1;
+    }
+
+    @Column(name="Number2")
+    public Integer getNumber2()
+    {
+        return number2;
+    }
+
+    public void setNumber2(Integer number2)
+    {
+        this.number2 = number2;
+    }
+
+    @Column(name="Text1", length = 32)
+    public String getText1()
+    {
+        return text1;
+    }
+
+    public void setText1(String text1)
+    {
+        this.text1 = text1;
+    }
+
+    @Column(name="Text2", length = 32)
+    public String getText2()
+    {
+        return text2;
+    }
+
+    public void setText2(String text2)
+    {
+        this.text2 = text2;
+    }
+
+    @Column(name="UsfwsCode", length = 16)
+    public String getUsfwsCode()
+    {
+        return usfwsCode;
+    }
+
+    public void setUsfwsCode(String usfwsCode)
+    {
+        this.usfwsCode = usfwsCode;
+    }
 
     @Column(name = "NodeNumber", unique = false, nullable = true, insertable = true, updatable = false, length = 10)
 	public Integer getNodeNumber()
