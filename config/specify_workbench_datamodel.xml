@@ -96,7 +96,7 @@
     <field column="Weight" name="weight" type="java.lang.Float" length="24"/>
     <field column="Length" name="length" type="java.lang.Float" length="24"/>
     <field column="Reproductive Condition" name="reproductiveCondition" type="java.lang.String" length="50"/>
-    <field column="Condition" name="condition" type="java.lang.String" length="50"/>
+    <field column="Condition" name="objCondition" type="java.lang.String" length="50"/>
     <field column="Maximum Length" name="maxLength" type="java.lang.Float" length="24"/>
     <field column="Minimum Length" name="minLength" type="java.lang.Float" length="24"/>
     <field column="Width" name="width" type="java.lang.Float" length="24"/>
