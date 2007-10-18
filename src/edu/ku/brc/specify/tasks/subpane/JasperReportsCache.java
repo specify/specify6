@@ -49,7 +49,7 @@ public class JasperReportsCache implements DataCacheIFace
      */
     protected JasperReportsCache()
     {
-        // XXX FOR WORKBENCH RELEASE ONLY
+        // XXX FOR WORKBENCH RELEASE ONLY (Maybe we need to keep this)
         reportsCacheName = "reportsCache_" + UIHelper.getOSType().toString();
     }
 

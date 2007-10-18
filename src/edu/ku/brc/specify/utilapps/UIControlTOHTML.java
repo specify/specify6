@@ -40,11 +40,12 @@ public class UIControlTOHTML
                                     FileNotFoundException, 
                                     IOException
     {
-        boolean doGerman    = false;
-        String  outFileName = "UIControls.html";
+        boolean doUIControls = true;
+        boolean doGerman     = false;
+        String  outFileName  = "UIControls.html";
         
         TransformerFactory tFactory = TransformerFactory.newInstance();
-        if (false)
+        if (doUIControls)
         {
            
           Transformer transformer = tFactory.newTransformer(new StreamSource("src/edu/ku/brc/specify/utilapps/uicontrols.xslt"));

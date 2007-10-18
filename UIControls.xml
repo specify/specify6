@@ -120,9 +120,12 @@
         </attr>
         <attr name="dsptype" type="string" required="false" default="dsptextfield">
             <desc>Indicates the type of control to use when the form is in "display" mode.
-            IDs do not have to be unique to it's parent form other sibling subforms, or its child subforms</desc>
+                IDs do not have to be unique to it's parent form other sibling subforms, or its child subforms</desc>
         </attr>                
-    	<subcontrols>
+        <param name="editoncreate" type="boolean" required="false" default="false">
+            <desc>This enables a field to be editable ONLY on creation, and then only viewable on edit.</desc>
+        </param>          
+        <subcontrols>
              <subcontrol type="text" dsp="disptextfield">
                 <desc>Text field that is editable.</desc>
 		        <attr name="format" type="string" required="false" default="">

@@ -22,6 +22,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -81,9 +82,10 @@ public class QueryFieldPanel extends JPanel
                            final IconManager.IconSize iconSize,
                            final String        columnDefStr)
     {
-        this.fieldQRI     = fieldQRI;
-        this.field        = fieldQRI != null ? fieldQRI.getFieldInfo() : null;
-        this.columnDefStr = columnDefStr;
+        this.queryBldrPane = queryBldrPane;
+        this.fieldQRI      = fieldQRI;
+        this.field         = fieldQRI != null ? fieldQRI.getFieldInfo() : null;
+        this.columnDefStr  = columnDefStr;
         
         thisItem = this;
         
@@ -91,7 +93,8 @@ public class QueryFieldPanel extends JPanel
         if (createAsHeader)
         {
             removeAll();
-            buildLabelLayout(iconSize, widths);
+            buildLabelLayout(widths);
+            queryBldrPane.setColumnDefStr(this.columnDefStr);
         }
     }
     
@@ -251,8 +254,7 @@ public class QueryFieldPanel extends JPanel
      * @param iconSize
      * @param widths
      */
-    protected void buildLabelLayout(final IconManager.IconSize iconSize,
-                                    final int[] widths)
+    protected void buildLabelLayout(final int[] widths)
     {
         
         StringBuilder sb     = new StringBuilder();
@@ -260,8 +262,9 @@ public class QueryFieldPanel extends JPanel
         int[]    labelWidths = new int[labelStrs.length];
         for (int i=0;i<labels.length;i++)
         {
-            labels[i] = new JLabel(labelStrs[i], JLabel.CENTER);
+            labels[i] = new JLabel(labelStrs[i], SwingConstants.CENTER);
             labelWidths[i] = Math.max(widths[i], labels[i].getPreferredSize().width);
+            System.out.println(labelStrs[i]+"  "+labelWidths[i]);
         }
         
         for (int i=0;i<labels.length;i++)
@@ -275,8 +278,9 @@ public class QueryFieldPanel extends JPanel
             sb.append(",4px");
         }
 
-        //System.out.println(sb.toString());
+        System.out.println(sb.toString());
         columnDefStr = sb.toString();
+        
         
         PanelBuilder    builder = new PanelBuilder(new FormLayout(sb.toString(), "p"), this);
         CellConstraints cc      = new CellConstraints();

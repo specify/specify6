@@ -10,6 +10,7 @@
      table { border-bottom: 1px solid black; border-right: 1px solid black; }
      table.subcontrol { background-color: rgb(240,240,240); }
      table.paramTable { background-color: rgb(240,240,240); }
+     table.fieldParamTable { background-color: rgb(255,255,255); }
      </style>
      </head><body>
 
@@ -32,14 +33,33 @@
        <tr><td align="center" width="33%"><b>Name</b></td><td align="center" width="34%"><b>Type</b></td><td align="center" width="33%"><b>Is Required</b></td></tr>
        
        <xsl:apply-templates select="attr"/>
+  
+  
+      <xsl:if test="count( param ) > 0">
+        <tr>
+          <td colspan="3"><br/><b>Parameters</b></td>
+        </tr>
+        <tr>
+          <td colspan="3">
+            <table class="fieldParamTable" border="0" cellspacing="0" width="100%">
+              <tr>
+                <td align="center"><b>Name</b></td><td align="center"><b>Type</b></td>
+                <td align="center"><b>Is Required</b></td><td align="center"><b>Default</b></td><td align="center"><b>Description</b></td>
+              </tr>
+              <xsl:apply-templates select="param"/>
+            </table>
+          </td>
+        </tr>
+      </xsl:if>
        
        <xsl:if test="count( subcontrols/subcontrol ) > 0">
-       <tr><td colspan="3"><br/>
+         <tr><td colspan="3"><br/>
        <xsl:apply-templates select="subcontrols/subcontrol">
        	<xsl:sort select="@type"/>
        </xsl:apply-templates>
        </td></tr>
        </xsl:if>
+    
     </table><br/><br/>
 
   </xsl:template>
@@ -84,6 +104,7 @@
   </xsl:template>
   
   <xsl:template match="subcontrol">
+    <br/>
     <table class="subcontrol" border="0" cellspacing="0" width="100%">
        <tr>
        	<td colspan="3" class="control"><xsl:value-of select="@type" /> - <xsl:value-of select="@dsp" /></td>

@@ -200,6 +200,7 @@ public class QueryBldrPane extends BaseSubPane
         queryFieldsPanel = new JPanel();
         queryFieldsPanel.setLayout(new NavBoxLayoutManager(0,2));
         JScrollPane sp = new JScrollPane(queryFieldsPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        sp.setBorder(null);
         add(sp, BorderLayout.CENTER);
         
         JButton         searchBtn = new JButton("Search");
@@ -436,13 +437,13 @@ public class QueryBldrPane extends BaseSubPane
     }
     
     /**
-     * @param queryFieldItems
+     * @param queryFieldItemsArg
      * @param sql
      */
-    protected void processSQL(final Vector<QueryFieldPanel> queryFieldItems, final String sql)
+    protected void processSQL(final Vector<QueryFieldPanel> queryFieldItemsArg, final String sql)
     {
         List<ERTICaptionInfo> captions = new Vector<ERTICaptionInfo>();
-        for (QueryFieldPanel qfp : queryFieldItems)
+        for (QueryFieldPanel qfp : queryFieldItemsArg)
         {
             DBFieldInfo fi      = qfp.getFieldInfo();
             DBTableInfo ti      = fi.getTableInfo();
@@ -503,11 +504,11 @@ public class QueryBldrPane extends BaseSubPane
             return qri;
         }
         
-        public boolean contains(BaseQRI qri)
+        public boolean contains(BaseQRI qriArg)
         {
             for (ProcessNode pn : kids)
             {
-                if (pn.getQri() == qri)
+                if (pn.getQri() == qriArg)
                 {
                     return true;
                 }
@@ -516,11 +517,11 @@ public class QueryBldrPane extends BaseSubPane
         }
     }
     
-    protected TableTree findTableTree(final TableTree parentTT, final String name)
+    protected TableTree findTableTree(final TableTree parentTT, final String nameArg)
     {
         for (TableTree tt : parentTT.getKids())
         {
-            if (tt.getName().equals(name))
+            if (tt.getName().equals(nameArg))
             {
                 return tt;
             }
@@ -807,26 +808,26 @@ public class QueryBldrPane extends BaseSubPane
     protected void processForAliases(final Element parent, 
                                      final Vector<TableTree> treeNodes)
     {
+        @SuppressWarnings("unused")
         TableTree treeNode = null;
-        String    name     = XMLHelper.getAttr(parent, "name", null);
+        String    nameStr  = XMLHelper.getAttr(parent, "name", null);
         for (TableTree tt : treeNodes)
         {
-            if (tt.getName().equals(name))
+            if (tt.getName().equals(nameStr))
             {
                 treeNode = tt;
                 break;
             }
         }
-        if (treeNode == null)
-        {
-            treeNode = null;
-        }
         
-        for (Object obj : parent.selectNodes("alias"))
-        {
-            Element kidElement = (Element)obj;
-            processForAliases(kidElement, treeNodes);
-        }
+        //if (treeNode != null)
+        //{
+            for (Object obj : parent.selectNodes("alias"))
+            {
+                Element kidElement = (Element)obj;
+                processForAliases(kidElement, treeNodes);
+            }
+        //}
     }
     
     protected void processForTables(final Element           parent, 
@@ -929,34 +930,13 @@ public class QueryBldrPane extends BaseSubPane
         return tables;
     }
 
-
-    //------------------------------------------------------------
-    // One of the Criteria for the search
-    //------------------------------------------------------------
-    
-    
-    //------------------------------------------------------------------
-    //-- 
-    //------------------------------------------------------------------
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    //-----------------------------------------------
-    //
+    /**
+     * @param columnDefStr the columnDefStr to set
+     */
+    public void setColumnDefStr(String columnDefStr)
+    {
+        this.columnDefStr = columnDefStr;
+    }
 
 
 }

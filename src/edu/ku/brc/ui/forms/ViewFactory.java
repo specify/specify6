@@ -762,17 +762,19 @@ public class ViewFactory
      * @param currDataObj the current data object
      * @param formRows the list of rows to be processed
      */
-    protected void processRows(final MultiView         parent,
-                               final FormViewDefIFace       formViewDef,
-                               final FormValidator     validator,
-                               final ViewBuilderIFace  viewBldObj,
+    protected void processRows(final MultiView                 parent,
+                               final FormViewDefIFace          formViewDef,
+                               final FormValidator             validator,
+                               final ViewBuilderIFace          viewBldObj,
                                final AltViewIFace.CreationMode mode,
                                final Hashtable<String, JLabel> labelsForHash,
-                               final Object            currDataObj,
-                               final List<FormRowIFace>     formRows)
+                               final Object                    currDataObj,
+                               final List<FormRowIFace>        formRows)
     {
         int rowInx    = 1;
         int curMaxRow = 1;
+        
+        boolean isNewObj = MultiView.isOptionOn(parent.getCreateOptions(), MultiView.IS_NEW_OBJECT);
         
         Hashtable<CollapsableSeparator, String> collapseSepHash = null;
 
@@ -856,7 +858,9 @@ public class ViewFactory
                 } else if (cell.getType() == FormCellIFace.CellType.field)
                 {
                     FormCellField cellField = (FormCellField)cell;
-
+                    
+                    boolean isEditOnCreateOnly = cellField.getPropertyAsBoolean("editoncreate", false);
+                    
                     FormCellField.FieldType uiType = cellField.getUiType();
                     
                     // Check to see if there is a picklist and get it if there is
@@ -877,7 +881,7 @@ public class ViewFactory
                     // here after we have the picklist and actually set the change into the cellField
                     // because it uses the value to determine whether to convert the value into a text string 
                     // before setting it.
-                    if (mode == AltViewIFace.CreationMode.VIEW)
+                    if (mode == AltViewIFace.CreationMode.VIEW || (isEditOnCreateOnly && !isNewObj))
                     {
                         if (uiType == FormCellFieldIFace.FieldType.combobox && cellField.getDspUIType() != FormCellFieldIFace.FieldType.textpl)
                         {
