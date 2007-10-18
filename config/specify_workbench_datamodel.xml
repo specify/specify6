@@ -134,10 +134,10 @@
     <field column="Number 30 (Col. Obj. Attribute)" name="colObjAttributeNumber30" type="java.lang.Short" length="5"/>
     <field column="Number 31 (Col. Obj. Attribute)" name="colObjAttributeNumber31" type="java.lang.Float" length="24"/>
     <field column="Number 32 (Col. Obj. Attribute)" name="colObjAttributeNumber32" type="java.lang.Float" length="24"/>
-    <field column="Number 33 (Col. Obj. Attribute)" name="colObjAttributeNumber34" type="java.lang.Float" length="24"/>
+    <field column="Number 33 (Col. Obj. Attribute)" name="colObjAttributeNumber33" type="java.lang.Float" length="24"/>
     <field column="Number 34 (Col. Obj. Attribute)" name="colObjAttributeNumber34" type="java.lang.Integer" length="10"/>
     <field column="Number 35 (Col. Obj. Attribute)" name="colObjAttributeNumber35" type="java.lang.Integer" length="10"/>
-    <field column="Number 36 (Col. Obj. Attribute)" name="colObjAttributeNumber37" type="java.lang.Integer" length="10"/>
+    <field column="Number 36 (Col. Obj. Attribute)" name="colObjAttributeNumber36" type="java.lang.Integer" length="10"/>
     <field column="Text 1 (Col. Obj. Attribute)" name="colObjAttributeText1" type="java.lang.String" length="300"/>
     <field column="Text 2 (Col. Obj. Attribute)" name="colObjAttributeText2" type="java.lang.String" length="300"/>
     <field column="Text 3 (Col. Obj. Attribute)" name="colObjAttributeText3" type="java.lang.String" length="300"/>
