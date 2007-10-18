@@ -2113,11 +2113,9 @@
                     <cell type="label" labelfor="remarks" label="Remarks"/>
                     <cell type="field" id="remarks" name="attachment.remarks" uitype="textarea"/>
                 </row>
-                <!--
                 <row>
-                	<cell type="subview" viewname="AttachmentMetadata" name="attachment.metadata" colspan="3"/>
+                	<cell type="subview" id="metadata" viewname="AttachmentMetadata" name="attachment.metadata" colspan="3"/>
                 </row>
-                -->
 			</rows>
 		</viewdef>
 		
@@ -2400,7 +2398,7 @@
                     <cell type="label" labelfor="name" label="Name"/>
                     <cell type="field" id="name" name="name" cols="16" uitype="text"/>
                     <cell type="label" labelfor="value" label="Value"/>
-                    <cell type="field" id="value" name="value" cols="16" uitype="text"/>
+                    <cell type="field" id="value" name="value" cols="32" uitype="text"/>
                 </row>
 			</rows>
 		</viewdef>
