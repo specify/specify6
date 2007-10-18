@@ -774,7 +774,7 @@ public class ViewFactory
         int rowInx    = 1;
         int curMaxRow = 1;
         
-        boolean isNewObj = MultiView.isOptionOn(parent.getCreateOptions(), MultiView.IS_NEW_OBJECT);
+        boolean isNewObj = parent != null && MultiView.isOptionOn(parent.getCreateOptions(), MultiView.IS_NEW_OBJECT);
         
         Hashtable<CollapsableSeparator, String> collapseSepHash = null;
 
