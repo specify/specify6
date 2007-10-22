@@ -29,7 +29,7 @@ import edu.ku.brc.ui.DateWrapper;
 /**
  * @author rod
  *
- * @code_status Alpha
+ * @code_status Beta
  *
  * Oct 16, 2007
  *
@@ -41,6 +41,9 @@ import edu.ku.brc.ui.DateWrapper;
 @org.hibernate.annotations.Table(appliesTo="treatmentevent", indexes =
     {   @Index (name="TEDateCompletedIDX", columnNames={"DateCompleted"}),
         @Index (name="TEDateInitiatedIDX", columnNames={"DateInitiated"}),
+        @Index (name="TEDateEnteredIsolationIDX", columnNames={"DateEnteredIsolation"}),
+        @Index (name="TEDateLeftIsolationIDX", columnNames={"DateLeftIsolation"}),
+        @Index (name="TETypeIDX", columnNames={"Type"}),
         @Index (name="TEFieldNumberIDX", columnNames={"FieldNumber"})
     })
 public class TreatmentEvent extends DataModelObjBase
@@ -50,6 +53,8 @@ public class TreatmentEvent extends DataModelObjBase
     protected Integer  treatmentEventId;
     protected Calendar dateInitiated;
     protected Calendar dateCompleted;
+    protected Calendar dateEnteredIsolation;
+    protected Calendar dateLeftIsolation;
     protected String   type;
     protected String   location;
     protected String   fieldNumber;
@@ -72,15 +77,17 @@ public class TreatmentEvent extends DataModelObjBase
     @Override
     public void initialize()
     {
-        treatmentEventId  = null;
-        dateInitiated     = null;
-        dateCompleted     = null;
-        type              = null;
-        location          = null;
-        fieldNumber       = null;
-        remarks           = null;
-        accession         = null;
-        collectionObject  = null;
+        treatmentEventId     = null;
+        dateInitiated        = null;
+        dateCompleted        = null;
+        dateEnteredIsolation = null;
+        dateLeftIsolation    = null;
+        type                 = null;
+        location             = null;
+        fieldNumber          = null;
+        remarks              = null;
+        accession            = null;
+        collectionObject     = null;
     }
 
     /**
@@ -113,6 +120,22 @@ public class TreatmentEvent extends DataModelObjBase
     public void setDateCompleted(Calendar dateCompleted)
     {
         this.dateCompleted = dateCompleted;
+    }
+    
+    /**
+     * @param dateEnteredIsolation the dateEnteredIsolation to set
+     */
+    public void setDateEnteredIsolation(Calendar dateEnteredIsolation)
+    {
+        this.dateEnteredIsolation = dateEnteredIsolation;
+    }
+
+    /**
+     * @param dateLeftIsolation the dateLeftIsolation to set
+     */
+    public void setDateLeftIsolation(Calendar dateLeftIsolation)
+    {
+        this.dateLeftIsolation = dateLeftIsolation;
     }
 
     /**
@@ -202,6 +225,25 @@ public class TreatmentEvent extends DataModelObjBase
         return dateCompleted;
     }
 
+    /**
+     * @return the dateEnteredIsolation
+     */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "DateEnteredIsolation", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getDateEnteredIsolation()
+    {
+        return dateEnteredIsolation;
+    }
+
+    /**
+     * @return the dateLeftIsolation
+     */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "DateLeftIsolation", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getDateLeftIsolation()
+    {
+        return dateLeftIsolation;
+    }
     /**
      * @return the type
      */

@@ -25,6 +25,7 @@ import java.util.Vector;
 public class FormRow implements Cloneable, FormRowIFace
 {
     protected Vector<FormCellIFace> cells = new Vector<FormCellIFace>();
+    protected byte rowNumber = 0;
     
     /**
      * Default Constructor
@@ -88,5 +89,29 @@ public class FormRow implements Cloneable, FormRowIFace
     public void toXML(StringBuffer sb)
     {
         throw new RuntimeException("Not Implemented.");
+    }
+    
+    /**
+     * @return the rowNumber
+     */
+    public byte getRowNumber()
+    {
+        return rowNumber;
+    }
+
+    /**
+     * @param rowNumber the rowNumber to set
+     */
+    public void setRowNumber(byte rowNumber)
+    {
+        this.rowNumber = rowNumber;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    public String toString()
+    {
+        return Byte.toString((byte)(rowNumber+1));
     }
 }

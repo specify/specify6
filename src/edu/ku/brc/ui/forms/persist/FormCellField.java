@@ -16,6 +16,8 @@ package edu.ku.brc.ui.forms.persist;
 
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
+
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.ui.DateWrapper;
 
@@ -470,4 +472,13 @@ public final class FormCellField extends FormCell implements FormCellFieldIFace
         return fcf;      
     }
 
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return (StringUtils.isNotEmpty(name) ? name : id) + " (" + uiType + ")";
+    }
 }

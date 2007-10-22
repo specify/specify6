@@ -21,7 +21,7 @@ public class TableFieldPair implements Comparable<TableFieldPair>
 {
     protected DBTableInfo tableinfo;
     protected DBFieldInfo fieldInfo;
-    protected boolean                isInUse    = false;
+    protected boolean     isInUse    = false;
     
     public TableFieldPair(final DBTableInfo tableinfo, final DBFieldInfo fieldInfo)
     {

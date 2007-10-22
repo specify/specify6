@@ -99,7 +99,6 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
     protected Set<ConservDescription>     conservDescriptions;
     protected Appraisal                   appraisal;
     protected Set<TreatmentEvent>         treatmentEvents;
-    protected Set<Ipm>                    ipms;
 
     // Constructors
 
@@ -146,7 +145,6 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
         conservDescriptions     = new HashSet<ConservDescription>();
         appraisal               = null;
         treatmentEvents         = new HashSet<TreatmentEvent>();
-        ipms                    = new HashSet<Ipm>();
 
         
     }
@@ -528,24 +526,6 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
     public void setTreatmentEvents(Set<TreatmentEvent> treatmentEvents)
     {
         this.treatmentEvents = treatmentEvents;
-    }
-
-    /**
-     * @return the ipms
-     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectionObject")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<Ipm> getIpms()
-    {
-        return ipms;
-    }
-
-    /**
-     * @param ipms the ipms to set
-     */
-    public void setIpms(Set<Ipm> ipms)
-    {
-        this.ipms = ipms;
     }
 
     /**

@@ -15,9 +15,9 @@
 package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
-import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.Color;
+import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,7 +29,6 @@ import java.util.Vector;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -40,6 +39,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.DroppableNavBox;
 import edu.ku.brc.af.core.MenuItemDesc;
+import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.NavBoxMgr;
@@ -58,13 +58,16 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.tasks.subpane.SQLQueryPane;
 import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
 import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DataFlavorTableExt;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.forms.FormHelper;
+import edu.ku.brc.ui.forms.MultiView;
 
 /**
  * This task will enable the user to create queries, save them and execute them.
@@ -90,7 +93,8 @@ public class QueryTask extends BaseTask
     protected Vector<JComponent>         menus            = new Vector<JComponent>();
     protected Vector<NavBoxIFace>        extendedNavBoxes = new Vector<NavBoxIFace>();
     protected DroppableNavBox            navBox           = null;
-
+    protected NavBox                     actionNavBox     = null;
+    
     /**
      * Default Constructor
      *
@@ -98,28 +102,153 @@ public class QueryTask extends BaseTask
     public QueryTask()
     {
         super(QUERY, getResourceString(QUERY));
+        
+        CommandDispatcher.register(QUERY, this);        
+        CommandDispatcher.register(APP_CMD_TYPE, this);
 
-        /*
-        // XXX Localize
-        // Temporary
-        NavBox navBox = new NavBox(name);
-        navBox.add(NavBox.createBtn(getResourceString("New"), name, IconManager.IconSize.Std16, new QueryAction("select * from picklist where picklist_id = 3")));
-        navBox.add(NavBox.createBtn(getResourceString("Advanced"), name, IconManager.IconSize.Std16));
-        navBox.add(NavBox.createBtn(getResourceString("Specimen"), name, IconManager.IconSize.Std16));
-        navBox.add(NavBox.createBtn(getResourceString("Taxonomic"), name, IconManager.IconSize.Std16));
-        navBox.add(NavBox.createBtn(getResourceString("Geographic"), name, IconManager.IconSize.Std16));
-        navBox.add(NavBox.createBtn(getResourceString("CollectionObject"), name, IconManager.IconSize.Std16, new QueryAction(null, "Collection Object Search")));
-        navBoxes.add(navBox);
+    }
+    
+    
+    /**
+     * Ask the user for information needed to fill in the data object. (Could be refactored with WorkBench Task)
+     * @param data the data object
+     * @return true if OK, false if cancelled
+     */
+    public static boolean askUserForInfo(final String viewSetName, 
+                                         final String dlgTitle,
+                                         final SpQuery query)
+    {
+        ViewBasedDisplayDialog editorDlg = new ViewBasedDisplayDialog(
+                (Frame)UIRegistry.getTopWindow(),
+                "Global",
+                viewSetName,
+                null,
+                dlgTitle,
+                getResourceString("OK"),
+                null, // className,
+                null, // idFieldName,
+                true, // isEdit,
+                MultiView.HIDE_SAVE_BTN);
+        
+        editorDlg.preCreateUI();
+        editorDlg.setData(query);
+        editorDlg.getMultiView().preValidate();
+        editorDlg.setModal(true);
+        editorDlg.setVisible(true);
 
-        navBox = new NavBox(getResourceString("Saved_Searches"));
-        navBox.add(NavBox.createBtn("Species Counts", name, IconManager.IconSize.Std16, new QueryAction("select SpeciesName,count(tx) as SpeciesCount from (select determination.TaxonNameId, taxonname.TaxonNameID as tx, taxonname.TaxonName as SpeciesName from taxonname,determination where determination.TaxonNameId = taxonname.taxonnameid) as newTable group by tx order by SpeciesCount DESC;")));
-        navBox.add(NavBox.createBtn("Picklist", name, IconManager.IconSize.Std16));
-        navBoxes.add(navBox);
-        */
+        if (!editorDlg.isCancelled())
+        {
+            editorDlg.getMultiView().getDataFromUI();
+        }
+        editorDlg.dispose();
+        
+        return !editorDlg.isCancelled();
+    }
+    
+    
+    /**
+     * (Could be refactored with WorkBench Task)
+     * @param workbench
+     * @param title
+     * @return
+     */
+    protected boolean fillInQueryNameAndAttrs(final SpQuery query, 
+                                              final String  queryName, 
+                                              final boolean skipFirstCheck)
+    {
+        boolean skip = skipFirstCheck;
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        
+        try
+        {
+            String newQueryName = queryName;
+            
+            boolean   alwaysAsk   = true;
+            SpQuery   fndQuery    = null;
+            boolean   shouldCheck = false;
+            do
+            {
+                if (StringUtils.isEmpty(newQueryName))
+                {
+                    alwaysAsk = true;
+                    
+                } else
+                {
+                    fndQuery = session.getData(SpQuery.class, "name", newQueryName, DataProviderSessionIFace.CompareType.Equals);
+                    if (fndQuery != null && !skip)
+                    {
+                        UIRegistry.getStatusBar().setErrorMessage(String.format(getResourceString("WB_DATASET_EXISTS"), new Object[] { newQueryName}));
+                        query.setName("");
+                    }
+                    skip = false;
+                }
+                
+                String oldName = query.getName();
+                if ((fndQuery != null || (StringUtils.isNotEmpty(newQueryName) && newQueryName.length() > 64)) || alwaysAsk)
+                {
+                    alwaysAsk = false;
+                    
+                    // We found the same name and it must be unique
+                    if (QueryTask.askUserForInfo("Query", getResourceString("QB_DATASET_INFO"), query))
+                    {
+                        newQueryName = query.getName();
+                        // This Part here needs to be moved into an <enablerule/>
+                        if (StringUtils.isNotEmpty(newQueryName) && newQueryName.length() > 64)
+                        {
+                            UIRegistry.getStatusBar().setErrorMessage(getResourceString("WB_NAME_TOO_LONG"));
+                        }
+                        fndQuery = query;
+                    } else
+                    {
+                        UIRegistry.getStatusBar().setText("");
+                        return false;
+                    }
+                }
+                
+                shouldCheck = oldName == null || !oldName.equals(newQueryName);
+                
+            } while (shouldCheck);
+            
+        } catch (Exception ex)
+        {
+            log.error(ex);
+            
+        } finally
+        {
+            session.close();    
+        }
+        UIRegistry.getStatusBar().setText("");
+        return true;
     }
 
+    
     /**
-     * CReates pane and executes a query
+     * Creates a new Query Data Object.
+     * @param wbName
+     * @return
+     */
+    protected SpQuery createNewQueryDataObj(final String wbName)
+    {
+        SpQuery query = new SpQuery();
+        query.initialize();
+        query.setSpecifyUser(SpecifyUser.getCurrentUser());
+        
+        if (StringUtils.isNotEmpty(wbName))
+        {
+            query.setName(wbName);
+        }
+        
+        if (fillInQueryNameAndAttrs(query, wbName, false))
+        {
+            return query;
+        }
+
+        return null;
+    }
+
+
+    /**
+     * Creates pane and executes a query.
      * @param sqlStr SQL to be executed
      */
     public void createAndExecute(final String sqlStr)
@@ -129,6 +258,7 @@ public class QueryTask extends BaseTask
         sqlPane.setSQLStr(sqlStr);
         sqlPane.doQuery();
     }
+    
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.BaseTask#getStarterPane()
@@ -152,6 +282,24 @@ public class QueryTask extends BaseTask
     // Taskable
     //-------------------------------------------------------
     
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#preInitialize()
+     */
+    @Override
+    public void preInitialize()
+    {
+        // Create and add the Actions NavBox first so it is at the top at the top
+        actionNavBox = new NavBox(getResourceString("Actions"));
+        actionNavBox.add(NavBox.createBtnWithTT(getResourceString("QB_CREATE_NEWQUERY"), name, getResourceString("QB_CREATE_NEWQUERY_TT"), IconManager.IconSize.Std16, new ActionListener() {
+            public void actionPerformed(ActionEvent arg0)
+            {
+                createNewQuery();
+            }
+        }
+        ));
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.Taskable#initialize()
      */
@@ -160,7 +308,10 @@ public class QueryTask extends BaseTask
         if (!isInitialized)
         {
             super.initialize(); // sets isInitialized to false
+            
             loadQueries();
+            
+            navBoxes.add(actionNavBox);
             navBoxes.add(navBox);
         }
     }
@@ -188,27 +339,30 @@ public class QueryTask extends BaseTask
     }
     
     /**
-     * Adds a Query to the Left Pane NavBox
+     * Adds a Query to the Left Pane NavBox (Refactor this with Workbench)
      * @param query the Query to be added
      * @return the nav box
      */
-    protected NavBoxItemIFace addToNavBox(final SpQuery query)
+    protected NavBoxItemIFace addToNavBox(final RecordSet recordSet)
     {
-        final RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(navBox, query.getName(), "Search", null, 
-                                                                   new CommandAction(QUERY, DELETE_CMD_ACT, query), 
+        final RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(navBox, recordSet.getName(), "Search", null, 
+                                                                   new CommandAction(QUERY, DELETE_CMD_ACT, recordSet), 
                                                                    true, true);// true means make it draggable
-        roc.setData(query.getSpQueryId());
+        roc.setData(recordSet);
         roc.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
-                editQuery((Integer)((RolloverCommand)e.getSource()).getData());
+                RolloverCommand queryNavBtn = (RolloverCommand)e.getSource();
+                editQuery((Integer)recordSet.getOnlyItem().getRecordId());
+                queryNavBtn.setEnabled(false);
+                queryBldrPane.setQueryNavBtn(queryNavBtn);
             }
             
         });
         
         NavBoxItemIFace nbi = (NavBoxItemIFace)roc;
         
-        DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(query.getContextTableId());
+        DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getTableId());
         if (tblInfo != null)
         {
             ImageIcon rsIcon = tblInfo.getIcon(IconManager.IconSize.Std16);
@@ -218,7 +372,7 @@ public class QueryTask extends BaseTask
             }
         }
         
-        roc.addDragDataFlavor(new DataFlavorTableExt(QueryTask.class, QUERY, query.getContextTableId()));
+        roc.addDragDataFlavor(new DataFlavorTableExt(QueryTask.class, QUERY, recordSet.getTableId()));
         
         return nbi;
     }
@@ -239,10 +393,23 @@ public class QueryTask extends BaseTask
         {
             Object[] obj = (Object[])iter.next();
             SpQuery query = (SpQuery)obj[0];
-            addToNavBox(query);
+            RecordSet rs = new RecordSet(query.getName(), SpQuery.getClassTableId());
+            rs.addItem(query.getSpQueryId());
+            addToNavBox(rs);
         }
-        navBoxes.add(navBox);
         session.close();
+    }
+    
+    /**
+     * 
+     */
+    protected void createNewQuery()
+    {
+        SpQuery query = createNewQueryDataObj(null);
+        if (query != null)
+        {
+            editQuery(query);
+        }
     }
     
     /**
@@ -251,11 +418,12 @@ public class QueryTask extends BaseTask
     protected void editQuery(Integer queryId)
     {
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        Object dataObj = session.getData(SpQuery.class, "spQueryId", queryId, DataProviderSessionIFace.CompareType.Equals);
+        Object                   dataObj = session.getData(SpQuery.class, "spQueryId", queryId, DataProviderSessionIFace.CompareType.Equals);
         if (dataObj != null)
         {
             editQuery((SpQuery)dataObj);
         }
+        session.close();
     }
     
     /**
@@ -306,6 +474,15 @@ public class QueryTask extends BaseTask
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#isSingletonPane()
+     */
+    @Override
+    public boolean isSingletonPane()
+    {
+        return true;
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#getTaskClass()
      */
     public Class<? extends BaseTask> getTaskClass()
@@ -346,12 +523,17 @@ public class QueryTask extends BaseTask
      * Save a record set.
      * @param recordSet the rs to be saved
      */
-    public void saveNewQuery(final SpQuery query)
+    public RolloverCommand saveNewQuery(final SpQuery query, final boolean enabled)
     {
-        addToNavBox(query);
+        RecordSet rs = new RecordSet(query.getName(), SpQuery.getClassTableId());
+        rs.addItem(query.getSpQueryId());
+        
+        RolloverCommand roc = (RolloverCommand)addToNavBox(rs);
+        roc.setEnabled(enabled);
         
         query.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
         query.setSpecifyUser(SpecifyUser.getCurrentUser());
+        
         persistRecordSet(query);
         
 
@@ -366,19 +548,24 @@ public class QueryTask extends BaseTask
         NavBoxMgr.getInstance().doLayout();
         NavBoxMgr.getInstance().repaint();
         UIRegistry.forceTopFrameRepaint();
+        
+        
+        String msg = String.format(getResourceString("WB_SAVED"), new Object[] { query.getName()} );
+        UIRegistry.getStatusBar().setText(msg);
 
-        // XXX CommandDispatcher.dispatch(new CommandAction("Labels", "NewRecordSet", nbi));
+        return roc;
     }
     
     /**
      * Delete a record set
      * @param rs the recordSet to be deleted
      */
-    protected void deleteQuery(final SpQuery query)
+    protected void deleteQuery(final RecordSet rs)
     {
         // delete from database
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        session.attach(query);
+        
+        SpQuery query = session.get(SpQuery.class, rs.getOnlyItem().getRecordId());
         try
         {
             session.beginTransaction();
@@ -399,11 +586,11 @@ public class QueryTask extends BaseTask
      * This method first checks to see if the boxItem is not null and uses that, if
      * it is null then it looks the box up by name and used that
      * @param boxItem the box item to be deleted
-     * @param recordSet the record set that is "owned" by some UI object that needs to be deleted (used for seconday lookup
+     * @param recordSet the record set that is "owned" by some UI object that needs to be deleted (used for secondary lookup
      */
-    protected void deleteQueryFromUI(final NavBoxItemIFace boxItem, final SpQuery query)
+    protected void deleteQueryFromUI(final NavBoxItemIFace boxItem, final RecordSet rs)
     {
-        deleteDnDBtn(navBox, boxItem != null ? boxItem : getBoxByTitle(navBox, query.getName()));
+        deleteDnDBtn(navBox, boxItem != null ? boxItem : getBoxByTitle(navBox, rs.getName()));
     }
     
     /**
@@ -412,40 +599,9 @@ public class QueryTask extends BaseTask
      */
     protected void processQueryCommands(final CommandAction cmdAction)
     {
-        if (cmdAction.isAction(SAVE_QUERY))
+        if (cmdAction.isAction(DELETE_CMD_ACT) && cmdAction.getData() instanceof RecordSet)
         {
-            Object data = cmdAction.getData();
-            if (data instanceof SpQuery)
-            {
-                // If there is only one item in the RecordSet then the User will most likely want it named the same
-                // as the "identity" of the data object. So this goes and gets the Identity name and
-                // pre-sets the name in the dialog.
-                String intialName = "";
-                SpQuery query = (SpQuery)cmdAction.getData();
-                if (query.getFields().size() == 1) // Insurance (shouldn't happen)
-                {
-                    intialName = query.getName();
-                    
-                    DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                    List<?> queriesList = session.getDataList(SpQuery.class, "name", query.getName());
-                    session.close();
-                    
-                    if (queriesList != null && queriesList.size() > 0)
-                    {
-                        String rsName  = JOptionPane.showInputDialog(UIRegistry.get(UIRegistry.FRAME), getResourceString("AskForRSName"), intialName);
-                        if (isNotEmpty(rsName))
-                        {
-                            SpQuery rs = (SpQuery)data;
-                            rs.setName(rsName);
-                            rs.setModifiedByAgent(SpecifyUser.getCurrentUser().getAgent());
-                            saveNewQuery(rs);
-                        }
-                    }
-                }
-            }
-        } else if (cmdAction.isAction(DELETE_CMD_ACT) && cmdAction.getData() instanceof RecordSet)
-        {
-            SpQuery recordSet = (SpQuery)cmdAction.getData();
+            RecordSet recordSet = (RecordSet)cmdAction.getData();
             deleteQuery(recordSet);
             deleteQueryFromUI(null, recordSet);
         }
@@ -466,7 +622,6 @@ public class QueryTask extends BaseTask
             this.initialize();
         }
     }
-    
 
 
     //--------------------------------------------------------------

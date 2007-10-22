@@ -693,7 +693,7 @@ public class WorkbenchTask extends BaseTask
      * CREates and displays the ColumnMapper Dialog (Template Editor), either a DatFileInfo or a Template is passed in, for both can be null.
      * @param dataFileInfo the imported file info
      * @param template an existing template
-     * @return the dlg aafter cancel or ok
+     * @return the dlg after cancel or ok
      */
     protected TemplateEditor showColumnMapperDlg(final ImportDataFileInfo dataFileInfo, 
                                                  final WorkbenchTemplate  template,

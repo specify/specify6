@@ -468,10 +468,13 @@ public class ViewLoader
         Element rowsElement = (Element)element.selectSingleNode("rows");
         if (rowsElement != null)
         {
-            for ( Iterator<?> i = rowsElement.elementIterator( "row" ); i.hasNext(); ) {
+            byte rowNumber = 0;
+            for ( Iterator<?> i = rowsElement.elementIterator( "row" ); i.hasNext(); ) 
+            {
                 Element rowElement = (Element) i.next();
 
                 FormRow formRow = new FormRow();
+                formRow.setRowNumber(rowNumber);
 
                 for ( Iterator<?> cellIter = rowElement.elementIterator( "cell" ); cellIter.hasNext(); )
                 {
@@ -724,6 +727,7 @@ public class ViewLoader
                     cell.setIgnoreSetGet(getAttr(cellElement, "ignore", false));
                 }
                 cellRows.add(formRow);
+                rowNumber++;
             }
         }
 

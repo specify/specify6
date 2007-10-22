@@ -554,12 +554,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
     /**
      * Returns a list of ViewSets from a AppResourceDefault, The ViewSets are created from the ViewSetObj.
-     * @param appResDef the AppResourceDefault
+     * @param dir the AppResourceDefault
      * @return list of ViewSet objects
      */
-    protected List<ViewSetIFace> getViewSetList(final SpAppResourceDir appResDef)
+    protected List<ViewSetIFace> getViewSetList(final SpAppResourceDir dir)
     {
-        if (debug) log.debug("Looking up["+appResDef.getUniqueIdentifer()+"]["+appResDef.getVerboseUniqueIdentifer()+"]");
+        if (debug) log.debug("Looking up["+dir.getUniqueIdentifer()+"]["+dir.getVerboseUniqueIdentifer()+"]");
         
         Boolean reloadViews = AppPreferences.getLocalPrefs().getBoolean("reload_views", false);
         if (reloadViews)
@@ -567,16 +567,16 @@ public class SpecifyAppContextMgr extends AppContextMgr
             viewSetHash.clear();
         }
         
-        List<ViewSetIFace> viewSetList = viewSetHash.get(appResDef.getUniqueIdentifer());
+        List<ViewSetIFace> viewSetList = viewSetHash.get(dir.getUniqueIdentifer());
         if (viewSetList == null)
         {
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            if (appResDef.getSpAppResourceDirId() != null)
+            if (dir.getSpAppResourceDirId() != null)
             {
-                session.attach(appResDef);
+                session.attach(dir);
             }
             viewSetList = new Vector<ViewSetIFace>();
-            for (SpViewSetObj vso : appResDef.getSpViewSets())
+            for (SpViewSetObj vso : dir.getSpViewSets())
             {
                 try
                 {
@@ -591,7 +591,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     throw new RuntimeException(ex);
                 }
             }
-            viewSetHash.put(appResDef.getUniqueIdentifer(), viewSetList);
+            viewSetHash.put(dir.getUniqueIdentifer(), viewSetList);
             session.close();
         }
         return viewSetList;
@@ -617,14 +617,14 @@ public class SpecifyAppContextMgr extends AppContextMgr
         if (debug) log.debug("Looking Up View ["+viewName+"] collType["+(collType != null ? collType.getName() : "null")+"]");
         
         boolean fndColObjDef = false;
-        for (SpAppResourceDir appResDef : spAppResourceList)
+        for (SpAppResourceDir appResDir : spAppResourceList)
         {
-            if (debug) log.debug("Looking["+(appResDef.getCollectionType() != null ? appResDef.getCollectionType().getName() : "null")+"]["+(collType != null ? collType.getName() : "null")+"]");
+            if (debug) log.debug("Looking["+(appResDir.getCollectionType() != null ? appResDir.getCollectionType().getName() : "null")+"]["+(collType != null ? collType.getName() : "null")+"]");
             
-            if (appResDef.getCollectionType() != null && appResDef.getCollectionType() == collType)
+            if (appResDir.getCollectionType() != null && appResDir.getCollectionType() == collType)
             {
                 fndColObjDef = true;
-                for (ViewSetIFace vs : getViewSetList(appResDef))
+                for (ViewSetIFace vs : getViewSetList(appResDir))
                 {
                     ViewIFace view = vs.getView(viewName);
                     if (view != null)

@@ -29,6 +29,7 @@ public class TableTree implements Cloneable, Comparable<TableTree>
     protected Vector<TableTree> kids      = new Vector<TableTree>();
     protected DBTableInfo       tableInfo = null;
     protected boolean           isAlias   = false;
+    protected BaseQRI           baseQRI   = null;          
 
     public TableTree(final TableTree parent, 
                      final String name)
@@ -46,6 +47,22 @@ public class TableTree implements Cloneable, Comparable<TableTree>
         this.name   = name;
         this.field  = field;
         this.tableInfo  = tableInfo;
+    }
+
+    /**
+     * @return the baseQRI
+     */
+    public BaseQRI getBaseQRI()
+    {
+        return baseQRI;
+    }
+
+    /**
+     * @param baseQRI the baseQRI to set
+     */
+    public void setBaseQRI(BaseQRI baseQRI)
+    {
+        this.baseQRI = baseQRI;
     }
 
     /**

@@ -92,9 +92,9 @@ public class CollectingEvent extends DataModelObjBase implements AttachmentOwner
     protected Locality              locality;
     protected CollectingTrip        collectingTrip;
     
-    protected HabitatAttributes         habitatAttributes;      // Specify 5 Attributes table
-    protected Set<CollectingEventAttr>  collectingEventAttrs; // Generic Expandable Attributes
-    protected Set<CollectingEventAttachment> collectingEventAttachments;
+    protected CollectingEventAttributes         collectingEventAttributes;      // Specify 5 Attributes table
+    protected Set<CollectingEventAttr>          collectingEventAttrs; // Generic Expandable Attributes
+    protected Set<CollectingEventAttachment>    collectingEventAttachments;
 
 
 
@@ -136,9 +136,9 @@ public class CollectingEvent extends DataModelObjBase implements AttachmentOwner
         collectors = new HashSet<Collector>();
         locality = null;
         
-        habitatAttributes    = null;
-        collectingEventAttrs = new HashSet<CollectingEventAttr>();
-        collectingEventAttachments = new HashSet<CollectingEventAttachment>();
+        collectingEventAttributes    = null;
+        collectingEventAttrs         = new HashSet<CollectingEventAttr>();
+        collectingEventAttachments   = new HashSet<CollectingEventAttachment>();
     }
     // End Initializer
 
@@ -475,15 +475,15 @@ public class CollectingEvent extends DataModelObjBase implements AttachmentOwner
     }
 
     @ManyToOne
-    @JoinColumn(name = "HabitatAttributesID")
-    public HabitatAttributes getHabitatAttributes()
+    @JoinColumn(name = "CollectingEventAttributesID")
+    public CollectingEventAttributes getCollectingEventAttributes()
     {
-        return habitatAttributes;
+        return collectingEventAttributes;
     }
 
-    public void setHabitatAttributes(HabitatAttributes habitatAttributes)
+    public void setCollectingEventAttributes(CollectingEventAttributes collectingEventAttributes)
     {
-        this.habitatAttributes = habitatAttributes;
+        this.collectingEventAttributes = collectingEventAttributes;
     }
     
     @OneToMany(mappedBy = "collectingEvent")

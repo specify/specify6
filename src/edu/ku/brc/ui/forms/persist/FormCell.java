@@ -432,4 +432,13 @@ public class FormCell implements Comparable<FormCellIFace>, Cloneable, FormCellI
     {
         throw new RuntimeException("Not Implemented.");
     }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return (StringUtils.isNotEmpty(name) ? name : id) + " (" + type + ")";
+    }
  }

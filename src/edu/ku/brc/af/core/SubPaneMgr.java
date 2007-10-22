@@ -508,9 +508,11 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         SubPaneIFace subPane = this.getCurrentSubPane();
         if(subPane != null)
         {
+            boolean isCurrentPaneStarter = subPane.getTask().isStarterPane();
+            
             // If there is only one pane left and there is only one tasks that provide UI
             // then we cannot let it close.
-            boolean wasLastSingleTaskPane = panes.size() == 1  && TaskMgr.getToolbarTaskCount() == 1;
+            boolean wasLastSingleTaskPane = (panes.size() == 1  && TaskMgr.getToolbarTaskCount() == 1) || subPane.getTask().isSingletonPane();
 
             Taskable task = subPane.getTask();
             if (task != null)
@@ -531,7 +533,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
                     return;
                 }
                 
-                if (wasLastSingleTaskPane)
+                if (wasLastSingleTaskPane && !isCurrentPaneStarter)
                 {
                     subPane = task.getStarterPane();
                     addPane(subPane);

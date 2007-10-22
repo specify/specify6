@@ -217,9 +217,9 @@ public class ViewFactory
      * @param cellField the definition of the cell for this control
      * @return a ValTextField
      */
-    protected JTextField createTextField(final FormValidator validator,
-                                         final FormCellField cellField,
-                                         final PickListDBAdapterIFace adapter)
+    public static JTextField createTextField(final FormValidator validator,
+                                             final FormCellField cellField,
+                                             final PickListDBAdapterIFace adapter)
     {
         String validationRule = cellField.getValidationRule();
 
@@ -260,8 +260,8 @@ public class ViewFactory
      * @param cellField the definition of the cell for this control
      * @return a ValPasswordField
      */
-    public JTextField createPasswordField(final FormValidator validator,
-                                          final FormCellField cellField)
+    public static JTextField createPasswordField(final FormValidator validator,
+                                                 final FormCellField cellField)
     {
         String validationRule = cellField.getValidationRule();
         JTextField txt;
@@ -297,10 +297,10 @@ public class ViewFactory
      * @param allEditOK indicates that all the fields should be editable (event the auto-numbered field)
      * @return ValFormattedTextField
      */
-    protected JComponent createFormattedTextField(final FormValidator validator,
-                                                  final FormCellField cellField,
-                                                  final boolean       isViewOnly,
-                                                  final boolean       allEditOK)
+    public static JComponent createFormattedTextField(final FormValidator validator,
+                                                      final FormCellField cellField,
+                                                      final boolean       isViewOnly,
+                                                      final boolean       allEditOK)
     {
         log.debug(cellField.getName()+"  "+cellField.getUIFieldFormatter());
 
@@ -367,8 +367,8 @@ public class ViewFactory
      * @param cellField the definition of the cell for this control
      * @return ValTextArea
      */
-    protected JTextArea createTextArea(final FormValidator validator,
-                                       final FormCellField cellField)
+    public static JTextArea createTextArea(final FormValidator validator,
+                                           final FormCellField cellField)
     {
         ValTextArea textArea = new ValTextArea("", cellField.getTxtRows(), cellField.getTxtCols());
         if (validator != null)
@@ -404,8 +404,8 @@ public class ViewFactory
      * @param cellField the definition of the cell for this control
      * @return ValListBox
      */
-    protected JList createList(final FormValidator validator,
-                               final FormCellField cellField)
+    public static JList createList(final FormValidator validator,
+                                   final FormCellField cellField)
     {
         String[] initArray = null;
         String dataStr = cellField.getProperty("data");
@@ -439,8 +439,8 @@ public class ViewFactory
      * @param cellField the definition of the cell for this control
      * @return ValComboBoxFromQuery
      */
-    public ValComboBoxFromQuery createQueryComboBox(final FormValidator validator,
-                                                    final FormCellField cellField)
+    public static ValComboBoxFromQuery createQueryComboBox(final FormValidator validator,
+                                                           final FormCellField cellField)
     {
         //String cbxName = cellField.getInitialize();
         String cbxName = cellField.getProperty("name");
@@ -477,9 +477,9 @@ public class ViewFactory
      * @param cellField the definition of the cell for this control
      * @return ValComboBox
      */
-    protected ValComboBox createValComboBox(final FormValidator validator,
-                                            final FormCellField cellField,
-                                            final PickListDBAdapterIFace adapter)
+    public static ValComboBox createValComboBox(final FormValidator validator,
+                                                final FormCellField cellField,
+                                                final PickListDBAdapterIFace adapter)
     {
         boolean                makeEditable = cellField.getPropertyAsBoolean("editable", false);
         ValComboBox            cbx          = null;
@@ -551,7 +551,7 @@ public class ViewFactory
      * @param cellField FormCellField info
      * @return the control
      */
-    protected JScrollPane createDisplayTextArea(final FormCellFieldIFace cellField)
+    public static JScrollPane createDisplayTextArea(final FormCellFieldIFace cellField)
     {
         JTextArea ta = new JTextArea(cellField.getTxtRows(), cellField.getTxtCols());
         // ta.setBorder(BorderFactory.createEmptyBorder(3,3,3,3));
@@ -576,8 +576,8 @@ public class ViewFactory
      * @param parent the parent mulitview needed because of pop Dialogs (from the info btn)
      * @return the control
      */
-    protected TextFieldWithInfo createTextFieldWithInfo(final FormCellField cellField,
-                                                        final MultiView     parent)
+    public static TextFieldWithInfo createTextFieldWithInfo(final FormCellField cellField,
+                                                            final MultiView     parent)
     {
         TextFieldWithInfo textFieldInfo = null;
         String            txtName = cellField.getProperty("name");
@@ -611,9 +611,9 @@ public class ViewFactory
      * @param validator the validator
      * @return the control
      */
-    protected ImageDisplay createImageDisplay(final FormCellField cellField,
-                                              final AltViewIFace.CreationMode mode,
-                                              final FormValidator validator)
+    public static ImageDisplay createImageDisplay(final FormCellField cellField,
+                                                  final AltViewIFace.CreationMode mode,
+                                                  final FormValidator validator)
     {
         int w = 150;
         int h = 150;
@@ -695,9 +695,9 @@ public class ViewFactory
      * @param mode indicates whether in Edit or View mode
      * @return the control
      */
-    protected JComponent createPlugin(final FormValidator validator, 
-                                      final FormCellField cellField,
-                                      final boolean       isViewMode)
+    public static JComponent createPlugin(final FormValidator validator, 
+                                          final FormCellField cellField,
+                                          final boolean       isViewMode)
     {
         String classNameStr = cellField.getProperty("class");
         if (StringUtils.isEmpty(classNameStr))
@@ -747,8 +747,6 @@ public class ViewFactory
         }
     }
     
-
-
     /**
      * Processes the rows in a definition.
      * @param parent MultiView parent

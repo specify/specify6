@@ -196,7 +196,7 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
 
 /**
  * 
- * @code_status Alpha
+ * @code_status Beta
  * @author jstewart
  */
 public class BuildSampleDatabase
@@ -325,7 +325,7 @@ public class BuildSampleDatabase
         //Byte desc        = SpQueryField.SortType.DESC.getOrdinal();
         
         SpQuery query = createQuery("Collection Objects", "CollectionObject", 1, SpecifyUser.getCurrentUser());
-        createQueryField(query, "catalogNumber", false, greq, lteq, "102", "103", asc, true, "1,1");
+        createQueryField(query, (short)0, "catalogNumber", false, greq, lteq, "102", "103", asc, true, "1");
         dataObjects.add(query);
     }
 

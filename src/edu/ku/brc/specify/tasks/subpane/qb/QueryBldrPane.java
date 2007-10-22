@@ -15,7 +15,6 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
@@ -28,7 +27,6 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.ListModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -49,16 +47,19 @@ import edu.ku.brc.af.core.expresssearch.ERTICaptionInfo;
 import edu.ku.brc.af.core.expresssearch.TableFieldPair;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.dbsupport.DBFieldInfo;
-import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpQueryField;
+import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -93,6 +94,8 @@ public class QueryBldrPane extends BaseSubPane
     protected Vector<TableTree>              nodeList         = new Vector<TableTree>();
     protected JScrollPane                    scrollPane;
     protected Vector<JScrollPane>            spList           = new Vector<JScrollPane>();
+    protected JButton                        saveBtn;
+    
     
     protected Hashtable<String, Boolean>     fieldsToSkipHash = new Hashtable<String, Boolean>();
     protected QryListRenderer                qryRenderer      = new QryListRenderer(IconManager.IconSize.Std16);
@@ -100,6 +103,8 @@ public class QueryBldrPane extends BaseSubPane
     
     protected Vector<TableTree>              tableTreeList;
     protected boolean                        processingLists = false;
+    
+    protected RolloverCommand                queryNavBtn     = null;
     
     /**
      * Constructor.
@@ -134,12 +139,21 @@ public class QueryBldrPane extends BaseSubPane
     {
         removeAll();
         
+        saveBtn = new JButton("Save");
+        saveBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                saveQuery();
+            }
+        });
+        
         listBoxPanel = new JPanel(new HorzLayoutManager(2,2));
         
         Vector<TableQRI> list = new Vector<TableQRI>();
         for (TableTree tt : tableTreeList)
         {
-            list.add(new TableQRI(null, tt)); 
+
+            list.add((TableQRI)tt.getBaseQRI()); 
         }
 
         Collections.sort(list);
@@ -153,6 +167,7 @@ public class QueryBldrPane extends BaseSubPane
         QryListRenderer qr = new QryListRenderer(IconManager.IconSize.Std16);
         qr.setDisplayKidIndicator(false);
         tableList.setCellRenderer(qr);
+        
         JScrollPane spt = new JScrollPane(tableList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         Dimension   pSize = spt.getPreferredSize();
         pSize.height = 200;
@@ -169,7 +184,20 @@ public class QueryBldrPane extends BaseSubPane
                 if (!e.getValueIsAdjusting())
                 {
                     nodeList.clear();
-                    fillNextList(tableList);
+                    
+                    int inx = tableList.getSelectedIndex();
+                    if (inx > -1)
+                    {
+                        fillNextList(tableList);
+                        
+                        TableTree node = tableTreeList.get(inx);
+                        query.setContextTableId((short)node.getTableInfo().getTableId());
+                        query.setContextName(node.getName());
+                        
+                    } else
+                    {
+                        listBoxPanel.removeAll();
+                    }
                 }
             }
         });
@@ -180,7 +208,12 @@ public class QueryBldrPane extends BaseSubPane
             public void actionPerformed(ActionEvent ae)
             {
                 FieldQRI fieldQRI = (FieldQRI)listBoxList.get(currentInx).getSelectedValue();
-                addQueryFieldItem(fieldQRI);
+                
+                SpQueryField qf = new SpQueryField();
+                qf.initialize();
+                qf.setFieldName(fieldQRI.getFieldInfo().getName());
+                query.addReference(qf, "fields");
+                addQueryFieldItem(fieldQRI, qf);
             }
         });
         
@@ -204,10 +237,15 @@ public class QueryBldrPane extends BaseSubPane
         add(sp, BorderLayout.CENTER);
         
         JButton         searchBtn = new JButton("Search");
+        
+        PanelBuilder    outer     = new PanelBuilder(new FormLayout("f:p:g,p", "p"));
         PanelBuilder    builder   = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "p"));
         CellConstraints cc        = new CellConstraints();
         builder.add(searchBtn, cc.xy(2, 1));
-        add(builder.getPanel(), BorderLayout.SOUTH);
+        
+        outer.add(builder.getPanel(), cc.xy(1, 1));
+        outer.add(saveBtn,            cc.xy(2, 1));
+        add(outer.getPanel(), BorderLayout.SOUTH);
         
         searchBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae)
@@ -218,7 +256,12 @@ public class QueryBldrPane extends BaseSubPane
         
         setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
         
-        this.validate();
+    }
+    
+    public int getCurrentContextTableId()
+    {
+        TableQRI currentTableQRI = (TableQRI)tableList.getSelectedValue();
+        return currentTableQRI.getTableInfo().getTableId();
     }
     
     /**
@@ -230,33 +273,58 @@ public class QueryBldrPane extends BaseSubPane
         return fieldName.substring(0, 1).toLowerCase() + fieldName.substring(1);
     }
     
+    /**
+     * 
+     */
     protected void setQueryIntoUI()
     {
         queryFieldsPanel.removeAll();
         queryFieldItems.clear();
         queryFieldsPanel.validate();
+        columnDefStr = null;
         
-        if (query == null)
+        for (JList list : listBoxList)
         {
-            tableList.setSelectedIndex(-1);
-            
-        } else
-        {
-            int tblId = query.getContextTableId();
-            for (int i=0;i<tableList.getModel().getSize();i++)
+            DefaultListModel model = (DefaultListModel)list.getModel();
+            for (int i=0;i<model.size();i++)
             {
-                TableQRI qri = (TableQRI)tableList.getModel().getElementAt(i);
-                if (qri.getTableInfo().getTableId() == tblId)
+                BaseQRI bq = (BaseQRI)model.get(i);
+                bq.setIsInUse(false);
+            }
+        }
+        
+        tableList.clearSelection();
+        
+        if (query != null)
+        {
+            Short tblId = query.getContextTableId();
+            if (tblId != null)
+            {
+                for (int i=0;i<tableList.getModel().getSize();i++)
                 {
-                    tableList.setSelectedIndex(i);
-                    for (SpQueryField field : query.getFields())
+                    TableQRI qri = (TableQRI)tableList.getModel().getElementAt(i);
+                    if (qri.getTableInfo().getTableId() == tblId.intValue())
                     {
-                        addQueryFieldItem(field);
+                        tableList.setSelectedIndex(i);
+                        Vector<SpQueryField> fields = new Vector<SpQueryField>(query.getFields());
+                        Collections.sort(fields);
+                        for (SpQueryField field : fields)
+                        {
+                            addQueryFieldItem(field);
+                        }
+                        break;
                     }
-                    break;
                 }
             }
         }
+        
+        for (QueryFieldPanel qfp : queryFieldItems)
+        {
+            qfp.resetValidator();
+        }
+        saveBtn.setEnabled(false);
+        
+        this.validate();
     }
     
     /**
@@ -276,15 +344,15 @@ public class QueryBldrPane extends BaseSubPane
         if (queryFieldItems.size() > 0)
         {
             StringBuilder fieldsStr = new StringBuilder();
-            for (QueryFieldPanel qfi : queryFieldItems)
+            for (QueryFieldPanel qfp : queryFieldItems)
             {
-                if (qfi.isForDisplay())
+                if (qfp.isForDisplay())
                 {
                     if (fieldsStr.length() > 0) fieldsStr.append(", ");
                 }
-                fieldsStr.append(qfi.getFieldInfo().getTableInfo().getAbbrev());
+                fieldsStr.append(qfp.getFieldInfo().getTableInfo().getAbbrev());
                 fieldsStr.append('.');
-                fieldsStr.append(qfi.getFieldInfo().getName());
+                fieldsStr.append(qfp.getFieldInfo().getName());
             }
             
             Vector<BaseQRI> list = new Vector<BaseQRI>();
@@ -469,6 +537,10 @@ public class QueryBldrPane extends BaseSubPane
         CommandDispatcher.dispatch(new CommandAction("Express_Search", "HQL", qri));
     }
     
+    /**
+     * @param pn
+     * @param lvl
+     */
     protected void printTree(ProcessNode pn, int lvl)
     {
         for (int i=0;i<lvl;i++)
@@ -480,6 +552,73 @@ public class QueryBldrPane extends BaseSubPane
         {
             printTree(kid, lvl+1);
         }
+    }
+    
+    /**
+     * 
+     */
+    protected void saveQuery()
+    {
+        TableQRI tableQRI = (TableQRI)tableList.getSelectedValue();
+        if (tableQRI != null)
+        {
+            short position = 0;
+            for (QueryFieldPanel qfp : queryFieldItems)
+            {
+                SpQueryField qf = qfp.getQueryField();
+                if (qf == null)
+                {
+                    throw new RuntimeException("Shouldn't get here!");
+                }
+                qf.setPosition(position);
+                qfp.updateQueryField();
+                
+                position++;
+            }
+            
+            if (query.getSpQueryId() == null)
+            {
+                queryNavBtn = ((QueryTask)task).saveNewQuery(query, false); // false tells it to disable the navbtn
+                
+            } else
+            {
+                try
+                {
+                    DataProviderSessionIFace session    = DataProviderFactory.getInstance().createSession();
+                    session.beginTransaction();
+                    session.saveOrUpdate(query);
+                    session.commit();
+                    session.close();
+                    
+                } catch (Exception ex)
+                {
+                    log.error(ex);
+                    ex.printStackTrace();
+                }
+            }
+            
+        } else
+        {
+            log.error("No Context selected!");
+        }
+    }
+    
+    
+    /**
+     * @param parentTT
+     * @param nameArg
+     * @return
+     */
+    protected static TableTree findTableTree(final TableTree parentTT, final String nameArg)
+    {
+        for (TableTree tt : parentTT.getKids())
+        {
+            if (tt.getName().equals(nameArg))
+            {
+                return tt;
+            }
+        }
+        return null;
     }
     
     //-----------------------------------------------------------
@@ -516,67 +655,30 @@ public class QueryBldrPane extends BaseSubPane
             return false;
         }
     }
-    
-    protected TableTree findTableTree(final TableTree parentTT, final String nameArg)
-    {
-        for (TableTree tt : parentTT.getKids())
-        {
-            if (tt.getName().equals(nameArg))
-            {
-                return tt;
-            }
-        }
-        return null;
-    }
-    
-    protected void createNewList(final BaseQRI parentQRI, final TableTree tableTree, final DefaultListModel model)
+
+     /**
+     * @param parentQRI
+     * @param tableTree
+     * @param model
+     */
+    protected void createNewList(final BaseQRI   parentQRI, 
+                                 final TableTree tableTree, 
+                                 final DefaultListModel model)
     {
         model.clear();
-        if (tableTree != null)
+        if (parentQRI != null)
         {
-            Vector<QryListRendererIFace> fldList = new Vector<QryListRendererIFace>();
-
-            for (DBFieldInfo fi : tableTree.getTableInfo().getFields())
+            TableQRI tblQRI = (TableQRI)parentQRI;
+            for (BaseQRI baseQRI : tblQRI.getKids())
             {
-                if (fi.getColumn() != null && fieldsToSkipHash.get(fi.getColumn()) == null && !fi.isHidden())
-                {
-                    fldList.add(new FieldQRI(parentQRI, fi));
-                }
-            }
-            for (TableTree tt : tableTree.getKids())
-            {
-                for (DBRelationshipInfo ri : tableTree.getTableInfo().getRelationships())
-                {
-                    if (!ri.isHidden())
-                    {
-                        String clsName = StringUtils.substringAfterLast(ri.getClassName(), ".");
-                        if (clsName.equals(tt.getName()))
-                        {
-                            TableTree riTT = findTableTree(parentQRI.getTableTree(), clsName);
-                            if (riTT == null)
-                            {
-                                riTT = tt;
-                            }
-                            fldList.add(new RelQRI(parentQRI, riTT, ri));
-                            break;
-                        }
-                    }
-                }
-            }
-            Collections.sort(fldList, new Comparator<QryListRendererIFace>() {
-                public int compare(QryListRendererIFace o1, QryListRendererIFace o2)
-                {
-                    return o1.getTitle().compareTo(o2.getTitle());
-                }
-            });
-            
-            for (QryListRendererIFace qri : fldList)
-            {
-                model.addElement(qri);
+                model.addElement(baseQRI);
             }
         }
     }
     
+    /**
+     * @param parentList
+     */
     protected void fillNextList(final JList parentList)
     {
         if (processingLists)
@@ -716,23 +818,49 @@ public class QueryBldrPane extends BaseSubPane
         });
     }
     
-    protected TableQRI getTableQRI(final JList list, final int tblId)
+    /**
+     * @param kids
+     * @param field
+     * @param tableIds
+     * @param level
+     * @return
+     */
+    protected FieldQRI getFieldQRI(final Vector<TableTree> kids, final SpQueryField field, final int[] tableIds, final int level)
     {
-        for (int i=0;i<list.getModel().getSize();i++)
+        int id = tableIds[level];
+        System.out.println("getFieldQRI id["+id+"] level["+level+"]");
+        for (TableTree kid : kids)
         {
-            BaseQRI qri = (BaseQRI)list.getModel().getElementAt(i);
-            if (qri instanceof TableQRI)
+            System.out.println("checking id["+id+"] ["+kid.getTableInfo().getTableId()+"]");
+            if (kid.getTableInfo().getTableId() == id)
             {
-                TableQRI tblQRI =  (TableQRI)qri;
-                if (tblQRI.getTableInfo().getTableId() == tblId)
+                if (level == (tableIds.length-1))
                 {
-                    list.setSelectedIndex(i);
-                    return tblQRI;
+                    TableQRI tblQRI = (TableQRI)kid.getBaseQRI();
+                    for (BaseQRI baseQRI : tblQRI.getKids())
+                    {
+                        if (baseQRI instanceof FieldQRI)
+                        {
+                            FieldQRI fqri = (FieldQRI)baseQRI;
+                            if (fqri.getFieldInfo().getName().equals(field.getFieldName()))
+                            {
+                                return fqri;
+                            }
+                        }
+                    }
+                } else
+                {
+                    FieldQRI fi = getFieldQRI(kid.getKids(), field, tableIds, level+1);
+                    if (fi != null)
+                    {
+                        return fi;
+                    }
                 }
             }
         }
         return null;
     }
+    
     
     /**
      * Add QueryFieldItem to the list created with a TableFieldPair.
@@ -742,34 +870,14 @@ public class QueryBldrPane extends BaseSubPane
     {
         if (field != null)
         {
-            currentInx = 0;
-            //TableQRI tableQRI = null;
-            int      level    = 0;
-            int[]    ids      = field.getTableIds();
-            for (int id : ids)
+            System.out.println(field.getTableList());
+            FieldQRI fieldQRI = getFieldQRI(tableTreeList, field, field.getTableIds(), 0);
+            if (fieldQRI != null)
             {
-                if (level == ids.length-1)
-                {
-                    ListModel model = listBoxList.get(level-1).getModel();
-                    for (int i=0;i<model.getSize();i++)
-                    {
-                        BaseQRI qri = (BaseQRI)model.getElementAt(i);
-                        if (qri instanceof FieldQRI)
-                        {
-                            FieldQRI fieldQRI = (FieldQRI)qri;
-                            if (fieldQRI.getFieldInfo().getName().equals(field.getFieldName()))
-                            {
-                                addQueryFieldItem(fieldQRI);
-                                currentInx = level-1;
-                                return;
-                            }
-                        }
-                    }
-                } else
-                {
-                    getTableQRI(level == 0 ? tableList : listBoxList.get(level-1), id);
-                }
-                level++;
+                addQueryFieldItem(fieldQRI, field);
+            } else
+            {
+                log.error("Couldn't find ["+field.getFieldName()+"] ["+field.getTableList()+"]");
             }
         }
     }
@@ -778,16 +886,17 @@ public class QueryBldrPane extends BaseSubPane
      * Add QueryFieldItem to the list created with a TableFieldPair.
      * @param fieldItem the TableFieldPair to be in the list
      */
-    protected void addQueryFieldItem(final FieldQRI fieldQRI)
+    protected void addQueryFieldItem(final FieldQRI fieldQRI, final SpQueryField queryField)
     {
         if (fieldQRI != null)
         {
             if (queryFieldItems.size() == 0 && queryFieldsPanel.getComponentCount() == 0)
             {
-                QueryFieldPanel qfp = new QueryFieldPanel(this, true, fieldQRI, IconManager.IconSize.Std24, columnDefStr);
+                QueryFieldPanel qfp = new QueryFieldPanel(this, fieldQRI, IconManager.IconSize.Std24, columnDefStr, saveBtn, null);
                 queryFieldsPanel.add(qfp);                
             }
-            final QueryFieldPanel qfp = new QueryFieldPanel(this, false, fieldQRI, IconManager.IconSize.Std24, columnDefStr);
+            
+            final QueryFieldPanel qfp = new QueryFieldPanel(this, fieldQRI, IconManager.IconSize.Std24, columnDefStr, saveBtn, queryField);
             queryFieldsPanel.add(qfp);
             queryFieldItems.add(qfp);
             fieldQRI.setIsInUse(true);
@@ -796,15 +905,22 @@ public class QueryBldrPane extends BaseSubPane
             SwingUtilities.invokeLater(new Runnable() {
                 public void run()
                 {
-                    listBoxList.get(currentInx).repaint();
-                    queryFieldsPanel.repaint();
-                    qfp.repaint();
-                    updateAddBtnState();
+                    if (currentInx > -1)
+                    {
+                        listBoxList.get(currentInx).repaint();
+                        queryFieldsPanel.repaint();
+                        qfp.repaint();
+                        updateAddBtnState();
+                    }
                 }
             });
         }
     }
     
+    /**
+     * @param parent
+     * @param treeNodes
+     */
     protected void processForAliases(final Element parent, 
                                      final Vector<TableTree> treeNodes)
     {
@@ -830,11 +946,23 @@ public class QueryBldrPane extends BaseSubPane
         //}
     }
     
+    /**
+     * @param parent
+     * @param parentTT
+     * @param ttKids
+     * @param parentQRI
+     */
     protected void processForTables(final Element           parent, 
                                     final TableTree         parentTT,
-                                    final Vector<TableTree> kids)
+                                    final Vector<TableTree> ttKids,
+                                    final TableQRI          parentQRI)
     {
-        String      tableName = XMLHelper.getAttr(parent, "name", null);
+        String tableName = XMLHelper.getAttr(parent, "name", null);
+        if (tableName.equals("CollectionObject"))
+        {
+            int x = 0;
+            x++;
+        }
         DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByShortClassName(tableName);
         if (!tableInfo.isHidden())
         {
@@ -845,12 +973,26 @@ public class QueryBldrPane extends BaseSubPane
             }
             
             TableTree newTreeNode = new TableTree(parentTT, tableName, fieldName, tableInfo);
-            kids.add(newTreeNode);
+            ttKids.add(newTreeNode);
+            
+            TableQRI tableQRI = new TableQRI(parentQRI, newTreeNode);
+            newTreeNode.setBaseQRI(tableQRI);
+            
+            for (DBFieldInfo fi : tableInfo.getFields())
+            {
+                FieldQRI  fqri = new FieldQRI(tableQRI, fi);
+                tableQRI.addKid(fqri);
+            }
+            
+            if (parentQRI != null)
+            {
+                parentQRI.addKid(tableQRI);
+            }
             
             for (Object kidObj : parent.selectNodes("table"))
             {
                 Element kidElement = (Element)kidObj;
-                processForTables(kidElement, newTreeNode, newTreeNode.getKids());
+                processForTables(kidElement, newTreeNode, newTreeNode.getKids(), tableQRI);
             }
             
             for (Object obj : parent.selectNodes("alias"))
@@ -871,6 +1013,10 @@ public class QueryBldrPane extends BaseSubPane
         }
     }
     
+    /**
+     * @param tableTree
+     * @param hash
+     */
     protected void fixAliases(final TableTree tableTree, Hashtable<String, TableTree> hash)
     {
         if (tableTree.isAlias())
@@ -897,6 +1043,9 @@ public class QueryBldrPane extends BaseSubPane
         
     }
     
+    /**
+     * @return
+     */
     protected Vector<TableTree> readTables()
     {
         Vector<TableTree> tables = null;
@@ -908,7 +1057,7 @@ public class QueryBldrPane extends BaseSubPane
             for (Object obj : tableNodes)
             {
                 Element tableElement = (Element)obj;
-                processForTables(tableElement, null, tables);
+                processForTables(tableElement, null, tables, null);
             }
             
             Hashtable<String, TableTree> hash = new Hashtable<String, TableTree>();
@@ -936,6 +1085,36 @@ public class QueryBldrPane extends BaseSubPane
     public void setColumnDefStr(String columnDefStr)
     {
         this.columnDefStr = columnDefStr;
+    }
+
+    /**
+     * @return the btn that launched the editor
+     */
+    public RolloverCommand getQueryNavBtn()
+    {
+        return queryNavBtn;
+    }
+
+    /**
+     * @param queryNavBtn
+     */
+    public void setQueryNavBtn(RolloverCommand queryNavBtn)
+    {
+        this.queryNavBtn = queryNavBtn;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.subpane.BaseSubPane#shutdown()
+     */
+    @Override
+    public void shutdown()
+    {
+        super.shutdown();
+        
+        if (queryNavBtn != null)
+        {
+            queryNavBtn.setEnabled(true);
+        }
     }
 
 

@@ -31,7 +31,7 @@ import org.apache.commons.lang.StringUtils;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "spqueryfield")
-public class SpQueryField extends DataModelObjBase
+public class SpQueryField extends DataModelObjBase implements Comparable<SpQueryField>
 {
     public static final Byte SORT_NONE = 0;
     public static final Byte SORT_ASC  = 1;
@@ -83,6 +83,7 @@ public class SpQueryField extends DataModelObjBase
     }
     
     protected Integer      spQueryFieldId;
+    protected Short         position;      
     protected String       fieldName;
     protected Boolean      isNot;
     protected Boolean      isDisplay;
@@ -114,6 +115,14 @@ public class SpQueryField extends DataModelObjBase
     public void setSpQueryFieldId(Integer spQueryFieldId)
     {
         this.spQueryFieldId = spQueryFieldId;
+    }
+
+    /**
+     * @param position the position to set
+     */
+    public void setPosition(Short position)
+    {
+        this.position = position;
     }
 
     /**
@@ -209,6 +218,15 @@ public class SpQueryField extends DataModelObjBase
     }
 
     /**
+     * @return the position
+     */
+    @Column(name = "Position", unique = false, nullable = false, insertable = true, updatable = true)
+    public Short getPosition()
+    {
+        return position;
+    }
+
+    /**
      * @return the fieldName
      */
     @Column(name = "FieldName", unique = false, nullable = false, insertable = true, updatable = true, length = 32)
@@ -265,7 +283,7 @@ public class SpQueryField extends DataModelObjBase
     /**
      * @return the endValue
      */
-    @Column(name = "EndValue", unique = false, nullable = false, insertable = true, updatable = true, length = 64)
+    @Column(name = "EndValue", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getEndValue()
     {
         return endValue;
@@ -308,16 +326,17 @@ public class SpQueryField extends DataModelObjBase
         super.init();
         
         spQueryFieldId = null;
-        fieldName     = null;
-        isNot         = null;
-        isDisplay     = null;
-        operStart     = null;
-        operEnd       = null;
-        startValue    = null;
-        endValue      = null;
-        sortType      = null;
-        query         = null;
-        tableList     = null;
+        position       = null;
+        fieldName      = null;
+        isNot          = null;
+        isDisplay      = null;
+        operStart      = null;
+        operEnd        = null;
+        startValue     = null;
+        endValue       = null;
+        sortType       = null;
+        query          = null;
+        tableList      = null;
     }
 
     @Transient
@@ -434,4 +453,11 @@ public class SpQueryField extends DataModelObjBase
     {
         return 518;
     }
+
+    public int compareTo(SpQueryField o)
+    {
+        return position.compareTo(o.position);
+    }
+    
+    
 }

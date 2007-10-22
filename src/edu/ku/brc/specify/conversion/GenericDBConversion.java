@@ -631,7 +631,7 @@ public class GenericDBConversion
 
             // Attribute Tables One-to-Ones
             //"CollectingEvent",  "HabitatAttributesID",     "Habitat",                    "HabitatID",
-            //"CollectionObject", "ColObjAttributesID",      "BiologicalObjectAttributes", "BiologicalObjectAttributesID", 
+            //"CollectionObject", "CollectionObjectAttributesID",      "BiologicalObjectAttributes", "BiologicalObjectAttributesID", 
             //"CollectionObject", "PreparationAttributesID", "Preparation",                "PreparationID",                
             //"BiologicalObjectAttributes", "BiologicalObjectTypeID", "BiologicalObjectType", "BiologicalObjectTypeID",
             //"BiologicalObjectAttributes", "SexID", "Sex", "SexID",
@@ -793,7 +793,7 @@ public class GenericDBConversion
        tableMaps.put("taxoncitation",            createFieldNameMap(new String[] {"TaxonID", "TaxonNameID"}));
 
        // Turn back on when datamodel checked in
-       tableMaps.put("colobjattributes",         createFieldNameMap(getColObjAttributeMappings()));
+       tableMaps.put("collectionobjectattributes",         createFieldNameMap(getCollectionObjectAttributeMappings()));
        tableMaps.put("preparationattributes",    createFieldNameMap(getPrepAttributeMappings()));
        tableMaps.put("habitatattributes",        createFieldNameMap(getHabitatAttributeMappings()));
        
@@ -874,7 +874,7 @@ public class GenericDBConversion
                // NOTE: We have mapped as a Many-to-One for Hibernate, because we really want it to be
                // a Zero-or-One
                BasicSQLUtils.setOneToOneIDHash(createFieldNameMap(new String[] {"PreparationAttributesID", "PreparationAttributesID", 
-                                                                                "ColObjAttributesID", "ColObjAttributesID"}));
+                                                                                "CollectionObjectAttributesID", "CollectionObjectAttributesID"}));
            }
            else if (fromTableName.equals("collectingevent")) 
            {
@@ -899,8 +899,8 @@ public class GenericDBConversion
            }      
            else if (fromTableName.equals("biologicalobjectattributes"))
            {
-               toTableName = "colobjattributes";
-               BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(getColObjAttributeToIgnore());  
+               toTableName = "collectionobjectattributes";
+               BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(getCollectionObjectAttributeToIgnore());  
            }      
            else if (fromTableName.equals("preparation"))
            {
@@ -950,7 +950,7 @@ public class GenericDBConversion
     }
     
     
-    protected String[] getColObjAttributeToIgnore()
+    protected String[] getCollectionObjectAttributeToIgnore()
     {
         return new String[] {
                 "BiologicalObjectTypeId",
@@ -965,7 +965,7 @@ public class GenericDBConversion
         };
     }
     
-    protected String[] getColObjAttributeMappings()
+    protected String[] getCollectionObjectAttributeMappings()
     {
         String oldBiologicalObjectAttribute_Condition_FieldName  = "Condition";
         if (BasicSQLUtils.mySourceServerType == BasicSQLUtils.SERVERTYPE.MySQL)
@@ -974,19 +974,19 @@ public class GenericDBConversion
         }
         
         return new String[] {
-                "ColObjAttributesID", "BiologicalObjectAttributesID", 
+                "CollectionObjectAttributesID", "BiologicalObjectAttributesID", 
                 // "biologicalObjectTypeId", ??? "Number36"
-                //"sex", 
-                //"age", 
-                //"stage", 
-                //"weight", 
-                //"length", 
+                "Number10",  "Sex", 
+                "Number11",  "Age", 
+                "Number12",  "Stage", 
+                "Number37",  "Weight", 
+                "Number38",  "Length", 
                 "Number8",  "GosnerStage", 
                 "Number9",  "SnoutVentLength", 
                 "Text8",    "Sctivity", 
                 "Number10", "LengthTail", 
-                //"reproductiveCondition", 
-                "ObjCondition", oldBiologicalObjectAttribute_Condition_FieldName, 
+                "Text13",   "ReproductiveCondition", 
+                "Text14",   "ObjCondition", 
                 "Number11", "LengthTarsus", 
                 "Number12", "LengthWing", 
                 "Number13", "LengthHead", 
@@ -994,8 +994,8 @@ public class GenericDBConversion
                 "Number15", "LengthMiddleToe", 
                 "Number16", "LengthBill", 
                 "Number17", "TotalExposedCulmen", 
-                //"maxLength", 
-                //"minLength", 
+                "Number39", "MaxLength", 
+                "Number40", "MinLength", 
                 "Number18", "LengthHindFoot", 
                 "Number19", "LengthForeArm", 
                 "Number20", "LengthTragus", 
@@ -1005,14 +1005,14 @@ public class GenericDBConversion
                 "Number24", "LengthGonad", 
                 "Number25", "WidthGonad", 
                 "Number26", "LengthHeadBody", 
-                //"width", 
+                "Number41", "Width", 
                 "Number27", "HeightFinalWhorl", 
                 "Number28", "InsideHeightAperture", 
                 "Number29", "InsideWidthAperture", 
                 "Number30", "NumberWhorls", 
                 "Number31", "OuterLipThickness",
                 "Number32", "Mantle", 
-                //"height", 
+                "Number42", "Height", 
                 "Number33", "Diameter", 
                 "Text9",    "BranchingAt", 
                 //"Text1", 
@@ -1115,27 +1115,27 @@ public class GenericDBConversion
         }
         return new String[] {
                         "HabitatAttributesID", "HabitatID", 
-                        //"airTempC",
-                        //"waterTempC",
-                        "WaterPH", "WaterpH",
-                        //"turbidity",
-                        //"clarity",
-                        //"salinity",
+                        "Number9", "airTempC",
+                        "Number10", "waterTempC",
+                        "Number11", "WaterpH",
+                        "Text12", "turbidity",
+                        "Text16", "clarity",
+                        "Text14", "salinity",
                         "Text6", "SoilType", 
                         "Number6", "SoilPh", 
                         "Number7", "SoilTempC", 
                         "Text7", "SoilMoisture", 
-                        //"slope",
-                        //"vegetation",
-                        //"habitatType",
+                        "Text15", "slope",
+                        "Text13", "vegetation",
+                        "Text17", "habitatType",
                         "Text8", oldHabitatAttribute_Current_FieldName, 
                         "Text9", "Substrate", 
                         "Text10", "SubstrateMoisture", 
                         "Number8", "HeightAboveGround", 
                         "Text11", "NearestNeighbor", 
                         //"remarks",
-                        //"minDepth",
-                        //"maxDepth",
+                        "Number13", "minDepth",
+                        "Number12", "maxDepth",
                         //"text1",
                         //"text2",
                         //"number1",
@@ -3461,7 +3461,7 @@ public class GenericDBConversion
                     {
                         str.append("NULL");//newCatSeriesId);
                         
-                    } else if (newFieldName.equals("ColObjAttributesID")) //User/Security changes
+                    } else if (newFieldName.equals("CollectionObjectAttributesID")) //User/Security changes
                     {
                         Object idObj = rs.getObject(1);
                         if (idObj != null)
@@ -3596,7 +3596,7 @@ public class GenericDBConversion
                 //if (count > 10) break;
             } while (rs.next());
             
-            log.info("ColObjAttributes not mapped: "+colObjAttrsNotMapped);
+            log.info("CollectionObjectAttributes not mapped: "+colObjAttrsNotMapped);
             
             stmt2.close();
 

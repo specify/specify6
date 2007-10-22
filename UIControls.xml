@@ -2,216 +2,248 @@
 <uicontrols>
     <control type="label">
         <desc>A Label in the UI that will have a ':' appended it is right justified.</desc>
-        <attr name="id" type="string" required="false" default="">
-            <desc>The unique identifier within the form or subform.
-                IDs do not have to be unique to it's parent form other sibling subforms, or its child subforms</desc>
-        </attr>
-        <attr name="label" type="string" required="true">
-            <desc>The text that is displayed in the control</desc>
-        </attr>
-        <attr name="labelfor" type="string" required="false" default="">
-            <desc>This can contain the id of a field that this label is associated with</desc>
-        </attr>
-        <attr name="align" type="boolean" required="false" default="true">
-            <desc>Indicates whetehr the label should automatically get a `:` appended.</desc>
-        </attr>
+        <attrs>
+	        <attr name="id" type="string" required="false" default="">
+	            <desc>The unique identifier within the form or subform.
+	                IDs do not have to be unique to it's parent form other sibling subforms, or its child subforms</desc>
+	        </attr>
+	        <attr name="label" type="string" required="true">
+	            <desc>The text that is displayed in the control</desc>
+	        </attr>
+	        <attr name="labelfor" type="string" required="false" default="">
+	            <desc>This can contain the id of a field that this label is associated with</desc>
+	        </attr>
+	        <attr name="align" type="boolean" required="false" default="true">
+	            <desc>Indicates whetehr the label should automatically get a `:` appended.</desc>
+	        </attr>
+        </attrs>
     </control>
     
     <control type="command">
         <desc>Displays a button that can issue a command.</desc>
-        <attr name="id" type="string" required="false" default="">
-            <desc>The unique identifier within the form or subform.
-                IDs do not have to be unique to it's parent form other sibling subforms, or its child subforms</desc>
-        </attr>
-        <attr name="label" type="string" required="true">
-            <desc> The text that is displayed on the button</desc>
-        </attr>
-        <attr name="commandtype" type="string" required="true">
-            <desc>The type of command, this often matches the taskable's name.</desc>
-        </attr>
-        <attr name="action" type="string" required="true">
-            <desc>The action to be performed.</desc>
-        </attr>
+        <attrs>
+	        <attr name="id" type="string" required="false" default="">
+	            <desc>The unique identifier within the form or subform.
+	                IDs do not have to be unique to it's parent form other sibling subforms, or its child subforms</desc>
+	        </attr>
+	        <attr name="label" type="string" required="true">
+	            <desc> The text that is displayed on the button</desc>
+	        </attr>
+	        <attr name="commandtype" type="string" required="true">
+	            <desc>The type of command, this often matches the taskable's name.</desc>
+	        </attr>
+	        <attr name="action" type="string" required="true">
+	            <desc>The action to be performed.</desc>
+	        </attr>
+	    </attrs>
     </control>
     
     <control type="separator">
         <desc>Displays a separator with text and optional icon.</desc>
-        <attr name="id" type="string" required="false" default="">
-            <desc>The unique identifier within the form or subform.
-                IDs do not have to be unique to it's parent form other sibling subforms, or its child subforms</desc>
-        </attr>
-        <attr name="label" type="string" required="false">
-            <desc>The text that is displayed in the separator</desc>
-        </attr>
-        <attr name="colspan" type="integer" required="false" default="1">
-            <desc>The number of columns the separator will span.</desc>
-        </attr>
-        <attr name="collapse" type="string" required="true">
-            <desc>The name of the subview to collape or show.</desc>
-        </attr>
-        <attr name="recordobj" type="tru" required="false" default="false">
-            <desc>Tells it that this will be dragable and contain the current object's unique identifier, which is usually the primary key.</desc>
-        </attr>
-        <attr name="icon" type="string" required="false" default="">
-            <desc>The name of the icon from the IconManager that will be displayed in the seaparator.</desc>
-        </attr>
+        <attrs>
+	        <attr name="id" type="string" required="false" default="">
+	            <desc>The unique identifier within the form or subform.
+	                IDs do not have to be unique to it's parent form other sibling subforms, or its child subforms</desc>
+	        </attr>
+	        <attr name="label" type="string" required="false">
+	            <desc>The text that is displayed in the separator</desc>
+	        </attr>
+	        <attr name="colspan" type="integer" required="false" default="1">
+	            <desc>The number of columns the separator will span.</desc>
+	        </attr>
+	        <attr name="collapse" type="string" required="true">
+	            <desc>The name of the subview to collape or show.</desc>
+	        </attr>
+	        <attr name="recordobj" type="tru" required="false" default="false">
+	            <desc>Tells it that this will be dragable and contain the current object's unique identifier, which is usually the primary key.</desc>
+	        </attr>
+	        <attr name="icon" type="string" required="false" default="">
+	            <desc>The name of the icon from the IconManager that will be displayed in the seaparator.</desc>
+	        </attr>
+	    </attrs>
     </control>
     
     <control type="subview">
         <desc>Displays a subview or sub form</desc>
-        <attr name="id" type="string" required="false" default="">
-            <desc>The unique identifier within the form or subform.
-                IDs do not have to be unique to it's parent form other sibling subforms, or its child subforms</desc>
-        </attr>
-        <attr name="name" type="string" required="true">
-            <desc> The name of the data object's field that will be used to fill in the form.</desc>
-        </attr>
-        <attr name="viewname" type="string" required="true">
-            <desc>References a View Definition in the same View Set.</desc>
-        </attr>
-        <attr name="colspan" type="integer" required="false" default="1">
-            <desc>The number of columns the separator will span.</desc>
-        </attr>
+        <attrs>
+	        <attr name="id" type="string" required="false" default="">
+	            <desc>The unique identifier within the form or subform.
+	                IDs do not have to be unique to it's parent form other sibling subforms, or its child subforms</desc>
+	        </attr>
+	        <attr name="name" type="string" required="true">
+	            <desc> The name of the data object's field that will be used to fill in the form.</desc>
+	        </attr>
+	        <attr name="viewname" type="string" required="true">
+	            <desc>References a View Definition in the same View Set.</desc>
+	        </attr>
+	        <attr name="colspan" type="integer" required="false" default="1">
+	            <desc>The number of columns the separator will span.</desc>
+	        </attr>
+	    </attrs>
     </control>
     
     <control type="panel">
         <desc>Displays/Creates a panel for orginizing controls more easily on the screen</desc>
-        <attr name="id" type="string" required="false" default="">
-            <desc>The unique identifier within the form or subform.
-                IDs do not have to be unique to it's parent form other sibling subforms, or its child subforms</desc>
-        </attr>
-        <attr name="name" type="string" required="true">
-            <desc> The name of the data object's field that will be used to fill in the form.</desc>
-        </attr>
-        <attr name="colspan" type="integer" required="false" default="1">
-            <desc>The number of columns the separator will span.</desc>
-        </attr>
-        <attr name="rowdef" type="string" required="true">
-            <desc>A JGoodies Form row definition</desc>
-        </attr>
-        <attr name="coldef" type="string" required="true">
-            <desc> A JGoodies Form column definition</desc>
-        </attr>
-        <attr name="paneltype" type="string" required="false" default="panel">
-            <desc>Indicates the panel, a value of 'buttonbar' will create a horizontal bar where the controls are centered.</desc>
-        </attr>
+        <attrs>
+	        <attr name="id" type="string" required="false" default="">
+	            <desc>The unique identifier within the form or subform.
+	                IDs do not have to be unique to it's parent form other sibling subforms, or its child subforms</desc>
+	        </attr>
+	        <attr name="name" type="string" required="true">
+	            <desc> The name of the data object's field that will be used to fill in the form.</desc>
+	        </attr>
+	        <attr name="colspan" type="integer" required="false" default="1">
+	            <desc>The number of columns the separator will span.</desc>
+	        </attr>
+	        <attr name="rowdef" type="string" required="true">
+	            <desc>A JGoodies Form row definition</desc>
+	        </attr>
+	        <attr name="coldef" type="string" required="true">
+	            <desc> A JGoodies Form column definition</desc>
+	        </attr>
+	        <attr name="paneltype" type="string" required="false" default="panel">
+	            <desc>Indicates the panel, a value of 'buttonbar' will create a horizontal bar where the controls are centered.</desc>
+	        </attr>
+        </attrs>
     </control>
     
     <control type="field">
-       <attr name="id" type="string" required="true">
-            <desc>The unique identifier within the form or subform.
-                IDs do not have to be unique to it's parent form other sibling subforms, or its child subforms</desc>
-        </attr>
-        <attr name="name" type="string" required="true">
-            <desc>This refers to the name of the data item with the data object ( tablerecord)</desc>
-        </attr>
-        <attr name="required" type="boolean" required="false" default="false">
-            <desc>Indicates the field MUST have a value</desc>
-        </attr>
-        <attr name="valtype" type="string" required="false" default="Change">
-            <desc>Indicates when the control is validated, which also causes the form's validation rules to be processed.</desc>
-            <values>Focus, Change</values>
-        </attr>
-        <attr name="rowspan" type="integer" required="false" default="1">
-            <desc>Indicates how many rows this control will span</desc>
-        </attr>
-        <attr name="colspan" type="integer" required="false" default="1">
-            <desc>Indicates how many columns this control will span</desc>
-        </attr>
-        <attr name="dsptype" type="string" required="false" default="dsptextfield">
-            <desc>Indicates the type of control to use when the form is in "display" mode.
-                IDs do not have to be unique to it's parent form other sibling subforms, or its child subforms</desc>
-        </attr>                
-        <param name="editoncreate" type="boolean" required="false" default="false">
-            <desc>This enables a field to be editable ONLY on creation, and then only viewable on edit.</desc>
-        </param>          
+		<attrs>
+	       <attr name="id" type="string" required="true">
+	            <desc>The unique identifier within the form or subform.
+	                IDs do not have to be unique to it's parent form other sibling subforms, or its child subforms</desc>
+	        </attr>
+	        <attr name="name" type="string" required="true">
+	            <desc>This refers to the name of the data item with the data object ( tablerecord)</desc>
+	        </attr>
+	        <attr name="required" type="boolean" required="false" default="false">
+	            <desc>Indicates the field MUST have a value</desc>
+	        </attr>
+	        <attr name="valtype" type="string" required="false" default="Change">
+	            <desc>Indicates when the control is validated, which also causes the form's validation rules to be processed.</desc>
+	            <values>Focus, Change</values>
+	        </attr>
+	        <attr name="rowspan" type="integer" required="false" default="1">
+	            <desc>Indicates how many rows this control will span</desc>
+	        </attr>
+	        <attr name="colspan" type="integer" required="false" default="1">
+	            <desc>Indicates how many columns this control will span</desc>
+	        </attr>
+	        <attr name="dsptype" type="string" required="false" default="dsptextfield">
+	            <desc>Indicates the type of control to use when the form is in "display" mode.
+	                IDs do not have to be unique to it's parent form other sibling subforms, or its child subforms</desc>
+	        </attr>
+        </attrs>
+        <params>             
+	        <param name="editoncreate" type="boolean" required="false" default="false">
+	            <desc>This enables a field to be editable ONLY on creation, and then only viewable on edit.</desc>
+	        </param>
+        </params>          
         <subcontrols>
              <subcontrol type="text" dsp="disptextfield">
                 <desc>Text field that is editable.</desc>
-		        <attr name="format" type="string" required="false" default="">
-                    <desc>String "sprintf" formatting (i.e. "%.0f" or "%5d")</desc>
-                </attr>
-                <attr name="default" type="string" required="false" default="">
-                    <desc>A default value for the text field.</desc>
-                </attr>         
+                <attrs>
+			        <attr name="format" type="string" required="false" default="">
+	                    <desc>String "sprintf" formatting (i.e. "%.0f" or "%5d")</desc>
+	                </attr>
+	                <attr name="default" type="string" required="false" default="">
+	                    <desc>A default value for the text field.</desc>
+	                </attr>
+	            </attrs>
             </subcontrol>
             
             <subcontrol type="dsptextfield" dsp="dsptextfield">
                 <desc>Text field that is never editable.</desc>
-                <attr name="format" type="string" required="false" default="">
-                    <desc>String "sprintf" formatting (i.e. "%.0f" or "%5d")</desc>
-                </attr>
-                <attr name="default" type="string" required="false" default="">
-                    <desc>A default value for the text field.</desc>
-                </attr>         
+                <attrs>
+	                <attr name="format" type="string" required="false" default="">
+	                    <desc>String "sprintf" formatting (i.e. "%.0f" or "%5d")</desc>
+	                </attr>
+	                <attr name="default" type="string" required="false" default="">
+	                    <desc>A default value for the text field.</desc>
+	                </attr>         
+                </attrs>
             </subcontrol>
             
             <subcontrol type="formattedtext" dsp="dsptextfield">
                 <desc>Text field that has a formatter.</desc>
-		        <attr name="uifieldformatter" type="string" required="true">
-                    <desc>The name of the UIFieldFormatter.</desc>
-                </attr>         
+                <attrs>
+			        <attr name="uifieldformatter" type="string" required="true">
+	                    <desc>The name of the UIFieldFormatter.</desc>
+	                </attr>
+	            </attrs>
             </subcontrol>
             
             <subcontrol type="textwithinfo" dsp="textwithinfo">
                 <desc>A textfield that can format a complex data object and display an "info" button to see the details of the object.
                 The field is not editable. The "querycbx" is used for editting and the control is used for display.</desc>
-                <param name="name" type="string" required="true" default="">
-                    <desc>Refers to a definition name that is managed by the ComboBoxFromQueryFactory</desc>
-                </param>        
-                <param name="title" type="string" required="true" default="">
-                    <desc>Human readable Title string for the dialog that shows the detailed information. Or the I18N key.</desc>
-                </param>
+                <params>
+	                <param name="name" type="string" required="true" default="">
+	                    <desc>Refers to a definition name that is managed by the ComboBoxFromQueryFactory</desc>
+	                </param>        
+	                <param name="title" type="string" required="true" default="">
+	                    <desc>Human readable Title string for the dialog that shows the detailed information. Or the I18N key.</desc>
+	                </param>
+                </params>
             </subcontrol>
             
             <subcontrol type="querycbx" dsp="textwithinfo">
                 <desc>A textfield that can format a complex data object and displays three buttons: Edit, New and Search.</desc>
-                <param name="name" type="string" required="true" default="">
-                    <desc>Refers to a definition name that is managed by the ComboBoxFromQueryFactory</desc>
-                </param>        
-                <param name="title" type="string" required="true" default="">
-                    <desc>Human readable Title string for the dialog that shows the detailed information. Or the I18N key.</desc>
-                </param>
+                <params>
+	                <param name="name" type="string" required="true" default="">
+	                    <desc>Refers to a definition name that is managed by the ComboBoxFromQueryFactory</desc>
+	                </param>        
+	                <param name="title" type="string" required="true" default="">
+	                    <desc>Human readable Title string for the dialog that shows the detailed information. Or the I18N key.</desc>
+	                </param>
+                </params>
             </subcontrol>
             
             <subcontrol type="image" dsp="image">
                 <desc>Displays an image in a box with a border. The value must be an valid URL that is then used to load the image. 
                     When the form is in edit mode, additional UI is presented that enabled the user to set a new URL for the image.
                 </desc>
-                <param name="width" type="integer" default="150" required="true">
-                    <desc>Width of Image</desc>
-                </param>
-                <param name="height" type="integer" default="150" required="true">
-                    <desc>Height of Image</desc>
-                </param>
-                <param name="edit" type="boolean"  default=""  required="false">
-                    <desc>this indicates the edit UI should be presented. When the form is in display mode this is set to false, 
-                        but can be overridden. 
-                        When the form is in edit mode this is automatically set to true and can be overridden.
-                    </desc>
-                </param>
+                <params>
+	                <param name="width" type="integer" default="150" required="true">
+	                    <desc>Width of Image</desc>
+	                </param>
+	                <param name="height" type="integer" default="150" required="true">
+	                    <desc>Height of Image</desc>
+	                </param>
+	                <param name="edit" type="boolean"  default=""  required="false">
+	                    <desc>this indicates the edit UI should be presented. When the form is in display mode this is set to false, 
+	                        but can be overridden. 
+	                        When the form is in edit mode this is automatically set to true and can be overridden.
+	                    </desc>
+	                </param>
+	            </params>
             </subcontrol>
             
             <subcontrol type="url" dsp="url">
                 <desc>Displays a button with user defined text. When the button is clicked the URL is loaded in a browser window.</desc>
-                <param name="title" type="string" required="true" default="">
-                    <desc>The Title of the url.</desc>
-                </param>
+                <params>
+	                <param name="title" type="string" required="true" default="">
+	                    <desc>The Title of the url.</desc>
+	                </param>
+	            </params>
             </subcontrol>
             
             <subcontrol type="comboxbox" dsp="dsptextfield">
                 <desc>Displays a combobox with a list of values from a picklist or from the initialize string. 
                     This is an autocomplete combobox.</desc>
-                <attr name="picklist" type="picklist" required="false">
-                    <desc>The name of the Pick List that is user defined. Pick Lists can be defined to be read only or have a set size where the 
-                          oldest value is removed if the list grows past the set size.</desc>
-                </attr>
-                <param name="data" type="list" required="false" default="">
-                    <desc>a comma separated list of values that are used to fill the combobox. This is referred to as a "quick list". 
-                        It works almost exactly like a read only Pick List. It is ideal for situations where there is a predefined set of values 
-                        that string field can have. Note: If the database contains a value that is not in the "quick list" the combobox is 
-                        set to not have a value.</desc>
-                </param>
+                <attrs>
+	                <attr name="picklist" type="picklist" required="false">
+	                    <desc>The name of the Pick List that is user defined. Pick Lists can be defined to be read only or have a set size where the 
+	                          oldest value is removed if the list grows past the set size.</desc>
+	                </attr>
+	            </attrs>
+	            <params>
+	                <param name="data" type="list" required="false" default="">
+	                    <desc>a comma separated list of values that are used to fill the combobox. This is referred to as a "quick list". 
+	                        It works almost exactly like a read only Pick List. It is ideal for situations where there is a predefined set of values 
+	                        that string field can have. Note: If the database contains a value that is not in the "quick list" the combobox is 
+	                        set to not have a value.</desc>
+	                </param>
+	            </params>
             </subcontrol>
             
             <subcontrol type="checkbox" dsp="checkbox">
@@ -221,45 +253,53 @@
             
             <subcontrol type="password" dsp="password">
                 <desc>Displays a password text field that displays "*" as the user types in their password.</desc>
-                <param name="isencrypted" type="boolean" required="true" default="">
-                    <desc>Indicates whether the control should automatically encrypt the password. Note: this greatly increases the length of 
-                        the string, but the size is less than 255.</desc>
-                </param>
+                <params>
+	                <param name="isencrypted" type="boolean" required="true" default="">
+	                    <desc>Indicates whether the control should automatically encrypt the password. Note: this greatly increases the length of 
+	                        the string, but the size is less than 255.</desc>
+                    </param>
+                </params>
             </subcontrol>
             
             <subcontrol type="textarea" dsp="dsptexarea">
                 <desc>Displays lengthy text in a text area (Text Control with rows and columns)</desc>
-                <param name="rows" type="integer" required="true" default="5">
-                    <desc>The number of rows to display</desc>
-                </param>
-                <param name="cols" type="integer" required="true" default="10">
-                    <desc>The number of columns to display</desc>
-                </param>
+                <params>
+	                <param name="rows" type="integer" required="true" default="5">
+	                    <desc>The number of rows to display</desc>
+	                </param>
+	                <param name="cols" type="integer" required="true" default="10">
+	                    <desc>The number of columns to display</desc>
+	                </param>
+	            </params>
             </subcontrol>
             
             <subcontrol type="browse" dsp="">
                 <desc>Displays a text field and button. The text field hold the value and the browse button enables 
                     the user to select a file (including its path) from the file system.</desc>
-                <param name="dirsonly" type="boolean" required="true" default="false">
-                    <desc>Specifies whether it should show only directories in the File Dialog.</desc>
-                </param>                
-                <param name="forinput" type="boolean" required="true" default="true">
-                    <desc>Specifies whether it should be for selecting a file (true), or for saving a file (false).</desc>
-                </param>                
+                <params>
+	                <param name="dirsonly" type="boolean" required="true" default="false">
+	                    <desc>Specifies whether it should show only directories in the File Dialog.</desc>
+	                </param>                
+	                <param name="forinput" type="boolean" required="true" default="true">
+	                    <desc>Specifies whether it should be for selecting a file (true), or for saving a file (false).</desc>
+	                </param>
+	            </params>
             </subcontrol>
             
             <subcontrol type="list" dsp="list">
                 <desc>Displays a list of items with a scroll bar.</desc>
-                <param name="rows" type="integer" required="false" default="15">
-                    <desc>The number of rows to be displayed
-                        The remainder can be a comma separated list of items to fill the list box, a "quick list"</desc>
-                </param>   
-                <param name="data" type="list" required="false" default="">
-                    <desc>a comma separated list of values that are used to fill the combobox. This is referred to as a "quick list". 
-                        It works almost exactly like a read only Pick List. It is ideal for situations where there is a predefined set of values 
-                        that string field can have. Note: If the database contains a value that is not in the "quick list" the combobox is 
-                        set to not have a value.</desc>
-                </param> 
+                <params>
+	                <param name="rows" type="integer" required="false" default="15">
+	                    <desc>The number of rows to be displayed
+	                        The remainder can be a comma separated list of items to fill the list box, a "quick list"</desc>
+	                </param>   
+	                <param name="data" type="list" required="false" default="">
+	                    <desc>a comma separated list of values that are used to fill the combobox. This is referred to as a "quick list". 
+	                        It works almost exactly like a read only Pick List. It is ideal for situations where there is a predefined set of values 
+	                        that string field can have. Note: If the database contains a value that is not in the "quick list" the combobox is 
+	                        set to not have a value.</desc>
+	                </param>
+	            </params> 
             </subcontrol>
             
             <subcontrol type="colorchooser" dsp="colorchooser">
@@ -271,33 +311,37 @@
             <subcontrol type="button" dsp="button">
                 <desc>Displays a button that does nothing. This is intended for those using the form engine to create dialogs. 
                     Should not be used in "regular" data entry forms.</desc>
-                <param name="title" type="string" required="true" default="">
-                    <desc>Human readable Title string for the dialog that shows the detailed information. Or the I18N key.</desc>
-                </param>
+                <params>
+	                <param name="title" type="string" required="true" default="">
+	                    <desc>Human readable Title string for the dialog that shows the detailed information. Or the I18N key.</desc>
+	                </param>
+	            </params>
             </subcontrol>
-            
             
             <subcontrol type="progress" dsp="progress">
                 <desc>Displays a progress bar that has its range initially set 0, 100.</desc>
             </subcontrol>
             
-            
             <subcontrol type="plugin" dsp="plugin">
                 <desc>Displays a custom control or UI plugin control. 
                     This control "should" implement the UIValidable and UIPluginable interface and MUST implement the "GetSetValueIFace".</desc>
-                <param name="class" type="string" required="true" default="">
-                    <desc>The fully specified class path of the Java class that implements the custom control.</desc>
-                </param>
+                <params>
+	                <param name="class" type="string" required="true" default="">
+	                    <desc>The fully specified class path of the Java class that implements the custom control.</desc>
+	                </param>
+	            </params>
             </subcontrol>
             
             <subcontrol type="spinner" dsp="dsptextfield">
                 <desc>Displays a Swing JSpinner control for numerical values.</desc>
-                <param name="min" type="integer" required="true" default="1">
-                    <desc>The maximum value.</desc>
-                </param>
-                <param name="max" type="integer" required="true" default="0">
-                    <desc>The minimum value.</desc>
-                </param>
+                <params>
+	                <param name="min" type="integer" required="true" default="1">
+	                    <desc>The maximum value.</desc>
+	                </param>
+	                <param name="max" type="integer" required="true" default="0">
+	                    <desc>The minimum value.</desc>
+	                </param>
+	            </params>
             </subcontrol>
             
         </subcontrols>

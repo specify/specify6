@@ -33,6 +33,12 @@ import javax.swing.ImageIcon;
 public interface Taskable
 {
     /**
+     * @return whether this Taskable should only ever have a single pane.
+     */
+    public boolean isSingletonPane();
+    
+    
+    /**
      * Returns all a collection of Nav Boxes for the NavBox Pane.
      * @return a collection of Nav Boxes
      */

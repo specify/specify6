@@ -205,7 +205,15 @@
 				<altview name="Report Properties" viewdef="ReportProperties" label="Properties" mode="edit" validated="true"/>
 			</altviews>
 		</view>
-  
+		
+        <view name="Query"
+            class="edu.ku.brc.specify.datamodel.SpQuery"
+            resourcelabels="false">
+            <desc><![CDATA[The Workbench Form.]]></desc>
+            <altviews>
+                <altview name="Query Edit" viewdef="Query" label="Edit" mode="edit" validated="true" default="true"/>                
+            </altviews>
+        </view>
   
     </views>
 
@@ -951,6 +959,32 @@
 				</row>
 			</rows>
 		</viewdef>
+		
+		       
+        <viewdef
+            type="form" 
+            name="Query"
+            class="edu.ku.brc.specify.datamodel.SpQuery"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The Query form]]></desc>
+            <!-- <enableRules>
+                <rule id="AddItem"><![CDATA[name.isNotEmpty() && name.length < 64]]></rule>
+            </enableRules>
+            -->
+            <columnDef>p,2px,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="name" uitype="text" cols="50" isrequired="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="4" label="Remarks"/>
+                    <cell type="field" id="4" name="remarks" uitype="textarea" cols="40"/>
+                </row>
+            </rows>
+        </viewdef>
         
     </viewdefs>
 </viewset>

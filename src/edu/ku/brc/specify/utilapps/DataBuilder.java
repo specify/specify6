@@ -193,6 +193,7 @@ public class DataBuilder
     }
     
     public static SpQueryField createQueryField(final SpQuery query,
+                                                final Short   position,
                                                 final String  fieldName, 
                                                 final Boolean isNot,
                                                 final Byte    operStart,
@@ -205,6 +206,7 @@ public class DataBuilder
     {
         SpQueryField field = new SpQueryField();
         field.initialize();
+        field.setPosition(position);
         field.setFieldName(fieldName);
         field.setOperStart(operStart);
         field.setOperEnd(operEnd);

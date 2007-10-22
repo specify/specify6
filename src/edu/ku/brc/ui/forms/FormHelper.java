@@ -306,6 +306,7 @@ public final class FormHelper
                             {
                                 try
                                 {
+                                    log.debug("fieldName ["+fieldName+"]");
                                     PropertyDescriptor descr = PropertyUtils.getPropertyDescriptor(dataObj, fieldName.trim());
                                     Class<?>  classObj = descr.getPropertyType();
                                     Object newObj = classObj.newInstance();

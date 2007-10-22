@@ -36,21 +36,21 @@ import org.hibernate.annotations.CascadeType;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "colobjattributes")
-public class ColObjAttributes extends DataModelObjBase
+@Table(name = "collectionobjectattributes")
+public class CollectionObjectAttributes extends DataModelObjBase
 {
-    protected Integer colObjAttributesId;
-    protected String sex;
-    protected String age;
-    protected String stage;
-    protected Float weight;
-    protected Float length;
-    protected Byte number8;
-    protected Float number9;
+    protected Integer collectionObjectAttributesId;
+    protected String text10;
+    protected String text11;
+    protected String text12;
+    protected Float  number37;
+    protected Float  number38;
+    protected Byte   number8;
+    protected Float  number9;
     protected String text8;
-    protected Float number10;
-    protected String reproductiveCondition;
-    protected String objCondition;
+    protected Float  number10;
+    protected String text13;
+    protected String text14;
     protected Float number11;
     protected Float number12;
     protected Float number13;
@@ -58,8 +58,8 @@ public class ColObjAttributes extends DataModelObjBase
     protected Float number15;
     protected Float number16;
     protected Float number17;
-    protected Float maxLength;
-    protected Float minLength;
+    protected Float number39;
+    protected Float number40;
     protected Float number18;
     protected Float number19;
     protected Float number20;
@@ -69,14 +69,14 @@ public class ColObjAttributes extends DataModelObjBase
     protected Float number24;
     protected Float number25;
     protected Float number26;
-    protected Float width;
+    protected Float number41;
     protected Float number27;
     protected Float number28;
     protected Float number29;
     protected Short number30;
     protected Float number31;
     protected Float number32;
-    protected Float height;
+    protected Float number42;
     protected Float number33;
     protected Float number34; // New
     protected Float number35; // New
@@ -109,15 +109,15 @@ public class ColObjAttributes extends DataModelObjBase
     // Constructors
 
     /** default constructor */
-    public ColObjAttributes()
+    public CollectionObjectAttributes()
     {
         // do nothing
     }
 
     /** constructor with id */
-    public ColObjAttributes(Integer colObjAttributesId) 
+    public CollectionObjectAttributes(Integer collectionObjectAttributesId) 
     {
-        this.colObjAttributesId = colObjAttributesId;
+        this.collectionObjectAttributesId = collectionObjectAttributesId;
     }
 
     // Initializer
@@ -125,18 +125,18 @@ public class ColObjAttributes extends DataModelObjBase
     public void initialize()
     {
         super.init();
-        colObjAttributesId = null;
-        sex = null;
-        age = null;
-        stage = null;
-        weight = null;
-        length = null;
+        collectionObjectAttributesId = null;
+        text10 = null;
+        text11 = null;
+        text12 = null;
+        number37 = null;
+        number38 = null;
         number8 = null;
         number9 = null;
         text8 = null;
         number10 = null;
-        reproductiveCondition = null;
-        objCondition = null;
+        text13 = null;
+        text14 = null;
         number11 = null;
         number12 = null;
         number13 = null;
@@ -144,8 +144,8 @@ public class ColObjAttributes extends DataModelObjBase
         number15 = null;
         number16 = null;
         number17 = null;
-        maxLength = null;
-        minLength = null;
+        number39 = null;
+        number40 = null;
         number18 = null;
         number19 = null;
         number20 = null;
@@ -155,14 +155,14 @@ public class ColObjAttributes extends DataModelObjBase
         number24 = null;
         number25 = null;
         number26 = null;
-        width = null;
+        number41 = null;
         number27 = null;
         number28 = null;
         number29 = null;
         number30 = null;
         number31 = null;
         number32 = null;
-        height = null;
+        number42 = null;
         number33 = null;
         number34 = null; // New
         number35 = null; // New
@@ -196,10 +196,10 @@ public class ColObjAttributes extends DataModelObjBase
 
     @Id
     @GeneratedValue
-    @Column(name = "ColObjAttributesID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Integer getColObjAttributesId()
+    @Column(name = "CollectionObjectAttributesID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Integer getCollectionObjectAttributesId()
     {
-        return colObjAttributesId;
+        return collectionObjectAttributesId;
     }
 
     /* (non-Javadoc)
@@ -209,50 +209,50 @@ public class ColObjAttributes extends DataModelObjBase
     @Override
     public Integer getId()
     {
-        return this.colObjAttributesId;
+        return this.collectionObjectAttributesId;
     }
-
-    @Column(name = "Age", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
-    public String getAge()
-    {
-        return age;
-    }
-
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "colObjAttributes")
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectionObjectAttributes")
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     public Set<CollectionObject> getCollectionObjects()
     {
         return collectionObjects;
     }
 
-    @Column(name = "ObjCondition", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
-    public String getObjCondition()
+
+    @Column(name = "Text11", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    public String getText11()
     {
-        return objCondition;
+        return text11;
     }
 
-    @Column(name = "Height", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getHeight()
+    @Column(name = "Text14", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    public String getText14()
     {
-        return height;
+        return text14;
     }
 
-    @Column(name = "Length", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getLength()
+    @Column(name = "Number42", unique = false, nullable = true, insertable = true, updatable = true)
+    public Float getNumber42()
     {
-        return length;
+        return number42;
     }
 
-    @Column(name = "MaxLength", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getMaxLength()
+    @Column(name = "Number38", unique = false, nullable = true, insertable = true, updatable = true)
+    public Float getNumber38()
     {
-        return maxLength;
+        return number38;
     }
 
-    @Column(name = "MinLength", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getMinLength()
+    @Column(name = "Number39", unique = false, nullable = true, insertable = true, updatable = true)
+    public Float getNumber39()
     {
-        return minLength;
+        return number39;
+    }
+
+    @Column(name = "Number40", unique = false, nullable = true, insertable = true, updatable = true)
+    public Float getNumber40()
+    {
+        return number40;
     }
 
     @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true)
@@ -478,22 +478,22 @@ public class ColObjAttributes extends DataModelObjBase
         return remarks;
     }
 
-    @Column(name = "ReproductiveCondition", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
-    public String getReproductiveCondition()
+    @Column(name = "Text13", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    public String getText13()
     {
-        return reproductiveCondition;
+        return text13;
     }
 
-    @Column(name = "Sex", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
-    public String getSex()
+    @Column(name = "Text10", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    public String getText10()
     {
-        return sex;
+        return text10;
     }
 
-    @Column(name = "Stage", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
-    public String getStage()
+    @Column(name = "Text12", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    public String getText12()
     {
-        return stage;
+        return text12;
     }
 
     @Column(name = "Text1", unique = false, nullable = true, insertable = true, updatable = true, length = 300)
@@ -550,16 +550,16 @@ public class ColObjAttributes extends DataModelObjBase
         return text9;
     }
 
-    @Column(name = "Weight", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getWeight()
+    @Column(name = "Number37", unique = false, nullable = true, insertable = true, updatable = true)
+    public Float getNumber37()
     {
-        return weight;
+        return number37;
     }
 
-    @Column(name = "Width", unique = false, nullable = true, insertable = true, updatable = true)
-    public Float getWidth()
+    @Column(name = "Number41", unique = false, nullable = true, insertable = true, updatable = true)
+    public Float getNumber41()
     {
-        return width;
+        return number41;
     }
 
     @Column(name = "YesNo1", unique = false, nullable = true, insertable = true, updatable = true)
@@ -604,9 +604,9 @@ public class ColObjAttributes extends DataModelObjBase
         return yesNo7;
     }
 
-    public void setAge(String age)
+    public void setText11(String text11)
     {
-        this.age = age;
+        this.text11 = text11;
     }
 
     public void setCollectionObjects(Set<CollectionObject> collectionObjects)
@@ -614,34 +614,34 @@ public class ColObjAttributes extends DataModelObjBase
         this.collectionObjects = collectionObjects;
     }
 
-    public void setColObjAttributesId(Integer colObjAttributesId)
+    public void setCollectionObjectAttributesId(Integer collectionObjectAttributesId)
     {
-        this.colObjAttributesId = colObjAttributesId;
+        this.collectionObjectAttributesId = collectionObjectAttributesId;
     }
 
-    public void setObjCondition(String objCondition)
+    public void setText14(String text14)
     {
-        this.objCondition = objCondition;
+        this.text14 = text14;
     }
 
-    public void setHeight(Float height)
+    public void setNumber42(Float number42)
     {
-        this.height = height;
+        this.number42 = number42;
     }
 
-    public void setLength(Float length)
+    public void setNumber38(Float number38)
     {
-        this.length = length;
+        this.number38 = number38;
     }
 
-    public void setMaxLength(Float maxLength)
+    public void setNumber39(Float number39)
     {
-        this.maxLength = maxLength;
+        this.number39 = number39;
     }
 
-    public void setMinLength(Float minLength)
+    public void setNumber40(Float number40)
     {
-        this.minLength = minLength;
+        this.number40 = number40;
     }
 
     public void setNumber1(Float number1)
@@ -829,19 +829,19 @@ public class ColObjAttributes extends DataModelObjBase
         this.remarks = remarks;
     }
 
-    public void setReproductiveCondition(String reproductiveCondition)
+    public void setText13(String text13)
     {
-        this.reproductiveCondition = reproductiveCondition;
+        this.text13 = text13;
     }
 
-    public void setSex(String sex)
+    public void setText10(String text10)
     {
-        this.sex = sex;
+        this.text10 = text10;
     }
 
-    public void setStage(String stage)
+    public void setText12(String text12)
     {
-        this.stage = stage;
+        this.text12 = text12;
     }
 
     public void setText1(String text1)
@@ -889,14 +889,14 @@ public class ColObjAttributes extends DataModelObjBase
         this.text9 = text9;
     }
 
-    public void setWeight(Float weight)
+    public void setNumber37(Float number37)
     {
-        this.weight = weight;
+        this.number37 = number37;
     }
 
-    public void setWidth(Float width)
+    public void setNumber41(Float number41)
     {
-        this.width = width;
+        this.number41 = number41;
     }
 
     public void setYesNo1(Boolean yesNo1)
@@ -941,7 +941,7 @@ public class ColObjAttributes extends DataModelObjBase
     @Override
     public Class<?> getDataClass()
     {
-        return ColObjAttributes.class;
+        return CollectionObjectAttributes.class;
     }
 
     /* (non-Javadoc)

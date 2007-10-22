@@ -4,6 +4,8 @@
 
     Last Used Id is 125 or 518
     
+    86 is available
+    
     PLEASE Keep this file in alphabetical order! 
 
 -->
@@ -65,7 +67,8 @@
         	<display view="CollectingEventAttachment" newobjdlg="CollectingEventAttachmentDisplay"/>
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
-        <table name="edu.ku.brc.specify.datamodel.CollectingEventAttr" abbrev="cea" id="25" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.CollectingEventAttr" abbrev="ceatr" id="25" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.CollectingEventAttributes" abbrev="cea" id="92" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.CollectingTrip" abbrev="clt" id="87" workbench="true" searchable="true">
             <display objtitle="Collecting Trip"/>
         </table>
@@ -82,7 +85,7 @@
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.CollectionObjectAttr" abbrev="coa" id="28" searchable="true"/>
-        <table name="edu.ku.brc.specify.datamodel.ColObjAttributes" abbrev="coas" id="93" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.CollectionObjectAttributes" abbrev="coas" id="93" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.CollectionObjectCitation" abbrev="coc" id="29" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.CollectionRelType" abbrev="crt" id="98">
             <display objtitle="Collection Relationship Type"/>
@@ -148,7 +151,6 @@
             <businessrule>edu.ku.brc.specify.datamodel.busrules.GeologicTimePeriodBusRules</businessrule>          
         </table>
         <table name="edu.ku.brc.specify.datamodel.GroupPerson" abbrev="gp" id="49" searchable="true"/>
-        <table name="edu.ku.brc.specify.datamodel.HabitatAttributes" abbrev="hat" id="92" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.InfoRequest" abbrev="ir" id="50" searchable="true">
             <display view="InfoRequest"/>
         </table>
@@ -158,7 +160,6 @@
         <table name="edu.ku.brc.specify.datamodel.Journal" abbrev="jn" id="51" searchable="true">
             <display view="Journal"/>
         </table>
-        <table name="edu.ku.brc.specify.datamodel.Ipm" abbrev="i" id="86" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.LithoStrat" abbrev="ls" id="100" workbench="true" searchable="true">
             <display objtitle="Lithostratigraphy" view="LithoStrat" dataobjformatter="" searchdlg="LithoStratSearch" newobjdlg="LithoStratDisplay"/>
         </table>

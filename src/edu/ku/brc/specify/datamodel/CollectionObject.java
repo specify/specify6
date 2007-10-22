@@ -128,7 +128,7 @@ public class CollectionObject extends DataModelObjBase implements AttachmentOwne
     protected Container                     container;
     protected Container                     containerOwner;
     protected Appraisal                     appraisal;
-    protected ColObjAttributes              colObjAttributes;      // Specify 5 Attributes table
+    protected CollectionObjectAttributes    collectionObjectAttributes;      // Specify 5 Attributes table
     protected Set<CollectionObjectAttr>     collectionObjectAttrs; // Generic Expandable Attributes
     protected Set<CollectionRelationship>   leftSideRels;
     protected Set<CollectionRelationship>   rightSideRels;
@@ -138,7 +138,6 @@ public class CollectionObject extends DataModelObjBase implements AttachmentOwne
     
     protected Set<ConservDescription>         conservDescriptions;
     protected Set<TreatmentEvent>             treatmentEvents;
-    protected Set<Ipm>                        ipms;
     protected Set<CollectionObjectAttachment> collectionObjectAttachments;
 
     // Constructors
@@ -217,7 +216,6 @@ public class CollectionObject extends DataModelObjBase implements AttachmentOwne
         
         conservDescriptions         = new HashSet<ConservDescription>();
         treatmentEvents             = new HashSet<TreatmentEvent>();
-        ipms                        = new HashSet<Ipm>();
         collectionObjectAttachments = new HashSet<CollectionObjectAttachment>();
     }
     // End Initializer
@@ -761,12 +759,14 @@ public class CollectionObject extends DataModelObjBase implements AttachmentOwne
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "ColObjAttributesID", unique = false, nullable = true, insertable = true, updatable = true)
-    public ColObjAttributes getColObjAttributes() {
-        return this.colObjAttributes;
+    public CollectionObjectAttributes getCollectionObjectAttributes() 
+    {
+        return this.collectionObjectAttributes;
     }
 
-    public void setColObjAttributes(ColObjAttributes colObjAttributes) {
-        this.colObjAttributes = colObjAttributes;
+    public void setCollectionObjectAttributes(CollectionObjectAttributes colObjAttributes) 
+    {
+        this.collectionObjectAttributes = colObjAttributes;
     }
 
     /**
@@ -944,24 +944,6 @@ public class CollectionObject extends DataModelObjBase implements AttachmentOwne
     public void setTreatmentEvents(Set<TreatmentEvent> treatmentEvents)
     {
         this.treatmentEvents = treatmentEvents;
-    }
-
-    /**
-     * @return the ipms
-     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectionObject")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<Ipm> getIpms()
-    {
-        return ipms;
-    }
-
-    /**
-     * @param ipms the ipms to set
-     */
-    public void setIpms(Set<Ipm> ipms)
-    {
-        this.ipms = ipms;
     }
 
     /**

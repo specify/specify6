@@ -129,4 +129,14 @@ public class FormCellLabel extends FormCellSeparator implements FormCellLabelIFa
         
         return fcl;      
     }
+    
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return label + " (label)";
+    }
 }

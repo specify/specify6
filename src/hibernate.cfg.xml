@@ -63,11 +63,12 @@
 		<mapping class="edu.ku.brc.specify.datamodel.CollectionObject"/>
 		<mapping class="edu.ku.brc.specify.datamodel.CollectionObjectAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.CollectionObjectAttr"/>
+		<mapping class="edu.ku.brc.specify.datamodel.CollectingEventAttributes"/>
 		<mapping class="edu.ku.brc.specify.datamodel.CollectionRelType"/>
 		<mapping class="edu.ku.brc.specify.datamodel.CollectionRelationship"/>
 		<mapping class="edu.ku.brc.specify.datamodel.CollectionType"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Collector"/>
-		<mapping class="edu.ku.brc.specify.datamodel.ColObjAttributes"/>
+		<mapping class="edu.ku.brc.specify.datamodel.CollectionObjectAttributes"/>
 		<mapping class="edu.ku.brc.specify.datamodel.CommonName"/>
 		<mapping class="edu.ku.brc.specify.datamodel.ConservDescription"/>
 		<mapping class="edu.ku.brc.specify.datamodel.ConservDescriptionAttachment"/>
@@ -98,10 +99,8 @@
 		<mapping class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef"/>
 		<mapping class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem"/>
 		<mapping class="edu.ku.brc.specify.datamodel.GroupPerson"/>
-		<mapping class="edu.ku.brc.specify.datamodel.HabitatAttributes"/>
 		<mapping class="edu.ku.brc.specify.datamodel.InfoRequest"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Institution"/>
-		<mapping class="edu.ku.brc.specify.datamodel.Ipm"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Journal"/>
 		<mapping class="edu.ku.brc.specify.datamodel.LithoStrat"/>
 		<mapping class="edu.ku.brc.specify.datamodel.LithoStratTreeDef"/>
@@ -144,6 +143,7 @@
 		<mapping class="edu.ku.brc.specify.datamodel.SpLocaleContainer"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpLocaleContainerItem"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpLocaleItemStr"/>
+		
 		<!--
 		<mapping class="edu.ku.brc.specify.datamodel.SpUIAltView"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpUICell"/>

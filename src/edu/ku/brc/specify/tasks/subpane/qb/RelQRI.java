@@ -25,11 +25,15 @@ import edu.ku.brc.ui.UIHelper;
 public class RelQRI extends BaseQRI
 {
     protected DBRelationshipInfo ri;
+    protected TableTree          tableTree;
     
     public RelQRI(final BaseQRI parent, final TableTree tableTree, final DBRelationshipInfo ri)
     {
         super(parent, tableTree);
-        this.ri = ri;
+        
+        int x = 0;
+        x++;
+        /*this.ri = ri;
         
         try
         {
@@ -45,12 +49,33 @@ public class RelQRI extends BaseQRI
             ex.printStackTrace();
             iconName = "BlankIcon";
             title    = "????";
-        }
+        }*/
     }
-    public DBRelationshipInfo getTableRelationship()
+    
+    /**
+     * @return the tableTree
+     */
+    public TableTree getTableTree()
     {
-        return ri;
-    }        
+        return tableTree;
+    }
+
+    /**
+     * @param tableTree the tableTree to set
+     */
+    public void setTableTree(TableTree tableTree)
+    {
+        this.tableTree = tableTree;
+        
+        title    = tableTree.getTableInfo().getTitle();
+        if (title == null)
+        {
+            int x = 0;
+            x++;
+        }
+        iconName = tableTree.getTableInfo().getShortClassName();
+    }
+
     public boolean hasChildren()
     {
         return true;//ri.getType() == DBRelationshipInfo.RelationshipType.OneToMany || ri.getType() == DBRelationshipInfo.RelationshipType.ManyToMany;

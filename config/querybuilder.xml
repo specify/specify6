@@ -56,7 +56,7 @@
     </table>
 
     <table name="CollectionObject">
-    	<table name="ColObjAttributes"/>
+    	<table name="CollectionObjectAttributes"/>
         <table name="CollectionObjectAttachment">
             <alias name="Attachment"/>
         </table>
@@ -180,7 +180,7 @@
     <table name="ExchangeIn" id="39"/>
     <table name="ExchangeOut" id="40"/>
     <table name="GroupPerson" id="49"/>
-    <table name="HabitatAttributes" id="92"/>
+    <table name="CollectingEventAttributes" id="92"/>
     <table name="InfoRequest" id="50">
     <table name="Institution" id="94">
     <table name="Journal" id="51">

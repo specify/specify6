@@ -941,11 +941,6 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public void wasValidated(final UIValidator validator)
     {
-        if (name.equals("Shipment"))
-        {
-            int x = 0;
-            x++;
-        }
         // When the form has been asked manually to be validated then ignore the notifications
         if (!ignoreValidationNotifications)
         {

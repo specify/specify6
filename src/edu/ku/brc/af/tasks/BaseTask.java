@@ -856,11 +856,20 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     {
         // do nothing
     }
-
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.Taskable#isSingletonPane()
+     */
+    public boolean isSingletonPane()
+    {
+        return false;
+    }
+    
     //--------------------------------------------------------------
     // NavBoxButton Helpers
     //--------------------------------------------------------------
-    
+
+
     /**
      * Creates Command Items for a mime type in the AppResources XML.
      * @param mimeType the MimeType to use

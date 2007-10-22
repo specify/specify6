@@ -14,6 +14,8 @@
  */
 package edu.ku.brc.ui.forms.persist;
 
+import org.apache.commons.lang.StringUtils;
+
 /*
  * @code_status Beta
  **
@@ -84,5 +86,14 @@ public class FormCellSeparator extends FormCell implements Cloneable, FormCellSe
         cellSep.collapseCompName  = collapseCompName;
         return cellSep;      
     }
-    
+
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return label + " (separator)";
+    }
 }
