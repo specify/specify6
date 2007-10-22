@@ -108,8 +108,8 @@
 		<mapping class="edu.ku.brc.specify.datamodel.LoanAgent"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Loan"/>
 		<mapping class="edu.ku.brc.specify.datamodel.LoanAttachment"/>
-		<mapping class="edu.ku.brc.specify.datamodel.LoanPhysicalObject"/>
-		<mapping class="edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject"/>
+		<mapping class="edu.ku.brc.specify.datamodel.LoanPreparation"/>
+		<mapping class="edu.ku.brc.specify.datamodel.LoanReturnPreparation"/>
 		<mapping class="edu.ku.brc.specify.datamodel.LocalityCitation"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Locality"/>
 		<mapping class="edu.ku.brc.specify.datamodel.LocalityDetail"/>

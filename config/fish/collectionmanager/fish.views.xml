@@ -168,7 +168,7 @@
         </view>
         
         <view name="LoanItems"
-            class="edu.ku.brc.specify.datamodel.LoanPhysicalObject"
+            class="edu.ku.brc.specify.datamodel.LoanPreparation"
             resourcelabels="false">
             <desc><![CDATA[Loan display form]]></desc>
             <altviews>
@@ -1189,7 +1189,7 @@
                     <cell type="separator" label="Preparations To be Loaned" colspan="12"/>
                 </row>
                 <row>
-                     <cell type="subview" viewname="LoanItems" id="10" name="loanPhysicalObjects" colspan="12"/>
+                     <cell type="subview" viewname="LoanItems" id="10" name="loanPreparations" colspan="12"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="attachments" label="Attachments"/>
@@ -1211,7 +1211,7 @@
         <viewdef
             type="form"
             name="LoanItems"
-            class="edu.ku.brc.specify.datamodel.LoanPhysicalObject"
+            class="edu.ku.brc.specify.datamodel.LoanPreparation"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             

@@ -46,7 +46,7 @@ import org.hibernate.annotations.Index;
         @Index (name="FNBStartDateIDX", columnNames={"StartDate"}),
         @Index (name="FNBEndDateIDX", columnNames={"EndDate"})
     })
-public class FieldNotebook extends DataModelObjBase
+public class FieldNotebook extends CollectionMember
 {
     protected Integer    fieldNotebookId;
     protected String     name;

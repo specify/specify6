@@ -60,7 +60,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         CollectionObject colObj = (CollectionObject)dataObj;
         for (Preparation prep : colObj.getPreparations())
         {
-            if (prep.getLoanPhysicalObjects().size() > 0)
+            if (prep.getLoanPreparations().size() > 0)
             {
                 session.close();
                 return false;

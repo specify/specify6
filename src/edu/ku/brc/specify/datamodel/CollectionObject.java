@@ -73,7 +73,7 @@ import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
         @Index (name="CatalogedDateIDX", columnNames={"CatalogedDate"}),
         @Index (name="CatalogNumberIDX", columnNames={"CatalogNumber"})
     })
-public class CollectionObject extends DataModelObjBase implements AttachmentOwnerIFace<CollectionObjectAttachment>, java.io.Serializable, AttributeProviderIFace, Comparable<CollectionObject>
+public class CollectionObject extends CollectionMember implements AttachmentOwnerIFace<CollectionObjectAttachment>, java.io.Serializable, AttributeProviderIFace, Comparable<CollectionObject>
 {
 
     // Fields

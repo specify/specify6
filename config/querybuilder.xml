@@ -187,8 +187,8 @@
     <table name="Loan" id="52">
     <table name="LoanAgent" id="53"/>
     <table name="LoanAttachment" id="114">
-    <table name="LoanPhysicalObject" id="54"/>
-    <table name="LoanReturnPhysicalObject" id="55">
+    <table name="LoanPreparation" id="54"/>
+    <table name="LoanReturnPreparation" id="55">
     <table name="Location" id="58">
     <table name="OtherIdentifier" id="61"/>
     <table name="Project" id="66"/>

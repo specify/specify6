@@ -95,7 +95,7 @@ import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Determination;
-import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
+import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.tests.SpecifyAppPrefs;
@@ -1019,9 +1019,9 @@ public class FormEditor implements DatabaseLoginListener
             int count       = prep.getCount();
             int quantityOut = 0;
             
-            if (prep.getLoanPhysicalObjects().size() > 0)
+            if (prep.getLoanPreparations().size() > 0)
             {
-                for (LoanPhysicalObject lpo : prep.getLoanPhysicalObjects())
+                for (LoanPreparation lpo : prep.getLoanPreparations())
                 {
                     int quantityLoaned   = lpo.getQuantity();
                     int quantityReturned = lpo.getQuantityReturned();

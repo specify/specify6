@@ -47,7 +47,7 @@ import edu.ku.brc.dbsupport.AttributeIFace;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "collectionobjectattr")
-public class CollectionObjectAttr extends DataModelObjBase implements AttributeIFace, java.io.Serializable
+public class CollectionObjectAttr extends CollectionMember implements AttributeIFace, java.io.Serializable
 {
 
     // Fields

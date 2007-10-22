@@ -46,7 +46,7 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
                 "specifyuser",  "AgentID",
                 "agent",        "ParentOrganizationID",
                 "groupperson", "GroupID",
-                "loanreturnphysicalobject", "ReceivedByID",
+                "loanreturnpreparation", "ReceivedByID",
                 "author",      "AgentID",
                 "borrowreturnmaterial", "ReturnedByID",
                 "preparation",  "PreparedByID",

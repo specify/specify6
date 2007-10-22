@@ -57,7 +57,7 @@ import org.hibernate.annotations.CascadeType;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "address")
-public class Address extends DataModelObjBase implements java.io.Serializable {
+public class Address extends CollectionMember implements java.io.Serializable {
 
     // Fields
 

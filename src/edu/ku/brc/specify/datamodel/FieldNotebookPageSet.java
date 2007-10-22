@@ -43,7 +43,7 @@ import org.hibernate.annotations.Index;
     {   @Index (name="FNBPSStartDateIDX", columnNames={"StartDate"}),
         @Index (name="FNBPSEndDateIDX", columnNames={"EndDate"})
     })
-public class FieldNotebookPageSet extends DataModelObjBase
+public class FieldNotebookPageSet extends CollectionMember
 {
     protected Integer    fieldNotebookPageSetId;
     protected Calendar   startDate;

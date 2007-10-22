@@ -58,7 +58,7 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
      protected Short quantity;
      protected String remarks;
      protected Deaccession deaccession;
-     protected Set<LoanReturnPhysicalObject> loanReturnPhysicalObjects;
+     protected Set<LoanReturnPreparation> loanReturnPreparations;
      protected Preparation preparation;
 
 
@@ -86,7 +86,7 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
         quantity = null;
         remarks = null;
         deaccession = null;
-        loanReturnPhysicalObjects = new HashSet<LoanReturnPhysicalObject>();
+        loanReturnPreparations = new HashSet<LoanReturnPreparation>();
         preparation = null;
     }
     // End Initializer
@@ -171,12 +171,12 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "deaccessionPreparation")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<LoanReturnPhysicalObject> getLoanReturnPhysicalObjects() {
-        return this.loanReturnPhysicalObjects;
+    public Set<LoanReturnPreparation> getLoanReturnPreparations() {
+        return this.loanReturnPreparations;
     }
     
-    public void setLoanReturnPhysicalObjects(Set<LoanReturnPhysicalObject> loanReturnPhysicalObjects) {
-        this.loanReturnPhysicalObjects = loanReturnPhysicalObjects;
+    public void setLoanReturnPreparations(Set<LoanReturnPreparation> loanReturnPreparations) {
+        this.loanReturnPreparations = loanReturnPreparations;
     }
 
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
@@ -193,20 +193,20 @@ public class DeaccessionPreparation extends DataModelObjBase implements java.io.
 
     // Add Methods
 
-    public void addLoanReturnPhysicalObjects(final LoanReturnPhysicalObject loanReturnPhysicalObject)
+    public void addLoanReturnPreparations(final LoanReturnPreparation loanReturnPreparation)
     {
-        this.loanReturnPhysicalObjects.add(loanReturnPhysicalObject);
-        loanReturnPhysicalObject.setDeaccessionPreparation(this);
+        this.loanReturnPreparations.add(loanReturnPreparation);
+        loanReturnPreparation.setDeaccessionPreparation(this);
     }
 
     // Done Add Methods
 
     // Delete Methods
 
-    public void removeLoanReturnPhysicalObjects(final LoanReturnPhysicalObject loanReturnPhysicalObject)
+    public void removeLoanReturnPreparations(final LoanReturnPreparation loanReturnPreparation)
     {
-        this.loanReturnPhysicalObjects.remove(loanReturnPhysicalObject);
-        loanReturnPhysicalObject.setDeaccessionPreparation(null);
+        this.loanReturnPreparations.remove(loanReturnPreparation);
+        loanReturnPreparation.setDeaccessionPreparation(null);
     }
 
     /* (non-Javadoc)

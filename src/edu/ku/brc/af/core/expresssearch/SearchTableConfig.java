@@ -50,6 +50,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
     protected Integer                    displayOrder;
     protected Vector<SearchFieldConfig>  searchFields  = new Vector<SearchFieldConfig>();
     protected Vector<DisplayFieldConfig> displayFields = new Vector<DisplayFieldConfig>();
+    protected Vector<DisplayFieldConfig> wsFields      = new Vector<DisplayFieldConfig>();
     
     // Transient 
     protected DBTableInfo                tableInfo;
@@ -76,6 +77,16 @@ public class SearchTableConfig implements DisplayOrderingIFace,
         for (DisplayFieldConfig dfc : displayFields)
         {
             dfc.setStc(this);
+        }
+        if (wsFields != null)
+        {
+            for (DisplayFieldConfig wsfc : wsFields)
+            {
+                wsfc.setStc(this);
+            }
+        } else
+        {
+            wsFields = new Vector<DisplayFieldConfig>();
         }
     }
 
@@ -147,6 +158,22 @@ public class SearchTableConfig implements DisplayOrderingIFace,
     public void setDisplayFields(Vector<DisplayFieldConfig> displayFields)
     {
         this.displayFields = displayFields;
+    }
+
+    /**
+     * @return the wsFields
+     */
+    public Vector<DisplayFieldConfig> getWsFields()
+    {
+        return wsFields;
+    }
+
+    /**
+     * @param wsFields the wsFields to set
+     */
+    public void setWsFields(Vector<DisplayFieldConfig> wsFields)
+    {
+        this.wsFields = wsFields;
     }
 
     /**

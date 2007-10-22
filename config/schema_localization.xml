@@ -2002,7 +2002,7 @@
         <descs/>
         <version>0</version>
       </item>
-      <item name="loanReturnPhysicalObjects" type="OneToMany">
+      <item name="loanReturnPreparations" type="OneToMany">
         <names>
           <str language="de" country="" variant="">
             <text>Loan Return Physical Objects</text>
@@ -13188,7 +13188,7 @@
   </container>
   <container name="deaccessionpreparation" type="">
     <items>
-      <item name="loanReturnPhysicalObjects" type="OneToMany">
+      <item name="loanReturnPreparations" type="OneToMany">
         <names>
           <str language="en" country="" variant="">
             <text>Loan Return Physical Objects</text>
@@ -19468,7 +19468,7 @@
         </descs>
         <version>0</version>
       </item>
-      <item name="loanPhysicalObjects" type="OneToMany">
+      <item name="loanPreparations" type="OneToMany">
         <names>
           <str language="de" country="" variant="">
             <text>Loan Physical Objects</text>
@@ -20183,7 +20183,7 @@
     <descs/>
     <version>0</version>
   </container>
-  <container name="loanphysicalobject" type="">
+  <container name="loanpreparation" type="">
     <items>
       <item name="preparation" type="ManyToOne">
         <names>
@@ -20362,7 +20362,7 @@
         <descs/>
         <version>0</version>
       </item>
-      <item name="loanReturnPhysicalObjects" type="OneToMany">
+      <item name="loanReturnPreparations" type="OneToMany">
         <names>
           <str language="de" country="" variant="">
             <text>Loan Return Physical Objects</text>
@@ -20472,9 +20472,9 @@
     <descs/>
     <version>0</version>
   </container>
-  <container name="loanreturnphysicalobject" type="">
+  <container name="loanreturnpreparation" type="">
     <items>
-      <item name="loanPhysicalObject" type="ManyToOne">
+      <item name="loanPreparation" type="ManyToOne">
         <names>
           <str language="de" country="" variant="">
             <text>Loan Physical Object</text>
@@ -24085,7 +24085,7 @@
         <descs/>
         <version>0</version>
       </item>
-      <item name="loanPhysicalObjects" type="OneToMany">
+      <item name="loanPreparations" type="OneToMany">
         <names>
           <str language="de" country="" variant="">
             <text>Loan Physical Objects</text>

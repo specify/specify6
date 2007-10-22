@@ -60,7 +60,7 @@ import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 @org.hibernate.annotations.Table(appliesTo="determination", indexes =
     {   @Index (name="DeterminedDateIDX", columnNames={"DeterminedDate"})
     })
-public class Determination extends DataModelObjBase implements java.io.Serializable, Comparable<Determination>
+public class Determination extends CollectionMember implements java.io.Serializable, Comparable<Determination>
 {
 
     // Fields    

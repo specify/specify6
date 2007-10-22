@@ -281,7 +281,7 @@
 		</order>
 		 
 	    <additional>
-			<field type="set" label="Loaned Preparations" labellevel="loanPhysicalObjects" >loanPhysicalObjects.preparation</field>
+			<field type="set" label="Loaned Preparations" labellevel="loanPreparations" >loanPreparations.preparation</field>
 		</additional>
 	
 	</class>
@@ -296,7 +296,7 @@
 		</order>
 	</class>
 	
-    <class name="LoanPhysicalObject" linkfield="" indexfield="">
+    <class name="LoanPreparation" linkfield="" indexfield="">
     	<skip>
 			<field>visibility</field>
 			<field>visibilitySetBy</field>
@@ -306,7 +306,7 @@
 		</order>
 	</class>
 	
-    <class name="LoanReturnPhysicalObject" linkfield="" indexfield="">
+    <class name="LoanReturnPreparation" linkfield="" indexfield="">
     	<skip>
 			<field>visibility</field>
 			<field>visibilitySetBy</field>

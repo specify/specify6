@@ -33,7 +33,7 @@ import edu.ku.brc.util.Orderable;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "collectingeventattachment")
-public class CollectingEventAttachment extends DataModelObjBase implements ObjectAttachmentIFace<CollectingEvent>, Orderable, Serializable
+public class CollectingEventAttachment extends CollectionMember implements ObjectAttachmentIFace<CollectingEvent>, Orderable, Serializable
 {
     protected Integer    collectingEventAttachmentId;
     protected CollectingEvent     collectingEvent;

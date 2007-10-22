@@ -42,7 +42,7 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Table(appliesTo="dnasequence", indexes =
     {   @Index (name="DNASeqDateIDX", columnNames={"SeqDate"})
     })
-public class DNASequence extends DataModelObjBase
+public class DNASequence extends CollectionMember
 {
     protected Integer  dnaSequenceId;
     protected String   geneName;

@@ -67,7 +67,7 @@ import edu.ku.brc.dbsupport.DBConnection;
         @Index (name="LoanDateIDX", columnNames={"LoanDate"}),
         @Index (name="CurrentDueDateIDX", columnNames={"CurrentDueDate"})
     })
-public class Loan extends DataModelObjBase implements AttachmentOwnerIFace<LoanAttachment>, java.io.Serializable {
+public class Loan extends CollectionMember implements AttachmentOwnerIFace<LoanAttachment>, java.io.Serializable {
 
     // options for the 'category' field
     public static final Boolean LOAN = false;
@@ -104,7 +104,7 @@ public class Loan extends DataModelObjBase implements AttachmentOwnerIFace<LoanA
     
     protected AddressOfRecord         addressOfRecord;
     protected Set<LoanAgent>          loanAgents;
-    protected Set<LoanPhysicalObject> loanPhysicalObjects;
+    protected Set<LoanPreparation>    loanPreparations;
     protected Set<Shipment>           shipments;
     protected Set<LoanAttachment>     loanAttachments;
     
@@ -156,7 +156,7 @@ public class Loan extends DataModelObjBase implements AttachmentOwnerIFace<LoanA
         yesNo2          = null;
         loanAgents      = new HashSet<LoanAgent>();
 
-        loanPhysicalObjects = new HashSet<LoanPhysicalObject>();
+        loanPreparations = new HashSet<LoanPreparation>();
         shipments           = new HashSet<Shipment>();
         
         loanAttachments = new HashSet<LoanAttachment>();
@@ -562,12 +562,12 @@ public class Loan extends DataModelObjBase implements AttachmentOwnerIFace<LoanA
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "loan")
     @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<LoanPhysicalObject> getLoanPhysicalObjects() {
-        return this.loanPhysicalObjects;
+    public Set<LoanPreparation> getLoanPreparations() {
+        return this.loanPreparations;
     }
     
-    public void setLoanPhysicalObjects(Set<LoanPhysicalObject> loanPhysicalObjects) {
-        this.loanPhysicalObjects = loanPhysicalObjects;
+    public void setLoanPreparations(Set<LoanPreparation> loanPreparations) {
+        this.loanPreparations = loanPreparations;
     }
 
     /**

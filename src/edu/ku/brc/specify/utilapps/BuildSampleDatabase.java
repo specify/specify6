@@ -37,8 +37,8 @@ import static edu.ku.brc.specify.utilapps.DataBuilder.createInstitution;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createJournal;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createLoan;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createLoanAgent;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createLoanPhysicalObject;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createLoanReturnPhysicalObject;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createLoanPreparation;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createLoanReturnPreparation;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createLocality;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createLocation;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createLocationTreeDef;
@@ -150,8 +150,8 @@ import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDefItem;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanAgent;
-import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
-import edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject;
+import edu.ku.brc.specify.datamodel.LoanPreparation;
+import edu.ku.brc.specify.datamodel.LoanReturnPreparation;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.LocalityCitation;
 import edu.ku.brc.specify.datamodel.Location;
@@ -520,6 +520,7 @@ public class BuildSampleDatabase
         Division         division         = createDivision(institution, "Icthyology");
         
         Agent            userAgent        = createAgent(title, firstName, midInit, lastName, abbrev, email);
+        userAgent.setCollectionMemberId(0);
         UserGroup        userGroup        = createUserGroup(discipline.getTitle());
         
         
@@ -527,17 +528,12 @@ public class BuildSampleDatabase
         persist(userGroup);
         persist(institution);
         persist(division);
-        //commitTx();
         
         SpecifyUser      user             = createSpecifyUser(username, email, (short) 0, userGroup, userType);
-        //startTx();
         persist(user);
-        //commitTx();
         
         DataType         dataType         = createDataType(discipline.getTitle());
-        //startTx();
         persist(dataType);
-        //commitTx();
         
         TaxonTreeDef     taxonTreeDef     = createTaxonTreeDef("Sample Taxon Tree Def");
 
@@ -546,24 +542,37 @@ public class BuildSampleDatabase
         CollectionType collectionType = createCollectionType(division, discipline.getName(), discipline.getTitle(), dataType, user, taxonTreeDef, null, null, null, lithoStratTreeDef);
         List<Object>   gtps           = createSimpleGeologicTimePeriod(collectionType, "Geologic Time Period");
         
-        //startTx();
         persist(collectionType);
         persist(userAgent);
         
         loadSchemaLocalization(collectionType, SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
         
+        
+        CatalogNumberingScheme cns = createCatalogNumberingScheme("CatalogNumber", "", true);
+        
+        persist(cns);
+        
+        ////////////////////////////////
+        // Create Collection
+        ////////////////////////////////
+        log.info("Creating a catalog series");
+        Collection collection = createCollection("KUFSH", "Fish", cns, collectionType);
+        persist(collection);
+        
+        Collection.setCurrentCollection(collection);
+
+        commitTx();
+        
+        startTx();
+        
         DBTableIdMgr schema = new DBTableIdMgr(false);
         schema.initialize(new File(XMLHelper.getConfigDirPath("specify_workbench_datamodel.xml")));
         loadSchemaLocalization(collectionType, SpLocaleContainer.WORKBENCH_SCHEMA, schema);
         
-        //commitTx();
-        
         SpecifyUser.setCurrentUser(user);
         user.setAgent(userAgent);
         
-        //startTx();
         persist(user);
-        //commitTx();
 
         Journal journal = createJournalsAndReferenceWork();
         
@@ -848,21 +857,7 @@ public class BuildSampleDatabase
         dataObjects.clear();
         
         frame.setProcess(++createStep);
-                
-        CatalogNumberingScheme cns = createCatalogNumberingScheme("CatalogNumber", "", true);
-        
-        //startTx();
-        persist(cns);
-        //commitTx();
-        
-        ////////////////////////////////
-        // Create Collection
-        ////////////////////////////////
-        log.info("Creating a catalog series");
-        Collection collection = createCollection("KUFSH", "Fish", cns, collectionType);
-        //startTx();
-        persist(collection);
-        //commitTx();
+
         
         ////////////////////////////////
         // Determination Status (Must be done here)
@@ -1060,8 +1055,8 @@ public class BuildSampleDatabase
         Calendar dateClosed1 = Calendar.getInstance();
         dateClosed1.set(2004, 7, 4);
       
-        List<LoanPhysicalObject>         loanPhysObjs = new Vector<LoanPhysicalObject>();
-        Vector<LoanReturnPhysicalObject> returns      = new Vector<LoanReturnPhysicalObject>();
+        List<LoanPreparation>         loanPhysObjs = new Vector<LoanPreparation>();
+        Vector<LoanReturnPreparation> returns      = new Vector<LoanReturnPreparation>();
         
         Loan closedLoan = createLoan("2006-001", loanDate1, currentDueDate1, originalDueDate1, 
                                      dateClosed1, Loan.LOAN, Loan.CLOSED, null);
@@ -1076,7 +1071,7 @@ public class BuildSampleDatabase
                 continue;
             }
             int quantity = Math.max(1,rand.nextInt(available));
-            LoanPhysicalObject lpo = DataBuilder.createLoanPhysicalObject(quantity, null, null, null, 0, 0, p, closedLoan);
+            LoanPreparation lpo = DataBuilder.createLoanPreparation(quantity, null, null, null, 0, 0, p, closedLoan);
             
             lpo.setIsResolved(true);
             loanPhysObjs.add(lpo);
@@ -1085,11 +1080,11 @@ public class BuildSampleDatabase
             returnedDate.setTime(lpo.getLoan().getLoanDate().getTime());
             returnedDate.add(Calendar.DAY_OF_YEAR, 72); // make the returned date be a little while after the original loan
             
-            LoanReturnPhysicalObject lrpo = createLoanReturnPhysicalObject(returnedDate, quantity, lpo, null, agents.get(0));
-            lpo.addLoanReturnPhysicalObjects(lrpo);
+            LoanReturnPreparation lrpo = createLoanReturnPreparation(returnedDate, quantity, lpo, null, agents.get(0));
+            lpo.addReference(lrpo, "loanReturnPreparations");
             returns.add(lrpo);
 
-            p.getLoanPhysicalObjects().add(lpo);
+            p.getLoanPreparations().add(lpo);
         }
         
         Calendar loanDate2 = Calendar.getInstance();
@@ -1112,9 +1107,9 @@ public class BuildSampleDatabase
                 continue;
             }
             int quantity = Math.max(1, rand.nextInt(available));
-            LoanPhysicalObject lpo = createLoanPhysicalObject(quantity, null, null, null, 0, 0, p, overdueLoan);
+            LoanPreparation lpo = createLoanPreparation(quantity, null, null, null, 0, 0, p, overdueLoan);
             loanPhysObjs.add(lpo);
-            p.getLoanPhysicalObjects().add(lpo);
+            p.getLoanPreparations().add(lpo);
         }
 
         Calendar loanDate3 = Calendar.getInstance();
@@ -1128,19 +1123,19 @@ public class BuildSampleDatabase
         
         Loan loan3 = createLoan("2006-003", loanDate3, currentDueDate3, originalDueDate3,  
                                       null, Loan.LOAN, Loan.OPEN, null);
-        Vector<LoanPhysicalObject> newLoanLPOs = new Vector<LoanPhysicalObject>();
+        Vector<LoanPreparation> newLoanLPOs = new Vector<LoanPreparation>();
         int lpoCountInNewLoan = 0;
         // put some LPOs in this loan that are from CollObjs that have other preps loaned out already
         // this algorithm (because of the randomness) can result in this loan having 0 LPOs.
-        for( LoanPhysicalObject lpo: loanPhysObjs)
+        for( LoanPreparation lpo: loanPhysObjs)
         {
             int available = lpo.getPreparation().getAvailable();
             if (available > 0)
             {
                 int quantity = Math.max(1, rand.nextInt(available));
-                LoanPhysicalObject newLPO = createLoanPhysicalObject(quantity, null, null, null, 0, 0, lpo.getPreparation(), loan3);
+                LoanPreparation newLPO = createLoanPreparation(quantity, null, null, null, 0, 0, lpo.getPreparation(), loan3);
                 newLoanLPOs.add(newLPO);
-                lpo.getPreparation().getLoanPhysicalObjects().add(newLPO);
+                lpo.getPreparation().getLoanPreparations().add(newLPO);
                 
                 // stop after we put 6 LPOs in the new loan
                 lpoCountInNewLoan++;
@@ -1151,11 +1146,11 @@ public class BuildSampleDatabase
             }
         }
         
-        // create some LoanReturnPhysicalObjects
+        // create some LoanReturnPreparations
         int startIndex = returns.size();
         for (int i=startIndex;i<loanPhysObjs.size();i++)
         {
-            LoanPhysicalObject lpo = loanPhysObjs.get(i);
+            LoanPreparation lpo = loanPhysObjs.get(i);
         
             int    quantityLoaned   = lpo.getQuantity();
             int    quantityReturned = (i == (loanPhysObjs.size() - 1)) ? quantityLoaned : (short)rand.nextInt(quantityLoaned);
@@ -1164,8 +1159,8 @@ public class BuildSampleDatabase
             returnedDate.setTime(lpo.getLoan().getLoanDate().getTime());
             // make the returned date be a little while after the original loan
             returnedDate.add(Calendar.DAY_OF_YEAR, 72);
-            LoanReturnPhysicalObject lrpo = createLoanReturnPhysicalObject(returnedDate, quantityReturned, lpo, null, agents.get(0));
-            lpo.addLoanReturnPhysicalObjects(lrpo);
+            LoanReturnPreparation lrpo = createLoanReturnPreparation(returnedDate, quantityReturned, lpo, null, agents.get(0));
+            lpo.addReference(lrpo, "loanReturnPreparations");
             
             lpo.setQuantityReturned(quantityReturned);
             lpo.setQuantityResolved((quantityLoaned - quantityReturned));

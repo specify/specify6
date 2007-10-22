@@ -143,8 +143,8 @@
     </format>
     
     <format
-        name="LoanPhysicalObject"
-        class="edu.ku.brc.specify.datamodel.LoanPhysicalObject"
+        name="LoanPreparation"
+        class="edu.ku.brc.specify.datamodel.LoanPreparation"
         default="true"
         >
         <switch single="true">
@@ -156,13 +156,13 @@
     </format>
     
     <format
-        name="LoanReturnPhysicalObject"
-        class="edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject"
+        name="LoanReturnPreparation"
+        class="edu.ku.brc.specify.datamodel.LoanReturnPreparation"
         default="true"
         >
         <switch single="true">
             <fields>
-                <field formatter="PrepType">loanPhysicalObject.preparation.prepType</field>
+                <field formatter="PrepType">loanPreparation.preparation.prepType</field>
                 <field sep=" - "  format="%d" type="int">quantity</field>
             </fields>
         </switch>

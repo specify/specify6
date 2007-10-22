@@ -56,7 +56,7 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Table(appliesTo="container", indexes =
     {   @Index (name="ContainerNameIDX", columnNames={"Name"})
     })
-public class Container extends DataModelObjBase implements java.io.Serializable {
+public class Container extends CollectionMember implements java.io.Serializable {
 
     // Fields
 

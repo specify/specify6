@@ -47,7 +47,7 @@ import javax.persistence.UniqueConstraint;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "loanagent", uniqueConstraints = { @UniqueConstraint(columnNames = { "Role", "LoanID", "AgentID" }) })
-public class LoanAgent extends DataModelObjBase implements java.io.Serializable {
+public class LoanAgent extends CollectionMember implements java.io.Serializable {
 
     // Fields    
 

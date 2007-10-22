@@ -64,7 +64,7 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Loan;
-import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
+import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.ui.ColorWrapper;
@@ -603,7 +603,7 @@ public class LoanSelectPrepsDlg extends JDialog
         {
             List<Loan> loans = new Vector<Loan>();
             
-            for (LoanPhysicalObject lpo : prep.getLoanPhysicalObjects())
+            for (LoanPreparation lpo : prep.getLoanPreparations())
             {
                 loans.add(lpo.getLoan());
             }

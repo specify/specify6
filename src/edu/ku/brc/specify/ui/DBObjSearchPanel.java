@@ -25,8 +25,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -37,11 +37,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import org.apache.log4j.Logger;
 
@@ -59,6 +56,7 @@ import edu.ku.brc.af.core.expresssearch.QueryForIdResultsSQL;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanel;
+import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.ViewFactory;
@@ -78,12 +76,12 @@ import edu.ku.brc.ui.forms.persist.ViewIFace;
  *
  */
 @SuppressWarnings("serial")
-public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPaneIFace
+public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPaneIFace, PropertyChangeListener
 {
     private static final Logger log  = Logger.getLogger(DBObjSearchDialog.class);
 
     // Form Stuff
-    protected ViewIFace           formView  = null;
+    protected ViewIFace      formView  = null;
     protected Viewable       form      = null;
     protected List<String>   fieldIds  = new ArrayList<String>();
     protected ActionListener doQuery   = null;
@@ -108,7 +106,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
 
     protected Hashtable<String, ExpressResultsTableInfo> tables = new Hashtable<String, ExpressResultsTableInfo>();
     protected ExpressResultsTableInfo  tableInfo;
-    protected ESResultsTablePanel  etrb = null;
+    protected ESResultsTablePanelIFace  etrb = null;
 
     protected List<Integer>  idList         = null;
     protected String         sqlStr;
@@ -269,7 +267,6 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
                 doStartQuery((JComponent)e.getSource());
             }
         };
-
         
         ExpressResultsTableInfo tblInfo = ExpressSearchConfigCache.getTableInfoByName(searchName);
         if (tblInfo != null)
@@ -437,40 +434,60 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
 
         if (etrb != null)
         {
-            panel.remove(etrb);
+            panel.remove(etrb.getUIComponent());
             etrb.cleanUp();
         }
-        panel.add(etrb = new ESResultsTablePanel(this, results, false, true));
         
-        table = etrb.getTable();
-        table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e)
-                {
-                    if (etrb != null && !e.getValueIsAdjusting())
+        if (true)
+        {
+            etrb = new ESResultsTablePanel(this, results, false, true);
+            etrb.setPropertyChangeListener(this);
+        } else
+        {
+            etrb = null; // Instantiate your class here
+            etrb.initialize(this, results);
+            etrb.setPropertyChangeListener(this);
+        }
+        
+        panel.add(etrb.getUIComponent());
+        
+        /*
+        if (etrb instanceof ESResultsTablePanel)
+        {
+            ESResultsTablePanel etrbPanel = (ESResultsTablePanel)etrb;
+            
+            table = etrbPanel.getTable();
+            table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            table.getSelectionModel().addListSelectionListener(new ListSelectionListener() 
+            {
+                public void valueChanged(ListSelectionEvent e)
                     {
-                        if (table.getSelectedRowCount() > 0)
+                        if (etrb != null && !e.getValueIsAdjusting())
                         {
-                            idList = etrb.getListOfIds(false);
+                            if (table.getSelectedRowCount() > 0)
+                            {
+                                idList = etrb.getListOfIds(false);
+                            } else
+                            {
+                                idList = null;
+                            }
+    
                         } else
                         {
                             idList = null;
                         }
-
-                    } else
-                    {
-                        idList = null;
+                        updateUIControls();
+                    }});
+            
+            table.addMouseListener(new MouseAdapter() {
+                public void mouseClicked(MouseEvent e) {
+                    if (e.getClickCount() == 2) {
+                        okBtn.doClick(); //emulate button click
                     }
-                    updateUIControls();
-                }});
-        
-        table.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
-                    okBtn.doClick(); //emulate button click
                 }
-            }
-        });
+            });
+        }
+        */
         setUIEnabled(true);
         repaint();
     }
@@ -542,6 +559,29 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
 
         }
         return null;
+    }
+
+    /* (non-Javadoc)
+     * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
+     */
+    public void propertyChange(PropertyChangeEvent evt)
+    {
+        if (evt.getPropertyName().equals("selection"))
+        {
+            Integer numRowsSelected = (Integer)evt.getOldValue();
+            if (numRowsSelected > 0)
+            {
+                idList = etrb.getListOfIds(false);
+            } else
+            {
+                idList = null;
+            }
+            updateUIControls();
+            
+        } else if (evt.getPropertyName().equals("doubleClick"))
+        {
+            okBtn.doClick();
+        }
     }
     
 }

@@ -36,7 +36,7 @@ import javax.persistence.Transient;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "addressofrecord")
-public class AddressOfRecord extends DataModelObjBase
+public class AddressOfRecord extends CollectionMember
 {
     protected Integer                  addressOfRecordId;
     protected String                   address;

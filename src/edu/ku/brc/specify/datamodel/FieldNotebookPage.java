@@ -43,7 +43,7 @@ import org.hibernate.annotations.Index;
     {   @Index (name="FNBPPageNumberIDX", columnNames={"PageNumber"}),
         @Index (name="FNBPScanDateIDX", columnNames={"ScanDate"})
     })
-public class FieldNotebookPage extends DataModelObjBase
+public class FieldNotebookPage extends CollectionMember
 {
     protected Integer  fieldNotebookPageId;
     protected Short    pageNumber;

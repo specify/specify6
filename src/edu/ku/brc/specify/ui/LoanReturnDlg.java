@@ -71,8 +71,8 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Loan;
-import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
-import edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject;
+import edu.ku.brc.specify.datamodel.LoanPreparation;
+import edu.ku.brc.specify.datamodel.LoanReturnPreparation;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.ui.ColorWrapper;
@@ -136,14 +136,14 @@ public class LoanReturnDlg extends JDialog
         
         JPanel mainPanel = new JPanel();
         
-        Hashtable<String, Vector<LoanPhysicalObject>> colObjHash = new Hashtable<String, Vector<LoanPhysicalObject>>();
-        for (LoanPhysicalObject lpo : loan.getLoanPhysicalObjects())
+        Hashtable<String, Vector<LoanPreparation>> colObjHash = new Hashtable<String, Vector<LoanPreparation>>();
+        for (LoanPreparation lpo : loan.getLoanPreparations())
         {
             CollectionObject colObj = lpo.getPreparation().getCollectionObject();
-            Vector<LoanPhysicalObject> list = colObjHash.get(colObj);
+            Vector<LoanPreparation> list = colObjHash.get(colObj);
             if (list == null)
             {
-                list = new Vector<LoanPhysicalObject>();
+                list = new Vector<LoanPreparation>();
                 colObjHash.put(colObj.getIdentityTitle(), list);
             }
             list.add(lpo);
@@ -348,7 +348,7 @@ public class LoanReturnDlg extends JDialog
         /**
          * @param colObj
          */
-        public ColObjPanel(final JDialog dlgParent, final List<LoanPhysicalObject> lpoList)
+        public ColObjPanel(final JDialog dlgParent, final List<LoanPreparation> lpoList)
         {
             super();
             this.dlgParent = dlgParent;
@@ -398,7 +398,7 @@ public class LoanReturnDlg extends JDialog
             Color[] colors = new Color[] { new Color(255,255,255), new Color(235,235,255)};
             
             int i = 0;
-            for (LoanPhysicalObject lpo : lpoList)
+            for (LoanPreparation lpo : lpoList)
             {
                 PrepPanel pp = new PrepPanel(dlgParent, lpo);
                 panels.add(pp);
@@ -464,7 +464,7 @@ public class LoanReturnDlg extends JDialog
     class PrepPanel extends JPanel implements ActionListener
     {
         protected Preparation prep;
-        protected LoanPhysicalObject lpo;
+        protected LoanPreparation lpo;
         protected JLabel      label    = null;
         protected JLabel      label2    = null;
         protected JComponent  prepInfoBtn    = null;
@@ -479,9 +479,9 @@ public class LoanReturnDlg extends JDialog
         /**
          * Constructs a pnale representing the Preparation being returned.
          * @param parent the parent dialog
-         * @param lpo the LoanPhysicalObject being returned
+         * @param lpo the LoanPreparation being returned
          */
-        public PrepPanel(final JDialog parent, final LoanPhysicalObject lpo)
+        public PrepPanel(final JDialog parent, final LoanPreparation lpo)
         {
             super();
             this.prep   = lpo.getPreparation();
@@ -534,7 +534,7 @@ public class LoanReturnDlg extends JDialog
                 } else
                 {
                     Calendar lastReturnDate = null;
-                    for (LoanReturnPhysicalObject lrpo : lpo.getLoanReturnPhysicalObjects())
+                    for (LoanReturnPreparation lrpo : lpo.getLoanReturnPreparations())
                     {
                         Calendar retDate = lrpo.getReturnedDate();
                         if (retDate != null)
@@ -634,10 +634,10 @@ public class LoanReturnDlg extends JDialog
         }
 
         /**
-         * Returns the LoanPhysicalObject for this panel.
-         * @return the LoanPhysicalObject for this panel.
+         * Returns the LoanPreparation for this panel.
+         * @return the LoanPreparation for this panel.
          */
-        public LoanPhysicalObject getLoanPhysicalObject()
+        public LoanPreparation getLoanPreparation()
         {
             return lpo;
         }
@@ -712,7 +712,7 @@ public class LoanReturnDlg extends JDialog
         {
             List<Loan> loans = new Vector<Loan>();
             
-            for (LoanPhysicalObject loanPO : prep.getLoanPhysicalObjects())
+            for (LoanPreparation loanPO : prep.getLoanPreparations())
             {
                 loans.add(loanPO.getLoan());
             }
@@ -812,12 +812,12 @@ public class LoanReturnDlg extends JDialog
     //------------------------------------------------------------------------------------------
     public class LoanReturnInfo
     {
-        protected LoanPhysicalObject lpo;
-        protected Boolean            isResolved;
-        protected String             remarks;
-        protected int              quantity;
+        protected LoanPreparation lpo;
+        protected Boolean         isResolved;
+        protected String          remarks;
+        protected int             quantity;
         
-        public LoanReturnInfo(LoanPhysicalObject lpo, Boolean isResolved, String remarks, short quantity)
+        public LoanReturnInfo(LoanPreparation lpo, Boolean isResolved, String remarks, short quantity)
         {
             super();
             this.lpo = lpo;
@@ -829,7 +829,7 @@ public class LoanReturnDlg extends JDialog
         {
             return isResolved;
         }
-        public LoanPhysicalObject getLoanPhysicalObject()
+        public LoanPreparation getLoanPreparation()
         {
             return lpo;
         }

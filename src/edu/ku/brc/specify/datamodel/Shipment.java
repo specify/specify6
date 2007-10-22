@@ -53,7 +53,7 @@ import org.hibernate.annotations.Index;
     {   @Index (name="ShipmentNumberIDX", columnNames={"ShipmentNumber"}),
         @Index (name="ShipmentDateIDX", columnNames={"ShipmentDate"})
     })
-public class Shipment extends DataModelObjBase implements java.io.Serializable 
+public class Shipment extends CollectionMember implements java.io.Serializable 
 {
 
     // Fields    

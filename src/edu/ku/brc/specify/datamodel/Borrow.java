@@ -61,7 +61,7 @@ import org.hibernate.annotations.Index;
     {   @Index (name="InvoiceNumberIDX", columnNames={"InvoiceNumber"}),
         @Index (name="ReceivedDateIDX", columnNames={"ReceivedDate"})
     })
-public class Borrow extends DataModelObjBase implements java.io.Serializable {
+public class Borrow extends CollectionMember implements java.io.Serializable {
 
     // Fields    
 

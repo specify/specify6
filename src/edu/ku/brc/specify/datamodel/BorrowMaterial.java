@@ -56,7 +56,7 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Table(appliesTo="borrowmaterial", indexes =
     {   @Index (name="MaterialNumberIDX", columnNames={"MaterialNumber"})
     })
-public class BorrowMaterial extends DataModelObjBase implements java.io.Serializable {
+public class BorrowMaterial extends CollectionMember implements java.io.Serializable {
 
     // Fields    
 

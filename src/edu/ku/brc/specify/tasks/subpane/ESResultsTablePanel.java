@@ -19,6 +19,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -34,8 +35,11 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
@@ -71,7 +75,7 @@ import edu.ku.brc.ui.UIRegistry;
  * @author rods
  *
  */
-public class ESResultsTablePanel extends JPanel implements Comparable<ESResultsTablePanel>, PropertyChangeListener
+public class ESResultsTablePanel extends JPanel implements Comparable<ESResultsTablePanel>, ESResultsTablePanelIFace
 {
 	private static final Logger log = Logger.getLogger(ESResultsTablePanel.class);
 
@@ -94,6 +98,8 @@ public class ESResultsTablePanel extends JPanel implements Comparable<ESResultsT
     
     protected GradiantLabel            topTitleBar;
     protected JButton                  moreBtn;
+    
+    protected PropertyChangeListener   propChangeListener = null;
 
     /**
      * Constructor of a results "table" which is really a panel
@@ -102,9 +108,9 @@ public class ESResultsTablePanel extends JPanel implements Comparable<ESResultsT
      * @param installServices indicates whether services should be installed
      */
     public ESResultsTablePanel(final ExpressSearchResultsPaneIFace esrPane,
-                                   final QueryForIdResultsIFace    results,
-                                   final boolean                   installServices,
-                                   final boolean                   isExpandedAtStartUp)
+                               final QueryForIdResultsIFace    results,
+                               final boolean                   installServices,
+                               final boolean                   isExpandedAtStartUp)
     {
         super(new BorderLayout());
 
@@ -264,7 +270,34 @@ public class ESResultsTablePanel extends JPanel implements Comparable<ESResultsT
         doLayout();
         UIRegistry.forceTopFrameRepaint();
         
-
+        table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() 
+        {
+            public void valueChanged(ListSelectionEvent e)
+                {
+                    if (propChangeListener != null)
+                    {
+                        if (!e.getValueIsAdjusting())
+                        {
+                            propChangeListener.propertyChange(new PropertyChangeEvent(this, "selection", table.getSelectedRowCount(), 0));
+    
+                        } else
+                        {
+                            propChangeListener.propertyChange(new PropertyChangeEvent(this, "selection", table.getSelectedRowCount(), 0));
+                        }
+                    }
+                }});
+        
+        table.addMouseListener(new MouseAdapter() 
+        {
+            public void mouseClicked(MouseEvent e) 
+            {
+                if (propChangeListener != null && e.getClickCount() == 2) 
+                {
+                    propChangeListener.propertyChange(new PropertyChangeEvent(this, "doubleClick", 2, 0));
+                }
+            }
+        });
     }
     
     /**
@@ -301,26 +334,24 @@ public class ESResultsTablePanel extends JPanel implements Comparable<ESResultsT
         }
     }
     
-    /**
-     * Returns the ExpressSearchResults object.
-     * @return the ExpressSearchResults object.
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace#getResults()
      */
     public QueryForIdResultsIFace getResults()
     {
         return results;
     }
 
-    /**
-     * Returns true if there were results.
-     * @return true if there were results.
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace#hasResults()
      */
     public boolean hasResults()
     {
         return hasResults;
     }
     
-    /**
-     * Cleans up references to other objects.
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace#cleanUp()
      */
     public void cleanUp()
     {
@@ -429,19 +460,16 @@ public class ESResultsTablePanel extends JPanel implements Comparable<ESResultsT
         //rsm.addDisplayIndexes(createIndexesArray(rows));
     }
 
-    /**
-     * Returns the JTable that holds the results.
-     * @return the JTable that holds the results
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace#getTable()
      */
     public JTable getTable()
     {
         return table;
     }
 
-    /**
-     * Return a recordset for the selected items.
-     * @param returnAll indicates whether all the records should be returned if nothing was selected
-     * @return a recordset for the selected items
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace#getRecordSet(boolean)
      */
     public RecordSetIFace getRecordSet(final boolean returnAll)
     {
@@ -474,10 +502,8 @@ public class ESResultsTablePanel extends JPanel implements Comparable<ESResultsT
         return rs;
     }
     
-    /**
-     * Returns a list of recordIds.
-     * @param returnAll indicates whether all the records should be returned if nothing was selected
-     * @return a list of recordIds
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace#getListOfIds(boolean)
      */
     public List<Integer> getListOfIds(final boolean returnAll)
     {
@@ -493,12 +519,8 @@ public class ESResultsTablePanel extends JPanel implements Comparable<ESResultsT
         return list;
     }
 
-    /**
-     * Returns a RecordSet object from the table.
-     * @param rows selected row indexes
-     * @param column the column to get the indexes from
-     * @param returnAll indicates whether all the records should be returned if nothing was selected
-     * @return Returns a RecordSet object from the table
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace#getRecordSet(int[], boolean)
      */
     public RecordSetIFace getRecordSet(final int[] rows, final boolean returnAll)
     {
@@ -507,32 +529,51 @@ public class ESResultsTablePanel extends JPanel implements Comparable<ESResultsT
         return rsm.getRecordSet(rows, returnAll);
     }
 
-    /**
-     * @return the title
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace#getTitle()
      */
     public String getTitle()
     {
         return results.getTitle();
     }
 
-    /**
-     * Comparable interface method.
-     * @param obj the objec to compare to
-     * @return 0 if equals
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace#compareTo(edu.ku.brc.specify.tasks.subpane.ESResultsTablePanel)
      */
     public int compareTo(ESResultsTablePanel obj)
     {
         return results.getDisplayOrder().compareTo(obj.results.getDisplayOrder());
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace#getUIComponent()
+     */
+    public Component getUIComponent()
+    {
+        return this;
+    }
+
     
     //--------------------------------------------------------------
     // Inner Classes
     //--------------------------------------------------------------
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace#setPropertyChangeListener(java.beans.PropertyChangeListener)
+     */
+    public void setPropertyChangeListener(PropertyChangeListener pcl)
+    {
+        propChangeListener = pcl;
+        
+    }
+
+    /* (non-Javadoc)
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     //@Override
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace#propertyChange(java.beans.PropertyChangeEvent)
+     */
     public void propertyChange(PropertyChangeEvent evt)
     {
         rowCount = (Integer)evt.getNewValue();
@@ -544,6 +585,13 @@ public class ESResultsTablePanel extends JPanel implements Comparable<ESResultsT
         }
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace#initialize(edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace, edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace)
+     */
+    public void initialize(ExpressSearchResultsPaneIFace esrPaneArg, QueryForIdResultsIFace resultsArg)
+    {
+        // NO OP
+    }
 
     /**
      * 

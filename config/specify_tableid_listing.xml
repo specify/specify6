@@ -174,8 +174,8 @@
         	<display view="LoanAttachment" newobjdlg="LoanAttachmentDisplay"/>
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
-        <table name="edu.ku.brc.specify.datamodel.LoanPhysicalObject" abbrev="lpo" id="54" searchable="true"/>
-        <table name="edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject" abbrev="lrpo" id="55" searchable="true">
+        <table name="edu.ku.brc.specify.datamodel.LoanPreparation" abbrev="lpo" id="54" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.LoanReturnPreparation" abbrev="lrpo" id="55" searchable="true">
             <businessrule>edu.ku.brc.specify.datamodel.busrules.LoanPreparationBusRules</businessrule>          
         </table>
         <table name="edu.ku.brc.specify.datamodel.Locality" abbrev="loc" id="2" workbench="true" searchable="true">

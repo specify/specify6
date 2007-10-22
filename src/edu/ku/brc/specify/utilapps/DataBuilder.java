@@ -56,8 +56,8 @@ import edu.ku.brc.specify.datamodel.Journal;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanAgent;
-import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
-import edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject;
+import edu.ku.brc.specify.datamodel.LoanPreparation;
+import edu.ku.brc.specify.datamodel.LoanReturnPreparation;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.LocalityCitation;
 import edu.ku.brc.specify.datamodel.LocalityDetail;
@@ -1721,8 +1721,8 @@ public class DataBuilder
         persist(loanAgent);
         return loanAgent;
     }
-//createLoanPhysicalObject((short)quantity, null, null, null, (short)0, (short)0, p, closedLoan);
-    public static LoanPhysicalObject createLoanPhysicalObject(final Integer quantity,
+//createLoanPreparation((short)quantity, null, null, null, (short)0, (short)0, p, closedLoan);
+    public static LoanPreparation createLoanPreparation(final Integer quantity,
                                                               final String descriptionOfMaterial,
                                                               final String outComments,
                                                               final String inComments,
@@ -1731,39 +1731,39 @@ public class DataBuilder
                                                               final Preparation preparation,
                                                               final Loan loan)
     {
-        LoanPhysicalObject loanphysicalobject = new LoanPhysicalObject();
-        loanphysicalobject.initialize();
-        loanphysicalobject.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        loanphysicalobject.setDescriptionOfMaterial(descriptionOfMaterial);
-        loanphysicalobject.setQuantity(quantity);
-        loanphysicalobject.setLoan(loan);
-        loanphysicalobject.setPreparation(preparation);
-        loanphysicalobject.setOutComments(outComments);
-        loanphysicalobject.setInComments(inComments);
-        loanphysicalobject.setQuantityResolved(quantityResolved);
-        loanphysicalobject.setQuantityReturned(quantityReturned);
+        LoanPreparation loanpreparation = new LoanPreparation();
+        loanpreparation.initialize();
+        loanpreparation.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        loanpreparation.setDescriptionOfMaterial(descriptionOfMaterial);
+        loanpreparation.setQuantity(quantity);
+        loanpreparation.setLoan(loan);
+        loanpreparation.setPreparation(preparation);
+        loanpreparation.setOutComments(outComments);
+        loanpreparation.setInComments(inComments);
+        loanpreparation.setQuantityResolved(quantityResolved);
+        loanpreparation.setQuantityReturned(quantityReturned);
         
-        loan.getLoanPhysicalObjects().add(loanphysicalobject);
+        loan.getLoanPreparations().add(loanpreparation);
 
-        persist(loanphysicalobject);
-        return loanphysicalobject;
+        persist(loanpreparation);
+        return loanpreparation;
     }
 
-    public static LoanReturnPhysicalObject createLoanReturnPhysicalObject(final Calendar returnedDate,
+    public static LoanReturnPreparation createLoanReturnPreparation(final Calendar returnedDate,
                                                                           final Integer quantity,
-                                                                          final LoanPhysicalObject loanPhysicalObject,
+                                                                          final LoanPreparation loanPreparation,
                                                                           final DeaccessionPreparation deaccessionPreparation,
                                                                           final Agent agent)
     {
-        LoanReturnPhysicalObject loanreturnphysicalobject = new LoanReturnPhysicalObject();
-        loanreturnphysicalobject.initialize();
-        loanreturnphysicalobject.setReceivedBy(agent);
-        loanreturnphysicalobject.setReturnedDate(returnedDate);
-        loanreturnphysicalobject.setQuantity(quantity);
-        loanreturnphysicalobject.setLoanPhysicalObject(loanPhysicalObject);
-        loanreturnphysicalobject.setDeaccessionPreparation(deaccessionPreparation);
-        persist(loanreturnphysicalobject);
-        return loanreturnphysicalobject;
+        LoanReturnPreparation loanreturnpreparation = new LoanReturnPreparation();
+        loanreturnpreparation.initialize();
+        loanreturnpreparation.setReceivedBy(agent);
+        loanreturnpreparation.setReturnedDate(returnedDate);
+        loanreturnpreparation.setQuantity(quantity);
+        loanreturnpreparation.setLoanPreparation(loanPreparation);
+        loanreturnpreparation.setDeaccessionPreparation(deaccessionPreparation);
+        persist(loanreturnpreparation);
+        return loanreturnpreparation;
     }
 
     public static Locality createLocality(final String namedPlace,

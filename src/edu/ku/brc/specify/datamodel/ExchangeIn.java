@@ -55,7 +55,7 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Table(appliesTo="exchangein", indexes =
     {   @Index (name="ExchangeDateIDX", columnNames={"ExchangeDate"})
     })
-public class ExchangeIn extends DataModelObjBase implements java.io.Serializable {
+public class ExchangeIn extends CollectionMember implements java.io.Serializable {
 
     // Fields    
 

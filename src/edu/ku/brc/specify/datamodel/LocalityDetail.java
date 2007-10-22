@@ -34,7 +34,7 @@ import javax.persistence.Transient;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "localitydetail")
-public class LocalityDetail extends DataModelObjBase
+public class LocalityDetail extends CollectionMember
 {
     // Fields    
 

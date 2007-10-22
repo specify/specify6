@@ -70,8 +70,8 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.InfoRequest;
 import edu.ku.brc.specify.datamodel.Loan;
-import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
-import edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject;
+import edu.ku.brc.specify.datamodel.LoanPreparation;
+import edu.ku.brc.specify.datamodel.LoanReturnPreparation;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Shipment;
@@ -534,12 +534,12 @@ public class InteractionsTask extends BaseTask
                         {
                             Integer count = prepsHash.get(prep);
                             
-                            LoanPhysicalObject lpo = new LoanPhysicalObject();
+                            LoanPreparation lpo = new LoanPreparation();
                             lpo.initialize();
                             lpo.setPreparation(prep);
                             lpo.setQuantity(count);
                             lpo.setLoan(loan);
-                            loan.getLoanPhysicalObjects().add(lpo);
+                            loan.getLoanPreparations().add(lpo);
                         }
                         
                         DataEntryTask dataEntryTask = (DataEntryTask)TaskMgr.getTask(DataEntryTask.DATA_ENTRY);
@@ -941,8 +941,8 @@ public class InteractionsTask extends BaseTask
                 
                 for (LoanReturnInfo lri : returns)
                 {   
-                    LoanPhysicalObject       lpo  = lri.getLoanPhysicalObject();
-                    LoanReturnPhysicalObject lrpo = new LoanReturnPhysicalObject();
+                    LoanPreparation       lpo  = lri.getLoanPreparation();
+                    LoanReturnPreparation lrpo = new LoanReturnPreparation();
                     lrpo.initialize();
                     //lrpo.setAgent(agent);
                     lrpo.setReceivedBy(agent);
@@ -952,10 +952,10 @@ public class InteractionsTask extends BaseTask
                     lrpo.setRemarks(lri.getRemarks());
                     if (lri.isResolved() != null)
                     {
-                        lri.getLoanPhysicalObject().setIsResolved(lri.isResolved());
+                        lri.getLoanPreparation().setIsResolved(lri.isResolved());
                     }
-                    lrpo.setLoanPhysicalObject(lpo);
-                    lpo.getLoanReturnPhysicalObjects().add(lrpo);
+                    lrpo.setLoanPreparation(lpo);
+                    lpo.getLoanReturnPreparations().add(lrpo);
                     
                 }
                 return null;

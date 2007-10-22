@@ -34,7 +34,7 @@ import javax.persistence.Transient;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "geocoorddetail")
-public class GeoCoordDetail extends DataModelObjBase
+public class GeoCoordDetail extends CollectionMember
 {
     // Manis Fields
     protected Integer               geoCoordDetailId;

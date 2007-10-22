@@ -389,8 +389,8 @@ accession.DateAccessioned, accession.DateReceived FROM accession WHERE (%s)]]>
         <table id="113" tableid="52" name="OpenLoans" title="Open Loans" priority="1" color="30, 144, 255">
             <detailView icon="Loan">
                 <sql>
-                    <![CDATA[SELECT DISTINCT loan.LoanID, LoanNumber, LoanDate, CurrentDueDate, OriginalDueDate FROM loan INNER JOIN loanphysicalobject ON loan.LoanID = loanphysicalobject.LoanID
- INNER JOIN preparation ON loanphysicalobject.PreparationID = preparation.PreparationID
+                    <![CDATA[SELECT DISTINCT loan.LoanID, LoanNumber, LoanDate, CurrentDueDate, OriginalDueDate FROM loan INNER JOIN loanpreparation ON loan.LoanID = loanpreparation.LoanID
+ INNER JOIN preparation ON loanpreparation.PreparationID = preparation.PreparationID
  INNER JOIN collectionobject ON preparation.CollectionObjectID = collectionobject.CollectionObjectID
  INNER JOIN collection ON collectionobject.CollectingEventID = collection.CollectionID
  INNER JOIN collectiontype ON collection.CollectionTypeID = collectiontype.CollectionTypeID

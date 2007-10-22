@@ -3644,7 +3644,7 @@ public class GenericDBConversion
      * Converts all the LoanPhysicalObjects.
      * @return true if no errors
      */
-    public boolean convertLoanPhysicalObjects()
+    public boolean convertLoanPreparations()
     {
         BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "determination", BasicSQLUtils.myDestinationServerType); 
         BasicSQLUtils.setIdentityInsertONCommandForSQLServer(newDBConn, "loanphysicalobject", BasicSQLUtils.myDestinationServerType); 

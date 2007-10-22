@@ -33,7 +33,7 @@ import edu.ku.brc.util.Orderable;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "preparationattachment")
-public class PreparationAttachment extends DataModelObjBase implements ObjectAttachmentIFace<Preparation>, Orderable, Serializable
+public class PreparationAttachment extends CollectionMember implements ObjectAttachmentIFace<Preparation>, Orderable, Serializable
 {
     protected Integer    preparationAttachmentId;
     protected Preparation     preparation;

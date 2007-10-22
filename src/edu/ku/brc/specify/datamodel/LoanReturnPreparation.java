@@ -51,19 +51,19 @@ import org.hibernate.annotations.Index;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "loanreturnphysicalobject")
-@org.hibernate.annotations.Table(appliesTo="loanreturnphysicalobject", indexes =
-    {   @Index (name="ReturnedDateIDX", columnNames={"ReturnedDate"})
+@Table(name = "loanreturnpreparation")
+@org.hibernate.annotations.Table(appliesTo="loanreturnpreparation", indexes =
+    {   @Index (name="LoanReturnedDateIDX", columnNames={"ReturnedDate"})
     })
-public class LoanReturnPhysicalObject extends DataModelObjBase implements java.io.Serializable {
+public class LoanReturnPreparation extends CollectionMember implements java.io.Serializable {
 
     // Fields    
 
-    protected Integer                loanReturnPhysicalObjectId;
+    protected Integer                loanReturnPreparationId;
     protected Calendar               returnedDate;
     protected Integer                quantity;
     protected String                 remarks;
-    protected LoanPhysicalObject     loanPhysicalObject;
+    protected LoanPreparation        loanPreparation;
     protected DeaccessionPreparation deaccessionPreparation;
     protected Agent                  receivedBy;
 
@@ -71,28 +71,26 @@ public class LoanReturnPhysicalObject extends DataModelObjBase implements java.i
     // Constructors
 
     /** default constructor */
-    public LoanReturnPhysicalObject() {
+    public LoanReturnPreparation() {
         //
     }
     
     /** constructor with id */
-    public LoanReturnPhysicalObject(Integer loanReturnPhysicalObjectId) {
-        this.loanReturnPhysicalObjectId = loanReturnPhysicalObjectId;
+    public LoanReturnPreparation(Integer loanReturnPreparationId)
+    {
+        this.loanReturnPreparationId = loanReturnPreparationId;
     }
-   
-    
-    
 
     // Initializer
     @Override
     public void initialize()
     {
         super.init();
-        loanReturnPhysicalObjectId = null;
+        loanReturnPreparationId = null;
         returnedDate = null;
         quantity = null;
         remarks = null;
-        loanPhysicalObject = null;
+        loanPreparation = null;
         deaccessionPreparation = null;
         receivedBy = null;
     }
@@ -105,9 +103,9 @@ public class LoanReturnPhysicalObject extends DataModelObjBase implements java.i
      */
     @Id
     @GeneratedValue
-    @Column(name = "LoanReturnPhysicalObjectID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Integer getLoanReturnPhysicalObjectId() {
-        return this.loanReturnPhysicalObjectId;
+    @Column(name = "LoanReturnPreparationID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Integer getLoanReturnPreparationId() {
+        return this.loanReturnPreparationId;
     }
 
     /**
@@ -118,7 +116,7 @@ public class LoanReturnPhysicalObject extends DataModelObjBase implements java.i
     @Override
     public Integer getId()
     {
-        return this.loanReturnPhysicalObjectId;
+        return this.loanReturnPreparationId;
     }
 
     /* (non-Javadoc)
@@ -128,11 +126,11 @@ public class LoanReturnPhysicalObject extends DataModelObjBase implements java.i
     @Override
     public Class<?> getDataClass()
     {
-        return LoanReturnPhysicalObject.class;
+        return LoanReturnPreparation.class;
     }
     
-    public void setLoanReturnPhysicalObjectId(Integer loanReturnPhysicalObjectId) {
-        this.loanReturnPhysicalObjectId = loanReturnPhysicalObjectId;
+    public void setLoanReturnPreparationId(Integer loanReturnPreparationId) {
+        this.loanReturnPreparationId = loanReturnPreparationId;
     }
 
     /**
@@ -174,23 +172,23 @@ public class LoanReturnPhysicalObject extends DataModelObjBase implements java.i
     }
 
     /**
-     *      * Link to LoanPhysicalObject table
+     *      * Link to LoanPreparation table
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "LoanPhysicalObjectID", unique = false, nullable = false, insertable = true, updatable = true)
-    public LoanPhysicalObject getLoanPhysicalObject() {
-        return this.loanPhysicalObject;
+    @JoinColumn(name = "LoanPreparationID", unique = false, nullable = false, insertable = true, updatable = true)
+    public LoanPreparation getLoanPreparation() {
+        return this.loanPreparation;
     }
     
-    public void setLoanPhysicalObject(LoanPhysicalObject loanPhysicalObject) {
-        this.loanPhysicalObject = loanPhysicalObject;
+    public void setLoanPreparation(LoanPreparation loanPreparation) {
+        this.loanPreparation = loanPreparation;
     }
 
     /**
-     *      * ID of associated (if present) DeaccessionPhysicalObject record
+     *      * ID of associated (if present) DeaccessionPreparation record
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "DeaccessionPhysicalObjectID", unique = false, nullable = true, insertable = true, updatable = true)
+    @JoinColumn(name = "DeaccessionPreparationID", unique = false, nullable = true, insertable = true, updatable = true)
     public DeaccessionPreparation getDeaccessionPreparation() {
         return this.deaccessionPreparation;
     }

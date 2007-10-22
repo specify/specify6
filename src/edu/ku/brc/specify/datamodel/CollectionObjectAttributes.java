@@ -37,7 +37,7 @@ import org.hibernate.annotations.CascadeType;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "collectionobjectattributes")
-public class CollectionObjectAttributes extends DataModelObjBase
+public class CollectionObjectAttributes extends CollectionMember
 {
     protected Integer collectionObjectAttributesId;
     protected String text10;

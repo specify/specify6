@@ -41,7 +41,7 @@ import javax.persistence.Transient;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "agentvariant")
-public class AgentVariant extends DataModelObjBase implements Serializable
+public class AgentVariant extends CollectionMember implements Serializable
 {
     public static final Byte VARIANT    = 0;
     public static final Byte VERNACULAR = 1;

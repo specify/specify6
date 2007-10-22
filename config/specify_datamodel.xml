@@ -167,7 +167,7 @@
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.RepositoryAgreement" relationshipname="repositoryAgreements" othersidename="originator" updatable="false" required="false"/>
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.CollectionObject" relationshipname="catalogers" othersidename="cataloger" updatable="false" required="false"/>
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Author" relationshipname="authors" othersidename="agent" updatable="false" required="false"/>
-      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject" relationshipname="loanReturnPhysicalObjects" othersidename="receivedBy" updatable="false" required="false"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.LoanReturnPreparation" relationshipname="loanReturnPreparations" othersidename="receivedBy" updatable="false" required="false"/>
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.BorrowReturnMaterial" relationshipname="borrowReturnMaterials" othersidename="agent" updatable="false" required="false"/>
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.ExchangeIn" relationshipname="exchangeInCatalogedBys" othersidename="agentCatalogedBy" updatable="false" required="false"/>
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Project" relationshipname="projects" othersidename="agent" updatable="false" required="false"/>
@@ -963,7 +963,7 @@
       <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" updatable="true" required="false" unique="false" indexed="false"/>
       <field column="Version" name="version" type="int" updatable="true" required="false" unique="false" indexed="false"/>
       <id column="DeaccessionPreparationID" name="deaccessionPreparationId" type="java.lang.Integer"/>
-      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject" relationshipname="loanReturnPhysicalObjects" othersidename="deaccessionPreparation" updatable="false" required="false"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.LoanReturnPreparation" relationshipname="loanReturnPreparations" othersidename="deaccessionPreparation" updatable="false" required="false"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Preparation" relationshipname="preparation" columnname="PreparationID" othersidename="deaccessionPreparations" updatable="false" required="false"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Deaccession" relationshipname="deaccession" columnname="DeaccessionID" othersidename="deaccessionPreparations" updatable="false" required="true"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="modifiedByAgent" columnname="ModifiedByAgentID" updatable="false" required="false"/>
@@ -1446,7 +1446,7 @@
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.AddressOfRecord" relationshipname="addressOfRecord" columnname="AddressOfRecordID" othersidename="loans" updatable="false" required="false"/>
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Shipment" relationshipname="shipments" othersidename="loan" updatable="false" required="false"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Division" relationshipname="division" columnname="DivisionID" othersidename="loans" updatable="false" required="false"/>
-      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.LoanPhysicalObject" relationshipname="loanPhysicalObjects" othersidename="loan" updatable="false" required="false"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.LoanPreparation" relationshipname="loanPreparations" othersidename="loan" updatable="false" required="false"/>
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.LoanAttachment" relationshipname="loanAttachments" othersidename="loan" updatable="false" required="false"/>
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.LoanAgent" relationshipname="loanAgents" othersidename="loan" updatable="false" required="false"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="modifiedByAgent" columnname="ModifiedByAgentID" updatable="false" required="false"/>
@@ -1477,7 +1477,7 @@
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="modifiedByAgent" columnname="ModifiedByAgentID" updatable="false" required="false"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="createdByAgent" columnname="CreatedByAgentID" updatable="false" required="false"/>
     </table>
-    <table classname="edu.ku.brc.specify.datamodel.LoanPhysicalObject" table="loanphysicalobject" tableid="54" searchable="true" abbrv="lpo">
+    <table classname="edu.ku.brc.specify.datamodel.LoanPreparation" table="loanpreparation" tableid="54" searchable="true" abbrv="lpo">
       <field column="DescriptionOfMaterial" name="descriptionOfMaterial" type="java.lang.String" length="255" updatable="true" required="false" unique="false" indexed="false"/>
       <field column="InComments" name="inComments" type="text" updatable="true" required="false" unique="false" indexed="false"/>
       <field column="IsResolved" name="isResolved" type="java.lang.Boolean" updatable="true" required="true" unique="false" indexed="false"/>
@@ -1488,25 +1488,25 @@
       <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" updatable="false" required="true" unique="false" indexed="false"/>
       <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" updatable="true" required="false" unique="false" indexed="false"/>
       <field column="Version" name="version" type="int" updatable="true" required="false" unique="false" indexed="false"/>
-      <id column="LoanPhysicalObjectID" name="loanPhysicalObjectId" type="java.lang.Integer"/>
-      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject" relationshipname="loanReturnPhysicalObjects" othersidename="loanPhysicalObject" updatable="false" required="false"/>
-      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Loan" relationshipname="loan" columnname="LoanID" othersidename="loanPhysicalObjects" updatable="false" required="true"/>
-      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Preparation" relationshipname="preparation" columnname="PreparationID" othersidename="loanPhysicalObjects" updatable="false" required="false"/>
+      <id column="LoanPreparationID" name="loanPreparationId" type="java.lang.Integer"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.LoanReturnPreparation" relationshipname="loanReturnPreparations" othersidename="loanPreparation" updatable="false" required="false"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Loan" relationshipname="loan" columnname="LoanID" othersidename="loanPreparations" updatable="false" required="true"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Preparation" relationshipname="preparation" columnname="PreparationID" othersidename="loanPreparations" updatable="false" required="false"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="modifiedByAgent" columnname="ModifiedByAgentID" updatable="false" required="false"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="createdByAgent" columnname="CreatedByAgentID" updatable="false" required="false"/>
     </table>
-    <table classname="edu.ku.brc.specify.datamodel.LoanReturnPhysicalObject" table="loanreturnphysicalobject" tableid="55" searchable="true" businessrule="edu.ku.brc.specify.datamodel.busrules.LoanPreparationBusRules" abbrv="lrpo">
+    <table classname="edu.ku.brc.specify.datamodel.LoanReturnPreparation" table="loanreturnpreparation" tableid="55" searchable="true" businessrule="edu.ku.brc.specify.datamodel.busrules.LoanPreparationBusRules" abbrv="lrpo">
       <field column="Quantity" name="quantity" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false"/>
       <field column="Remarks" name="remarks" type="text" updatable="true" required="false" unique="false" indexed="false"/>
       <field column="ReturnedDate" name="returnedDate" type="java.util.Calendar" indexName="ReturnedDateIDX" updatable="true" required="false" unique="false" indexed="true"/>
       <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" updatable="false" required="true" unique="false" indexed="false"/>
       <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" updatable="true" required="false" unique="false" indexed="false"/>
       <field column="Version" name="version" type="int" updatable="true" required="false" unique="false" indexed="false"/>
-      <id column="LoanReturnPhysicalObjectID" name="loanReturnPhysicalObjectId" type="java.lang.Integer"/>
+      <id column="LoanReturnPreparationID" name="loanReturnPreparationId" type="java.lang.Integer"/>
       <tableindex indexName="ReturnedDateIDX" columnNames="ReturnedDate"/>
-      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.LoanPhysicalObject" relationshipname="loanPhysicalObject" columnname="LoanPhysicalObjectID" othersidename="loanReturnPhysicalObjects" updatable="false" required="true"/>
-      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.DeaccessionPreparation" relationshipname="deaccessionPreparation" columnname="DeaccessionPhysicalObjectID" othersidename="loanReturnPhysicalObjects" updatable="false" required="false"/>
-      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="receivedBy" columnname="ReceivedByID" othersidename="loanReturnPhysicalObjects" updatable="false" required="false"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.LoanPreparation" relationshipname="loanPreparation" columnname="LoanPreparationID" othersidename="loanReturnPreparations" updatable="false" required="true"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.DeaccessionPreparation" relationshipname="deaccessionPreparation" columnname="DeaccessionPreparationID" othersidename="loanReturnPreparations" updatable="false" required="false"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="receivedBy" columnname="ReceivedByID" othersidename="loanReturnPreparations" updatable="false" required="false"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="modifiedByAgent" columnname="ModifiedByAgentID" updatable="false" required="false"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="createdByAgent" columnname="CreatedByAgentID" updatable="false" required="false"/>
     </table>
@@ -1807,7 +1807,7 @@
       <tableindex indexName="PreparedDateIDX" columnNames="preparedDate"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Location" relationshipname="location" columnname="LocationID" othersidename="preparations" updatable="false" required="false"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.CollectionObject" relationshipname="collectionObject" columnname="CollectionObjectID" othersidename="preparations" updatable="false" required="true"/>
-      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.LoanPhysicalObject" relationshipname="loanPhysicalObjects" othersidename="preparation" updatable="false" required="false"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.LoanPreparation" relationshipname="loanPreparations" othersidename="preparation" updatable="false" required="false"/>
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.PreparationAttr" relationshipname="preparationAttrs" othersidename="preparation" updatable="false" required="false"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.PrepType" relationshipname="prepType" columnname="PrepTypeID" othersidename="preparations" updatable="false" required="true"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="preparedByAgent" columnname="PreparedByID" othersidename="preparations" updatable="false" required="false"/>

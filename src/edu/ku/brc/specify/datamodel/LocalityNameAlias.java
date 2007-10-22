@@ -36,7 +36,7 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Table(appliesTo="localitynamealias", indexes =
     {   @Index (name="LocalityNameAliasIDX", columnNames={"Name"})
     })
-public class LocalityNameAlias extends DataModelObjBase
+public class LocalityNameAlias extends CollectionMember
 {
     
     protected Integer  localityNameAliasId;

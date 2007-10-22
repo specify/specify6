@@ -6,7 +6,7 @@
      */
 package edu.ku.brc.specify.datamodel.busrules;
 
-import edu.ku.brc.specify.datamodel.LoanPhysicalObject;
+import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.ui.forms.Viewable;
 
 /**
@@ -24,7 +24,7 @@ public class LoanPreparationBusRule extends BaseBusRules
      */
     public LoanPreparationBusRule()
     {
-        super(LoanPhysicalObject.class);
+        super(LoanPreparation.class);
     }
     
     /* (non-Javadoc)

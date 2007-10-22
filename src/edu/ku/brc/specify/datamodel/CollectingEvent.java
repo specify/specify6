@@ -66,7 +66,7 @@ import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
         @Index (name="StartDateIDX", columnNames={"StartDate"}),
         @Index (name="EndDateIDX", columnNames={"EndDate"})
     })
-public class CollectingEvent extends DataModelObjBase implements AttachmentOwnerIFace<CollectingEventAttachment>, AttributeProviderIFace, java.io.Serializable, Comparable<CollectingEvent> {
+public class CollectingEvent extends CollectionMember implements AttachmentOwnerIFace<CollectingEventAttachment>, AttributeProviderIFace, java.io.Serializable, Comparable<CollectingEvent> {
 
     // Fields    
 

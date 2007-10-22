@@ -608,12 +608,12 @@ public class SpecifyDBConverter
                 }
                 frame.incOverall();
                 
-                frame.setDesc("Converting LoanPhysicalObjects Records");
-                log.info("Converting LoanPhysicalObjects Records");
-                boolean doLoanPhysicalObjects = false;
-                if (doLoanPhysicalObjects || doAll)
+                frame.setDesc("Converting LoanPreparations Records");
+                log.info("Converting LoanPreparations Records");
+                boolean doLoanPreparations = false;
+                if (doLoanPreparations || doAll)
                 {
-                    conversion.convertLoanPhysicalObjects();
+                    conversion.convertLoanPreparations();
                     frame.incOverall();
                     
                 } else

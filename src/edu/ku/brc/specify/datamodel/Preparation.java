@@ -65,7 +65,7 @@ import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 @org.hibernate.annotations.Table(appliesTo="preparation", indexes =
     {   @Index (name="PreparedDateIDX", columnNames={"preparedDate"})
     })
-public class Preparation extends DataModelObjBase implements AttachmentOwnerIFace<PreparationAttachment>, AttributeProviderIFace, java.io.Serializable, Comparable<Preparation>
+public class Preparation extends CollectionMember implements AttachmentOwnerIFace<PreparationAttachment>, AttributeProviderIFace, java.io.Serializable, Comparable<Preparation>
 {
 
     // Fields    
@@ -86,7 +86,7 @@ public class Preparation extends DataModelObjBase implements AttachmentOwnerIFac
     protected Boolean                     yesNo2;
     protected Boolean                     yesNo3;
     
-    protected Set<LoanPhysicalObject>     loanPhysicalObjects;
+    protected Set<LoanPreparation>        loanPreparations;
     protected PrepType                    prepType;
     protected CollectionObject            collectionObject;
     protected Agent                       preparedByAgent;
@@ -134,7 +134,7 @@ public class Preparation extends DataModelObjBase implements AttachmentOwnerIFac
         yesNo2       = null;
         yesNo3       = null;
         
-        loanPhysicalObjects = new HashSet<LoanPhysicalObject>();
+        loanPreparations = new HashSet<LoanPreparation>();
         prepType = null;
         collectionObject = null;
         preparedByAgent = null;
@@ -232,7 +232,7 @@ public class Preparation extends DataModelObjBase implements AttachmentOwnerIFac
     public int getQuantityOut()
     {
         int stillOut = 0;
-        for (LoanPhysicalObject lpo : getLoanPhysicalObjects())
+        for (LoanPreparation lpo : getLoanPreparations())
         {
             int quantityLoaned   = lpo.getQuantity() != null ? lpo.getQuantity() : 0;
             int quantityReturned = lpo.getQuantityReturned() != null ? lpo.getQuantityReturned() : 0;
@@ -404,12 +404,12 @@ public class Preparation extends DataModelObjBase implements AttachmentOwnerIFac
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "preparation")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<LoanPhysicalObject> getLoanPhysicalObjects() {
-        return this.loanPhysicalObjects;
+    public Set<LoanPreparation> getLoanPreparations() {
+        return this.loanPreparations;
     }
     
-    public void setLoanPhysicalObjects(Set<LoanPhysicalObject> loanPhysicalObjects) {
-        this.loanPhysicalObjects = loanPhysicalObjects;
+    public void setLoanPreparations(Set<LoanPreparation> loanPreparations) {
+        this.loanPreparations = loanPreparations;
     }
 
    /**

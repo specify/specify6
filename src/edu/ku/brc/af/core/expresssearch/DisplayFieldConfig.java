@@ -31,8 +31,9 @@ public class DisplayFieldConfig implements TableNameRendererIFace, Comparable<Di
 {
     protected String  fieldName;
     protected String  formatter;
-    protected Integer order        = null;
-    
+    protected Integer order             = null;
+    protected Boolean isWebServiceField = false;
+
     // Transient
     protected SearchTableConfig      stc;
     protected boolean                isInUse   = false;
@@ -116,6 +117,29 @@ public class DisplayFieldConfig implements TableNameRendererIFace, Comparable<Di
         this.isInUse = isInUse;
     }
     
+    /**
+     * @return the isWebServiceField
+     */
+    public Boolean getIsWebServiceField()
+    {
+        return isWebServiceField;
+    }
+    
+    /**
+     * @return false if null or the true/false
+     */
+    public boolean isWebServiceField()
+    {
+        return isWebServiceField == null ? false : isWebServiceField;
+    }
+    
+    /**
+     * @param isWebServiceField the isWebServiceField to set
+     */
+    public void setIsWebServiceField(Boolean isWebServiceField)
+    {
+        this.isWebServiceField = isWebServiceField;
+    }
     /**
      * @return the stc
      */

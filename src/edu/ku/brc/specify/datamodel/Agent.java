@@ -64,7 +64,7 @@ import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
         @Index (name="AuthorNameIDX", columnNames={"AuthorName"}), 
         @Index (name="CollectorNameIDX", columnNames={"CollectorName"})  
     })
-public class Agent extends DataModelObjBase implements java.io.Serializable, AttachmentOwnerIFace<AgentAttachment> {
+public class Agent extends CollectionMember implements java.io.Serializable, AttachmentOwnerIFace<AgentAttachment> {
 
     // Fields
     
@@ -97,7 +97,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     protected String                        guid; 
     
     protected Set<Author>                   authors;
-    protected Set<LoanReturnPhysicalObject> loanReturnPhysicalObjects;
+    protected Set<LoanReturnPreparation>    loanReturnPreparations;
     protected Set<BorrowReturnMaterial>     borrowReturnMaterials;
     protected Set<ExchangeIn>               exchangeInCatalogedBys;
     protected Set<Agent>                    orgMembers;
@@ -195,7 +195,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         collectorName             = null;
         guid                      = null;
         authors                   = new HashSet<Author>();
-        loanReturnPhysicalObjects = new HashSet<LoanReturnPhysicalObject>();
+        loanReturnPreparations = new HashSet<LoanReturnPreparation>();
         borrowReturnMaterials     = new HashSet<BorrowReturnMaterial>();
         exchangeInCatalogedBys    = new HashSet<ExchangeIn>();
         orgMembers                = new HashSet<Agent>();
@@ -482,14 +482,14 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "receivedBy")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<LoanReturnPhysicalObject> getLoanReturnPhysicalObjects() 
+    public Set<LoanReturnPreparation> getLoanReturnPreparations() 
     {
-        return this.loanReturnPhysicalObjects;
+        return this.loanReturnPreparations;
     }
 
-    public void setLoanReturnPhysicalObjects(Set<LoanReturnPhysicalObject> loanReturnPhysicalObjects) 
+    public void setLoanReturnPreparations(Set<LoanReturnPreparation> loanReturnPreparations) 
     {
-        this.loanReturnPhysicalObjects = loanReturnPhysicalObjects;
+        this.loanReturnPreparations = loanReturnPreparations;
     }
 
     /**

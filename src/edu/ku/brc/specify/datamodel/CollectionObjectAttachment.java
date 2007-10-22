@@ -33,7 +33,7 @@ import edu.ku.brc.util.Orderable;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "collectionobjectattachment")
-public class CollectionObjectAttachment extends DataModelObjBase implements ObjectAttachmentIFace<CollectionObject>, Orderable, Serializable
+public class CollectionObjectAttachment extends CollectionMember implements ObjectAttachmentIFace<CollectionObject>, Orderable, Serializable
 {
     protected Integer    collectionObjectAttachmentId;
     protected CollectionObject     collectionObject;

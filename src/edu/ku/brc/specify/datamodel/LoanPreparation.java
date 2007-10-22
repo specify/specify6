@@ -52,37 +52,37 @@ import org.hibernate.annotations.CascadeType;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "loanphysicalobject")
-public class LoanPhysicalObject extends DataModelObjBase implements java.io.Serializable, Comparable<LoanPhysicalObject>
+@Table(name = "loanpreparation")
+public class LoanPreparation extends CollectionMember implements java.io.Serializable, Comparable<LoanPreparation>
 {
 
     // Fields    
 
-    protected Integer                       loanPhysicalObjectId;
+    protected Integer                       loanPreparationId;
     protected Integer                       quantity;
     protected String                        descriptionOfMaterial;
     protected String                        outComments;          // Shipped Comments
     protected String                        inComments;           // Returned Comments
-    //protected String                        receivedComments;     // Received Comments
+    protected String                        receivedComments;     // Received Comments
     protected Integer                       quantityResolved;
     protected Integer                       quantityReturned;
     protected Boolean                       isResolved;
     protected Preparation                   preparation;
     protected Loan                          loan;
-    protected Set<LoanReturnPhysicalObject> loanReturnPhysicalObjects;
+    protected Set<LoanReturnPreparation>    loanReturnPreparations;
 
 
     // Constructors
 
     /** default constructor */
-    public LoanPhysicalObject() {
+    public LoanPreparation() {
         //
     }
     
     /** constructor with id */
-    public LoanPhysicalObject(Integer loanPhysicalObjectId) 
+    public LoanPreparation(Integer loanPreparationId) 
     {
-        this.loanPhysicalObjectId = loanPhysicalObjectId;
+        this.loanPreparationId = loanPreparationId;
     }
    
     
@@ -93,17 +93,18 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
     public void initialize()
     {
         super.init();
-        loanPhysicalObjectId = null;
+        loanPreparationId = null;
         quantity = null;
         descriptionOfMaterial = null;
         outComments = null;
         inComments = null;
+        receivedComments = null;
         quantityResolved = null;
         quantityReturned = null;
         isResolved = false;
         preparation = null;
         loan = null;
-        loanReturnPhysicalObjects = new HashSet<LoanReturnPhysicalObject>();
+        loanReturnPreparations = new HashSet<LoanReturnPreparation>();
     }
     // End Initializer
 
@@ -114,9 +115,9 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
      */
     @Id
     @GeneratedValue
-    @Column(name = "LoanPhysicalObjectID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Integer getLoanPhysicalObjectId() {
-        return this.loanPhysicalObjectId;
+    @Column(name = "LoanPreparationID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Integer getLoanPreparationId() {
+        return this.loanPreparationId;
     }
 
     /**
@@ -127,7 +128,7 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
     @Override
     public Integer getId()
     {
-        return this.loanPhysicalObjectId;
+        return this.loanPreparationId;
     }
 
     /* (non-Javadoc)
@@ -137,11 +138,11 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
     @Override
     public Class<?> getDataClass()
     {
-        return LoanPhysicalObject.class;
+        return LoanPreparation.class;
     }
     
-    public void setLoanPhysicalObjectId(Integer loanPhysicalObjectId) {
-        this.loanPhysicalObjectId = loanPhysicalObjectId;
+    public void setLoanPreparationId(Integer loanPreparationId) {
+        this.loanPreparationId = loanPreparationId;
     }
 
     /**
@@ -172,7 +173,7 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
      *      * Comments on item when loaned
      */
     @Lob
-    @Column(name = "OutComments", length=1024, unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "OutComments", unique = false, nullable = true, insertable = true, updatable = true, length = 1024)
     public String getOutComments() {
         return this.outComments;
     }
@@ -185,13 +186,31 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
      *      * Comments on item when returned
      */
     @Lob
-    @Column(name = "InComments", length=1024, unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "InComments", unique = false, nullable = true, insertable = true, updatable = true, length = 1024)
     public String getInComments() {
         return this.inComments;
     }
     
     public void setInComments(String inComments) {
         this.inComments = inComments;
+    }
+
+    /**
+     * @return the receivedComments
+     */
+    @Lob
+    @Column(name = "ReceivedComments", unique = false, nullable = true, insertable = true, updatable = true, length = 1024)
+    public String getReceivedComments()
+    {
+        return receivedComments;
+    }
+
+    /**
+     * @param receivedComments the receivedComments to set
+     */
+    public void setReceivedComments(String receivedComments)
+    {
+        this.receivedComments = receivedComments;
     }
 
     /**
@@ -244,7 +263,7 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
     }
 
     /**
-     *      * Loan containing the PhysicalObject
+     *      * Loan containing the Preparation
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "LoanID", unique = false, nullable = false, insertable = true, updatable = true)
@@ -259,36 +278,14 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
     /**
      * 
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "loanPhysicalObject")
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "loanPreparation")
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    public Set<LoanReturnPhysicalObject> getLoanReturnPhysicalObjects() {
-        return this.loanReturnPhysicalObjects;
+    public Set<LoanReturnPreparation> getLoanReturnPreparations() {
+        return this.loanReturnPreparations;
     }
     
-    public void setLoanReturnPhysicalObjects(Set<LoanReturnPhysicalObject> loanReturnPhysicalObjects) {
-        this.loanReturnPhysicalObjects = loanReturnPhysicalObjects;
-    }
-
-
-
-
-
-    // Add Methods
-
-    public void addLoanReturnPhysicalObjects(final LoanReturnPhysicalObject loanReturnPhysicalObject)
-    {
-        this.loanReturnPhysicalObjects.add(loanReturnPhysicalObject);
-        loanReturnPhysicalObject.setLoanPhysicalObject(this);
-    }
-
-    // Done Add Methods
-
-    // Delete Methods
-
-    public void removeLoanReturnPhysicalObjects(final LoanReturnPhysicalObject loanReturnPhysicalObject)
-    {
-        this.loanReturnPhysicalObjects.remove(loanReturnPhysicalObject);
-        loanReturnPhysicalObject.setLoanPhysicalObject(null);
+    public void setLoanReturnPreparations(Set<LoanReturnPreparation> loanReturnPreparations) {
+        this.loanReturnPreparations = loanReturnPreparations;
     }
 
     /* (non-Javadoc)
@@ -316,7 +313,7 @@ public class LoanPhysicalObject extends DataModelObjBase implements java.io.Seri
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    public int compareTo(LoanPhysicalObject obj)
+    public int compareTo(LoanPreparation obj)
     {
         return timestampCreated.compareTo(obj.timestampCreated);
     }

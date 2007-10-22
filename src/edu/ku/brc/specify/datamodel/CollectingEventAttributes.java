@@ -37,7 +37,7 @@ import org.hibernate.annotations.CascadeType;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "collectingeventattributes")
-public class CollectingEventAttributes extends DataModelObjBase
+public class CollectingEventAttributes extends CollectionMember
 {
     protected Integer collectingEventAttributesId;
     
