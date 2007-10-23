@@ -54,6 +54,10 @@ public class Attachment extends DataModelObjBase implements Serializable
     protected Set<CollectionObjectAttachment>        collectionObjectAttachments;
     protected Set<ConservDescriptionAttachment>      conservDescriptionAttachments;
     protected Set<ConservEventAttachment>            conservEventAttachments;
+    protected Set<DNASequenceAttachment>             dnaSequenceAttachments;
+    protected Set<FieldNotebookAttachment>           fieldNotebookAttachments;
+    protected Set<FieldNotebookPageAttachment>       fieldNotebookPageAttachments;
+    protected Set<FieldNotebookPageSetAttachment>    fieldNotebookPageSetAttachments;
     protected Set<LoanAttachment>                    loanAttachments;
     protected Set<LocalityAttachment>                localityAttachments;
     protected Set<PermitAttachment>                  permitAttachments;
@@ -310,6 +314,54 @@ public class Attachment extends DataModelObjBase implements Serializable
     public void setConservEventAttachments(Set<ConservEventAttachment> conservEventAttachments)
     {
         this.conservEventAttachments = conservEventAttachments;
+    }
+
+    @OneToMany(mappedBy = "attachment")
+    @Cascade( {CascadeType.ALL} )
+    public Set<DNASequenceAttachment> getDnaSequenceAttachments()
+    {
+        return dnaSequenceAttachments;
+    }
+
+    public void setDnaSequenceAttachments(Set<DNASequenceAttachment> dnaSequenceAttachments)
+    {
+        this.dnaSequenceAttachments = dnaSequenceAttachments;
+    }
+
+    @OneToMany(mappedBy = "attachment")
+    @Cascade( {CascadeType.ALL} )
+    public Set<FieldNotebookAttachment> getFieldNotebookAttachments()
+    {
+        return fieldNotebookAttachments;
+    }
+
+    public void setFieldNotebookAttachments(Set<FieldNotebookAttachment> fieldNotebookAttachments)
+    {
+        this.fieldNotebookAttachments = fieldNotebookAttachments;
+    }
+
+    @OneToMany(mappedBy = "attachment")
+    @Cascade( {CascadeType.ALL} )
+    public Set<FieldNotebookPageAttachment> getFieldNotebookPageAttachments()
+    {
+        return fieldNotebookPageAttachments;
+    }
+
+    public void setFieldNotebookPageAttachments(Set<FieldNotebookPageAttachment> fieldNotebookPageAttachments)
+    {
+        this.fieldNotebookPageAttachments = fieldNotebookPageAttachments;
+    }
+
+    @OneToMany(mappedBy = "attachment")
+    @Cascade( {CascadeType.ALL} )
+    public Set<FieldNotebookPageSetAttachment> getFieldNotebookPageSetAttachments()
+    {
+        return fieldNotebookPageSetAttachments;
+    }
+
+    public void setFieldNotebookPageSetAttachments(Set<FieldNotebookPageSetAttachment> fieldNotebookPageSetAttachments)
+    {
+        this.fieldNotebookPageSetAttachments = fieldNotebookPageSetAttachments;
     }
 
     @OneToMany(mappedBy = "attachment")

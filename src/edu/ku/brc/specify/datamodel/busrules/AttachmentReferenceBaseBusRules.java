@@ -18,6 +18,10 @@ import edu.ku.brc.specify.datamodel.CollectingEventAttachment;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttachment;
 import edu.ku.brc.specify.datamodel.ConservDescriptionAttachment;
 import edu.ku.brc.specify.datamodel.ConservEventAttachment;
+import edu.ku.brc.specify.datamodel.DNASequenceAttachment;
+import edu.ku.brc.specify.datamodel.FieldNotebookAttachment;
+import edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment;
+import edu.ku.brc.specify.datamodel.FieldNotebookPageSetAttachment;
 import edu.ku.brc.specify.datamodel.LoanAttachment;
 import edu.ku.brc.specify.datamodel.LocalityAttachment;
 import edu.ku.brc.specify.datamodel.ObjectAttachmentIFace;
@@ -28,7 +32,6 @@ import edu.ku.brc.specify.datamodel.TaxonAttachment;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
-import edu.ku.brc.util.thumbnails.Thumbnailer;
 
 public class AttachmentReferenceBaseBusRules extends BaseBusRules
 {
@@ -42,6 +45,10 @@ public class AttachmentReferenceBaseBusRules extends BaseBusRules
                CollectionObjectAttachment.class,
                ConservDescriptionAttachment.class,
                ConservEventAttachment.class,
+               DNASequenceAttachment.class,
+               FieldNotebookAttachment.class,
+               FieldNotebookPageAttachment.class,
+               FieldNotebookPageSetAttachment.class,
                LoanAttachment.class,
                LocalityAttachment.class,
                PermitAttachment.class,

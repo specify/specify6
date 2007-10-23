@@ -9,6 +9,7 @@ package edu.ku.brc.specify.datamodel;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -52,9 +53,10 @@ public class FieldNotebookPageSet extends CollectionMember
     protected Short      orderNumber;
     protected String     description;
     
-    protected Agent                  sourceAgent;
-    protected FieldNotebook          fieldNotebook;
-    protected Set<FieldNotebookPage> pages;
+    protected Agent                               sourceAgent;
+    protected FieldNotebook                       fieldNotebook;
+    protected Set<FieldNotebookPage>              pages;
+    protected Set<FieldNotebookPageSetAttachment> attachments;
     
     /**
      * 
@@ -79,6 +81,7 @@ public class FieldNotebookPageSet extends CollectionMember
         sourceAgent            = null;
         fieldNotebook          = null;
         pages                  = new HashSet<FieldNotebookPage>();
+        attachments            = new TreeSet<FieldNotebookPageSetAttachment>();
     }
 
     /**
@@ -241,6 +244,18 @@ public class FieldNotebookPageSet extends CollectionMember
         return pages;
     }
     
+    @OneToMany(mappedBy = "fieldNotebookPageSet")
+    @Cascade( {CascadeType.ALL} )
+    public Set<FieldNotebookPageSetAttachment> getAttachments()
+    {
+        return attachments;
+    }
+
+    public void setAttachments(Set<FieldNotebookPageSetAttachment> attachments)
+    {
+        this.attachments = attachments;
+    }
+
     //---------------------------------------------------------------------------
     // Overrides DataModelObjBase
     //---------------------------------------------------------------------------

@@ -101,6 +101,10 @@ import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.ConservDescriptionAttachment;
 import edu.ku.brc.specify.datamodel.ConservEventAttachment;
+import edu.ku.brc.specify.datamodel.DNASequenceAttachment;
+import edu.ku.brc.specify.datamodel.FieldNotebookAttachment;
+import edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment;
+import edu.ku.brc.specify.datamodel.FieldNotebookPageSetAttachment;
 import edu.ku.brc.specify.datamodel.LoanAttachment;
 import edu.ku.brc.specify.datamodel.LocalityAttachment;
 import edu.ku.brc.specify.datamodel.PermitAttachment;
@@ -272,20 +276,27 @@ public class Specify extends JPanel implements DatabaseLoginListener
         AttachmentUtils.setThumbnailer(thumb);
         ActionListener attachmentDisplayer = AttachmentUtils.getAttachmentDisplayer();
         
-        DefaultClassActionHandler.getInstance().registerActionHandler(Attachment.class, attachmentDisplayer);
-        DefaultClassActionHandler.getInstance().registerActionHandler(AccessionAttachment.class, attachmentDisplayer);
-        DefaultClassActionHandler.getInstance().registerActionHandler(AgentAttachment.class, attachmentDisplayer);
-        DefaultClassActionHandler.getInstance().registerActionHandler(CollectingEventAttachment.class, attachmentDisplayer);
-        DefaultClassActionHandler.getInstance().registerActionHandler(CollectionObjectAttachment.class, attachmentDisplayer);
-        DefaultClassActionHandler.getInstance().registerActionHandler(ConservDescriptionAttachment.class, attachmentDisplayer);
-        DefaultClassActionHandler.getInstance().registerActionHandler(ConservEventAttachment.class, attachmentDisplayer);
-        DefaultClassActionHandler.getInstance().registerActionHandler(LoanAttachment.class, attachmentDisplayer);
-        DefaultClassActionHandler.getInstance().registerActionHandler(LocalityAttachment.class, attachmentDisplayer);
-        DefaultClassActionHandler.getInstance().registerActionHandler(PermitAttachment.class, attachmentDisplayer);
-        DefaultClassActionHandler.getInstance().registerActionHandler(PreparationAttachment.class, attachmentDisplayer);
-        DefaultClassActionHandler.getInstance().registerActionHandler(RepositoryAgreementAttachment.class, attachmentDisplayer);
-        DefaultClassActionHandler.getInstance().registerActionHandler(TaxonAttachment.class, attachmentDisplayer);
-        DefaultClassActionHandler.getInstance().registerActionHandler(Collector.class, new CollectorActionListener());
+        DefaultClassActionHandler defClassActionHandler = DefaultClassActionHandler.getInstance();
+        
+        defClassActionHandler.registerActionHandler(Attachment.class,                     attachmentDisplayer);
+        defClassActionHandler.registerActionHandler(AccessionAttachment.class,            attachmentDisplayer);
+        defClassActionHandler.registerActionHandler(AgentAttachment.class,                attachmentDisplayer);
+        defClassActionHandler.registerActionHandler(CollectingEventAttachment.class,      attachmentDisplayer);
+        defClassActionHandler.registerActionHandler(CollectionObjectAttachment.class,     attachmentDisplayer);
+        defClassActionHandler.registerActionHandler(ConservDescriptionAttachment.class,   attachmentDisplayer);
+        defClassActionHandler.registerActionHandler(ConservEventAttachment.class,         attachmentDisplayer);
+        defClassActionHandler.registerActionHandler(DNASequenceAttachment.class,          attachmentDisplayer);
+        defClassActionHandler.registerActionHandler(FieldNotebookAttachment.class,        attachmentDisplayer);
+        defClassActionHandler.registerActionHandler(FieldNotebookPageAttachment.class,    attachmentDisplayer);
+        defClassActionHandler.registerActionHandler(FieldNotebookPageSetAttachment.class, attachmentDisplayer);
+        defClassActionHandler.registerActionHandler(LoanAttachment.class,                 attachmentDisplayer);
+        defClassActionHandler.registerActionHandler(LocalityAttachment.class,             attachmentDisplayer);
+        defClassActionHandler.registerActionHandler(PermitAttachment.class,               attachmentDisplayer);
+        defClassActionHandler.registerActionHandler(PreparationAttachment.class,          attachmentDisplayer);
+        defClassActionHandler.registerActionHandler(RepositoryAgreementAttachment.class,  attachmentDisplayer);
+        defClassActionHandler.registerActionHandler(TaxonAttachment.class,                attachmentDisplayer);
+        
+        defClassActionHandler.registerActionHandler(Collector.class, new CollectorActionListener());
         
         
         // Load Local Prefs

@@ -49,6 +49,10 @@ public class AttachmentBusRules extends BaseBusRules
             boolean noCollObj   = super.okToDelete("collectionobjectattachment",    "AttachmentID", id);
             boolean noConsDesc  = super.okToDelete("conservdescriptionattachment",  "AttachmentID", id);
             boolean noConsEvt   = super.okToDelete("conserveventattachment",        "AttachmentID", id);
+            boolean noDNA       = super.okToDelete("dnasequenceattachment",         "AttachmentID", id);
+            boolean noNotebooks = super.okToDelete("fieldnotebookattachment",       "AttachmentID", id);
+            boolean noPages     = super.okToDelete("fieldnotebookpageattachment",   "AttachmentID", id);
+            boolean noPageSets  = super.okToDelete("fieldnotebookpagesetattachment","AttachmentID", id);
             boolean noLoan      = super.okToDelete("loanattachment",                "AttachmentID", id);
             boolean noLoc       = super.okToDelete("localityattachment",            "AttachmentID", id);
             boolean noPermit    = super.okToDelete("permitattachment",              "AttachmentID", id);
@@ -62,6 +66,10 @@ public class AttachmentBusRules extends BaseBusRules
                    noCollObj &&
                    noConsDesc &&
                    noConsEvt &&
+                   noDNA &&
+                   noNotebooks &&
+                   noPages &&
+                   noPageSets &&
                    noLoan &&
                    noLoc &&
                    noPermit &&

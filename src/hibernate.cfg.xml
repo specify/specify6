@@ -86,11 +86,15 @@
 		<mapping class="edu.ku.brc.specify.datamodel.DeterminationStatus"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Division"/>
 		<mapping class="edu.ku.brc.specify.datamodel.DNASequence"/>
+		<mapping class="edu.ku.brc.specify.datamodel.DNASequenceAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.ExchangeIn"/>
 		<mapping class="edu.ku.brc.specify.datamodel.ExchangeOut"/>
 		<mapping class="edu.ku.brc.specify.datamodel.FieldNotebook"/>
+		<mapping class="edu.ku.brc.specify.datamodel.FieldNotebookAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.FieldNotebookPageSet"/>
+		<mapping class="edu.ku.brc.specify.datamodel.FieldNotebookPageSetAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.FieldNotebookPage"/>
+		<mapping class="edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.GeoCoordDetail"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Geography"/>
 		<mapping class="edu.ku.brc.specify.datamodel.GeographyTreeDef"/>

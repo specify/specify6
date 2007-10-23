@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last Used Id is 125 or 518
+    Last used ID is 129 or 518
     
     86 is available
     
@@ -19,7 +19,7 @@
         <table name="edu.ku.brc.specify.datamodel.AccessionAgent" abbrev="aa" id="12" searchable="true">
             <display objtitle="Accession Agent" view="AccessionAgent" dataobjformatter="AccessionAgent" searchdlg="AccessionAgentSearch" newobjdlg="AccessionAgentDisplay"/>
         </table>
-        <table name="edu.ku.brc.specify.datamodel.AccessionAttachment" abbrev="act" id="108" searchable="true">
+        <table name="edu.ku.brc.specify.datamodel.AccessionAttachment" abbrev="acat" id="108" searchable="true">
         	<display view="AccessionAttachment" newobjdlg="AccessionAttachmentDisplay"/>
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
@@ -127,12 +127,36 @@
         <table name="edu.ku.brc.specify.datamodel.Division" abbrev="dv" id="96" searchable="true">
             <display view="Division"/>
         </table>
-        <table name="edu.ku.brc.specify.datamodel.DNASequence" abbrev="dna" id="121" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.DNASequence" abbrev="dna" id="121" searchable="true">
+        	<businessrule>edu.ku.brc.specify.datamodel.busrules.DNASequenceBusRules</businessrule>
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.DNASequenceAttachment" abbrev="dnaat" id="126" searchable="true">
+        	<display view="DNASequenceAttachment" newobjdlg="DNASequenceAttachmentDisplay"/>
+        	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.ExchangeIn" abbrev="exi" id="39" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.ExchangeOut" abbrev="exo" id="40" searchable="true"/>
-        <table name="edu.ku.brc.specify.datamodel.FieldNotebook" abbrev="fnb" id="83" searchable="true"/>
-        <table name="edu.ku.brc.specify.datamodel.FieldNotebookPageSet" abbrev="fnbps" id="84" searchable="true"/>
-        <table name="edu.ku.brc.specify.datamodel.FieldNotebookPage" abbrev="fnbp" id="85" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.FieldNotebook" abbrev="fnb" id="83" searchable="true">
+        	<businessrule>edu.ku.brc.specify.datamodel.busrules.FieldNotebookBusRules</businessrule>
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.FieldNotebookAttachment" abbrev="fnbat" id="127" searchable="true">
+        	<display view="FieldNotebookAttachment" newobjdlg="FieldNotebookAttachmentDisplay"/>
+        	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.FieldNotebookPage" abbrev="fnbp" id="85" searchable="true">
+        	<businessrule>edu.ku.brc.specify.datamodel.busrules.FieldNotebookPageBusRules</businessrule>
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment" abbrev="fnbpat" id="129" searchable="true">
+        	<display view="FieldNotebookPageAttachment" newobjdlg="FieldNotebookPageAttachmentDisplay"/>
+        	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.FieldNotebookPageSet" abbrev="fnbps" id="84" searchable="true">
+        	<businessrule>edu.ku.brc.specify.datamodel.busrules.FieldNotebookPageSetBusRules</businessrule>
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.FieldNotebookPageSetAttachment" abbrev="fnbpsat" id="128" searchable="true">
+        	<display view="FieldNotebookPageSetAttachment" newobjdlg="FieldNotebookPageSetAttachmentDisplay"/>
+        	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.GeoCoordDetail" abbrev="gcd" id="123" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.Geography" abbrev="geo" id="3" workbench="true" searchable="true">
             <display objtitle="Geography" view="Geography" dataobjformatter="Geography" searchdlg="GeographySearch" newobjdlg="GeographyDisplay"/>

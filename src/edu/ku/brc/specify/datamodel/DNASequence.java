@@ -7,7 +7,9 @@
 package edu.ku.brc.specify.datamodel;
 
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -58,6 +60,7 @@ public class DNASequence extends CollectionMember
     protected String   ncbiNumber;
     
     protected Set<CollectionObject> collectionObjects;
+    protected Set<DNASequenceAttachment> attachments;
     
     /**
      * 
@@ -85,6 +88,8 @@ public class DNASequence extends CollectionMember
         submissionDate    = null;
         sequencer         = null;
         ncbiNumber        = null;
+        collectionObjects = new HashSet<CollectionObject>();
+        attachments       = new TreeSet<DNASequenceAttachment>();
     }
 
     /**
@@ -313,17 +318,30 @@ public class DNASequence extends CollectionMember
     /**
      * @return the collectionObjects
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "dnaSequence")
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    @OneToMany(mappedBy = "dnaSequence")
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public Set<CollectionObject> getCollectionObjects()
     {
         return collectionObjects;
     }
     
+    @OneToMany(mappedBy = "dnaSequence")
+    @Cascade( {CascadeType.ALL} )
+    public Set<DNASequenceAttachment> getAttachments()
+    {
+        return attachments;
+    }
+
+
+    public void setAttachments(Set<DNASequenceAttachment> attachments)
+    {
+        this.attachments = attachments;
+    }
+
     //---------------------------------------------------------------------------
     // Overrides DataModelObjBase
     //---------------------------------------------------------------------------
-    
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getId()
      */

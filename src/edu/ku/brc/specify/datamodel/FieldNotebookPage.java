@@ -9,6 +9,7 @@ package edu.ku.brc.specify.datamodel;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -50,8 +51,9 @@ public class FieldNotebookPage extends CollectionMember
     protected Calendar scanDate;
     protected String   description;
     
-    protected FieldNotebookPageSet  pageSet;
-    protected Set<CollectionObject> collectionObjects;
+    protected FieldNotebookPageSet             pageSet;
+    protected Set<CollectionObject>            collectionObjects;
+    protected Set<FieldNotebookPageAttachment> attachments;
 
     /**
      * 
@@ -74,6 +76,7 @@ public class FieldNotebookPage extends CollectionMember
         
         pageSet           = null;
         collectionObjects = new HashSet<CollectionObject>();
+        attachments       = new TreeSet<FieldNotebookPageAttachment>();
     }
 
     /**
@@ -161,6 +164,18 @@ public class FieldNotebookPage extends CollectionMember
     public String getDescription()
     {
         return description;
+    }
+
+    @OneToMany(mappedBy = "fieldNotebookPage")
+    @Cascade( {CascadeType.ALL} )
+    public Set<FieldNotebookPageAttachment> getAttachments()
+    {
+        return attachments;
+    }
+
+    public void setAttachments(Set<FieldNotebookPageAttachment> attachments)
+    {
+        this.attachments = attachments;
     }
 
     /**
