@@ -2401,7 +2401,7 @@ public class BuildSampleDatabase
                     {
                         startTx();
                         List<?> journal    = HibernateUtil.getCurrentSession().createCriteria(Journal.class).list();
-                        List<?> taxa       = HibernateUtil.getCurrentSession().createCriteria(Taxon.class).list();
+                        List<?> taxa       = HibernateUtil.getCurrentSession().createQuery("select t from Taxon t").list();
                         List<?> localities = HibernateUtil.getCurrentSession().createCriteria(Locality.class).list();
                         List<ReferenceWork> rwList = new Vector<ReferenceWork>();
                         rwList.addAll(((Journal)journal.get(0)).getReferenceWorks());
