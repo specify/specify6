@@ -1188,6 +1188,7 @@ public class DatamodelGenerator
                 {
                     String fileName = file.getName();
                     if (!StringUtils.contains(fileName, "DataModelObjBase") && 
+                            !StringUtils.contains(fileName, "CollectionMember") && 
                             !StringUtils.contains(fileName, "Treeable") && 
                             !StringUtils.contains(fileName, "SpLocaleBase") && 
                             !StringUtils.contains(fileName.toLowerCase(), "iface"))
