@@ -1427,23 +1427,37 @@ public class BuildSampleDatabase
                         if (agent.getLastName() != null && agent.getLastName().startsWith(names[i]))
                         {
                             String photoPath = attachmentFilesLoc + photos[i];
+                            
+                            // create the attachment record
                             Attachment photoAttachment = createAttachment(photoPath, "image/jpeg");
+                            dataObjects.add(photoAttachment);
+
+                            // link the attachment to the agent
                             AgentAttachment agentAttach = new AgentAttachment();
                             agentAttach.initialize();
                             agentAttach.setAgent(agent);
                             agentAttach.setAttachment(photoAttachment);
                             agentAttach.setOrderIndex(0);
-                            dataObjects.add(photoAttachment);
                             dataObjects.add(agentAttach);
                             
-                            AttachmentMetadata metadata = new AttachmentMetadata();
-                            metadata.initialize();
-                            metadata.setName("Copyright");
-                            metadata.setValue("2006");
-                            photoAttachment.getMetadata().add(metadata);
-                            metadata.setAttachment(photoAttachment);
-                            dataObjects.add(metadata);
+                            // add some metadata to the attachment record
+                            AttachmentMetadata copyrightData = new AttachmentMetadata();
+                            copyrightData.initialize();
+                            copyrightData.setName("Copyright");
+                            copyrightData.setValue("2006");
+                            photoAttachment.getMetadata().add(copyrightData);
+                            copyrightData.setAttachment(photoAttachment);
+                            dataObjects.add(copyrightData);
                             
+                            AttachmentMetadata defPhotoIndicator = new AttachmentMetadata();
+                            defPhotoIndicator.initialize();
+                            defPhotoIndicator.setName("Default Photo");
+                            defPhotoIndicator.setValue("yes");
+                            photoAttachment.getMetadata().add(defPhotoIndicator);
+                            defPhotoIndicator.setAttachment(photoAttachment);
+                            dataObjects.add(defPhotoIndicator);
+                            
+                            // store the actual file into the attachment storage system
                             AttachmentUtils.getAttachmentManager().setStorageLocationIntoAttachment(photoAttachment);
                             photoAttachment.storeFile();
                         }
