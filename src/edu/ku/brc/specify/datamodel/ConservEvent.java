@@ -324,7 +324,8 @@ public class ConservEvent extends DataModelObjBase implements AttachmentOwnerIFa
         this.conservDescription = conservDescription;
     }
     
-    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "conservEvent")
+    @OneToMany(mappedBy = "conservEvent")
+    @Cascade( {CascadeType.ALL} )
     public Set<ConservEventAttachment> getConservEventAttachments()
     {
         return conservEventAttachments;
