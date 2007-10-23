@@ -126,7 +126,7 @@ public class AgentAttachment extends DataModelObjBase implements ObjectAttachmen
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.OrderableFormDataObj#getOrderIndex()
+     * @see edu.ku.brc.util.Orderable#getOrderIndex()
      */
     @Transient
     public int getOrderIndex()
@@ -135,7 +135,7 @@ public class AgentAttachment extends DataModelObjBase implements ObjectAttachmen
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.OrderableFormDataObj#setOrderIndex(int)
+     * @see edu.ku.brc.util.Orderable#setOrderIndex(int)
      */
     public void setOrderIndex(int ordinal)
     {
