@@ -89,9 +89,9 @@ public class AgentAttachment extends DataModelObjBase implements ObjectAttachmen
         this.agent = agent;
     }
 
-    @ManyToOne()
-    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
+    @ManyToOne
     @JoinColumn(name = "AttachmentID", nullable = false)
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public Attachment getAttachment()
     {
         return attachment;
