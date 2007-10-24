@@ -117,9 +117,9 @@ public class ExpressSearchConfigDlg extends CustomDialog
     
     static
     {
-        NONE       = getResourceString("NONE");
-        ASCENDING  = getResourceString("ASCENDING");
-        DESCENDING = getResourceString("DESCENDING");
+        NONE       = getResourceString("ES_NONE");
+        ASCENDING  = getResourceString("ES_ASCENDING");
+        DESCENDING = getResourceString("ES_DESCENDING");
     }
     
     /**
@@ -303,8 +303,8 @@ public class ExpressSearchConfigDlg extends CustomDialog
 
         PanelBuilder innerBuilder = new PanelBuilder(new FormLayout("max(250px;p):g, 2px, p, 10px, max(250px;p):g", "p,2px,f:min(250px;p):g"));
 
-        innerBuilder.add(new JLabel(getResourceString("SEARCHFIELDS"),   SwingConstants.CENTER), cc.xy(1, 1));
-        innerBuilder.add(new JLabel(getResourceString("DISPLAYFIELDS"),  SwingConstants.CENTER), cc.xy(5, 1));
+        innerBuilder.add(new JLabel(getResourceString("ES_SEARCHFIELDS"),   SwingConstants.CENTER), cc.xy(1, 1));
+        innerBuilder.add(new JLabel(getResourceString("ES_DISPLAYFIELDS"),  SwingConstants.CENTER), cc.xy(5, 1));
         
         PanelBuilder upDownPanel = new PanelBuilder(new FormLayout("p", "f:p:g, p, 2px, p, f:p:g"));        
         upDownPanel.add(orderUpBtn,       cc.xy(1, 2));
@@ -364,18 +364,18 @@ public class ExpressSearchConfigDlg extends CustomDialog
             }
         });
 
-        outer.add(new JLabel(getResourceString("AVAIL_TABLES"), SwingConstants.CENTER), cc.xy(1,1));
+        outer.add(new JLabel(getResourceString("ES_AVAIL_TABLES"), SwingConstants.CENTER), cc.xy(1,1));
         outer.add(builder.getPanel(), cc.xy(1,3));
-        outer.add(new JLabel(getResourceString("FLDS_TO_SEARCH"), SwingConstants.CENTER), cc.xy(3,1));
+        outer.add(new JLabel(getResourceString("ES_FLDS_TO_SEARCH"), SwingConstants.CENTER), cc.xy(3,1));
         outer.add(sp, cc.xy(3,3));
         
         orderPanel = new ESTableOrderPanel(config);
         
         // Crate TabbedPane and add tabs
         tabbedPane = new JTabbedPane();
-        tabbedPane.add(getResourceString("SEARCH_FIELDS"), outer.getPanel());
-        tabbedPane.add(getResourceString("RESULTS_ORDERING"), orderPanel);
-        tabbedPane.add(getResourceString("RELATED_TABLES"), createRelatedTabledPanel());
+        tabbedPane.add(getResourceString("ES_SEARCH_FIELDS"), outer.getPanel());
+        tabbedPane.add(getResourceString("ES_RESULTS_ORDERING"), orderPanel);
+        tabbedPane.add(getResourceString("ES_RELATED_TABLES"), createRelatedTabledPanel());
         
         tabbedPane.addChangeListener(new ChangeListener() {
             //@Override
@@ -701,7 +701,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
         
         public SearchFieldsTableModel()
         {
-            String[] heads = {"Search", "FIELDNAME", "SORTING"};
+            String[] heads = {"Search", "ES_FIELDNAME", "ES_SORTING"};
             for (String key : heads)
             {
                 headings.add(getResourceString(key));
