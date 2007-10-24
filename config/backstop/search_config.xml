@@ -193,6 +193,23 @@
             </detailView>
         </table>
         
+        <table id="6" tableid="4" indexed="false" name="Accepted Taxon" title="Accepted Taxon" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="4" primary="true">t1.AcceptedID</join>
+                <join tableid="4">t2.TaxonID</join>
+            </joins>
+            <detailView icon="Taxon">
+                <sql>
+                    <![CDATA[SELECT t1.TaxonID, t1.FullName, t2.FullName, %s FROM taxon t1 INNER JOIN taxon t2 ON t1.AcceptedID = t2.TaxonID WHERE %s]]>
+                </sql>
+                <captions>
+                    <caption col="t1.TaxonID"         text="taxon.TaxonID" visible="false"/>
+                    <caption col="t1.FullName"        text="Taxon"/>
+                    <caption col="t2.FullName"        text="Accepted Name"/>
+                </captions>
+            </detailView>
+        </table>
+        
     </express>
     
     <!-- ************************************************* -->
