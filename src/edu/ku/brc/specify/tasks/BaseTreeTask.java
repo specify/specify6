@@ -431,16 +431,6 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 
         if (parentComboBox != null)
         {
-            boolean isNew = MultiView.isOptionOn(form.getMVParent().getOptions(), MultiView.IS_NEW_OBJECT);
-            
-            if (!isNew)
-            {
-                // Don't let them CHANGE the parent in the forms system.
-                // They can create new children, but not move children.
-                // That is done in the tree viewer.
-                parentComboBox.setEnabled(false);
-            }
-            
             parentComboBox.addFocusListener(new FocusListener()
             {
                 public void focusGained(FocusEvent e)
@@ -452,7 +442,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                     // set the contents of this combobox based on the value chosen as the parent
                     GetSetValueIFace parentField = (GetSetValueIFace)parentComboBox;
                     adjustRankComboBoxModel(parentField, rankComboBox, nodeInForm);
-                    
+
                     // set the tree def for the object being edited by using the parent node's tree def
                     T parent = (T)parentField.getValue();
                     if (parent != null)
@@ -497,7 +487,19 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         // this is the lowest rank the edited item can possibly be
         I bottomItem = null;
 
-        T parent = (T)parentField.getValue();
+        Object value = parentField.getValue();
+        T parent = null;
+        if (value instanceof String)
+        {
+            // this happens when the combobox is in view mode, which means it's really a textfield
+            // in that case, the parent of the node in the form will do, since the user can't change the parents
+            parent = nodeInForm.getParent();
+        }
+        else
+        {
+            parent = (T)parentField.getValue();
+        }
+        
         if (parent == null)
         {
             return;
