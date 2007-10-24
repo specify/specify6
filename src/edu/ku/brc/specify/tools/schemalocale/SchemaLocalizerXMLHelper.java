@@ -722,7 +722,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
         sb.append(lang);
         sb.append(StringUtils.isNotEmpty(country) ? ("_" + country) : "");
         sb.append(StringUtils.isNotEmpty(variant) ? ("_" + variant) : "");
-        System.out.println(sb.toString());
+        //System.out.println(sb.toString());
         return sb.toString();
     }
     

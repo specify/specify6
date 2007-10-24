@@ -1161,7 +1161,7 @@ public class ViewFactory
                     FormCellSubView cellSubView = (FormCellSubView)cell;
 
                     String subViewName = cellSubView.getViewName();
-
+                    
                     ViewIFace subView = AppContextMgr.getInstance().getView(cellSubView.getViewSetName(), subViewName);
                     if (subView != null)
                     {
@@ -1174,21 +1174,41 @@ public class ViewFactory
                                 
                                 boolean isSingle      = cellSubView.isSingleValueFromSet();
                                 boolean isACollection = false;
-                                try
+                                if (false)
                                 {
-                                    Class<?> cls = Class.forName(parentView.getClassName());
-                                    Field fld = cls.getDeclaredField(cellSubView.getName());
-                                    if (fld != null)
+                                    try
                                     {
-                                        isACollection = Collection.class.isAssignableFrom(fld.getType());
-                                    } else
+                                        Class<?> cls = Class.forName(parentView.getClassName());
+                                        Field fld = cls.getDeclaredField(cellSubView.getName());
+                                        if (fld != null)
+                                        {
+                                            isACollection = Collection.class.isAssignableFrom(fld.getType());
+                                        } else
+                                        {
+                                            log.error("Couldn't find field ["+cellSubView.getName()+"] in class ["+parentView.getClassName()+"]");
+                                        }
+                                        
+                                    } catch (Exception ex)
                                     {
-                                        log.error("Couldn't find field ["+cellSubView.getName()+"] in class ["+parentView.getClassName()+"]");
+                                        ex.printStackTrace();
                                     }
-                                    
-                                } catch (Exception ex)
+                                } else
                                 {
-                                    ex.printStackTrace();
+                                    try
+                                    {
+                                        Class<?> cls = Class.forName(parentView.getClassName());
+                                        Field fld = getFieldFromDotNotation(cellSubView, cls);
+                                        if (fld != null)
+                                        {
+                                            isACollection = Collection.class.isAssignableFrom(fld.getType());
+                                        } else
+                                        {
+                                            log.error("Couldn't find field ["+cellSubView.getName()+"] in class ["+parentView.getClassName()+"]");
+                                        }
+                                    } catch (Exception ex)
+                                    {
+                                        ex.printStackTrace();
+                                    }
                                 }
 
                                 int options = (isACollection && !isSingle ? MultiView.RESULTSET_CONTROLLER : MultiView.IS_SINGLE_OBJ) | MultiView.VIEW_SWITCHER |
@@ -1320,6 +1340,42 @@ public class ViewFactory
                 }
             }
         }
+    }
+    
+    protected Field getFieldFromDotNotation(final FormCellSubView cellSubView, final Class<?> dataClass)
+    {
+        Class<?> parentCls = dataClass;
+        
+        String[] fieldNames = StringUtils.split(cellSubView.getName(), ".");
+        if (fieldNames.length == 2)
+        {
+            int x = 0;
+            x++;
+        }
+        for (int i=0;i<fieldNames.length;i++)
+        {
+            try
+            {
+                Field fld = parentCls.getDeclaredField(fieldNames[i]);
+                if (fld != null)
+                {
+                    if (i == fieldNames.length-1)
+                    {
+                        return fld;
+                    }
+                    parentCls = fld.getType();
+                    
+                } else
+                {
+                    log.error("Couldn't find field ["+cellSubView.getName()+"] in class ["+parentCls.getSimpleName()+"]");
+                }
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+        return null;
     }
     
     /**

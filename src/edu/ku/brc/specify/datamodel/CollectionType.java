@@ -54,7 +54,7 @@ import org.hibernate.annotations.Index;
  */
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
-@org.hibernate.annotations.Proxy(lazy = false)
+//@org.hibernate.annotations.Proxy(lazy = false)
 @Table(name="collectiontype")
 @org.hibernate.annotations.Table(appliesTo="collectiontype", indexes =
     {   @Index (name="ColTypeNameIDX", columnNames={"Name"}),
@@ -251,7 +251,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     /**
      *
      */
-    @ManyToOne
+    @ManyToOne( fetch = FetchType.LAZY )
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL })
     @JoinColumn(name="GeographyTreeDefID", unique=false, nullable=true, insertable=true, updatable=true)
     public GeographyTreeDef getGeographyTreeDef() {
@@ -265,7 +265,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     /**
      *
      */
-    @ManyToOne
+    @ManyToOne( fetch = FetchType.LAZY )
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL })
     @JoinColumn(name="GeologicTimePeriodTreeDefID", unique=false, nullable=false, insertable=true, updatable=true)
     public GeologicTimePeriodTreeDef getGeologicTimePeriodTreeDef() {
@@ -279,7 +279,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     /**
      *
      */
-    @ManyToOne
+    @ManyToOne( fetch = FetchType.LAZY )
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL })
     @JoinColumn(name="LocationTreeDefID", unique=false, nullable=true, insertable=true, updatable=true)
     public LocationTreeDef getLocationTreeDef() {
@@ -307,7 +307,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     /**
      *      * @hibernate.many-to-one
      */
-    @ManyToOne
+    @ManyToOne( fetch = FetchType.LAZY )
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL })
     @JoinColumn(name="LithoStratTreeDefID")
     public LithoStratTreeDef getLithoStratTreeDef() {

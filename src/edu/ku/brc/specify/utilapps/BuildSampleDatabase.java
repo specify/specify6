@@ -76,6 +76,7 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
@@ -93,7 +94,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
@@ -212,6 +216,8 @@ public class BuildSampleDatabase
     
     protected SetupDialog        setupDlg  = null;
     protected boolean            hideFrame = false;
+    
+    protected boolean            copyToUserDir = true;
     
     /**
      * 
@@ -1941,6 +1947,24 @@ public class BuildSampleDatabase
     }
     
     /**
+     * Copies the DerbyDatabases dir to the User app dir
+     */
+    protected void copyToUserWorkingDir()
+    {
+        File src = new File(UIRegistry.getDefaultWorkingPath()+File.separator+"DerbyDatabases");
+        File dst = new File(UIRegistry.getUserHomeAppDir()+File.separator+"DerbyDatabases");
+        log.info("Copying DerbyDatabases from \n"+ src.getAbsolutePath() + "\n to \n" + dst.getAbsolutePath());
+        try
+        {
+            FileUtils.copyDirectory(src, dst);
+            
+        } catch (IOException ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+    
+    /**
      * Creates the dialog to find out what database and what database driver to use. 
      */
     protected void buildSetup(final String[] args)
@@ -1955,7 +1979,7 @@ public class BuildSampleDatabase
                 doEmptyBuild = args[0].equals("build_empty");
                 derbyPath    = StringUtils.isNotEmpty(args[1]) ? args[1] : null;
                 hideFrame    = true;
-                System.out.println("doEmptyBuild [ "+doEmptyBuild+" ]");
+                //System.out.println("doEmptyBuild [ "+doEmptyBuild+" ]");
                 
             } else
             {
@@ -2076,7 +2100,8 @@ public class BuildSampleDatabase
                 
                 frame.setVisible(false);
                 frame.dispose();
-                
+
+
                 return null;
             }
 
@@ -2248,12 +2273,14 @@ public class BuildSampleDatabase
                          final String driverName, 
                          final Discipline discipline) throws SQLException
     {
+        boolean doingDerby = StringUtils.contains(driverName, "Derby");
+
         frame = new ProgressFrame("Building sample DB");
         frame.setSize(new Dimension(500,125));
         frame.setTitle("Building Test Database");
         UIHelper.centerAndShow(frame);
         frame.setProcessPercent(true);
-        frame.setOverall(0, 5);
+        frame.setOverall(0, 5+(doingDerby ? 1 : 0));
         frame.getCloseBtn().setVisible(false);
 
         System.setProperty(AppPreferences.factoryName,          "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
@@ -2339,6 +2366,7 @@ public class BuildSampleDatabase
                               userName, 
                               password))
         {
+            
             boolean single = true;
             if (single)
             {
@@ -2399,11 +2427,12 @@ public class BuildSampleDatabase
                     
                     if (true)
                     {
-                        startTx();
                         List<?> journal    = HibernateUtil.getCurrentSession().createCriteria(Journal.class).list();
                         List<?> taxa       = HibernateUtil.getCurrentSession().createQuery("select t from Taxon t").list();
                         List<?> localities = HibernateUtil.getCurrentSession().createCriteria(Locality.class).list();
                         List<ReferenceWork> rwList = new Vector<ReferenceWork>();
+
+                        startTx();
                         rwList.addAll(((Journal)journal.get(0)).getReferenceWorks());
                         
                         TaxonCitation taxonCitation = new TaxonCitation();
@@ -2446,6 +2475,22 @@ public class BuildSampleDatabase
                     }
                     AppPreferences.getRemote().flush();
                     
+                    
+                    if (doingDerby)
+                    {
+                        SwingUtilities.invokeLater(new Runnable()
+                        {
+                            public void run()
+                            {
+                                frame.getProcessProgress().setIndeterminate(true);
+                                frame.getProcessProgress().setString("");
+                                frame.setDesc("Copying DerbyDatases to User App Dir");
+                                frame.setOverall(steps++);
+                            }
+                        });
+                        copyToUserWorkingDir();
+                    }
+                    
 
                     frame.setDesc("Build Completed.");
                     frame.setOverall(steps++);
@@ -2476,6 +2521,19 @@ public class BuildSampleDatabase
         }
         
         System.out.println("All done");
+    }
+    
+    public static void turnOnHibernateLogging(Level level)
+    {
+        for (Enumeration<?> e=LogManager.getCurrentLoggers(); e.hasMoreElements();)
+        {
+            Logger    logger = (Logger)e.nextElement();
+            if (StringUtils.contains(logger.getName(), "hibernate"))
+            {
+                logger.setLevel(level);
+            }
+        }
+
     }
     
     /**

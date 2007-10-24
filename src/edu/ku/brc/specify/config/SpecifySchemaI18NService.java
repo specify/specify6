@@ -196,7 +196,7 @@ public class SpecifySchemaI18NService extends SchemaI18NService
             
             int cnt = rs.getMetaData().getColumnCount();
             
-            if (rs.first())
+            if (rs.next())
             {
                 do
                 {

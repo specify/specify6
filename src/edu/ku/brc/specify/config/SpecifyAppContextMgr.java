@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
@@ -47,6 +48,7 @@ import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpAppResourceDir;
 import edu.ku.brc.specify.datamodel.SpViewSetObj;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
@@ -230,7 +232,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
             if (askToSelect)
             {
-                String queryStr = "select cs From CollectionType as ct Inner Join ct.specifyUser as user Inner Join ct.collections as cs where user.specifyUserId = "+user.getSpecifyUserId();
+                String queryStr = "SELECT coll FROM Collection coll WHERE coll.collectionType.specifyUser.id = " + user.getSpecifyUserId(); 
                 Hashtable<String, Collection> collectionHash = new Hashtable<String, Collection>();
                 for (Object obj : sessionArg.getDataList(queryStr))
                 {
