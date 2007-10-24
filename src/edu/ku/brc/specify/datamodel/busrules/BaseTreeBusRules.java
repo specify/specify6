@@ -92,10 +92,16 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         // we need a way to determine if the name changed
         // load a fresh copy from the DB and get the values needed for comparison
         DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
-        T fromDB = (T)tmpSession.load(node.getClass(), node.getTreeId());
-        T origParent = fromDB.getParent();
+        T fromDB = (T)tmpSession.get(node.getClass(), node.getTreeId());
         tmpSession.close();
+        
+        if (fromDB == null)
+        {
+            // this node is new and hasn't yet been flushed to the DB, so we don't need to worry about updating fullnames
+            return;
+        }
 
+        T origParent = fromDB.getParent();
         boolean parentChanged = false;
         T currentParent = node.getParent();
         if ((currentParent == null && origParent != null) || (currentParent != null && origParent == null))
