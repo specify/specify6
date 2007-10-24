@@ -204,7 +204,7 @@
                 </sql>
                 <captions>
                     <caption col="t1.TaxonID"         text="taxon.TaxonID" visible="false"/>
-                    <caption col="t1.FullName"        text="Taxon"/>
+                    <caption col="t1.FullName"        text="Old Name"/>
                     <caption col="t2.FullName"        text="Accepted Name"/>
                 </captions>
             </detailView>
