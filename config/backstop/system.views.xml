@@ -1330,7 +1330,7 @@
     		    </row>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
-                    <cell type="field" id="origFilename" name="attachment.origFilename" uitype="browse"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" uitype="browse"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="mimeType" label="MIME Type"/>
