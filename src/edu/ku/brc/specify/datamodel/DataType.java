@@ -162,27 +162,6 @@ public class DataType extends DataModelObjBase implements java.io.Serializable {
         return buffer.toString();
     }
 
-    // Add Methods
-
-    public void addCollectionType(final CollectionType collectionTypeArg)
-    {
-        this.collectionType.add(collectionTypeArg);
-        collectionTypeArg.setDataType(this);
-    }
-
-    // Done Add Methods
-
-    // Delete Methods
-
-    public void removeCollectionType(final CollectionType collectionTypeArg)
-    {
-        this.collectionType.remove(collectionTypeArg);
-        collectionTypeArg.setDataType(null);
-    }
-
-    // Delete Add Methods
-    
-    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
      */

@@ -131,7 +131,7 @@ public class ConservRecommendation extends DataModelObjBase implements java.io.S
      *
      */
     @Lob
-    @Column(name="Remarks", unique=false, nullable=true, updatable=true, insertable=true)
+    @Column(name = "Remarks", length = 4096)
     public String getRemarks() {
         return this.remarks;
     }
@@ -144,7 +144,7 @@ public class ConservRecommendation extends DataModelObjBase implements java.io.S
      *
      */
     @Lob
-    @Column(name="CompletedComments", unique=false, nullable=true, updatable=true, insertable=true)
+    @Column(name="CompletedComments", length = 4096)
     public String getCompletedComments() {
         return this.completedComments;
     }

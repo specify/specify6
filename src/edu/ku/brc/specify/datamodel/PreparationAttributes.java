@@ -42,7 +42,35 @@ public class PreparationAttributes extends CollectionMember
 {
     protected Integer preparationAttributesId;
     protected Date attrDate;
-    protected String medium;
+    protected String text22;  // preparationType
+    protected String text23;  // containerType
+    protected String text24;  // medium
+    protected Float number1;
+    protected Float number2;
+    protected Float number3;
+    protected Integer number4;
+    protected Integer number5;
+    protected Integer number6;
+    protected Integer number7;
+    protected Integer number8;
+    protected Short number9;
+    protected String remarks;
+    protected String text26;     // size
+    protected String text25;
+    protected String text1;
+    protected String text10;
+    protected String text11;
+    protected String text12;
+    protected String text13;
+    protected String text14;
+    protected String text15;
+    protected String text16;
+    protected String text17;
+    protected String text18;
+    protected String text19;
+    protected String text2;
+    protected String text20;
+    protected String text21;
     protected String text3;
     protected String text4;
     protected String text5;
@@ -50,37 +78,14 @@ public class PreparationAttributes extends CollectionMember
     protected String text7;
     protected String text8;
     protected String text9;
-    protected String size;
-    protected String text10;
-    protected String text11;
-    protected String text12;
-    protected String text13;
-    protected String text14;
-    protected String text15;
-    protected Integer number4;
-    protected Integer number5;
-    protected Integer number6;
-    protected Integer number7;
-    protected String text16;
-    protected String text17;
-    protected String text18;
-    protected String storageInfo;
-    protected String preparationType;
-    protected Integer number8;
-    protected String containerType;
-    protected String text19;
-    protected String text20;
-    protected String text21;
-    protected String text1;
-    protected String text2;
-    protected Float number1;
-    protected Float number2;
-    protected Float number3;
-    protected String remarks;
-    protected Short number9;
     protected Boolean yesNo1;
     protected Boolean yesNo2;
+    protected Boolean yesNo3;
+    protected Boolean yesNo4;
+    
     protected Set<Preparation> preparations;
+    
+
     
 
     /* (non-Javadoc)
@@ -92,7 +97,7 @@ public class PreparationAttributes extends CollectionMember
         super.init();
         preparationAttributesId = null;
         attrDate = null;
-        medium = null;
+        text24 = null;
         text3 = null;
         text4 = null;
         text5 = null;
@@ -100,7 +105,7 @@ public class PreparationAttributes extends CollectionMember
         text7 = null;
         text8 = null;
         text9 = null;
-        size = null;
+        text26 = null;
         text10 = null;
         text11 = null;
         text12 = null;
@@ -114,10 +119,10 @@ public class PreparationAttributes extends CollectionMember
         text16 = null;
         text17 = null;
         text18 = null;
-        storageInfo = null;
-        preparationType = null;
+        text25 = null;
+        text22 = null;
         number8 = null;
-        containerType = null;
+        text23 = null;
         text19 = null;
         text20 = null;
         text21 = null;
@@ -165,21 +170,21 @@ public class PreparationAttributes extends CollectionMember
     }
 
     /**
-     * @return the containerType
+     * @return the Text23
      */
-    @Column(name = "ContainerType", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
-    public String getContainerType()
+    @Column(name = "Text23", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    public String getText23()
     {
-        return containerType;
+        return text23;
     }
 
     /**
-     * @return the medium
+     * @return the Text24
      */
-    @Column(name = "Medium", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
-    public String getMedium()
+    @Column(name = "Text24", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    public String getText24()
     {
-        return medium;
+        return text24;
     }
 
     /**
@@ -266,10 +271,10 @@ public class PreparationAttributes extends CollectionMember
     /**
      * @return the preparationType
      */
-    @Column(name = "PreparationType", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
-    public String getPreparationType()
+    @Column(name = "Text22", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
+    public String getText22()
     {
-        return preparationType;
+        return text22;
     }
 
     /**
@@ -285,7 +290,7 @@ public class PreparationAttributes extends CollectionMember
      * @return the remarks
      */
     @Lob
-    @Column(name="Remarks", unique=false, nullable=true, updatable=true, insertable=true)
+    @Column(name = "Remarks", length = 4096)
     public String getRemarks()
     {
         return remarks;
@@ -294,19 +299,19 @@ public class PreparationAttributes extends CollectionMember
     /**
      * @return the size
      */
-    @Column(name = "Size", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
-    public String getSize()
+    @Column(name = "Text26", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    public String getText26()
     {
-        return size;
+        return text26;
     }
 
     /**
      * @return the storageInfo
      */
-    @Column(name = "StorageInfo", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
-    public String getStorageInfo()
+    @Column(name = "Text25", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    public String getText25()
     {
-        return storageInfo;
+        return text25;
     }
 
     /**
@@ -517,6 +522,40 @@ public class PreparationAttributes extends CollectionMember
     }
 
     /**
+     * @return the yesNo3
+     */
+    @Column(name = "YesNo3", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getYesNo3()
+    {
+        return yesNo3;
+    }
+
+    /**
+     * @param yesNo3 the yesNo3 to set
+     */
+    public void setYesNo3(Boolean yesNo3)
+    {
+        this.yesNo3 = yesNo3;
+    }
+
+    /**
+     * @return the yesNo4
+     */
+    @Column(name = "YesNo4", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getYesNo4()
+    {
+        return yesNo4;
+    }
+
+    /**
+     * @param yesNo4 the yesNo4 to set
+     */
+    public void setYesNo4(Boolean yesNo4)
+    {
+        this.yesNo4 = yesNo4;
+    }
+
+    /**
      * @param preparations the preparations to set
      */
     public void setPreparations(Set<Preparation> preparations)
@@ -527,17 +566,17 @@ public class PreparationAttributes extends CollectionMember
     /**
      * @param containerType the containerType to set
      */
-    public void setContainerType(String containerType)
+    public void setText23(String containerType)
     {
-        this.containerType = containerType;
+        this.text23 = containerType;
     }
 
     /**
      * @param medium the medium to set
      */
-    public void setMedium(String medium)
+    public void setText24(String text24)
     {
-        this.medium = medium;
+        this.text24 = text24;
     }
 
     /**
@@ -623,9 +662,9 @@ public class PreparationAttributes extends CollectionMember
     /**
      * @param preparationType the preparationType to set
      */
-    public void setPreparationType(String preparationType)
+    public void setText22(String text22)
     {
-        this.preparationType = preparationType;
+        this.text22 = text22;
     }
 
     /**
@@ -647,17 +686,17 @@ public class PreparationAttributes extends CollectionMember
     /**
      * @param size the size to set
      */
-    public void setSize(String size)
+    public void setText26(String text26)
     {
-        this.size = size;
+        this.text26 = text26;
     }
 
     /**
-     * @param storageInfo the storageInfo to set
+     * @param storageInfo the text25 to set
      */
-    public void setStorageInfo(String storageInfo)
+    public void setText25(String text25)
     {
-        this.storageInfo = storageInfo;
+        this.text25 = text25;
     }
 
     /**

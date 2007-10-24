@@ -190,7 +190,7 @@ public class Attachment extends DataModelObjBase implements Serializable
     }
 
     @Lob
-    @Column(name="Remarks")
+    @Column(name = "Remarks", length = 4096)
     public String getRemarks()
     {
         return this.remarks;

@@ -1067,7 +1067,7 @@ public class GenericDBConversion
                 "Text7", "EndSlideNumber", 
                 "Text8", "SectionOrientation", 
                 "Text9", "SectionWidth", 
-                //"size",
+                "Text26", "size",
                 "Text10", "URL", 
                 "Text11", "Identifier", 
                 "Text12", "NestLining", 
@@ -1081,10 +1081,11 @@ public class GenericDBConversion
                 "Text17", "EggIncubationStage", 
                 "Text18", "EggDescription", 
                 "Text19", "Format", 
-                //"storageInfo",
-                //"preparationType",
+                "Text25", "storageInfo",
+                "Text22", "preparationType",
                 //"preparationTypeId", "Number8", ?????
-                //"containerType",
+                "Text23", "containerType",
+                "Text24", "medium",
                 //"containerTypeId",????????
                 "Text20", "DNAConcentration",
                 "Text21", "Volume",

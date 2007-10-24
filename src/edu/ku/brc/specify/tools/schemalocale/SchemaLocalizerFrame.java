@@ -30,7 +30,6 @@ import javax.swing.WindowConstants;
 import com.apple.eawt.Application;
 import com.apple.eawt.ApplicationAdapter;
 import com.apple.eawt.ApplicationEvent;
-import com.lowagie.text.pdf.SpotColor;
 
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.dbsupport.DBTableIdMgr;

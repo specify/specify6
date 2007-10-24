@@ -159,7 +159,7 @@ public class UserGroup extends DataModelObjBase implements java.io.Serializable 
      *
      */
     @Lob
-    @Column(name="Remarks", unique=false, nullable=true, updatable=true, insertable=true)
+    @Column(name = "Remarks", length = 4096)
     public String getRemarks() {
         return this.remarks;
     }

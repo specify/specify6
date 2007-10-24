@@ -10,7 +10,7 @@ import edu.ku.brc.specify.tools.schemalocale.LocalizedStrIFace;
  * @author megkumin
  *
  */
-public class Relationship
+public class Relationship implements Comparable<Relationship>
 {
 
     protected String   type;
@@ -38,6 +38,14 @@ public class Relationship
         this.className = className;
         this.columnName = columnName;
         this.relationshipName = relationshipName;
+    }
+
+    /**
+     * @param type the type to set
+     */
+    public void setType(String type)
+    {
+        this.type = type;
     }
 
     /**
@@ -198,6 +206,14 @@ public class Relationship
     public void setNameDesc(LocalizedStrIFace nameDesc)
     {
         this.nameDesc = nameDesc;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(Relationship o)
+    {
+        return relationshipName.compareTo(o.relationshipName);
     }
     
 }

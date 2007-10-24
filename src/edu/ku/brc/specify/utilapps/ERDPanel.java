@@ -19,6 +19,7 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.Arc2D;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -47,10 +48,10 @@ class ERDPanel extends JPanel
     protected int     colorInx     = 0;
     protected boolean doDebugBoxes = false;
 
-    protected  TableTracker tableTracker;
+    protected TableTracker tableTracker;
     
-    protected  Vector<ERDTable>            tables   = new Vector<ERDTable>();
-    protected  Hashtable<String, ERDTable> tblHash  = new Hashtable<String, ERDTable>();
+    protected Vector<ERDTable>             tables   = new Vector<ERDTable>();
+    protected Hashtable<String, ERDTable>  tblHash  = new Hashtable<String, ERDTable>();
     protected Hashtable<ERDTable, Boolean> usedHash = new Hashtable<ERDTable, Boolean>();
     
     protected  Vector<DBRelationshipInfo> orderedList;
@@ -70,7 +71,8 @@ class ERDPanel extends JPanel
     
     protected Color     mainColor  = new Color(239, 251, 214);
     protected Color     relColor   = new Color(219, 239, 176);
-    protected Color     lineColor  = new Color(113, 38, 0);
+    protected Color     lineColor1 = new Color(113, 38, 0);
+    protected Color     lineColor2 = Color.BLACK;//(179, 60, 0);
     
     protected ERDTable  root = null;
     protected Dimension preferredSize = null;
@@ -177,7 +179,23 @@ class ERDPanel extends JPanel
             mainTable = table;
             table.setBackground(mainColor);
             orderedList = new Vector<DBRelationshipInfo>(mainTable.getTable().getRelationships());
-            Collections.sort(orderedList);
+            //Collections.sort(orderedList);
+            Collections.sort(orderedList, new Comparator<DBRelationshipInfo>() {
+                public int compare(DBRelationshipInfo o1, DBRelationshipInfo o2)
+                {
+                    String name1 = ((DBRelationshipInfo)o1).getClassName();
+                    if (name1.startsWith("Sp"))
+                    {
+                        name1 = name1.substring(2, name1.length());
+                    }
+                    String name2 = ((DBRelationshipInfo)o2).getClassName();
+                    if (name2.startsWith("Sp"))
+                    {
+                        name2 = name2.substring(2, name2.length());
+                    }
+                    return name1.compareTo(name2);
+                }
+            });
             
         } else
         {
@@ -214,10 +232,12 @@ class ERDPanel extends JPanel
         
         for (DBRelationshipInfo t : orderedList)
         {
+            System.out.println(t.getName()+"  "+t.getClassName());
+            
             ERDTable table = tblHash.get(t.getClassName());
             if (table != null)
             {
-                if (table != mainTable && !relTables.contains(table))// && !table.getTable().getClassName().toLowerCase().endsWith("iface"))
+                if (table != mainTable && !relTables.contains(table))
                 {
                     relTables.add(table);
                     rightPB.add(table, cc.xy(1, (relTables.size()*2)-1));
@@ -243,7 +263,7 @@ class ERDPanel extends JPanel
             Rectangle kr = k.getBounds();
             int kx = kr.x + ((kr.width-20) / 2);
             int ky = kr.y;
-            g.setColor(lineColor);
+            g.setColor(lineColor1);
             g.drawLine(x, y, kx, ky-1);
             //System.out.println(x+" "+y+" "+kx+" "+ky+" ");
             drawTreeLines(k, g);
@@ -269,7 +289,7 @@ class ERDPanel extends JPanel
         {
             Graphics2D g2d = (Graphics2D)g;
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
-            g.setColor(lineColor);
+            g.setColor(lineColor1);
             g2d.setStroke(new BasicStroke(2));
             drawTreeLines(root, g);
             return;
@@ -325,6 +345,7 @@ class ERDPanel extends JPanel
             Integer belowGap = null;
             int xPosAbove = 0;
             int xPosBelow = 0;
+            int cnt       = 1;
             for (DBRelationshipInfo rel : orderedList)
             {
                 String rName = rel.getClassName();
@@ -371,7 +392,7 @@ class ERDPanel extends JPanel
                 
                 Graphics2D g2d = (Graphics2D)g;
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
-                g.setColor(lineColor);
+                g.setColor(cnt % 2 == 0 ? lineColor2 : lineColor1);
                 g2d.setStroke(new BasicStroke(2));
                 
                 int pos;
@@ -409,7 +430,7 @@ class ERDPanel extends JPanel
                             Arc2D.OPEN));
                 }
 
-                g.drawLine(x+1, y, x+pos-1, y);
+                g.drawLine(x+2, y, x+pos-1, y);
                 //g.drawString(ends[0], x+2,y+(fm.getAscent()/2));
                 
                 int ey = dy + (dy < y ? 1 : -1);
@@ -418,6 +439,7 @@ class ERDPanel extends JPanel
                 g.drawLine(x+pos, dy, dx-1, dy);
                 
                 //g.drawString(ends[1], dx-fm.stringWidth(ends[1])-2, dy+(fm.getAscent()/2));
+                cnt++;
             }
         }
         

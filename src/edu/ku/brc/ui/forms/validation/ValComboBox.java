@@ -28,6 +28,7 @@ import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -85,7 +86,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
      */
     public ValComboBox(boolean editable)
     {
-        comboBox = new JComboBox();
+        comboBox = new JComboBox(new DefaultComboBoxModel());
         init(editable);
     }
 

@@ -78,7 +78,7 @@ public class FieldNotebookPageAttachment extends DataModelObjBase implements Obj
     }
 
     @Lob
-    @Column(name = "Remarks", length = 65535)
+    @Column(name = "Remarks", length = 8192)
     public String getRemarks()
     {
         return remarks;

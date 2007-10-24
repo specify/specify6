@@ -446,7 +446,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
      * @return the XML string
      */
     @Lob
-    @Column(name="BioGeomancerResults", length=65535)
+    @Column(name="BioGeomancerResults", length=8192)
     public String getBioGeomancerResults()
     {
         return bioGeomancerResults;

@@ -145,7 +145,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
         add(multiView, BorderLayout.NORTH);
         contentPanel = new JPanel(new NavBoxLayoutManager(0,2));
         
-        if (parentWin instanceof JDialog)
+        if (parentWin != null && parentWin instanceof JDialog)
         {
             ((JDialog)parentWin).getRootPane().setDefaultButton(okBtn);
         }

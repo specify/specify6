@@ -54,6 +54,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     private static final Logger log = Logger.getLogger(SchemaLocalizerXMLHelper.class);
     
     protected static String    fileName[]   = {"schema_localization.xml", "wbschema_localization.xml"};
+    protected static boolean   doFixNames = true;
     
     protected static LocalizableStrFactory                 localizableStrFactory;
     protected Byte                                         schemaType;
@@ -69,6 +70,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     protected Hashtable<LocalizableJListItem, Vector<LocalizableJListItem>> itemJListItemsHash = new Hashtable<LocalizableJListItem, Vector<LocalizableJListItem>>();
     
     protected boolean                                      changesMadeDuringStartup = false;
+    
     
     // Used for Caching the lists
     protected Vector<LocalizableStrIFace> namesList = new Vector<LocalizableStrIFace>();
@@ -244,17 +246,30 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                             changesBuffer.append("<td align=\"center\">"+ti.getName()+"</td><td align=\"center\">");
                             changesBuffer.append(fi.getName());
                             changesBuffer.append("</td></tr>");
-                        } else
-                        {
-                            /*String name = UIHelper.makeNamePretty(fi.getDataClass().getSimpleName());
-                            for (SpLocaleItemStr str : item.getNames())
-                            {
-                                if (name.equals(str.getText()))
-                                {
-                                    str.setText(UIHelper.makeNamePretty(fi.getName()));
-                                }
-                            }*/
                             
+                        } else if (doFixNames)
+                        {
+                            Class<?> cls = fi.getDataClass();
+                            if (cls != null)
+                            {
+                                String name = UIHelper.makeNamePretty(fi.getDataClass().getSimpleName());
+                                for (SpLocaleItemStr str : item.getNames())
+                                {
+                                    if (name.equals(str.getText()))
+                                    {
+                                        str.setText(UIHelper.makeNamePretty(fi.getName()));
+                                        
+                                        changesMadeDuringStartup = true;
+                                        changesBuffer.append("<tr><td align=\"center\">Fixed Name</td>");
+                                        changesBuffer.append("<td align=\"center\">"+ti.getName()+"</td><td align=\"center\">");
+                                        changesBuffer.append(fi.getName());
+                                        changesBuffer.append("</td></tr>");
+                                    }
+                                }
+                            } else
+                            {
+                                log.error("Data Class is null for field["+fi.getColumn()+"]");
+                            }
                         }
                     }
                     
@@ -272,14 +287,32 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                             nameStr.setText(UIHelper.makeNamePretty(ri.getName()));
                             nameStr.setLanguage(lang);
                             item.addName(nameStr);
+                            
                             log.info("For Table["+ti.getName()+"] Adding Rel ["+ri.getName()+"]");
                             changesMadeDuringStartup = true;
                             changesBuffer.append("<tr><td align=\"center\">Added</td>");
                             changesBuffer.append("<td align=\"center\">"+ti.getName()+"</td><td align=\"center\">");
                             changesBuffer.append(ri.getName());
                             changesBuffer.append("</td></tr>");
+                            
+                        } else 
+                        {
+                            if (item.getNames().size() == 0)
+                            {
+                                SpLocaleItemStr nameStr = new SpLocaleItemStr();
+                                nameStr.initialize();
+                                nameStr.setText(UIHelper.makeNamePretty(ri.getName()));
+                                nameStr.setLanguage(lang);
+                                item.addName(nameStr);
+                                
+                                changesMadeDuringStartup = true;
+                                changesBuffer.append("<tr><td align=\"center\">Added</td>");
+                                changesBuffer.append("<td align=\"center\">"+ti.getName()+"</td><td align=\"center\">");
+                                changesBuffer.append(ri.getName());
+                                changesBuffer.append("</td></tr>");
+                            }
                         }
-                    }
+                    } 
                 }
             }
             
@@ -354,7 +387,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     
     protected void escapeForXML()
     {
-        Vector<LocalizableContainerIFace> containers = new Vector<LocalizableContainerIFace>();
+        //Vector<LocalizableContainerIFace> containers = new Vector<LocalizableContainerIFace>();
         
         for (SpLocaleContainer ctr : tables)
         {

@@ -571,9 +571,9 @@ public class BuildSampleDatabase
         
         startTx();
         
-        DBTableIdMgr schema = new DBTableIdMgr(false);
-        schema.initialize(new File(XMLHelper.getConfigDirPath("specify_workbench_datamodel.xml")));
-        loadSchemaLocalization(collectionType, SpLocaleContainer.WORKBENCH_SCHEMA, schema);
+        //DBTableIdMgr schema = new DBTableIdMgr(false);
+        //schema.initialize(new File(XMLHelper.getConfigDirPath("specify_datamodel.xml")));
+        //loadSchemaLocalization(collectionType, SpLocaleContainer, schema);
         
         SpecifyUser.setCurrentUser(user);
         user.setAgent(userAgent);

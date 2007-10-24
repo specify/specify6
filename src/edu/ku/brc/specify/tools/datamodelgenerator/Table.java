@@ -183,6 +183,8 @@ public class Table implements Comparable<Table>
      */
     public Collection<Field> getFields()
     {
+        Collections.sort(fields);
+        
         return fields;
     }
 
@@ -202,6 +204,7 @@ public class Table implements Comparable<Table>
      */
     public Collection<Relationship> getRelationships()
     {
+        Collections.sort(relationships);
         return relationships;
     }
 

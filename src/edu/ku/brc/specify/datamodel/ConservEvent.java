@@ -148,7 +148,7 @@ public class ConservEvent extends DataModelObjBase implements AttachmentOwnerIFa
      *
      */
     @Lob
-    @Column(name = "ConditionReport", unique = false, nullable = true, insertable = true, updatable = true, length = 65535)
+    @Column(name = "ConditionReport", unique = false, nullable = true, insertable = true, updatable = true, length = 8192)
     public String getConditionReport()
     {
         return this.conditionReport;
@@ -163,7 +163,7 @@ public class ConservEvent extends DataModelObjBase implements AttachmentOwnerIFa
      *
      */
     @Lob
-    @Column(name = "AdvTestingExam", unique = false, nullable = true, insertable = true, updatable = true, length = 65535)
+    @Column(name = "AdvTestingExam", unique = false, nullable = true, insertable = true, updatable = true, length = 8192)
     public String getAdvTestingExam()
     {
         return this.advTestingExam;
@@ -178,7 +178,7 @@ public class ConservEvent extends DataModelObjBase implements AttachmentOwnerIFa
      *
      */
     @Lob
-    @Column(name = "AdvTestingExamResults", unique = false, nullable = true, insertable = true, updatable = true, length = 65535)
+    @Column(name = "AdvTestingExamResults", unique = false, nullable = true, insertable = true, updatable = true, length = 8192)
     public String getAdvTestingExamResults()
     {
         return this.advTestingExamResults;
@@ -193,7 +193,7 @@ public class ConservEvent extends DataModelObjBase implements AttachmentOwnerIFa
      *
      */
     @Lob
-    @Column(name = "TreatmentReport", unique = false, nullable = true, insertable = true, updatable = true, length = 65535)
+    @Column(name = "TreatmentReport", unique = false, nullable = true, insertable = true, updatable = true, length = 8192)
     public String getTreatmentReport()
     {
         return this.treatmentReport;
@@ -223,7 +223,7 @@ public class ConservEvent extends DataModelObjBase implements AttachmentOwnerIFa
      *
      */
     @Lob
-    @Column(name = "PhotoDocs", unique = false, nullable = true, insertable = true, updatable = true, length = 65535)
+    @Column(name = "PhotoDocs", unique = false, nullable = true, insertable = true, updatable = true, length = 8192)
     public String getPhotoDocs()
     {
         return this.photoDocs;

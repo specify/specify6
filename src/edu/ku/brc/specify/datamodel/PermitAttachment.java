@@ -116,7 +116,7 @@ public class PermitAttachment extends DataModelObjBase implements ObjectAttachme
     }
 
     @Lob
-    @Column(name = "Remarks")
+    @Column(name = "Remarks", length = 4096)
     public String getRemarks()
     {
         return remarks;

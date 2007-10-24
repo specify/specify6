@@ -45,7 +45,9 @@ import org.hibernate.annotations.Index;
 
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.dbsupport.AttributeIFace;
+import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
@@ -85,8 +87,11 @@ public class DatamodelGenerator
     
     protected Hashtable<String, String> abbrvHash = new Hashtable<String, String>();
     
-    protected boolean      includeDesc = false;
-    protected boolean      doGerman    = false;
+    protected boolean      includeDesc       = false;
+    protected boolean      doRelsToZeroToOne = includeDesc;
+    protected boolean      doGerman          = false;
+    protected boolean      showDescErrors    = false;
+    protected boolean      showDebug         = false;
     
 
     /**
@@ -129,7 +134,7 @@ public class DatamodelGenerator
                 return desc;
             } else
             {
-                log.error("No Desc for Table["+tableName+"]");
+                if (showDescErrors) log.error("No Desc for Table["+tableName+"]");
             }
         } else
         {
@@ -184,7 +189,7 @@ public class DatamodelGenerator
                     return desc;
                 } else
                 {
-                    log.error("No Desc for ["+tableName+"] Field["+fieldName+"]");
+                    if (showDescErrors) log.error("No Desc for ["+tableName+"] Field["+fieldName+"]");
                 }
             } else
             {
@@ -361,13 +366,18 @@ public class DatamodelGenerator
         String retType;
         String len;
         
-        if (isLob)
+        if (isLob)  
         {
             retType = "text";
-            len     = "";
+            len = retType.equals("java.lang.String") ? Integer.toString(col.length()) : (col.length() != 255 ? Integer.toString(col.length()) : "");
+            
         } else
         {
             retType = isLob ? "text" : getReturnType(method);
+            if (retType.equals("int"))
+            {
+                retType = "java.lang.Integer";
+            }
             len = retType.equals("java.lang.String") ? Integer.toString(col.length()) : (col.length() != 255 ? Integer.toString(col.length()) : "");
         }
         Field field = new Field(getNameFromMethod(method), retType, col.name(), len);
@@ -1146,10 +1156,10 @@ public class DatamodelGenerator
             {
                 
                 
-                log.debug("Reading    " + file.getAbsolutePath());
+                if (showDebug) log.debug("Reading    " + file.getAbsolutePath());
                 List<?> lines = FileUtils.readLines(file);
                 count++;
-                log.debug("Processing " + count + " of " + files.length + "  " + file.getAbsolutePath());
+                if (showDebug) log.debug("Processing " + count + " of " + files.length + "  " + file.getAbsolutePath());
 
                 String  className   = null;
                 
@@ -1224,14 +1234,45 @@ public class DatamodelGenerator
         }
         return columnName;
     }
+    
+    protected void setRelToZeroToOne(Collection<Relationship> rels, final String name)
+    {
+        for (Relationship rel : rels)
+        {
+            if (rel.getRelationshipName().equalsIgnoreCase(name))
+            {
+                rel.setType("zero-to-one");
+            }
+        }
+    }
 
+    protected void adjustRelsForZeroToOne(final Table tbl)
+    {
+        System.out.println(tbl.getName());
+        if (StringUtils.contains(tbl.getName().toLowerCase(), "collectionobject"))
+        {
+            setRelToZeroToOne(tbl.getRelationships(), "paleoContext");
+        }
+        if (StringUtils.contains(tbl.getName().toLowerCase(), "locality"))
+        {
+            setRelToZeroToOne(tbl.getRelationships(), "localityDetails");
+            setRelToZeroToOne(tbl.getRelationships(), "geoCoordDetails");
+        }
+    }
     /**
-     * Takes a list and prints out datamodel file using betwixt.
+     * Takes a list and prints out data model file using betwixt.
      * @param classesList the class list
      */
     public boolean writeTree(final List<?> classesList)
     {
-
+        if (doRelsToZeroToOne)
+        {
+            for (Object obj : classesList)
+            {
+                adjustRelsForZeroToOne((Table)obj);
+            }
+        }
+        
         try
         {
             if (classesList == null)
@@ -1343,6 +1384,7 @@ public class DatamodelGenerator
             }
             fileInputStream.close();
             return true;
+            
         } catch (Exception ex)
         {
             ex.printStackTrace();

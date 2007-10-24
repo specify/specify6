@@ -144,7 +144,7 @@ public class Institution extends DataModelObjBase implements java.io.Serializabl
      * @return the copyright
      */
     @Lob
-    @Column(name = "Copyright", unique = false, nullable = true, insertable = true, updatable = true, length = 16000)
+    @Column(name = "Copyright", unique = false, nullable = true, insertable = true, updatable = true, length = 8192)
     public String getCopyright()
     {
         return copyright;
@@ -154,7 +154,7 @@ public class Institution extends DataModelObjBase implements java.io.Serializabl
      * @return the disclaimer
      */
     @Lob
-    @Column(name = "Disclaimer", unique = false, nullable = true, insertable = true, updatable = true, length = 16000)
+    @Column(name = "Disclaimer", unique = false, nullable = true, insertable = true, updatable = true, length = 8192)
     public String getDisclaimer()
     {
         return disclaimer;
@@ -174,7 +174,7 @@ public class Institution extends DataModelObjBase implements java.io.Serializabl
      * @return the ipr
      */
     @Lob
-    @Column(name = "Ipr", unique = false, nullable = true, insertable = true, updatable = true, length = 16000)
+    @Column(name = "Ipr", unique = false, nullable = true, insertable = true, updatable = true, length = 8192)
     public String getIpr()
     {
         return ipr;
@@ -193,7 +193,7 @@ public class Institution extends DataModelObjBase implements java.io.Serializabl
      * @return the remarks
      */
     @Lob
-    @Column(name = "Remarks", unique = false, nullable = true, insertable = true, updatable = true, length=16000)
+    @Column(name = "Remarks", unique = false, nullable = true, insertable = true, updatable = true, length=8192)
     public String getRemarks()
     {
         return remarks;
@@ -214,7 +214,7 @@ public class Institution extends DataModelObjBase implements java.io.Serializabl
      * @return the termsOfUse
      */
     @Lob
-    @Column(name = "TermsOfUse", unique = false, nullable = true, insertable = true, updatable = true, length=16000)
+    @Column(name = "TermsOfUse", unique = false, nullable = true, insertable = true, updatable = true, length=8192)
     public String getTermsOfUse()
     {
         return termsOfUse;

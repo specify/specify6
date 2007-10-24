@@ -20,6 +20,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -246,7 +247,23 @@ public class ERDTable extends JPanel implements Comparable<ERDTable>
             yy += 2;
             
             Vector<DBRelationshipInfo> orderedList = new Vector<DBRelationshipInfo>(table.getRelationships());
-            Collections.sort(orderedList);
+            Collections.sort(orderedList, new Comparator<DBRelationshipInfo>() {
+                public int compare(DBRelationshipInfo o1, DBRelationshipInfo o2)
+                {
+                    String name1 = ((DBRelationshipInfo)o1).getClassName();
+                    if (name1.startsWith("Sp"))
+                    {
+                        name1 = name1.substring(2, name1.length());
+                    }
+                    String name2 = ((DBRelationshipInfo)o2).getClassName();
+                    if (name2.startsWith("Sp"))
+                    {
+                        name2 = name2.substring(2, name2.length());
+                    }
+                    return name1.compareTo(name2);
+                }
+            });
+            
             for (DBRelationshipInfo r : orderedList)
             {
                 //System.out.println(r.getName()+" "+r.getType());

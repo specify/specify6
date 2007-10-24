@@ -103,8 +103,8 @@ public class Locality extends CollectionMember implements AttachmentOwnerIFace<L
     protected Set<CollectingEvent>    collectingEvents;
     protected Set<LocalityAttachment> localityAttachments;
     protected Set<LocalityNameAlias>  localityNameAliass;
-    protected Set<LocalityDetail>     localityDetail;
-    protected Set<GeoCoordDetail>     geoCoordDetail;
+    protected Set<LocalityDetail>     localityDetails;
+    protected Set<GeoCoordDetail>     geoCoordDetails;
 
 
     // Constructors
@@ -159,8 +159,8 @@ public class Locality extends CollectionMember implements AttachmentOwnerIFace<L
         collectingEvents    = new HashSet<CollectingEvent>();
         localityNameAliass  = new HashSet<LocalityNameAlias>();
         localityAttachments = new HashSet<LocalityAttachment>();
-        localityDetail      = new HashSet<LocalityDetail>();
-        geoCoordDetail      = new HashSet<GeoCoordDetail>();
+        localityDetails     = new HashSet<LocalityDetail>();
+        geoCoordDetails     = new HashSet<GeoCoordDetail>();
     }
     // End Initializer
 
@@ -502,7 +502,7 @@ public class Locality extends CollectionMember implements AttachmentOwnerIFace<L
      * 
      */
     @Lob
-    @Column(name = "Remarks", unique = false, nullable = true, updatable = true, insertable = true)
+    @Column(name = "Remarks", length = 4096)
     public String getRemarks()
     {
         return this.remarks;
@@ -691,17 +691,17 @@ public class Locality extends CollectionMember implements AttachmentOwnerIFace<L
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "locality")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<LocalityDetail> getLocalityDetail()
+    public Set<LocalityDetail> getLocalityDetails()
     {
-        return localityDetail;
+        return localityDetails;
     }
 
     /**
      * @param localityDetail the localityDetail to set
      */
-    public void setLocalityDetail(Set<LocalityDetail> localityDetail)
+    public void setLocalityDetails(Set<LocalityDetail> localityDetails)
     {
-        this.localityDetail = localityDetail;
+        this.localityDetails = localityDetails;
     }
 
     /**
@@ -709,17 +709,17 @@ public class Locality extends CollectionMember implements AttachmentOwnerIFace<L
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "locality")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<GeoCoordDetail> getGeoCoordDetail()
+    public Set<GeoCoordDetail> getGeoCoordDetails()
     {
-        return geoCoordDetail;
+        return geoCoordDetails;
     }
 
     /**
      * @param geoCoordDetail the geoCoordDetail to set
      */
-    public void setGeoCoordDetail(Set<GeoCoordDetail> geoCoordDetail)
+    public void setGeoCoordDetails(Set<GeoCoordDetail> geoCoordDetails)
     {
-        this.geoCoordDetail = geoCoordDetail;
+        this.geoCoordDetails = geoCoordDetails;
     }
 
     /*

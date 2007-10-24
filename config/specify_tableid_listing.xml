@@ -29,9 +29,7 @@
         <table name="edu.ku.brc.specify.datamodel.Address" abbrev="ad" id="8" workbench="false" searchable="true">
             <display objtitle="Address" view="Address"/>
         </table>
-        <table name="edu.ku.brc.specify.datamodel.AddressOfRecord" abbrev="aor" id="125" workbench="false" searchable="true">
-            <display objtitle="Address" view="Address"/>
-        </table>
+        <table name="edu.ku.brc.specify.datamodel.AddressOfRecord" abbrev="aor" id="125" workbench="false" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.Agent" abbrev="ag" id="5" workbench="true" searchable="true">
             <display objtitle="Agent" view="Agent" dataobjformatter="Agent" searchdlg="AgentSearch" newobjdlg="AgentDisplay"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.AgentBusRules</businessrule>

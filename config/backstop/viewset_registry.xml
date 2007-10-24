@@ -5,5 +5,6 @@
     <file type="system" name="Search"      title="Search"       file="search.views.xml"/>
     
     <file type="system" name="Global"      title="Global"       file="global.views.xml"/>
+    <file type="system" name="Editor"      title="Form Editor"  file="editorpanel.views.xml"/>
     
 </files>

@@ -227,7 +227,7 @@
 	            </params>
             </subcontrol>
             
-            <subcontrol type="comboxbox" dsp="dsptextfield">
+            <subcontrol type="combobox" dsp="dsptextfield">
                 <desc>Displays a combobox with a list of values from a picklist or from the initialize string. 
                     This is an autocomplete combobox.</desc>
                 <attrs>
@@ -238,7 +238,7 @@
 	            </attrs>
 	            <params>
 	                <param name="data" type="list" required="false" default="">
-	                    <desc>a comma separated list of values that are used to fill the combobox. This is referred to as a "quick list". 
+	                    <desc>A comma separated list of values that are used to fill the combobox. This is referred to as a "quick list". 
 	                        It works almost exactly like a read only Pick List. It is ideal for situations where there is a predefined set of values 
 	                        that string field can have. Note: If the database contains a value that is not in the "quick list" the combobox is 
 	                        set to not have a value.</desc>

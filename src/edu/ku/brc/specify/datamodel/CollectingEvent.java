@@ -342,7 +342,7 @@ public class CollectingEvent extends CollectionMember implements AttachmentOwner
      *      * Free text to record information that does not conform to structured fields, or to explain data recorded in those fields, particularly problematic interpretations of data given by collector(s).
      */
     @Lob
-    @Column(name="Remarks")
+    @Column(name = "Remarks", length = 4096)
     public String getRemarks() {
         return this.remarks;
     }

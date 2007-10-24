@@ -1190,7 +1190,7 @@ public class ViewFactory
                                         
                                     } catch (Exception ex)
                                     {
-                                        ex.printStackTrace();
+                                        log.error("Couldn't find field ["+cellSubView.getName()+"] in class ["+parentView.getClassName()+"]");
                                     }
                                 } else
                                 {
@@ -1207,7 +1207,7 @@ public class ViewFactory
                                         }
                                     } catch (Exception ex)
                                     {
-                                        ex.printStackTrace();
+                                        log.error("Couldn't find field ["+cellSubView.getName()+"] in class ["+parentView.getClassName()+"]");
                                     }
                                 }
 

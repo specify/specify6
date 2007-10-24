@@ -154,7 +154,7 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
      *
      */
     @Lob
-    @Column(name = "Description", unique = false, nullable = true, insertable = true, updatable = true, length = 65535)
+    @Column(name = "Description", unique = false, nullable = true, insertable = true, updatable = true, length = 8192)
     public String getDescription()
     {
         return this.description;
@@ -169,7 +169,7 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
      *
      */
     @Lob
-    @Column(name = "BackgroundInfo", unique = false, nullable = true, insertable = true, updatable = true, length = 65535)
+    @Column(name = "BackgroundInfo", unique = false, nullable = true, insertable = true, updatable = true, length = 8192)
     public String getBackgroundInfo()
     {
         return this.backgroundInfo;
@@ -240,7 +240,7 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
      *
      */
     @Lob
-    @Column(name = "omposition", unique = false, nullable = true, insertable = true, updatable = true, length = 65535)
+    @Column(name = "omposition", unique = false, nullable = true, insertable = true, updatable = true, length = 8192)
     public String getComposition()
     {
         return this.composition;
@@ -255,7 +255,7 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
      *
      */
     @Lob
-    @Column(name = "Remarks", unique = false, nullable = true, insertable = true, updatable = true, length = 65535)
+    @Column(name = "Remarks", unique = false, nullable = true, insertable = true, updatable = true, length = 8192)
     public String getRemarks()
     {
         return this.remarks;
@@ -270,7 +270,7 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
      *
      */
     @Lob
-    @Column(name = "Source", unique = false, nullable = true, insertable = true, updatable = true, length = 65535)
+    @Column(name = "Source", unique = false, nullable = true, insertable = true, updatable = true, length = 8192)
     public String getSource()
     {
         return this.source;
@@ -285,7 +285,7 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
      *
      */
     @Temporal(TemporalType.DATE)
-    @Column(name = "CuratorApprovalDate", unique = false, nullable = true, insertable = true, updatable = true, length = 65535)
+    @Column(name = "CuratorApprovalDate", unique = false, nullable = true, insertable = true, updatable = true, length = 8192)
     public Calendar getCuratorApprovalDate()
     {
         return this.curatorApprovalDate;

@@ -116,7 +116,7 @@ public class TaxonAttachment extends DataModelObjBase implements ObjectAttachmen
     }
 
     @Lob
-    @Column(name = "Remarks")
+    @Column(name = "Remarks", length = 4096)
     public String getRemarks()
     {
         return remarks;

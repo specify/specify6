@@ -165,7 +165,7 @@ public class Division extends DataModelObjBase implements java.io.Serializable
      * @return the remarks
      */
     @Lob
-    @Column(name = "Remarks", unique = false, nullable = true, insertable = true, updatable = true, length=16000)
+    @Column(name = "Remarks", length = 8192)
     public String getRemarks()
     {
         return remarks;

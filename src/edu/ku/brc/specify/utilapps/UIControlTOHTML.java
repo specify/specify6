@@ -40,7 +40,7 @@ public class UIControlTOHTML
                                     FileNotFoundException, 
                                     IOException
     {
-        boolean doUIControls = true;
+        boolean doUIControls = false;
         boolean doGerman     = false;
         String  outFileName  = "UIControls.html";
         

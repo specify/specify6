@@ -296,7 +296,7 @@
             resourcelabels="false">
             <desc><![CDATA[]]></desc>
             <altviews>
-                <altview name="ViewDef Edit" viewdef="ExcelExportInfo" label="Edit" mode="edit" validated="true"/>
+                <altview name="ExcelExportInfo Edit" viewdef="ExcelExportInfo" label="Edit" mode="edit" validated="true"/>
             </altviews>
         </view>
         

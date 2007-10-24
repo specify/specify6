@@ -25,7 +25,6 @@ import java.io.FileWriter;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -98,12 +97,6 @@ public class ViewLoader
         String   desc              = getDesc(element);
         String   businessRules     = getAttr(element, "busrules", null);
         
-        if (name.equals("CollectionObject"))
-        {
-            int x= 0;
-            x = 0;
-        }
-
         View view = new View(instance.viewSetName, name, objTitle, className, businessRules != null ? businessRules.trim() : null, desc, useResourceLabels, resLabels);
 
         Element altviews = (Element)element.selectSingleNode("altviews");

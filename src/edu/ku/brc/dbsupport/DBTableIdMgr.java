@@ -479,7 +479,7 @@ public class DBTableIdMgr
 	}
     
     /**
-     * Converts a String to an Enum for Realtionship Type
+     * Converts a String to an Enum for Relationship Type
      * @param relTypeStr the string
      * @return the relationship type
      */
@@ -500,6 +500,10 @@ public class DBTableIdMgr
         } else if (relTypeStr.equals("one-to-one"))
         {
             return DBRelationshipInfo.RelationshipType.OneToOne;
+            
+        } else if (relTypeStr.equals("zero-to-one"))
+        {
+            return DBRelationshipInfo.RelationshipType.ZeroToOne;
         }
         return null;
     }

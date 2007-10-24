@@ -31,7 +31,7 @@ public class DBRelationshipInfo extends DBInfoBase
 {
     protected static final Logger log = Logger.getLogger(DBRelationshipInfo.class);
     
-    public enum RelationshipType { OneToOne, OneToMany, ManyToOne, ManyToMany}
+    public enum RelationshipType { OneToOne, OneToMany, ManyToOne, ManyToMany, ZeroToOne}
     
     protected RelationshipType type;
     protected String           className;
@@ -56,6 +56,14 @@ public class DBRelationshipInfo extends DBInfoBase
         this.otherSide = otherSide;
         this.isRequired = isRequired;
         this.isUpdatable = isUpdatable;
+    }
+    
+    /**
+     * @param type the type to set
+     */
+    public void setType(RelationshipType type)
+    {
+        this.type = type;
     }
 
     public String getClassName()
