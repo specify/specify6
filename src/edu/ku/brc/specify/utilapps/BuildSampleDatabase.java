@@ -35,6 +35,7 @@ import static edu.ku.brc.specify.utilapps.DataBuilder.createGeologicTimePeriodTr
 import static edu.ku.brc.specify.utilapps.DataBuilder.createGeologicTimePeriodTreeDefItem;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createInstitution;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createJournal;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createLithoStratTreeDef;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createLoan;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createLoanAgent;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createLoanPreparation;
@@ -150,6 +151,7 @@ import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem;
 import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.Journal;
+import edu.ku.brc.specify.datamodel.LithoStrat;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDefItem;
 import edu.ku.brc.specify.datamodel.Loan;
@@ -242,82 +244,6 @@ public class BuildSampleDatabase
         return frame;
     }
     
-    @SuppressWarnings("unchecked")
-    public static LithoStratTreeDef createStandardLithoStratDefinitionAndItems()
-    {
-        LithoStratTreeDef def = new LithoStratTreeDef();
-        def.initialize();
-        def.setName("Default LithoStrat Definition");
-        def.setRemarks("A simple super, group, formation, member, bed Litho Stratigraphy tree");
-        def.setFullNameDirection(TreeDefIface.REVERSE);
-
-        LithoStratTreeDefItem planet = new LithoStratTreeDefItem();
-        planet.initialize();
-        planet.setName("Surface");
-        planet.setRankId(0);
-        planet.setIsEnforced(true);
-        planet.setFullNameSeparator(", ");
-
-        LithoStratTreeDefItem superLitho = new LithoStratTreeDefItem();
-        superLitho.initialize();
-        superLitho.setName("SuperLitho");
-        superLitho.setRankId(100);
-        superLitho.setFullNameSeparator(", ");
-
-        LithoStratTreeDefItem group = new LithoStratTreeDefItem();
-        group.initialize();
-        group.setName("Group");
-        group.setRankId(200);
-        group.setIsInFullName(true);
-        group.setFullNameSeparator(", ");
-
-        LithoStratTreeDefItem formation = new LithoStratTreeDefItem();
-        formation.initialize();
-        formation.setName("Formation");
-        formation.setRankId(300);
-        formation.setIsInFullName(true);
-        formation.setFullNameSeparator(", ");
-
-        LithoStratTreeDefItem member = new LithoStratTreeDefItem();
-        member.initialize();
-        member.setName("Member");
-        member.setRankId(400);
-        member.setIsInFullName(true);
-        member.setFullNameSeparator(", ");
-
-        LithoStratTreeDefItem bed = new LithoStratTreeDefItem();
-        bed.initialize();
-        bed.setName("Bed");
-        bed.setRankId(500);
-        bed.setIsInFullName(true);
-        bed.setFullNameSeparator(", ");
-
-        // setup parents
-        bed.setParent(member);
-        member.setParent(formation);
-        formation.setParent(group);
-        group.setParent(superLitho);
-        superLitho.setParent(planet);
-
-        // set the tree def for each tree def item
-        planet.setTreeDef(def);
-        superLitho.setTreeDef(def);
-        group.setTreeDef(def);
-        formation.setTreeDef(def);
-        member.setTreeDef(def);
-        bed.setTreeDef(def);
-        
-        Set defItems = def.getTreeDefItems();
-        defItems.add(planet);
-        defItems.add(superLitho);
-        defItems.add(group);
-        defItems.add(formation);
-        defItems.add(member);
-        defItems.add(bed);
-        
-        return def;
-    }
-    
     protected void standardQueries(final Vector<Object> dataObjects)
     {
         //Byte greaterThan = SpQueryField.OperatorType.GREATERTHAN.getOrdinal();
@@ -355,9 +281,14 @@ public class BuildSampleDatabase
         UserGroup         userGroup         = createUserGroup(disciplineName);
         SpecifyUser       user              = createSpecifyUser(username, email, (short) 0, userGroup, userType);
         DataType          dataType          = createDataType(disciplineName);
-        TaxonTreeDef      taxonTreeDef      = createTaxonTreeDef("Sample Taxon Tree Def");
-        LithoStratTreeDef lithoStratTreeDef = createStandardLithoStratDefinitionAndItems();
-        
+
+        // create tree defs (later we will make the def items and nodes)
+        TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Sample Taxon Tree");
+        GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Sample Geography Tree");
+        GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Sample Geologic Time Period Tree");
+        LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("Sample LithoStrat Tree");
+        LocationTreeDef           locTreeDef        = createLocationTreeDef("Sample Location Tree");
+
         Institution    institution    = createInstitution("Natural History Museum");
         Division       division       = createDivision(institution, "Icthyology");
         CollectionType collectionType = createCollectionType(division, collTypeName, disciplineName, dataType, user, taxonTreeDef, null, null, null, lithoStratTreeDef);
@@ -384,16 +315,22 @@ public class BuildSampleDatabase
         dataObjects.add(taxonTreeDef);
         dataObjects.add(userAgent);
         
-        List<Object> taxa = createSimpleTaxon(collectionType.getTaxonTreeDef());
-        List<Object> geos = createSimpleGeography(collectionType, "Geography");
-        List<Object> locs = createSimpleLocation(collectionType, "Location");
-        List<Object> gtps = createSimpleGeologicTimePeriod(collectionType, "Geologic Time Period");
-
-        dataObjects.addAll(taxa);
-        dataObjects.addAll(geos);
-        dataObjects.addAll(locs);
-        dataObjects.addAll(gtps);
+        ////////////////////////////////
+        // build the tree def items and nodes
+        ////////////////////////////////
+        List<Object> taxa        = createSimpleTaxon(taxonTreeDef);
+        List<Object> geos        = createSimpleGeography(geoTreeDef);
+        List<Object> locs        = createSimpleLocation(locTreeDef);
+        List<Object> gtps        = createSimpleGeologicTimePeriod(gtpTreeDef);
+        List<Object> lithoStrats = createSimpleLithoStrat(lithoStratTreeDef);
         
+        //startTx();
+        persist(taxa);
+        persist(geos);
+        persist(locs);
+        persist(gtps);
+        persist(lithoStrats);
+         
         CatalogNumberingScheme cns = createCatalogNumberingScheme("CatalogNumber", "", true);
         dataObjects.add(cns);
 
@@ -541,18 +478,21 @@ public class BuildSampleDatabase
         DataType         dataType         = createDataType(discipline.getTitle());
         persist(dataType);
         
-        TaxonTreeDef     taxonTreeDef     = createTaxonTreeDef("Sample Taxon Tree Def");
-
-        LithoStratTreeDef lithoStratTreeDef = createStandardLithoStratDefinitionAndItems();
+        // create tree defs (later we will make the def items and nodes)
+        TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Sample Taxon Tree");
+        GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Sample Geography Tree");
+        GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Sample Geologic Time Period Tree");
+        LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("Sample LithoStrat Tree");
+        LocationTreeDef           locTreeDef        = createLocationTreeDef("Sample Location Tree");
         
-        CollectionType collectionType = createCollectionType(division, discipline.getName(), discipline.getTitle(), dataType, user, taxonTreeDef, null, null, null, lithoStratTreeDef);
-        List<Object>   gtps           = createSimpleGeologicTimePeriod(collectionType, "Geologic Time Period");
+        lithoStratTreeDef.setRemarks("A simple super, group, formation, member, bed Litho Stratigraphy tree");
+        
+        CollectionType collectionType = createCollectionType(division, discipline.getName(), discipline.getTitle(), dataType, user, taxonTreeDef, geoTreeDef, gtpTreeDef, locTreeDef, lithoStratTreeDef);
         
         persist(collectionType);
         persist(userAgent);
         
         loadSchemaLocalization(collectionType, SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
-        
         
         CatalogNumberingScheme cns = createCatalogNumberingScheme("CatalogNumber", "", true);
         
@@ -585,11 +525,13 @@ public class BuildSampleDatabase
         frame.setProcess(++createStep);
         
         ////////////////////////////////
-        // build some of the trees
+        // build the tree def items and nodes
         ////////////////////////////////
-        List<Object> taxa = createSimpleTaxon(collectionType.getTaxonTreeDef());
-        List<Object> geos = createSimpleGeography(collectionType, "Geography");
-        List<Object> locs = createSimpleLocation(collectionType, "Location");
+        List<Object> taxa        = createSimpleTaxon(taxonTreeDef);
+        List<Object> geos        = createSimpleGeography(geoTreeDef);
+        List<Object> locs        = createSimpleLocation(locTreeDef);
+        List<Object> gtps        = createSimpleGeologicTimePeriod(gtpTreeDef);
+        List<Object> lithoStrats = createSimpleLithoStrat(lithoStratTreeDef);
         
         //startTx();
         persist(journal);
@@ -597,6 +539,7 @@ public class BuildSampleDatabase
         persist(geos);
         persist(locs);
         persist(gtps);
+        persist(lithoStrats);
         //commitTx();
         
         frame.setProcess(++createStep);
@@ -677,7 +620,7 @@ public class BuildSampleDatabase
         String RECT  = "Rectangle";
         
         log.info("Creating localities");
-        Locality forestStream = createLocality("Unnamed forest stream pond", (Geography)geos.get(13));
+        Locality forestStream = createLocality("Unnamed forest stream pond", (Geography)geos.get(12));
         forestStream.setLatLongType(POINT);
         forestStream.setOriginalLatLongUnit(0);
         forestStream.setLat1text("38.925467 deg N");
@@ -685,7 +628,7 @@ public class BuildSampleDatabase
         forestStream.setLong1text("94.984867 deg W");
         forestStream.setLongitude1(new BigDecimal(-94.984867));
 
-        Locality lake   = createLocality("Deep, dark lake pond", (Geography)geos.get(18));
+        Locality lake   = createLocality("Deep, dark lake pond", (Geography)geos.get(17));
         lake.setLatLongType(RECT);
         lake.setOriginalLatLongUnit(1);
         lake.setLat1text("41.548842 deg N");
@@ -698,7 +641,7 @@ public class BuildSampleDatabase
         lake.setLong2text("100.403180 deg W");
         lake.setLongitude2(new BigDecimal(-100.403180));
         
-        Locality farmpond = createLocality("Farm pond", (Geography)geos.get(22));
+        Locality farmpond = createLocality("Farm pond", (Geography)geos.get(21));
         farmpond.setLatLongType(LINE);
         farmpond.setOriginalLatLongUnit(2);
         farmpond.setLat1text("41.642187 deg N");
@@ -933,22 +876,22 @@ public class BuildSampleDatabase
         longAgo.set(1976, 01, 29, 8, 12, 00);
         Calendar whileBack = Calendar.getInstance(); 
         whileBack.set(2002, 7, 4, 9, 33, 12);
-        determs.add(createDetermination(collObjs.get(0), agents.get(0), (Taxon)taxa.get(11), current, recent));
-        determs.add(createDetermination(collObjs.get(1), agents.get(0), (Taxon)taxa.get(12), current, recent));
-        determs.add(createDetermination(collObjs.get(2), agents.get(0), (Taxon)taxa.get(13), current, recent));
-        determs.add(createDetermination(collObjs.get(3), agents.get(0), (Taxon)taxa.get(14), current, recent));
-        determs.add(createDetermination(collObjs.get(4), agents.get(0), (Taxon)taxa.get(15), current, recent));
-        determs.add(createDetermination(collObjs.get(5), agents.get(0), (Taxon)taxa.get(16), current, recent));
-        determs.add(createDetermination(collObjs.get(6), agents.get(3), (Taxon)taxa.get(17), current, recent));
-        determs.add(createDetermination(collObjs.get(7), agents.get(4), (Taxon)taxa.get(18), current, recent));
+        determs.add(createDetermination(collObjs.get(0), agents.get(0), (Taxon)taxa.get(10), current, recent));
+        determs.add(createDetermination(collObjs.get(1), agents.get(0), (Taxon)taxa.get(11), current, recent));
+        determs.add(createDetermination(collObjs.get(2), agents.get(0), (Taxon)taxa.get(12), current, recent));
+        determs.add(createDetermination(collObjs.get(3), agents.get(0), (Taxon)taxa.get(13), current, recent));
+        determs.add(createDetermination(collObjs.get(4), agents.get(0), (Taxon)taxa.get(14), current, recent));
+        determs.add(createDetermination(collObjs.get(5), agents.get(0), (Taxon)taxa.get(15), current, recent));
+        determs.add(createDetermination(collObjs.get(6), agents.get(3), (Taxon)taxa.get(16), current, recent));
+        determs.add(createDetermination(collObjs.get(7), agents.get(4), (Taxon)taxa.get(17), current, recent));
         
-        determs.add(createDetermination(collObjs.get(0), agents.get(0), (Taxon)taxa.get(11), notCurrent, longAgo));
-        determs.add(createDetermination(collObjs.get(1), agents.get(1), (Taxon)taxa.get(18), notCurrent, whileBack));
-        determs.add(createDetermination(collObjs.get(2), agents.get(1), (Taxon)taxa.get(19), notCurrent, whileBack));
-        determs.add(createDetermination(collObjs.get(3), agents.get(2), (Taxon)taxa.get(20), notCurrent, whileBack));
-        determs.add(createDetermination(collObjs.get(4), agents.get(2), (Taxon)taxa.get(20), notCurrent, whileBack));
-        determs.add(createDetermination(collObjs.get(4), agents.get(3), (Taxon)taxa.get(23), incorrect, longAgo));
-        determs.add(createDetermination(collObjs.get(4), agents.get(4), (Taxon)taxa.get(22), incorrect, longAgo));
+        determs.add(createDetermination(collObjs.get(0), agents.get(0), (Taxon)taxa.get(10), notCurrent, longAgo));
+        determs.add(createDetermination(collObjs.get(1), agents.get(1), (Taxon)taxa.get(17), notCurrent, whileBack));
+        determs.add(createDetermination(collObjs.get(2), agents.get(1), (Taxon)taxa.get(18), notCurrent, whileBack));
+        determs.add(createDetermination(collObjs.get(3), agents.get(2), (Taxon)taxa.get(19), notCurrent, whileBack));
+        determs.add(createDetermination(collObjs.get(4), agents.get(2), (Taxon)taxa.get(19), notCurrent, whileBack));
+        determs.add(createDetermination(collObjs.get(4), agents.get(3), (Taxon)taxa.get(22), incorrect, longAgo));
+        determs.add(createDetermination(collObjs.get(4), agents.get(4), (Taxon)taxa.get(21), incorrect, longAgo));
         determs.get(13).setRemarks("This determination is totally wrong.  What a foolish determination.");
         
         //startTx();
@@ -969,29 +912,29 @@ public class BuildSampleDatabase
 
         List<Preparation> preps = new Vector<Preparation>();
         Calendar prepDate = Calendar.getInstance();
-        preps.add(createPreparation(etoh, agents.get(0), collObjs.get(0), (Location)locs.get(8), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(etoh, agents.get(0), collObjs.get(1), (Location)locs.get(8), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(etoh, agents.get(1), collObjs.get(2), (Location)locs.get(8), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(etoh, agents.get(1), collObjs.get(3), (Location)locs.get(8), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(etoh, agents.get(2), collObjs.get(4), (Location)locs.get(9), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(etoh, agents.get(2), collObjs.get(5), (Location)locs.get(9), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(etoh, agents.get(3), collObjs.get(6), (Location)locs.get(9), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(etoh, agents.get(3), collObjs.get(7), (Location)locs.get(9), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(skel, agents.get(1), collObjs.get(0), (Location)locs.get(12), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(skel, agents.get(1), collObjs.get(1), (Location)locs.get(12), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(skel, agents.get(1), collObjs.get(2), (Location)locs.get(11), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(skel, agents.get(2), collObjs.get(3), (Location)locs.get(10), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(skel, agents.get(3), collObjs.get(4), (Location)locs.get(10), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(skel, agents.get(0), collObjs.get(5), (Location)locs.get(10), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(cas, agents.get(1), collObjs.get(6), (Location)locs.get(10), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(cas, agents.get(1), collObjs.get(7), (Location)locs.get(10), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(cas, agents.get(1), collObjs.get(2), (Location)locs.get(9), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(etoh, agents.get(0), collObjs.get(0), (Location)locs.get(7), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(etoh, agents.get(0), collObjs.get(1), (Location)locs.get(7), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(etoh, agents.get(1), collObjs.get(2), (Location)locs.get(7), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(etoh, agents.get(1), collObjs.get(3), (Location)locs.get(7), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(etoh, agents.get(2), collObjs.get(4), (Location)locs.get(8), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(etoh, agents.get(2), collObjs.get(5), (Location)locs.get(8), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(etoh, agents.get(3), collObjs.get(6), (Location)locs.get(8), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(etoh, agents.get(3), collObjs.get(7), (Location)locs.get(8), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(skel, agents.get(1), collObjs.get(0), (Location)locs.get(11), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(skel, agents.get(1), collObjs.get(1), (Location)locs.get(11), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(skel, agents.get(1), collObjs.get(2), (Location)locs.get(10), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(skel, agents.get(2), collObjs.get(3), (Location)locs.get(9), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(skel, agents.get(3), collObjs.get(4), (Location)locs.get(9), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(skel, agents.get(0), collObjs.get(5), (Location)locs.get(9), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(cas, agents.get(1), collObjs.get(6), (Location)locs.get(9), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(cas, agents.get(1), collObjs.get(7), (Location)locs.get(9), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(cas, agents.get(1), collObjs.get(2), (Location)locs.get(8), rand.nextInt(20)+1, prepDate));
 
-        preps.add(createPreparation(xray, agents.get(1), collObjs.get(0), (Location)locs.get(8), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(xray, agents.get(1), collObjs.get(1), (Location)locs.get(8), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(xray, agents.get(1), collObjs.get(2), (Location)locs.get(9), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(xray, agents.get(1), collObjs.get(3), (Location)locs.get(9), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(xray, agents.get(1), collObjs.get(4), (Location)locs.get(10), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(xray, agents.get(1), collObjs.get(0), (Location)locs.get(7), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(xray, agents.get(1), collObjs.get(1), (Location)locs.get(7), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(xray, agents.get(1), collObjs.get(2), (Location)locs.get(8), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(xray, agents.get(1), collObjs.get(3), (Location)locs.get(8), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(xray, agents.get(1), collObjs.get(4), (Location)locs.get(9), rand.nextInt(20)+1, prepDate));
 
         dataObjects.add(skel);
         dataObjects.add(cas);
@@ -1514,21 +1457,103 @@ public class BuildSampleDatabase
         return dataObjects;
     }
 
-
-
-    public static List<Object> createSimpleGeography(final CollectionType collType, final String treeDefName)
+    public static List<Object> createSimpleLithoStrat(LithoStratTreeDef def)
     {
-        log.info("createSimpleGeography " + treeDefName);
+        log.info("createSimpleLithoStrat " + def.getName());
 
         List<Object> newObjs = new Vector<Object>();
 
-        // Create a geography tree definition (and tie it to the CollectionType)
-        GeographyTreeDef geoTreeDef = createGeographyTreeDef(treeDefName);
-        geoTreeDef.getCollectionTypes().add(collType);
-        collType.setGeographyTreeDef(geoTreeDef);
-        // 0
-        newObjs.add(geoTreeDef);
+        LithoStratTreeDefItem planet = new LithoStratTreeDefItem();
+        planet.initialize();
+        planet.setName("Surface");
+        planet.setRankId(0);
+        planet.setIsEnforced(true);
+        planet.setFullNameSeparator(", ");
+
+        LithoStratTreeDefItem superLitho = new LithoStratTreeDefItem();
+        superLitho.initialize();
+        superLitho.setName("SuperLitho");
+        superLitho.setRankId(100);
+        superLitho.setFullNameSeparator(", ");
+
+        LithoStratTreeDefItem group = new LithoStratTreeDefItem();
+        group.initialize();
+        group.setName("Group");
+        group.setRankId(200);
+        group.setIsInFullName(true);
+        group.setFullNameSeparator(", ");
+
+        LithoStratTreeDefItem formation = new LithoStratTreeDefItem();
+        formation.initialize();
+        formation.setName("Formation");
+        formation.setRankId(300);
+        formation.setIsInFullName(true);
+        formation.setFullNameSeparator(", ");
+
+        LithoStratTreeDefItem member = new LithoStratTreeDefItem();
+        member.initialize();
+        member.setName("Member");
+        member.setRankId(400);
+        member.setIsInFullName(true);
+        member.setFullNameSeparator(", ");
+
+        LithoStratTreeDefItem bed = new LithoStratTreeDefItem();
+        bed.initialize();
+        bed.setName("Bed");
+        bed.setRankId(500);
+        bed.setIsInFullName(true);
+        bed.setFullNameSeparator(", ");
+
+        // setup parents
+        bed.setParent(member);
+        member.setParent(formation);
+        formation.setParent(group);
+        group.setParent(superLitho);
+        superLitho.setParent(planet);
+
+        // set the tree def for each tree def item
+        planet.setTreeDef(def);
+        superLitho.setTreeDef(def);
+        group.setTreeDef(def);
+        formation.setTreeDef(def);
+        member.setTreeDef(def);
+        bed.setTreeDef(def);
         
+        Set<LithoStratTreeDefItem> defItems = def.getTreeDefItems();
+        defItems.add(planet);
+        defItems.add(superLitho);
+        defItems.add(group);
+        defItems.add(formation);
+        defItems.add(member);
+        defItems.add(bed);
+        
+        newObjs.add(planet);
+        newObjs.add(superLitho);
+        newObjs.add(group);
+        newObjs.add(formation);
+        newObjs.add(member);
+        newObjs.add(bed);
+        
+        LithoStrat earth = new LithoStrat();
+        earth.initialize();
+        earth.setName("Earth");
+        earth.setFullName("Earth");
+        earth.setDefinition(def);
+        earth.setDefinitionItem(planet);
+        earth.setNodeNumber(1);
+        earth.setHighestChildNodeNumber(1);
+        
+        newObjs.add(earth);
+        
+        return newObjs;
+    }
+
+    public static List<Object> createSimpleGeography(final GeographyTreeDef geoTreeDef)
+    {
+        log.info("createSimpleGeography " + geoTreeDef.getName());
+
+        List<Object> newObjs = new Vector<Object>();
+
         // create the geo tree def items
         GeographyTreeDefItem root = createGeographyTreeDefItem(null, geoTreeDef, "GeoRoot", 0);
         root.setIsEnforced(true);
@@ -1540,15 +1565,15 @@ public class BuildSampleDatabase
         county.setIsInFullName(true);
         county.setTextAfter(" Co.");
 
-        // 1
+        // 0
         newObjs.add(root);
-        // 2
+        // 1
         newObjs.add(cont);
-        // 3
+        // 2
         newObjs.add(country);
-        // 4
+        // 3
         newObjs.add(state);
-        // 5
+        // 4
         newObjs.add(county);
 
         // Create the planet Earth.
@@ -1558,13 +1583,13 @@ public class BuildSampleDatabase
         Geography us = createGeography(geoTreeDef, northAmerica, "United States", country.getRankId());
         List<Geography> states = createGeographyChildren(geoTreeDef, us,
                 new String[] { "Kansas", "Iowa", "Nebraska" }, state.getRankId());
-        // 6
+        // 5
         newObjs.add(earth);
-        // 7
+        // 6
         newObjs.add(northAmerica);
-        // 8
+        // 7
         newObjs.add(us);
-        // 9, 10, 11
+        // 8, 9, 10
         newObjs.addAll(states);
 
         
@@ -1572,15 +1597,15 @@ public class BuildSampleDatabase
         // Create Kansas and a few counties
         List<Geography> counties = createGeographyChildren(geoTreeDef, states.get(0),
                 new String[] { "Douglas", "Johnson", "Osage", "Sedgwick" }, county.getRankId());
-        // 12, 13, 14, 15
+        // 11, 12, 13, 14
         newObjs.addAll(counties);
         counties = createGeographyChildren(geoTreeDef, states.get(1),
                 new String[] { "Blackhawk", "Fayette", "Polk", "Woodbury", "Johnson" }, county.getRankId());
-        // 16, 17, 18, 19, 20
+        // 15, 16, 17, 18, 19
         newObjs.addAll(counties);
         counties = createGeographyChildren(geoTreeDef, states.get(2),
                 new String[] { "Dakota", "Logan", "Valley", "Wheeler", "Johnson" }, county.getRankId());
-        // 21, 22, 23, 24, 25
+        // 20, 21, 22, 23, 24
         newObjs.addAll(counties);
         
         TreeHelper.fixFullnameForNodeAndDescendants(earth);
@@ -1591,19 +1616,13 @@ public class BuildSampleDatabase
     }
 
 
-    public static List<Object> createSimpleGeologicTimePeriod(final CollectionType collType,
-                                                              final String treeDefName)
+    public static List<Object> createSimpleGeologicTimePeriod(final GeologicTimePeriodTreeDef treeDef)
     {
-        log.info("createSimpleGeologicTimePeriod " + treeDefName);
+        log.info("createSimpleGeologicTimePeriod " + treeDef.getName());
 
         List<Object> newObjs = new Vector<Object>();
 
-        // Create a geography tree definition
-        GeologicTimePeriodTreeDef treeDef = createGeologicTimePeriodTreeDef(treeDefName);
-        treeDef.getCollectionTypes().add(collType);
-        collType.setGeologicTimePeriodTreeDef(treeDef);
-        newObjs.add(treeDef);
-
+        // Create a geologic time period tree definition
         GeologicTimePeriodTreeDefItem defItemLevel0 = createGeologicTimePeriodTreeDefItem(
                 null, treeDef, "Level 0", 0);
         GeologicTimePeriodTreeDefItem defItemLevel1 = createGeologicTimePeriodTreeDefItem(
@@ -1645,16 +1664,11 @@ public class BuildSampleDatabase
     }
 
 
-    public static List<Object> createSimpleLocation(final CollectionType collType, final String treeDefName)
+    public static List<Object> createSimpleLocation(final LocationTreeDef locTreeDef)
     {
-        log.info("createSimpleLocation " + treeDefName);
+        log.info("createSimpleLocation " + locTreeDef.getName());
 
         List<Object> newObjs = new Vector<Object>();
-
-        // Create a geography tree definition
-        LocationTreeDef locTreeDef = createLocationTreeDef(treeDefName);
-        locTreeDef.getCollectionTypes().add(collType);
-        collType.setLocationTreeDef(locTreeDef);
 
         LocationTreeDefItem building = createLocationTreeDefItem(null, locTreeDef, "building", 0);
         building.setIsEnforced(true);
@@ -1666,66 +1680,64 @@ public class BuildSampleDatabase
         shelf.setIsInFullName(true);
 
         // Create the building
-        Location dyche = createLocation(locTreeDef, null, "Dyche Hall", building.getRankId());
-        Location rm606 = createLocation(locTreeDef, dyche, "Room 606", room.getRankId());
-        Location freezerA = createLocation(locTreeDef, rm606, "Freezer A", freezer.getRankId());
-        Location shelf5 = createLocation(locTreeDef, freezerA, "Shelf 5", shelf.getRankId());
-        Location shelf4 = createLocation(locTreeDef, freezerA, "Shelf 4", shelf.getRankId());
-        Location shelf3 = createLocation(locTreeDef, freezerA, "Shelf 3", shelf.getRankId());
-        Location shelf2 = createLocation(locTreeDef, freezerA, "Shelf 2", shelf.getRankId());
-        Location shelf1 = createLocation(locTreeDef, freezerA, "Shelf 1", shelf.getRankId());
+        Location dyche        = createLocation(locTreeDef, null,         "Dyche Hall", building.getRankId());
+        Location rm606        = createLocation(locTreeDef, dyche,        "Room 606",   room.getRankId());
+        Location freezerA     = createLocation(locTreeDef, rm606,        "Freezer A",  freezer.getRankId());
+        Location shelf5       = createLocation(locTreeDef, freezerA,     "Shelf 5",    shelf.getRankId());
+        Location shelf4       = createLocation(locTreeDef, freezerA,     "Shelf 4",    shelf.getRankId());
+        Location shelf3       = createLocation(locTreeDef, freezerA,     "Shelf 3",    shelf.getRankId());
+        Location shelf2       = createLocation(locTreeDef, freezerA,     "Shelf 2",    shelf.getRankId());
+        Location shelf1       = createLocation(locTreeDef, freezerA,     "Shelf 1",    shelf.getRankId());
 
-        Location rm701 = createLocation(locTreeDef, dyche, "Room 701", room.getRankId());
-        Location freezerA_701 = createLocation(locTreeDef, rm701, "Freezer A", freezer.getRankId());
-        Location shelf1_701 = createLocation(locTreeDef, freezerA_701, "Shelf 1", shelf.getRankId());
+        Location rm701        = createLocation(locTreeDef, dyche,        "Room 701",   room.getRankId());
+        Location freezerA_701 = createLocation(locTreeDef, rm701,        "Freezer A",  freezer.getRankId());
+        Location shelf1_701   = createLocation(locTreeDef, freezerA_701, "Shelf 1",    shelf.getRankId());
         
-        Location rm703 = createLocation(locTreeDef, dyche, "Room 703", room.getRankId());
-        Location freezerA_703 = createLocation(locTreeDef, rm703, "Freezer A", freezer.getRankId());
-        Location shelf1_703 = createLocation(locTreeDef, freezerA_703, "Shelf 1", shelf.getRankId());
-        Location shelf2_703 = createLocation(locTreeDef, freezerA_703, "Shelf 2", shelf.getRankId());
-        Location shelf3_703 = createLocation(locTreeDef, freezerA_703, "Shelf 3", shelf.getRankId());
+        Location rm703        = createLocation(locTreeDef, dyche,        "Room 703",   room.getRankId());
+        Location freezerA_703 = createLocation(locTreeDef, rm703,        "Freezer A",  freezer.getRankId());
+        Location shelf1_703   = createLocation(locTreeDef, freezerA_703, "Shelf 1",    shelf.getRankId());
+        Location shelf2_703   = createLocation(locTreeDef, freezerA_703, "Shelf 2",    shelf.getRankId());
+        Location shelf3_703   = createLocation(locTreeDef, freezerA_703, "Shelf 3",    shelf.getRankId());
         
         // 0
-        newObjs.add(locTreeDef);
-        // 1
         newObjs.add(building);
-        // 2
+        // 1
         newObjs.add(room);
-        // 3
+        // 2
         newObjs.add(freezer);
-        // 4
+        // 3
         newObjs.add(shelf);
-        // 5
+        // 4
         newObjs.add(dyche);
-        // 6
+        // 5
         newObjs.add(rm606);
-        // 7
+        // 6
         newObjs.add(freezerA);
-        // 8
+        // 7
         newObjs.add(shelf5);
-        // 9
+        // 8
         newObjs.add(shelf4);
-        // 10
+        // 9
         newObjs.add(shelf3);
-        // 11
+        // 10
         newObjs.add(shelf2);
-        // 12
+        // 11
         newObjs.add(shelf1);
-        // 13
+        // 12
         newObjs.add(rm701);
-        // 14
+        // 13
         newObjs.add(freezerA_701);
-        // 15
+        // 14
         newObjs.add(shelf1_701);
-        // 16
+        // 15
         newObjs.add(rm703);
-        // 17
+        // 16
         newObjs.add(freezerA_703);
-        // 18
+        // 17
         newObjs.add(shelf1_703);
-        // 19
+        // 18
         newObjs.add(shelf2_703);
-        // 20
+        // 19
         newObjs.add(shelf3_703);
         
         TreeHelper.fixFullnameForNodeAndDescendants(dyche);
@@ -2437,11 +2449,11 @@ public class BuildSampleDatabase
                         
                         TaxonCitation taxonCitation = new TaxonCitation();
                         taxonCitation.initialize();
-                        Taxon taxon10 = (Taxon)taxa.get(10);
-                        taxonCitation.setTaxon(taxon10);
+                        Taxon taxon9 = (Taxon)taxa.get(9);
+                        taxonCitation.setTaxon(taxon9);
                         taxonCitation.setReferenceWork(rwList.get(0));
                         rwList.get(0).addTaxonCitations(taxonCitation);
-                        taxon10.getTaxonCitations().add(taxonCitation);
+                        taxon9.getTaxonCitations().add(taxonCitation);
                         dataObjects.add(taxonCitation);
                         persist(taxonCitation);
                         

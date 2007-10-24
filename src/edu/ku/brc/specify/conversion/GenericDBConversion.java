@@ -92,6 +92,7 @@ import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.specify.treeutils.TreeHelper;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
+import edu.ku.brc.specify.utilapps.DataBuilder;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.PickListDBAdapterIFace;
@@ -4460,7 +4461,8 @@ public class GenericDBConversion
 
         HibernateUtil.beginTransaction();
 
-        LithoStratTreeDef def = BuildSampleDatabase.createStandardLithoStratDefinitionAndItems();
+        LithoStratTreeDef def = DataBuilder.createLithoStratTreeDef("Standard LithoStrat Tree");
+        List<Object> defItemsAndRootNode = BuildSampleDatabase.createSimpleLithoStrat(def);
         
         session.save(def);
 

@@ -140,7 +140,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
      */
     @Id
     @GeneratedValue
-    @Column(name="CollectionTypeID", unique=false, nullable=false, insertable=true, updatable=true)
+    @Column(name="CollectionTypeID")
     public Integer getCollectionTypeId() {
         return this.collectionTypeId;
     }
@@ -173,7 +173,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     /**
      *
      */
-    @Column(name="Name", unique=false, nullable=true, insertable=true, updatable=true, length=64)
+    @Column(name="Name", length=64)
     public String getName() {
         return this.name;
     }
@@ -185,7 +185,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     /**
     *
     */
-    @Column(name="Discipline", unique=false, nullable=true, insertable=true, updatable=true, length=64)
+    @Column(name="Discipline", length=64)
     public String getDiscipline()
     {
         return discipline;
@@ -200,7 +200,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
      *
      */
     @ManyToOne
-    @JoinColumn(name="DataTypeID", unique=false, nullable=false, insertable=true, updatable=true)
+    @JoinColumn(name="DataTypeID", nullable=false)
     public DataType getDataType() {
         return this.dataType;
     }
@@ -212,7 +212,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     /**
      *
      */
-    @OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="collectionType")
+    @OneToMany(mappedBy="collectionType")
     @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<Collection> getCollections() {
         return this.collections;
@@ -226,7 +226,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
      *
      */
     @ManyToOne
-    @JoinColumn(name="SpecifyUserID", unique=false, nullable=false, insertable=true, updatable=true)
+    @JoinColumn(name="SpecifyUserID", nullable=false)
     public SpecifyUser getSpecifyUser() {
         return this.specifyUser;
     }
@@ -238,7 +238,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     /**
      *
      */
-    @OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="collectionType")
+    @OneToMany(mappedBy="collectionType")
     @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<AttributeDef> getAttributeDefs() {
         return this.attributeDefs;
@@ -252,8 +252,8 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
      *
      */
     @ManyToOne( fetch = FetchType.LAZY )
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL })
-    @JoinColumn(name="GeographyTreeDefID", unique=false, nullable=true, insertable=true, updatable=true)
+    @Cascade( {CascadeType.ALL} )
+    @JoinColumn(name="GeographyTreeDefID", nullable=false)
     public GeographyTreeDef getGeographyTreeDef() {
         return this.geographyTreeDef;
     }
@@ -266,8 +266,8 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
      *
      */
     @ManyToOne( fetch = FetchType.LAZY )
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL })
-    @JoinColumn(name="GeologicTimePeriodTreeDefID", unique=false, nullable=false, insertable=true, updatable=true)
+    @Cascade( {CascadeType.ALL} )
+    @JoinColumn(name="GeologicTimePeriodTreeDefID", nullable=false)
     public GeologicTimePeriodTreeDef getGeologicTimePeriodTreeDef() {
         return this.geologicTimePeriodTreeDef;
     }
@@ -280,8 +280,8 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
      *
      */
     @ManyToOne( fetch = FetchType.LAZY )
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL })
-    @JoinColumn(name="LocationTreeDefID", unique=false, nullable=true, insertable=true, updatable=true)
+    @Cascade( {CascadeType.ALL} )
+    @JoinColumn(name="LocationTreeDefID")
     public LocationTreeDef getLocationTreeDef() {
         return this.locationTreeDef;
     }
@@ -293,7 +293,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     /**
      *      * @hibernate.one-to-one
      */
-    @OneToOne(cascade={})
+    @OneToOne
     @Cascade( {CascadeType.ALL} )
     @JoinColumn(name="TaxonTreeDefID")
     public TaxonTreeDef getTaxonTreeDef() {
@@ -308,7 +308,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
      *      * @hibernate.many-to-one
      */
     @ManyToOne( fetch = FetchType.LAZY )
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL })
+    @Cascade( {CascadeType.ALL} )
     @JoinColumn(name="LithoStratTreeDefID")
     public LithoStratTreeDef getLithoStratTreeDef() {
         return this.lithoStratTreeDef;
@@ -321,7 +321,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     /**
      *
      */
-    @ManyToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="collectionTypes")
+    @ManyToMany(mappedBy="collectionTypes")
     @Cascade( {CascadeType.SAVE_UPDATE} )
     public Set<Locality> getLocalities() {
         return this.localities;
@@ -331,8 +331,8 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
         this.localities = localities;
     } 
 
-    @OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="collectionType")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OneToMany(mappedBy="collectionType")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<SpAppResourceDir> getSpAppResourceDirs()
     {
         return spAppResourceDirs;
@@ -343,7 +343,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
         this.spAppResourceDirs = spAppResourceDirs;
     }
     
-    @OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="collectionType")
+    @OneToMany(mappedBy="collectionType")
     @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<UserPermission> getUserPermissions() 
     {
@@ -359,7 +359,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     /**
      * @return the localeContainers
      */
-    @OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="collectionType")
+    @OneToMany(mappedBy="collectionType")
     @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<SpLocaleContainer> getSpLocaleContainers()
     {
@@ -377,8 +377,8 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     /**
      * @return the division
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "DivisionID", unique = false, nullable = false, insertable = true, updatable = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "DivisionID", nullable = false)
     public Division getDivision()
     {
         return division;

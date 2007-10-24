@@ -18,7 +18,11 @@ import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectionObject;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectionType;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createDataType;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createDivision;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createGeographyTreeDef;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createGeologicTimePeriodTreeDef;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createInstitution;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createLithoStratTreeDef;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createLocationTreeDef;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createSpecifyUser;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createTaxonTreeDef;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createUserGroup;
@@ -52,8 +56,11 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Division;
+import edu.ku.brc.specify.datamodel.GeographyTreeDef;
+import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
+import edu.ku.brc.specify.datamodel.LocationTreeDef;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.UserGroup;
@@ -142,8 +149,13 @@ public class TestAutoNumbering extends TestCase
         UserGroup         userGroup         = createUserGroup(disciplineName);
         SpecifyUser       user              = createSpecifyUser(username, email, (short) 0, userGroup, userType);
         DataType          dataType          = createDataType(disciplineName);
-        TaxonTreeDef      taxonTreeDef      = createTaxonTreeDef("Sample Taxon Tree Def");
-        LithoStratTreeDef lithoStratTreeDef = BuildSampleDatabase.createStandardLithoStratDefinitionAndItems();
+
+        // create tree defs (later we will make the def items and nodes)
+        TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Sample Taxon Tree");
+        GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Sample Geography Tree");
+        GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Sample Geologic Time Period Tree");
+        LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("Sample LithoStrat Tree");
+        LocationTreeDef           locTreeDef        = createLocationTreeDef("Sample Location Tree");
         
         Institution    institution    = createInstitution("Natural History Museum");
         Division       division       = createDivision(institution, "Icthyology");
@@ -159,15 +171,21 @@ public class TestAutoNumbering extends TestCase
         dataObjects.add(taxonTreeDef);
         dataObjects.add(userAgent);
         
-        List<Object> taxa = BuildSampleDatabase.createSimpleTaxon(collectionType.getTaxonTreeDef());
-        List<Object> geos = BuildSampleDatabase.createSimpleGeography(collectionType, "Geography");
-        List<Object> locs = BuildSampleDatabase.createSimpleLocation(collectionType, "Location");
-        List<Object> gtps = BuildSampleDatabase.createSimpleGeologicTimePeriod(collectionType, "Geologic Time Period");
-
-        dataObjects.addAll(taxa);
-        dataObjects.addAll(geos);
-        dataObjects.addAll(locs);
-        dataObjects.addAll(gtps);
+        ////////////////////////////////
+        // build the tree def items and nodes
+        ////////////////////////////////
+        List<Object> taxa        = BuildSampleDatabase.createSimpleTaxon(taxonTreeDef);
+        List<Object> geos        = BuildSampleDatabase.createSimpleGeography(geoTreeDef);
+        List<Object> locs        = BuildSampleDatabase.createSimpleLocation(locTreeDef);
+        List<Object> gtps        = BuildSampleDatabase.createSimpleGeologicTimePeriod(gtpTreeDef);
+        List<Object> lithoStrats = BuildSampleDatabase.createSimpleLithoStrat(lithoStratTreeDef);
+        
+        //startTx();
+        persist(taxa);
+        persist(geos);
+        persist(locs);
+        persist(gtps);
+        persist(lithoStrats);
         
         CatalogNumberingScheme cns = createCatalogNumberingScheme("CatalogNumber", "", true);
         dataObjects.add(cns);
