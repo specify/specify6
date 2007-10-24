@@ -71,6 +71,7 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
                 if (a != null && a.getAttachmentLocation() == null)
                 {
                     AttachmentUtils.getAttachmentManager().setStorageLocationIntoAttachment(a);
+                    a.setStoreFile(true);
                 }
             }
         }
@@ -94,10 +95,10 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
             for (ObjectAttachmentIFace<?> oa: owner.getAttachmentReferences())
             {
                 Attachment a = oa.getAttachment();
-                if (a != null && a.getAttachmentId() == null)
+                if (a != null && a.isStoreFile())
                 {
                     // this is a new Attachment object
-                    // we need to save it's file into the storage system
+                    // we need to store it's file into the storage system
                     try
                     {
                         a.storeFile();

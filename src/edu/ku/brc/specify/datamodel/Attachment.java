@@ -15,6 +15,7 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Lob;
@@ -46,6 +47,9 @@ public class Attachment extends DataModelObjBase implements Serializable
     protected Integer                 visibility;
     protected String                  visibilitySetBy;
     protected Set<AttachmentMetadata> metadata;
+    
+    // transient field
+    protected boolean                 storeFile;
     
     // data model classes that can have Attachments
     protected Set<AccessionAttachment>               accessionAttachments;
@@ -91,6 +95,8 @@ public class Attachment extends DataModelObjBase implements Serializable
         remarks            = null;
         attachmentLocation = null;
         metadata           = new HashSet<AttachmentMetadata>();
+        
+        storeFile          = false;
         
         accessionAttachments           = new HashSet<AccessionAttachment>();
         agentAttachments               = new HashSet<AgentAttachment>();
@@ -232,7 +238,7 @@ public class Attachment extends DataModelObjBase implements Serializable
         this.visibilitySetBy = visibilitySetBy;
     }
 
-    @OneToMany(mappedBy = "attachment")
+    @OneToMany(fetch=FetchType.EAGER, mappedBy = "attachment")
     @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<AttachmentMetadata> getMetadata()
     {
@@ -467,6 +473,17 @@ public class Attachment extends DataModelObjBase implements Serializable
             return f.getName();
         }
         return super.getIdentityTitle();
+    }
+
+    @Transient
+    public boolean isStoreFile()
+    {
+        return storeFile;
+    }
+
+    public void setStoreFile(boolean storeFile)
+    {
+        this.storeFile = storeFile;
     }
 
     public void storeFile() throws IOException
