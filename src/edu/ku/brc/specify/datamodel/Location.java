@@ -114,7 +114,7 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
 
     @Id
     @GeneratedValue
-    @Column(name = "LocationID", unique = false, nullable = false, insertable = true, updatable = true)
+    @Column(name = "LocationID")
 	public Integer getLocationId()
 	{
 		return this.locationId;
@@ -146,7 +146,7 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
 		this.locationId = locationId;
 	}
 
-    @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Column(name = "Name", length = 128)
 	public String getName()
 	{
 		return this.name;
@@ -160,7 +160,7 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
 	/**
 	 * @return the fullName
 	 */
-    @Column(name = "FullName", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "FullName", length = 1024 )
 	public String getFullName()
 	{
 		return fullName;
@@ -186,7 +186,7 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
 		this.remarks = remarks;
 	}
 
-    @Column(name = "RankID", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
+    @Column(name = "RankID", length = 10)
 	public Integer getRankId()
 	{
 		return this.rankId;
@@ -197,7 +197,7 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
 		this.rankId = rankId;
 	}
 
-    @Column(name = "NodeNumber", unique = false, nullable = true, insertable = true, updatable = false, length = 10)
+    @Column(name = "NodeNumber", updatable = false)
 	public Integer getNodeNumber()
 	{
 		return this.nodeNumber;
@@ -208,7 +208,7 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
 		this.nodeNumber = nodeNumber;
 	}
 
-    @Column(name = "HighestChildNodeNumber", unique = false, nullable = true, insertable = true, updatable = false, length = 10)
+    @Column(name = "HighestChildNodeNumber", updatable = false)
 	public Integer getHighestChildNodeNumber()
 	{
 		return this.highestChildNodeNumber;
@@ -219,7 +219,7 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
 		this.highestChildNodeNumber = highestChildNodeNumber;
 	}
 
-    @Column(name = "Abbrev", unique = false, nullable = true, insertable = true, updatable = true, length = 16)
+    @Column(name = "Abbrev", length = 16)
 	public String getAbbrev()
 	{
 		return this.abbrev;
@@ -230,7 +230,7 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
 		this.abbrev = abbrev;
 	}
 
-    @Column(name = "Text1", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    @Column(name = "Text1", length = 32)
 	public String getText1()
 	{
 		return this.text1;
@@ -241,7 +241,7 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
 		this.text1 = text1;
 	}
 
-    @Column(name = "Text2", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    @Column(name = "Text2", length = 32)
 	public String getText2()
 	{
 		return this.text2;
@@ -252,7 +252,7 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
 		this.text2 = text2;
 	}
 
-    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
+    @Column(name = "Number1")
 	public Integer getNumber1()
 	{
 		return this.number1;
@@ -263,7 +263,7 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
 		this.number1 = number1;
 	}
 
-    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
+    @Column(name = "Number2")
 	public Integer getNumber2()
 	{
 		return this.number2;
@@ -274,7 +274,7 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
 		this.number2 = number2;
 	}
 
-    @Column(name = "TimestampVersion", unique = false, nullable = true, insertable = true, updatable = true, length = 16)
+    @Column(name = "TimestampVersion")
 	public Date getTimestampVersion()
 	{
 		return this.timestampVersion;
@@ -284,7 +284,8 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
 	{
 		this.timestampVersion = timestampVersion;
 	}
-    @Column(name="IsAccepted", unique=false, nullable=true, insertable=true, updatable=true)
+    
+    @Column(name="IsAccepted")
     public Boolean getIsAccepted()
     {
         return this.isAccepted;
@@ -307,7 +308,7 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
         this.acceptedChildren = acceptedChildren;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "AcceptedID")
     public Location getAcceptedLocation()
     {
@@ -330,8 +331,8 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
         setAcceptedLocation(acceptedParent);
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @JoinColumn(name = "LocationTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
+    @ManyToOne
+    @JoinColumn(name = "LocationTreeDefID", nullable = false)
 	public LocationTreeDef getDefinition()
 	{
 		return this.definition;
@@ -342,8 +343,8 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
 		this.definition = definition;
 	}
 
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @JoinColumn(name = "LocationTreeDefItemID", unique = false, nullable = false, insertable = true, updatable = true)
+    @ManyToOne
+    @JoinColumn(name = "LocationTreeDefItemID", nullable = false)
 	public LocationTreeDefItem getDefinitionItem()
 	{
 		return this.definitionItem;
@@ -358,8 +359,8 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
         }
 	}
 
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @JoinColumn(name = "ParentID", unique = false, nullable = true, insertable = true, updatable = true)
+    @ManyToOne
+    @JoinColumn(name = "ParentID")
 	public Location getParent()
 	{
 		return this.parent;
@@ -370,8 +371,8 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
 		this.parent = parent;
 	}
 
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "location")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OneToMany(mappedBy = "location")
+    @Cascade( {CascadeType.ALL} )
 	public Set<Preparation> getPreparations()
 	{
 		return this.preparations;
@@ -382,8 +383,8 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
 		this.preparations = preparations;
 	}
 
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "location")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OneToMany(mappedBy = "location")
+    @Cascade( {CascadeType.ALL} )
 	public Set<Container> getContainers()
 	{
 		return this.containers;
@@ -394,7 +395,8 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
 		this.containers = containers;
 	}
 
-    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, fetch = FetchType.LAZY, mappedBy = "parent")
+    @OneToMany(mappedBy = "parent")
+    @Cascade( {CascadeType.ALL} )
 	public Set<Location> getChildren()
 	{
 		return this.children;
