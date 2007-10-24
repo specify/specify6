@@ -139,6 +139,16 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
             textField.setText(newValue);
             firePropertyChange("setValue", oldValue, newValue);
         }
+        
+        if (value == null)
+        {
+            String oldValue = textField.getText();
+            textField.setText(defaultValue);
+            firePropertyChange("setValue", oldValue, defaultValue);
+            
+            // We had to put a repaint() call in here.  Swing should have done this for us.
+            textField.repaint();
+        }
     }
 
     /* (non-Javadoc)
