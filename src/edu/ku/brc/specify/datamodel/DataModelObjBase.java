@@ -41,6 +41,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.forms.DataObjectGettable;
 import edu.ku.brc.ui.forms.DataObjectGettableFactory;
 import edu.ku.brc.ui.forms.DataObjectSettable;
@@ -309,30 +310,60 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#addReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
      */
-    public void addReference(FormDataObjIFace ref, String fieldName)
+    public void addReference(final FormDataObjIFace ref, final String fieldName)
     {
+        // Note that this method uses local members for the parent data object the field name.
+        // This is because they may need to be adjusted when using '.' notation.
+        String           fldName          = fieldName;
+        FormDataObjIFace parentDataObject = this;
+        
         if (ref != null)
         {
             DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(getTableId());
             if (tblInfo != null)
             {
-                DBRelationshipInfo rel = tblInfo.getRelationshipByName(fieldName);
+                // Check for DOT notation for setting a child
+                // If so then we need to walk the list finding the 'true' parent of the last
+                // item in the hierarchy list, and the let it continue with the 'adjusted' parent and 
+                // the 'real' field name (the name after the last '.')
+                if (StringUtils.contains(fldName, '.'))
+                {
+                    // Get the list of data objects to walk and 
+                    // create a new list without the last member
+                    String[] fieldNames = StringUtils.split(fldName, '.');
+                    String[] parentPath = new String[fieldNames.length-1];
+                    for (int i=0;i<parentPath.length;i++)
+                    {
+                        parentPath[i] = fieldNames[i];
+                    }
+                    // Now go get the 'true' parent of the incoming reference by walk the hierarchy
+                    DataObjectGettable getter = DataObjectGettableFactory.get(getClass().getName(), "edu.ku.brc.ui.forms.DataGetterForObj");
+                    Object[] values = UIHelper.getFieldValues(parentPath, this, getter);
+                    parentDataObject = (FormDataObjIFace)values[parentPath.length-1];
+                    
+                    // Set the field name to the last item in the original list
+                    fldName = fieldNames[fieldNames.length-1];
+                    
+                    // Now go get the table info for the 'adjusted' parent, meaning the parent of the field we are trying to set
+                    tblInfo = DBTableIdMgr.getInstance().getInfoById(parentDataObject.getTableId());
+                }
+                
+                DBRelationshipInfo rel = tblInfo.getRelationshipByName(fldName);
                 if (rel != null)
                 {
-                    //String fieldName = rel.getName();
                     String otherSide = rel.getOtherSide();
                     
                     Field   fld           = null;
                     boolean isACollection = false;
                     try
                     {
-                        fld = getClass().getDeclaredField(fieldName);
+                        fld = parentDataObject.getClass().getDeclaredField(fldName);
                         if (fld != null)
                         {
                             isACollection = Collection.class.isAssignableFrom(fld.getType());
                         } else
                         {
-                            log.error("Couldn't find field ["+fieldName+"] in class ["+getClass().getSimpleName()+"]");
+                            log.error("Couldn't find field ["+fldName+"] in class ["+getClass().getSimpleName()+"]");
                         }
                         
                     } catch (Exception ex)
@@ -344,26 +375,26 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
                     {
                         if (isACollection)
                         {
-                            addToCollection(this, fieldName, ref);
+                            addToCollection(parentDataObject, fldName, ref);
                             DataObjectSettable setter = DataObjectSettableFactory.get(ref.getClass().getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
-                            setter.setFieldValue(ref, otherSide, this);
+                            setter.setFieldValue(ref, otherSide, parentDataObject);
     
                         } else
                         {
                             if (otherSide != null)
                             {
-                                addToCollection(ref, otherSide, this);
+                                addToCollection(ref, otherSide, parentDataObject);
                             }
                             DataObjectSettable setter = DataObjectSettableFactory.get(ref.getClass().getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
-                            setter.setFieldValue(this, fieldName, ref);
+                            setter.setFieldValue(parentDataObject, fldName, ref);
                         }
                     } else
                     {
-                        log.error("Could not find field["+fieldName+"] in class["+getClass().getSimpleName()+"]");
+                        log.error("Could not find field["+fieldName+"] ["+fldName+"] in class["+parentDataObject.getClass().getSimpleName()+"]");
                     }
                 } else
                 {
-                    log.error("Couldn't find relationship["+fieldName+"] For Table["+ref.getTableId()+"]");
+                    log.error("Couldn't find relationship["+fieldName+"] ["+fldName+"] For Table["+ref.getTableId()+"]");
                 }
             } else
             {
