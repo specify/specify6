@@ -93,7 +93,7 @@
  FullName, 
  %s 
  From collectionobject 
- Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID 
+ Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID
  Inner Join taxon ON taxon.TaxonID = determination.TaxonID 
  where %s order by CatalogNumber asc]]>
                 </sql>
@@ -268,6 +268,35 @@
                     <caption col="deterTax.FullName"     text="Old Name (on Determination)"/>
                     <caption col="acceptTax.FullName"    text="Accepted Name"/>
                     <caption col="oldTax.FullName"       text="Other Old Name"/>
+                </captions>
+            </detailView>
+        </table>
+
+        <table id="10" tableid="1" indexed="false" name="CurrCollObject" title="Current Collection Objects" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="1" primary="true">collectionobject.CollectionObjectID</join>
+                <join tableid="4">taxon.TaxonID</join>
+            </joins>
+            <detailView icon="ColObj">
+                <sql>
+                    <![CDATA[
+ SELECT distinct 
+ collectionobject.CollectionObjectID, 
+ CatalogNumber, 
+ CatalogedDate, 
+ FullName, 
+ %s 
+ From collectionobject 
+ Inner Join determination ON determination.CollectionObjectID = collectionobject.CollectionObjectID
+ Inner Join determinationstatus ON determination.DeterminationStatusID = determinationstatus.DeterminationStatusID AND determinationstatus.IsCurrent IS true
+ Inner Join taxon ON taxon.TaxonID = determination.TaxonID 
+ where %s order by CatalogNumber asc]]>
+                </sql>
+                <captions>
+                    <caption col="collectionobject.CollectionObjectID" text="CollectionObjectID" visible="false"/>
+                    <caption col="CatalogNumber" text="Catalog Number" formatter="CatalogNumber"/>
+                    <caption col="CatalogedDate" text="Cataloged Date"/>
+                    <caption col="FullName"      text="Taxon Name"/>
                 </captions>
             </detailView>
         </table>
