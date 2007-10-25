@@ -240,7 +240,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     protected TreeTableViewer<T,D,I> showTreeInternal(final D treeDef)
     {
         ContextMgr.requestContext(this);
-        String tabName = getResourceString(name) + ": " + treeDef.getName();
+        String tabName = treeDef.getName();
         TreeTableViewer<T,D,I> ttv = new TreeTableViewer<T,D,I>(treeDef,tabName,this);
         addSubPaneToMgr(ttv);
         currentDefInUse = true;
