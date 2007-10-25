@@ -203,6 +203,11 @@ public interface FormCellFieldIFace extends FormCellIFace
      * @return whether it is a password
      */
     public abstract boolean isPassword();
+    
+    /**
+     * @return whether the control is ONLY editable on create
+     */
+    public abstract boolean isEditOnCreate();
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormCell#clone()

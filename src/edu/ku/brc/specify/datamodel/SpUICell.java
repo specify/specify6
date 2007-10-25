@@ -169,7 +169,8 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
     
     
     // Transient
-    protected Properties properties = new Properties();
+    protected Properties properties     = new Properties();
+    protected boolean    isEditOnCreate = false;
 
     /**
      * 
@@ -1942,6 +1943,25 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
             funcModes          = fcs.getFuncModes();
             tableRowsDB        = (byte)fcs.getTableRows();
         }
+    }
+    
+    
+
+    /**
+     * @return the isEditOnCreate
+     */
+    @Transient
+    public boolean isEditOnCreate()
+    {
+        return isEditOnCreate;
+    }
+
+    /**
+     * @param isEditOnCreate the isEditOnCreate to set
+     */
+    public void setEditOnCreate(boolean isEditOnCreate)
+    {
+        this.isEditOnCreate = isEditOnCreate;
     }
 
     /* (non-Javadoc)

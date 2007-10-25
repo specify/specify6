@@ -57,8 +57,10 @@ public final class FormCellField extends FormCell implements FormCellFieldIFace
     protected String   validationType = "";
     protected String   validationRule = "";
 
+    // Transient
     protected boolean  isTextField    = false;
     protected boolean  isDSPTextField = false;
+    protected boolean  isEditOnCreate = false;
 
     /**
      * Constructor
@@ -439,6 +441,22 @@ public final class FormCellField extends FormCell implements FormCellFieldIFace
     public void setValidationType(String validationType)
     {
         this.validationType = validationType;
+    }
+
+    /**
+     * @return the isEditOnCreate
+     */
+    public boolean isEditOnCreate()
+    {
+        return isEditOnCreate;
+    }
+
+    /**
+     * @param isEditOnCreate the isEditOnCreate to set
+     */
+    public void setEditOnCreate(boolean isEditOnCreate)
+    {
+        this.isEditOnCreate = isEditOnCreate;
     }
 
     /* (non-Javadoc)

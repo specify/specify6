@@ -1056,6 +1056,12 @@ public class FormViewObj implements Viewable,
         {
             formValidator.validateForm();
         }
+        
+        // After a Subform is added we need to have the top most parent MultiView check to see if all is ok
+        if (mvParent != null)
+        {
+            mvParent.getTopLevel().wasValidated(null);//.getCurrentViewAsFormViewObj().getValidator().validateForm();
+        }
     }
     
     /**
@@ -1417,10 +1423,15 @@ public class FormViewObj implements Viewable,
             String delMsg = (businessRules != null) ? businessRules.getDeleteMsg(dataObj) : "";
             UIRegistry.getStatusBar().setText(delMsg);
             formValidator.setHasChanged(true);
-            formValidator.validateForm();
+            mvParent.getTopLevel().wasValidated(null);
             
-            adjustRSControllerAfterRemove();
+            formValidator.validateForm();
 
+            // We need to turn off the notifications when setting new data.
+            formValidator.setIgnoreValidationNotifications(true);
+            adjustRSControllerAfterRemove();
+            formValidator.setIgnoreValidationNotifications(false);
+            
             return;
         }
         
@@ -2043,7 +2054,11 @@ public class FormViewObj implements Viewable,
             {
                 if (this.dataObj != null)
                 {
-                    controlPanel.setRSCVisibility(!isEditting);
+                    // I added this 'if' and I have no idea why the call was here in the first place. - rods
+                    if (!alreadyInTheList)
+                    {
+                        controlPanel.setRSCVisibility(!isEditting);
+                    }
                     rsController.setEnabled(true);
                     
                 } else
@@ -2430,14 +2445,14 @@ public class FormViewObj implements Viewable,
                     if (fc instanceof FormCellField)
                     {
                         FormCellFieldIFace fcf = (FormCellFieldIFace)fc;
-                        isReadOnly  = fcf.isReadOnly();
+                        isReadOnly  = fcf.isReadOnly() || fcf.isEditOnCreate();
                         useThisData = fcf.useThisData();
                         
                     } else
                     {
                         useThisData = false;
                     }
-    
+                    
                     if (isReadOnly || fc.isIgnoreSetGet())
                     {
                         

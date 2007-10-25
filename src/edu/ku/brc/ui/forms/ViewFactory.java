@@ -858,6 +858,7 @@ public class ViewFactory
                     FormCellField cellField = (FormCellField)cell;
                     
                     boolean isEditOnCreateOnly = cellField.getPropertyAsBoolean("editoncreate", false);
+                    cellField.setEditOnCreate(isEditOnCreateOnly);
                     
                     FormCellField.FieldType uiType = cellField.getUiType();
                     

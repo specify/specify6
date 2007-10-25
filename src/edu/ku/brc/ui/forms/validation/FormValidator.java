@@ -621,6 +621,14 @@ public class FormValidator implements ValidationListener, DataChangeListener
     }
 
     /**
+     * @param ignoreValidationNotifications the ignoreValidationNotifications to set
+     */
+    public void setIgnoreValidationNotifications(boolean ignoreValidationNotifications)
+    {
+        this.ignoreValidationNotifications = ignoreValidationNotifications;
+    }
+
+    /**
      * Validates the fields.
      */
     public void validateForm()
@@ -629,6 +637,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
         {
             log.debug("validateForm ["+name+"]");
     
+            boolean curIgnoreVal = ignoreValidationNotifications; // cache the value in case it has already been set
             ignoreValidationNotifications = true;
     
             processRulesAreOK = processFormRules();
@@ -673,7 +682,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
             // when validating for OK we always leave it enabled
             //turnOnOKButton(true);
     
-            ignoreValidationNotifications = false;
+            ignoreValidationNotifications = curIgnoreVal;
         }
     }
     
