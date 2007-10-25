@@ -187,7 +187,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
-    @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Column(name = "Name", length = 64)
 	public String getName()
 	{
 		return this.name;
@@ -213,7 +213,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
-    @Column(name = "CommonName", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Column(name = "CommonName", length = 128)
 	public String getCommonName()
 	{
 		return this.commonName;
@@ -227,7 +227,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 * @return the fullName
 	 */
-    @Column(name = "FullName", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "FullName", length = 255)
 	public String getFullName()
 	{
 		return fullName;

@@ -207,7 +207,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
     /**
      * @return the fullName
      */
-    @Column(name = "FullName")
+    @Column(name = "FullName", length = 255)
     public String getFullName()
     {
         return fullName;

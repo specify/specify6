@@ -146,7 +146,7 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
 		this.locationId = locationId;
 	}
 
-    @Column(name = "Name", length = 128)
+    @Column(name = "Name", length = 64)
 	public String getName()
 	{
 		return this.name;
@@ -160,7 +160,7 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
 	/**
 	 * @return the fullName
 	 */
-    @Column(name = "FullName", length = 1024 )
+    @Column(name = "FullName", length = 255)
 	public String getFullName()
 	{
 		return fullName;
