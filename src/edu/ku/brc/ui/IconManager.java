@@ -18,16 +18,18 @@ package edu.ku.brc.ui;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
-import java.awt.Image;
+import java.io.File;
 import java.net.URL;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.Vector;
 
 import javax.swing.ImageIcon;
 
@@ -99,9 +101,15 @@ public class IconManager extends Component
     protected static final String      relativePath = "images/";
     protected static final IconManager instance     = new IconManager();
 
-    protected Class<?>                        appClass = null;
-    protected Hashtable<String, IconEntry> entries = new Hashtable<String, IconEntry>();
+    protected Class<?>                 appClass = null;
     
+    protected Hashtable<String, Vector<String>> iconSets = new Hashtable<String, Vector<String>>();
+    
+    protected Hashtable<String, IconEntry> defaultEntries  = new Hashtable<String, IconEntry>();
+    
+    // This is used during the registration process to track
+    // extra icons loaded with a 'type' in the XML
+    protected Vector<String> iconListForType = null;
 
     /**
      *
@@ -122,7 +130,7 @@ public class IconManager extends Component
     {
         instance.appClass = appClass;
 
-        if (instance.entries.size() == 0)
+        if (instance.defaultEntries.size() == 0)
         {
             IconManager.loadIcons();
         }
@@ -135,7 +143,9 @@ public class IconManager extends Component
      * @param id the size of the icon
      * @return the icon that was created at the "id" size
      */
-   public static IconEntry register(final String iconName, final String fileName, final IconSize id)
+   public static IconEntry register(final String iconName, 
+                                    final String fileName,
+                                    final IconSize id)
     {
 	   
         URL url = getImagePath(fileName);
@@ -149,6 +159,7 @@ public class IconManager extends Component
         try
         {	
             icon = new ImageIcon(url);  
+            
         } catch (NullPointerException ex)
         {
             log.error("Image at URL ["+url+"] couldn't be loaded.");
@@ -168,14 +179,28 @@ public class IconManager extends Component
      * @param id the size of the icon
      * @return the icon that was created at the "id" size
      */
-   public static IconEntry register(final String iconName, final ImageIcon icon, final URL path, final IconSize id)
+   public static IconEntry register(final String    iconName, 
+                                    final ImageIcon icon, 
+                                    final URL       path, 
+                                    final IconSize  id)
     {
+        if (instance.iconListForType != null && instance.defaultEntries.get(iconName) != null)
+        {
+            log.error("Icon name is already registered["+iconName+"]");
+            return null;
+        }
+        
         if (icon != null)
         {
             IconEntry entry = new IconEntry(iconName);
     
             entry.add(id, path);
-            instance.entries.put(iconName, entry);
+            instance.defaultEntries.put(iconName, entry);
+            
+            if (instance.iconListForType != null)
+            {
+                instance.iconListForType.add(iconName);
+            }
         	
             return entry;
         }
@@ -184,8 +209,12 @@ public class IconManager extends Component
         return null;
     }
     
-
-    
+    /**
+     * @param size
+     * @param bw
+     * @param faded
+     * @return
+     */
     public static IconSize getIconSize(int size, boolean bw, boolean faded)
     {
         if (size != 32 && size != 24 && size != 16)
@@ -234,8 +263,6 @@ public class IconManager extends Component
         {
     		
         	ImageIcon scaledIcon = new ImageIcon(instance.getFastScale(icon, iconSize, scaledIconSize));
-        	//ImageIcon scaledIcon = new ImageIcon(icon.getImage().getScaledInstance(scaledIconSize.size(),
-              //     scaledIconSize.size(), Image.SCALE_SMOOTH));
         	return scaledIcon;	
         } 
         // else
@@ -269,7 +296,6 @@ public class IconManager extends Component
      */
     public static ImageIcon getIcon(final String iconName)
     {
-    	
         if (iconName == null)
         {
             throw new NullPointerException("icon name should not be null!");
@@ -277,7 +303,7 @@ public class IconManager extends Component
 
         //create icon 
         
-        IconEntry entry = instance.entries.get(iconName);
+        IconEntry entry = instance.defaultEntries.get(iconName);
         if (entry != null)
         {
             return entry.getIcon();
@@ -308,13 +334,34 @@ public class IconManager extends Component
      */
     public static void loadIcons()
     {
+        loadIcons(XMLHelper.getConfigDir("icons.xml"));
+    }
 
+    /**
+     * Loads icons from config file
+     *
+     */
+    public static void loadIcons(final File iconFile)
+    {
         try
         {
-            Element root  = XMLHelper.readDOMFromConfigDir("icons.xml");
+            Element root = XMLHelper.readFileToDOM4J(iconFile);
             if (root != null)
             {
                 Hashtable<String, String> aliases = new Hashtable<String, String>();
+                Element iconsNode = (Element)root.selectSingleNode("/icons");
+                String  type      = XMLHelper.getAttr(iconsNode, "type", null);
+                if (StringUtils.isNotEmpty(type))
+                {
+                    if (instance.iconSets.get(type) == null)
+                    {
+                        instance.iconListForType = new Vector<String>();
+                        instance.iconSets.put(type, instance.iconListForType);
+                    } else
+                    {
+                        log.debug("Type ["+type+"] has already been loaded.");
+                    }
+                }
                 
                 List<?> boxes = root.selectNodes("/icons/icon");
                 for ( Iterator<?> iter = boxes.iterator(); iter.hasNext(); )
@@ -362,10 +409,10 @@ public class IconManager extends Component
                 
                 for (String name : aliases.keySet())
                 {
-                    IconEntry entry = instance.entries.get(aliases.get(name));
+                    IconEntry entry = instance.defaultEntries.get(aliases.get(name));
                     if (entry != null)
                     {
-                        instance.entries.put(name, entry);
+                        instance.defaultEntries.put(name, entry);
                     }
                 }
             } else
@@ -377,6 +424,32 @@ public class IconManager extends Component
             ex.printStackTrace();
             log.error(ex);
         }
+        
+        instance.iconListForType = null;
+    }
+    
+    /**
+     * Create a new list of icons for a given type and size
+     * @param type the type of icon (external set of icons)
+     * @param size the size to return
+     * @return the list of icons for a given type.
+     */
+    public static List<ImageIcon> getListByType(final String type, final IconSize size)
+    {
+        Vector<String> nameList = instance.iconSets.get(type);
+        if (nameList != null)
+        {
+            Vector<ImageIcon> icons = new Vector<ImageIcon>(); 
+            for (String key : nameList)
+            {
+                ImageIcon ii = getIcon(key, size);
+                if (ii != null)
+                {
+                    icons.add(ii);
+                }
+            }
+        }
+        return null;
     }
 
     /**

@@ -11,7 +11,6 @@
     <icon name="SpecifyLargeIcon" file="specify128.png" sizes="NonStd"/>
     <icon name="SpecifySplash" file="SpecifyBigSplash.png" sizes="NonStd"/>
     
-    
     <icon name="Save"           file="filesave.png" sizes="all"/>
     <icon name="Import"         file="ImportData16x16.png" sizes="16"/>
     <icon name="ImportImages"   file="ImportImages16x16.png" sizes="16"/>
@@ -37,33 +36,6 @@
     <icon name="SystemSetup"      file="system.png" sizes="all"/>
     <icon name="PlaceHolder"      file="specify32faded.png" sizes="32"/>
     <icon name="Template"         file="template.png" sizes="all"/>
-    
-    <!--  Table Icons -->
-    <icon name="accession"      file="accession.gif" sizes="all"/>
-    <icon name="accessionagent" file="agent.gif" sizes="all"/>
-    <icon name="address"        file="address.png" sizes="all"/>
-    <icon name="agent"          file="agent.gif" sizes="all"/>
-    <icon name="author"         file="author.png" sizes="all"/>
-    <icon name="collectingevent" file="collevent.gif" sizes="all"/>
-    <icon name="collectingtrip" file="canoe.png" sizes="all"/>
-    <icon name="collection"     file="package.png" sizes="all"/>
-    <icon name="collectionobject" file="catobj_fish32x32.gif" sizes="all"/>
-    <icon name="collectionobjectcitation" file="citation.png" sizes="all"/>
-    <icon name="colobj"         file="catobj_fish.gif" sizes="all"/>
-    <icon name="colobjattributes" file="newworkbench.gif" sizes="32"/>
-    <icon name="determination"  file="agent.gif" sizes="all"/>
-    <icon name="geography"      file="earth.png" sizes="all"/>
-    <icon name="geologictimeperiod" file="geologictime.png" sizes="all"/>
-    <icon name="inforequest"    file="information.gif" sizes="all"/>
-    <icon name="journal"        file="journal.png" sizes="all"/>
-    <icon name="loan"           file="loans.gif" sizes="all"/>
-    <icon name="locality"       file="locality.gif" sizes="all"/>
-    <icon name="location"       file="location.gif" sizes="all"/>
-    <icon name="permit"         file="permit.png" sizes="all"/>
-    <icon name="preptype"       file="preptype.png" sizes="all"/>
-    <icon name="referencework"  file="referencework.png" sizes="all"/>
-    <icon name="stratigraphy"   file="strat_icon32x32.gif" sizes="all"/>
-    <icon name="taxon"          file="taxon.gif" sizes="all"/>
     
     <icon name="Labels16"      file="Label16x16.png" sizes="16"/>
     <icon name="Reports"       file="Reports32x32.png" sizes="all"/>
@@ -92,67 +64,16 @@
     <icon name="DropIndicator"  file="dropindicator.png" sizes="NonStd"/>
 
     <!-- Aliases -->
-    <icon name="attachment"             alias="unknown"/>
-    <icon name="preparation"            alias="cs"/>
-    <icon name="determinationcitation"  alias="collectionobjectcitation"/>
-    <icon name="localitycitation"       alias="collectionobjectcitation"/>
-    <icon name="taxoncitation"          alias="collectionobjectcitation"/>
-    <icon name="determinationcitaton"   alias="collectionobjectcitation"/>
-    <icon name="localityxitation"       alias="collectionobjectcitation"/>
-    <icon name="taxoncitation"          alias="collectionobjectcitation"/>
-    <icon name="repositoryagreement"    alias="accession"/>
-    <icon name="habitatattributes"      alias="colobjattributes"/>
-    <icon name="preparationattributes"  alias="colobjattributes"/>
-    
-    <icon name="Accession Agent"        alias="accessionagent"/>
-    <icon name="Collecting Event"       alias="collectingevent"/>
-    <icon name="Collecting Trip"        alias="collectingtrip"/>
-    <icon name="Collection Object"      alias="collectionobject"/>
-    <icon name="Collection Object Attributes" alias="colobjattributes"/>
-    <icon name="Habitat Attributes"     alias="colobjattributes"/>
-    <icon name="Preparation Attributes" alias="colobjattributes"/>
-    <icon name="Preparation Type"       alias="preptype"/>
-    <icon name="Repository Agreement"   alias="accession"/>
-    <icon name="Reference Work"         alias="referencework"/>
-    
-    <icon name="Agent"                  alias="agent"/>
-    <icon name="Attachment"             alias="attachment"/>
-    <icon name="Determination"          alias="agent"/>
-    <icon name="AccessionAgent"         alias="agent"/>
-    <icon name="CollectionObject"       alias="collectionobject"/>
-    <icon name="Taxon"                  alias="taxon"/>
-    <icon name="Geography"              alias="geography"/>
-    <icon name="Locality"               alias="locality"/>
-    <icon name="ColObj"                 alias="colobj"/>
-    <icon name="Address"                alias="address"/>
-    <icon name="Location"               alias="location"/>
-    <icon name="CollectingEvent"        alias="collectingevent"/>
-    <icon name="Accession"              alias="accession"/>
-    <icon name="Permit"                 alias="permit"/>
-    <icon name="InfoRequest"            alias="inforequest"/>
-    <icon name="PrepType"               alias="preptype"/>
-    <icon name="Loan"                   alias="loan"/>
-    <icon name="Stratigraphy"           alias="stratigraphy"/>
-    <icon name="CollectingTrip"         alias="collectingtrip"/>
-    <icon name="Collection"             alias="collection"/>
-    <icon name="Journal"                alias="journal"/>
-    <icon name="CollectionObjectCitation" alias="collectionobjectcitation"/>
-    <icon name="Address"                alias="address"/>
-    <icon name="ReferenceWork"          alias="referencework"/>
-    <icon name="Author"                 alias="author"/>
-    <icon name="GeologicTimePeriod"     alias="geologictimeperiod"/>
-    <icon name="ColObjAttributes"       alias="colobjattributes"/>
-    
-    <icon name="ShowMap"		        alias="LocalityMapper"/>
+    <icon name="ShowMap"		           alias="LocalityMapper"/>
     
     <icon name="taxontreedef"              alias="taxon"/>
     <icon name="geographytreedef"          alias="geography"/>
     <icon name="geologictimePeriodtreedef" alias="geologictimeperiod"/>
     <icon name="locationlreedef"           alias="location"/>
     
-    <icon name="Startup"	            alias="AppIcon"/>
+    <icon name="Startup"	               alias="AppIcon"/>
     
-    <icon name="DiGIR"                  file="DigirShovel.png"/>
+    <!-- Done Aliases -->
     
     <icon name="UserInterface" file="form.gif" sizes="all"/>
     
@@ -163,7 +84,7 @@
     <icon name="PlusSign"      file="plussign.gif"      sizes="16"/>
     <icon name="MinusSign"     file="minussign.gif"     sizes="16"/>
     <icon name="GrayDot"       file="graydot.gif"       sizes="16"/>
-    <icon name="Eraser16"        file="Clear16x16.png"  sizes="16"/>
+    <icon name="Eraser16"      file="Clear16x16.png"  sizes="16"/>
     
     <icon name="NewRecord"     alias="PlusSign"/>
     <icon name="DeleteRecord"  alias="MinusSign"/>
@@ -238,21 +159,6 @@
     
     <icon name="Checkmark" file="stock-apply.png" sizes="all"/>
     
-    <!-- Discipline Icons -->
-    <icon name="FishColObj"  file="catobj_fish.gif" sizes="all"/>    
-    
-    <!--  Plugins -->
-    <icon name="FishBase"         file="fblogootw32.png" sizes="all"/>
-    <!-- <icon name="BioGeoMancer"     file="biogeomancer.png" sizes="all"/> -->
-    <icon name="BioGeoMancer"     file="biogeomancer20x20.png" sizes="NonStd"/>
-    <icon name="ConvertGeoRef"	  file="LatLong20x20.png" sizes="NonStd"/>
-    <icon name="GoogleEarth"      file="GoogleEarth20x20.png" sizes="NonStd"/>
-    
-    <icon name="SearchBoxMac"      file="SearchBoxMac.gif"  sizes="NonStd"/>
-    <icon name="SearchBoxLinux"    file="queryIt.gif"        sizes="NonStd"/>
-    <icon name="SearchTriangle"    file="SearchTriangle.gif" sizes="NonStd"/>
-    
-    
     <!-- Preferences -->
     <icon name="Browse" file="browse.gif" sizes="all"/>
     
@@ -268,12 +174,6 @@
     <icon name="TTV_ToggleViewMode" file="split_view.png" sizes="32"/>
     
     <!-- Tree Task icons -->
-    <icon name="Geography_Tree"     file="earth.png"    sizes="all"/>
-    <!-- <icon name="Location_Tree"      file="location.gif" sizes="all"/> -->
-    <icon name="Location_Tree"      alias="Location"/>
-    <icon name="GeoTimePeriod_Tree" file="clock.png"    sizes="all"/>
-    <icon name="Taxon_Tree"         file="taxon.gif"    sizes="all"/>
-    
     <icon name="TreeDefEditor"      file="taxon.gif"    sizes="all"/>
     <icon name="TreeViewer"			file="taxon.gif"	sizes="all"/>
     

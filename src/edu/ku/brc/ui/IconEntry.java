@@ -62,7 +62,7 @@ public class IconEntry
     public void add(final IconSize id, final URL path)
     {
         //log.debug("Putting["+name+"]["+id.toString()+"]");
-    	icons.put(id,path);
+    	icons.put(id, path);
     }
 
     /*

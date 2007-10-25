@@ -1428,9 +1428,12 @@ public class Specify extends JPanel implements DatabaseLoginListener
         public void run()
           {
     	      // Set App Name, MUST be done very first thing!
-              UIRegistry.setAppName("Specify");              
-              // Then set this, which        
+              UIRegistry.setAppName("Specify"); 
+              
+              // Then set this
         	  IconManager.setApplicationClass(Specify.class);
+              IconManager.loadIcons(XMLHelper.getConfigDir("icons_datamodel.xml"));
+              IconManager.loadIcons(XMLHelper.getConfigDir("icons_plugins.xml"));
               
               if (!isRelease)
               {

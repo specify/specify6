@@ -12,6 +12,7 @@ import com.jgoodies.looks.plastic.theme.DesertBlue;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.tests.SpecifyAppPrefs;
 import edu.ku.brc.ui.IconManager;
@@ -69,6 +70,9 @@ public class BasicHibernateMain implements DatabaseLoginListener
         System.setProperty("edu.ku.brc.ui.db.PickListDBAdapterFactory", "edu.ku.brc.specify.ui.db.PickListDBAdapterFactory");   // Needed By the Auto Cosmplete UI
 
         IconManager.setApplicationClass(Specify.class);
+        IconManager.loadIcons(XMLHelper.getConfigDir("icons_datamodel.xml"));
+        IconManager.loadIcons(XMLHelper.getConfigDir("icons_plugins.xml"));
+
         UIRegistry.getInstance(); // initializes it first thing
         UIRegistry.setAppName("Specify");
 
