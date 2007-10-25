@@ -210,6 +210,68 @@
             </detailView>
         </table>
         
+        <table id="7" tableid="1" indexed="false" name="SynonymCollObjs" title="Synonym Coll Objs (type 4)" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="1" primary="true">co.CollectionObjectID</join>
+                <join tableid="9">d.CollectionObjectID</join>
+                <join tableid="4">t.TaxonID</join>
+                <join tableid="4">t2.TaxonID</join>
+            </joins>
+            <detailView icon="Taxon">
+                <sql>
+                    <![CDATA[SELECT DISTINCT co.CollectionObjectID, co.CatalogNumber, t.FullName, t2.FullName, %s FROM collectionobject co INNER JOIN determination d ON d.CollectionObjectID=co.CollectionObjectID INNER JOIN taxon t ON d.TaxonID = t.TaxonID INNER JOIN taxon t2 ON t2.TaxonID = t.AcceptedID WHERE %s]]>
+                </sql>
+                <captions>
+                    <caption col="co.CollectionObjectID" text="co.CollectionObjectID" visible="false"/>
+                    <caption col="co.CatalogNumber"      text="Catalog Number"/>
+                    <caption col="t.FullName"            text="Determination Name"/>
+                    <caption col="t2.FullName"           text="Accepted Name"/>
+                </captions>
+            </detailView>
+        </table>
+        
+        <table id="8" tableid="1" indexed="false" name="AcceptedNameCollObjs" title="Accepted Name Coll Objs (type 3)" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="1" primary="true">co.CollectionObjectID</join>
+                <join tableid="9">d.CollectionObjectID</join>
+                <join tableid="4">t.TaxonID</join>
+                <join tableid="4">t2.TaxonID</join>
+            </joins>
+            <detailView icon="Taxon">
+                <sql>
+                    <![CDATA[SELECT DISTINCT co.CollectionObjectID, co.CatalogNumber, t.FullName, t2.FullName, %s FROM collectionobject co INNER JOIN determination d ON d.CollectionObjectID=co.CollectionObjectID INNER JOIN taxon t ON d.TaxonID = t.TaxonID INNER JOIN taxon t2 ON t.TaxonID = t2.AcceptedID WHERE %s]]>
+                </sql>
+                <captions>
+                    <caption col="co.CollectionObjectID" text="co.CollectionObjectID" visible="false"/>
+                    <caption col="co.CatalogNumber"      text="Catalog Number"/>
+                    <caption col="t.FullName"            text="Determination Name"/>
+                    <caption col="t2.FullName"           text="Old Name"/>
+                </captions>
+            </detailView>
+        </table>
+        
+        <table id="9" tableid="1" indexed="false" name="OtherSynsCollObjs" title="Other Synonym Coll Objs (type 2)" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="1" primary="true">co.CollectionObjectID</join>
+                <join tableid="9">d.CollectionObjectID</join>
+                <join tableid="4">deterTax.TaxonID</join>
+                <join tableid="4">acceptTax.TaxonID</join>
+                <join tableid="4">oldTax.TaxonID</join>
+            </joins>
+            <detailView icon="Taxon">
+                <sql>
+                    <![CDATA[SELECT DISTINCT co.CollectionObjectID, co.CatalogNumber, deterTax.FullName, acceptTax.FullName, oldTax.FullName, %s FROM collectionobject co INNER JOIN determination d ON d.CollectionObjectID=co.CollectionObjectID INNER JOIN taxon deterTax ON d.TaxonID = deterTax.TaxonID INNER JOIN taxon acceptTax ON acceptTax.TaxonID = deterTax.AcceptedID INNER JOIN taxon oldTax ON oldTax.AcceptedID = acceptTax.TaxonID  AND oldTax.TaxonID != deterTax.TaxonID WHERE %s]]>
+                </sql>
+                <captions>
+                    <caption col="co.CollectionObjectID" text="co.CollectionObjectID" visible="false"/>
+                    <caption col="co.CatalogNumber"      text="Catalog Number"/>
+                    <caption col="deterTax.FullName"     text="Old Name (on Determination)"/>
+                    <caption col="acceptTax.FullName"    text="Accepted Name"/>
+                    <caption col="oldTax.FullName"       text="Other Old Name"/>
+                </captions>
+            </detailView>
+        </table>
+        
     </express>
     
     <!-- ************************************************* -->
