@@ -940,7 +940,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="parent" label="Parent"/>
-                	<cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=true;editoncreate=true" name="parent" colspan="3"/>
+                	<cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false;editoncreate=true" name="parent" colspan="3"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="definitionItem" label="Rank"/>
@@ -976,7 +976,7 @@
                 </row>
                 <row>
                 	<cell type="label" labelfor="acceptedParent" label="Accepted Taxon"/>
-                	<cell type="field" id="acceptedParent" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=true" name="acceptedParent" colspan="3"/>
+                	<cell type="field" id="acceptedParent" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="acceptedParent" colspan="3"/>
                 </row>
                 <row>
                 	<cell type="label" labelfor="isHybrid" label="Is Hybrid?"/>
@@ -984,11 +984,11 @@
                 </row>
                 <row>
                 	<cell type="label" labelfor="hybridParent1" label="Hybrid Parent 1"/>
-                	<cell type="field" id="hybridParent1" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=true" name="hybridParent1" colspan="3"/>
+                	<cell type="field" id="hybridParent1" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="hybridParent1" colspan="3"/>
                 </row>
                 <row>
                 	<cell type="label" labelfor="hybridParent2" label="Hybrid Parent 2"/>
-                	<cell type="field" id="hybridParent2" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=true" name="hybridParent2" colspan="3"/>
+                	<cell type="field" id="hybridParent2" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="hybridParent2" colspan="3"/>
                 </row>
                 <row>
                     <cell type="separator" label="Attachments" colspan="5"/>
