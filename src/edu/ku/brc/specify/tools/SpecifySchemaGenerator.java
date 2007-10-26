@@ -165,25 +165,31 @@ public class SpecifySchemaGenerator
     protected static void dropDB(final DBConnection dbConnection, final String dbName) throws SQLException
     {
         Connection connection = dbConnection.createConnection();
-        Statement  stmt       = connection.createStatement();
-        try
+        if (connection != null)
         {
-            log.info("Dropping database "+dbName);
-            //String myStatemt
-            stmt.execute("drop database "+ dbName);
-            
-            log.info("Dropped database "+dbName);
-            
+            Statement  stmt       = connection.createStatement();
+            try
+            {
+                log.info("Dropping database "+dbName);
+                //String myStatemt
+                stmt.execute("drop database "+ dbName);
+                
+                log.info("Dropped database "+dbName);
+                
+                stmt.close();
+                
+                
+            } catch (SQLException ex)
+            {
+                log.error("SQLException could not drop database ["+dbName+"]:" + "\n" + ex.toString());
+                ex.toString();
+            }        
             stmt.close();
-            
-            
-        } catch (SQLException ex)
+            connection.close();
+        } else
         {
-            log.error("SQLException could not drop database ["+dbName+"]:" + "\n" + ex.toString());
-            ex.toString();
-        }        
-        stmt.close();
-        connection.close();
+            log.error(dbConnection.getErrorMsg());
+        }
     } 
     
     /**
@@ -195,12 +201,19 @@ public class SpecifySchemaGenerator
     protected static void createDB(final DBConnection dbConnection, final String dbName) throws SQLException
     {
         Connection connection = dbConnection.createConnection();
-        Statement  stmt       = connection.createStatement();
-        log.info("Creating database "+dbName);        
-        stmt.execute("create database "+ dbName);        
-        log.info("Created database "+dbName);        
-        stmt.close();
-        connection.close();
+        if (connection != null)
+        {
+            Statement  stmt       = connection.createStatement();
+            log.info("Creating database "+dbName);        
+            stmt.execute("create database "+ dbName);        
+            log.info("Created database "+dbName);        
+            stmt.close();
+            connection.close();            
+        } else
+        {
+            log.error(dbConnection.getErrorMsg());
+        }
+
         //System.exit(0);
     }
     /**
