@@ -179,7 +179,6 @@ import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonCitation;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
-import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.datamodel.Workbench;
@@ -214,7 +213,8 @@ public class BuildSampleDatabase
     
     protected int                steps = 0;   
     protected ProgressFrame      frame;
-    protected Properties         initPrefs = null;
+    protected Properties         initPrefs     = null;
+    protected Properties         backstopPrefs = null;
     
     protected SetupDialog        setupDlg  = null;
     protected boolean            hideFrame = false;
@@ -2020,7 +2020,7 @@ public class BuildSampleDatabase
         System.setProperty(AppPreferences.factoryName,          "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
         System.setProperty("edu.ku.brc.dbsupport.DataProvider", "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
 
-        Properties backstopPrefs = getInitializePrefs(null);
+        backstopPrefs = getInitializePrefs(null);
         
         String driverName   = backstopPrefs.getProperty("initializer.drivername",   "MySQL");
         String databaseName = backstopPrefs.getProperty("initializer.databasename", "testfish");        
@@ -2298,7 +2298,14 @@ public class BuildSampleDatabase
         System.setProperty(AppPreferences.factoryName,          "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
         System.setProperty("edu.ku.brc.dbsupport.DataProvider", "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
 
-        initPrefs = getInitializePrefs(dbName);
+        Properties props = getInitializePrefs(dbName);
+        if (props != null)
+        {
+            initPrefs = props;
+        } else
+        {
+            initPrefs = backstopPrefs;
+        }
         
         String userName     = initPrefs.getProperty("initializer.username", "rods");
         String password     = initPrefs.getProperty("initializer.password", "rods");
@@ -2563,16 +2570,15 @@ public class BuildSampleDatabase
             if (initFile.exists())
             {
                 properties.load(new FileInputStream(initFile));
-            } else
-            {
-                System.out.println("Couldn't find ["+initFile.getAbsolutePath()+"]");
-            }
+                return properties;
+            } 
+            System.out.println("Couldn't find ["+initFile.getAbsolutePath()+"]");
             
         } catch (Exception ex)
         {
             System.err.println(ex); // XXX Error Dialog
         }
-        return properties;
+        return null; 
     }
     
     
@@ -2613,7 +2619,7 @@ public class BuildSampleDatabase
             databaseNameTxt = new JTextField(databaseName);
             
             usernameTxtFld = new JTextField("rods");
-            passwdTxtFld = new JPasswordField("rods");
+            passwdTxtFld   = new JPasswordField("rods");
             
             PanelBuilder    builder    = new PanelBuilder(new FormLayout("p,2px,p:g", "p,4px,p,4px,p,4px,p,4px,p,10px,p"));
             CellConstraints cc         = new CellConstraints();
