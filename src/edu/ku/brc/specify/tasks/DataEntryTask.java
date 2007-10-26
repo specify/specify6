@@ -588,7 +588,7 @@ public class DataEntryTask extends BaseTask
             } else if (cmdAction.getData() instanceof Object[])
             {
                 Object[] dataList = (Object[])cmdAction.getData();
-                if (dataList.length != 3)
+                if (dataList.length == 3)
                 {
                     ViewIFace   view = (ViewIFace)dataList[0];
                     String mode = (String)dataList[1];
