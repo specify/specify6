@@ -47,6 +47,7 @@
 		<mapping class="edu.ku.brc.specify.datamodel.Appraisal"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Attachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AttachmentMetadata"/>
+		<mapping class="edu.ku.brc.specify.datamodel.AttachmentTag"/>
 		<mapping class="edu.ku.brc.specify.datamodel.AttributeDef"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Author"/>
 		<mapping class="edu.ku.brc.specify.datamodel.BorrowAgent"/>

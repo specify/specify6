@@ -41,12 +41,19 @@ public class Attachment extends DataModelObjBase implements Serializable
     protected Integer                 attachmentId;
     protected String                  mimeType;
     protected String                  origFilename;
+    protected String                  title;
+    protected String                  license;
+    protected String                  copyrightHolder;
+    protected String                  copyrightDate;
+    protected String                  credit;
+    protected String                  dateImaged;
     protected Calendar                fileCreatedDate;
     protected String                  remarks;
     protected String                  attachmentLocation;
     protected Integer                 visibility;
     protected String                  visibilitySetBy;
     protected Set<AttachmentMetadata> metadata;
+    protected Set<AttachmentTag>      tags;
     
     // transient field
     protected boolean                 storeFile;
@@ -95,6 +102,7 @@ public class Attachment extends DataModelObjBase implements Serializable
         remarks            = null;
         attachmentLocation = null;
         metadata           = new HashSet<AttachmentMetadata>();
+        tags               = new HashSet<AttachmentTag>();
         
         storeFile          = false;
         
@@ -183,6 +191,72 @@ public class Attachment extends DataModelObjBase implements Serializable
 //        }
     }
 
+    @Column(name = "Title", length = 64)
+    public String getTitle()
+    {
+        return title;
+    }
+
+    public void setTitle(String title)
+    {
+        this.title = title;
+    }
+
+    @Column(name = "License", length = 64)
+    public String getLicense()
+    {
+        return license;
+    }
+
+    public void setLicense(String license)
+    {
+        this.license = license;
+    }
+
+    @Column(name = "CopyrightDate", length = 64)
+    public String getCopyrightDate()
+    {
+        return copyrightDate;
+    }
+
+    public void setCopyrightDate(String copyrightDate)
+    {
+        this.copyrightDate = copyrightDate;
+    }
+
+    @Column(name = "CopyrightHolder", length = 64)
+    public String getCopyrightHolder()
+    {
+        return copyrightHolder;
+    }
+
+    public void setCopyrightHolder(String copyrightHolder)
+    {
+        this.copyrightHolder = copyrightHolder;
+    }
+
+    @Column(name = "Credit", length = 64)
+    public String getCredit()
+    {
+        return credit;
+    }
+
+    public void setCredit(String credit)
+    {
+        this.credit = credit;
+    }
+
+    @Column(name = "DateImaged", length = 64)
+    public String getDateImaged()
+    {
+        return dateImaged;
+    }
+
+    public void setDateImaged(String dateImaged)
+    {
+        this.dateImaged = dateImaged;
+    }
+
     @Temporal(TemporalType.DATE)
     @Column(name = "FileCreatedDate")
     public Calendar getFileCreatedDate()
@@ -250,6 +324,18 @@ public class Attachment extends DataModelObjBase implements Serializable
         this.metadata = metadata;
     }
     
+    @OneToMany(fetch=FetchType.EAGER, mappedBy = "attachment")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
+    public Set<AttachmentTag> getTags()
+    {
+        return tags;
+    }
+
+    public void setTags(Set<AttachmentTag> tags)
+    {
+        this.tags = tags;
+    }
+
     @OneToMany(mappedBy = "attachment")
     @Cascade( {CascadeType.ALL} )
     public Set<AccessionAttachment> getAccessionAttachments()

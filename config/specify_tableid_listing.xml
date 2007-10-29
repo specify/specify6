@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last used ID is 129 or 518
+    Last used ID is 130 or 518
     
     86 is available
     
@@ -45,6 +45,7 @@
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.AttachmentMetadata" abbrev="atm" id="42" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.AttachmentTag" abbrev="attag" id="130" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.AttributeDef" abbrev="atd" id="16"/>
         <table name="edu.ku.brc.specify.datamodel.Author" abbrev="au" id="17" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.Borrow" abbrev="bo" id="18" searchable="true"/>
