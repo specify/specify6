@@ -2299,7 +2299,7 @@ public class BuildSampleDatabase
         System.setProperty("edu.ku.brc.dbsupport.DataProvider", "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
 
         Properties props = getInitializePrefs(dbName);
-        if (props != null)
+        if (props.size() > 0)
         {
             initPrefs = props;
         } else
@@ -2578,7 +2578,7 @@ public class BuildSampleDatabase
         {
             System.err.println(ex); // XXX Error Dialog
         }
-        return null; 
+        return new Properties();
     }
     
     
