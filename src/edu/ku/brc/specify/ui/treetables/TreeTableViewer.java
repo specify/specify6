@@ -305,17 +305,21 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		listHeaders = new TreeViewerListHeader[2];
 		treeListPanels = new JPanel[2];
         
+        int rowHeight = 20;
+        
 		lists[0] = new TreeDataGhostDropJList(listModel,this);
 		lists[0].addMouseListener(mouseListener);
 		lists[0].setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		lists[0].setCellRenderer(listCellRenderer);
 		lists[0].addListSelectionListener(listSelListener);
+        lists[0].setFixedCellHeight(rowHeight);
 		
 		lists[1] = new TreeDataGhostDropJList(listModel,this);
 		lists[1].addMouseListener(mouseListener);
 		lists[1].setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		lists[1].setCellRenderer(listCellRenderer);
 		lists[1].addListSelectionListener(listSelListener);
+        lists[1].setFixedCellHeight(rowHeight);
 		
         Map<Integer,String> rankNamesMap = new HashMap<Integer, String>();
         for (I defItem: treeDef.getTreeDefItems())
