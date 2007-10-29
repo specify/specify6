@@ -441,7 +441,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         });
 
         // view manipulation buttons
-        JLabel viewLabel0 = new JLabel("View");
+        JLabel viewLabel0 = new JLabel(getResourceString("View"));
         viewLabel0.setSize(32,viewLabel0.getHeight());
         buttonPanel0.add(viewLabel0);
         viewLabel0.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -457,7 +457,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         buttonPanel0.add(Box.createRigidArea(new Dimension(20,20)));
         
         // tree editing buttons
-        JLabel editLabel0 = new JLabel("Edit");
+        JLabel editLabel0 = new JLabel(getResourceString("Edit"));
         editLabel0.setSize(32,editLabel0.getHeight());
         buttonPanel0.add(editLabel0);
         editLabel0.setAlignmentX(Component.CENTER_ALIGNMENT);
