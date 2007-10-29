@@ -38,7 +38,7 @@ public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializab
     public static final int SUBPHYLUM     = 40;
     public static final int SUPERCLASS    = 50;
     public static final int CLASS         = 60;
-    public static final int SUBLCASS      = 70;
+    public static final int SUBCLASS      = 70;
     public static final int INFRACLASS    = 80;
     public static final int SUPERORDER    = 90;
     public static final int ORDER         = 100;

@@ -6,6 +6,8 @@
  */
 package edu.ku.brc.specify.treeutils;
 
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.datamodel.Geography;
@@ -18,6 +20,7 @@ import edu.ku.brc.specify.datamodel.Location;
 import edu.ku.brc.specify.datamodel.LocationTreeDef;
 import edu.ku.brc.specify.datamodel.LocationTreeDefItem;
 import edu.ku.brc.specify.datamodel.Taxon;
+import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
@@ -371,72 +374,100 @@ public class TreeFactory
 		return def;
 	}
     
-	/** An array describing the standard levels of a {@link Location} tree. */
-	@SuppressWarnings("unused")
-	private Object[][] stdLocItems = {
-			{   0,"Location Root",true},
-            { 200,"Building",false},
-         	{ 400,"Floor",false},
-         	{ 600,"Room",true},
-         	{ 800,"Shelf/Freezer",true}, };
-	
-    /** An array describing the standard levels of a {@link Geography} tree. */
-    @SuppressWarnings("unused")
-	private Object[][] stdGeoItems = {
-    		{ 0, "Geography Root", true },
-			{ 200, "Continent/Ocean", true },
-			{ 400, "Country", false },
-			{ 600, "State", true },
-			{ 800, "County", false }, };
-
-    /** An array describing the standard levels of a {@link GeologicTimePeriod} tree. */
-    @SuppressWarnings("unused")
-    private Object[][] stdGtpItems = {
-            { 0, "Time Root", true },
-            { 200, "Erathem", false },
-            { 400, "Period", false },
-            { 600, "Epoch", false },
-            { 800, "Age", false }, };
-
-    /** An array describing the standard levels of a {@link LithoStrat} tree. */
-    @SuppressWarnings("unused")
-    private Object[][] stdLithoStratItems = {
-            { 0, "Litho Root", true },
-            { 100, "SuperGroup", false },
-            { 200, "LithoGroup", false },
-            { 300, "Formation", false },
-            { 400, "Member", false },
-            { 500, "Bed", false }, };
+    public static Set<TaxonTreeDefItem> addStandardTaxonDefItems(TaxonTreeDef def)
+    {
+        Set<TaxonTreeDefItem> items = def.getTreeDefItems();
+        
+        TaxonTreeDefItem prevItem = null;
+        
+        for (Object[] itemDesc: stdTaxonItems)
+        {
+            TaxonTreeDefItem item = new TaxonTreeDefItem();
+            item.initialize();
+            items.add(item);
+            item.setTreeDef(def);
+            
+            item.setRankId((Integer)itemDesc[0]);
+            item.setName((String)itemDesc[1]);
+            item.setIsEnforced((Boolean)itemDesc[2]);
+            item.setIsInFullName((Boolean)itemDesc[3]);
+            item.setParent(prevItem);
+            prevItem = item;
+        }
+        
+        return items;
+    }
+    
+//	/** An array describing the standard levels of a {@link Location} tree. */
+//	@SuppressWarnings("unused")
+//	private static Object[][] stdLocItems = {
+//			{   0,"Location Root",true},
+//            { 200,"Building",false},
+//         	{ 400,"Floor",false},
+//         	{ 600,"Room",true},
+//         	{ 800,"Shelf/Freezer",true}, };
+//	
+//    /** An array describing the standard levels of a {@link Geography} tree. */
+//    @SuppressWarnings("unused")
+//	private static Object[][] stdGeoItems = {
+//    		{ 0, "Geography Root", true },
+//			{ 200, "Continent/Ocean", true },
+//			{ 400, "Country", false },
+//			{ 600, "State", true },
+//			{ 800, "County", false }, };
+//
+//    /** An array describing the standard levels of a {@link GeologicTimePeriod} tree. */
+//    @SuppressWarnings("unused")
+//    private static Object[][] stdGtpItems = {
+//            { 0, "Time Root", true },
+//            { 200, "Erathem", false },
+//            { 400, "Period", false },
+//            { 600, "Epoch", false },
+//            { 800, "Age", false }, };
+//
+//    /** An array describing the standard levels of a {@link LithoStrat} tree. */
+//    @SuppressWarnings("unused")
+//    private static Object[][] stdLithoStratItems = {
+//            { 0, "Litho Root", true },
+//            { 100, "SuperGroup", false },
+//            { 200, "LithoGroup", false },
+//            { 300, "Formation", false },
+//            { 400, "Member", false },
+//            { 500, "Bed", false }, };
 
     /** An array describing the standard levels of a {@link Taxon} tree. */
+    // format is rankID, name, isEnforced, isInFullname
 	@SuppressWarnings("unused")
-	private Object[][] stdTaxonItems = {
-			{ 0, "Taxonomy Root", true },
-			{ 100, "Kingdom", true },
-			{ 200, "Subkingdom", false },
-			{ 300, "Phylum", true },
-			//	{ 300,"Division",true}, // botanical collections
-			{ 400, "Subphylum", false },
-			//	{ 400,"Subdivision",false}, // botanical collections
-			{ 500, "Superclass", false },
-			{ 600, "Class", true },
-			{ 700, "Subclass", false },
-			{ 800, "Infraclass", false },
-			{ 900, "Superorder", false },
-			{ 1000, "Order", true },
-			{ 1100, "Suborder", false },
-			{ 1200, "Infraorder", false },
-			{ 1300, "Superfamily", false },
-			{ 1400, "Tribe", false },
-			{ 1500, "Subtribe", false },
-			{ 1600, "Genus", true },
-			{ 1700, "Subgenus", false },
-			{ 1800, "Section", false },
-			{ 1900, "Subsection", false },
-			{ 2000, "Species", false },
-			{ 2100, "Subspecies", false },
-			{ 2200, "Variety", false },
-			{ 2300, "Subvariety", false },
-			{ 2400, "Forma", false },
-			{ 2500, "Subforma", false } };
+	private static Object[][] stdTaxonItems = {
+            { TaxonTreeDef.TAXONOMY_ROOT,   "Taxonomy Root", true,  false },
+            { TaxonTreeDef.KINGDOM,         "Kingdom",       true,  false },
+            { TaxonTreeDef.SUBKINGDOM,      "Subkingdom",    false, false },
+            { TaxonTreeDef.PHYLUM,          "Phylum",        true,  false },
+            //{ TaxonTreeDef.DIVISION,        "Division",      true,  false}, // botanical collections
+            { TaxonTreeDef.SUBPHYLUM,       "Subphylum",     false, false },
+            //{ TaxonTreeDef.SUBDIVISION,     "Subdivision",   false, false}, // botanical collections
+            { TaxonTreeDef.SUPERCLASS,      "Superclass",    false, false },
+            { TaxonTreeDef.CLASS,           "Class",         true,  false },
+            { TaxonTreeDef.SUBCLASS,        "Subclass",      false, false },
+            { TaxonTreeDef.INFRACLASS,      "Infraclass",    false, false },
+            { TaxonTreeDef.SUPERORDER,      "Superorder",    false, false },
+            { TaxonTreeDef.ORDER,           "Order",         true,  false },
+            { TaxonTreeDef.SUBORDER,        "Suborder",      false, false },
+            { TaxonTreeDef.INFRAORDER,      "Infraorder",    false, false },
+            { TaxonTreeDef.SUPERFAMILY,     "Superfamily",   false, false },
+            { TaxonTreeDef.FAMILY,          "Family",        false, false },
+            { TaxonTreeDef.SUBFAMILY,       "Subfamily",     false, false },
+            { TaxonTreeDef.TRIBE,           "Tribe",         false, false },
+            { TaxonTreeDef.SUBTRIBE,        "Subtribe",      false, false },
+            { TaxonTreeDef.GENUS,           "Genus",         true,  true },
+            { TaxonTreeDef.SUBGENUS,        "Subgenus",      false, true },
+            { TaxonTreeDef.SECTION,         "Section",       false, true },
+            { TaxonTreeDef.SUBSECTION,      "Subsection",    false, true },
+            { TaxonTreeDef.SPECIES,         "Species",       false, true },
+            { TaxonTreeDef.SUBSPECIES,      "Subspecies",    false, true },
+            { TaxonTreeDef.VARIETY,         "Variety",       false, true },
+            { TaxonTreeDef.SUBVARIETY,      "Subvariety",    false, true },
+            { TaxonTreeDef.FORMA,           "Forma",         false, true },
+            { TaxonTreeDef.SUBFORMA,        "Subforma",      false, true }
+            };
 }
