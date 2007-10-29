@@ -391,6 +391,7 @@ public class TreeFactory
             item.setName((String)itemDesc[1]);
             item.setIsEnforced((Boolean)itemDesc[2]);
             item.setIsInFullName((Boolean)itemDesc[3]);
+            item.setFullNameSeparator(" ");
             item.setParent(prevItem);
             prevItem = item;
         }
