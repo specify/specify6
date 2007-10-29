@@ -254,7 +254,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 	public TreeDefinitionEditor<T,D,I> openTreeDefEditor(D treeDef)
 	{
         ContextMgr.requestContext(this);
-        String tabName = getResourceString("TreeDefEditor") + ": " + treeDef.getName();
+        String tabName = treeDef.getName();
 	    TreeDefinitionEditor<T,D,I> defEditor = new TreeDefinitionEditor<T,D,I>(treeDef,tabName,this);
         addSubPaneToMgr(defEditor);
         currentDefInUse = true;
