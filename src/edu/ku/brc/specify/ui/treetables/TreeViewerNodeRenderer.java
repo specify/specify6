@@ -318,7 +318,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
     public void intervalRemoved(ListDataEvent e)
     {
         widthsValid = false;
-        removeUnusedColumnWidths();
+        //removeUnusedColumnWidths();
     }
 
     public void contentsChanged(ListDataEvent e)
