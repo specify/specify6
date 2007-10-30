@@ -15,7 +15,7 @@
 package edu.ku.brc.ui.forms.persist;
 
 import java.util.Hashtable;
-import java.util.List;
+import java.util.Vector;
 
 public interface FormViewDefIFace extends ViewDefIFace
 {
@@ -29,7 +29,7 @@ public interface FormViewDefIFace extends ViewDefIFace
     /**
      * @return all the rows
      */
-    public abstract List<FormRowIFace> getRows();
+    public abstract Vector<FormRowIFace> getRows();
 
     /**
      * Returns a FormCell by ID (searches the rows and then the columns)

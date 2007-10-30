@@ -17,7 +17,9 @@ package edu.ku.brc.ui.forms.persist;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.Collections;
 import java.util.Hashtable;
+import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
@@ -352,9 +354,28 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#toXML(java.lang.StringBuffer)
      */
-    public void toXML(StringBuffer sb)
+    public void toXML(final StringBuilder sb)
     {
-        throw new RuntimeException("Not Implemented.");
+        sb.append("<viewset name=\""+name+"\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n");
+        
+        sb.append("  <views>\n");
+        Vector<ViewIFace> viewsList = new Vector<ViewIFace>(views.values());
+        Collections.sort(viewsList);
+        for (ViewIFace view : viewsList)
+        {
+            view.toXML(sb);
+        }
+        sb.append("  </views>\n");
+        
+        sb.append("  <viewdefs>\n");
+        Vector<ViewDefIFace> viewDefsList = new Vector<ViewDefIFace>(viewDefs.values());
+        Collections.sort(viewDefsList);
+        for (ViewDefIFace viewDef : viewDefsList)
+        {
+            viewDef.toXML(sb);
+        }
+        sb.append("  </viewdefs>\n");
+        sb.append("</viewset>\n");
     }
 
     /**

@@ -17,8 +17,8 @@
  */
 package edu.ku.brc.specify.datamodel;
 
-import static edu.ku.brc.ui.forms.persist.View.xmlAttr;
-import static edu.ku.brc.ui.forms.persist.View.xmlNode;
+import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
+import static edu.ku.brc.helpers.XMLHelper.xmlNode;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -739,7 +739,7 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
         viewSetName       = view.getViewSetName();
     }
     
-    public void toXML(final StringBuffer sb)
+    public void toXML(final StringBuilder sb)
     {
         sb.append("<view ");
         xmlAttr(sb, "name", name);

@@ -38,7 +38,7 @@ public class WorkbenchJRDataSource implements JRDataSource
     private List<WorkbenchRow>       workbenchRows;
  
     /**
-     * Constrcutor with Workbench.
+     * Constructor with Workbench.
      * @param workbench the workbench
      */
     public WorkbenchJRDataSource(final Workbench workbench)
@@ -49,7 +49,7 @@ public class WorkbenchJRDataSource implements JRDataSource
     }
 
     /**
-     * Constrcutor with Workbench and a the rows to use.
+     * Constructor with Workbench and a the rows to use.
      * @param workbench the workbench
      * @param workbenchRows the rows to use
      */

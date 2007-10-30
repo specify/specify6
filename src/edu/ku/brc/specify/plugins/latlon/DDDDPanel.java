@@ -77,7 +77,7 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
 
 
     /**
-     * Constrcutor. 
+     * Constructor. 
      */
     public DDDDPanel()
     {

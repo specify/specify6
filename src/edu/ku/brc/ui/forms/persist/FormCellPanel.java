@@ -15,6 +15,8 @@
 
 package edu.ku.brc.ui.forms.persist;
 
+import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
+
 import java.util.List;
 import java.util.Vector;
 
@@ -103,5 +105,15 @@ public class FormCellPanel extends FormCell implements Cloneable, FormCellPanelI
             fcp.rows.add((FormRow)formRow.clone());
         }
         return fcp;      
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCell#toXMLAttrs(java.lang.StringBuilder)
+     */
+    public void toXMLAttrs(StringBuilder sb)
+    {
+        xmlAttr(sb, "coldef", colDef);
+        xmlAttr(sb, "rowdef", rowDef);
+        xmlAttr(sb, "paneltype", panelType);
     }
 }

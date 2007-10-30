@@ -334,7 +334,7 @@ public class JComboBoxFromQuery extends JComboBox
                     }
                 }
                 
-                if (rs != null && rs.first())
+                if (rs != null && rs.next())
                 {
                     if (numColumns == -1)
                     {

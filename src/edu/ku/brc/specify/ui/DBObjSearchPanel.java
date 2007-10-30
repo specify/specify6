@@ -68,7 +68,7 @@ import edu.ku.brc.ui.forms.persist.ViewIFace;
  * and then the search definition it is to use to do the search and display the results as a table in the dialog. The resulting class is to be passed in
  * on construction so the results of the search can actually yield a Hibernate object.
  *
- * NOTE: The second constrcutor has not been tested! (It is designed as a single text field only that doesn't need a form view).
+ * NOTE: The second Constructor has not been tested! (It is designed as a single text field only that doesn't need a form view).
  *
  * @code_status Beta
  * 

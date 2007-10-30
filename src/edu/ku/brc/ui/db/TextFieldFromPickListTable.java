@@ -46,7 +46,7 @@ public class TextFieldFromPickListTable extends JTextField implements GetSetValu
     //protected Color                  bgColor    = null;
 
     /**
-     * Constrcutor.
+     * Constructor.
      * @param adapter the PickListTableAdapter
      */
     public TextFieldFromPickListTable(final PickListDBAdapterIFace adapter)

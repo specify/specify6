@@ -31,7 +31,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
 {
 
     /**
-     * Constrcutor.
+     * Constructor.
      */
     public CollectionObjectBusRules()
     {

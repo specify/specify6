@@ -14,6 +14,8 @@
  */
 package edu.ku.brc.ui.forms.persist;
 
+import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
+
 import java.util.List;
 import java.util.Vector;
 
@@ -323,5 +325,18 @@ public class FormCellSubView extends FormCell implements FormCellSubViewIFace
         subViewDef.description = description;
         subViewDef.tableRows   = tableRows;
         return subViewDef;      
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCell#toXMLAttrs(java.lang.StringBuilder)
+     */
+    public void toXMLAttrs(StringBuilder sb)
+    {
+        xmlAttr(sb, "viewname", viewName);
+        xmlAttr(sb, "desc", description);
+        //xmlAttr(sb, "funcmode", getFuncModes());
+        xmlAttr(sb, "defaulttype", defaultAltViewType);
+        if (ViewLoader.DEFAULT_SUBVIEW_ROWS != tableRows) xmlAttr(sb, "rows", tableRows);
+        if (singleValueFromSet) xmlAttr(sb, "single", singleValueFromSet);
     }
 }

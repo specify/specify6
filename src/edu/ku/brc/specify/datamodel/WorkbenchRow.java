@@ -95,7 +95,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     }
     
     /**
-     * Constrcutor for the code that knows the row number.
+     * Constructor for the code that knows the row number.
      * @param rowNum the row number or index
      */
     public WorkbenchRow(final Workbench workbench, final short rowNum)

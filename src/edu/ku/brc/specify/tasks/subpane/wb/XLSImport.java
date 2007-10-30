@@ -75,7 +75,7 @@ public class XLSImport extends DataImport implements DataImportIFace
     }
      
      /**
-     * Constrcutor.
+     * Constructor.
      * @param config the configuration
      */
     public XLSImport(final ConfigureExternalDataIFace config)

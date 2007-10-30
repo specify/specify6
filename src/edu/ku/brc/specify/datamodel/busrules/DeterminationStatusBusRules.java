@@ -40,7 +40,7 @@ public class DeterminationStatusBusRules extends BaseBusRules
 {
     
     /**
-     * Constrcutor.
+     * Constructor.
      */
     public DeterminationStatusBusRules()
     {
@@ -80,7 +80,7 @@ public class DeterminationStatusBusRules extends BaseBusRules
             conn = DBConnection.getInstance().createConnection();
             stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("select count(*) from determination where determination.DeterminationStatusID = "+DeterminationStatus.getId());
-            return rs.first() && rs.getInt(1) == 0;
+            return rs.next() && rs.getInt(1) == 0;
             
         } catch (Exception ex)
         {

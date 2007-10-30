@@ -42,10 +42,15 @@ public interface FormRowIFace
     public abstract void setCells(Vector<FormCellIFace> cells);
     
     /**
+     * @param num
+     */
+    public abstract void setRowNumber(byte num);
+    
+    /**
      * Appends its XML.
      * @param sb the buffer
      */
-    public abstract void toXML(final StringBuffer sb);
+    public abstract void toXML(final StringBuilder sb);
 
 
     /* (non-Javadoc)

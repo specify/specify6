@@ -67,7 +67,7 @@
 		    	</enableRules>
 
 			<columnDef>p,2dlu,p,5dlu,p,2dlu,p</columnDef>
-			<rowDef dup="14" cell="p" sep="4dlu"/>
+			<rowDef auto="true" cell="p" sep="4dlu"/>
 
 			<rows>
 				<row>

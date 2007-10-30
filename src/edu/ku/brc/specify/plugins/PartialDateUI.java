@@ -81,7 +81,7 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace, UIPlugina
     protected ValFormattedTextField textField;
     
     /**
-     * Constrcutor.
+     * Constructor.
      */
     public PartialDateUI(final boolean isViewOnly)
     {

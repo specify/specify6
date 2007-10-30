@@ -42,7 +42,7 @@ public class SimpleDescPane extends BaseSubPane
     protected Image splashImage = null;
 
     /**
-     * Constrcutor with string to be cetnered.
+     * Constructor with string to be cetnered.
      * @param name name of pane
      * @param task the task
      * @param desc  a description that displays in the center

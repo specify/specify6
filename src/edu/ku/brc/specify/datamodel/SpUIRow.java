@@ -130,6 +130,14 @@ public class SpUIRow implements java.io.Serializable, FormRowIFace, Comparable<S
         this.rowNum = rowNum;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormRowIFace#setRowNumber(byte)
+     */
+    public void setRowNumber(byte num)
+    {
+        this.rowNum = (short)num;
+    }
+
     /**
      * @param spUIRowId the spUIRowId to set
      */
@@ -251,7 +259,7 @@ public class SpUIRow implements java.io.Serializable, FormRowIFace, Comparable<S
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormRowIFace#toXML(java.lang.StringBuffer)
      */
-    public void toXML(StringBuffer sb)
+    public void toXML(StringBuilder sb)
     {
         sb.append("   <rows>\n");
         for (SpUICell cell : spCells)
@@ -260,7 +268,4 @@ public class SpUIRow implements java.io.Serializable, FormRowIFace, Comparable<S
         }
         sb.append("   </rows>\n");
     }
-
-
-
 }

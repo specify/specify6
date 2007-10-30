@@ -37,7 +37,7 @@ public class DBInfoBase implements Comparable<DBInfoBase>
     protected boolean isHidden = false;
     
     /**
-     * Default Constrcutor.
+     * Default Constructor.
      */
     public DBInfoBase()
     {

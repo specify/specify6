@@ -17,8 +17,8 @@
  */
 package edu.ku.brc.specify.datamodel;
 
-import static edu.ku.brc.ui.forms.persist.View.xmlAttr;
-import static edu.ku.brc.ui.forms.persist.View.xmlNode;
+import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
+import static edu.ku.brc.helpers.XMLHelper.xmlNode;
 
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -760,7 +760,7 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
      * @see edu.ku.brc.ui.forms.persist.FormViewDefIFace#getRows()
      */
     @Transient
-    public List<FormRowIFace> getRows()
+    public Vector<FormRowIFace> getRows()
     {
         // XXX Not the best approach
         return new Vector<FormRowIFace>(spRows);
@@ -986,7 +986,7 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#toXML(java.lang.StringBuffer)
      */
-    public void toXML(StringBuffer sb)
+    public void toXML(StringBuilder sb)
     {
         /*
          <viewdef

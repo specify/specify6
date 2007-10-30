@@ -15,7 +15,11 @@
 
 package edu.ku.brc.ui.forms.persist;
 
+import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
+import static edu.ku.brc.helpers.XMLHelper.xmlNode;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
+
+import java.util.Hashtable;
 
 import org.apache.log4j.Logger;
 
@@ -45,10 +49,10 @@ public class ViewDef implements Cloneable, ViewDefIFace
     protected DataObjectGettable   dataGettable   = null;
     protected DataObjectSettable   dataSettable   = null;
     
-    protected int                  xCoord  = 0;
-    protected int                  yCoord  = 0;
-    protected int                  width   = 0;
-    protected int                  height  = 0;
+    protected int                  xCoord  = -1;
+    protected int                  yCoord  = -1;
+    protected int                  width   = -1;
+    protected int                  height  = -1;
     
     /**
      * Default Constructor
@@ -327,14 +331,69 @@ public class ViewDef implements Cloneable, ViewDefIFace
         this.height = height;
     }
     
+    protected void toXMLAttrs(final StringBuilder sb)
+    {
+        // no op
+    }
+    
+    protected void toXMLNodes(final StringBuilder sb)
+    {
+        // no op
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#toXML(java.lang.StringBuffer)
      */
-    public void toXML(StringBuffer sb)
+    public void toXML(final StringBuilder sb)
     {
-        throw new RuntimeException("Not Implemented.");
+        /*
+         <viewdef
+            type="iconview"
+            name="AccessionIconView"
+            class="edu.ku.brc.specify.datamodel.Accession"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The Accession Agent Icon Viewer]]></desc>
+        </viewdef>
+         */
+        String indent = "\n        ";
+        sb.append("    <viewdef");
+        xmlAttr(sb, "type", type.toString());
+        sb.append(indent);
+        xmlAttr(sb, "name", name);
+        sb.append(indent);
+        xmlAttr(sb, "class", className);
+        sb.append(indent);
+        xmlAttr(sb, "gettable", dataGettableName);
+        sb.append(indent);
+        xmlAttr(sb, "settable", dataSettableName);
+        if (xCoord > -1)
+        {
+            sb.append(indent);
+            xmlAttr(sb, "x", xCoord);
+        }
+        if (yCoord > -1)
+        {
+            sb.append(indent);
+            xmlAttr(sb, "y", yCoord);
+        }
+        if (width > -1)
+        {
+            sb.append(indent);
+            xmlAttr(sb, "width", width);
+        }
+        if (height > -1)
+        {
+            sb.append(indent);
+            xmlAttr(sb, "height", height);
+        }
+        toXMLAttrs(sb);
+        sb.append(">\n    ");
+        xmlNode(sb, "desc", desc, true);
+        toXMLNodes(sb);
+        sb.append("    </viewdef>\n\n");        
     }
-
+    
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
@@ -371,4 +430,28 @@ public class ViewDef implements Cloneable, ViewDefIFace
         viewDef.dataSettable     = dataSettable;
         return viewDef;      
     }
+    
+    /**
+     * @param enableRules
+     * @return
+     */
+    protected String createEnableRulesXML(final Hashtable<String, String> enableRules)
+    {
+        if (enableRules.keySet().size() > 0)
+        {
+            StringBuilder sb = new StringBuilder("<enableRules>");
+            for (String key : enableRules.keySet())
+            {
+                sb.append("<rule id=\"");
+                sb.append(key);
+                sb.append("\"><![CDATA[");
+                sb.append(enableRules.get(key));
+                sb.append("]]></rule>");
+            }
+            sb.append("</enableRules>");
+            return sb.toString();
+        }
+        return null;
+    }
+
 }

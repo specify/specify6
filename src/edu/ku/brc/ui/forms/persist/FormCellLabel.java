@@ -14,6 +14,8 @@
  */
 package edu.ku.brc.ui.forms.persist;
 
+import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
+
 import javax.swing.ImageIcon;
 
 import org.apache.commons.lang.StringUtils;
@@ -31,7 +33,12 @@ public class FormCellLabel extends FormCellSeparator implements FormCellLabelIFa
     protected String    labelFor;
     protected String    iconName;
     protected ImageIcon icon;
-    protected boolean   recordObj;
+    protected boolean   isRecordObj;
+    
+    public FormCellLabel()
+    {
+        
+    }
     
     public FormCellLabel(final String id, 
                          final String name, 
@@ -43,10 +50,10 @@ public class FormCellLabel extends FormCellSeparator implements FormCellLabelIFa
     {
         super(name, id, label, colspan);
         
-        this.type      = FormCellIFace.CellType.label;        
-        this.labelFor  = labelFor;
-        this.recordObj = recordObj;
-        this.iconName  = iconName;
+        this.type        = FormCellIFace.CellType.label;        
+        this.labelFor    = labelFor;
+        this.isRecordObj = recordObj;
+        this.iconName    = iconName;
         
         icon = StringUtils.isNotEmpty(iconName) ? IconManager.getIcon(iconName, IconManager.IconSize.Std16) : null;
     }
@@ -88,15 +95,15 @@ public class FormCellLabel extends FormCellSeparator implements FormCellLabelIFa
      */
     public boolean isRecordObj()
     {
-        return recordObj;
+        return isRecordObj;
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormCellLabelIFace#setRecordObj(boolean)
      */
-    public void setRecordObj(boolean recordObj)
+    public void setRecordObj(boolean isRecordObj)
     {
-        this.recordObj = recordObj;
+        this.isRecordObj = isRecordObj;
     }
 
     /* (non-Javadoc)
@@ -123,7 +130,7 @@ public class FormCellLabel extends FormCellSeparator implements FormCellLabelIFa
         FormCellLabel fcl = (FormCellLabel)super.clone();
 
         fcl.labelFor  = labelFor;
-        fcl.recordObj = recordObj;
+        fcl.isRecordObj = isRecordObj;
         fcl.iconName  = iconName;
         fcl.icon      = icon;
         
@@ -138,5 +145,19 @@ public class FormCellLabel extends FormCellSeparator implements FormCellLabelIFa
     public String toString()
     {
         return label + " (label)";
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCell#toXMLAttrs(java.lang.StringBuilder)
+     */
+    public void toXMLAttrs(StringBuilder sb)
+    {
+        xmlAttr(sb, "label",     label);
+        xmlAttr(sb, "icon",      iconName);
+        if (isRecordObj)
+        {
+            xmlAttr(sb, "recordobj", isRecordObj);
+        }
+        xmlAttr(sb, "labelfor",  labelFor);
     }
 }

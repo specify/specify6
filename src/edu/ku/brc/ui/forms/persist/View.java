@@ -14,6 +14,9 @@
  */
 package edu.ku.brc.ui.forms.persist;
 
+import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
+import static edu.ku.brc.helpers.XMLHelper.xmlNode;
+
 import java.util.List;
 import java.util.Vector;
 
@@ -382,113 +385,25 @@ public class View implements ViewIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.AltViewIFace#toXML(java.lang.StringBuffer)
      */
-    public void toXML(StringBuffer sb)
+    public void toXML(final StringBuilder sb)
     {
-        throw new RuntimeException("Not Implemented.");
-        
-    }
-
-    
-    //----------------------------------------------------------
-    //-- XML Helpers
-    //----------------------------------------------------------
-    
-    
-    public static void xmlAttr(final StringBuffer sb, final String attr, final String val)
-    {
-        if (val != null)
+        sb.append("    <view ");
+        xmlAttr(sb, "name", name);
+        xmlAttr(sb, "class", className);
+        xmlAttr(sb, "busrule", businessRulesClassName);
+        xmlAttr(sb, "resourcelabels", useResourceLabels);
+        sb.append(">\n    ");
+        xmlNode(sb, "desc", desc, true);
+        sb.append("      <altviews");
+        xmlAttr(sb, "defaultmode", defaultMode.toString().toLowerCase());
+        xmlAttr(sb, "selector", selectorName);
+        sb.append(">\n");
+        for (AltViewIFace av : altViews)
         {
-            sb.append(' ');
-            sb.append(attr);
-            sb.append("=\"");
-            sb.append(val);
-            sb.append('\"');
+            av.toXML(sb);
         }
+        sb.append("      </altviews>\n");
+        sb.append("    </view>\n");
     }
     
-    public static void xmlAttr(final StringBuffer sb, final String attr, final Integer val)
-    {
-        if (val != null)
-        {
-            xmlAttr(sb, attr, val.toString());
-        }
-    }
-    
-    public static void xmlAttr(final StringBuffer sb, final String attr, final Short val)
-    {
-        if (val != null)
-        {
-            xmlAttr(sb, attr, val.toString());
-        }
-    }
-    
-    public static void xmlAttr(final StringBuffer sb, final String attr, final Byte val)
-    {
-        if (val != null)
-        {
-            xmlAttr(sb, attr, val.toString());
-        }
-    }
-    
-    public static void xmlAttr(final StringBuffer sb, final String attr, final Boolean val)
-    {
-        if (val != null)
-        {
-            xmlAttr(sb, attr, val.toString());
-        }
-    }
-    
-    public static void xmlNode(final StringBuffer sb, final String tag, final String val, final boolean useCData)
-    {
-        if (val != null)
-        {
-            sb.append("  <");
-            sb.append(tag);
-            sb.append(">");
-            if (useCData) sb.append("![CDATA[");
-            sb.append(val);
-            if (useCData) sb.append("]]>");
-            sb.append("</");
-            sb.append(tag);
-            sb.append(">");
-        }
-    }
-    
-    public static void xmlAttr(final StringBuffer sb, final String attr, final Boolean val, final Boolean defaultVal)
-    {
-        if (val != null || (defaultVal != null && val.equals(defaultVal)))
-        {
-            xmlAttr(sb, attr, val);
-        }
-    }
-    
-    public static void xmlAttr(final StringBuffer sb, final String attr, final String val, final String defaultVal)
-    {
-        if (val != null || (defaultVal != null && val.equals(defaultVal)))
-        {
-            xmlAttr(sb, attr, val);
-        }
-    }
-    
-    public static void xmlAttr(final StringBuffer sb, final String attr, final Integer val, final Integer defaultVal)
-    {
-        if (val != null || (defaultVal != null && val.equals(defaultVal)))
-        {
-            xmlAttr(sb, attr, val);
-        }
-    }
-    public static void xmlAttr(final StringBuffer sb, final String attr, final Integer val, final Short defaultVal)
-    {
-        if (val != null || (defaultVal != null && val.equals(defaultVal)))
-        {
-            xmlAttr(sb, attr, val);
-        }
-    }
-    public static void xmlAttr(final StringBuffer sb, final String attr, final Byte val, final Byte defaultVal)
-    {
-        if (val != null || (defaultVal != null && val.equals(defaultVal)))
-        {
-            xmlAttr(sb, attr, val);
-        }
-    }
 }

@@ -14,9 +14,14 @@
  */
 package edu.ku.brc.ui.forms.persist;
 
+import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
+import static edu.ku.brc.helpers.XMLHelper.xmlNode;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
+
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Vector;
+
+import org.apache.commons.lang.StringUtils;
 
 
 /*
@@ -27,10 +32,10 @@ import java.util.Vector;
  */
 public class FormViewDef extends ViewDef implements Cloneable, FormViewDefIFace
 {
-    protected String             columnDef      = "";
-    protected String             rowDef         = "";
-    protected List<FormRowIFace> rows           = new Vector<FormRowIFace>(); 
-    protected String             definitionName = null;
+    protected JGDefItem            columnDef      = new JGDefItem();
+    protected JGDefItem            rowDef         = new JGDefItem();
+    protected Vector<FormRowIFace> rows           = new Vector<FormRowIFace>(); 
+    protected String               definitionName = null;
     
     protected Hashtable<String, String>  enableRules = null;
 
@@ -43,11 +48,11 @@ public class FormViewDef extends ViewDef implements Cloneable, FormViewDefIFace
      * @param desc description
       */
     public FormViewDef(final ViewDef.ViewType type, 
-                        final String  name, 
-                        final String  className, 
-                        final String  gettableClassName, 
-                        final String  settableClassName, 
-                        final String  desc)
+                       final String  name, 
+                       final String  className, 
+                       final String  gettableClassName, 
+                       final String  settableClassName, 
+                       final String  desc)
     {
         super(type, name, className, gettableClassName, settableClassName, desc);
         
@@ -73,7 +78,7 @@ public class FormViewDef extends ViewDef implements Cloneable, FormViewDefIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormViewDefIFace#getRows()
      */
-    public List<FormRowIFace> getRows()
+    public Vector<FormRowIFace> getRows()
     {
         return rows;
     }
@@ -137,7 +142,7 @@ public class FormViewDef extends ViewDef implements Cloneable, FormViewDefIFace
      */
     public String getColumnDef()
     {
-        return columnDef;
+        return columnDef.getDefStr();
     }
 
     /* (non-Javadoc)
@@ -145,7 +150,7 @@ public class FormViewDef extends ViewDef implements Cloneable, FormViewDefIFace
      */
     public void setColumnDef(String columnDef)
     {
-        this.columnDef = columnDef;
+        this.columnDef.setDefStr(columnDef);
     }
 
     /* (non-Javadoc)
@@ -153,7 +158,7 @@ public class FormViewDef extends ViewDef implements Cloneable, FormViewDefIFace
      */
     public String getRowDef()
     {
-        return rowDef;
+        return rowDef.getDefStr();
     }
 
     /* (non-Javadoc)
@@ -161,7 +166,7 @@ public class FormViewDef extends ViewDef implements Cloneable, FormViewDefIFace
      */
     public void setRowDef(String rowDef)
     {
-        this.rowDef = rowDef;
+        this.rowDef.setDefStr(rowDef);
     }
 
     /* (non-Javadoc)
@@ -195,6 +200,22 @@ public class FormViewDef extends ViewDef implements Cloneable, FormViewDefIFace
     {
         this.definitionName = definitionName;
     }
+    
+    /**
+     * @return
+     */
+    public JGDefItem getRowDefItem()
+    {
+        return this.rowDef;
+    }
+
+    /**
+     * @return
+     */
+    public JGDefItem getColumnDefItem()
+    {
+        return this.columnDef;
+    }
 
     /* (non-Javadoc)
      * @see java.lang.Object#clone()
@@ -205,13 +226,218 @@ public class FormViewDef extends ViewDef implements Cloneable, FormViewDefIFace
     public Object clone() throws CloneNotSupportedException
     {
         FormViewDef fvd = (FormViewDef)super.clone();
-        fvd.rows      = new Vector<FormRowIFace>(); 
-        fvd.columnDef = columnDef;
-        fvd.rowDef    = rowDef;
+        fvd.rows        = new Vector<FormRowIFace>(); 
+        fvd.columnDef   = (JGDefItem)columnDef.clone();
+        fvd.rowDef      = (JGDefItem)rowDef.clone();
         for (FormRowIFace formRow : rows)
         {
             fvd.rows.add((FormRow)formRow.clone()); 
         }
         return fvd;      
+    }
+    
+    //------------------------------------------
+    //-- Inner Classes
+    //------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewDef#toXMLAttrs(java.lang.StringBuffer)
+     */
+    @Override
+    protected void toXMLAttrs(final StringBuilder sb)
+    {
+        super.toXMLAttrs(sb);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewDef#toXMLNodes(java.lang.StringBuffer)
+     */
+    @Override
+    protected void toXMLNodes(final StringBuilder sb)
+    {
+        super.toXMLNodes(sb);
+        
+        //if (isNotEmpty(definitionName))
+        {
+            sb.append("  ");
+            columnDef.toXML("columnDef", sb);
+        }
+        //if (isNotEmpty(definitionName)))
+        {
+            sb.append("  ");
+            rowDef.toXML("rowDef", sb);
+        }
+        
+        System.out.println("["+definitionName+"]");
+        if (isNotEmpty(definitionName))
+        {
+            sb.append("  ");
+            xmlNode(sb, "definition", definitionName, false);
+        }
+        
+        for (FormRowIFace row : rows)
+        {
+            row.toXML(sb);
+        }
+    }
+
+    public class JGDefItem implements Cloneable
+    {
+        protected String  defStr;
+        protected boolean isAuto;
+        protected String  cellDefStr;
+        protected String  sepDefStr;
+        protected int     numItems = 0;
+        
+        /**
+         * 
+         */
+        public JGDefItem()
+        {
+            // no op
+        }
+
+        /**
+         * @param defStr
+         * @param isAuto
+         * @param singleDefStr
+         * @param sepDefStr
+         */
+        public JGDefItem(final String defStr, final boolean isAuto, final String singleDefStr, final String sepDefStr)
+        {
+            this.defStr     = defStr;
+            this.isAuto     = isAuto;
+            this.cellDefStr = singleDefStr;
+            this.sepDefStr  = sepDefStr;
+            
+            numItems = StringUtils.countMatches(defStr, ",") + 1;
+        }
+
+        /**
+         * @return the defStr
+         */
+        public String getDefStr()
+        {
+            return defStr;
+        }
+
+        /**
+         * @param defStr the defStr to set
+         */
+        public void setDefStr(String defStr)
+        {
+            this.defStr   = defStr;
+            this.numItems = StringUtils.countMatches(defStr, ",") + 1;
+        }
+
+        /**
+         * @return the isAuto
+         */
+        public boolean isAuto()
+        {
+            return isAuto;
+        }
+
+        /**
+         * @param isAuto the isAuto to set
+         */
+        public void setAuto(boolean isAuto)
+        {
+            this.isAuto = isAuto;
+        }
+
+        /**
+         * @return the singleDefStr
+         */
+        public String getCellDefStr()
+        {
+            return cellDefStr;
+        }
+
+        /**
+         * @param singleDefStr the singleDefStr to set
+         */
+        public void setCellDefStr(String cellDefStr)
+        {
+            this.cellDefStr = cellDefStr;
+        }
+
+        /**
+         * @return the sepDefStr
+         */
+        public String getSepDefStr()
+        {
+            return sepDefStr;
+        }
+
+        /**
+         * @param sepDefStr the sepDefStr to set
+         */
+        public void setSepDefStr(String sepDefStr)
+        {
+            this.sepDefStr = sepDefStr;
+        }
+        
+        public Object clone() throws CloneNotSupportedException
+        {
+            JGDefItem item = (JGDefItem)super.clone();
+            
+            item.defStr       = defStr;
+            item.isAuto       = isAuto;
+            item.cellDefStr = cellDefStr;
+            item.sepDefStr    = sepDefStr;
+            return item;      
+        }
+        
+        /**
+         * @return the numItems
+         */
+        public int getNumItems()
+        {
+            return numItems;
+        }
+
+        /**
+         * @param numItems the numItems to set
+         */
+        public void setNumItems(int numItems)
+        {
+            this.numItems = numItems;
+        }
+        
+        public void toXML(final String nodeName, final StringBuilder sb)
+        {
+            sb.append("    <");
+            sb.append(nodeName);
+            if (isAuto)
+            {
+                xmlAttr(sb, "auto", true);
+                xmlAttr(sb, "cell", cellDefStr);
+                xmlAttr(sb, "sep", sepDefStr);
+                sb.append("/>\n");
+            } else
+            {
+                sb.append('>');
+                sb.append(defStr);
+                sb.append("</");
+                sb.append(nodeName);
+                sb.append(">\n");
+            }
+        }
+
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        public String toString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.append("defStr:       "+defStr+"\n");
+            sb.append("isAuto:       "+isAuto+"\n");
+            sb.append("singleDefStr: "+cellDefStr+"\n");
+            sb.append("sepDefStr:    "+sepDefStr+"\n");
+            
+            return sb.toString();
+        }
+        
     }
 }

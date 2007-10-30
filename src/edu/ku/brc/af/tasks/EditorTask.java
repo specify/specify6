@@ -11,6 +11,7 @@ package edu.ku.brc.af.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.BorderLayout;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
@@ -18,6 +19,7 @@ import java.util.Vector;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JTree;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -28,6 +30,9 @@ import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
+import edu.ku.brc.af.tasks.subpane.formeditor.BasicFormPreviewPanel;
+import edu.ku.brc.af.tasks.subpane.formeditor.ViewSetSelectorPanel;
+import edu.ku.brc.ui.CustomFrame;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.forms.persist.ViewSetIFace;
@@ -43,6 +48,10 @@ import edu.ku.brc.ui.forms.persist.ViewSetIFace;
 public class EditorTask extends BaseTask
 {
     public static final String EDITOR = "FormEditor";
+    
+    protected ViewSetSelectorPanel viewSetSelectorPanel;
+    protected JTree                tree          = null;
+
     
     /**
      * 
@@ -93,10 +102,22 @@ public class EditorTask extends BaseTask
     {
         SimpleDescPane pane = new SimpleDescPane(name, this, "Editor");
         
-        /*
+        
         pane.removeAll();
         pane.setLayout(new BorderLayout());
         
+        BasicFormPreviewPanel previewPanel = new BasicFormPreviewPanel();
+        CustomFrame frame = new CustomFrame("Layout Preview", previewPanel);
+        
+        viewSetSelectorPanel = new ViewSetSelectorPanel(previewPanel);
+        
+        frame.setSize(500,500);
+        frame.setVisible(true);
+        
+        pane.add(viewSetSelectorPanel, BorderLayout.CENTER);
+        
+        
+        /*
         Hashtable<String, List<ViewSetIFace>> hash = AppContextMgr.getInstance().getViewSetHash();
         List<ViewSetIFace> list = hash.values().iterator().next();
         
@@ -166,5 +187,6 @@ public class EditorTask extends BaseTask
         list.add(new ToolBarItemDesc(btn));
         return list;
     }
+    
 
 }

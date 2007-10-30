@@ -14,9 +14,8 @@
  */
 package edu.ku.brc.ui.forms.persist;
 
+import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
-import static edu.ku.brc.ui.forms.persist.View.xmlAttr;
-import static edu.ku.brc.ui.forms.persist.View.xmlNode;
 
 import java.util.List;
 import java.util.Vector;
@@ -76,6 +75,14 @@ public class AltView implements Comparable<AltViewIFace>, Cloneable, AltViewIFac
     public CreationMode getMode()
     {
         return mode;
+    }
+
+    /**
+     * @param validated the validated to set
+     */
+    public void setValidated(boolean validated)
+    {
+        this.validated = validated;
     }
 
     /* (non-Javadoc)
@@ -156,6 +163,16 @@ public class AltView implements Comparable<AltViewIFace>, Cloneable, AltViewIFac
     public void setDefault(boolean isDefault)
     {
         this.isDefault = isDefault;
+    }
+    
+    public void setIsDefault(final boolean isDef)
+    {
+        isDefault = isDef;
+    }
+    
+    public boolean getIsDefault()
+    {
+        return isDefault;
     }
     
     /* (non-Javadoc)
@@ -262,10 +279,17 @@ public class AltView implements Comparable<AltViewIFace>, Cloneable, AltViewIFac
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.AltViewIFace#toXML(java.lang.StringBuffer)
      */
-    public void toXML(StringBuffer sb)
+    public void toXML(StringBuilder sb)
     {
-        throw new RuntimeException("Not Implemented.");
-        
+        sb.append("        <altview ");
+        xmlAttr(sb, "name", name);
+        xmlAttr(sb, "viewdef", name);
+        xmlAttr(sb, "label", label);
+        xmlAttr(sb, "validated", validated);
+        xmlAttr(sb, "default", isDefault);
+        xmlAttr(sb, "selector", selectorName);
+        xmlAttr(sb, "selector_value", selectorValue);
+        sb.append("/>\n");
     }
 
     //-------------------------------------

@@ -60,6 +60,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.exception.ConstraintViolationException;
 
 import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.debug.FormDebugPanel;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
@@ -139,6 +140,7 @@ public class FormViewObj implements Viewable,
     protected static Object[]               formattedValues = new Object[2];
     protected static ColorWrapper           viewFieldColor  = null;
     protected static CellConstraints        cc              = new CellConstraints();
+    protected static boolean                useDebugForm    = false;
 
     // Data Members
     protected DataProviderSessionIFace      session        = null;
@@ -256,8 +258,10 @@ public class FormViewObj implements Viewable,
         this.formViewDef = (FormViewDef)altView.getViewDef();
         
         // Figure columns
+        
+        JPanel panel = useDebugForm ? new FormDebugPanel() : new JPanel();
         formLayout = new FormLayout(formViewDef.getColumnDef(), formViewDef.getRowDef());
-        builder    = new PanelBuilder(formLayout);
+        builder    = new PanelBuilder(formLayout, panel);
         
         mainComp = new JPanel(new BorderLayout());
         mainComp.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
@@ -2861,7 +2865,7 @@ public class FormViewObj implements Viewable,
     public void addLabel(final FormCellLabel formCell, final JLabel label)
     {
 
-        if (formCell != null)
+        if (formCell != null && StringUtils.isNotEmpty(formCell.getLabelFor()))
         {
             if (labels.get(formCell.getLabelFor()) != null)
             {
@@ -2880,12 +2884,14 @@ public class FormViewObj implements Viewable,
     {
         if (formCell != null)
         {
+            boolean isThis = formCell.getName().equals("this");
+            
             if (controlsById.get(formCell.getIdent()) != null)
             {
                 throw new RuntimeException("Two controls have the same id ["+formCell.getIdent()+"] "+formViewDef.getName());
             }
 
-            if (controlsByName.get(formCell.getName()) != null)
+            if (!isThis && controlsByName.get(formCell.getName()) != null)
             {
                 throw new RuntimeException("Two controls have the same name ["+formCell.getName()+"] "+formViewDef.getName());
             }
@@ -2904,7 +2910,10 @@ public class FormViewObj implements Viewable,
             
             FieldInfo fieldInfo = new FieldInfo(formCell, comp, scrPane, controlsById.size());
             controlsById.put(formCell.getIdent(), fieldInfo);
-            controlsByName.put(formCell.getName(), fieldInfo);
+            if (!isThis)
+            {
+                controlsByName.put(formCell.getName(), fieldInfo);
+            }
 
         }
     }
@@ -3337,6 +3346,21 @@ public class FormViewObj implements Viewable,
             comp       = null;
             fieldScrollPane = null;
         }
+    }
 
+    /**
+     * @return the useDebugForm
+     */
+    public static boolean isUseDebugForm()
+    {
+        return useDebugForm;
+    }
+
+    /**
+     * @param useDebugForm the useDebugForm to set
+     */
+    public static void setUseDebugForm(boolean useDebugForm)
+    {
+        FormViewObj.useDebugForm = useDebugForm;
     }
 }

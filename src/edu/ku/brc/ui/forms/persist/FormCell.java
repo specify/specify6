@@ -14,6 +14,9 @@
  */
 package edu.ku.brc.ui.forms.persist;
 
+import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
+import static edu.ku.brc.helpers.XMLHelper.xmlProps;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.apache.commons.lang.StringUtils.split;
 
 import java.util.Properties;
@@ -29,8 +32,6 @@ import org.apache.commons.lang.StringUtils;
  */
 public class FormCell implements Comparable<FormCellIFace>, Cloneable, FormCellIFace
 {
-    
-
     // Required fields
     protected CellType type;
     protected String   id;
@@ -44,10 +45,10 @@ public class FormCell implements Comparable<FormCellIFace>, Cloneable, FormCellI
     protected int      colspan = 1;
     protected int      rowspan = 1;
 
-    protected int      xCoord  = 0;
-    protected int      yCoord  = 0;
-    protected int      width   = 0;
-    protected int      height  = 0;
+    protected int      xCoord  = -1;
+    protected int      yCoord  = -1;
+    protected int      width   = -1;
+    protected int      height  = -1;
 
 
     protected Properties properties = null;
@@ -71,6 +72,7 @@ public class FormCell implements Comparable<FormCellIFace>, Cloneable, FormCellI
         this.type = type;
         this.id   = id;
         this.name = name;
+
         this.isMultiField = name.indexOf(',') > -1;
         //if (isMultiField)
         //{
@@ -302,7 +304,7 @@ public class FormCell implements Comparable<FormCellIFace>, Cloneable, FormCellI
         if (properties != null)
         {
             String str = properties.getProperty(nameStr);
-            if (StringUtils.isNotEmpty(str))
+            if (isNotEmpty(str))
             {
                 return Integer.parseInt(str);
             }
@@ -318,7 +320,7 @@ public class FormCell implements Comparable<FormCellIFace>, Cloneable, FormCellI
         if (properties != null)
         {
             String str = properties.getProperty(nameStr);
-            if (StringUtils.isNotEmpty(str))
+            if (isNotEmpty(str))
             {
                 return str.equalsIgnoreCase("true");
             }
@@ -331,6 +333,10 @@ public class FormCell implements Comparable<FormCellIFace>, Cloneable, FormCellI
      */
     public Properties getProperties()
     {
+        if (properties == null)
+        {
+            properties = new Properties();
+        }
         return properties;
     }
     
@@ -424,13 +430,55 @@ public class FormCell implements Comparable<FormCellIFace>, Cloneable, FormCellI
 
         return formCell;
     }
+    
+    protected void toXMLAttrs(final StringBuilder sb)
+    {
+        // no op
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormCellIFace#toXML(java.lang.StringBuffer)
      */
-    public void toXML(StringBuffer sb)
+    public void toXML(StringBuilder sb)
     {
-        throw new RuntimeException("Not Implemented.");
+        sb.append("        <cell");
+        
+        xmlAttr(sb, "type", type.toString());
+        
+        xmlAttr(sb, "id", id);
+        xmlAttr(sb, "name", name);
+        
+        if (changeListenerOnly) xmlAttr(sb, "changesonly", changeListenerOnly);
+
+        this.toXMLAttrs(sb);
+        
+        if (colspan > 1)
+        {
+            xmlAttr(sb, "colspan", colspan);
+        }
+        
+        if (rowspan > 1)
+        {
+            xmlAttr(sb, "rowspan", rowspan);
+        }
+        
+        if (xCoord > -1)
+        {
+            xmlAttr(sb, "x",       xCoord);
+            xmlAttr(sb, "y",       yCoord);
+            xmlAttr(sb, "width",   width);
+            xmlAttr(sb, "height",  height);
+        }
+        
+        if (properties != null && properties.size() > 0)
+        {
+            sb.append(" initialize=\"");
+            xmlProps(sb, properties);
+            sb.append("\"");
+        }
+        
+        sb.append("/>\n");
+        
     }
 
     /* (non-Javadoc)
@@ -439,6 +487,6 @@ public class FormCell implements Comparable<FormCellIFace>, Cloneable, FormCellI
     @Override
     public String toString()
     {
-        return (StringUtils.isNotEmpty(name) ? name : id) + " (" + type + ")";
+        return (isNotEmpty(name) ? name : id) + " (" + type + ")";
     }
  }

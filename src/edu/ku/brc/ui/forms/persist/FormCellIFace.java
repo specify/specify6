@@ -90,7 +90,7 @@ public interface FormCellIFace
      * Appends its XML.
      * @param sb the buffer
      */
-    public abstract void toXML(final StringBuffer sb);
+    public abstract void toXML(final StringBuilder sb);
 
     /* (non-Javadoc)
      * @see java.lang.Object#clone()

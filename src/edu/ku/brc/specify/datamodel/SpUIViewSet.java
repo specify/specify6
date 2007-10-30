@@ -427,7 +427,7 @@ public class SpUIViewSet extends DataModelObjBase implements ViewSetIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#toXML(java.lang.StringBuffer)
      */
-    public void toXML(final StringBuffer sb)
+    public void toXML(final StringBuilder sb)
     {
         sb.append("<viewset name=\""+name+"\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n");
         

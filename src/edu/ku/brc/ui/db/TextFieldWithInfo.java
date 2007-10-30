@@ -168,12 +168,15 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
             @Override
             public void okPressed(ViewBasedDisplayIFace vbd)
             {
-                if (multiView != null)
+                if (frame != null)
                 {
-                    multiView.unregisterDisplayFrame(frame);
+                    if (multiView != null)
+                    {
+                        multiView.unregisterDisplayFrame(frame);
+                    }
+                    frame.dispose();
+                    frame = null;
                 }
-                frame.dispose();
-                frame = null;
             }
             
         });

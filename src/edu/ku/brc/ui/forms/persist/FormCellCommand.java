@@ -14,6 +14,8 @@
  */
 package edu.ku.brc.ui.forms.persist;
 
+import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
+
 /*
  * @code_status Beta
  **
@@ -78,5 +80,14 @@ public class FormCellCommand extends FormCellSeparator implements Cloneable, For
         fcc.commandType = commandType;
         fcc.action      = action;
         return fcc;      
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCell#toXMLAttrs(java.lang.StringBuilder)
+     */
+    public void toXMLAttrs(StringBuilder sb)
+    {
+        xmlAttr(sb, "commandtype", commandType);
+        xmlAttr(sb, "action", action);
     }
 }

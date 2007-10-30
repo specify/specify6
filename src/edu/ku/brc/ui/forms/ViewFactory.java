@@ -22,8 +22,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,7 +51,6 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.exceptions.ConfigurationException;
-import edu.ku.brc.helpers.BrowserLauncher;
 import edu.ku.brc.ui.BrowseBtnPanel;
 import edu.ku.brc.ui.ColorChooser;
 import edu.ku.brc.ui.ColorWrapper;
@@ -806,7 +803,7 @@ public class ViewFactory
                         boolean useColon = StringUtils.isNotEmpty(cellLabel.getLabelFor());
                         int align;
                         String alignProp = cellLabel.getProperty("align");
-                        System.out.println(lblStr);
+                        //System.out.println("["+cellLabel.getLabelFor()+"]  "+useColon);
                         if (StringUtils.isNotEmpty(alignProp))
                         {
                             if (alignProp.equals("left"))
@@ -1295,11 +1292,11 @@ public class ViewFactory
                     if (validator != null && addToValidator)
                     {
 
-                        String id = cell.getIdent();
-                        if (StringUtils.isEmpty(id))
-                        {
-                            System.out.println(cell.getName());
-                        }
+                        //String id = cell.getIdent();
+                        //if (StringUtils.isEmpty(id))
+                        //{
+                        //    System.out.println(cell.getName());
+                        //}
                         validator.addUIComp(cell.getIdent(), compToReg == null ? compToAdd : compToReg);
                     }
                     colInx += colspan + 1;
@@ -1328,11 +1325,6 @@ public class ViewFactory
         Class<?> parentCls = dataClass;
         
         String[] fieldNames = StringUtils.split(cellSubView.getName(), ".");
-        if (fieldNames.length == 2)
-        {
-            int x = 0;
-            x++;
-        }
         for (int i=0;i<fieldNames.length;i++)
         {
             try
@@ -1784,74 +1776,5 @@ public class ViewFactory
         }
         return null;
     }
-
-    //-----------------------------------------------------------
-    // Inner Class
-    //-----------------------------------------------------------
     
-    class BrowserLauncherBtn extends JButton implements GetSetValueIFace
-    {
-        protected String url     = null;
-        protected Object dataObj = null;
-        protected BrowserLauncherAction action = null;
-        
-        public BrowserLauncherBtn(final String text)
-        {
-            super(text);
-            setEnabled(false);
-        }
-        
-        /* (non-Javadoc)
-         * @see edu.ku.brc.af.ui.GetSetValueIFace#setValue(java.lang.Object, java.lang.String)
-         */
-        public void setValue(Object value, String defaultValue)
-        {
-            if (value != null)
-            {
-                url = value.toString();
-                dataObj = value;
-                
-                if (action != null)
-                {
-                    this.removeActionListener(action);
-                }
-                
-                if (StringUtils.isNotEmpty(url) && url.startsWith("http"))
-                {
-                    action = new BrowserLauncherAction(url);
-                    addActionListener(action);
-                    setEnabled(true);
-                } else
-                {
-                    setEnabled(false);
-                }
-            } else
-            {
-                setEnabled(false);
-            }
-        }
-        
-        /* (non-Javadoc)
-         * @see edu.ku.brc.af.ui.GetSetValueIFace#getValue()
-         */
-        public Object getValue()
-        {
-            return dataObj;
-        }
-    }
-    
-    class BrowserLauncherAction implements ActionListener
-    {
-        protected String url;
-        
-        public BrowserLauncherAction(final String url)
-        {
-            this.url = url;
-        }
-        
-        public void actionPerformed(ActionEvent ae)
-        {
-            BrowserLauncher.openURL(url);
-        }
-    }
 }

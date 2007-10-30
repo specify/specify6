@@ -52,6 +52,10 @@ import edu.ku.brc.ui.forms.validation.TypeSearchForQueryFactory;
  */
 public class ViewLoader
 {
+    public static final int DEFAULT_ROWS         = 5;
+    public static final int DEFAULT_COLS         = 10;
+    public static final int DEFAULT_SUBVIEW_ROWS = 5;
+    
     // Statics
     private static final Logger     log = Logger.getLogger(ViewLoader.class);
     private static final ViewLoader instance = new ViewLoader();
@@ -386,7 +390,10 @@ public class ViewLoader
      * @param numRows the number of rows
      * @return the String representing the column definition for JGoodies
      */
-    protected static String createDef(final Element element, final String attrName, final int numRows)
+    protected static String createDef(final Element element, 
+                                      final String attrName, 
+                                      final int numRows,
+                                      final FormViewDef.JGDefItem item)
     {
         Element cellDef = (Element)element.selectSingleNode(attrName);
         if (cellDef != null)
@@ -395,27 +402,30 @@ public class ViewLoader
             String cellStr  = getAttr(cellDef, "cell", null);
             String sepStr   = getAttr(cellDef, "sep", null);
             
-            if (cellStr != null && sepStr != null)
+            item.setDefStr(cellText);
+            item.setCellDefStr(cellStr);
+            item.setSepDefStr(sepStr);
+            
+            if (StringUtils.isNotEmpty(cellStr) && StringUtils.isNotEmpty(sepStr))
             {
-                
                 boolean auto = getAttr(cellDef, "auto", false);
+                
+                item.setAuto(auto);
+
                 if (auto)
                 {
-                    return createDuplicateJGoodiesDef(cellStr, sepStr, numRows) + 
-                                (StringUtils.isNotEmpty(cellText) ? ("," + cellText) : "");
-                }
-                
-                int dup = getAttr(cellDef, "dup", -1);
-                if (dup > 0)
-                {
-                    return createDuplicateJGoodiesDef(cellStr, sepStr, dup) + 
-                        (StringUtils.isNotEmpty(cellText) ? ("," + cellText) : "");
-
+                    String autoStr = createDuplicateJGoodiesDef(cellStr, sepStr, numRows) + 
+                                         (StringUtils.isNotEmpty(cellText) ? ("," + cellText) : "");
+                    
+                    item.setDefStr(autoStr);
+                    return autoStr;
                 }
                 // else
                 throw new RuntimeException("Element ["+element.getName()+"] Cell or Sep is null for 'dup' or 'auto 'on column def.");
             }
             // else
+            item.setAuto(false);
+
             return cellText;
         }
         // else
@@ -478,7 +488,7 @@ public class ViewLoader
                     int     rowspan     = getAttr(cellElement, "rowspan", 1);
 
                     FormCell.CellType cellType = FormCellIFace.CellType.valueOf(cellElement.attributeValue(TYPE));
-                    FormCellIFace          cell     = null;
+                    FormCellIFace     cell     = null;
 
                     switch (cellType)
                     {
@@ -513,8 +523,8 @@ public class ViewLoader
                             String format         = getAttr(cellElement, "format", "");
                             String formatName     = getAttr(cellElement, "formatname", "");
                             String uiFieldFormatter = getAttr(cellElement, "uifieldformatter", "");
-                            int    cols           = getAttr(cellElement, "cols", 10); // XXX PREF for default width of text field
-                            int    rows           = getAttr(cellElement, "rows", 5);  // XXX PREF for default heightof text area
+                            int    cols           = getAttr(cellElement, "cols", DEFAULT_COLS); // XXX PREF for default width of text field
+                            int    rows           = getAttr(cellElement, "rows", DEFAULT_ROWS);  // XXX PREF for default heightof text area
                             String validationType = getAttr(cellElement, "valtype", "Changed");
                             String validationRule = getAttr(cellElement, "validation", "");
                             String initialize     = getAttr(cellElement, "initialize", "");
@@ -680,7 +690,7 @@ public class ViewLoader
                                                    cellElement.attributeValue("class"),
                                                    getAttr(cellElement, "desc", ""),
                                                    getAttr(cellElement, "defaulttype", null),
-                                                   getAttr(cellElement, "rows", 5),
+                                                   getAttr(cellElement, "rows", DEFAULT_SUBVIEW_ROWS),
                                                    colspan,
                                                    rowspan,
                                                    getAttr(cellElement, "single", false)));
@@ -755,8 +765,9 @@ public class ViewLoader
             
             processRows(element, rows);
             
-            formView.setColumnDef(createDef(element, "columnDef", rows.size()));
-            formView.setRowDef(createDef(element, "rowDef", rows.size()));
+            createDef(element, "columnDef", rows.size(), formView.getColumnDefItem());
+            createDef(element, "rowDef",    rows.size(), formView.getRowDefItem());
+            
             formView.setEnableRules(getEnableRules(element));
             
         } else

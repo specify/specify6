@@ -14,7 +14,8 @@
  */
 package edu.ku.brc.ui.forms.persist;
 
-import org.apache.commons.lang.StringUtils;
+import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
+
 
 /*
  * @code_status Beta
@@ -26,6 +27,11 @@ public class FormCellSeparator extends FormCell implements Cloneable, FormCellSe
 {
     protected String label;
     protected String collapseCompName;
+    
+    public FormCellSeparator()
+    {
+        
+    }
 
     public FormCellSeparator(final String id, 
                              final String name, 
@@ -95,5 +101,14 @@ public class FormCellSeparator extends FormCell implements Cloneable, FormCellSe
     public String toString()
     {
         return label + " (separator)";
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCell#toXMLAttrs(java.lang.StringBuilder)
+     */
+    public void toXMLAttrs(StringBuilder sb)
+    {
+        xmlAttr(sb, "label",     label);
+        xmlAttr(sb, "collapse",  collapseCompName);
     }
 }

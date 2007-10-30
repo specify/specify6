@@ -46,7 +46,7 @@ public class CustomStatQueries implements CustomQuery
     protected List<?>                   resultsList = null;
     
     /**
-     * Constrcutor.
+     * Constructor.
      * @param type type of query to execute.
      */
     public CustomStatQueries(final Type type)

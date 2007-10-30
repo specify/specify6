@@ -17,7 +17,7 @@
  */
 package edu.ku.brc.specify.datamodel;
 
-import static edu.ku.brc.ui.forms.persist.View.xmlAttr;
+import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
 
 import java.util.Date;
 import java.util.List;
@@ -1967,7 +1967,7 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormCellIFace#toXML(java.lang.StringBuffer)
      */
-    public void toXML(StringBuffer sb)
+    public void toXML(StringBuilder sb)
     {
         sb.append("    <cell");
         xmlAttr(sb, "type", typeName.toString().toLowerCase());
@@ -2021,11 +2021,10 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
             xmlAttr(sb, "isrequired", isRequiredDB);
             xmlAttr(sb, "valtype", validationType);
             xmlAttr(sb, "readonly", isReadOnlyDB);
-            xmlAttr(sb, "ispassword", isPasswordDB);
             xmlAttr(sb, "changesonly", changeListenerOnlyDB);
             xmlAttr(sb, "validation", validationRule);
             
-        } else if (typeName.equals("subview"))
+        } else if (typeName.equals("command"))
         {
             xmlAttr(sb, "commandtype", commandType);
             xmlAttr(sb, "action", action);

@@ -42,7 +42,7 @@ public class PrepTypeBusRules extends BaseBusRules
 {
 
     /**
-     * Constrcutor.
+     * Constructor.
      */
     public PrepTypeBusRules()
     {
@@ -89,7 +89,7 @@ public class PrepTypeBusRules extends BaseBusRules
             conn = DBConnection.getInstance().createConnection();
             stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("select count(*) from preparation where preparation.PrepTypeID = "+prepType.getId());
-            return rs.first() && rs.getInt(1) == 0;
+            return rs.next() && rs.getInt(1) == 0;
             
         } catch (Exception ex)
         {

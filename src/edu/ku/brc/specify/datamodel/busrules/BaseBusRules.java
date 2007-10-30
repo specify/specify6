@@ -139,7 +139,7 @@ public abstract class BaseBusRules implements BusinessRulesIFace
         try
         {
             ResultSet rs = stmt.executeQuery("select count(*) from " + tableName + " where " + tableName + "." + columnName + " = " + id);
-            boolean isOK = rs.first() && rs.getInt(1) == 0;
+            boolean isOK = rs.next() && rs.getInt(1) == 0;
             rs.close();
             return isOK;
             

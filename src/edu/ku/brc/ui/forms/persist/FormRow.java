@@ -86,11 +86,15 @@ public class FormRow implements Cloneable, FormRowIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormCellIFace#toXML(java.lang.StringBuffer)
      */
-    public void toXML(StringBuffer sb)
+    public void toXML(StringBuilder sb)
     {
-        throw new RuntimeException("Not Implemented.");
-    }
-    
+        sb.append("      <rows>\n");
+        for (FormCellIFace cell : cells)
+        {
+            cell.toXML(sb);
+        }
+        sb.append("      </rows>\n");
+    }    
     /**
      * @return the rowNumber
      */

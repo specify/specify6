@@ -38,7 +38,32 @@
             </altviews>
         </view>
   
-
+        <view name="AltViewProps"
+            class="edu.ku.brc.specify.datamodel.AltView"
+            resourcelabels="false">
+            <desc><![CDATA[]]></desc>
+            <altviews>
+                <altview name="AltView Edit" viewdef="AltViewProps" label="Edit" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+        
+        <view name="ViewDefProps"
+            class="edu.ku.brc.specify.datamodel.ViewDef"
+            resourcelabels="false">
+            <desc><![CDATA[]]></desc>
+            <altviews>
+                <altview name="ViewDef Edit" viewdef="ViewDefProps" label="Edit" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+  
+       <view name="ViewProps"
+            class="edu.ku.brc.specify.datamodel.View"
+            resourcelabels="false">
+            <desc><![CDATA[]]></desc>
+            <altviews>
+                <altview name="View Edit" viewdef="ViewProps" label="Edit" mode="edit" validated="true"/>
+            </altviews>
+        </view>
   
     </views>
 
@@ -61,11 +86,24 @@
             
             <rows>
                 <row>
-                	<cell type="separator" label="label" colspan="3"/>
-                </row>
-                <row>
                 	<cell type="subview" viewname="baseFormCell" id="1" name="" colspan="3"/>
                 </row> 
+                <row>
+                    <cell type="label" labelfor="2" label="Label"/>
+                    <cell type="field" uitype="text" id="2" name="label" isrequired="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="Label For"/>
+                    <cell type="field" uitype="combobox" id="3" name="labelForCBX" isrequired="false"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="4" label="Image"/>
+                    <cell type="field" uitype="combobox" id="4" name="imageNameCBX" isrequired="false"/>
+                </row>
+                 <row>
+                    <cell type="label" labelfor="5" label="Is Record Obj"/>
+                    <cell type="field" uitype="checkbox" id="5" name="isRecordObj" isrequired="false"/>
+                </row>
             </rows>
         </viewdef>
         
@@ -81,9 +119,6 @@
             <columnDef>140px,2px,p,2px,f:p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <rows>
-                <row>
-                	<cell type="separator" label="combobox" colspan="5"/>
-                </row>
                 <row>
                 	<cell type="subview" viewname="baseFormCell" id="1" name="1" colspan="5"/>
                 </row>                
@@ -117,12 +152,12 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="0" label="Type"/>
-                    <cell type="field" uitype="combobox" id="0" name="typecbx" isrequired="true" colspan="3"/>
+                    <cell type="field" uitype="dsptextfield" id="0" name="type" isrequired="true" colspan="3"/>
                 </row>
-                <row>
+                <!-- <row>
                     <cell type="label" labelfor="1" label="Id"/>
                     <cell type="field" id="1" name="id" isrequired="true" cols="5" colspan="3"/>
-                </row>
+                </row>    -->
                 <row>
                     <cell type="label" labelfor="2" label="Name"/>
                     <cell type="field" uitype="combobox" id="2" name="namecbx" isrequired="true" colspan="3"/>
@@ -169,6 +204,123 @@
                 </row>
             </rows>
         </viewdef>
+        
+        		
+		<viewdef
+            type="form"
+            name="AltViewProps"
+            class="edu.ku.brc.specify.datamodel.AltView"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+
+            <desc><![CDATA[Alt View Props]]></desc>
+
+            <columnDef>p,2px,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+    		<rows>
+    		    <row>
+    		        <cell type="label" label="Alternative View Properties" icon="Form" colspan="3" initialize="align=center"/>
+    		    </row>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="name" uitype="text" cols="20"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Label"/>
+                    <cell type="field" id="2" name="label" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="6" label="Is Validated"/>
+                    <cell type="field" id="6" name="validated" uitype="checkbox"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="7" label="Is Default"/>
+                    <cell type="field" id="7" name="isDefault" uitype="checkbox"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="8" label="Default Mode"/>
+                    <cell type="field" id="8" name="defaultMode" uitype="combobox" />
+                </row>
+			</rows>
+		</viewdef>
+		
+		<viewdef
+            type="form"
+            name="ViewDefProps"
+            class="edu.ku.brc.specify.datamodel.ViewDef"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+
+            <desc><![CDATA[View Def Props]]></desc>
+
+            <columnDef>p,2px,max(80px;p),p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+    		<rows>
+    		    <row>
+    		        <cell type="label" label="View Def Properties" icon="Form" colspan="4" initialize="align=center"/>
+    		    </row>
+                <row>
+                    <cell type="label" labelfor="3" label="Type"/>
+                    <cell type="field" id="3" name="type" uitype="dsptextfield"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="name" uitype="text" cols="20" colspan="2"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Description"/>
+                    <cell type="field" id="2" name="desc" uitype="text" colspan="2"/>
+                </row>
+                <!--  <row>
+                    <cell type="label" labelfor="4" label="Data Class"/>
+                    <cell type="field" id="4" name="className" uitype="text" colspan="2"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5" label="Getter Name"/>
+                    <cell type="field" id="5" name="dataGettableName" uitype="text"  colspan="2"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="6" label="Setter Name"/>
+                    <cell type="field" id="6" name="dataSettableName" uitype="text" colspan="2"/>
+                </row>  -->
+                <row>
+                    <cell type="label" labelfor="7" label="Column Def"/>
+                    <cell type="field" uitype="plugin" id="7" name="this" initialize="class=edu.ku.brc.af.tasks.subpane.formeditor.DefItemEditorPlugin;type=columnDef" colspan="2"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="8" label="Row Def"/>
+                    <cell type="field" uitype="plugin" id="8" name="this" initialize="class=edu.ku.brc.af.tasks.subpane.formeditor.DefItemEditorPlugin;type=rowDef" colspan="2"/>
+                </row>
+                <!--
+                <row>
+                    <cell type="label" labelfor="7" label="Is Absolute Layout"/>
+                    <cell type="field" id="7" name="isAbsoluteLayout" uitype="checkbox" colspan="2"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="8" label="Width"/>
+                    <cell type="field" id="8" name="width" uitype="spinner"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="9" label="Height"/>
+                    <cell type="field" id="9" name="height" uitype="spinner"/>
+                </row>
+                  -->
+			</rows>
+		</viewdef>
+		
+        <viewdef
+            type="form"
+            name="ViewProps"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+
+            <desc><![CDATA[View Props]]></desc>
+
+            <columnDef>p,2px,max(80px;p),p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+    		<rows>
+		   </rows>
+		</viewdef>
         
     </viewdefs>
 </viewset>        

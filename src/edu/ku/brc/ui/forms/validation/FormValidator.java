@@ -103,7 +103,10 @@ public class FormValidator implements ValidationListener, DataChangeListener
     public void registerOKButton(final JButton btn)
     {
         okBtn = btn;
-        okBtn.setEnabled(false);
+        if (okBtn != null)
+        {
+            okBtn.setEnabled(false);
+        }
     }
 
     /**

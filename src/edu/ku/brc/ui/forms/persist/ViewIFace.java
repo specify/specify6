@@ -174,6 +174,6 @@ public interface ViewIFace  extends Comparable<ViewIFace>
      * Appends its XML.
      * @param sb the buffer
      */
-    public abstract void toXML(final StringBuffer sb);
+    public abstract void toXML(final StringBuilder sb);
 
 }

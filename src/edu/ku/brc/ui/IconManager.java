@@ -39,6 +39,7 @@ import org.dom4j.Element;
 
 import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.util.Pair;
 
 /**
  * Caches icon in three sizes (32, 24, 16).
@@ -434,20 +435,21 @@ public class IconManager extends Component
      * @param size the size to return
      * @return the list of icons for a given type.
      */
-    public static List<ImageIcon> getListByType(final String type, final IconSize size)
+    public static List<Pair<String, ImageIcon>> getListByType(final String type, final IconSize size)
     {
         Vector<String> nameList = instance.iconSets.get(type);
         if (nameList != null)
         {
-            Vector<ImageIcon> icons = new Vector<ImageIcon>(); 
+            List<Pair<String, ImageIcon>> icons = new Vector<Pair<String, ImageIcon>>(); 
             for (String key : nameList)
             {
                 ImageIcon ii = getIcon(key, size);
                 if (ii != null)
                 {
-                    icons.add(ii);
+                    icons.add(new Pair<String, ImageIcon>(key, ii));
                 }
             }
+            return icons;
         }
         return null;
     }

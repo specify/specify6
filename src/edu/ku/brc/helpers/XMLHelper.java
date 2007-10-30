@@ -27,9 +27,11 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.Writer;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -396,5 +398,120 @@ public class XMLHelper
        }
        return sb.toString();
    }
+   
+   public static void xmlAttr(final StringBuilder sb, final String attr, final String val)
+   {
+       if (StringUtils.isNotEmpty(val))
+       {
+           sb.append(' ');
+           sb.append(attr);
+           sb.append("=\"");
+           sb.append(val);
+           sb.append('\"');
+       }
+   }
+   
+   public static void xmlAttr(final StringBuilder sb, final String attr, final Integer val)
+   {
+       if (val != null)
+       {
+           xmlAttr(sb, attr, val.toString());
+       }
+   }
+   
+   public static void xmlAttr(final StringBuilder sb, final String attr, final Short val)
+   {
+       if (val != null)
+       {
+           xmlAttr(sb, attr, val.toString());
+       }
+   }
+   
+   public static void xmlAttr(final StringBuilder sb, final String attr, final Byte val)
+   {
+       if (val != null)
+       {
+           xmlAttr(sb, attr, val.toString());
+       }
+   }
+   
+   public static void xmlAttr(final StringBuilder sb, final String attr, final Boolean val)
+   {
+       if (val != null)
+       {
+           xmlAttr(sb, attr, val.toString());
+       }
+   }
+   
+   public static void xmlNode(final StringBuilder sb, final String tag, final String val, final boolean useCData)
+   {
+       if (val != null)
+       {
+           sb.append("  <");
+           sb.append(tag);
+           sb.append(">");
+           if (useCData) sb.append("![CDATA[");
+           sb.append(val);
+           if (useCData) sb.append("]]>");
+           sb.append("</");
+           sb.append(tag);
+           sb.append(">\n");
+       }
+   }
+   
+   public static void xmlProps(final StringBuilder sb, final Properties props)
+   {
+       if (props != null)
+       {
+           int i = 0;
+           for (Object key : props.keySet())
+           {
+               if (i > 0) sb.append(';');
+               sb.append(key.toString());
+               sb.append("=");
+               sb.append(props.getProperty(key.toString()));
+               i++;
+           }
+       }
+   }
+   
+   public static void xmlAttr(final StringBuilder sb, final String attr, final Boolean val, final Boolean defaultVal)
+   {
+       if (val != null || (defaultVal != null && val.equals(defaultVal)))
+       {
+           xmlAttr(sb, attr, val);
+       }
+   }
+   
+   public static void xmlAttr(final StringBuilder sb, final String attr, final String val, final String defaultVal)
+   {
+       if (val != null || (defaultVal != null && val.equals(defaultVal)))
+       {
+           xmlAttr(sb, attr, val);
+       }
+   }
+   
+   public static void xmlAttr(final StringBuilder sb, final String attr, final Integer val, final Integer defaultVal)
+   {
+       if (val != null || (defaultVal != null && val.equals(defaultVal)))
+       {
+           xmlAttr(sb, attr, val);
+       }
+   }
+   public static void xmlAttr(final StringBuilder sb, final String attr, final Integer val, final Short defaultVal)
+   {
+       if (val != null || (defaultVal != null && val.equals(defaultVal)))
+       {
+           xmlAttr(sb, attr, val);
+       }
+   }
+   public static void xmlAttr(final StringBuilder sb, final String attr, final Byte val, final Byte defaultVal)
+   {
+       if (val != null || (defaultVal != null && val.equals(defaultVal)))
+       {
+           xmlAttr(sb, attr, val);
+       }
+   }
+
 
 }

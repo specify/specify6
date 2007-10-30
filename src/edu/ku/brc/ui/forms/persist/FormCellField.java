@@ -14,6 +14,8 @@
  */
 package edu.ku.brc.ui.forms.persist;
 
+import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
+
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
@@ -70,7 +72,7 @@ public final class FormCellField extends FormCell implements FormCellFieldIFace
      * @param colspan the number of columns to span
      * @param rowspan the number of rows to span
      */
-    protected FormCellField(final FormCell.CellType type,
+    public FormCellField(final FormCell.CellType type,
                             final String            id,
                             final String            name,
                             final int               colspan,
@@ -498,5 +500,45 @@ public final class FormCellField extends FormCell implements FormCellFieldIFace
     public String toString()
     {
         return (StringUtils.isNotEmpty(name) ? name : id) + " (" + uiType + ")";
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCell#toXMLAttrs(java.lang.StringBuilder)
+     */
+    public void toXMLAttrs(StringBuilder sb)
+    {
+        xmlAttr(sb, "uitype", uiType.toString());
+        xmlAttr(sb, "dsptype", dspUIType.toString());
+        
+        switch (uiType)
+        {
+            case text :
+                if (cols != ViewLoader.DEFAULT_COLS) xmlAttr(sb, "cols", cols);
+                if (isEncrypted) xmlAttr(sb, "isencrypted", isEncrypted);
+                if (isPassword) xmlAttr(sb, "ispassword", isPassword);
+                break;
+                
+            case textarea :
+                if (rows != ViewLoader.DEFAULT_ROWS) xmlAttr(sb, "rows", rows);
+                if (cols != ViewLoader.DEFAULT_COLS) xmlAttr(sb, "cols", cols);
+                break;
+                
+            case combobox:
+                xmlAttr(sb, "picklist", pickListName);
+                break;
+        }
+        
+        xmlAttr(sb, "format", format);
+        xmlAttr(sb, "formatname", formatName);
+        xmlAttr(sb, "uifieldformatter", uiFieldFormatter);
+        
+        if (isRequired) xmlAttr(sb, "isrequired", isRequired);
+        
+        if (StringUtils.isNotEmpty(validationType) && !validationType.equals("Changed")) xmlAttr(sb, "valtype", validationType);
+        
+        if (isReadOnly) xmlAttr(sb, "readonly", isReadOnly);
+        
+        xmlAttr(sb, "validation", validationRule);
+            
     }
 }
