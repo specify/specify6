@@ -95,7 +95,7 @@ public class AutoNumberGeneric implements AutoNumberIFace
 
         //List list = session.createCriteria(classObj).addOrder( Order.desc(fieldName) ).setMaxResults(1).list();
         StringBuilder sb = new StringBuilder(" FROM "+classObj.getSimpleName());
-        if (yearVal != null)
+        if (yearVal != null && yearPos != null)
         {
             sb.append(" WHERE ");
             sb.append(yearVal);
@@ -191,7 +191,7 @@ public class AutoNumberGeneric implements AutoNumberIFace
         UIFieldFormatterField yearField = formatter.getYear();
         boolean               isByYear  = yearField != null && yearField.isByYear();
         
-        Integer valToBeInc      = null;
+        Integer valToBeInc     = null;
         Integer yearToUse      = null;
         String  strToUseForInc = highestValue;   // This is the string where the incrementer value will be extracted from
 
@@ -258,7 +258,6 @@ public class AutoNumberGeneric implements AutoNumberIFace
             }
         } else
         {
-            yearToUse = null;
             if (StringUtils.isNotEmpty(highestValue))
             {
                 valToBeInc = extractIntegerValue(formatter.getIncPosition(), strToUseForInc);

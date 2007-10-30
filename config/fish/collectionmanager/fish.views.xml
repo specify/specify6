@@ -501,7 +501,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="1" label="Number"/>
-                    <cell type="field" id="1" name="number" uitype="formattedtext" isrequired="true" uifieldformatter="AccessionNumber" valtype="Focus"/>
+                    <cell type="field" id="1" name="accessionNumber" uitype="formattedtext" isrequired="true" uifieldformatter="AccessionNumber" valtype="Focus"/>
 
                     <cell type="label" labelfor="2" label="Status"/>
                     <cell type="field" id="2" name="status"  uitype="combobox" picklist="AccessionStatus" isrequired="true" valtype="Changed"/>
@@ -510,7 +510,7 @@
                     <cell type="separator" label="Attachments" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="subview" id="attachments" viewname="AccessionAttachment" name="accessionAttachments" colspan="12"/>
+                    <cell type="subview" id="attachments" viewname="AccessionAttachment" name="accessionAttachments" colspan="12" initialize="addsearch=true"/>
                 </row>
 
             </rows>
@@ -1647,7 +1647,7 @@
     		        <cell type="separator" label="Attachments" colspan="12"/>
     		    </row>
     		    <row>
-                    <cell type="subview" id="attachments" viewname="PreparationAttachment" name="preparationAttachments" colspan="12"/>
+                    <cell type="subview" id="attachments" viewname="PreparationAttachment" name="preparationAttachments" colspan="12" initialize=""/>
                 </row>
 
     			<!--

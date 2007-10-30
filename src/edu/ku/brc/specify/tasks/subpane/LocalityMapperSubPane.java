@@ -360,7 +360,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
         Font font = titleLabel.getFont();
         titleLabel.setFont(new Font(font.getFontName(), Font.BOLD, font.getSize()+2));
 
-        recordSetController = new ResultSetController(null, false, false, null, collectingEvents.size());
+        recordSetController = new ResultSetController(null, false, false, false, null, collectingEvents.size());
         recordSetController.addListener(this);
         recordSetController.getPanel().setBackground(Color.WHITE);
 

@@ -41,6 +41,8 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -53,8 +55,7 @@ import edu.ku.brc.af.core.expresssearch.ExpressResultsTableInfo;
 import edu.ku.brc.af.core.expresssearch.ExpressSearchConfigCache;
 import edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace;
 import edu.ku.brc.af.core.expresssearch.QueryForIdResultsSQL;
-import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanel;
 import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
@@ -533,30 +534,56 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
      */
     public Object getSelectedObject()
     {
+        String errMsg = null;
+        
         if (idList != null && idList.size() > 0)
         {
+            Session session = null;
             Integer id = idList.get(0);
             try
             {
                 log.debug("getSelectedObject class["+className+"] idFieldName["+idFieldName+"] id["+id+"]");
                 
-                Class<?> classObj = Class.forName(className);
+                //Class<?> classObj = Class.forName(className);
                 
-                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                List<?> list = session.getDataList(classObj, idFieldName, id);
-                session.close();
-                
-                if (list.size() == 1)
-                {
-                    return list.get(0);
-                }
-                // else
-                throw new RuntimeException("Why would more than one object be found in DBObjSearchDialog?");
+                //DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(className);
+                //if (tableInfo != null)
+                //{
+                    session = HibernateUtil.getNewSession();
+                    Query   query   = session.createQuery("FROM "+className+" WHERE "+idFieldName+" = " + id.toString());
+                    List<?> list    = query.list();
+                    
+                    if (list.size() == 1)
+                    {
+                        return list.get(0);
+                        
+                    } else if (list.size() == 0)
+                    {
+                        errMsg = "Why could we load the object with id["+id+"] for class["+className+"]in DBObjSearchDialog?";
+                    } else
+                    {
+                        errMsg = "Why would more than one object be found in DBObjSearchDialog? return size["+list.size()+"]";
+                    }
+                //} else
+                //{
+                //    errMsg = "Could find TableInfo for Class ["+className +"]";
+                //}
             } catch (Exception ex)
             {
-                log.error(ex);
+                errMsg = ex.toString();
+                
+            } finally
+            {
+                if (session != null)
+                {
+                    session.close();
+                }
             }
-
+        }
+        
+        if (errMsg != null)
+        {
+            throw new RuntimeException(errMsg);
         }
         return null;
     }

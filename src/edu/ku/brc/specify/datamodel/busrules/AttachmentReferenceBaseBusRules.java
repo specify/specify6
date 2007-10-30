@@ -125,4 +125,30 @@ public class AttachmentReferenceBaseBusRules extends BaseBusRules
         
         return ((Integer)choice == JOptionPane.YES_OPTION);
     }
+
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#doesSearchObjectRequireNewParent()
+     */
+    public boolean doesSearchObjectRequireNewParent()
+    {
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#processSearchObject(java.lang.Object, java.lang.Object)
+     */
+    @Override
+    public Object processSearchObject(final Object newParentDataObj, 
+                                      final Object dataObjectFromSearch)
+    {
+        if (newParentDataObj instanceof ObjectAttachmentIFace)
+        {
+            ObjectAttachmentIFace objAtt = (ObjectAttachmentIFace)newParentDataObj;
+            objAtt.setAttachment((Attachment)dataObjectFromSearch);
+            return objAtt;
+        }
+        
+        return dataObjectFromSearch;
+    }
 }

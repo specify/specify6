@@ -1157,10 +1157,8 @@ public class ViewFactory
                 } else if (cell.getType() == FormCellIFace.CellType.subview)
                 {
                     FormCellSubView cellSubView = (FormCellSubView)cell;
-
-                    String subViewName = cellSubView.getViewName();
-                    
-                    ViewIFace subView = AppContextMgr.getInstance().getView(cellSubView.getViewSetName(), subViewName);
+                    String          subViewName = cellSubView.getViewName();
+                    ViewIFace       subView     = AppContextMgr.getInstance().getView(cellSubView.getViewSetName(), subViewName);
                     if (subView != null)
                     {
                         // Check to see this view should be "flatten" meaning we are creating a grid from a form
@@ -1168,7 +1166,8 @@ public class ViewFactory
                         {
                             if (parent != null)
                             {
-                                ViewIFace parentView = parent.getView();
+                                ViewIFace  parentView = parent.getView();
+                                Properties props      = cellSubView.getProperties();
                                 
                                 boolean isSingle      = cellSubView.isSingleValueFromSet();
                                 boolean isACollection = false;
@@ -1176,7 +1175,7 @@ public class ViewFactory
                                 try
                                 {
                                     Class<?> cls = Class.forName(parentView.getClassName());
-                                    Field fld = getFieldFromDotNotation(cellSubView, cls);
+                                    Field    fld = getFieldFromDotNotation(cellSubView, cls);
                                     if (fld != null)
                                     {
                                         isACollection = Collection.class.isAssignableFrom(fld.getType());
@@ -1193,7 +1192,12 @@ public class ViewFactory
                                               (MultiView.isOptionOn(parent.getCreateOptions(), MultiView.IS_NEW_OBJECT) ? MultiView.IS_NEW_OBJECT : MultiView.NO_OPTIONS);
                                 
                                 
-                                Color bgColor = getBackgroundColor(cellSubView.getProperties(), parent.getBackground());
+                                Color bgColor = getBackgroundColor(props, parent.getBackground());
+                                
+                                if (UIHelper.getProperty(props, "addsearch", false))
+                                {
+                                    options |= MultiView.ADD_SEARCH_BTN;
+                                }
                                 
                                 //MultiView.printCreateOptions("SUBVIEW", options);
                                 MultiView multiView = new MultiView(parent, 
@@ -1387,6 +1391,11 @@ public class ViewFactory
         }
     }
 
+    /**
+     * @param props
+     * @param bgColor
+     * @return
+     */
     protected Color getBackgroundColor(final Properties props, final Color bgColor)
     {
         if (props != null)

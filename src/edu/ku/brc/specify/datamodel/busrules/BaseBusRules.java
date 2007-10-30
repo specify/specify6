@@ -281,11 +281,27 @@ public abstract class BaseBusRules implements BusinessRulesIFace
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#doesSearchObjectRequireNewParent()
+     */
+    public boolean doesSearchObjectRequireNewParent()
+    {
+        return false;
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#setObjectIdentity(java.lang.Object, edu.ku.brc.ui.forms.DraggableRecordIdentifier)
      */
     public void setObjectIdentity(Object dataObj, DraggableRecordIdentifier draggableIcon)
     {
         // no op
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#processSearchObject(java.lang.Object, java.lang.Object)
+     */
+    public Object processSearchObject(final Object parentdataObj, final Object dataObjectFromSearch)
+    {
+        return dataObjectFromSearch;
     }
 
 }

@@ -530,5 +530,17 @@ accession.DateAccessioned, accession.DateReceived FROM accession WHERE (%s)]]>
             </detailView>
         </table>
         
+        <table id="115" tableid="41" name="AttachmentSearch" title="Attachment" priority="1" color="30, 144, 255">
+            <detailView icon="Attachment">
+                <sql>
+                    <![CDATA[SELECT AttachmentID, OrigFilename FROM attachment WHERE (%s)]]>
+                </sql>
+                <captions>
+                    <caption col="AttachmentID" text="ID" visible="false"/>
+                    <caption col="OrigFilename" text="File name"/>
+                </captions>
+            </detailView>
+        </table>
+        
     </generic>
 </searches>

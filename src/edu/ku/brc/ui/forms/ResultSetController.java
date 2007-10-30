@@ -37,6 +37,7 @@ import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.forms.validation.FormValidator;
 import edu.ku.brc.ui.forms.validation.UIValidator;
@@ -73,6 +74,7 @@ public class ResultSetController implements ValidationListener
     protected JButton lastBtn  = null;  
     protected JButton newRecBtn = null;  
     protected JButton delRecBtn = null;
+    protected JButton searchRecBtn = null;
     
     protected int     currentInx = 0;
     protected int     lastInx    = 0;
@@ -89,6 +91,7 @@ public class ResultSetController implements ValidationListener
     public ResultSetController(final FormValidator formValidator, 
                                final boolean addNewBtn,  
                                final boolean addDelBtn, 
+                               final boolean addSearchBtn, 
                                final String  objTitle,
                                final int     len)
     {
@@ -109,7 +112,7 @@ public class ResultSetController implements ValidationListener
             }
             
         }
-        buildRecordNavBar(addNewBtn, addDelBtn, objectTitle);
+        buildRecordNavBar(addNewBtn, addDelBtn, addSearchBtn, objectTitle);
         
         setLength(len);
     }
@@ -133,10 +136,15 @@ public class ResultSetController implements ValidationListener
      */
     protected void buildRecordNavBar(final boolean addNewBtn, 
                                      final boolean addDelBtn, 
+                                     final boolean addSearchBtn, 
                                      final String  objTitle)
     {
-        String colDef = "p,2dlu,p,2dlu,max(50dlu;p):grow,2dlu,p,2dlu,p" + (addNewBtn ? ",12px,p" : "") + (addDelBtn ? ",2dlu,p" : "");
-        Insets insets = new Insets(1,1,1,1);
+        String             colDef     = "p,2dlu,p,2dlu,max(50dlu;p):grow,2dlu,p,2dlu,p" + 
+                                        (addNewBtn ? ",12px,p" : "") + 
+                                        (addDelBtn ? ",2dlu,p" : "") + 
+                                        (addSearchBtn ? ",2dlu,p" : "");
+        
+        Insets             insets     = new Insets(1,1,1,1);
         DefaultFormBuilder rowBuilder = new DefaultFormBuilder(new FormLayout(colDef, "p"));
         
         firstBtn = UIHelper.createIconBtn("FirstRec", null, null);
@@ -193,7 +201,16 @@ public class ResultSetController implements ValidationListener
             delRecBtn = UIHelper.createIconBtn("DeleteRecord", null, null);
             delRecBtn.setToolTipText(createTooltip("RemoveRecordTT", objTitle));
             delRecBtn.setMargin(insets);
-            rowBuilder.add(delRecBtn, cc.xy(row++,1));
+            rowBuilder.add(delRecBtn, cc.xy(row,1));
+            row += 2;
+        }
+        
+        if (addSearchBtn)
+        {
+            searchRecBtn = UIHelper.createIconBtn("Search", IconManager.IconSize.Std16, null, null);
+            searchRecBtn.setToolTipText(createTooltip("SearchForRecordTT", objTitle));
+            searchRecBtn.setMargin(insets);
+            rowBuilder.add(searchRecBtn, cc.xy(row,1));
             row += 2;
         }
         
@@ -238,10 +255,11 @@ public class ResultSetController implements ValidationListener
         });
         
         // Make sure it gets centered
+        rowBuilder.getPanel().setOpaque(false);
         DefaultFormBuilder outerCenteredPanel = new DefaultFormBuilder(new FormLayout("c:p:g", "p"));
         outerCenteredPanel.add(rowBuilder.getPanel(), cc.xy(1,1));
-        outerCenteredPanel.getPanel().setOpaque(false);
         panel = outerCenteredPanel.getPanel();    
+        panel.setOpaque(false);
     }
     
     /**
@@ -336,7 +354,7 @@ public class ResultSetController implements ValidationListener
         
         recDisp.setEnabled(enabled);
         recDisp.setBorder(enabled ? enabledBorder : disabledBorder);
-        recDisp.setBackground(enabled ? enabledTxtBG : disabledTxtBG);
+        //recDisp.setBackground(enabled ? enabledTxtBG : disabledTxtBG);
         recDisp.setText(numRecords > 0 ? ((currentInx+1) + " of " + numRecords) : " "); // XXX Move to I18N properties file formatted
         
         if (delRecBtn != null)
@@ -357,12 +375,21 @@ public class ResultSetController implements ValidationListener
     }
 
     /**
-     * Returns the JBUtton that is used to create new records.
-     * @return the JBUtton that is used to create new records
+     * Returns the JButton that is used to create new records.
+     * @return the JButton that is used to create new records
      */
     public JButton getDelRecBtn()
     {
         return delRecBtn;
+    }
+
+    /**
+     * Returns the JButton that is used to search for existing records.
+     * @return the JButton that is used to search for existing records.
+     */
+    public JButton getSearchRecBtn()
+    {
+        return searchRecBtn;
     }
 
     /**

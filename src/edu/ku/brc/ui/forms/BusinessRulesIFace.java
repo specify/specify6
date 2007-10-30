@@ -135,6 +135,25 @@ public interface BusinessRulesIFace
      */
     public void afterDeleteCommit(Object dataObj);
     
-    public void setObjectIdentity(final Object dataObj, final DraggableRecordIdentifier draggableIcon);
+    /**
+     * @param dataObj
+     * @param draggableIcon
+     */
+    public void setObjectIdentity(Object dataObj, DraggableRecordIdentifier draggableIcon);
+    
+    /**
+     * Returns whether a the form should create a new object and pass it in. This new object
+     * is usually a requried parent for the the search object.
+     * @return whether to create a new object
+     */
+    public boolean doesSearchObjectRequireNewParent();
+    
+    /**
+     * Asks the business rules to associate the optional new parent data object and the search object.
+     * @param newParentDataObj the new parent object (is null if doesSearchObjectRequireNewParent return false)
+     * @param dataObjectFromSearch the new object found from the search.
+     * @return the dataObjectFromSearch
+     */
+    public Object processSearchObject(Object newParentDataObj, Object dataObjectFromSearch);
     
 }

@@ -1790,7 +1790,7 @@ public final class UIHelper
      * @param defVal the default value
      * @return
      */
-    public boolean getProperty(final Properties properties, final String nameStr, final boolean defVal)
+    public static boolean getProperty(final Properties properties, final String nameStr, final boolean defVal)
     {
         if (properties != null)
         {

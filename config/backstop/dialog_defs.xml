@@ -2,6 +2,7 @@
 <dialog resourcelabels="">
     <dialog type="search" viewset="Search" view="AccessionSearch"          name="AccessionSearch"          title="AccessionSearchTitle"      class="edu.ku.brc.specify.datamodel.Accession"      idfield="accessionId"/>
     <dialog type="search" viewset="Search" view="AgentSearch"              name="AgentSearch"              title="AgentSearch"               class="edu.ku.brc.specify.datamodel.Agent"          idfield="agentId"/>
+    <dialog type="search" viewset="Search" view="AttachmentSearch"         name="AttachmentSearch"         title="AttachmentSearch"          class="edu.ku.brc.specify.datamodel.Attachment"     idfield="attachmentId"/>
     <dialog type="search" viewset="Search" view="CollectionTypeSearch"     name="CollectionTypeSearch"     title="CollectionTypeSearchTitle" class="edu.ku.brc.specify.datamodel.CollectionType" idfield="collectionTypeSearchId"/>
     <dialog type="search" viewset="Search" view="DeterminationSearch"      name="DeterminationSearch"      title="DeterminationSearch"       class="edu.ku.brc.specify.datamodel.Determination"  idfield="determinationId"/>
     <dialog type="search" viewset="Search" view="GeographySearch"          name="GeographySearch"          title="GeographySearchTitle"      class="edu.ku.brc.specify.datamodel.Geography"      idfield="geographyId"/>

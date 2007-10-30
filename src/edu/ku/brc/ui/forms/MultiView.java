@@ -72,6 +72,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     public static final int IS_EDITTING          = 16; // Whether the MultiView is in Edit mode.
     public static final int IS_SINGLE_OBJ        = 32; // Whether the data being passed into the MultiView is a Collection of Object or a single Object
     public static final int NO_SCROLLBARS        = 64; // Whether the form should be scrollable
+    public static final int ADD_SEARCH_BTN       = 128; // Whether a special search btn should be added
 
     // Statics
     private static final Logger log = Logger.getLogger(MultiView.class);
@@ -100,7 +101,6 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     protected String                       selectorValue   = null;
     
     protected Vector<Object>               deletedItems    = null;
-
 
     // Temp
     protected MultiView                    thisObj           = null;
@@ -196,7 +196,6 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
 
         createWithAltView(createDefaultViewable(defaultAltViewType));
     }
-
 
     /**
      * Constructor - Note that createWithMode can be null and is passed in from parent ALWAYS.

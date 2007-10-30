@@ -20,7 +20,7 @@
             <display objtitle="Accession Agent" view="AccessionAgent" dataobjformatter="AccessionAgent" searchdlg="AccessionAgentSearch" newobjdlg="AccessionAgentDisplay"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.AccessionAttachment" abbrev="acat" id="108" searchable="true">
-        	<display view="AccessionAttachment" newobjdlg="AccessionAttachmentDisplay"/>
+            <display view="AccessionAttachment" newobjdlg="AccessionAttachmentDisplay" searchdlg="AttachmentSearch" />
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.AccessionAuthorization" abbrev="aca" id="13" searchable="true">

@@ -209,16 +209,17 @@ public class FormViewObj implements Viewable,
     protected Color                         bgColor           = null;
 
     /**
-     * Constructor with FormView definition
+     * Constructor with FormView definition.
      * @param view the definition of the view
      * @param altView indicates which AltViewIFace we will be using
      * @param mvParent the mvParent mulitview
      * @param createResultSetController indicates that a ResultSet Controller should be created
      * @param formValidator the form's formValidator
      * @param options the options needed for creating the form
+     * @param bgColor bg color it should use
      */
-    public FormViewObj(final ViewIFace          view,
-                       final AltViewIFace       altView,
+    public FormViewObj(final ViewIFace     view,
+                       final AltViewIFace  altView,
                        final MultiView     mvParent,
                        final FormValidator formValidator,
                        final int           options,
@@ -228,14 +229,14 @@ public class FormViewObj implements Viewable,
     }
     
     /**
-     * Constructor with FormView definition
+     * Constructor with FormView definition.
      * @param view the definition of the view
      * @param altView indicates which AltViewIFace we will be using
      * @param mvParent the mvParent mulitview
-     * @param createResultSetController indicates that a ResultSet Controller should be created
      * @param formValidator the form's formValidator
      * @param options the options needed for creating the form
-     * @param properties creation properties
+     * @param cellName the name of the outer form's cell for this view (subview)
+     * @param bgColor bg color it should use
      */
     public FormViewObj(final ViewIFace     view,
                        final AltViewIFace  altView,
@@ -421,7 +422,34 @@ public class FormViewObj implements Viewable,
 
         if (createResultSetController)
         {
-            addRSController();
+            boolean addSearch = mvParent != null && MultiView.isOptionOn(mvParent.getOptions(), MultiView.ADD_SEARCH_BTN);
+            addRSController(addSearch);
+            
+            if (addSearch)
+            {
+                DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
+                if (tblInfo != null)
+                {
+                    searchName = tblInfo.getSearchDialog();
+                    if (StringUtils.isEmpty(searchName))
+                    {
+                        searchName = ""; // Note not null but empty tells it to disable the search btn
+                        
+                        log.error("The Search Dialog Name is empty or missing for class["+view.getClassName()+"]");
+                    }
+                } else
+                {
+                    log.error("Couldn't find TableInfo for class["+view.getClassName()+"]");
+                }
+                
+                rsController.getSearchRecBtn().setEnabled(true);
+                rsController.getSearchRecBtn().addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        doSearch();
+                    }
+                });
+            }
             
         } else if (isSingleObj)
         {
@@ -1001,7 +1029,7 @@ public class FormViewObj implements Viewable,
     /**
      * Creates a new Record and adds it to the List and dataSet if necessary
      */
-    protected void createNewDataObject()
+    protected void createNewDataObject(final boolean doSetIntoAndValidate)
     {
         log.debug("createNewDataObject " + this.getView().getName());
 
@@ -1052,17 +1080,20 @@ public class FormViewObj implements Viewable,
         traverseToToSetAsNew(mvParent, formIsInNewDataMode, false); // don't traverse deeper than our immediate children
         updateControllerUI();
 
-        this.setDataIntoUI();
-
-        if (formValidator != null)
+        if (doSetIntoAndValidate)
         {
-            formValidator.validateForm();
-        }
-        
-        // After a Subform is added we need to have the top most parent MultiView check to see if all is ok
-        if (mvParent != null)
-        {
-            mvParent.getTopLevel().wasValidated(null);//.getCurrentViewAsFormViewObj().getValidator().validateForm();
+            this.setDataIntoUI();
+    
+            if (formValidator != null)
+            {
+                formValidator.validateForm();
+            }
+            
+            // After a Subform is added we need to have the top most parent MultiView check to see if all is ok
+            if (mvParent != null)
+            {
+                mvParent.getTopLevel().wasValidated(null);//.getCurrentViewAsFormViewObj().getValidator().validateForm();
+            }
         }
     }
     
@@ -1666,7 +1697,7 @@ public class FormViewObj implements Viewable,
             addBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae)
                 {
-                    createNewDataObject();
+                    createNewDataObject(true);
                     focusFirstFormControl();
                 }
             });
@@ -1685,14 +1716,15 @@ public class FormViewObj implements Viewable,
 
     /**
      * Adds the ResultSetController to the panel.
+     * @param addSearch indicates it should add a search btn
      */
-    protected void addRSController()
+    protected void addRSController(final boolean addSearch)
     {
         // If the Control panel doesn't exist, then add it
         if (rsController == null && controlPanel != null)
         {
             boolean inEditMode = altView.getMode() == AltViewIFace.CreationMode.EDIT;
-            rsController = new ResultSetController(formValidator, inEditMode, inEditMode, view.getObjTitle(), 0);
+            rsController = new ResultSetController(formValidator, inEditMode, inEditMode, addSearch, view.getObjTitle(), 0);
             rsController.getPanel().setBackground(bgColor);
             
             rsController.addListener(this);
@@ -1707,8 +1739,7 @@ public class FormViewObj implements Viewable,
     }
     
     /**
-     * Crates the extra btns.
-     * @param properties properties needed for creation of the search btn
+     * Creates the extra btns.
      */
     protected void createAddDelSearchPanel()
     {
@@ -1768,16 +1799,51 @@ public class FormViewObj implements Viewable,
         if (StringUtils.isNotEmpty(searchName))
         {
             ViewBasedSearchDialogIFace dlg = UIRegistry.getViewbasedFactory().createSearchDialog(UIHelper.getFrame(mainComp), searchName);
+            dlg.getDialog().setModal(true);
             dlg.getDialog().setVisible(true);
             if (!dlg.isCancelled())
             {
-                setDataObj(dlg.getSelectedObject());
+                // Some object that are searched for need to have a new parent
+                // so we ask them if they want us to create one for them
+                // and then we hand it to them.
+                // Otherwise we just set the new object into the form.
+                Object  newDataObject   = dlg.getSelectedObject();
+                boolean doSetNewDataObj = true;
+                if (businessRules != null)
+                {
+                    if (businessRules.doesSearchObjectRequireNewParent())
+                    {
+                        createNewDataObject(false);
+                        doSetNewDataObj = false;
+                    }
+                    businessRules.processSearchObject(!doSetNewDataObj ? dataObj : null, newDataObject);
+                    
+                    // Set the data and validate
+                    this.setDataIntoUI();
+                    
+                    if (formValidator != null)
+                    {
+                        formValidator.validateForm();
+                    }
+                    
+                    // After a Subform is added we need to have the top most parent MultiView check to see if all is ok
+                    if (mvParent != null)
+                    {
+                        mvParent.getTopLevel().wasValidated(null);
+                    }
+                }
+                
+                if (doSetNewDataObj)
+                {
+                    setDataObj(newDataObject);
+                }
+                
                 //valueHasChanged();
             }
 
         } else
         {
-            log.error("Couldn't find TableInfo for class["+view.getClassName()+"] not found.");
+            log.error("The search name is empty is there one defined in the display tag for the XML?");
         }
     }
 

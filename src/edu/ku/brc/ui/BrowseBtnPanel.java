@@ -59,6 +59,8 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
     {
         super(new BorderLayout());
         
+        setOpaque(false);
+        
         this.isForInput = isForInput;
         
         createUI(value, cols, doDirsOnly, isForInput);
@@ -85,7 +87,7 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
      */
     protected void createUI(final Object value, final int cols, final boolean doDirsOnly, final boolean isForInputArg)
     {
-        PanelBuilder panelBuilder = new PanelBuilder(new FormLayout("f:p:g, 2dlu, r:p", "p"));
+        PanelBuilder panelBuilder = new PanelBuilder(new FormLayout("f:p:g, 2dlu, r:p", "p"), this);
         CellConstraints cc = new CellConstraints();
 
         if (textField == null)
@@ -98,7 +100,7 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
         browseBtn.addActionListener(new BrowseAction(textField, doDirsOnly, isForInputArg));
         panelBuilder.add(browseBtn, cc.xy(3,1));
 
-        add(panelBuilder.getPanel(), BorderLayout.CENTER);
+        setOpaque(false);
 
     }
 

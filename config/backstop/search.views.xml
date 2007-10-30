@@ -12,6 +12,7 @@
                 <altview name="AgentSearch" viewdef="AgentSearch" label="Edit" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
+        
         <view 
             name="AgentNameSearch"
             class="edu.ku.brc.specify.datamodel.Agent"
@@ -19,6 +20,16 @@
             <desc><![CDATA[The Agent Search Form]]></desc>
             <altviews>
                 <altview name="AgentNameSearch" viewdef="AgentNameSearch" label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+        
+        <view 
+            name="AttachmentSearch"
+            class="edu.ku.brc.specify.datamodel.Attachment"
+            resourcelabels="false">
+            <desc><![CDATA[The Attachment Search Form]]></desc>
+            <altviews>
+                <altview name="AttachmentSearch" viewdef="AttachmentSearch" label="Edit" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -528,6 +539,26 @@ Good: <cell type="field" name="FieldNum" ...>
                 <row>
                     <cell type="label" labelfor="DistanceUnits" label="Distance Units"/>
                     <cell type="field" id="DistanceUnits" name="DistanceUnits" isrequired="true" uitype="text"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef type="form"
+            name="AttachmentSearch"
+            class="edu.ku.brc.specify.datamodel.Attachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[The Attachment Search Form]]></desc>
+            <enableRules/>
+            
+            <columnDef>p,3dlu,p</columnDef>
+            <rowDef>p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="OrigFilename" label="Filename"/>
+                    <cell type="field" id="OrigFilename" name="OrigFilename" isrequired="true" uitype="text"/>
                 </row>
             </rows>
         </viewdef>

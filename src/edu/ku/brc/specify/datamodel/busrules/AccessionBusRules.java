@@ -107,7 +107,7 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules
             if (checkAccessionNumberForDuplicates)
             {
                 DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                List <?> accessionNumbers        = session.getDataList(Accession.class, "number", accessionNumber);
+                List <?> accessionNumbers        = session.getDataList(Accession.class, "accessionNumber", accessionNumber);
                 if (accessionNumbers.size() > 0)
                 {
                     errorList.add("ACCESSION_IN_USE");
