@@ -280,7 +280,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		Color[] bgs = new Color[2];
 		bgs[0] = new Color(202,238,255);
 		bgs[1] = new Color(151,221,255);
-		listCellRenderer = new TreeViewerNodeRenderer(listModel,bgs);
+        Color lineColor = new Color(0x00, 0x00, 0x00, 0x66);
+		listCellRenderer = new TreeViewerNodeRenderer(listModel, bgs, lineColor);
 		ListSelectionListener listSelListener = new ListSelectionListener()
 		{
 			@SuppressWarnings("unchecked")

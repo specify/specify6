@@ -9,12 +9,14 @@ package edu.ku.brc.specify.ui.treetables;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Stroke;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -66,10 +68,13 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
     
     protected boolean firstTime = true;
     
+    protected Stroke lineStroke;
+    protected Color  lineColor;
+    
     /**
      * 
      */
-    public TreeViewerNodeRenderer(TreeViewerListModel model, Color[] bgColors)
+    public TreeViewerNodeRenderer(TreeViewerListModel model, Color[] bgColors, Color lineColor)
     {
         this.model = model;
         
@@ -87,6 +92,9 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         widthsValid = false;
         
         model.addListDataListener(this);
+        
+        lineStroke = new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+        this.lineColor = lineColor;
         
         nodeUI = new TreeNodeUI();
     }
@@ -446,6 +454,13 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         
         private void drawNodeAnchors(Graphics g)
         {
+            // setup the color and stroke
+            Graphics2D g2d = (Graphics2D)g;
+            Stroke origStroke = g2d.getStroke();
+            g2d.setStroke(lineStroke);
+            Color origColor = g.getColor();
+            g.setColor(lineColor);
+            
             TreeNode node = treeNode;
             TreeNode parent = model.getNodeById(treeNode.getParentId());
             int cellHeight = list.getFixedCellHeight();
@@ -462,19 +477,30 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
                 {
                     // draw an L-line
                     g.drawLine(parentAnchorBounds.second,0,parentAnchorBounds.second,midCell);
-                    g.drawLine(parentAnchorBounds.second,midCell,nodeAnchorBounds.first,midCell);
+                    g.drawLine(parentAnchorBounds.second+1,midCell,nodeAnchorBounds.first,midCell);
                 }
                 else
                 {
                     // draw a T-shape
                     g.drawLine(parentAnchorBounds.second,0,parentAnchorBounds.second,cellHeight);
-                    g.drawLine(parentAnchorBounds.second,midCell,nodeAnchorBounds.first,midCell);
+                    g.drawLine(parentAnchorBounds.second+1,midCell,nodeAnchorBounds.first,midCell);
                 }
             }
+            
+            // reset the color and stroke to original values
+            g2d.setStroke(origStroke);
+            g.setColor(origColor);
         }
         
         private void drawTreeLinesToLowerNodes(Graphics g)
         {
+            // setup the color and stroke
+            Graphics2D g2d = (Graphics2D)g;
+            Stroke origStroke = g2d.getStroke();
+            g2d.setStroke(lineStroke);
+            Color origColor = g.getColor();
+            g.setColor(lineColor);
+            
             // determine if this node has more peer nodes below it
             // if not, draw an L-shape
             // if so, draw a T-shape
@@ -489,12 +515,20 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
                 {
                     // draw the vertical line for under this parent
                     int width = getAnchorBoundsForRank(parent.getRank()).second;
-                    g.drawLine(width, 0, width, cellHeight);
+                    
+                    if (parent.getRank() != treeNode.getParentRank())
+                    {
+                        g.drawLine(width, 0, width, cellHeight);
+                    }
                 }
                 
                 node = parent;
                 parent = model.getNodeById(node.getParentId());
             }
+            
+            // reset the color and stroke to original values
+            g2d.setStroke(origStroke);
+            g.setColor(origColor);
         }
         
         private void drawOpenClosedIcon(Graphics g)
@@ -559,6 +593,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
             g.setColor(startingColor);
         }
         
+        @SuppressWarnings("unused")
         private void drawParentageStrings(Graphics g)
         {
             TreeNode node = treeNode;
