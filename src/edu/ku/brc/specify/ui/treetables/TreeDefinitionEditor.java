@@ -12,6 +12,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -21,7 +22,9 @@ import java.util.Set;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -50,8 +53,11 @@ import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.treeutils.TreeDataService;
 import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.treeutils.TreeFactory;
+import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
@@ -164,7 +170,8 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 		
 		// create north panel widgets
 		defNameLabel = new JLabel();
-		editDefButton = new JButton("Edit");
+        Icon editIcon = IconManager.getIcon("EditIcon", IconSize.Std16);
+		editDefButton = new JButton(editIcon);
 		editDefButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent ae)
@@ -397,12 +404,27 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                     List<String> nodesToChange = getNodesThatMustBeFixedBeforeEdit(beforeItem, defItem);
                     if (nodesToChange != null && nodesToChange.size() > 0)
                     {
-                        StringBuilder message = new StringBuilder(getResourceString("TDE_CantMakeChange"));
+                        StringBuilder message = new StringBuilder("<html><h3><center>");
+                        message.append(getResourceString("TDE_CantMakeChange"));
+                        message.append("</center></h3><ul>");
                         for (String node: nodesToChange)
                         {
-                            message.append("\n" + node);
+                            message.append("<li>" + node);
                         }
-                        JOptionPane.showMessageDialog(null, message.toString());
+                        message.append("</ul></html>");
+                        JLabel label = new JLabel();
+                        label.setText(message.toString());
+                        Window w = UIRegistry.getMostRecentWindow();
+                        JFrame parent = null;
+                        if (w instanceof JFrame)
+                        {
+                            parent = (JFrame)w;
+                        }
+                        CustomDialog errorDialog = new CustomDialog(parent,getResourceString("Error"),true,CustomDialog.OK_BTN, new JScrollPane(label));
+                        errorDialog.createUI();
+                        errorDialog.setSize(650, 200);
+                        errorDialog.setVisible(true);
+                        
                         success = false;
                         return success;
                     }
@@ -411,7 +433,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                     DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
                     try
                     {
-                        mergedItem = (I)session.merge(defItem);
+                        mergedItem = session.merge(defItem);
                     }
                     catch (StaleObjectException e1)
                     {
@@ -633,12 +655,26 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                         List<String> nodesToChange = getNodesThatMustBeFixedToEnforceNewLevel(newItem);
                         if (nodesToChange != null && nodesToChange.size() > 0)
                         {
-                            StringBuilder message = new StringBuilder(getResourceString("TDE_CantEnforceNewLevel"));
+                            StringBuilder message = new StringBuilder("<html><h3><center>");
+                            message.append(getResourceString("TDE_CantEnforceNewLevel"));
+                            message.append("</center></h3><ul>");
                             for (String node: nodesToChange)
                             {
-                                message.append("\n" + node);
+                                message.append("<li>" + node);
                             }
-                            JOptionPane.showMessageDialog(null, message.toString());
+                            message.append("</ul></html>");
+                            JLabel label = new JLabel();
+                            label.setText(message.toString());
+                            Window w = UIRegistry.getMostRecentWindow();
+                            JFrame parent = null;
+                            if (w instanceof JFrame)
+                            {
+                                parent = (JFrame)w;
+                            }
+                            CustomDialog errorDialog = new CustomDialog(parent,getResourceString("Error"),true,CustomDialog.OK_BTN, new JScrollPane(label));
+                            errorDialog.createUI();
+                            errorDialog.setSize(650, 200);
+                            errorDialog.setVisible(true);
                             
                             newItem.setIsEnforced(false);
                         }
@@ -812,7 +848,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                 DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
                 try
                 {
-                    mergedItem = (I)session.merge(itemToDelete);
+                    mergedItem = session.merge(itemToDelete);
                 }
                 catch (StaleObjectException e1)
                 {
@@ -1006,7 +1042,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                     DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
                     try
                     {
-                        mergedDef = (D)session.merge(def);
+                        mergedDef = session.merge(def);
                     }
                     catch (StaleObjectException e1)
                     {

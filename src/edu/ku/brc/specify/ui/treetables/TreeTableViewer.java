@@ -682,7 +682,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                     }
                     catch (Exception e)
                     {
-                        log.warn("Failed to show and select previously selected node", e);
+                        log.warn("Failed to show and select previously selected node");
                     }
                 }
             }
