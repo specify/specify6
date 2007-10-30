@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.net.URI;
 import java.util.Set;
 
 import javax.persistence.Transient;
@@ -36,6 +37,7 @@ import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.FormViewObj;
+import edu.ku.brc.util.AttachmentUtils;
 
 /**
  * Task that handles the UI for viewing taxonomy data.
@@ -83,6 +85,7 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
             @SuppressWarnings("unchecked")
             public Object construct()
             {
+                // get a clean copy of the tree def (one that isn't attached to everything else in the system)
                 DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
                 TaxonTreeDef def = session.load(TaxonTreeDef.class, treeDef.getTreeDefId());
                 session.close();
@@ -93,7 +96,6 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
             @Override
             public void finished()
             {
-                super.finished();
                 TaxonTreeDef def = (TaxonTreeDef)getValue();
                 final TreeTableViewer<Taxon, TaxonTreeDef, TaxonTreeDefItem> ttv = showTreeInternal(def);
                 
@@ -101,16 +103,32 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
                 {
                     final TreeNodePopupMenu popup = ttv.getPopupMenu();
                     // install custom popup menu items
-//                  JMenuItem getITIS = new JMenuItem("Get ITIS Info");
-//                  getITIS.addActionListener(new ActionListener()
-//                  {
-//                      public void actionPerformed(ActionEvent e)
-//                      {
-//                          Taxon taxon = ttv.getSelectedNode(popup.getList());
-//                          System.out.println("Get ITIS info for " + taxon.getFullName());
-//                      }
-//                  });
-//                  popup.add(getITIS);
+                  JMenuItem getITIS = new JMenuItem("View ITIS Page");
+                  getITIS.addActionListener(new ActionListener()
+                  {
+                      public void actionPerformed(ActionEvent e)
+                      {
+                          StringBuilder itisURL = new StringBuilder("http://www.cbif.gc.ca/pls/itisca/taxastep?p_action=containing&p_format=html&taxa=");
+                          Taxon taxon = ttv.getSelectedNode(popup.getList());
+                          String kingdom = taxon.getLevelName(TaxonTreeDef.KINGDOM);
+                          String fullName = taxon.getFullName();
+                          fullName = fullName.replaceAll(" ", "%20");
+                          itisURL.append(fullName);
+                          itisURL.append("&king=");
+                          itisURL.append(kingdom);
+                          try
+                          {
+                              AttachmentUtils.openURI(new URI(itisURL.toString()));
+                          }
+                          catch (Exception e1)
+                          {
+                              String errorMessage = getResourceString("ERROR_CANT_OPEN_WEBPAGE") + ": " + itisURL;
+                              log.warn(errorMessage, e1);
+                              UIRegistry.getStatusBar().setErrorMessage(errorMessage, e1);
+                          }
+                      }
+                  });
+                  popup.add(getITIS);
                     
                     JMenuItem getDeters = new JMenuItem(getResourceString("TTV_TAXON_ASSOC_DETERS"));
                     getDeters.addActionListener(new ActionListener()

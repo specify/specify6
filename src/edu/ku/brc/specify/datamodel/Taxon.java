@@ -175,7 +175,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         environmentalProtectionStatus = null;
         nodeNumber                    = null;
         highestChildNodeNumber        = null;
-        isAccepted                    = null;
+        isAccepted                    = true; // null for isAccepted means the same as true.  true is more clear.  So, I put true in here.
         rankId                        = null;
         groupNumber                   = null;
         visibility                    = null;
@@ -197,7 +197,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 
     @Id
     @GeneratedValue
-    @Column(name = "TaxonID", unique = false, nullable = false, insertable = true, updatable = true)
+    @Column(name = "TaxonID")
 	public Integer getTaxonId()
 	{
 		return this.taxonId;
@@ -262,7 +262,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         this.fullName = fullName;
     }
 
-    @Column(name = "CommonName", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Column(name = "CommonName", length = 128)
     public String getCommonName() 
     {
         return this.commonName;
@@ -273,7 +273,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         this.commonName = commonName;
     }
 
-    @Column(name = "TaxonomicSerialNumber", unique = false, nullable = true, length = 50)
+    @Column(name = "TaxonomicSerialNumber", length = 50)
 	public String getTaxonomicSerialNumber()
 	{
 		return this.taxonomicSerialNumber;
@@ -284,7 +284,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 		this.taxonomicSerialNumber = taxonomicSerialNumber;
 	}
 
-    @Column(name = "GUID", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Column(name = "GUID", length = 128)
 	public String getGuid()
 	{
 		return this.guid;
@@ -307,7 +307,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 		this.remarks = remarks;
 	}
 
-    @Column(name = "UnitInd1", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "UnitInd1", length = 50)
 	public String getUnitInd1()
 	{
 		return this.unitInd1;
@@ -318,7 +318,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 		this.unitInd1 = unitInd1;
 	}
 
-    @Column(name = "UnitName1", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "UnitName1", length = 50)
 	public String getUnitName1()
 	{
 		return this.unitName1;
@@ -329,7 +329,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 		this.unitName1 = unitName1;
 	}
 
-    @Column(name = "UnitInd2", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "UnitInd2", length = 50)
 	public String getUnitInd2()
 	{
 		return this.unitInd2;
@@ -340,7 +340,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 		this.unitInd2 = unitInd2;
 	}
 
-    @Column(name = "UnitName2", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "UnitName2", length = 50)
 	public String getUnitName2()
 	{
 		return this.unitName2;
@@ -351,7 +351,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 		this.unitName2 = unitName2;
 	}
 
-    @Column(name = "UnitInd3", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "UnitInd3", length = 50)
 	public String getUnitInd3()
 	{
 		return this.unitInd3;
@@ -362,7 +362,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 		this.unitInd3 = unitInd3;
 	}
 
-    @Column(name = "UnitName3", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "UnitName3", length = 50)
 	public String getUnitName3()
 	{
 		return this.unitName3;
@@ -373,7 +373,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 		this.unitName3 = unitName3;
 	}
 
-    @Column(name = "UnitInd4", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "UnitInd4", length = 50)
 	public String getUnitInd4()
 	{
 		return this.unitInd4;
@@ -384,7 +384,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 		this.unitInd4 = unitInd4;
 	}
 
-    @Column(name = "UnitName4", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "UnitName4", length = 50)
 	public String getUnitName4()
 	{
 		return this.unitName4;
@@ -395,7 +395,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 		this.unitName4 = unitName4;
 	}
 
-    @Column(name = "Author", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Column(name = "Author", length = 128)
 	public String getAuthor()
 	{
 		return this.author;
@@ -406,7 +406,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 		this.author = author;
 	}
 
-    @Column(name = "Source", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    @Column(name = "Source", length = 64)
 	public String getSource()
 	{
 		return this.source;
@@ -417,7 +417,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 		this.source = source;
 	}
 
-    @Column(name = "EnvironmentalProtectionStatus", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    @Column(name = "EnvironmentalProtectionStatus", length = 64)
 	public String getEnvironmentalProtectionStatus()
 	{
 		return this.environmentalProtectionStatus;
@@ -527,7 +527,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         this.usfwsCode = usfwsCode;
     }
 
-    @Column(name = "NodeNumber", unique = false, nullable = true, insertable = true, updatable = false, length = 10)
+    @Column(name = "NodeNumber", updatable = false)
 	public Integer getNodeNumber()
 	{
 		return this.nodeNumber;
@@ -538,7 +538,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 		this.nodeNumber = nodeNumber;
 	}
 
-    @Column(name = "HighestChildNodeNumber", unique = false, nullable = true, insertable = true, updatable = false, length = 10)
+    @Column(name = "HighestChildNodeNumber", updatable = false)
 	public Integer getHighestChildNodeNumber()
 	{
 		return this.highestChildNodeNumber;
@@ -549,7 +549,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 		this.highestChildNodeNumber = highestChildNodeNumber;
 	}
 
-    @Column(name="IsAccepted", unique=false, nullable=true, insertable=true, updatable=true)
+    @Column(name="IsAccepted")
     public Boolean getIsAccepted()
 	{
 		return this.isAccepted;
@@ -560,7 +560,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 		this.isAccepted = accepted;
 	}
 
-    @Column(name = "RankID", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
+    @Column(name = "RankID")
 	public Integer getRankId()
 	{
 		return this.rankId;
@@ -571,7 +571,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 		this.rankId = rankId;
 	}
 
-    @Column(name = "GroupNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 20)
+    @Column(name = "GroupNumber", length = 20)
 	public String getGroupNumber()
 	{
 		return this.groupNumber;
@@ -584,7 +584,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
     /**
      *      * Indicates whether this record can be viewed - by owner, by instituion, or by all
      */
-    @Column(name = "Visibility", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
+    @Column(name = "Visibility")
     public Integer getVisibility() {
         return this.visibility;
     }
@@ -635,7 +635,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 		this.acceptedChildren = acceptedChildren;
 	}
 
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "AcceptedID")
 	public Taxon getAcceptedTaxon()
 	{
@@ -645,6 +645,8 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 	public void setAcceptedTaxon(Taxon acceptedTaxon)
 	{
 		this.acceptedTaxon = acceptedTaxon;
+        boolean accepted = (acceptedTaxon == null);
+        setIsAccepted(accepted);
 	}
 
     @Transient
@@ -664,7 +666,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
      * 
      * @returnthe the primary parent of the taxon, or null if the object doesn't represent a hybrid taxon
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "HybridParent1ID")
     public Taxon getHybridParent1()
     {
@@ -681,7 +683,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
      * 
      * @return the the secondary parent of the taxon, or null if the object doesn't represent a hybrid taxon
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "HybridParent2ID")
     public Taxon getHybridParent2()
     {
@@ -698,7 +700,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
      * 
      * @return the set of Taxon objects where this object is the hybridParent1 value.
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "hybridParent1")
+    @OneToMany(mappedBy = "hybridParent1")
     @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public Set<Taxon> getHybridChildren1()
     {
@@ -715,7 +717,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
      * 
      * @return the set of Taxon objects where this object is the hybridParent2 value.
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "hybridParent2")
+    @OneToMany(mappedBy = "hybridParent2")
     @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public Set<Taxon> getHybridChildren2()
     {
@@ -727,7 +729,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         this.hybridChildren2 = hybridChildren2;
     }
 
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "taxon")
+    @OneToMany(mappedBy = "taxon")
     @Cascade( {CascadeType.MERGE, CascadeType.LOCK} )
 	public Set<Determination> getDeterminations()
 	{
@@ -742,7 +744,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
     /**
      * @return the commonNames
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "taxon")
+    @OneToMany(mappedBy = "taxon")
     @Cascade( {CascadeType.MERGE, CascadeType.LOCK} )
     public Set<CommonName> getCommonNames()
     {
@@ -757,7 +759,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         this.commonNames = commonNames;
     }
 
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "taxon")
+    @OneToMany(mappedBy = "taxon")
     @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
 	public Set<TaxonCitation> getTaxonCitations()
 	{
@@ -769,7 +771,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 		this.taxonCitations = taxonCitations;
 	}
 
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "TaxonTreeDefID", nullable = false)
 	public TaxonTreeDef getDefinition()
 	{
@@ -781,7 +783,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 		this.definition = definition;
 	}
 
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "TaxonTreeDefItemID", nullable = false)
 	public TaxonTreeDefItem getDefinitionItem()
 	{
@@ -797,7 +799,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         }
 	}
 
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "ParentID")
 	public Taxon getParent()
 	{
@@ -809,7 +811,8 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 		this.parent = parent;
 	}
 
-    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, fetch = FetchType.LAZY, mappedBy = "parent")
+    @OneToMany(mappedBy = "parent")
+    @Cascade( {CascadeType.ALL} )
 	public Set<Taxon> getChildren()
 	{
 		return this.children;
@@ -831,7 +834,8 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         this.taxonId = id;
 	}
 
-    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "taxon")
+    @OneToMany(mappedBy = "taxon")
+    @Cascade( {CascadeType.ALL} )
     public Set<TaxonAttachment> getTaxonAttachments()
     {
         return taxonAttachments;

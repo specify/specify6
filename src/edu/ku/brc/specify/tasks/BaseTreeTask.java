@@ -218,6 +218,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
             @SuppressWarnings("unchecked")
             public Object construct()
             {
+                // get a clean copy of the tree def (one that isn't attached to everything else in the system)
                 DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
                 D def = (D)session.load(treeDef.getClass(), treeDef.getTreeDefId());
                 session.close();
@@ -228,7 +229,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
             @Override
             public void finished()
             {
-                super.finished();
+                // do the UI work to show the tree
                 D def = (D)getValue();
                 showTreeInternal(def);
             }

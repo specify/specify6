@@ -876,22 +876,22 @@ public class BuildSampleDatabase
         longAgo.set(1976, 01, 29, 8, 12, 00);
         Calendar whileBack = Calendar.getInstance(); 
         whileBack.set(2002, 7, 4, 9, 33, 12);
-        determs.add(createDetermination(collObjs.get(0), agents.get(0), (Taxon)taxa.get(32), current, recent));
-        determs.add(createDetermination(collObjs.get(1), agents.get(0), (Taxon)taxa.get(33), current, recent));
-        determs.add(createDetermination(collObjs.get(2), agents.get(0), (Taxon)taxa.get(34), current, recent));
-        determs.add(createDetermination(collObjs.get(3), agents.get(0), (Taxon)taxa.get(35), current, recent));
-        determs.add(createDetermination(collObjs.get(4), agents.get(0), (Taxon)taxa.get(36), current, recent));
-        determs.add(createDetermination(collObjs.get(5), agents.get(0), (Taxon)taxa.get(37), current, recent));
-        determs.add(createDetermination(collObjs.get(6), agents.get(3), (Taxon)taxa.get(38), current, recent));
-        determs.add(createDetermination(collObjs.get(7), agents.get(4), (Taxon)taxa.get(39), current, recent));
+        determs.add(createDetermination(collObjs.get(0), agents.get(0), (Taxon)taxa.get(33), current, recent));
+        determs.add(createDetermination(collObjs.get(1), agents.get(0), (Taxon)taxa.get(34), current, recent));
+        determs.add(createDetermination(collObjs.get(2), agents.get(0), (Taxon)taxa.get(35), current, recent));
+        determs.add(createDetermination(collObjs.get(3), agents.get(0), (Taxon)taxa.get(36), current, recent));
+        determs.add(createDetermination(collObjs.get(4), agents.get(0), (Taxon)taxa.get(37), current, recent));
+        determs.add(createDetermination(collObjs.get(5), agents.get(0), (Taxon)taxa.get(38), current, recent));
+        determs.add(createDetermination(collObjs.get(6), agents.get(3), (Taxon)taxa.get(39), current, recent));
+        determs.add(createDetermination(collObjs.get(7), agents.get(4), (Taxon)taxa.get(40), current, recent));
         
-        determs.add(createDetermination(collObjs.get(0), agents.get(0), (Taxon)taxa.get(32), notCurrent, longAgo));
-        determs.add(createDetermination(collObjs.get(1), agents.get(1), (Taxon)taxa.get(39), notCurrent, whileBack));
-        determs.add(createDetermination(collObjs.get(2), agents.get(1), (Taxon)taxa.get(41), notCurrent, whileBack));
-        determs.add(createDetermination(collObjs.get(3), agents.get(2), (Taxon)taxa.get(42), notCurrent, whileBack));
-        determs.add(createDetermination(collObjs.get(4), agents.get(2), (Taxon)taxa.get(42), notCurrent, whileBack));
-        determs.add(createDetermination(collObjs.get(4), agents.get(3), (Taxon)taxa.get(45), incorrect, longAgo));
-        determs.add(createDetermination(collObjs.get(4), agents.get(4), (Taxon)taxa.get(44), incorrect, longAgo));
+        determs.add(createDetermination(collObjs.get(0), agents.get(0), (Taxon)taxa.get(33), notCurrent, longAgo));
+        determs.add(createDetermination(collObjs.get(1), agents.get(1), (Taxon)taxa.get(40), notCurrent, whileBack));
+        determs.add(createDetermination(collObjs.get(2), agents.get(1), (Taxon)taxa.get(42), notCurrent, whileBack));
+        determs.add(createDetermination(collObjs.get(3), agents.get(2), (Taxon)taxa.get(43), notCurrent, whileBack));
+        determs.add(createDetermination(collObjs.get(4), agents.get(2), (Taxon)taxa.get(43), notCurrent, whileBack));
+        determs.add(createDetermination(collObjs.get(4), agents.get(3), (Taxon)taxa.get(46), incorrect, longAgo));
+        determs.add(createDetermination(collObjs.get(4), agents.get(4), (Taxon)taxa.get(45), incorrect, longAgo));
         determs.get(13).setRemarks("This determination is totally wrong.  What a foolish determination.");
         
         //startTx();
@@ -1757,25 +1757,6 @@ public class BuildSampleDatabase
         Set<TaxonTreeDefItem> newItems = TreeFactory.addStandardTaxonDefItems(taxonTreeDef);
         newObjs.addAll(newItems);
         
-//        // Create a Taxon tree definition
-//        TaxonTreeDefItem taxonRoot = createTaxonTreeDefItem(null, taxonTreeDef, "life", TaxonTreeDef.TAXONOMY_ROOT);
-//        taxonRoot.setIsEnforced(true);
-//        TaxonTreeDefItem defItemLevel0 = createTaxonTreeDefItem(taxonRoot, taxonTreeDef, "order", TaxonTreeDef.ORDER);
-//        defItemLevel0.setIsEnforced(true);
-//        TaxonTreeDefItem defItemLevel1 = createTaxonTreeDefItem(defItemLevel0, taxonTreeDef, "family", TaxonTreeDef.FAMILY);
-//        TaxonTreeDefItem defItemLevel2 = createTaxonTreeDefItem(defItemLevel1, taxonTreeDef, "genus", TaxonTreeDef.GENUS);
-//        defItemLevel2.setFormatToken("%G");
-//        defItemLevel2.setIsEnforced(true);
-//        defItemLevel2.setIsInFullName(true);
-//        TaxonTreeDefItem defItemLevel3 = createTaxonTreeDefItem(defItemLevel2, taxonTreeDef, "species", TaxonTreeDef.SPECIES);
-//        defItemLevel3.setFormatToken("%S");
-//        defItemLevel3.setIsEnforced(true);
-//        defItemLevel3.setIsInFullName(true);
-//        TaxonTreeDefItem defItemLevel4 = createTaxonTreeDefItem(defItemLevel3, taxonTreeDef, "subspecies", TaxonTreeDef.SUBSPECIES);
-//        defItemLevel4.setFormatToken("%SS");
-//        defItemLevel4.setIsEnforced(false);
-//        defItemLevel4.setIsInFullName(true);
-        
         for (TaxonTreeDefItem item: newItems)
         {
             if (item.getRankId().equals(TaxonTreeDef.GENUS))
@@ -1792,71 +1773,94 @@ public class BuildSampleDatabase
             }
         }
 
-//        // 0
-//        newObjs.add(taxonRoot);
-//        // 1
-//        newObjs.add(defItemLevel0);
-//        // 2
-//        newObjs.add(defItemLevel1);
-//        // 3
-//        newObjs.add(defItemLevel2);
-//        // 4
-//        newObjs.add(defItemLevel3);
-//        // 5
-//        newObjs.add(defItemLevel4);
-        
-        // new items are 0 through 27
-        
-//        TaxonTreeDefItem root = taxonTreeDef.getDefItemByRank(TaxonTreeDef.TAXONOMY_ROOT);
-//        TaxonTreeDefItem order = taxonTreeDef.getDefItemByRank(TaxonTreeDef.ORDER);
-//        TaxonTreeDefItem family = taxonTreeDef.getDefItemByRank(TaxonTreeDef.FAMILY);
-//        TaxonTreeDefItem genus = taxonTreeDef.getDefItemByRank(TaxonTreeDef.GENUS);
 
         Taxon life        = createTaxon(taxonTreeDef, null,        "Life",        TaxonTreeDef.TAXONOMY_ROOT);
-        Taxon perciformes = createTaxon(taxonTreeDef, life,        "Perciformes", TaxonTreeDef.ORDER);
+        Taxon animalia    = createTaxon(taxonTreeDef, life,        "Animalia",    TaxonTreeDef.KINGDOM);
+        Taxon perciformes = createTaxon(taxonTreeDef, animalia,    "Perciformes", TaxonTreeDef.ORDER);
         Taxon percidae    = createTaxon(taxonTreeDef, perciformes, "Percidae",    TaxonTreeDef.FAMILY);
         Taxon ammocrypta  = createTaxon(taxonTreeDef, percidae,    "Ammocrypta",  TaxonTreeDef.GENUS);
+        ammocrypta.setCommonName("sand darters");
+        
         // 28
         newObjs.add(life);
         // 29
-        newObjs.add(perciformes);
+        newObjs.add(animalia);
         // 30
-        newObjs.add(percidae);
+        newObjs.add(perciformes);
         // 31
+        newObjs.add(percidae);
+        // 32
         newObjs.add(ammocrypta);
 
         String[] speciesNames = { "asprella", "beanii", "bifascia", "clara", "meridiana", "pellucida", "vivax" };
-        String[] commonNames  = {"Crystal darter", "Naked sand darter", "Florida sand darter", "Western sand darter", "Southern sand darter", "Eastern sand darter", "Scaly sand darter"};
+        String[] commonNames  = {"crystal darter", "naked sand darter", "Florida sand darter", "western sand darter", "southern sand darter", "eastern sand darter", "scaly sand darter"};
         List<Object> kids = createTaxonChildren(taxonTreeDef, ammocrypta, speciesNames, commonNames, TaxonTreeDef.SPECIES);
-        // 32, 33, 34, 35, 36, 37, 38
+        // 33, 34, 35, 36, 37, 38, 39
         newObjs.addAll(kids);
 
         Taxon carangidae = createTaxon(taxonTreeDef, perciformes, "Carangidae", TaxonTreeDef.FAMILY);
-        Taxon caranx    = createTaxon(taxonTreeDef, carangidae, "Caranx", TaxonTreeDef.GENUS);
+        Taxon caranx     = createTaxon(taxonTreeDef, carangidae, "Caranx", TaxonTreeDef.GENUS);
         
-        // 39
-        newObjs.add(carangidae);
         // 40
+        newObjs.add(carangidae);
+        // 41
         newObjs.add(caranx);
 
-        String[] speciesNames2 = { "bartholomaei", "caballus", "caninus", "crysos", "dentex", "hippos", "latus" };
-        String[] commonNames2  = {"Yellow jack", "Green jack", "Pacific crevalle jack", "Blue runner", "White trevally", "Crevalle jack", "Horse-eye jack"};
+        String[] speciesNames2 = { "bartholomaei", "caballus", "caninus", "crysos", "dentex", "hippos", "latus"};
+        String[] commonNames2  = {"yellow jack", "green jack", "Pacific crevalle jack", "blue runner", "white trevally", "crevalle jack", "horse-eye jack"};
         kids = createTaxonChildren(taxonTreeDef, caranx, speciesNames2, commonNames2, TaxonTreeDef.SPECIES);
-        // 41, 42, 43, 44, 45, 46, 47
+        // 42, 43, 44, 45, 46, 47, 48
         newObjs.addAll(kids);
+
+        // setup a couple of synonyms (and supporting nodes)
+        Taxon fusus = createTaxon(taxonTreeDef, caranx, "fusus", TaxonTreeDef.SPECIES);
+        fusus.setCommonName("Blue runner");
+        fusus.setAcceptedTaxon((Taxon)newObjs.get(45));
+        
+        Taxon carangus = createTaxon(taxonTreeDef, caranx, "carangus", TaxonTreeDef.SPECIES);
+        carangus.setCommonName("Blacktailed trevally");
+        carangus.setAcceptedTaxon((Taxon)newObjs.get(47));
+        
+        Taxon etheostoma = createTaxon(taxonTreeDef, percidae, "Etheostoma", TaxonTreeDef.GENUS);
+        etheostoma.setCommonName("smoothbelly darters");
+        
+        Taxon meridianum = createTaxon(taxonTreeDef, etheostoma, "meridianum", TaxonTreeDef.SPECIES);
+        meridianum.setCommonName("southern sand darter");
+        ((Taxon)newObjs.get(37)).setAcceptedTaxon(meridianum);
+        
+        Taxon pellucidum = createTaxon(taxonTreeDef, etheostoma, "pellucidum", TaxonTreeDef.SPECIES);
+        pellucidum.setCommonName("eastern sand darter");
+        pellucidum.setAcceptedTaxon((Taxon)newObjs.get(38));
+        
+        Taxon ethVivax = createTaxon(taxonTreeDef, etheostoma, "vivax", TaxonTreeDef.SPECIES);
+        ethVivax.setCommonName("scaly sand darter");
+        ethVivax.setAcceptedTaxon((Taxon)newObjs.get(39));
+        
+        Taxon beani = createTaxon(taxonTreeDef, ammocrypta, "beani", TaxonTreeDef.SPECIES);
+        beani.setCommonName("naked sand darter");
+        beani.setAcceptedTaxon((Taxon)newObjs.get(34));
+        
+        Taxon crystallaria = createTaxon(taxonTreeDef, percidae, "Crystallaria", TaxonTreeDef.GENUS);
+        crystallaria.setCommonName("crystal darters");
+        
+        Taxon crysAsprella = createTaxon(taxonTreeDef, crystallaria, "asprella", TaxonTreeDef.SPECIES);
+        crysAsprella.setCommonName("crystal darter");
+        ((Taxon)newObjs.get(33)).setAcceptedTaxon(crysAsprella);
+
+        newObjs.add(fusus);
+        newObjs.add(carangus);
+        newObjs.add(etheostoma);
+        newObjs.add(meridianum);
+        newObjs.add(pellucidum);
+        newObjs.add(ethVivax);
+        newObjs.add(beani);
+        newObjs.add(crystallaria);
+        newObjs.add(crysAsprella);
+        // 49, 50, 51, 52, 53, 54, 55, 56, 57
 
         TreeHelper.fixFullnameForNodeAndDescendants(life);
         life.setNodeNumber(1);
         fixNodeNumbersFromRoot(life);
-        
-        for (Object o: newObjs)
-        {
-            if (o instanceof Taxon)
-            {
-                Taxon t = (Taxon)o;
-                t.setIsAccepted(true);
-            }
-        }
         
         return newObjs;
     }
