@@ -89,18 +89,7 @@
     <field column="Cataloger First Name" name="catalogerFirstName" type="java.lang.String" length="50"/>
     <field column="Cataloger Last Name" name="catalogerLastName" type="java.lang.String" length="50"/>
   </table>
-  <table classname="edu.ku.brc.specify.datamodel.ColObjAttributes" table="colobjattributes" tableid="93" lazy="true" query="false">
-    <field column="Sex" name="sex" type="java.lang.String" length="50"/>
-    <field column="Age" name="age" type="java.lang.String" length="50"/>
-    <field column="Stage" name="stage" type="java.lang.String" length="50"/>
-    <field column="Weight" name="weight" type="java.lang.Float" length="24"/>
-    <field column="Length" name="length" type="java.lang.Float" length="24"/>
-    <field column="Reproductive Condition" name="reproductiveCondition" type="java.lang.String" length="50"/>
-    <field column="Condition" name="objCondition" type="java.lang.String" length="50"/>
-    <field column="Maximum Length" name="maxLength" type="java.lang.Float" length="24"/>
-    <field column="Minimum Length" name="minLength" type="java.lang.Float" length="24"/>
-    <field column="Width" name="width" type="java.lang.Float" length="24"/>
-    <field column="Height" name="height" type="java.lang.Float" length="24"/>
+  <table classname="edu.ku.brc.specify.datamodel.CollectionObjectAttributes" table="collectionobjectattributes" tableid="93" lazy="true" query="false">
     <field column="Remarks (Col. Obj. Attribute)" name="colObjAttributesRemarks" type="java.lang.String" length="1073741823"/>
     <field column="Number 1 (Col. Obj. Attribute)" name="colObjAttributeNumber1" type="java.lang.Float" length="24"/>
     <field column="Number 2 (Col. Obj. Attribute)" name="colObjAttributeNumber2" type="java.lang.Float" length="24"/>
@@ -138,6 +127,12 @@
     <field column="Number 34 (Col. Obj. Attribute)" name="colObjAttributeNumber34" type="java.lang.Integer" length="10"/>
     <field column="Number 35 (Col. Obj. Attribute)" name="colObjAttributeNumber35" type="java.lang.Integer" length="10"/>
     <field column="Number 36 (Col. Obj. Attribute)" name="colObjAttributeNumber36" type="java.lang.Integer" length="10"/>
+    <field column="Number 37 (Col. Obj. Attribute)" name="colObjAttributeNumber36" type="java.lang.Integer" length="10"/>
+    <field column="Number 38 (Col. Obj. Attribute)" name="colObjAttributeNumber36" type="java.lang.Integer" length="10"/>
+    <field column="Number 39 (Col. Obj. Attribute)" name="colObjAttributeNumber36" type="java.lang.Integer" length="10"/>
+    <field column="Number 40 (Col. Obj. Attribute)" name="colObjAttributeNumber36" type="java.lang.Integer" length="10"/>
+    <field column="Number 41 (Col. Obj. Attribute)" name="colObjAttributeNumber36" type="java.lang.Integer" length="10"/>
+    <field column="Number 42 (Col. Obj. Attribute)" name="colObjAttributeNumber36" type="java.lang.Integer" length="10"/>
     <field column="Text 1 (Col. Obj. Attribute)" name="colObjAttributeText1" type="java.lang.String" length="300"/>
     <field column="Text 2 (Col. Obj. Attribute)" name="colObjAttributeText2" type="java.lang.String" length="300"/>
     <field column="Text 3 (Col. Obj. Attribute)" name="colObjAttributeText3" type="java.lang.String" length="300"/>
@@ -147,6 +142,11 @@
     <field column="Text 7 (Col. Obj. Attribute)" name="colObjAttributeText7" type="java.lang.String" length="100"/>
     <field column="Text 8 (Col. Obj. Attribute)" name="colObjAttributeText8" type="java.lang.String" length="50"/>
     <field column="Text 9 (Col. Obj. Attribute)" name="colObjAttributeText9" type="java.lang.String" length="50"/>
+    <field column="Text 10 (Col. Obj. Attribute)" name="colObjAttributeText9" type="java.lang.String" length="50"/>
+    <field column="Text 11 (Col. Obj. Attribute)" name="colObjAttributeText9" type="java.lang.String" length="50"/>
+    <field column="Text 12 (Col. Obj. Attribute)" name="colObjAttributeText9" type="java.lang.String" length="50"/>
+    <field column="Text 13 (Col. Obj. Attribute)" name="colObjAttributeText9" type="java.lang.String" length="50"/>
+    <field column="Text 14 (Col. Obj. Attribute)" name="colObjAttributeText9" type="java.lang.String" length="50"/>
     <field column="YesNo 1 (Col. Obj. Attribute)" name="colObjAttributeYesNo1" type="boolean"/>
     <field column="YesNo 2 (Col. Obj. Attribute)" name="colObjAttributeYesNo2" type="boolean"/>
     <field column="YesNo 3 (Col. Obj. Attribute)" name="colObjAttributeYesNo3" type="boolean"/>
@@ -211,6 +211,7 @@
     <field column="Remarks (Geologic Time Period)" name="geologicTimePeriodRemarks" type="java.lang.String" length="255"/>
   </table>
   
+  <!--
   <table classname="edu.ku.brc.specify.datamodel.HabitatAttributes" table="habitatattributes" tableid="92" lazy="true" query="false">
     <field column="Air Temp Celcius" name="airTempC" type="java.lang.Float" length="24"/>
     <field column="Water Temp Celcius" name="waterTempC" type="java.lang.Float" length="24"/>
@@ -249,6 +250,7 @@
     <field column="YesNo 4 (Habitat Attributes)" name="habitatAttributeYesNo4" type="boolean"/>
     <field column="YesNo 5 (Habitat Attributes)" name="habitatAttributeYesNo5" type="boolean"/>
   </table>
+  -->
   
   <table classname="edu.ku.brc.specify.datamodel.Locality" table="locality" tableid="2" lazy="true" >
     <display objtitle="Locality" view="Locality" dataobjformatter="Locality" searchdlg="LocalitySearch" newobjdlg="LocalityDisplay"/>
@@ -436,6 +438,8 @@
     <field column="YesNo 2 (Repository Agreement)" name="repositoryAgreementYesNo2" type="boolean"/>
   </table>
   -->
+  
+  <!--
   <table classname="edu.ku.brc.specify.datamodel.Stratigraphy" table="stratigraphy" tableid="73" >
     <field column="Super Group" name="superGroup" type="java.lang.String" length="50"/>
     <field column="Litho Group" name="lithoGroup" type="java.lang.String" length="50"/>
@@ -450,6 +454,8 @@
     <field column="YesNo 1 (Stratigraphy)" name="stratigraphyYesNo1" type="boolean"/>
     <field column="YesNo 2 (Stratigraphy)" name="stratigraphyYesNo2" type="boolean"/>
   </table>
+  -->
+  
   <table classname="edu.ku.brc.specify.datamodel.Taxon" table="taxon" tableid="4">
     <field column="Kingdom" name="kingdom" type="java.lang.String" length="64"/>
     <field column="Subkingdom" name="subkingdom" type="java.lang.String" length="64"/>

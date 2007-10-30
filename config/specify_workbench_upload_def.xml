@@ -10,6 +10,15 @@
     <field table="Accession" name="authAgentFirstName4" onetomanysequence="3" actualtable="accessionagent" relationshipname="agent" relatedfieldname="firstName"/>
     <field table="Accession" name="authAgentLastName4" onetomanysequence="3" actualtable="accessionagent" relationshipname="agent" relatedfieldname="lastName"/>
     <field table="Accession" name="Permit" onetomanysequence="0" actualtable="accessionauthorization" relationshipname="permit" relatedfieldname="permitNumber"/>
+    <field table="Accession" name="number" actualname="accessionNumber"/>
+    <field table="Accession" name="accessionText1" actualname="Text1"/>
+    <field table="Accession" name="accessionText2" actualname="Text2"/>
+    <field table="Accession" name="accessionText3" actualname="Text3"/>
+    <field table="Accession" name="accessionNumber1" actualname="Number1"/>
+    <field table="Accession" name="accessionNumber2" actualname="Number2"/>
+    <field table="Accession" name="accessionRemarks" actualname="Remarks"/>
+    <field table="Accession" name="accessionYesNo1" actualname="YesNo1"/>
+    <field table="Accession" name="accessionYesNo2" actualname="YesNo2"/>
 
 	<!-- collectingevent -->
     <field table="CollectingEvent" name="collectorFirstName1" onetomanysequence="0" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="firstName"/>
@@ -28,6 +37,7 @@
     <field table="CollectingEvent" name="collectorLastName7" onetomanysequence="6" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="lastName"/>
     <field table="CollectingEvent" name="collectorFirstName8" onetomanysequence="7" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="firstName"/>
     <field table="CollectingEvent" name="collectorLastName8" onetomanysequence="7" sequencefield="orderNumber" actualtable="collector" relationshipname="agent" relatedfieldname="lastName"/>
+	<field table="CollectingEvent" name="collectingEventRemarks" actualname="Remarks"/>
 
 	<!-- collectingtrip -->
 	<field table="CollectingTrip" name="collectingTripRemarks" actualname="Remarks"/>
@@ -39,64 +49,76 @@
 	<field table="CollectionObject" name="collectionObjectYesNo2" actualname="YesNo2" />
 	<field table="CollectionObject" name="collectionObjectNumber1" actualname="Number1" />
 	<field table="CollectionObject" name="collectionObjectNumber2" actualname="Number2" />
+	<field table="CollectionObject" name="collectionObjectRemarks" actualname="Remarks"/>
     <field table="CollectionObject" name="catalogerFirstName" relationshipname="cataloger" relatedfieldname="firstName"/>
     <field table="CollectionObject" name="catalogerLastName" relationshipname="cataloger" relatedfieldname="lastName"/>
     <field table="CollectionObject" name="collectionObjectCitation" onetomanysequence="0" actualtable="CollectionObjectCitation" relationshipname="referenceWork" relatedfieldname="title"/>
 
-	<!-- collobjattribute -->
-    <field table="CollObjAttributes" name="colObjAttributesRemarks" actualname="Remarks"/>
-    <field table="CollObjAttributes" name="colObjAttributeNumber1" actualname="Number1"/>
-    <field table="CollObjAttributes" name="colObjAttributeNumber2" actualname="Number2"/>
-    <field table="CollObjAttributes" name="colObjAttributeNumber3" actualname="Number3"/>
-    <field table="CollObjAttributes" name="colObjAttributeNumber4" actualname="Number4"/>
-    <field table="CollObjAttributes" name="colObjAttributeNumber5" actualname="Number5"/>
-    <field table="CollObjAttributes" name="colObjAttributeNumber6" actualname="Number6"/>
-    <field table="CollObjAttributes" name="colObjAttributeNumber7" actualname="Number7"/>
-    <field table="CollObjAttributes" name="colObjAttributeNumber8" actualname="Number8"/>
-    <field table="CollObjAttributes" name="colObjAttributeNumber9" actualname="Number9"/>
-    <field table="CollObjAttributes" name="colObjAttributeNumber10" actualname="Number10"/>
-    <field table="CollObjAttributes" name="colObjAttributeNumber11" actualname="Number11"/>
-    <field table="CollObjAttributes" name="colObjAttributeNumber12" actualname="Number12"/>
-    <field table="CollObjAttributes" name="colObjAttributeNumber13" actualname="Number13"/>
-    <field table="CollObjAttributes" name="colObjAttributeNumber14" actualname="Number14"/>
-    <field table="CollObjAttributes" name="colObjAttributeNumber15" actualname="Number15"/>
-    <field table="CollObjAttributes" name="colObjAttributeNumber16" actualname="Number16"/>
-    <field table="CollObjAttributes" name="colObjAttributeNumber17" actualname="Number17"/>
-    <field table="CollObjAttributes" name="colObjAttributeNumber18" actualname="Number18"/>
-    <field table="CollObjAttributes" name="colObjAttributeNumber19" actualname="Number19"/>
-    <field table="CollObjAttributes" name="colObjAttributeNumber20" actualname="Number20"/>
-    <field table="CollObjAttributes" name="colObjAttributeNumber21" actualname="Number21"/>
-    <field table="CollObjAttributes" name="colObjAttributeNumber22" actualname="Number22"/>
-    <field table="CollObjAttributes" name="colObjAttributeNumber23" actualname="Number23"/>
-    <field table="CollObjAttributes" name="colObjAttributeNumber24" actualname="Number24"/>
-    <field table="CollObjAttributes" name="colObjAttributeNumber25" actualname="Number25"/>
-    <field table="CollObjAttributes" name="colObjAttributeNumber26" actualname="Number26"/>
-    <field table="CollObjAttributes" name="colObjAttributeNumber27" actualname="Number27"/>
-    <field table="CollObjAttributes" name="colObjAttributeNumber28" actualname="Number28"/>
-    <field table="CollObjAttributes" name="colObjAttributeNumber29" actualname="Number29"/>
-    <field table="CollObjAttributes" name="colObjAttributeNumber30" actualname="Number30"/>
-    <field table="CollObjAttributes" name="colObjAttributeNumber31" actualname="Number31"/>
-    <field table="CollObjAttributes" name="colObjAttributeNumber32" actualname="Number32"/>
-    <field table="CollObjAttributes" name="colObjAttributeNumber34" actualname="Number34"/>
-    <field table="CollObjAttributes" name="colObjAttributeNumber34" actualname="Number34"/>
-    <field table="CollObjAttributes" name="colObjAttributeNumber35" actualname="Number35"/>
-    <field table="CollObjAttributes" name="colObjAttributeNumber37" actualname="Number37"/>
-    <field table="CollObjAttributes" name="colObjAttributeText1" actualname="Text1"/>
-    <field table="CollObjAttributes" name="colObjAttributeText2" actualname="Text2"/>
-    <field table="CollObjAttributes" name="colObjAttributeText3" actualname="Text3"/>
-    <field table="CollObjAttributes" name="colObjAttributeText4" actualname="Text4"/>
-    <field table="CollObjAttributes" name="colObjAttributeText5" actualname="Text5"/>
-    <field table="CollObjAttributes" name="colObjAttributeText6" actualname="Text6"/>
-    <field table="CollObjAttributes" name="colObjAttributeText7" actualname="Text7"/>
-    <field table="CollObjAttributes" name="colObjAttributeText8" actualname="Text8"/>
-    <field table="CollObjAttributes" name="colObjAttributeText9" actualname="Text9"/>
-    <field table="CollObjAttributes" name="colObjAttributeYesNo1" actualname="YesNo1"/>
-    <field table="CollObjAttributes" name="colObjAttributeYesNo2" actualname="YesNo2"/>
-    <field table="CollObjAttributes" name="colObjAttributeYesNo3" actualname="YesNo3"/>
-    <field table="CollObjAttributes" name="colObjAttributeYesNo4" actualname="YesNo4"/>
-    <field table="CollObjAttributes" name="colObjAttributeYesNo5" actualname="YesNo5"/>
-    <field table="CollObjAttributes" name="colObjAttributeYesNo6" actualname="YesNo6"/>
-    <field table="CollObjAttributes" name="colObjAttributeYesNo7" actualname="YesNo7"/>
+	<!-- collectionobjectattributes -->
+    <field table="CollectionObjectAttributes" name="colObjAttributesRemarks" actualname="Remarks"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber1" actualname="Number1"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber2" actualname="Number2"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber3" actualname="Number3"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber4" actualname="Number4"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber5" actualname="Number5"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber6" actualname="Number6"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber7" actualname="Number7"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber8" actualname="Number8"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber9" actualname="Number9"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber10" actualname="Number10"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber11" actualname="Number11"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber12" actualname="Number12"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber13" actualname="Number13"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber14" actualname="Number14"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber15" actualname="Number15"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber16" actualname="Number16"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber17" actualname="Number17"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber18" actualname="Number18"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber19" actualname="Number19"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber20" actualname="Number20"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber21" actualname="Number21"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber22" actualname="Number22"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber23" actualname="Number23"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber24" actualname="Number24"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber25" actualname="Number25"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber26" actualname="Number26"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber27" actualname="Number27"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber28" actualname="Number28"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber29" actualname="Number29"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber30" actualname="Number30"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber31" actualname="Number31"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber32" actualname="Number32"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber33" actualname="Number33"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber34" actualname="Number34"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber35" actualname="Number35"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber36" actualname="Number36"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber37" actualname="Number36"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber38" actualname="Number36"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber39" actualname="Number36"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber40" actualname="Number36"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber41" actualname="Number36"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeNumber42" actualname="Number36"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeText1" actualname="Text1"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeText2" actualname="Text2"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeText3" actualname="Text3"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeText4" actualname="Text4"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeText5" actualname="Text5"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeText6" actualname="Text6"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeText7" actualname="Text7"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeText8" actualname="Text8"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeText9" actualname="Text9"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeText10" actualname="Text9"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeText11" actualname="Text9"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeText12" actualname="Text9"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeText13" actualname="Text9"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeText14" actualname="Text9"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeYesNo1" actualname="YesNo1"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeYesNo2" actualname="YesNo2"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeYesNo3" actualname="YesNo3"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeYesNo4" actualname="YesNo4"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeYesNo5" actualname="YesNo5"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeYesNo6" actualname="YesNo6"/>
+    <field table="CollectionObjectAttributes" name="colObjAttributeYesNo7" actualname="YesNo7"/>
 
     <!-- determination -->
     <field table="Determination" name="determinedDate1" actualname="determinedDate" onetomanysequence="0" relationshipname="collectionObject"/>
@@ -138,34 +160,59 @@
     <field table="Geography" name="country" treename="geography" maptofield="name" rankid="200"/>
     <field table="Geography" name="state" treename="geography" maptofield="name" rankid="300"/>
     <field table="Geography" name="county" treename="geography" maptofield="name" rankid="400"/>
-
+    
+    <!-- geologictimeperied -->
+    <field table="GeologicTimePeriod" name="geologicTimePeriodRemarks" actualname="Remarks" />
+    
    	<!-- habitatattributes -->
-	<field table="HabitatAttribute" name="habitatAttributeRemarks" actualname="Remarks"/>
-    <field table="HabitatAttribute" name="habitatAttributeNumber1" actualname="Number1"/>
-    <field table="HabitatAttribute" name="habitatAttributeNumber2" actualname="Number2"/>
-    <field table="HabitatAttribute" name="habitatAttributeNumber3" actualname="Number3"/>
-    <field table="HabitatAttribute" name="habitatAttributeNumber4" actualname="Number4"/>
-    <field table="HabitatAttribute" name="habitatAttributeNumber5" actualname="Number5"/>
-    <field table="HabitatAttribute" name="habitatAttributeNumber6" actualname="Number6"/>
-    <field table="HabitatAttribute" name="habitatAttributeNumber7" actualname="Number7"/>
-    <field table="HabitatAttribute" name="habitatAttributeNumber8" actualname="Number8"/>
-    <field table="HabitatAttribute" name="habitatAttributeText1" actualname="Text1"/>
-    <field table="HabitatAttribute" name="habitatAttributeText2" actualname="Text2"/>
-    <field table="HabitatAttribute" name="habitatAttributeText3" actualname="Text3"/>
-    <field table="HabitatAttribute" name="habitatAttributeText4" actualname="Text4"/>
-    <field table="HabitatAttribute" name="habitatAttributeText5" actualname="Text5"/>
-    <field table="HabitatAttribute" name="habitatAttributeText6" actualname="Text6"/>
-    <field table="HabitatAttribute" name="habitatAttributeText7" actualname="Text7"/>
-    <field table="HabitatAttribute" name="habitatAttributeText8" actualname="Text8"/>
-    <field table="HabitatAttribute" name="habitatAttributeText9" actualname="Text9"/>
-    <field table="HabitatAttribute" name="habitatAttributeText10" actualname="Text10"/>
-    <field table="HabitatAttribute" name="habitatAttributeText11" actualname="Text11"/>
-    <field table="HabitatAttribute" name="habitatAttributeYesNo1" actualname="YesNo1"/>
-    <field table="HabitatAttribute" name="habitatAttributeYesNo2" actualname="YesNo2"/>
-    <field table="HabitatAttribute" name="habitatAttributeYesNo3" actualname="YesNo3"/>
-    <field table="HabitatAttribute" name="habitatAttributeYesNo4" actualname="YesNo4"/>
-    <field table="HabitatAttribute" name="habitatAttributeYesNo5" actualname="YesNo5"/>
+	<field table="HabitatAttributes" name="habitatAttributeRemarks" actualname="Remarks"/>
+    <field table="HabitatAttributes" name="habitatAttributeNumber1" actualname="Number1"/>
+    <field table="HabitatAttributes" name="habitatAttributeNumber2" actualname="Number2"/>
+    <field table="HabitatAttributes" name="habitatAttributeNumber3" actualname="Number3"/>
+    <field table="HabitatAttributes" name="habitatAttributeNumber4" actualname="Number4"/>
+    <field table="HabitatAttributes" name="habitatAttributeNumber5" actualname="Number5"/>
+    <field table="HabitatAttributes" name="habitatAttributeNumber6" actualname="Number6"/>
+    <field table="HabitatAttributes" name="habitatAttributeNumber7" actualname="Number7"/>
+    <field table="HabitatAttributes" name="habitatAttributeNumber8" actualname="Number8"/>
+    <field table="HabitatAttributes" name="habitatAttributeText1" actualname="Text1"/>
+    <field table="HabitatAttributes" name="habitatAttributeText2" actualname="Text2"/>
+    <field table="HabitatAttributes" name="habitatAttributeText3" actualname="Text3"/>
+    <field table="HabitatAttributes" name="habitatAttributeText4" actualname="Text4"/>
+    <field table="HabitatAttributes" name="habitatAttributeText5" actualname="Text5"/>
+    <field table="HabitatAttributes" name="habitatAttributeText6" actualname="Text6"/>
+    <field table="HabitatAttributes" name="habitatAttributeText7" actualname="Text7"/>
+    <field table="HabitatAttributes" name="habitatAttributeText8" actualname="Text8"/>
+    <field table="HabitatAttributes" name="habitatAttributeText9" actualname="Text9"/>
+    <field table="HabitatAttributes" name="habitatAttributeText10" actualname="Text10"/>
+    <field table="HabitatAttributes" name="habitatAttributeText11" actualname="Text11"/>
+    <field table="HabitatAttributes" name="habitatAttributeYesNo1" actualname="YesNo1"/>
+    <field table="HabitatAttributes" name="habitatAttributeYesNo2" actualname="YesNo2"/>
+    <field table="HabitatAttributes" name="habitatAttributeYesNo3" actualname="YesNo3"/>
+    <field table="HabitatAttributes" name="habitatAttributeYesNo4" actualname="YesNo4"/>
+    <field table="HabitatAttributes" name="habitatAttributeYesNo5" actualname="YesNo5"/>
    
+   	<!-- locality -->
+   	<field table="Locality" name="localityRemarks" actualname="Remarks"/>
+    <field table="Locality" name="localityText1" actualname="Text1" actualtable="LocalityDetail" relationshipname="locality"/>
+    <field table="Locality" name="localityText2" actualname="Text2" actualtable="LocalityDetail" relationshipname="locality"/>
+    <field table="Locality" name="localityNumber1" actualname="Number1" actualtable="LocalityDetail" relationshipname="locality"/>
+    <field table="Locality" name="localityNumber2" actualname="Number2" actualtable="LocalityDetail" relationshipname="locality"/>
+    <field table="Locality" name="localityYesNo1" actualname="YesNo1" actualtable="LocalityDetail" relationshipname="locality"/>
+    <field table="Locality" name="localityYesNo2" actualname="YesNo2" actualtable="LocalityDetail" relationshipname="locality"/>
+    <field table="Locality" name="nationalParkName" actualtable="LocalityDetail" relationshipname="locality"/>
+    <field table="Locality" name="islandGroup" actualtable="LocalityDetail" relationshipname="locality"/>
+    <field table="Locality" name="island" actualtable="LocalityDetail" relationshipname="locality"/>
+    <field table="Locality" name="waterBody" actualtable="LocalityDetail" relationshipname="locality"/>
+    <field table="Locality" name="drainage" actualtable="LocalityDetail" relationshipname="locality"/>
+    <field table="Locality" name="township" actualtable="LocalityDetail" relationshipname="locality"/>
+    <field table="Locality" name="townshipDirection" actualtable="LocalityDetail" relationshipname="locality"/>
+    <field table="Locality" name="range" actualtable="LocalityDetail" relationshipname="locality"/>
+    <field table="Locality" name="rangeDirection" actualtable="LocalityDetail" relationshipname="locality"/>
+    <field table="Locality" name="section" actualtable="LocalityDetail" relationshipname="locality"/>
+    <field table="Locality" name="sectionPart" actualtable="LocalityDetail" relationshipname="locality"/>
+    <field table="Locality" name="baseMeridian" actualtable="LocalityDetail" relationshipname="locality"/>
+    <field table="Locality" name="localityCitation" onetomanysequence="0" actualtable="LocalityCitation" relationshipname="referenceWork" relatedfieldname="title"/>
+   	
   	<!-- preparation -->
     <field table="Preparation" name="preparedDate1" actualname="preparedDate" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Preparation" name="preparedFirstNameBy1" onetomanysequence="0" relationshipname="preparedByAgent" relatedfieldname="firstName"/>
@@ -173,7 +220,7 @@
     <field table="Preparation" name="prepType1" onetomanysequence="0" relationshipname="prepType" relatedfieldname="name"/>
     <field table="Preparation" name="count1" actualname="count" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation1" actualname="storageLocation" onetomanysequence="0" relationshipname="collectionObject"/>
-    <field table="Preparation" name="prepRemarks1" actualname="prepRemarks" onetomanysequence="0" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prepRemarks1" actualname="Remarks" onetomanysequence="0" relationshipname="collectionObject"/>
     
     <field table="Preparation" name="preparedDate2" actualname="preparedDate" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="Preparation" name="preparedFirstNameBy2" onetomanysequence="1" relationshipname="preparedByAgent" relatedfieldname="firstName"/>
@@ -181,7 +228,7 @@
     <field table="Preparation" name="prepType2" onetomanysequence="1"  relationshipname="prepType" relatedfieldname="name"/>
     <field table="Preparation" name="count2" actualname="count" onetomanysequence="1" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation2" actualname="storageLocation" onetomanysequence="1" relationshipname="collectionObject"/>
-    <field table="Preparation" name="prepRemarks2" actualname="prepRemarks" onetomanysequence="1" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prepRemarks2" actualname="Remarks" onetomanysequence="1" relationshipname="collectionObject"/>
     
     <field table="Preparation" name="preparedDate3" actualname="preparedDate" onetomanysequence="2" relationshipname="collectionObject"/>
     <field table="Preparation" name="preparedFirstNameBy3" onetomanysequence="2" relationshipname="preparedByAgent" relatedfieldname="firstName"/>
@@ -189,7 +236,7 @@
     <field table="Preparation" name="prepType3" onetomanysequence="2" relationshipname="prepType" relatedfieldname="name"/>
     <field table="Preparation" name="count3" actualname="count" onetomanysequence="2" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation3" actualname="storageLocation" onetomanysequence="2" relationshipname="collectionObject"/>
-    <field table="Preparation" name="prepRemarks3" actualname="prepRemarks" onetomanysequence="2" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prepRemarks3" actualname="Remarks" onetomanysequence="2" relationshipname="collectionObject"/>
     
     <field table="Preparation" name="preparedDate4" actualname="preparedDate" onetomanysequence="3" relationshipname="collectionObject"/>
     <field table="Preparation" name="preparedFirstNameBy4" onetomanysequence="3" relationshipname="preparedByAgent" relatedfieldname="firstName"/>
@@ -197,7 +244,7 @@
     <field table="Preparation" name="prepType4" onetomanysequence="3" relationshipname="prepType" relatedfieldname="name"/>
     <field table="Preparation" name="count4" actualname="count" onetomanysequence="3" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation4" actualname="storageLocation" onetomanysequence="3" relationshipname="collectionObject"/>
-    <field table="Preparation" name="prepRemarks4" actualname="prepRemarks" onetomanysequence="3" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prepRemarks4" actualname="Remarks" onetomanysequence="3" relationshipname="collectionObject"/>
     
     <field table="Preparation" name="preparedDate5" actualname="preparedDate" onetomanysequence="4" relationshipname="collectionObject"/>
     <field table="Preparation" name="preparedFirstNameBy5" onetomanysequence="4" relationshipname="preparedByAgent" relatedfieldname="firstName"/>
@@ -205,7 +252,7 @@
     <field table="Preparation" name="prepType5" onetomanysequence="4" relationshipname="prepType" relatedfieldname="name"/>
     <field table="Preparation" name="count5" actualname="count" onetomanysequence="4" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation5" actualname="storageLocation" onetomanysequence="4" relationshipname="collectionObject"/>
-    <field table="Preparation" name="prepRemarks5" actualname="prepRemarks" onetomanysequence="4" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prepRemarks5" actualname="Remarks" onetomanysequence="4" relationshipname="collectionObject"/>
     
     <field table="Preparation" name="preparedDate6" actualname="preparedDate" onetomanysequence="5" relationshipname="collectionObject"/>
     <field table="Preparation" name="preparedFirstNameBy6" onetomanysequence="5" relationshipname="preparedByAgent" relatedfieldname="firstName"/>
@@ -213,7 +260,7 @@
     <field table="Preparation" name="prepType6" onetomanysequence="5" relationshipname="prepType" relatedfieldname="name"/>
     <field table="Preparation" name="count6" actualname="count" onetomanysequence="5" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation6" actualname="storageLocation" onetomanysequence="5" relationshipname="collectionObject"/>
-    <field table="Preparation" name="prepRemarks6" actualname="prepRemarks" onetomanysequence="5" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prepRemarks6" actualname="Remarks" onetomanysequence="5" relationshipname="collectionObject"/>
     
     <field table="Preparation" name="preparedDate7" actualname="preparedDate" onetomanysequence="6" relationshipname="collectionObject"/>
     <field table="Preparation" name="preparedFirstNameBy7" onetomanysequence="6" relationshipname="preparedByAgent" relatedfieldname="firstName"/>
@@ -221,7 +268,7 @@
     <field table="Preparation" name="prepType7" onetomanysequence="6" relationshipname="prepType" relatedfieldname="name"/>
     <field table="Preparation" name="count7" actualname="count" onetomanysequence="6" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation7" actualname="storageLocation" onetomanysequence="6" relationshipname="collectionObject"/>
-    <field table="Preparation" name="prepRemarks7" actualname="prepRemarks" onetomanysequence="6" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prepRemarks7" actualname="Remarks" onetomanysequence="6" relationshipname="collectionObject"/>
     
     <field table="Preparation" name="preparedDate8" actualname="preparedDate" onetomanysequence="7" relationshipname="collectionObject"/>
     <field table="Preparation" name="preparedFirstNameBy8" onetomanysequence="7" relationshipname="preparedByAgent" relatedfieldname="firstName"/>
@@ -229,7 +276,7 @@
     <field table="Preparation" name="prepType8" onetomanysequence="7" relationshipname="prepType" relatedfieldname="name"/>
     <field table="Preparation" name="count8" actualname="count" onetomanysequence="7" relationshipname="collectionObject"/>
     <field table="Preparation" name="storageLocation8" actualname="storageLocation" onetomanysequence="7" relationshipname="collectionObject"/>
-    <field table="Preparation" name="prepRemarks8" actualname="prepRemarks" onetomanysequence="7" relationshipname="collectionObject"/>
+    <field table="Preparation" name="prepRemarks8" actualname="Remarks" onetomanysequence="7" relationshipname="collectionObject"/>
 
 	<!-- preparationattributes -->
     <field table="PreparationAttributes" name="preparationAttributeRemarks" actualname="Remarks" />
@@ -265,6 +312,7 @@
     <field table="PreparationAttributes" name="preparationAttributeText21" actualname="Text21"/>
     <field table="PreparationAttributes" name="preparationAttributeYesNo1" actualname="YesNo1"/>
     <field table="PreparationAttributes" name="preparationAttributeYesNo2" actualname="YesNo2"/>
+    <field table="PreparationAttributes" name="preparedDate" actualname="AttrDate"/>
 
 	<!-- referencework -->
     <field table="ReferenceWork" name="referenceWorkRemarks" actualname="Remarks"/>

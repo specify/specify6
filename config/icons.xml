@@ -57,6 +57,7 @@
     <icon name="EditForm24"    file="Form20x20.png" sizes="NonStd"/>
     <icon name="Spreadsheet24" file="Grid20x20.png" sizes="NonStd"/>
     <icon name="Export"        file="ExportDataSet20x20.png" sizes="NonStd"/>
+    <icon name="Upload"        file="upload_data.gif" sizes="NonStd"/>	
     <icon name="Eraser"        file="Clear20x20.png"   sizes="NonStd"/>
     <icon name="CardImage"     file="ImageWindow20x20.png" sizes="NonStd"/>
     <icon name="LocalityMapper" file="map20x20.png" sizes="NonStd"/>
