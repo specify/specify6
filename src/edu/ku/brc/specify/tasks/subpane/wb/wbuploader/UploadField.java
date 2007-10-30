@@ -7,9 +7,9 @@ import edu.ku.brc.specify.tasks.subpane.wb.schema.Relationship;
 
 /**
  * @author timbo
- *
+ * 
  * @code_status Alpha
- *
+ * 
  * Describes properties of fields being uploaded as part of a workbench upload.
  */
 public class UploadField
@@ -23,13 +23,18 @@ public class UploadField
      */
     protected String       value;
     /**
-     * For UploadFields implementing foreign keys: The relationship the foreign key participates in. 
+     * For UploadFields implementing foreign keys: The relationship the foreign key participates in.
      */
     protected Relationship relationship;
     /**
-     * The field's column index in the workbench being uploaded. (-1 when not applicable (as for foreign keys.)) 
+     * The field's column index in the workbench being uploaded. (-1 when not applicable (as for
+     * foreign keys.))
      */
     protected int          index;
+    /**
+     * The caption of the field's column in the workbench. (null when index == -1)
+     */
+    protected String       wbFldName;
     /**
      * The one to many 'order' of the field (e.g. LastName1, lastName2, ... )
      */
@@ -39,7 +44,8 @@ public class UploadField
      */
     protected boolean      required;
     /**
-     * The method for used to set the field's contents to the java object representing the field's Table.
+     * The method used to set the field's contents to the java object representing the field's
+     * Table.
      */
     protected Method       setter;
 
@@ -59,10 +65,11 @@ public class UploadField
         this.setter = setter;
     }
 
-    public UploadField(Field field, int index, Relationship relationship)
+    public UploadField(Field field, int index, String wbFldName, Relationship relationship)
     {
         this.field = field;
         this.index = index;
+        this.wbFldName = wbFldName;
         this.relationship = relationship;
         this.required = false;
     }
@@ -171,5 +178,13 @@ public class UploadField
     public void setRequired(boolean required)
     {
         this.required = required;
+    }
+
+    /**
+     * @return the wbFldName
+     */
+    public final String getWbFldName()
+    {
+        return wbFldName;
     }
 }

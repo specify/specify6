@@ -5,10 +5,13 @@ package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -146,10 +149,13 @@ public class DB
     {
         protected boolean showAllFields = false;
         protected Map<String, Vector<Vector<String>>> myStorages;
+        protected Vector<CustomFrame> tblForms;
         
         public BogusViewer(Map<String, Vector<Vector<String>>> myStorages)
         {
             this.myStorages = myStorages;
+            tblForms = new Vector<CustomFrame>();
+            
         }
         
         public BogusViewer()
@@ -221,16 +227,51 @@ public class DB
             mainPane.add(new JScrollPane(mods), BorderLayout.CENTER);
 
             CustomFrame cwin = new CustomFrame("Imported Data", CustomFrame.OK_BTN, mainPane);
-//            cwin.addWindowStateListener(new WindowStateListener()
-//            {
-//                public void windowStateChanged(WindowEvent e)
-//                {
-//                    if (imp != null && e.getNewState() == WindowEvent.WINDOW_CLOSED)
+            cwin.addWindowListener(new WindowListener()
+            {
+                public void windowActivated(WindowEvent e)
+                { //documented
+                }
+                public void windowIconified(WindowEvent e)
+                {//documented
+                }
+                public void windowDeiconified(WindowEvent e)
+                {//documented
+                }
+                public void windowDeactivated(WindowEvent e)
+                {//documented
+                }
+                public void windowOpened(WindowEvent e)
+                {//documented
+                }
+                public void windowClosed(WindowEvent e)
+                {
+                    System.out.println("closed");
+                }
+                public void windowClosing(WindowEvent e)
+                {
+                    System.out.println("closing");
+                }
+                
+////                    if (imp != null && e.getNewState() == WindowEvent.WINDOW_CLOSED)
+////                    {
+////                        imp.undoUpload();
+////                    }
+//                    
+//                    if (UIRegistry.displayConfirm("WB_CANCEL_UPLOAD_TITLE", 
+//                            "WB_CANCEL_UPLOAD_MSG", 
+//                            "OK",
+//                            "Cancel", 
+//                            JOptionPane.QUESTION_MESSAGE))
 //                    {
-//                        imp.undoUpload();
+//                        System.out.println("OK");
+//                    }
+//                    else
+//                    {
+//                        System.out.println("Cancel");
 //                    }
 //                }
-//            });
+            });
             UIHelper.centerAndShow(cwin);
         }
 
@@ -243,8 +284,33 @@ public class DB
             return false;
         }
 
-        protected void viewBogusTbl(String tblName, boolean hideEmptyFields)
+        protected CustomFrame findTblForm(String tblName)
         {
+            for (CustomFrame result : tblForms)
+            {
+                if (result.getTitle().equals(tblName))
+                {
+                    return result;
+                }
+            }
+            return null;
+        }
+        public void viewBogusTbl(String tblName, boolean hideEmptyFields)
+        {
+            CustomFrame cwin = findTblForm(tblName);
+            if (cwin != null)
+            {
+                if (!cwin.isVisible())
+                {
+                    cwin.setVisible(true);
+                }
+                if (cwin.getExtendedState() == Frame.ICONIFIED)
+                {
+                    cwin.setExtendedState(Frame.NORMAL);
+                }
+                cwin.toFront();
+                return;
+            }
             JPanel mainPane = new JPanel(new BorderLayout());
             JTable table;
             Vector<String> fldNames = new Vector<String>();
@@ -307,9 +373,22 @@ public class DB
 
             //mainPane.add(table, BorderLayout.CENTER);
             mainPane.add(new JScrollPane(table), BorderLayout.CENTER);
-            CustomFrame cwin = new CustomFrame(tblName, CustomFrame.OK_BTN, mainPane);
+            cwin = new CustomFrame(tblName, CustomFrame.OK_BTN, mainPane);
+            tblForms.add(cwin);
             UIHelper.centerAndShow(cwin);
         }
+        
+        public void closeViewers()
+        {
+            for (CustomFrame frm : tblForms)
+            {
+                if (frm.isVisible())
+                {
+                    frm.setVisible(false);
+                }
+                frm.dispose();
+            }
+        }    
     }
     public class BogusRecord
     {

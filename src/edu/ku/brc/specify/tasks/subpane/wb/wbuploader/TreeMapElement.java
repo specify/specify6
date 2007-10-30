@@ -18,6 +18,10 @@ public class TreeMapElement
 	 * The index in the workbench being uploaded.
 	 */
 	protected int index;
+    /**
+     * The caption for the rank in the workbench.
+     */
+    protected String wbFldName;
 	/**
 	 * The 1-to-many 'order' of the column (currently used only for determinations - genus1, genus2 ...)
 	 */
@@ -32,10 +36,11 @@ public class TreeMapElement
 	 * @param sequence
 	 * @param required
 	 */
-	public TreeMapElement(int index, int rank, Integer sequence, boolean required)
+	public TreeMapElement(int index, String wbFldName, int rank, Integer sequence, boolean required)
 	{
 		super();
 		this.index = index;
+        this.wbFldName = wbFldName;
 		this.rank = rank;
 		this.sequence = sequence;
 		this.required = required;
@@ -45,10 +50,11 @@ public class TreeMapElement
 	 * @param index
 	 * @param required
 	 */
-	public TreeMapElement(int index, int rank, boolean required)
+	public TreeMapElement(int index, String wbFldName, int rank, boolean required)
 	{
 		super();
 		this.index = index;
+        this.wbFldName = wbFldName;
 		this.rank = rank;
 		this.required = required;
 	}
@@ -86,5 +92,12 @@ public class TreeMapElement
     public void setSequence(Integer sequence)
     {
         this.sequence = sequence;
+    }
+    /**
+     * @return the wbFldName
+     */
+    public final String getWbFldName()
+    {
+        return wbFldName;
     }			
 }

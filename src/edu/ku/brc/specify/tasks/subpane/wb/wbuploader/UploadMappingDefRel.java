@@ -45,9 +45,10 @@ public class UploadMappingDefRel extends UploadMappingDef
 	 * @param field
 	 * @param relatedTable
 	 */
-	public UploadMappingDefRel(String table, String field, String relatedTable)
+	public UploadMappingDefRel(String table, String field, String relatedTable, String wbFldName)
 	{
 		super(table, field);
+        this.wbFldName = wbFldName;
 		this.relatedTable = relatedTable;
 		relatedFields = new Vector<ImportMappingRelFld>();
 		localFields = new Vector<ImportMappingRelFld>();
@@ -59,12 +60,13 @@ public class UploadMappingDefRel extends UploadMappingDef
 	 * @param relatedTable
 	 * @param relatedField
 	 */
-	public UploadMappingDefRel(String table, String field, String relatedTable,  Integer sequence, String sequenceFld)
+	public UploadMappingDefRel(String table, String field, String relatedTable,  Integer sequence, String sequenceFld, String wbFldName)
 	{
 		super(table, field);
 		this.relatedTable = relatedTable;
 		this.sequence = sequence;
 		this.sequenceFld = sequenceFld;
+        this.wbFldName = wbFldName;
 		relatedFields = new Vector<ImportMappingRelFld>();
 		localFields = new Vector<ImportMappingRelFld>();
 	}
@@ -93,9 +95,9 @@ public class UploadMappingDefRel extends UploadMappingDef
 	/**
 	 * @param relatedField the relatedField to add
 	 */
-	public void addRelatedField(String relatedField, int idx)
+	public void addRelatedField(String relatedField, int idx, String wbFieldName)
 	{
-		relatedFields.add(new ImportMappingRelFld(relatedField, idx));
+		relatedFields.add(new ImportMappingRelFld(relatedField, idx, wbFieldName));
 	} 
 	/**
 	 * @return the relatedTable
@@ -122,16 +124,18 @@ public class UploadMappingDefRel extends UploadMappingDef
     public class ImportMappingRelFld
 	{
 		protected String fieldName;
-		protected int fldIndex; //column index for the field's value
+		protected String wbFieldName;
+        protected int fldIndex; //column index for the field's value
 		/**
 		 * @param fieldName
 		 * @param fldIndex
 		 */
-		public ImportMappingRelFld(String fieldName, int fldIndex)
+		public ImportMappingRelFld(String fieldName, int fldIndex, String wbFieldName)
 		{
 			super();
 			this.fieldName = fieldName;
 			this.fldIndex = fldIndex;
+            this.wbFieldName = wbFieldName;
 		}
 		/**
 		 * @return the fieldName
@@ -161,6 +165,13 @@ public class UploadMappingDefRel extends UploadMappingDef
 		{
 			this.fldIndex = fldIndex;
 		}
+        /**
+         * @return the wbFldName
+         */
+        public final String getWbFldName()
+        {
+            return wbFieldName;
+        }
 	}
 	/**
 	 * @return the sequenceFld
@@ -180,8 +191,31 @@ public class UploadMappingDefRel extends UploadMappingDef
 	/**
 	 * @param fieldName
 	 */
-	public void addLocalField(String fieldName, int fldIndex)
+	public void addLocalField(String fieldName, int fldIndex, String wbFieldName)
 	{
-		localFields.add(new ImportMappingRelFld(fieldName, fldIndex));
+		localFields.add(new ImportMappingRelFld(fieldName, fldIndex, wbFieldName));
 	}
+    
+    /**
+     * @return the wbFldName
+     */
+    @Override
+    public String getWbFldName()
+    {
+        //localFields shouldn't be relevant for the current use of this method.
+        if (relatedFields.size() == 0)
+        {
+            return wbFldName;
+        }
+        StringBuilder result = new StringBuilder();
+        for (ImportMappingRelFld f : relatedFields)
+        {
+            if (!result.toString().equals(""))
+            {
+                result.append(", ");
+            }
+            result.append(f.getWbFldName());
+        }
+        return result.toString();
+    }
 }

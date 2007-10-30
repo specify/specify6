@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.specify.tasks.subpane.wb.graph.DirectedGraph;
 import edu.ku.brc.specify.tasks.subpane.wb.graph.DirectedGraphException;
@@ -65,6 +66,13 @@ public class DBSchema
         // add foreign keys
         for (Table tbl : getTables())
         {
+            Class<?> tblClass = tbl.getTableInfo().getClassObj();
+            if (Treeable.class.isAssignableFrom(tblClass))
+            {
+                log.debug("adding foreign key: " + tbl.getName() + ".parentid");
+                System.out.println("adding foreign key: " + tbl.getName() + ".parentid");
+                tbl.addField(new Field("parentid", tbl.getTableInfo().getIdType()));
+            }
             for (DBRelationshipInfo rel : tbl.getTableInfo().getRelationships())
             {
                 String fld2Name = rel.getColName();
@@ -76,16 +84,13 @@ public class DBSchema
                 if (fld2 == null)
                 {
                     log.debug("adding foreign key: " + tbl.getName() + "." + fld2Name);
-                    fld2 = new Field(fld2Name, tbl.getTableInfo().getIdType());
-                    tbl.addField(fld2);
+                    System.out.println("adding foreign key: " + tbl.getName() + "." + fld2Name);
+                    tbl.addField(new Field(fld2Name, tbl.getTableInfo().getIdType()));
                 }
-
             }
         }
-
         relationships = new Vector<Relationship>();
         // don't actually need relationships if DBTableIdMgr is present
-
     }
 
 

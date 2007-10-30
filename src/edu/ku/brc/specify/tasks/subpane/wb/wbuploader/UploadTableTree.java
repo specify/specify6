@@ -11,9 +11,9 @@ package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
 import java.util.List;
 
-import org.hibernate.Query;
-import org.hibernate.Session;
-
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
@@ -184,13 +184,14 @@ public class UploadTableTree extends UploadTable
     public DataModelObjBase getTreeDef(final String defName)
     {
         String hql = "from " + defName;
-        Session session = getNewSession();
+        //Session session = getNewSession();
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();        
         try
         {
-            Query q = session.createQuery(hql);
-            List<DataModelObjBase> matches = q.list();
+            QueryIFace q = session.createQuery(hql);
+            List<?> matches = q.list();
             if (matches.size() == 0) { return null; }
-                return matches.get(0);
+                return (DataModelObjBase)matches.get(0);
         }
         finally
         {

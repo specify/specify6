@@ -186,7 +186,7 @@ public class DateConverter
             if (dateStr.matches(format.regex)) { return format.convertToCalendar(dateStr); }
         }
 
-        return null;
+        throw new ParseException("unrecognized date format", 0);
     }
 
     /**

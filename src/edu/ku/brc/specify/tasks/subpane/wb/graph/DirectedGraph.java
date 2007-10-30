@@ -164,6 +164,24 @@ public class DirectedGraph<E, F>
     /**
      * @param v1
      * @param v2
+     * @return edges from v1 to v2 if it exists.
+     */
+    private Vector<Edge<E, F>> getEdges(Vertex<E> v1, Vertex<E> v2)
+    {
+        Vector<Edge<E,F>> result = new Vector<Edge<E,F>>();
+        for (Edge<E, F> e : edges)
+        {
+            if (e.getPointA().equals(v1) && e.getPointB().equals(v2)) 
+            { 
+                result.add(e); 
+            }
+        }
+        return result;
+    }
+
+    /**
+     * @param v1
+     * @param v2
      * @return edge data for edge from v2 to v2. null if no edge exists from v2 to v2.
      */
     public F getEdgeData(Vertex<E> v1, Vertex<E> v2)
@@ -171,6 +189,22 @@ public class DirectedGraph<E, F>
         Edge<E, F> e = getEdge(v1, v2);
         if (e != null) { return e.getData(); }
         return null;
+    }
+
+    /**
+     * @param v1
+     * @param v2
+     * @return edge data for all edges from v2 to v2. 
+     */
+    public Vector<F> getAllEdgeData(Vertex<E> v1, Vertex<E> v2)
+    {
+        Vector<Edge<E, F>> es = getEdges(v1, v2);
+        Vector<F> result = new Vector<F>();
+        for (Edge<E,F> e : es)
+        {
+            result.add(e.getData());
+        }
+        return result;
     }
 
     /**
@@ -186,6 +220,21 @@ public class DirectedGraph<E, F>
         if (v1 == null || v2 == null) { throw new DirectedGraphException(
                 "vertex does not exist in graph"); }
         return getEdgeData(v1, v2);
+    }
+
+    /**
+     * @param vData1
+     * @param vData2
+     * @return edge data for all edgee from vertex with vData1 to vertex with vData2, or null if there is no such edge in graph.
+     * @throws DirectedGraphException if vertices with given data are not in graph.
+     */
+    public Vector<F> getAllEdgeData(E vData1, E vData2) throws DirectedGraphException
+    {
+        Vertex<E> v1 = getVertexByData(vData1);
+        Vertex<E> v2 = getVertexByData(vData2);
+        if (v1 == null || v2 == null) { throw new DirectedGraphException(
+                "vertex does not exist in graph"); }
+        return getAllEdgeData(v1, v2);
     }
 
     /**

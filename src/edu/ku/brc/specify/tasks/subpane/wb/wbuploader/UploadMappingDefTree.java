@@ -40,12 +40,13 @@ public class UploadMappingDefTree extends UploadMappingDef
 	 * @param root
 	 * @param levels
 	 */
-	public UploadMappingDefTree(String tableName, String fieldName, String parentField, String root, Vector<Vector<TreeMapElement>> levels)
+	public UploadMappingDefTree(String tableName, String fieldName, String parentField, String root, Vector<Vector<TreeMapElement>> levels, String wbFldName)
 	{
 		super(tableName, fieldName);
 		this.parentField = parentField;
 		this.root = root;
 		this.levels = levels;	
+        this.wbFldName = wbFldName; //actually just using tree name for wbFldName for now.
 	}
 		
 	/**

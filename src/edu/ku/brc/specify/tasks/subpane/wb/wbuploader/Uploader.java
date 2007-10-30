@@ -3,23 +3,35 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowStateListener;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+import javax.swing.JProgressBar;
+
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.specify.datamodel.DataModelObjBase;
+import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.tasks.WorkbenchTask;
+import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
 import edu.ku.brc.specify.tasks.subpane.wb.graph.DirectedGraph;
 import edu.ku.brc.specify.tasks.subpane.wb.graph.DirectedGraphException;
 import edu.ku.brc.specify.tasks.subpane.wb.graph.Edge;
@@ -28,17 +40,54 @@ import edu.ku.brc.specify.tasks.subpane.wb.schema.Field;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Relationship;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMappingDefRel.ImportMappingRelFld;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable.DefaultFieldEntry;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable.RelatedClassEntry;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable.UploadTableInvalidValue;
+import edu.ku.brc.ui.JStatusBar;
+import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 
 /**
  * @author timo
  * 
  */
-public class Uploader
+public class Uploader implements ActionListener, WindowStateListener
 {
-	protected DB db;
+    //Phases in the upload process...
+    protected static String CHECKING_REQS = "WB_UPLOAD_CHECKING_REQS";
+    protected static String VALIDATING_DATA = "WB_UPLOAD_VALIDATING_DATA";
+    protected static String READY_TO_UPLOAD = "WB_UPLOAD_READY_TO_UPLOAD";
+    protected static String UPLOADING = "WB_UPLOAD_UPLOADING";
+    protected static String SUCCESS = "WB_UPLOAD_SUCCESS";
+    protected static String RETRIEVING_UPLOADED_DATA = "WB_RETRIEVING_UPLOADED_DATA";
+    protected static String FAILURE = "WB_UPLOAD_FAILURE";
+    protected static String USER_INPUT = "WB_UPLOAD_USER_INPUT";
+    protected static String UNDOING_UPLOAD = "WB_UPLOAD_UNDO";
+    
+    /**
+     * one of above statics
+     */
+    protected String currentOp;
+    
+
+    /**
+     * used by bogusViewer
+     */
+    Map<String, Vector<Vector<String>>> bogusStorages = null;    
+    /**
+     * Displays uploaded data. Roughly.
+     */
+    protected DB.BogusViewer bogusViewer = null;
+    
+    protected DB db;
 
 	protected UploadData uploadData;
+    
+    /**
+     * The WorkbenchPane for the uploading dataset. 
+     */
+    protected WorkbenchPaneSS wbSS;
 
 	protected Vector<UploadField> uploadFields;
 
@@ -48,23 +97,50 @@ public class Uploader
     
     boolean verbose = false;
     
-    protected DataProviderSessionIFace importSession = null;
+    boolean dataValidated = false;
     
+    protected UploadMainForm mainForm;
     
+    /**
+     * Problems with contents of cells in dataset.
+     */
+    protected Vector<UploadTableInvalidValue> validationIssues = null;
+    /**
+     * This object assigns default values for missing required fields and foreign keys.
+     * And provides UI for viewing and changing the defaults.
+     */
+    MissingDataResolver resolver;
+    
+    /**
+     * Required related classes that are not available in the dataset.
+     */
+    protected Vector<UploadTable.RelatedClassEntry> missingRequiredClasses;
+    /**
+     * Required fields not present in the dataset.
+     */
+    protected Vector<UploadTable.DefaultFieldEntry> missingRequiredFields;
+        
     /**
      *  While an upload is underway, this member will be provide access to the uploader.
      */
     protected static Uploader currentUpload = null;
     
     /**
-     *  A unique identifier currently used to identify uploaded records (stored in the lastEditedBy field).
-     *  (NOTE: Would it be desirable to store info on imports - dataset imported, date, user, basic stats ??? 
-     *  - this means lastEditedBy storage (which is only good till somebody edits an imported record) is not good enough)
+     *  A unique identifier currently used to identify the upload. Currently not used.
+     *  NOTE: Would it be desirable to store info on imports - dataset imported, date, user, basic stats ??? 
+     * 
      */
     protected String identifier;
 
     private static final Logger log = Logger.getLogger(Uploader.class);
-       
+   
+    /**
+     * @return dataValidated
+     */
+    public boolean getDataValidated()
+    {
+        return dataValidated;
+    }
     
     /**
      * @return the currentUpload;
@@ -83,18 +159,18 @@ public class Uploader
     }
     
     /**
-     * creates a unique (?) identifier for an importer
-     * Currently stored in lastEditedBy field. Mostly used for debugging purposes.
+     * creates an identifier for an importer
+     * 
      */
     protected void buildIdentifier()
     {
         Date now = new Date(System.currentTimeMillis());
-        identifier =  "Upload " /*+ uploadData.getWbRow(0).getWorkbench().getName() */ + now.toString();
+        identifier =  "Upload " + uploadData.getWbRow(0).getWorkbench().getName() + now.toString();
     }
     
     /**
      * @param f
-     * @return an existing importTable that is suitable for f
+     * @return an existing importTable that contains f
      */
     protected UploadTable getUploadTable(UploadField f)
 	{
@@ -119,7 +195,8 @@ public class Uploader
 		uploadTables = new Vector<UploadTable>();
 		for (UploadField f : uploadFields)
 		{
-			if (f.getField() != null)
+			System.out.println(f.getField().getName());
+            if (f.getField() != null)
             {
                 UploadTable it = getUploadTable(f);
                 boolean addIt = it == null;
@@ -155,7 +232,7 @@ public class Uploader
             {
                 log.debug("could not find field in db: " + mapping.getTable() + "." + mapping.getField());
             }
-            UploadField newFld = new UploadField(fld, -1, null);
+            UploadField newFld = new UploadField(fld, -1, mapping.getWbFldName(), null);
 			newFld.setSequence(mapping.getSequence());
 			newFld.setValue(mapping.getSequence().toString());
 			uploadFields.add(newFld);
@@ -169,34 +246,44 @@ public class Uploader
             {
                 log.debug("could not find field in db: " + t1.getName() + "." + fld.getFieldName());
             }
-            UploadField newFld = new UploadField(dbFld, fld.getFldIndex(), null);
+            UploadField newFld = new UploadField(dbFld, fld.getFldIndex(), fld.getWbFldName(), null);
 			newFld.setSequence(mapping.getSequence());
 			uploadFields.add(newFld);
 		}
 		if (mapping.getRelatedFields().size() > 0)
 		{
-			Relationship r;
+			Relationship r = null;
+            Vector<Relationship> rs;
 			try
 			{
-				r = db.getGraph().getEdgeData(t1, t2);
-				if (r == null)
+				rs = db.getGraph().getAllEdgeData(t1, t2);
+				if (rs.size() == 0)
 				{
-					r = db.getGraph().getEdgeData(t2, t1);
+					rs = db.getGraph().getAllEdgeData(t2, t1);
 				}
 			} catch (DirectedGraphException ex)
 			{
 				throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
 			}
+            //find the 'right' rel. ie: discard Agent ->> ModifiedByAgentID/CreatedByAgentID
+            for (Relationship rel : rs)
+            {
+                if (!rel.getRelatedField().getName().equalsIgnoreCase("modifiedbyagentid") && !rel.getRelatedField().getName().equalsIgnoreCase("createdbyagentid")) 
+                {
+                    r = rel;
+                    break;
+                }
+            }
 			if (r != null)
 			{
 				Vector<ImportMappingRelFld> relFlds = mapping
 						.getRelatedFields();
 				for (int relF = 0; relF < relFlds.size(); relF++)
 				{
-					UploadField newFld = new UploadField(db.getSchema()
-							.getField(t2.getName(),
-									relFlds.get(relF).getFieldName()), relFlds
-							.get(relF).getFldIndex(), r);
+					Field fld = db.getSchema().getField(t2.getName(),relFlds.get(relF).getFieldName());
+                    int fldIdx = relFlds.get(relF).getFldIndex();
+                    String wbFldName = relFlds.get(relF).getWbFldName();
+                    UploadField newFld = new UploadField(fld, fldIdx, wbFldName, r);
 					newFld.setSequence(mapping.getSequence());
 					uploadFields.add(newFld);
 				}
@@ -227,7 +314,7 @@ public class Uploader
                 {
                     log.debug("could not find field in db: " + m.getTable() + "." + m.getField());
                 }
-                UploadField newFld = new UploadField(fld, m.getIndex(),
+                UploadField newFld = new UploadField(fld, m.getIndex(), m.getWbFldName(),
 						null);
 				uploadFields.add(newFld);
 				if (m.getClass() == UploadMappingDefRel.class)
@@ -334,12 +421,14 @@ public class Uploader
 	 * @param uploadData
 	 * @throws UploaderException
 	 */
-	public Uploader(DB db, UploadData importData) throws UploaderException
+	public Uploader(DB db, UploadData importData, final WorkbenchPaneSS wbSS) throws UploaderException
 	{
 		this.db = db;
 		this.uploadData = importData;
+        this.wbSS = wbSS;
 		this.uploadFields = new Vector<UploadField>(importData.getCols());
-
+        this.missingRequiredClasses = new Vector<UploadTable.RelatedClassEntry>();
+        this.missingRequiredFields = new Vector<UploadTable.DefaultFieldEntry>();
 		try
 		{
 			buildUploadFields();
@@ -388,9 +477,7 @@ public class Uploader
 		}
 	}
     
-	
-	
-    /**
+   /**
      * @param treeMap
      * @param level
      * @return a name for table representing data with rank represented by level param.
@@ -448,14 +535,15 @@ public class Uploader
 			// add ImportFields for new table
 			for (int seq = 0; seq < treeMap.getLevels().get(level).size(); seq++)
 			{
-				UploadField newFld1 = new UploadField(rankTbl.getField(treeMap
-						.getField()), treeMap.getLevels().get(level).get(seq)
-						.getIndex(), null);
+                Field fld = rankTbl.getField(treeMap.getField());
+                int fldIdx = treeMap.getLevels().get(level).get(seq).getIndex();
+                String wbFldName = treeMap.getLevels().get(level).get(seq).getWbFldName();
+                UploadField newFld1 = new UploadField(fld, fldIdx, wbFldName, null);
 				newFld1.setRequired(true);
 				newFld1.setSequence(seq);
 				uploadFields.add(newFld1);
 				UploadField newFld2 = new UploadField(rankTbl.getField("rankId"),
-						-1, null);
+						-1, null, null);
 				newFld2.setRequired(true);
 				newFld2.setValue(Integer.toString(treeMap.getLevels()
 						.get(level).get(0).getRank()));
@@ -534,9 +622,22 @@ public class Uploader
 		return new Vector<UploadTable>(its);
 	}
     
+    /**
+     * @author timbo
+     *
+     * @code_status Alpha
+     *
+     *Handles 'parent-child' relationships between UploadTables
+     */
     public class ParentTableEntry
     {
+        /**
+         * The parent UploadTable
+         */
         protected UploadTable importTable;
+        /**
+         * The relationship to the parent
+         */
         protected Relationship  parentRel;
          /**
          * The hibernate property name of the foreign key.
@@ -609,7 +710,13 @@ public class Uploader
             return propertyName;
         }
     }
+    
 
+    /**
+     * @throws UploaderException
+     * 
+     * Determines 'parent' UploadTables for each UploadTable
+     */
     protected void buildUploadTableParents() throws UploaderException
     {
         for (UploadTable it : uploadTables)
@@ -620,18 +727,21 @@ public class Uploader
             {
                 try
                 {
-                    Relationship r = uploadGraph.getEdgeData(tv.getData(), it.getTable());
-                    Vector<UploadTable> impTs = getUploadTable(tv.getData());
-                    Vector<ParentTableEntry> entries = new Vector<ParentTableEntry>();
-                    for (UploadTable impT : impTs)
+                    Vector<Relationship> rs = uploadGraph.getAllEdgeData(tv.getData(), it.getTable());
+                    for (Relationship r : rs)
                     {
-                        if (impT.getRelationship() == null || r.equals(impT.getRelationship()))
+                        Vector<UploadTable> impTs = getUploadTable(tv.getData());
+                        Vector<ParentTableEntry> entries = new Vector<ParentTableEntry>();
+                        for (UploadTable impT : impTs)
                         {
-                            impT.setHasChildren(true);
-                            entries.add(new ParentTableEntry(impT, r));
+                            if (impT.getRelationship() == null || r.equals(impT.getRelationship()))
+                            {
+                                impT.setHasChildren(true);
+                                entries.add(new ParentTableEntry(impT, r));
+                            }
                         }
+                        parentTables.add(entries);
                     }
-                    parentTables.add(entries);
                 }
                 catch (DirectedGraphException ex)
                 {
@@ -641,6 +751,7 @@ public class Uploader
             it.setParentTables(parentTables);
         }
     }
+    
     
 	/**
      * @throws UploaderException
@@ -674,24 +785,69 @@ public class Uploader
 	}
     
 
-	/**
-	 * @return true if everything's OK.
-	 */
-	public boolean validateData()
-	{
-		for (int r = 0; r < uploadData.getRows(); r++)
-		{
-			for (int c = 0; c < uploadData.getCols(); c++)
-			{
-				if (!uploadFields.get(c).validate(uploadData.get(r, c)))
-				{
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-    
+    /**
+     *  Validates contents of all cells in dataset.
+     */
+    public void validateData()
+    {       
+        dataValidated = false;
+        
+        final Vector<UploadTableInvalidValue> issues = new Vector<UploadTableInvalidValue>();
+        
+        final SwingWorker validateTask = new SwingWorker()
+        {
+            final JStatusBar statusBar = UIRegistry.getStatusBar();
+ 
+            @Override
+            public void interrupt()
+            {
+                super.interrupt();
+            }
+                        
+            @SuppressWarnings("synthetic-access")
+            @Override
+            public Object construct()
+            {
+                int progress = 0;
+                initProgressBar(0, uploadTables.size());
+                for (UploadTable tbl : uploadTables)
+                {
+                    setCurrentOpProgress(++progress);
+                    issues.addAll(tbl.validateValues(uploadData));
+                }
+                dataValidated = issues.size() == 0;
+                return new Boolean(dataValidated);
+            }
+            
+            @Override
+            public void finished()
+            {
+                validationIssues = issues;
+                if (dataValidated && resolver.isResolved())
+                {
+                    statusBar.setText(getResourceString("WB_DATASET_VALIDATED")); 
+                    setCurrentOp(Uploader.READY_TO_UPLOAD);
+                }
+                else
+                {
+                    setCurrentOp(Uploader.USER_INPUT);
+                    statusBar.setText(getResourceString("WB_INVALID_DATASET"));
+                }
+            }
+
+        };
+        validateTask.start();
+        if (mainForm == null)
+        {
+            initUI(Uploader.VALIDATING_DATA);
+            UIHelper.centerAndShow(mainForm);
+        }
+        else
+        {
+            setCurrentOp(Uploader.VALIDATING_DATA);
+        }
+    }
+        
 
 	/**
 	 * @return a set of tables for which no fields are being imported, but which provide foreign keys for tables that do have fields being imported.
@@ -759,113 +915,20 @@ public class Uploader
         return true;
     }
     
-	/**
-	 * @return
-	 * @throws ClassNotFoundException
-	 */
-	protected boolean getMissingData() throws ClassNotFoundException, NoSuchMethodException
-    {
-       for (UploadTable t : uploadTables)
-        {
-            for (UploadTable.RelatedClassEntry rce : t.getMissingReqRelClasses())
-            {
-                if (!meetRelClassRequirement(rce, t)) { return false; }
-            }
-            for (UploadTable.DefaultFieldEntry dfe : t.getMissingRequiredFlds())
-            {
-                if (!meetFldRequirement(dfe, t)) { return false; }
-            }
-        }
-        return true;
-    }
-    
-    /**
-     * @param dfe
-     * @param t
-     * @return
-     */
-    protected boolean meetFldRequirement(UploadTable.DefaultFieldEntry dfe, UploadTable t)
-    {
-        if (t.getTblClass() == edu.ku.brc.specify.datamodel.Agent.class)
-        {
-            if (dfe.getFldName().equalsIgnoreCase("agenttype"))
-            {
-                System.out.println("setting Agent.AgentType to 0");
-                dfe.setDefaultValue(new Byte("0"));
-                return true;
-            }
-        }
-        if (t.getTblClass() == edu.ku.brc.specify.datamodel.PrepType.class)
-        {
-            if (dfe.getFldName().equalsIgnoreCase("IsLoanable"))
-            {
-                System.out.println("setting PrepType.IsLoanable to true");
-                dfe.setDefaultValue(true);
-                return true;
-            }
-        }
-        if (t.getTblClass() == edu.ku.brc.specify.datamodel.AccessionAgent.class)
-        {
-            if (dfe.getFldName().equalsIgnoreCase("Role"))
-            {
-                System.out.println("setting AccessionAgent.Role to \"Receiver\"");
-                dfe.setDefaultValue("Receiver");
-                return true;
-            }
-        }
-        if (t.getTblClass() == edu.ku.brc.specify.datamodel.ReferenceWork.class)
-        {
-            if (dfe.getFldName().equalsIgnoreCase("ReferenceWorkType"))
-            {
-                System.out.println("setting ReferenceWork.ReferenceWorkType to 1");
-                dfe.setDefaultValue(new Byte("1"));
-                return true;
-            }
-        }
-        System.out.println("unable to meet requirement: " + t.getTblClass().getSimpleName() + "." + dfe.getFldName());
-        return false;
-    }
-    
-    /**
-     * @param rce
-     * @param t
-     * @return
-     */
-    protected boolean meetRelClassRequirement(UploadTable.RelatedClassEntry rce, UploadTable t) 
-    {
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        try
-        {
-            List data = session.getDataList(rce.getRelatedClass());
-            if (data.size() > 0)
-            {
-                Object id = ((DataModelObjBase) data.get(0)).getId();
-                System.out
-                        .println("setting " + rce.getRelatedClass().getSimpleName() + " to " + id);
-                t.addRelatedClassDefault(rce, id);
-                return true;
-            }
-        }
-        finally
-        {
-            session.close();
-        }
-        System.out.println("unable to meet requirement: " + t.getTblClass().getSimpleName() + "<->"
-                + rce.getRelatedClass().getSimpleName());
-        return false;
-    }
         
-	
-    public void validate() throws UploaderException
+    /**
+     * @throws UploaderException
+     * 
+     * Sets up for upload.
+     */
+    public void prepareToUpload() throws UploaderException
     {
-        if (!validateStructure()) { throw new UploaderException("invalid structure",
-                UploaderException.ABORT_IMPORT); }
-        if (!validateData()) { throw new UploaderException("invalid data",
-                UploaderException.ABORT_IMPORT); }
         try
         {
-            if (!getMissingData()) { throw new UploaderException(
-                    "unable to meet requirements.", UploaderException.ABORT_IMPORT); }
+            for (UploadTable t : uploadTables)
+            {
+                t.prepareToUpload();
+            }
         }
         catch (ClassNotFoundException cnfEx)
         {
@@ -876,123 +939,814 @@ public class Uploader
             throw new UploaderException(nsmeEx, UploaderException.ABORT_IMPORT);
         }
     }
+        
+    
     /**
-	 * @throws UploaderException 
+     * @param opName
      * 
-     * imports.
-	 */
-	public void uploadIt() throws UploaderException
+     * Puts UI into correct state for current upload phase.
+     */
+    protected synchronized void setCurrentOp(final String opName)
+    {
+        currentOp = opName;
+        if (mainForm == null)
+        {
+            log.error("UI does not exist.");
+            return;
+        }
+        setupUI(currentOp);
+    }
+    
+    
+    /**
+     * @param min
+     * @param max
+     * 
+     * Initializes progress bar for upload actions. 
+     * If min and max = 0, sets progress bar is indeterminate.
+     */
+    protected synchronized void initProgressBar(int min, int max)
+    {
+        if (mainForm == null)
+        {
+            log.error("UI does not exist.");
+            return;
+        }
+        JProgressBar pb = mainForm.getCurrOpProgress();
+        pb.setVisible(true);
+        if (min == 0 && max == 0)
+        {
+            pb.setIndeterminate(true);
+        }
+        else
+        {
+            if (pb.isIndeterminate())
+            {
+                pb.setIndeterminate(false);
+            }
+            pb.setMinimum(min);
+            pb.setMaximum(max);
+            pb.setValue(min);
+        }
+        pb.setString("");
+    }
+    
+    
+    /**
+     * @param val
+     * 
+     * Sets progress bar progress.
+     */
+    protected synchronized void setCurrentOpProgress(int val)
+    {
+        if (mainForm == null)
+        {
+            log.error("UI does not exist.");
+            return;
+        }
+        if (!mainForm.getCurrOpProgress().isIndeterminate())
+        {
+            mainForm.getCurrOpProgress().setValue(val);
+        }
+    }
+    
+    /**
+     * @param initOp
+     * 
+     * builds upload ui witn initial phase of initOp
+     */
+    protected void initUI(final String initOp)
+    {
+        buildMainUI();
+        setCurrentOp(initOp);
+        mainForm.pack();
+    }
+    
+    
+    
+    /**
+     * Gets default values for all missing required classes (foreign keys) and local fields. 
+     */
+    public void getDefaultsForMissingRequirements()
+    {        
+        final SwingWorker uploadTask = new SwingWorker()
+        {
+            final JStatusBar statusBar = UIRegistry.getStatusBar();
+            boolean success = false;                        
+            @SuppressWarnings("synthetic-access")
+            @Override
+            public Object construct()
+            {
+                UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_UPLOAD_VALIDATING_DATASET"),
+                        new Object[] { "" }), WorkbenchTask.GLASSPANE_FONT_SIZE);
+                missingRequiredClasses.clear();
+                missingRequiredFields.clear();
+                Iterator<RelatedClassEntry> rces;
+                Iterator<DefaultFieldEntry> dfes;
+                for (UploadTable t : uploadTables)
+                {
+                    try 
+                    {
+                        rces = t.getRelatedClassDefaults();
+                    }
+                    catch (ClassNotFoundException ex)
+                    {
+                        log.error(ex);
+                        return null;
+                    }
+                    while (rces.hasNext())
+                    {
+                        missingRequiredClasses.add(rces.next());
+                    }
+
+                    try
+                    {
+                        dfes = t.getMissingRequiredFlds();
+                    }
+                    catch (NoSuchMethodException ex)
+                    {
+                        log.error(ex);
+                        return null;
+                    }
+                    while (dfes.hasNext())
+                    {
+                        missingRequiredFields.add(dfes.next());
+                    }
+                    success = true;
+                }
+                resolver = new MissingDataResolver(missingRequiredClasses, missingRequiredFields);
+                return null;
+            }
+            
+            @Override
+            public void finished()
+            {
+                UIRegistry.clearGlassPaneMsg();
+                if (success)
+                {
+                    statusBar.setText(getResourceString("WB_REQUIRED_RETRIEVED")); 
+                    validateData();
+                }
+                else
+                {
+                    setCurrentOp(Uploader.FAILURE);
+                }
+            }
+
+        };
+
+        uploadTask.start();
+        initUI(Uploader.CHECKING_REQS);
+        mainForm.setAlwaysOnTop(true);
+        UIHelper.centerAndShow(mainForm);
+    }
+    
+      
+    /**
+     * Called when dataset is saved. 
+     */
+    public void refresh()
+    {
+        wbSS.getWorkbench().forceLoad();
+        validateData();
+    }
+    
+    
+    /**
+     * Called when dataset is closing.
+     */
+    public void closing()
+    {
+        if (mainForm != null)
+        {
+            closeMainForm();
+        }
+    }
+    
+    
+    /**
+     * Shuts down upload UI.
+     */
+    protected void closeMainForm()
+    {
+        mainForm.setVisible(false);
+        mainForm.dispose();
+        mainForm = null;
+        closeUploadedDataViewers();
+    }
+    
+    
+    /**
+     * Closes views of uploaded data.
+     */
+    protected void closeUploadedDataViewers()
+    {
+        if (bogusViewer != null)
+        {
+            bogusViewer.closeViewers();
+            bogusViewer = null;
+        }
+    }
+    
+    
+    /* (non-Javadoc)
+     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+     * 
+     * Responds to user actions in UI.
+     */
+    public void actionPerformed(ActionEvent e)
+    {
+        if (e.getActionCommand().equals(UploadMainForm.DO_UPLOAD))
+        {
+            System.out.println(UploadMainForm.DO_UPLOAD);
+            uploadIt();
+        }
+        else if (e.getActionCommand().equals(UploadMainForm.VIEW_UPLOAD))
+        {
+            System.out.println(UploadMainForm.VIEW_UPLOAD);
+            if (currentOp.equals(Uploader.SUCCESS))
+            {
+                if (bogusStorages == null)
+                {
+                    retrieveUploadedData();
+                }
+                else
+                {
+                    viewSelectedTable();
+                }
+            }
+        }
+        else if (e.getActionCommand().equals(UploadMainForm.VIEW_SETTINGS))
+        {
+            System.out.println(UploadMainForm.VIEW_SETTINGS);
+            resolver.resolve(!currentOp.equals(Uploader.READY_TO_UPLOAD)
+                    && !currentOp.equals(Uploader.USER_INPUT));
+            if (currentOp.equals(Uploader.READY_TO_UPLOAD) && !resolver.isResolved())
+            {
+                setCurrentOp(Uploader.USER_INPUT);
+            }
+            else if (currentOp.equals(Uploader.USER_INPUT) && resolver.isResolved())
+            {
+                setCurrentOp(Uploader.READY_TO_UPLOAD);
+            }
+        }
+        else if (e.getActionCommand().equals(UploadMainForm.CLOSE_UI))
+        {
+            System.out.println(UploadMainForm.CLOSE_UI);
+            closeMainForm();
+            wbSS.uploadDone();
+        }
+        else if (e.getActionCommand().equals(UploadMainForm.UNDO_UPLOAD))
+        {
+            System.out.println(UploadMainForm.UNDO_UPLOAD);
+            undoUpload();
+            closeMainForm();
+            wbSS.uploadDone();
+        }
+        else if (e.getActionCommand().equals(UploadMainForm.CANCEL_OPERATION))
+        {
+            System.out.println(UploadMainForm.CANCEL_OPERATION);
+        }
+        else if (e.getActionCommand().equals(UploadMainForm.TBL_DBL_CLICK))
+        {
+            System.out.println(UploadMainForm.TBL_DBL_CLICK);
+            mainForm.getViewUploadBtn().setEnabled(canViewUpload(currentOp));
+            if (currentOp.equals(Uploader.SUCCESS))
+            {
+                if (bogusStorages == null)
+                {
+                    retrieveUploadedData();
+                }
+                else
+                {
+                    viewSelectedTable();
+                }
+            }
+        }
+        else if (e.getActionCommand().equals(UploadMainForm.TBL_CLICK))
+        {
+            System.out.println(UploadMainForm.TBL_CLICK);
+            mainForm.getViewUploadBtn().setEnabled(canViewUpload(currentOp));
+        }
+        else if (e.getActionCommand().equals(UploadMainForm.INVALID_VAL_CLICK))
+        {
+            System.out.println(UploadMainForm.INVALID_VAL_CLICK);
+            goToInvalidWBCell();
+        }
+    }
+    
+    
+    /**
+     * Moves to dataset cell corresponding to currently selected validation issue and starts editor.
+     */
+    protected void goToInvalidWBCell()
+    {
+        if (mainForm == null)
+        {
+            throw new RuntimeException("Upload form does not exist.");
+        }
+        if (wbSS != null)
+        {
+            UploadTableInvalidValue invalid = validationIssues.get(mainForm.getInvalidVals().getSelectedIndex());
+            Rectangle rect = wbSS.getSpreadSheet().getCellRect(invalid.getRowNum(), invalid.getUploadFld().getIndex(), false);
+            wbSS.getSpreadSheet().scrollRectToVisible(rect);
+            wbSS.getSpreadSheet().editCellAt(invalid.getRowNum(), invalid.getUploadFld().getIndex(), null);
+            wbSS.getSpreadSheet().grabFocus();
+        }
+    }
+    
+    
+    public void windowStateChanged(WindowEvent e)
+    {
+        if (e.getNewState() == WindowEvent.WINDOW_CLOSING)
+        {
+            System.out.println("Closing");
+        }
+        else if (e.getNewState() == WindowEvent.WINDOW_ACTIVATED)
+        {
+            System.out.println("Activated");
+        }
+    }
+    
+    
+    /**
+     * Builds form for upload UI.
+     */
+    protected void buildMainUI()
+    {
+        mainForm = new UploadMainForm();
+        mainForm.buildUI();
+         
+        SortedSet<String> tblNames = new TreeSet<String>();
+        for (UploadTable ut : uploadTables)
+        {
+            tblNames.add(ut.getWriteTable().getName());
+        }
+        DefaultListModel tbls = new DefaultListModel();
+        for (String tblName : tblNames)
+        {
+            tbls.addElement(tblName);
+        }
+        mainForm.getUploadTbls().setModel(tbls);
+        mainForm.setActionListener(this);
+        mainForm.addWindowStateListener(this);
+    }
+    
+    
+    /**
+     * @param op
+     * 
+     * Sets up mainForm for upload phase for op.
+     */
+    protected synchronized void setupUI(final String op)
+    {
+        if (mainForm == null)
+        {
+            log.error("UI does not exist.");
+            return;
+        }
+
+        if (op.equals(Uploader.SUCCESS))
+        {
+            if (mainForm.getUploadTbls().getSelectedIndex() == -1)
+            {
+                //assuming list is not empty
+                mainForm.getUploadTbls().setSelectedIndex(0);
+            }
+        }
+
+        mainForm.getCancelBtn().setEnabled(canCancel(op));
+        mainForm.getCancelBtn().setVisible(mainForm.getCancelBtn().isEnabled());
+        mainForm.getDoUploadBtn().setEnabled(canUpload(op));
+        mainForm.getDoUploadBtn().setVisible(mainForm.getDoUploadBtn().isEnabled());
+        mainForm.getViewSettingsBtn().setEnabled(canViewSettings(op));
+        mainForm.getViewSettingsBtn().setVisible(mainForm.getViewSettingsBtn().isEnabled());
+        mainForm.getViewUploadBtn().setEnabled(canViewUpload(op));
+        mainForm.getViewUploadBtn().setVisible(mainForm.getViewUploadBtn().isEnabled());
+        mainForm.getUndoBtn().setEnabled(canUndo(op));
+        mainForm.getUndoBtn().setVisible(mainForm.getUndoBtn().isEnabled());
+        mainForm.getCloseBtn().setEnabled(canClose(op));
+        
+        DefaultListModel invalids = new DefaultListModel();
+        if (validationIssues != null)
+        {
+            for (UploadTableInvalidValue invalid : validationIssues)
+            {
+                invalids.addElement(invalid);
+            }
+        }
+        mainForm.getInvalidVals().setModel(invalids);
+        mainForm.getInvalidValPane().setVisible(invalids.size() > 0);
+        
+        mainForm.getCurrOpProgress().setVisible(mainForm.getCancelBtn().isVisible());
+        
+        mainForm.getCurrOpLbl().setText(getResourceString(op));
+    }
+    
+    
+    /**
+     * Opens view of uploaded data for selected table.
+     * Initializes viewer object if necessary. 
+     */
+    protected void viewSelectedTable()
+    {
+        if (currentOp.equals(Uploader.SUCCESS))
+        {
+            if (mainForm.getUploadTbls().getSelectedValue() != null)
+            {
+                if (bogusStorages != null)
+                {
+                    if (bogusViewer == null)
+                    {
+                        bogusViewer = db.new BogusViewer(bogusStorages);
+                    }
+                    if (bogusViewer != null)
+                    {
+                        bogusViewer.viewBogusTbl(mainForm.getUploadTbls().getSelectedValue().toString(), true);
+                    }
+                }
+            }
+        }
+    }
+    
+    
+    /**
+     * @param op
+     * @return true if canUndo in phase op.
+     */
+    protected boolean canUndo(final String op)
+    {
+        return op.equals(Uploader.SUCCESS);
+    }
+    
+    /**
+     * @param op
+     * @return true if canCancel in phase op.
+     */
+    protected boolean canCancel(final String op)
+    {
+        return op.equals(Uploader.UPLOADING)
+          || op.equals(Uploader.CHECKING_REQS)
+          || op.equals(Uploader.VALIDATING_DATA);
+    }
+    
+    /**
+     * @param op
+     * @return true if canUpload in phase op.
+     */
+    protected boolean canUpload(final String op)
+    {
+        return op.equals(Uploader.READY_TO_UPLOAD);
+    }
+    
+    /**
+     * @param op
+     * @return true if canClose in phase op.
+     */
+    protected boolean canClose(final String op)
+    {
+        return op.equals(Uploader.READY_TO_UPLOAD)
+         || op.equals(Uploader.USER_INPUT)
+         || op.equals(Uploader.SUCCESS)
+         || op.equals(Uploader.FAILURE);
+    }
+
+    /**
+     * @param op
+     * @return true if canViewSettings in phase op.
+     */
+    protected boolean canViewSettings(final String op)
+    {
+        return op.equals(Uploader.READY_TO_UPLOAD)
+        || op.equals(Uploader.USER_INPUT)
+        || op.equals(Uploader.SUCCESS)
+        || op.equals(Uploader.FAILURE);
+    }
+
+    /**
+     * @param op
+     * @return true if canViewUpload in phase op.
+     */
+    protected boolean canViewUpload(final String op)
+    {
+        return op.equals(Uploader.SUCCESS) && mainForm.getUploadTbls().getSelectedIndex() != -1;
+    }
+    
+    
+    /**
+     * Uploads dataset.
+     */
+    public void uploadIt() 
     {
         buildIdentifier();
         currentUpload = this;
-        boolean committed = false;
-        //DataProviderSessionIFace importSession = DataProviderFactory.getInstance().createSession();
-        //importSession = DataProviderFactory.getInstance().createSession();
-       try
+        
+        final SwingWorker uploadTask = new SwingWorker()
         {
-            //importSession.beginTransaction();
-            for (UploadTable t : uploadTables)
+            final JStatusBar statusBar = UIRegistry.getStatusBar();
+            boolean success = false;
+            boolean cancelled = false;
+            boolean holdIt = false;
+            
+            @Override
+            public void interrupt()
             {
-                t.prepareToUpload();
-            }
-            for (int r = 0; r < uploadData.getRows(); r++)
-            {
-                for (UploadTable t : uploadTables)
+                //this will hold the upload process until the confirm dlg is closed
+                holdIt = true;
+                if (UIRegistry.displayConfirm(getResourceString("WB_CANCEL_UPLOAD_TITLE"), 
+                        getResourceString("WB_CANCEL_UPLOAD_MSG"), 
+                        getResourceString("OK"),
+                        getResourceString("Cancel"), 
+                        JOptionPane.QUESTION_MESSAGE))
                 {
-                    try
-                    {
-                        uploadRow(t, r);
-                    }
-                    catch (UploaderException ex)
-                    {
-                        if (ex.getAbortStatus() != UploaderException.ABORT_IMPORT)
-                        {
-                            log.debug(ex.getMessage());
-                            break;
-                        }
-                        throw ex;
-                    }
-
+                    super.interrupt();
+                    cancelled = true;
                 }
+                holdIt = false;
             }
-            //importSession.commit();
-            committed = true;
-        }
-        catch (Exception ex)
-        {
-            if (ex.getClass() != UploaderException.class)
+                        
+            @SuppressWarnings("synthetic-access")
+            @Override
+            public Object construct()
             {
-                throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
+                UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_UPLOADING_DATASET"),
+                        new Object[] { "" }), WorkbenchTask.GLASSPANE_FONT_SIZE);
+                initProgressBar(0, uploadData.getRows());
+                try
+                {
+                    for (int r = 0; r < uploadData.getRows();)
+                    {
+                        if (!holdIt)
+                        {
+                            for (UploadTable t : uploadTables)
+                            {
+                                if (cancelled)
+                                {
+                                    break;
+                                }
+                                setCurrentOpProgress(r + 1);
+                                try
+                                {
+                                    uploadRow(t, r);
+                                }
+                                catch (UploaderException ex)
+                                {
+                                    if (ex.getAbortStatus() != UploaderException.ABORT_IMPORT)
+                                    {
+                                        log.debug(ex.getMessage());
+                                        break;
+                                    }
+                                    throw ex;
+                                }
+                            }
+                            r++;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return ex;
+                }
+                success = !cancelled;
+                return Boolean.valueOf(success);
             }
-            throw (UploaderException)ex;
-        }
-        finally
-        {
-            if (!committed)
+            
+            @Override
+            public void finished()
             {
-                //importSession.rollback();
-                //rollback doesn't rollback - need to associate UploadTable sessions with importSession ???
-                undoUpload();
+                if (success)
+                {
+                    statusBar.setText(getResourceString(SUCCESS)); 
+                    setCurrentOp(Uploader.SUCCESS);
+                }
+                else 
+                {
+                    for (int ut = uploadTables.size()-1; ut >= 0; ut--)
+                    {
+                        uploadTables.get(ut).undoUpload();
+                    }
+                    if (cancelled)
+                    {
+                        statusBar.setText(getResourceString("WB_UPLOAD_CANCELLED"));
+                        setCurrentOp(Uploader.READY_TO_UPLOAD);
+                    }
+                    else
+                    {
+                        statusBar.setText(getResourceString(Uploader.FAILURE)); 
+                        setCurrentOp(Uploader.FAILURE);
+                    }
+                }
+                UIRegistry.clearGlassPaneMsg();
             }
-            currentUpload = null;
-            //importSession.close();
-            //importSession = null;
+
+        };
+
+        JButton cancelBtn = mainForm.getCancelBtn();
+        cancelBtn.addActionListener(new ActionListener()
+        {
+            @SuppressWarnings("synthetic-access")
+            public void actionPerformed(ActionEvent ae)
+            {
+                log.debug("Stopping the dataset upload thread");
+                uploadTask.interrupt();
+            }
+        });
+
+        uploadTask.start();
+        if (mainForm == null)
+        {
+            initUI(Uploader.UPLOADING);
+            UIHelper.centerAndShow(mainForm);
+        }
+        else
+        {
+            setCurrentOp(Uploader.UPLOADING);
         }
     }
+    
+    
     
 	/**
-	 * Undoes the most recent upload.
+     * Undoes the most recent upload.
      * 
-     *  This is currently intended to be used as a debugging aid.
-	 */
+     * This is currently intended to be used as a debugging aid.
+     */
 	public void undoUpload()
     {
-        for (int ut = uploadTables.size()-1; ut >= 0; ut--)
+        final SwingWorker undoTask = new SwingWorker()
         {
-            uploadTables.get(ut).undoUpload(identifier);
-        }
+            final JStatusBar statusBar = UIRegistry.getStatusBar();
+            boolean success = false;
+                                    
+            @SuppressWarnings("synthetic-access")
+            @Override
+            public Object construct()
+            {
+                UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_UPLOAD_UNDO"),
+                        new Object[] { "" }), WorkbenchTask.GLASSPANE_FONT_SIZE);
+                initProgressBar(0, 0);
+                for (int ut = uploadTables.size()-1; ut >= 0; ut--)
+                {
+                    uploadTables.get(ut).undoUpload();
+                }
+                success = true;
+                return Boolean.valueOf(success);
+            }
+            
+            @Override
+            public void finished()
+            {
+                UIRegistry.clearGlassPaneMsg();
+                if (success)
+                {
+                    statusBar.setText(getResourceString("WB_UPLOAD_ROLLEDBACK"));
+                    setCurrentOp(Uploader.READY_TO_UPLOAD);
+                }
+                else 
+                {
+                        statusBar.setText(getResourceString("WB_UPLOAD_ROLLBACK_FAILURE")); 
+                        setCurrentOp(Uploader.FAILURE);
+                }
+            }
+
+        };
+        undoTask.start();
+        setCurrentOp(Uploader.UNDOING_UPLOAD);
     }
     
+    
+    /**
+     * @throws IllegalAccessException
+     * @throws InvocationTargetException
+     * 
+     * prints listing of uploaded data to System.out.
+     */
     public void printUpload() throws IllegalAccessException, InvocationTargetException
     {
-        Vector<String> printed = new Vector<String>();
         for (UploadTable ut : uploadTables)
         {
-            if (!printed.contains(ut.getWriteTable().getName()))
+            System.out.println(ut.getWriteTable().getName());
+            Vector<Vector<String>> vals = ut.printUpload();
+            for (Vector<String> row : vals)
             {
-                System.out.println(ut.getWriteTable().getName());
-                Vector<Vector<String>> vals = ut.printUpload(identifier);
-                for (Vector<String> row : vals)
+                for (String val : row)
                 {
-                    for (String val : row)
-                    {
-                        System.out.print(val + ", ");
-                    }
-                    System.out.println();
+                    System.out.print(val + ", ");
                 }
-                printed.add(ut.getWriteTable().getName());
                 System.out.println();
             }
         }
     }
     
-    public void viewUpload() throws IllegalAccessException, InvocationTargetException
+
+    /**
+     * Builds viewer for uploaded data.
+     */
+    public void retrieveUploadedData() 
     {
-        Map<String, Vector<Vector<String>>> storages = new HashMap<String, Vector<Vector<String>>>();
-        for (UploadTable ut : uploadTables)
+        bogusStorages = new HashMap<String, Vector<Vector<String>>>();
+
+        final SwingWorker retrieverTask = new SwingWorker()
         {
-            if (!storages.containsKey(ut.getWriteTable().getName()))
+            final JStatusBar statusBar = UIRegistry.getStatusBar();
+            boolean cancelled = false;
+            boolean holdIt = false;
+            
+            @Override
+            public void interrupt()
             {
-                Vector<Vector<String>> vals = ut.printUpload(identifier);
-                if (vals.size() > 0)
+                //this will hold the display process until the confirm dlg is closed
+                holdIt = true;
+                if (UIRegistry.displayConfirm(getResourceString("WB_CANCEL_UPLOAD_RETRIEVE_TITLE"), 
+                        getResourceString("WB_CANCEL_UPLOAD_RETRIEVE_MSG"), 
+                        getResourceString("OK"),
+                        getResourceString("Cancel"), 
+                        JOptionPane.QUESTION_MESSAGE))
                 {
-                    storages.put(ut.getWriteTable().getName(), vals);
+                    super.interrupt();
+                    cancelled = true;
                 }
+                holdIt = false;
             }
+                        
+            @SuppressWarnings("synthetic-access")
+            @Override
+            public Object construct()
+            {
+                initProgressBar(0, uploadTables.size());
+                for (int progress = 0; progress < uploadTables.size();)
+                {
+                    if (cancelled)
+                    {
+                        break;
+                    }
+                    if (!holdIt)
+                    {
+                        UploadTable ut = uploadTables.get(progress);
+                        setCurrentOpProgress(progress + 1);
+                        try
+                        {
+                            Vector<Vector<String>> vals = ut.printUpload();
+                            if (vals.size() > 0)
+                            {
+                                if (!bogusStorages.containsKey(ut.getWriteTable().getName()))
+                                {
+                                    bogusStorages.put(ut.getWriteTable().getName(), vals);
+                                }
+                                else
+                                {
+                                    // delete header
+                                    vals.remove(0);
+                                    bogusStorages.get(ut.getWriteTable().getName()).addAll(vals);
+                                }
+                            }
+                        }
+                        catch (InvocationTargetException ex)
+                        {
+                            log.error(ex);
+                        }
+                        catch (IllegalAccessException ex)
+                        {
+                            log.error(ex);
+                        }
+                        progress++;
+                    }
+                }
+               return null;
+            }
+            
+            @Override
+            public void finished()
+            {
+                setCurrentOp(Uploader.SUCCESS);
+                if (!cancelled)
+                {
+                    viewSelectedTable();
+                    statusBar.setText(getResourceString("WB_UPLOAD_DATA_FETCHED")); 
+                    //undoUpload(); 
+                }
+                else
+                {
+                    bogusStorages = null;
+                    statusBar.setText(getResourceString("RetrievalWB_UPLOAD_FETCH_CANCELLED cancelled"));
+                    //undoUpload();
+                }
+                UIRegistry.clearGlassPaneMsg();
+            }
+
+        };
+        if (mainForm == null)
+        {
+            initUI(Uploader.RETRIEVING_UPLOADED_DATA);
+            UIHelper.centerAndShow(mainForm);
         }
-        DB.BogusViewer bv = db.new BogusViewer(storages);
-        bv.viewBogus();
+        else
+        {
+            setCurrentOp(Uploader.RETRIEVING_UPLOADED_DATA);
+        }
+        retrieverTask.start();
     }
+
     
 	/**
      * @param t
@@ -1005,7 +1759,8 @@ public class Uploader
 	{
 		for (UploadField field : uploadFields)
 		{
-			if (field.getField().getTable().equals(t.getTable()))
+			System.out.println(field.getWbFldName());
+            if (field.getField().getTable().equals(t.getTable()))
 			{
 				if (field.getIndex() != -1)
 				{
@@ -1048,17 +1803,6 @@ public class Uploader
     {
         t.writeRow();
     }
-        
-	public void dumpBogus()
-	{
-		db.dumpBogus();
-	}
+            
 
-    /**
-     * @return the importSession
-     */
-    public final DataProviderSessionIFace getImportSession()
-    {
-        return importSession;
-    }
 }

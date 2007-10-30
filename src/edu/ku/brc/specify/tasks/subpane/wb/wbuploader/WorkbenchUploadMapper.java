@@ -128,6 +128,7 @@ public class WorkbenchUploadMapper
         protected boolean required;
         protected Integer sequence;
         protected int index;
+        protected String wbFldName;
 
         public TreeLevelInfo(int rank, boolean required, Integer sequence)
         {
@@ -191,6 +192,22 @@ public class WorkbenchUploadMapper
         public final Integer getSequence()
         {
             return sequence;
+        }
+
+        /**
+         * @return the wbFldName
+         */
+        public final String getWbFldName()
+        {
+            return wbFldName;
+        }
+
+        /**
+         * @param wbFldName the wbFldName to set
+         */
+        public final void setWbFldName(String wbFldName)
+        {
+            this.wbFldName = wbFldName;
         }
     }
 
@@ -357,7 +374,7 @@ public class WorkbenchUploadMapper
                 {
                     fld = def.actualName;
                 }
-                maps.add(new UploadMappingDef(wbi.getTableName(), fld, wbi.getViewOrder()));
+                maps.add(new UploadMappingDef(wbi.getTableName(), fld, wbi.getViewOrder(), wbi.getCaption()));
                 mappedItems.add(wbi.getViewOrder());
             }
         }
@@ -418,16 +435,16 @@ public class WorkbenchUploadMapper
         if (map == null)
         {
             
-            map = new UploadMappingDefRel(def.actualTable, rel.getColName(), relTbl.getShortClassName(), def.oneToManySequence, def.sequenceField);
+            map = new UploadMappingDefRel(def.actualTable, rel.getColName(), relTbl.getShortClassName(), def.oneToManySequence, def.sequenceField, wbi.getCaption());
             maps.add(map);
         }
         if (def.relatedFieldName != null)
         {
-            map.addRelatedField(def.relatedFieldName, wbi.getViewOrder());
+            map.addRelatedField(def.relatedFieldName, wbi.getViewOrder(), wbi.getCaption());
         }
         else
         {
-            map.addLocalField(def.actualName, wbi.getViewOrder());
+            map.addLocalField(def.actualName, wbi.getViewOrder(), wbi.getCaption());
        }
     }
 
@@ -494,19 +511,19 @@ public class WorkbenchUploadMapper
      */
     protected void mapTaxTreeItems(Vector<WorkbenchTemplateMappingItem> treeItems)
     {
-        log.debug("taxTreeItems:");
+/*        log.debug("taxTreeItems:");
         for (WorkbenchTemplateMappingItem wbi : treeItems)
         {
             log.debug(wbi.getCaption() + ": " + wbi.getTableName() + "."
                     + wbi.getFieldName());
         }
-        log.debug("");
+        log.debug("");*/
         if (treeItems.size() > 0)
         {
             Vector<Vector<TreeMapElement>> levels = mapTreeItems(treeItems, taxonLevels);
             if (levels.size() > 0)
             {
-                maps.add(new UploadMappingDefTree("taxon", "name", "parentId", null, levels));
+                maps.add(new UploadMappingDefTree("taxon", "name", "parentId", null, levels, "Taxon"/*i18n*/));
             }
         }
     }
@@ -545,7 +562,7 @@ public class WorkbenchUploadMapper
             Vector<Vector<TreeMapElement>> levels = mapTreeItems(treeItems, geoLevels);
             if (levels.size() > 0)
             {
-                maps.add(new UploadMappingDefTree("geography", "name", "parentId", null, levels));
+                maps.add(new UploadMappingDefTree("geography", "name", "parentId", null, levels, "geography"/*i18n*/));
             }
         }
     }
@@ -564,6 +581,7 @@ public class WorkbenchUploadMapper
         {
             TreeLevelInfo levelInfo = ranks.get(wbi.getFieldName());
             levelInfo.setIndex(wbi.getViewOrder());
+            levelInfo.setWbFldName(wbi.getCaption());
             levels.add(levelInfo);
             mappedItems.add(wbi.getViewOrder());
         }
@@ -580,7 +598,7 @@ public class WorkbenchUploadMapper
                 result.add(currentElement);
                 currentRank = level.getRank();
             }
-            currentElement.add(new TreeMapElement(level.getIndex(), level.getRank(), level
+            currentElement.add(new TreeMapElement(level.getIndex(), level.getWbFldName(), level.getRank(), level
                     .getSequence(), level.isRequired()));
         }
         return result;
@@ -595,7 +613,7 @@ public class WorkbenchUploadMapper
                                                Map<String, TreeLevelInfo> levels)
     {
         TreeLevelInfo level = levels.get(wbi.getFieldName());
-        TreeMapElement result = new TreeMapElement(wbi.getViewOrder(), level.getRank(), level.getSequence(),
+        TreeMapElement result = new TreeMapElement(wbi.getViewOrder(), wbi.getCaption(), level.getRank(), level.getSequence(),
                 level.isRequired());
         return result;
     }
@@ -627,6 +645,7 @@ public class WorkbenchUploadMapper
     {
         return wbi.getTableName().equals("geography") && geoLevels.containsKey(wbi.getFieldName());
     }
+    
    
 /*Saving this stuff in case it's needed again...
     for (UploadMappingDef map : maps)

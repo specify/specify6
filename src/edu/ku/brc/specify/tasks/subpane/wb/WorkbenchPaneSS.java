@@ -137,6 +137,13 @@ import edu.ku.brc.specify.exporters.GoogleEarthPlacemarkIFace;
 import edu.ku.brc.specify.exporters.WorkbenchRowPlacemarkWrapper;
 import edu.ku.brc.specify.tasks.ExportTask;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
+import edu.ku.brc.specify.tasks.subpane.wb.graph.DirectedGraphException;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.DB;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadData;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMappingDef;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploaderException;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.WorkbenchUploadMapper;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.specify.ui.LengthInputVerifier;
 import edu.ku.brc.ui.CommandAction;
@@ -202,7 +209,8 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected JButton               biogeomancerBtn        = null;
     protected JButton               convertGeoRefFormatBtn = null;
     protected JButton               exportExcelCsvBtn      = null;
-
+    protected JButton               uploadDatasetBtn     = null;
+    
     protected List<JButton>         selectionSensativeButtons  = new Vector<JButton>();
     
     protected int                   currentRow                 = 0;
@@ -224,6 +232,8 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected JLabel                mapImageLabel              = null;
     
     protected WindowListener        minMaxWindowListener       = null; 
+    
+    protected Uploader              dataSetUploader            = null; 
     
     // XXX PREF
     protected int                   mapSize                    = 500;
@@ -520,6 +530,15 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         });
         exportExcelCsvBtn.setEnabled(true);
+
+        uploadDatasetBtn = createIconBtn("Upload", IconManager.IconSize.NonStd, "WB_UPLOAD_DATA", false, new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                doDatasetUpload();
+            }
+        });
+        uploadDatasetBtn.setEnabled(true);
         
         // listen to selection changes to enable/disable certain buttons
         spreadSheet.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -585,7 +604,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         // start putting together the visible UI
         CellConstraints cc = new CellConstraints();
 
-        JComponent[] comps      = {addRowsBtn, deleteRowsBtn, clearCellsBtn, showMapBtn, exportKmlBtn, biogeomancerBtn, convertGeoRefFormatBtn, exportExcelCsvBtn};
+        JComponent[] comps      = {addRowsBtn, deleteRowsBtn, clearCellsBtn, showMapBtn, exportKmlBtn, biogeomancerBtn, convertGeoRefFormatBtn, exportExcelCsvBtn, uploadDatasetBtn};
         PanelBuilder spreadSheetControlBar = new PanelBuilder(new FormLayout("f:p:g,4px,"+createDuplicateJGoodiesDef("p", "4px", comps.length)+",4px,", "c:p:g"));
         
         int x = 3;
@@ -2602,6 +2621,10 @@ public class WorkbenchPaneSS extends BaseSubPane
         checkCurrentEditState();
         
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        /* committed prevents null transaction exceptions occuring in catch blocks below.
+         * DataProviderSessionIFace needs methods to access transaction status??
+         */
+        boolean committed = false; 
         try
         {
             FormHelper.updateLastEdittedInfo(workbench);
@@ -2648,7 +2671,8 @@ public class WorkbenchPaneSS extends BaseSubPane
             }*/
             session.saveOrUpdate(dObj);
             session.commit();
-
+            committed = true;
+            session.flush();
             workbench = dObj;
             workbench.forceLoad();
             
@@ -2662,14 +2686,19 @@ public class WorkbenchPaneSS extends BaseSubPane
             log.info("Session Saved[ and Flushed "+session.hashCode()+"]");
            
             hasChanged = false;
-            
+            if (dataSetUploader != null)
+            {
+                dataSetUploader.refresh();
+            }
             String msg = String.format(getResourceString("WB_SAVED"), new Object[] { workbench.getName()} );
             UIRegistry.getStatusBar().setText(msg);
         }
         catch (StaleObjectException ex) // was StaleObjectStateException
         {
-            session.rollback();
-            
+            if (!committed)
+            {
+                session.rollback();
+            }
             //recoverFromStaleObject("UPDATE_DATA_STALE");
             UIRegistry.getStatusBar().setErrorMessage(getResourceString("WB_ERROR_SAVING"), ex);
             UnhandledExceptionDialog dlg = new UnhandledExceptionDialog(ex);
@@ -2680,12 +2709,13 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             log.error("******* " + ex);
             ex.printStackTrace();
-            session.rollback();
-            
+            if (!committed)
+            {
+                session.rollback();
+            }
             UIRegistry.getStatusBar().setErrorMessage(getResourceString("WB_ERROR_SAVING"), ex);
             UnhandledExceptionDialog dlg = new UnhandledExceptionDialog(ex);
             dlg.setVisible(true);
-
         }
         
         if (saveBtn != null)
@@ -2754,7 +2784,11 @@ public class WorkbenchPaneSS extends BaseSubPane
         if (retStatus)
         {
             ((WorkbenchTask)task).closing(this);
-            
+            if (dataSetUploader != null)
+            {
+                dataSetUploader.closing();
+                dataSetUploader = null;
+            }
             spreadSheet.getSelectionModel().removeListSelectionListener(workbenchRowChangeListener);
             workbenchRowChangeListener = null;
         }
@@ -2938,7 +2972,38 @@ public class WorkbenchPaneSS extends BaseSubPane
         return currentPanelType == PanelType.Spreadsheet ? "WorkbenchGridEditing" : "WorkbenchFormEditing";
     }
     
-    
+    protected void doDatasetUpload()
+    {        
+        WorkbenchUploadMapper importMapper = new WorkbenchUploadMapper(workbench
+                .getWorkbenchTemplate());
+        try
+        {
+            Vector<UploadMappingDef> maps = importMapper.getImporterMapping();
+            DB db = new DB();
+            System.out.println("constructing importer...");
+            dataSetUploader = new Uploader(db, new UploadData(maps, workbench.getWorkbenchRowsAsList()), this);
+            dataSetUploader.prepareToUpload();
+            if (!dataSetUploader.validateStructure()) { throw new UploaderException(
+                    "Invalid dataset structure", UploaderException.ABORT_IMPORT); // i18n
+            }
+            dataSetUploader.getDefaultsForMissingRequirements();
+        }
+        catch (DirectedGraphException ex)
+        {
+            UIRegistry.clearGlassPaneMsg();
+            UIRegistry.getStatusBar().setErrorMessage(ex.getMessage());
+        }
+        catch (UploaderException ex)
+        {
+            UIRegistry.clearGlassPaneMsg();
+            UIRegistry.getStatusBar().setErrorMessage(ex.getMessage());
+        }
+    }
+
+    public void uploadDone()
+    {
+        dataSetUploader = null;
+    }
 
     //------------------------------------------------------------
     // Inner Classes
@@ -3212,6 +3277,30 @@ public class WorkbenchPaneSS extends BaseSubPane
                 System.out.println(vLeftColIndex);
             }*/
         }
+    }
+
+    /**
+     * @return the hasChanged
+     */
+    public boolean isHasChanged()
+    {
+        return hasChanged;
+    }
+
+    /**
+     * @param hasChanged the hasChanged to set
+     */
+    public void setHasChanged(boolean hasChanged)
+    {
+        this.hasChanged = hasChanged;
+    }
+
+    /**
+     * @return the spreadSheet
+     */
+    public SpreadSheet getSpreadSheet()
+    {
+        return spreadSheet;
     }
 }
 

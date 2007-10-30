@@ -31,6 +31,10 @@ public class UploadMappingDef
 	 * column index (for maps that don't involve relatedFields)
 	 */
 	protected int index = -1; 
+    /**
+     * caption of the field in the workbench. (null when index == -1) 
+     */
+    protected String wbFldName = null;
 	/**
 	 * @param table
 	 * @param field
@@ -73,12 +77,13 @@ public class UploadMappingDef
 	 * @param table
 	 * @param field
 	 */
-	public UploadMappingDef(String table, String field, int index)
+	public UploadMappingDef(String table, String field, int index, String wbFldName)
 	{
 		super();
 		this.table = table;
 		this.field = field;
 		this.index = index;
+        this.wbFldName = wbFldName;
 	}
 	
 	/**
@@ -88,4 +93,11 @@ public class UploadMappingDef
 	{
 		return index;
 	}
+    /**
+     * @return the wbFldName
+     */
+    public String getWbFldName()
+    {
+        return wbFldName;
+    }
 }
