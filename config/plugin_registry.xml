@@ -43,6 +43,17 @@
 		
 	</core>
 	
+	<uiplugins>
+		
+		<plugin name="WebLinkLauncherButton" class="edu.ku.brc.specify.ui.WebLinkLauncherButton"/>
+		<plugin name="PartialDateUI" class="edu.ku.brc.specify.plugins.PartialDateUI"/>
+		<plugin name="LocalityGoogleEarth" class="edu.ku.brc.specify.plugins.LocalityGoogleEarthPlugin"/>
+		<plugin name="FishBase" class="edu.ku.brc.specify.plugins.FishBase"/>
+		<plugin name="LatLonUI" class="edu.ku.brc.specify.plugins.latlon.LatLonUI"/>
+		<plugin name="TaxonLabelFormatting" class="edu.ku.brc.specify.plugins.TaxonLabelFormatting"/>
+		
+	</uiplugins>
+	
 	<external>
 		
 	</external>

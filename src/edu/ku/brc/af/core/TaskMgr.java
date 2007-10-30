@@ -43,8 +43,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolbarLayoutManager;
+import edu.ku.brc.ui.UIPluginable;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 
@@ -72,6 +74,8 @@ public class TaskMgr
     protected Vector<Taskable>            toolbarTasks   = new Vector<Taskable>();
     protected Element                     commandDOMRoot = null;
     protected Taskable                    defaultTask    = null;
+    
+    protected Hashtable<String, Class<?>>   uiPluginHash   = new Hashtable<String,  Class<?>>();
 
     /**
      * Protected Default Constructor for Singleton
@@ -492,12 +496,60 @@ public class TaskMgr
                         // XXX Need to display an error
                     }
                 }
+                
+                for ( Iterator<?> iter = root.selectNodes("/plugins/uiplugins/plugin").iterator(); iter.hasNext(); )
+                {
+                    Element pluginElement = (Element)iter.next();
+    
+                    String name      = XMLHelper.getAttr(pluginElement, "name", null);
+                    String className = XMLHelper.getAttr(pluginElement, "class", null);
+                    if (StringUtils.isNotEmpty(name) && StringUtils.isNotEmpty(className))
+                    {
+                        try
+                        {
+                            Class<?> cls = Class.forName(className).asSubclass(UIPluginable.class);
+                            log.debug("Registering ["+name+"] Class["+cls.getName()+"]");
+                            instance.uiPluginHash.put(name, cls);
+        
+                        } catch (Exception ex)
+                        {
+                            log.error(ex);
+                            ex.printStackTrace();
+                            
+                            // go to the next plugin
+                            continue;
+                            // XXX Do we need a dialog here ???
+                        }
+                    }
+                }
+
             } catch (Exception ex)
             {
                 ex.printStackTrace();
                 log.error(ex);
             }
         }
+    }
+    
+    /**
+     * Looks up a plugin's class by name.
+     * @param name the name of the plugin
+     * @return the class of the plgin.
+     */
+    public static Class<?> getUIPluginClassForName(final String pluginName)
+    {
+        log.debug("Looing up["+pluginName+"]["+instance.uiPluginHash.get(pluginName)+"]");
+        return instance.uiPluginHash.get(pluginName);
+    }
+    
+    /**
+     * @return a sorted list of the names of the Plugins
+     */
+    public List<String> getUIPluginList()
+    {
+        List<String> list = new Vector<String>(uiPluginHash.keySet().size());
+        list.addAll(uiPluginHash.keySet());
+        return list;
     }
 
     /**

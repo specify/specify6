@@ -373,10 +373,14 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                 if (cmdAction.getData() instanceof FormPane)
                 {
                     FormPane fp = (FormPane)cmdAction.getData();
-                    FormViewObj formViewObj = (FormViewObj)fp.getViewable();
-                    if (formViewObj != null)
+                    
+                    if (fp.getViewable() instanceof FormViewObj)
                     {
-                        adjustForm(formViewObj);
+                        FormViewObj formViewObj = (FormViewObj)fp.getViewable();
+                        if (formViewObj != null)
+                        {
+                            adjustForm(formViewObj);
+                        }
                     }
                 }
             }

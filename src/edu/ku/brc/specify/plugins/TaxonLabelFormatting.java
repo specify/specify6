@@ -35,7 +35,6 @@ import java.util.ResourceBundle;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
-import javax.swing.ComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;

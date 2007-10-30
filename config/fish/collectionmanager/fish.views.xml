@@ -676,7 +676,7 @@
                 <row>
                     <cell type="label" labelfor="7" label="E-mail"/>
                     <cell type="field" id="7" name="email" uitype="text" cols="32" valtype="Changed"/>
-                    <cell type="field" id="mailto" name="this" uitype="plugin" initialize="class=edu.ku.brc.specify.ui.WebLinkLauncherButton;url=mailto:$email$;label=Send Mail"/>
+                    <cell type="field" id="mailto" name="this" uitype="plugin" initialize="name=WebLinkLauncherButton;url=mailto:$email$;label=Send Mail"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="8" label="Abbreviation"/>
@@ -690,7 +690,8 @@
                     <!--<cell type="command" id="attachments" label="attachments" name="agentAttachments" commandtype="Data_Entry" action="Edit"/>-->
                 </row>
                 <row>
-                    <cell type="subview" id="attachments" viewname="AgentAttachment" name="agentAttachments" colspan="7"/>
+                    <cell type="command" id="attachments" label="attachments" name="agentAttachments" commandtype="Data_Entry" action="Edit"/>
+                    <!-- <cell type="subview" id="attachments" viewname="AgentAttachment" name="agentAttachments" colspan="7"/> -->
                 </row>
                 
             </rows>
@@ -878,7 +879,7 @@
                 <row>
                     <cell type="label" labelfor="7" label="E-mail"/>
                     <cell type="field" id="7" name="agent.email" uitype="text" cols="32" valtype="Changed"/>
-                    <cell type="field" id="mailto" name="agent" uitype="plugin" initialize="class=edu.ku.brc.specify.ui.WebLinkLauncherButton;url=mailto:$email$;label=Send Mail"/>
+                    <cell type="field" id="mailto" name="agent" uitype="plugin" initialize="name=WebLinkLauncherButton;url=mailto:$email$;label=Send Mail"/>
                 </row>
     		</rows>
     	</viewdef>
@@ -918,7 +919,7 @@
 
                     <cell type="label" labelfor="5" label="Date"/>
     			    <cell type="field" id="5" name="catalogedDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
-    			    <!-- <cell type="field" id="5" name="this" uitype="plugin" initialize="class=edu.ku.brc.specify.plugins.PartialDateUI;dateField=catalogedDate;dateTypeField=text1" default="today"/> -->
+    			    <!-- <cell type="field" id="5" name="this" uitype="plugin" initialize="name=PartialDateUI;dateField=catalogedDate;dateTypeField=text1" default="today"/> -->
     			</row>
      			<row>
     				<cell type="separator" label="Determination" colspan="12"/>
@@ -934,7 +935,7 @@
     		    <row>
     		        <!-- <cell type="subview" viewname="Locality" id="7" name="collectingEvent.locality" colspan="12"/> -->
     		        <cell type="field" id="7" name="collectingEvent.locality" uitype="querycbx" initialize="name=Locality;title=Locality" colspan="12"/>
-    		        <cell type="field" id="23" name="this" uitype="plugin" initialize="class=edu.ku.brc.specify.plugins.LocalityGoogleEarthPlugin;name=GoogleEarth;title=Google Earth" colspan="1"/>
+    		        <cell type="field" id="23" name="this" uitype="plugin" initialize="name=LocalityGoogleEarth;title=Google Earth" colspan="1"/>
     		    </row>
     		    
     			<row>
@@ -1033,7 +1034,7 @@
     			<row>
     			    <!--
                     <cell type="label" labelfor="1" label="Taxon"/>
-    			    <cell type="field" id="1" name="taxon" uitype="plugin" initialize="class=edu.ku.brc.specify.plugins.FishBase;name=Taxon;title=Taxon" colspan="5"/>
+    			    <cell type="field" id="1" name="taxon" uitype="plugin" initialize="name=FishBase;title=Taxon" colspan="5"/>
                     -->
     			    
     			    <cell type="label" labelfor="1" label="Taxon"/>
@@ -1327,7 +1328,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="5" label="Lat/Lon"/>
-                    <cell type="field" id="5" name="this" uitype="plugin" initialize="class=edu.ku.brc.specify.plugins.latlon.LatLonUI" colspan="10"/>
+                    <cell type="field" id="5" name="this" uitype="plugin" initialize="name=LatLonUI" colspan="10"/>
                 </row>
                 <row>
                     <cell type="separator" label="Elevation" colspan="12"/>
@@ -1367,7 +1368,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="4" label="Lat/Lon"/>
-                    <cell type="field" id="4" name="this" uitype="plugin" initialize="class=edu.ku.brc.specify.plugins.latlon.LatLonUI" colspan="4"/>
+                    <cell type="field" id="4" name="this" uitype="plugin" initialize="name=LatLonUI" colspan="4"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="1" label="Datum"/>
@@ -1835,7 +1836,7 @@
             
             <rows>
                 <row>
-                    <cell type="field" id="1" name="this" uitype="plugin" initialize="class=edu.ku.brc.specify.plugins.TaxonLabelFormatting;name=Taxon;title=Taxon" colspan="3"/>
+                    <cell type="field" id="1" name="this" uitype="plugin" initialize="name=TaxonLabelFormatting;title=Taxon" colspan="3"/>
                 </row>
             </rows>
         </viewdef>

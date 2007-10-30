@@ -160,12 +160,12 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
     
     class CEPlacemark implements GoogleEarthPlacemarkIFace 
     {
-        protected CollectingEvent ce;
+        protected CollectingEvent colEv;
         protected String          title;
         
         public CEPlacemark(CollectingEvent ce)
         {
-            this.ce = ce;
+            this.colEv = ce;
             DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
             title = scrDateFormat.format(ce.getStartDate());
         }
@@ -175,7 +175,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
          */
         public void cleanup()
         {
-            ce = null;
+            colEv = null;
         }
 
         /* (non-Javadoc)
@@ -185,9 +185,9 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
         {
             StringBuilder sb = new StringBuilder("<table>");
             sb.append("<tr><td align=\"center\">");
-            sb.append(ce.getLocality().getLat1());
+            sb.append(colEv.getLocality().getLat1());
             sb.append(", ");
-            sb.append(ce.getLocality().getLong1());
+            sb.append(colEv.getLocality().getLong1());
             sb.append("</td></tr>\n");
             sb.append("</table>\n");
             return sb.toString();
@@ -198,7 +198,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
          */
         public Pair<Double, Double> getLatLon()
         {
-            return new Pair<Double, Double>(ce.getLocality().getLat1(), ce.getLocality().getLong1());
+            return new Pair<Double, Double>(colEv.getLocality().getLat1(), colEv.getLocality().getLong1());
         }
 
         /* (non-Javadoc)

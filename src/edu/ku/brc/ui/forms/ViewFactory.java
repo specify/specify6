@@ -49,6 +49,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.ui.BrowseBtnPanel;
@@ -696,52 +697,60 @@ public class ViewFactory
                                           final FormCellField cellField,
                                           final boolean       isViewMode)
     {
-        String classNameStr = cellField.getProperty("class");
-        if (StringUtils.isEmpty(classNameStr))
+        String pluginName = cellField.getProperty("name");
+        if (StringUtils.isEmpty(pluginName))
         {
             throw new RuntimeException("Creating plugin and the class property was missing.");
         }
         
-        try
+        // We should refactor the plugin manager.
+        Class<?> pluginClass = TaskMgr.getUIPluginClassForName(pluginName);
+        if (pluginClass != null)
         {
-            JComponent uiObj = Class.forName(classNameStr).asSubclass(JComponent.class).newInstance();
-            
-            if (!(uiObj instanceof GetSetValueIFace))
+            try
             {
-                throw new RuntimeException("Plugin of class["+classNameStr+"] doesn't implement the GetSetValueIFace!");
-            }
-            
-            // This needs to be done before the initialize.
-            if (uiObj instanceof UIValidatable)
-            {
-                ((UIValidatable)uiObj).setRequired(cellField.isRequired());
-            }
-            
-            if (uiObj instanceof UIPluginable)
-            {
-                UIPluginable uip = (UIPluginable)uiObj;
-                uip.initialize(cellField.getProperties(), isViewMode);
+                JComponent uiObj = pluginClass.asSubclass(JComponent.class).newInstance();
                 
-                if (validator != null && (cellField.isChangeListenerOnly() || 
-                                          cellField.isRequired() || 
-                                          isNotEmpty(cellField.getValidationRule())))
+                if (!(uiObj instanceof GetSetValueIFace))
                 {
-                    DataChangeNotifier dcn = validator.hookupComponent(uiObj, 
-                                                                       cellField.getIdent(),
-                                                                       parseValidationType(cellField.getValidationType()), 
-                                                                       cellField.getValidationRule(), 
-                                                                       cellField.isChangeListenerOnly());
-                    uip.setChangeListener(dcn);
+                    throw new RuntimeException("Plugin of class["+pluginClass.getName()+"] doesn't implement the GetSetValueIFace!");
                 }
-            }
+                
+                // This needs to be done before the initialize.
+                if (uiObj instanceof UIValidatable)
+                {
+                    ((UIValidatable)uiObj).setRequired(cellField.isRequired());
+                }
+                
+                if (uiObj instanceof UIPluginable)
+                {
+                    UIPluginable uip = (UIPluginable)uiObj;
+                    uip.initialize(cellField.getProperties(), isViewMode);
+                    
+                    if (validator != null && (cellField.isChangeListenerOnly() || 
+                                              cellField.isRequired() || 
+                                              isNotEmpty(cellField.getValidationRule())))
+                    {
+                        DataChangeNotifier dcn = validator.hookupComponent(uiObj, 
+                                                                           cellField.getIdent(),
+                                                                           parseValidationType(cellField.getValidationType()), 
+                                                                           cellField.getValidationRule(), 
+                                                                           cellField.isChangeListenerOnly());
+                        uip.setChangeListener(dcn);
+                    }
+                }
 
-            return uiObj;
+                return uiObj;
             
-        } catch (Exception ex)
-        {
-           log.error(ex);
-           throw new RuntimeException(ex);
+            
+            } catch (Exception ex)
+            {
+               log.error(ex);
+               throw new RuntimeException(ex);
+            }
         }
+        log.error("Couldn't find plugin by name["+pluginName+"]");
+        return null;
     }
     
     /**
