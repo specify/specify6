@@ -687,6 +687,7 @@
                 </row>
                 <row>
                     <cell type="separator" label="Attachments" colspan="7"/>
+                    <!--<cell type="command" id="attachments" label="attachments" name="agentAttachments" commandtype="Data_Entry" action="Edit"/>-->
                 </row>
                 <row>
                     <cell type="subview" id="attachments" viewname="AgentAttachment" name="agentAttachments" colspan="7"/>
