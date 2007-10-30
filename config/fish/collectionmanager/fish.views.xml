@@ -493,7 +493,7 @@
             <enableRules/>
 
             <columnDef>100px,2px,p,2px,100px,2px,p,2px,p,2px,p,p:g</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
                 <row>
@@ -507,8 +507,10 @@
                     <cell type="field" id="2" name="status"  uitype="combobox" picklist="AccessionStatus" isrequired="true" valtype="Changed"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="attachments" label="Attachments"/>
-                    <cell type="subview" id="attachments" viewname="AccessionAttachment" name="accessionAttachments" colspan="10"/>
+                    <cell type="separator" label="Attachments" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="subview" id="attachments" viewname="AccessionAttachment" name="accessionAttachments" colspan="12"/>
                 </row>
 
             </rows>
@@ -562,7 +564,7 @@
             <enableRules/>
 
             <columnDef>100px,2px,p,2px,p:g</columnDef>
-            <rowDef>p,2px,p</rowDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
                 <row>
                     <cell type="label" labelfor="1" label="Permit"/>
@@ -594,7 +596,7 @@
 
             <desc><![CDATA[Address subform for Accessions.]]></desc>
             <columnDef>p,2px,p,2px,p,2px,p,2px,p,2px,p</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
                 <row>
@@ -648,7 +650,7 @@
 
             <desc><![CDATA[Agent subform for Acessions.]]></desc>
             <columnDef>p,2px,p,2px,p,2px,p:g</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
                 <row>
@@ -682,6 +684,9 @@
                 </row>
                 <row>
                     <cell type="subview" viewname="Address" id="9" name="addresses" colspan="7" valtype="Changed"/>
+                </row>
+                <row>
+                    <cell type="separator" label="Attachments" colspan="7"/>
                 </row>
                 <row>
                     <cell type="subview" id="attachments" viewname="AgentAttachment" name="agentAttachments" colspan="7"/>
@@ -811,7 +816,9 @@
                     <cell type="subview" viewname="Collectors" id="8" name="collectors" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="attachments" label="Attachments"/>
+                    <cell type="separator" label="Attachments" colspan="10"/>
+                </row>
+                <row>
                     <cell type="subview" id="attachments" viewname="CollectingEventAttachment" name="collectingEventAttachments" colspan="10"/>
                 </row>
                 <!--
@@ -906,7 +913,7 @@
     			 <cell type="field" id="3" name="accession" uitype="querycbx" initialize="name=Accession;title=Accession" isrequired="false" valtype="Changed"/>
 
                  <cell type="label" labelfor="4" label="Cataloger"/>
-    			    <cell type="field" id="4" name="cataloger" uitype="querycbx" initialize="name=Agent;title=Catalog Agent" isrequired="true"/>
+    			    <cell type="field" id="4" name="cataloger" uitype="querycbx" initialize="name=Agent;title=Catalog Agent;editoncreate=true" isrequired="true"/>
 
                     <cell type="label" labelfor="5" label="Date"/>
     			    <cell type="field" id="5" name="catalogedDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
@@ -937,9 +944,12 @@
     			    <cell type="subview" viewname="Preparation" id="8" name="preparations" defaulttype="table" colspan="12"/>
     			</row>
 
-                <row>
-                    <cell type="label" labelfor="attachments" label="Attachments"/>
-                    <cell type="subview" id="attachments" viewname="CollectionObjectAttachment" name="collectionObjectAttachments" colspan="10"/>
+    		    <row>
+    		        <cell type="separator" label="Attachments" colspan="12"/>
+    		    </row>
+    		    
+    		    <row>
+                    <cell type="subview" id="attachments" viewname="CollectionObjectAttachment" name="collectionObjectAttachments" colspan="12"/>
                 </row>
 
     			<row>
@@ -968,7 +978,7 @@
             <enableRules/>
             
             <columnDef>120px,2px,p,2px,120px,2px,p,2px,60px,2px,p,p:g</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,10dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
                 <row>
@@ -1061,7 +1071,7 @@
 
             <desc><![CDATA[FishBase]]></desc>
             <columnDef>p,2px,p,2px,p,2px,p,2px,p,2px,p,2px</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
                 <row>
@@ -1192,7 +1202,9 @@
                      <cell type="subview" viewname="LoanItems" id="10" name="loanPreparations" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="attachments" label="Attachments"/>
+                    <cell type="separator" label="Attachments" colspan="12"/>
+                </row>
+                <row>
                     <cell type="subview" id="attachments" viewname="LoanAttachment" name="loanAttachments" colspan="12"/>
                 </row>
                 <row>
@@ -1328,8 +1340,10 @@
                     <cell type="field" id="8" name="elevationMethod" uitype="text" cols="1"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="attachments" label="Attachments"/>
-                    <cell type="subview" id="attachments" viewname="LoanAttachment" name="loanAttachments" colspan="10"/>
+                    <cell type="separator" label="Attachments" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="subview" id="attachments" viewname="LoanAttachment" name="loanAttachments" colspan="12"/>
                 </row>
             </rows>
         </viewdef>
@@ -1377,7 +1391,7 @@
 
             <desc><![CDATA[Locality Mapper]]></desc>
             <columnDef>p,2px,p,2px</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
                 <row>
@@ -1437,9 +1451,9 @@
                     <cell type="label" labelfor="7" label="Abbreviation"/>
                     <cell type="field" id="7" name="abbreviation" uitype="text" cols="20" valtype="Changed"/>
                 </row>
-                <row>
+                <!-- <row>
                     <cell type="subview" viewname="Address" id="9" name="addresses" colspan="4" valtype="Changed"/>
-                </row>
+                </row> -->
             </rows>
         </viewdef>
 
@@ -1496,7 +1510,6 @@
                     <cell type="field" id="9" name="remarks" uitype="textarea" colspan="10" valtype="Changed"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="10" label="Attachments"/>
                     <cell type="subview" viewname="PermitAttachment" id="10" name="permitAttachments" colspan="10"/>
                 </row>
             </rows>
@@ -1513,7 +1526,7 @@
             <enableRules/>
 
             <columnDef>100px,2px,p,2px,100px,2px,p,2px,60px,2px,p,p:g</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu</rowDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
                 <row>
@@ -1576,7 +1589,7 @@
     	    <enableRules/>
 
     	    <columnDef>120px,2px,p,2px,100px,2px,p,2px,60px,2px,p,p:g</columnDef>
-    		<rowDef>p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+    	    <rowDef auto="true" cell="p" sep="2dlu"/>
 
     		<rows>
 			   <row>
@@ -1629,9 +1642,11 @@
     			</row>
     			-->
 
-                <row>
-                    <cell type="label" labelfor="attachments" label="Attachments"/>
-                    <cell type="subview" id="attachments" viewname="PreparationAttachment" name="preparationAttachments" colspan="10"/>
+    		    <row>
+    		        <cell type="separator" label="Attachments" colspan="12"/>
+    		    </row>
+    		    <row>
+                    <cell type="subview" id="attachments" viewname="PreparationAttachment" name="preparationAttachments" colspan="12"/>
                 </row>
 
     			<!--
@@ -2076,9 +2091,6 @@
             <columnDef>p,5dlu,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
     		<rows>
-    		    <row>
-    		        <cell type="label" label="Attachments" icon="Attachment" recordobj="true" colspan="3"/>
-    		    </row>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
                     <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse"/>
@@ -2102,9 +2114,6 @@
             <columnDef>80px,2dlu,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
     		<rows>
-    		    <row>
-    		        <cell type="label" label="Attachments" icon="Attachment" recordobj="true" colspan="3"/>
-    		    </row>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
                     <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse"/>
@@ -2131,9 +2140,6 @@
             <columnDef>p,5dlu,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
     		<rows>
-    		    <row>
-    		        <cell type="label" label="Attachments" icon="Attachment" recordobj="true" colspan="3"/>
-    		    </row>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
                     <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse"/>
@@ -2157,9 +2163,6 @@
             <columnDef>p,5dlu,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
     		<rows>
-    		    <row>
-    		        <cell type="label" label="Attachments" icon="Attachment" recordobj="true" colspan="3"/>
-    		    </row>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
                     <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse"/>
@@ -2183,9 +2186,6 @@
             <columnDef>p,5dlu,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
     		<rows>
-    		    <row>
-    		        <cell type="label" label="Attachments" icon="Attachment" recordobj="true" colspan="3"/>
-    		    </row>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
                     <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse"/>
@@ -2209,9 +2209,6 @@
             <columnDef>p,5dlu,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
     		<rows>
-    		    <row>
-    		        <cell type="label" label="Attachments" icon="Attachment" recordobj="true" colspan="3"/>
-    		    </row>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
                     <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse"/>
@@ -2235,9 +2232,6 @@
             <columnDef>p,5dlu,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
     		<rows>
-    		    <row>
-    		        <cell type="label" label="Attachments" icon="Attachment" recordobj="true" colspan="3"/>
-    		    </row>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
                     <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse"/>
@@ -2261,9 +2255,6 @@
             <columnDef>p,5dlu,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
     		<rows>
-    		    <row>
-    		        <cell type="label" label="Attachments" icon="Attachment" recordobj="true" colspan="3"/>
-    		    </row>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
                     <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse"/>
@@ -2287,9 +2278,6 @@
             <columnDef>p,5dlu,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
     		<rows>
-    		    <row>
-    		        <cell type="label" label="Attachments" icon="Attachment" recordobj="true" colspan="3"/>
-    		    </row>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
                     <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse"/>
@@ -2313,9 +2301,6 @@
             <columnDef>p,5dlu,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
     		<rows>
-    		    <row>
-    		        <cell type="label" label="Attachments" icon="Attachment" recordobj="true" colspan="3"/>
-    		    </row>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
                     <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse"/>
@@ -2339,9 +2324,6 @@
             <columnDef>p,5dlu,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
     		<rows>
-    		    <row>
-    		        <cell type="label" label="Attachments" icon="Attachment" recordobj="true" colspan="3"/>
-    		    </row>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
                     <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse"/>
@@ -2365,9 +2347,6 @@
             <columnDef>p,5dlu,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
     		<rows>
-    		    <row>
-    		        <cell type="label" label="Attachments" icon="Attachment" recordobj="true" colspan="3"/>
-    		    </row>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
                     <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse"/>

@@ -99,7 +99,6 @@ import edu.ku.brc.helpers.MenuItemPropertyChangeListener;
 import edu.ku.brc.specify.conversion.CustomDBConverter;
 import edu.ku.brc.specify.conversion.CustomDBConverterDlg;
 import edu.ku.brc.specify.conversion.CustomDBConverterListener;
-import edu.ku.brc.specify.conversion.CustomDBConverterPanel;
 import edu.ku.brc.ui.ViewBasedDialogFactoryIFace.FRAME_TYPE;
 import edu.ku.brc.ui.db.DatabaseLoginDlg;
 import edu.ku.brc.ui.db.DatabaseLoginListener;
@@ -1368,7 +1367,7 @@ public final class UIHelper
      * @param isNewObject whether it is a new object
      * @return the dialog
      */
-    public static  ViewBasedDisplayIFace createDataObjectDialog(final AltViewIFace          altView, 
+    public static  ViewBasedDisplayIFace createDataObjectDialog(@SuppressWarnings("unused") final AltViewIFace     altView, 
                                                                 final JComponent       mainComp, 
                                                                 final FormDataObjIFace dataObj, 
                                                                 final boolean          isEditMode,

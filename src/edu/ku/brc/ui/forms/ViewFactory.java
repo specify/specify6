@@ -1175,41 +1175,21 @@ public class ViewFactory
                                 
                                 boolean isSingle      = cellSubView.isSingleValueFromSet();
                                 boolean isACollection = false;
-                                if (false)
+
+                                try
                                 {
-                                    try
+                                    Class<?> cls = Class.forName(parentView.getClassName());
+                                    Field fld = getFieldFromDotNotation(cellSubView, cls);
+                                    if (fld != null)
                                     {
-                                        Class<?> cls = Class.forName(parentView.getClassName());
-                                        Field fld = cls.getDeclaredField(cellSubView.getName());
-                                        if (fld != null)
-                                        {
-                                            isACollection = Collection.class.isAssignableFrom(fld.getType());
-                                        } else
-                                        {
-                                            log.error("Couldn't find field ["+cellSubView.getName()+"] in class ["+parentView.getClassName()+"]");
-                                        }
-                                        
-                                    } catch (Exception ex)
+                                        isACollection = Collection.class.isAssignableFrom(fld.getType());
+                                    } else
                                     {
                                         log.error("Couldn't find field ["+cellSubView.getName()+"] in class ["+parentView.getClassName()+"]");
                                     }
-                                } else
+                                } catch (Exception ex)
                                 {
-                                    try
-                                    {
-                                        Class<?> cls = Class.forName(parentView.getClassName());
-                                        Field fld = getFieldFromDotNotation(cellSubView, cls);
-                                        if (fld != null)
-                                        {
-                                            isACollection = Collection.class.isAssignableFrom(fld.getType());
-                                        } else
-                                        {
-                                            log.error("Couldn't find field ["+cellSubView.getName()+"] in class ["+parentView.getClassName()+"]");
-                                        }
-                                    } catch (Exception ex)
-                                    {
-                                        log.error("Couldn't find field ["+cellSubView.getName()+"] in class ["+parentView.getClassName()+"]");
-                                    }
+                                    log.error("Couldn't find field ["+cellSubView.getName()+"] in class ["+parentView.getClassName()+"]");
                                 }
 
                                 int options = (isACollection && !isSingle ? MultiView.RESULTSET_CONTROLLER : MultiView.IS_SINGLE_OBJ) | MultiView.VIEW_SWITCHER |
@@ -1515,11 +1495,11 @@ public class ViewFactory
      * @param options the options needed for creating the form
      * @return the form
      */
-    public FormViewObj buildFormViewable(final ViewIFace        view,
-                                         final AltViewIFace     altView,
-                                         final MultiView   parentView,
-                                         final int         options,
-                                         final Color       bgColor)
+    public FormViewObj buildFormViewable(final ViewIFace    view,
+                                         final AltViewIFace altView,
+                                         final MultiView    parentView,
+                                         final int          options,
+                                         final Color        bgColor)
     {
         try
         {

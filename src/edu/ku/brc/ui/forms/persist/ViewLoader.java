@@ -230,7 +230,7 @@ public class ViewLoader
                break;
                
             case iconview:
-                viewDef = createIconViewDef(element, type, name, className, gettableClassName, settableClassName, desc);
+                viewDef = createIconViewDef(type, name, className, gettableClassName, settableClassName, desc);
                 break;
         }
         return viewDef;
@@ -779,7 +779,6 @@ public class ViewLoader
     
     
     /**
-     * @param element the DOM element for building the form
      * @param type the type of form to be built
      * @param name the name of the form
      * @param className the class name of the data object
@@ -788,8 +787,7 @@ public class ViewLoader
      * @param desc the description
      * @return a form view of type "form"
      */
-    protected static ViewDef createIconViewDef(final Element element,
-                                               final ViewDef.ViewType type,
+    protected static ViewDef createIconViewDef(final ViewDef.ViewType type,
                                                final String  name,
                                                final String  className,
                                                final String  gettableClassName,

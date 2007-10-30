@@ -96,20 +96,20 @@ public class ViewSetMgr
     /**
      * Adds a new ViewSet to the registry
      * @param typeStr the type of viewset
-     * @param name the name
+     * @param nameArg the name
      * @param title the title
      * @param fileName the file name (no path)
      */
-    public void addViewSetDef(final String typeStr, final String name, final String title, final String fileName)
+    public void addViewSetDef(final String typeStr, final String nameArg, final String title, final String fileName)
     {
-        if (!isViewSetNameInUse(name))
+        if (!isViewSetNameInUse(nameArg))
         {
-            ViewSet viewSet = new ViewSet(ViewSet.parseType(typeStr), name, title, fileName, contextDir);
+            ViewSet viewSet = new ViewSet(ViewSet.parseType(typeStr), nameArg, title, fileName, contextDir);
             viewsHash.put(viewSet.getName(), viewSet);
             
         } else
         {
-            throw new RuntimeException("ViewSet Name["+name+"] is in use.");
+            throw new RuntimeException("ViewSet Name["+nameArg+"] is in use.");
         }
     }
 
@@ -275,8 +275,8 @@ public class ViewSetMgr
             for ( Iterator<?> i = rootDOM.elementIterator( "file" ); i.hasNext(); ) 
             {
                 Element fileElement = (Element) i.next();
-                String  name        = getAttr(fileElement, "name", null);
-                if (!isViewSetNameInUse(name))
+                String  fName       = getAttr(fileElement, "name", null);
+                if (!isViewSetNameInUse(fName))
                 {
                     String typeStr   = getAttr(fileElement, "type", "system");
                     String title     = getAttr(fileElement, "title", null);
@@ -302,12 +302,12 @@ public class ViewSetMgr
                         throw new RuntimeException("ViewSet file cannot be found at["+viewSetFile.getAbsolutePath()+"]");
                     }
                     
-                    ViewSet viewSet = new ViewSet(ViewSet.parseType(typeStr), name, title, fileName, contextDir);
+                    ViewSet viewSet = new ViewSet(ViewSet.parseType(typeStr), fName, title, fileName, contextDir);
                     viewsHash.put(viewSet.getName(), viewSet);
                     
                 } else
                 {
-                    log.error("ViewSet Name["+name+"] is in use.");
+                    log.error("ViewSet Name["+fName+"] is in use.");
                 }
             }
         } else

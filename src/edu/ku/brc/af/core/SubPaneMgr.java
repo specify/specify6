@@ -364,10 +364,8 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             if (!ok)
             {
                 return false;
-            } else
-            {
-                removePane(sp, false); // overrides asking to be saved.
             }
+            removePane(sp, false); // overrides asking to be saved.
         }
         
         return true;
@@ -508,6 +506,13 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         SubPaneIFace subPane = this.getCurrentSubPane();
         if(subPane != null)
         {
+            if (!subPane.aboutToShutdown())
+            {
+                return;
+            }
+            
+            subPane.shutdown();
+            
             boolean isCurrentPaneStarter = subPane.getTask().isStarterPane();
             
             // If there is only one pane left and there is only one tasks that provide UI

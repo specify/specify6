@@ -81,9 +81,9 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
      * @param value the value for the new TextField
      * @param cols the number of columns for the new TextField
      * @param doDirsOnly
-     * @param isForInput
+     * @param isForInputArg
      */
-    protected void createUI(final Object value, final int cols, final boolean doDirsOnly, final boolean isForInput)
+    protected void createUI(final Object value, final int cols, final boolean doDirsOnly, final boolean isForInputArg)
     {
         PanelBuilder panelBuilder = new PanelBuilder(new FormLayout("f:p:g, 2dlu, r:p", "p"));
         CellConstraints cc = new CellConstraints();
@@ -95,7 +95,7 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
         panelBuilder.add(textField, cc.xy(1,1));
 
         browseBtn = new JButton(getResourceString("Browse"));
-        browseBtn.addActionListener(new BrowseAction(textField, doDirsOnly, isForInput));
+        browseBtn.addActionListener(new BrowseAction(textField, doDirsOnly, isForInputArg));
         panelBuilder.add(browseBtn, cc.xy(3,1));
 
         add(panelBuilder.getPanel(), BorderLayout.CENTER);
@@ -173,7 +173,7 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
         private JTextField   txtField;
         private JFileChooser chooser = null;
         private boolean      dirsOnly;
-        private boolean      isForInput;
+        private boolean      isForInputBA;
 
         /**
          * Constructor with CommandAction.
@@ -185,7 +185,7 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
         {
             this.txtField   = textField;
             this.dirsOnly   = dirsOnly;
-            this.isForInput = isForInput;
+            this.isForInputBA = isForInput;
         }
 
         /* (non-Javadoc)
@@ -200,7 +200,7 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
             }
 
             int returnVal;
-            if (isForInput)
+            if (isForInputBA)
             {
                 returnVal = chooser.showOpenDialog(UIRegistry.getTopWindow());
             } else

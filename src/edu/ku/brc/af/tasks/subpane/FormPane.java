@@ -188,7 +188,7 @@ public class FormPane extends DroppableTaskPane
     //-----------------------------------------------
     public void doCommand(CommandAction cmdAction)
     {
-        System.out.println(cmdAction);
+        //System.out.println(cmdAction);
     }
 
     //-----------------------------------------------
@@ -379,7 +379,7 @@ public class FormPane extends DroppableTaskPane
      */
     public void setActive(boolean isActive)
     {
-        // Auto-generated method stub
+        // no op
     }
     
     /**

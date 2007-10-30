@@ -235,8 +235,8 @@ public class FormViewObj implements Viewable,
      * @param options the options needed for creating the form
      * @param properties creation properties
      */
-    public FormViewObj(final ViewIFace          view,
-                       final AltViewIFace       altView,
+    public FormViewObj(final ViewIFace     view,
+                       final AltViewIFace  altView,
                        final MultiView     mvParent,
                        final FormValidator formValidator,
                        final int           options,
@@ -258,6 +258,9 @@ public class FormViewObj implements Viewable,
         // Figure columns
         formLayout = new FormLayout(formViewDef.getColumnDef(), formViewDef.getRowDef());
         builder    = new PanelBuilder(formLayout);
+        
+        mainComp = new JPanel(new BorderLayout());
+        mainComp.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
 
         if (mvParent == null)
         {
@@ -281,18 +284,10 @@ public class FormViewObj implements Viewable,
 
         scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
 
-        if (isSingleObj)
-        {
-            int x = 0;
-            x++;
-            
-        }
         AppPreferences.getRemote().addChangeListener("ui.formatting.viewfieldcolor", this);
 
         boolean addController = mvParent != null && view.getAltViews().size() > 1;
 
-        boolean addExtraRow = addController || createResultSetController || altView.getMode() == AltViewIFace.CreationMode.SEARCH;
-        
         // See if we need to add a Selector ComboBox
         isSelectorForm = StringUtils.isNotEmpty(view.getSelectorName());
         
@@ -302,12 +297,9 @@ public class FormViewObj implements Viewable,
             addSelectorCBX = true;
         }
 
-        String rowDefs = (addSelectorCBX ? "t:p," : "") + (mvParent == null ? "t:p" : "t:p:g") + (addExtraRow ? ",2px,t:p" : "");
-
-        PanelBuilder mainBuilder = new PanelBuilder(new FormLayout("f:p:g", rowDefs));
-        
         List<JComponent> comps = new ArrayList<JComponent>();
 
+        int y = 1;
         // Here we create the JComboBox that enables the user to switch between forms
         // when creating a new object
         if (addSelectorCBX)
@@ -327,7 +319,7 @@ public class FormViewObj implements Viewable,
             p.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
             selectorCBX = new JComboBox(cbxList);
             p.add(selectorCBX, BorderLayout.WEST);
-            mainBuilder.add(p, cc.xy(1, 1));
+            mainComp.add(p, BorderLayout.NORTH);
             
             if (mvParent != null)
             {
@@ -338,6 +330,7 @@ public class FormViewObj implements Viewable,
                     }
                 });
             }
+            y += 2;
         }
  
         //
@@ -410,23 +403,9 @@ public class FormViewObj implements Viewable,
             }
 
         }
-
-        mainComp = new JPanel(new BorderLayout());
-        mainComp.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
-        mainComp.setBackground(bgColor);
-        mainBuilder.getPanel().setBackground(bgColor);
         
-        //if (MultiView.isOptionOn(options, MultiView.NO_SCROLLBARS))
-        //{
-            mainComp.add(mainBuilder.getPanel(), BorderLayout.CENTER);
+        mainComp.add(builder.getPanel(), BorderLayout.CENTER);
             
-        /*} else
-        {
-            JScrollPane scrollPane = new JScrollPane(mainBuilder.getPanel(), ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-            scrollPane.setBorder(null);
-            mainComp.add(scrollPane, BorderLayout.CENTER);
-        }*/
-        
         if (comps.size() > 0 || addController || createResultSetController)
         {
             controlPanel = new ControlBarPanel(bgColor);
@@ -461,7 +440,6 @@ public class FormViewObj implements Viewable,
                                                             final AltViewIFace         altViewArg, 
                                                             final Vector<AltViewIFace> altViewsListArg)
     {
-        
         // Add all the View if we are at the top level
         // If not, then we are a subform and we should only add the view that belong to our same creation mode.
         if (mvParentArg.isTopLevel())
@@ -937,8 +915,28 @@ public class FormViewObj implements Viewable,
         if ((formValidator != null && formValidator.hasChanged()) ||
             (mvParent != null && mvParent.isTopLevel() && mvParent.hasChanged()))
         {
+            String title = null;
+            if (dataObj != null)
+            {
+                if (tableInfo == null)
+                {
+                    tableInfo = DBTableIdMgr.getInstance().getByShortClassName(dataObj.getClass().getSimpleName());
+                }
+                
+                title     = tableInfo != null ? tableInfo.getTitle() : null;
+                
+                if (StringUtils.isEmpty(title))
+                {
+                    title = UIHelper.makeNamePretty(dataObj.getClass().getSimpleName());
+                }
+            }
+            if (StringUtils.isEmpty(title))
+            {
+                title = "data"; // I18N, not really sure what to put here.
+            }
+            
             int rv = JOptionPane.showConfirmDialog(null,
-                        getResourceString("SaveChanges"),
+                        UIRegistry.getLocalizedMessage("SaveChanges", title),
                         getResourceString("SaveChangesTitle"),
                         JOptionPane.YES_NO_CANCEL_OPTION);
 
