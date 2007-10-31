@@ -208,6 +208,12 @@ public class TreeViewerListModel extends AbstractListModel
     public synchronized void showChildNodes(List<TreeNode> childNodes, TreeNode parent)
     {
         log.debug("performing addChildNodes( " + childNodes + ", " + parent + ")");
+        
+        if (parent == null || childNodes == null)
+        {
+            return;
+        }
+        
         if (!isDescendantOfNode(parent, visibleRoot))
         {
             return;

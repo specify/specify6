@@ -11,6 +11,7 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -293,7 +294,18 @@ public class TreeViewerListHeader extends JPanel implements ListDataListener
 	@Override
 	public int getHeight()
 	{
-		return list.getGraphics().getFontMetrics().getHeight()+20;
+        int fallback = 32;
+        Graphics g = list.getGraphics();
+        if (g==null)
+        {
+            return fallback;
+        }
+        FontMetrics fm = g.getFontMetrics();
+        if (fm==null)
+        {
+            return fallback;
+        }
+		return fm.getHeight()+20;
 	}
 
 	@Override

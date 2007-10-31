@@ -690,6 +690,22 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         
         UIRegistry.forceTopFrameRepaint();
 	}
+    
+    protected void invalidateAndRepaintEverything()
+    {
+        listHeaders[0].invalidate();
+        listHeaders[0].repaint();
+        listHeaders[1].invalidate();
+        listHeaders[1].repaint();
+        
+        lists[0].invalidate();
+        lists[0].repaint();
+        lists[1].invalidate();
+        lists[1].repaint();
+        
+        invalidate();
+        repaint();        
+    }
 	
 	@SuppressWarnings("unchecked")
     protected void setBusy(boolean busy,String statusText)
@@ -738,7 +754,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         syncViews0.setEnabled(mode == DUAL_VIEW_MODE);
         syncViews1.setEnabled(mode == DUAL_VIEW_MODE);
 		
-		repaint();
+		invalidateAndRepaintEverything();
     	UIRegistry.forceTopFrameRepaint();
 	}
     
@@ -757,7 +773,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			// set to dual view mode
 			this.add(new JSplitPane(JSplitPane.VERTICAL_SPLIT,treeListPanels[0],treeListPanels[1]),BorderLayout.CENTER);
 		}
-		repaint();
+		invalidateAndRepaintEverything();
 	}
     
 	protected void syncViewWithOtherView(JList list)
@@ -930,6 +946,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		
         list.setSelectedValue(selectedNode,true);
         list.setSelectedValue(selectedNode,true);
+        
+        invalidateAndRepaintEverything();
 	}
 	
     public synchronized void zoomOutOneLevel(JList list)
@@ -950,6 +968,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         // I doubled this call b/c Swing wasn't doing this unless I put it in here twice
         list.setSelectedValue(selectedNode, true);
         list.setSelectedValue(selectedNode, true);
+        
+        invalidateAndRepaintEverything();
     }
     
 	/**
@@ -1400,8 +1420,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                     
                     UIRegistry.clearGlassPaneMsg();
                  
-                    lists[0].repaint();
-                    lists[1].repaint();
+                    invalidateAndRepaintEverything();
                 }
             };
             
@@ -1589,7 +1608,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 //                }
 //            }
             
-            repaint();
+            invalidateAndRepaintEverything();
 			if (statusMsg != null)
 			{
 			    statusBar.setText(statusMsg);
