@@ -88,6 +88,7 @@ import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.config.DebugLoggerDialog;
 import edu.ku.brc.specify.config.LoggerDialog;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.AccessionAttachment;
@@ -192,7 +193,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     public Specify()
     {
         UIRegistry.setRelease(isRelease);
-        
+
     }
     
     /**
@@ -428,6 +429,13 @@ public class Specify extends JPanel implements DatabaseLoginListener
         }
         
         TaskMgr.requestInitalContext();
+        
+        
+        if (!isRelease)
+        {
+            DebugLoggerDialog dialog = new DebugLoggerDialog(null);
+            dialog.configureLoggers();
+        }
 
         showApp();
     }
@@ -764,6 +772,17 @@ public class Specify extends JPanel implements DatabaseLoginListener
                         public void actionPerformed(ActionEvent ae)
                         {
                             final LoggerDialog dialog = new LoggerDialog(topFrame);
+                            UIHelper.centerAndShow(dialog);
+                        }
+                    });
+            
+            mi = UIHelper.createMenuItem(menu, "Config Debug Loggers", "D", "Config Debug Logger", true, null);
+            mi.addActionListener(new ActionListener()
+                    {
+                        @SuppressWarnings("synthetic-access")
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            DebugLoggerDialog dialog = new DebugLoggerDialog(topFrame);
                             UIHelper.centerAndShow(dialog);
                         }
                     });
