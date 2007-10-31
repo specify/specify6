@@ -825,7 +825,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     /**
      *
      */
-    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "collectionObject")
+    @OneToMany(mappedBy = "collectionObject")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Preparation> getPreparations() {
         return this.preparations;
@@ -838,7 +838,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     /**
      *
      */
-    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "collectionObject")
+    @OneToMany(mappedBy = "collectionObject")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<Determination> getDeterminations() 
     {
