@@ -1399,6 +1399,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                     }
                     
                     UIRegistry.clearGlassPaneMsg();
+                 
+                    lists[0].repaint();
+                    lists[1].repaint();
                 }
             };
             

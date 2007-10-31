@@ -214,7 +214,7 @@ public class TreeViewerListHeader extends JPanel implements ListDataListener
 	protected synchronized void paintComponent(Graphics g)
 	{
 		Graphics2D g2 = (Graphics2D)g;
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        GraphicsUtils.turnOnAntialiasedDrawing(g);
         g2.setColor(this.getBackground());
         
         int w = this.getWidth();
@@ -310,7 +310,10 @@ public class TreeViewerListHeader extends JPanel implements ListDataListener
 	 */
 	public void contentsChanged(ListDataEvent e)
 	{
-		repaint();
+        invalidate();
+        list.invalidate();
+		list.repaint();
+        repaint();
 	}
 
 	/**
@@ -321,7 +324,10 @@ public class TreeViewerListHeader extends JPanel implements ListDataListener
 	 */
 	public void intervalAdded(ListDataEvent e)
 	{
-		repaint();
+        invalidate();
+        list.invalidate();
+		list.repaint();
+        repaint();
 	}
 
 	/**
@@ -332,6 +338,9 @@ public class TreeViewerListHeader extends JPanel implements ListDataListener
 	 */
 	public void intervalRemoved(ListDataEvent e)
 	{
-		repaint();
+        invalidate();
+        list.invalidate();
+		list.repaint();
+        repaint();
 	}
 }
