@@ -1704,12 +1704,13 @@ public class UploadTable implements Comparable<UploadTable>
                 {
                     q.setParameter("theKey", key);
                     DataModelObjBase obj = (DataModelObjBase)q.uniqueResult();
+                    session.beginTransaction();
                     session.delete(obj);
-                    session.flush();
+                    session.commit();
                 }
                 catch (Exception ex)
                 {
-                    //the delete may fail if another user has used uploaded records...
+                    //the delete may fail if another user has used or deleted uploaded records...
                     log.info(ex);
                 }
             }
@@ -1718,29 +1719,6 @@ public class UploadTable implements Comparable<UploadTable>
         {
             session.close();
         }
-//        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-//        String hql = "delete from " + getWriteTable().getName() + " where id =:theKey";
-//        QueryIFace q = session.createQuery(hql);
-//        try
-//        {
-//            for (Object key : uploadedKeys)
-//            {
-//                try
-//                {
-//                    q.setParameter("theKey", key);
-//                    q.executeUpdate();
-//                }
-//                catch (Exception ex)
-//                {
-//                    //the delete may fail if another user has used uploaded records...
-//                    log.info(ex);
-//                }
-//            }
-//        }
-//        finally
-//        {
-//            session.close();
-//        }
     }
 
     private Vector<Method> getGetters()
