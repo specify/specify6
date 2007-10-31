@@ -377,6 +377,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 zoomOutOneLevel(lists[0]);
             }
         });
+        wholeTree0.setEnabled(false);
 
         toParent0 = new JButton(icon_toParent);
         toParent0.setSize(20,20);
@@ -518,6 +519,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 zoomOutOneLevel(lists[1]);
             }
         });
+        wholeTree1.setEnabled(false);
 
         toParent1 = new JButton(icon_toParent);
         toParent1.setSize(20,20);
@@ -947,6 +949,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         list.setSelectedValue(selectedNode,true);
         list.setSelectedValue(selectedNode,true);
         
+        wholeTree0.setEnabled(true);
+        wholeTree1.setEnabled(true);
+        
         invalidateAndRepaintEverything();
 	}
 	
@@ -968,6 +973,12 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         // I doubled this call b/c Swing wasn't doing this unless I put it in here twice
         list.setSelectedValue(selectedNode, true);
         list.setSelectedValue(selectedNode, true);
+        
+        if (listModel.getVisibleRoot().getRank() == 0)
+        {
+            wholeTree0.setEnabled(false);
+            wholeTree1.setEnabled(false);
+        }
         
         invalidateAndRepaintEverything();
     }
