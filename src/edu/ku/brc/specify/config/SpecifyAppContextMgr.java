@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
@@ -48,7 +47,6 @@ import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpAppResourceDir;
 import edu.ku.brc.specify.datamodel.SpViewSetObj;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
@@ -857,7 +855,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     public void putResourceAsXML(String name, String xmlStr)
     {
         SpAppResourceDir appResourceDef = null;
-        SpAppResource        appRes         = null;
+        SpAppResource    appRes         = null;
         
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
@@ -870,7 +868,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 
                 if (session != null)
                 {
-                    List<?> appResDefList = session.getDataList( "From AppResourceDefault where specifyUserId = "+user.getSpecifyUserId());
+                    List<?> appResDefList = session.getDataList( "From SpAppResourceDir where specifyUserId = "+user.getSpecifyUserId());
                     appResourceDef = find(appResDefList, user, Collection.getCurrentCollection(), CollectionType.getCurrentCollectionType());
                     if (appResourceDef == null)
                     {
@@ -913,7 +911,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 appRes  = (SpAppResource)appResource;
             }
     
-            if (appResource != null && appResource instanceof SpAppResource)
+            if (appResource instanceof SpAppResource)
             {
                 if (appRes.getSpAppResourceId() != null)
                 {
