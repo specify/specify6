@@ -195,7 +195,6 @@ public class Uploader implements ActionListener, WindowStateListener
 		uploadTables = new Vector<UploadTable>();
 		for (UploadField f : uploadFields)
 		{
-			System.out.println(f.getField().getName());
             if (f.getField() != null)
             {
                 UploadTable it = getUploadTable(f);
@@ -1158,12 +1157,10 @@ public class Uploader implements ActionListener, WindowStateListener
     {
         if (e.getActionCommand().equals(UploadMainForm.DO_UPLOAD))
         {
-            System.out.println(UploadMainForm.DO_UPLOAD);
             uploadIt();
         }
         else if (e.getActionCommand().equals(UploadMainForm.VIEW_UPLOAD))
         {
-            System.out.println(UploadMainForm.VIEW_UPLOAD);
             if (currentOp.equals(Uploader.SUCCESS))
             {
                 if (bogusStorages == null)
@@ -1178,7 +1175,6 @@ public class Uploader implements ActionListener, WindowStateListener
         }
         else if (e.getActionCommand().equals(UploadMainForm.VIEW_SETTINGS))
         {
-            System.out.println(UploadMainForm.VIEW_SETTINGS);
             resolver.resolve(!currentOp.equals(Uploader.READY_TO_UPLOAD)
                     && !currentOp.equals(Uploader.USER_INPUT));
             if (currentOp.equals(Uploader.READY_TO_UPLOAD) && !resolver.isResolved())
@@ -1192,24 +1188,21 @@ public class Uploader implements ActionListener, WindowStateListener
         }
         else if (e.getActionCommand().equals(UploadMainForm.CLOSE_UI))
         {
-            System.out.println(UploadMainForm.CLOSE_UI);
             closeMainForm();
             wbSS.uploadDone();
         }
         else if (e.getActionCommand().equals(UploadMainForm.UNDO_UPLOAD))
         {
-            System.out.println(UploadMainForm.UNDO_UPLOAD);
             undoUpload();
             closeMainForm();
             wbSS.uploadDone();
         }
         else if (e.getActionCommand().equals(UploadMainForm.CANCEL_OPERATION))
         {
-            System.out.println(UploadMainForm.CANCEL_OPERATION);
+            //System.out.println(UploadMainForm.CANCEL_OPERATION);
         }
         else if (e.getActionCommand().equals(UploadMainForm.TBL_DBL_CLICK))
         {
-            System.out.println(UploadMainForm.TBL_DBL_CLICK);
             mainForm.getViewUploadBtn().setEnabled(canViewUpload(currentOp));
             if (currentOp.equals(Uploader.SUCCESS))
             {
@@ -1225,13 +1218,11 @@ public class Uploader implements ActionListener, WindowStateListener
         }
         else if (e.getActionCommand().equals(UploadMainForm.TBL_CLICK))
         {
-            System.out.println(UploadMainForm.TBL_CLICK);
             mainForm.getViewUploadBtn().setEnabled(canViewUpload(currentOp));
         }
         else if (e.getActionCommand().equals(UploadMainForm.INVALID_VAL_CLICK))
         {
-            System.out.println(UploadMainForm.INVALID_VAL_CLICK);
-            goToInvalidWBCell();
+             goToInvalidWBCell();
         }
     }
     
@@ -1759,7 +1750,6 @@ public class Uploader implements ActionListener, WindowStateListener
 	{
 		for (UploadField field : uploadFields)
 		{
-			System.out.println(field.getWbFldName());
             if (field.getField().getTable().equals(t.getTable()))
 			{
 				if (field.getIndex() != -1)

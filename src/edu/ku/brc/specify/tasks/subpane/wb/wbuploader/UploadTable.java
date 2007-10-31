@@ -233,8 +233,6 @@ public class UploadTable implements Comparable<UploadTable>
                 if (!col.nullable() && !col.name().startsWith("Timestamp") && !fldInDataset(col.name()))
                 {
                     log.debug("adding required field: " + tblClass.getName() + " - " + m.getName());
-                    System.out.println("adding required field: " + tblClass.getName() + " - "
-                            + m.getName());
                     Method setter = getSetterForGetter(m);
                     String fldName = col.name();
                     missingRequiredFlds.add(new DefaultFieldEntry(this, m.getReturnType(), setter, fldName));
@@ -287,8 +285,6 @@ public class UploadTable implements Comparable<UploadTable>
                 if (!jc.nullable())
                 {
                     log.debug("adding required class: " + tblClass.getName() + " - " + m.getName());
-                    System.out.println("adding required class: " + tblClass.getName() + " - "
-                            + m.getName());
                     Method setter = getSetterForGetter(m);
                     String fldName = jc.referencedColumnName();
                     if (fldName == null || fldName.equals(""))
@@ -1495,7 +1491,6 @@ public class UploadTable implements Comparable<UploadTable>
     protected void writeRow() throws UploaderException
     {
         int recNum = 0;
-        System.out.println("writeRow(): " + table.getName());
         for (Vector<UploadField> seq : uploadFields)
         {
            try
@@ -1699,7 +1694,7 @@ public class UploadTable implements Comparable<UploadTable>
     public void undoUpload()
     {
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        String hql = "delete from " + getWriteTable().getName() + " where id =:theKey";
+        String hql = "from " + getWriteTable().getName() + " where id =:theKey";
         QueryIFace q = session.createQuery(hql);
         try
         {
@@ -1708,7 +1703,9 @@ public class UploadTable implements Comparable<UploadTable>
                 try
                 {
                     q.setParameter("theKey", key);
-                    q.executeUpdate();
+                    DataModelObjBase obj = (DataModelObjBase)q.uniqueResult();
+                    session.delete(obj);
+                    session.flush();
                 }
                 catch (Exception ex)
                 {
@@ -1721,6 +1718,29 @@ public class UploadTable implements Comparable<UploadTable>
         {
             session.close();
         }
+//        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+//        String hql = "delete from " + getWriteTable().getName() + " where id =:theKey";
+//        QueryIFace q = session.createQuery(hql);
+//        try
+//        {
+//            for (Object key : uploadedKeys)
+//            {
+//                try
+//                {
+//                    q.setParameter("theKey", key);
+//                    q.executeUpdate();
+//                }
+//                catch (Exception ex)
+//                {
+//                    //the delete may fail if another user has used uploaded records...
+//                    log.info(ex);
+//                }
+//            }
+//        }
+//        finally
+//        {
+//            session.close();
+//        }
     }
 
     private Vector<Method> getGetters()
@@ -1763,14 +1783,14 @@ public class UploadTable implements Comparable<UploadTable>
             {
                 if (key == null)
                 {
-                    System.out.println("null key");
+                    log.error("null key");
                     continue;
                 }
                 qif.setParameter("theKey", key);
                 Object rec = qif.uniqueResult();
                 if (rec == null)
                 {
-                    System.out.println("null object for key: " + key.toString());
+                    log.error("null object for key: " + key.toString());
                     continue;
                 }
                 if (!wroteHeaders)

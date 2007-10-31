@@ -57,7 +57,7 @@ import edu.ku.brc.util.Pair;
  */
 public class MissingDataResolver implements ActionListener
 {
-    private static final Logger log = Logger.getLogger(Uploader.class);
+    protected static final Logger log = Logger.getLogger(Uploader.class);
 
     /**
      * Foreign keys not provided by the upload dataset.
@@ -187,9 +187,7 @@ public class MissingDataResolver implements ActionListener
             if (data.size() > 0)
             {
                 Object id = ((DataModelObjBase) data.get(0)).getId();
-                System.out
-                        .println("setting " + rce.getRelatedClass().getSimpleName() + " to " + id);
-                //rce.getUploadTbl().addRelatedClassDefault(rce, id);
+                log.debug("setting " + rce.getRelatedClass().getSimpleName() + " to " + id);
                 rce.setDefaultId(id);
                 return true;
             }
@@ -198,7 +196,7 @@ public class MissingDataResolver implements ActionListener
         {
             session.close();
         }
-        System.out.println("unable to meet requirement: " + rce.getUploadTbl().getTblClass().getSimpleName() + "<->"
+        log.debug("unable to meet requirement: " + rce.getUploadTbl().getTblClass().getSimpleName() + "<->"
                 + rce.getRelatedClass().getSimpleName());
         return false;
     }
@@ -402,7 +400,7 @@ public class MissingDataResolver implements ActionListener
         {
             if (dfe.getFldName().equalsIgnoreCase("agenttype"))
             {
-                System.out.println("setting Agent.AgentType to 1");
+                log.debug("setting Agent.AgentType to 1");
                 dfe.setDefaultValue(new Byte("1"));
                 return true;
             }
@@ -411,7 +409,7 @@ public class MissingDataResolver implements ActionListener
         {
             if (dfe.getFldName().equalsIgnoreCase("IsLoanable"))
             {
-                System.out.println("setting PrepType.IsLoanable to true");
+                log.debug("setting PrepType.IsLoanable to true");
                 dfe.setDefaultValue(true);
                 return true;
             }
@@ -420,7 +418,7 @@ public class MissingDataResolver implements ActionListener
         {
             if (dfe.getFldName().equalsIgnoreCase("Role"))
             {
-                System.out.println("setting AccessionAgent.Role to \"Receiver\"");
+                log.debug("setting AccessionAgent.Role to \"Receiver\"");
                 dfe.setDefaultValue("Receiver");
                 return true;
             }
@@ -429,7 +427,7 @@ public class MissingDataResolver implements ActionListener
         {
             if (dfe.getFldName().equalsIgnoreCase("ReferenceWorkType"))
             {
-                System.out.println("setting ReferenceWork.ReferenceWorkType to 1");
+                log.debug("setting ReferenceWork.ReferenceWorkType to 1");
                 dfe.setDefaultValue(new Byte("1"));
                 return true;
             }
@@ -620,7 +618,7 @@ public class MissingDataResolver implements ActionListener
                 {
                     JTable tbl = (JTable) me.getSource();
                     int rowNum = tbl.getSelectedRow();
-                    System.out.println(tbl.getModel().getValueAt(rowNum, 0) + "."
+                    log.debug(tbl.getModel().getValueAt(rowNum, 0) + "."
                             + tbl.getModel().getValueAt(rowNum, 1));
                 }
             }

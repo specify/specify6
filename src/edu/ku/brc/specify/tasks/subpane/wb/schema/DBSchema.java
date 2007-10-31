@@ -70,7 +70,6 @@ public class DBSchema
             if (Treeable.class.isAssignableFrom(tblClass))
             {
                 log.debug("adding foreign key: " + tbl.getName() + ".parentid");
-                System.out.println("adding foreign key: " + tbl.getName() + ".parentid");
                 tbl.addField(new Field("parentid", tbl.getTableInfo().getIdType()));
             }
             for (DBRelationshipInfo rel : tbl.getTableInfo().getRelationships())
@@ -84,7 +83,6 @@ public class DBSchema
                 if (fld2 == null)
                 {
                     log.debug("adding foreign key: " + tbl.getName() + "." + fld2Name);
-                    System.out.println("adding foreign key: " + tbl.getName() + "." + fld2Name);
                     tbl.addField(new Field(fld2Name, tbl.getTableInfo().getIdType()));
                 }
             }
