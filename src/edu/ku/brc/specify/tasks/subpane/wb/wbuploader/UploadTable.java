@@ -29,6 +29,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace.CriteriaIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Preparation;
@@ -109,6 +110,16 @@ public class UploadTable implements Comparable<UploadTable>
      * search for matches before writing to the database. 
      */
     protected boolean hasChildren;
+    
+    /**
+     * A vector of related tables that need to be checked when finding matching existing records.
+     * For example: Collectors must be checked when matching collectingEvents. 
+     */
+    protected Vector<UploadTable> matchChildren;
+    /**
+     * If a matching parent including matchChildren has been found then skipRow is set true for members of matchChildren
+     */
+    protected boolean skipRow = false;
     /**
      * Non-null fields in tblClass that are not included in the uploading dataset.  
      */
@@ -126,6 +137,7 @@ public class UploadTable implements Comparable<UploadTable>
         uploadFields = new Vector<Vector<UploadField>>();
         uploadedKeys = new HashSet<Object>();
         currentRecords = new Vector<DataModelObjBase>();
+        matchChildren = new Vector<UploadTable>();
         relatedClassDefaults = null;
         dateConverter = new DateConverter();
     }
@@ -828,6 +840,21 @@ public class UploadTable implements Comparable<UploadTable>
     public final void setParentTables(Vector<Vector<Uploader.ParentTableEntry>> parentTables)
     {
         this.parentTables = parentTables;
+        for (Vector<ParentTableEntry> ptes : this.parentTables)
+        {
+            for (ParentTableEntry pte : ptes)
+            {
+                if (pte.getImportTable().needToMatchChildren())
+                {
+                    pte.getImportTable().addChild(this);
+                }
+            }
+        }
+    }
+    
+    protected void addChild(final UploadTable child)
+    {
+        matchChildren.add(child);
     }
 
     /**
@@ -1157,57 +1184,64 @@ public class UploadTable implements Comparable<UploadTable>
         }
     }
     
-    /**
-     * Builds the HQL query used to find matching records for rows in the uploading dataset.
-     */
-//    protected void buildMatchHQL()
-//    {
-//        StringBuilder wheres = new StringBuilder();
-//        for (UploadField uf : uploadFields.get(0))
-//        {
-//            if (uf.getSetter() != null)
-//            {
-//                if (!wheres.toString().equals(""))
-//                {
-//                    wheres.append(" and ");
-//                }
-//                wheres.append("obj." + deCapitalize(uf.getField().getName()) + "=:obj" + uf.getField().getName());
-//            }
-//        }
-//        for (Vector<ParentTableEntry> ptes : parentTables)
-//        {
-//            for (ParentTableEntry pt : ptes)
-//            {
-//                if (!wheres.toString().equals(""))
-//                {
-//                    wheres.append(" and ");
-//                }
-//                wheres.append(pt.getForeignKey() + "=:obj" + pt.getForeignKey());
-//            }
-//        }
-//        for (RelatedClassEntry rce : relatedClassDefaults)
-//        {
-//            if (!wheres.toString().equals(""))
-//            {
-//                wheres.append(" and ");
-//            }
-//            wheres.append(rce.getFieldName() + "=:obj" + rce.getFieldName());
-//        }
-//        for (DefaultFieldEntry dfe : missingRequiredFlds)
-//        {
-//            if (!wheres.toString().equals(""))
-//            {
-//                wheres.append(" and ");
-//            }
-//            wheres.append("obj." + deCapitalize(dfe.getFldName()) + "=:obj" + dfe.getFldName());
-//        }
-//        matchHQL = "from " + tblClass.getSimpleName() + " obj where " + wheres.toString();
-//    }
     
-    protected boolean checkChildrenMatch(DataModelObjBase match)
+    protected boolean checkChildrenMatch(DataModelObjBase match) throws UploaderException
     {
         log.debug("Checking to see if children match:" + match);
-        return true;
+        boolean result = true;
+        if (tblClass.equals(CollectingEvent.class)) 
+        { 
+            for (UploadTable child : matchChildren)
+            {
+                log.debug(child.getTable().getName());
+                if (child.getTblClass().equals(Collector.class))
+                {
+                    DataProviderSessionIFace matchSession = DataProviderFactory.getInstance()
+                            .createSession();
+                    try
+                    {
+                        QueryIFace matchesQ = matchSession.createQuery("from Collector where collectingeventid = " + match.getId() + " order by orderNumber");
+                        List<?> matches = matchesQ.list();
+                        child.loadFromDataSet();
+                        if (matches.size() != child.getUploadFields().size())
+                        {
+                            result = false;
+                        }
+                        else for (int rec = 0; rec < matches.size(); rec++)
+                        {
+                            Collector coll1 = (Collector)matches.get(rec);
+                            Collector coll2 = (Collector)child.getCurrentRecord(rec);
+                            if (!coll1.getOrderNumber().equals(coll2.getOrderNumber()))
+                            {
+                                //maybe this doesn't really need to be checked?
+                                result = false;
+                            }
+                            else if (!coll1.getAgent().getId().equals(coll2.getAgent().getId()))
+                            {
+                                result = false;
+                            }
+                            child.skipRow = true;
+                        }
+                    }
+                    finally
+                    {
+                        matchSession.close();
+                    }
+                }
+            }
+            if (!result)
+            {
+                for (UploadTable child : matchChildren)
+                {
+                    child.skipRow = false;
+                }
+            }
+            return result; 
+        }
+        // else: Oh no!!
+        log.error("Unable to check matching children for " + tblClass.getName());
+        throw new UploaderException("Unable to check matching children for " + tblClass.getName(),
+                UploaderException.ABORT_IMPORT);
     }
     
     protected boolean needToMatchChildren()
@@ -1236,7 +1270,6 @@ public class UploadTable implements Comparable<UploadTable>
         {
             return false;
         }
-        //Session session = getNewSession();
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         DataModelObjBase match = null;
         try
@@ -1284,7 +1317,7 @@ public class UploadTable implements Comparable<UploadTable>
             try
             {
                 match = (DataModelObjBase)critter.uniqueResult();
-                if (needToMatchChildren() && !checkChildrenMatch(match))
+                if (match != null && needToMatchChildren() && !checkChildrenMatch(match))
                 {
                     match = null;
                 }
@@ -1317,63 +1350,6 @@ public class UploadTable implements Comparable<UploadTable>
         }
         return false;
     }
-
-//    @SuppressWarnings("unchecked")
-//    protected boolean findMatch(int recNum) throws UploaderException, InvocationTargetException, IllegalAccessException,
-//        ParseException, NoSuchMethodException
-//    {
-//        Session session = getNewSession();
-//        int matchCount;
-//        DataModelObjBase match = null;
-//        try
-//        {
-//            Query matcher = session.createQuery(matchHQL);
-//            for (UploadField uf : uploadFields.get(recNum))
-//            {
-//                if (uf.getSetter() != null)
-//                {
-//                    Object arg = getArgForSetter(uf)[0];
-//                    if (arg != null)
-//                    {
-//                        matcher.setParameter("obj" + uf.getField().getName(), getArgForSetter(uf)[0]);
-//                    }
-//                }
-//            }
-//            for (Vector<ParentTableEntry> ptes : parentTables)
-//            {
-//                for (ParentTableEntry pte : ptes)
-//                {
-//                    matcher.setParameter("obj" + pte.getForeignKey(), pte
-//                            .getImportTable().getCurrentRecord(recNum).getId());
-//                }
-//            }
-//            for (RelatedClassEntry rce : relatedClassDefaults)
-//            {
-//                matcher.setParameter("obj" + rce.getFieldName(), rce.getDefaultId());
-//            }
-//            for (DefaultFieldEntry dfe : missingRequiredFlds)
-//            {
-//                matcher.setParameter("obj" + dfe.getFldName(), dfe.getDefaultValue()[0]);
-//            }
-//            List<DataModelObjBase> matches = matcher.list();
-//            matchCount = matches.size();
-//            if (matchCount == 1 || (matchCount > 1 && tblClass == DeterminationStatus.class))
-//            {
-//                match = matches.get(0);
-//            }
-//        }
-//        finally
-//        {
-//            session.close();
-//        }
-//        if (matchCount == 0) { return false; }
-//        if (match != null)
-//        {
-//            setCurrentRecord(match, recNum);
-//            return true;
-//        }
-//        throw new UploaderException("multiple matching records.", UploaderException.ABORT_IMPORT);
-//     }
     
     /**
      * @param rec
@@ -1497,13 +1473,36 @@ public class UploadTable implements Comparable<UploadTable>
         }
         return result;
     }
+    
+    /**
+     * @throws UploaderException
+     * 
+     * This is loads values from dataset into current DataModelObj record, but does not save record to the database.
+     * It might be a good idea to track that data has been loaded to avoid unecessary repetition.
+     */
+    protected void loadFromDataSet() throws UploaderException
+    {
+        writeRowOrNot(true);
+    }
+    
+    protected void writeRow() throws UploaderException
+    {
+        if (!skipRow)
+        {
+            writeRowOrNot(false);
+        }
+        else
+        {
+            skipRow = false;
+        }
+    }
     /**
      * Searches for matching record in database. If match is found it is set to be the current record.
      * If no match then a record is initialized and populated and written to the database.
      * 
      * @throws UploaderException
      */
-    protected void writeRow() throws UploaderException
+    protected void writeRowOrNot(final boolean doNotWrite) throws UploaderException
     {
         int recNum = 0;
         for (Vector<UploadField> seq : uploadFields)
@@ -1520,7 +1519,11 @@ public class UploadTable implements Comparable<UploadTable>
                     rec.setModifiedByAgent(SpecifyUser.getCurrentUser().getAgent());
                     setRelatedDefaults(rec);
                     finalizeWrite(rec, recNum);
-                    doWrite(rec, recNum);
+                    if (!doNotWrite)
+                    {
+                        doWrite(rec, recNum);
+                    }
+                    setCurrentRecord(rec, recNum);
                 }
             }
             catch (InstantiationException ieEx)
@@ -1611,7 +1614,6 @@ public class UploadTable implements Comparable<UploadTable>
                 tblSession.close();
             }
         }
-        setCurrentRecord(rec, recNum);
     }
 
 

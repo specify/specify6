@@ -531,7 +531,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         });
         exportExcelCsvBtn.setEnabled(true);
 
-        uploadDatasetBtn = createIconBtn("Upload", IconManager.IconSize.NonStd, "WB_UPLOAD_DATA", false, new ActionListener()
+        uploadDatasetBtn = createIconBtn("Upload", IconManager.IconSize.Std24, "WB_UPLOAD_DATA", false, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
