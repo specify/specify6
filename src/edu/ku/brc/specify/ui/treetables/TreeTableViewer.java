@@ -1683,8 +1683,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			return false;
 		}
 
-		// TODO: fully implement this
-		// XXX
 		if(dropAction == DnDConstants.ACTION_COPY  || dropAction == DnDConstants.ACTION_NONE)
 		{
             // this is a request to make a node relationship (e.g. synonym on a Taxon record)
