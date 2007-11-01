@@ -279,7 +279,7 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
         {
             selectedObject = anObject;
             fireContentsChanged(this, -1, -1);
-            System.out.println("*************** SetSelectedItem["+selectedObject+"]");
+            //System.out.println("*************** SetSelectedItem["+selectedObject+"]");
         }
     }
 

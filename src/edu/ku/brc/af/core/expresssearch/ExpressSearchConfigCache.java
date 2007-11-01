@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
@@ -34,6 +36,13 @@ import edu.ku.brc.af.core.AppContextMgr;
  * and maps ups different hash tables for figuring out what are the join tables for a given search table.
  * 
  * (based on the searches defined in the XML file, not on the schema)
+ * 
+ * Basically this creates three hashtables
+ * 1) A hash by ES Name
+ * 2) A hash by ES Id
+ * 3) A hash from the Actual Table Ids to a list of ExpressResultsTableInfo (Express Searches) 
+ *    that are associated with that (so for any given actual Table Id I know what Express Searches
+ *    that it particates in.
  * 
  * @author rods
  *
@@ -54,7 +63,7 @@ public class ExpressSearchConfigCache
      * Returns the HashMap of ExpressResultsTableInfo items mapped By Name.
      * @return the HashMap of ExpressResultsTableInfo items mapped By Name.
      */
-    public static TableInfoWeakRef getTableInfoHashMaps()
+    public static synchronized TableInfoWeakRef getTableInfoWeakRef()
     {
         TableInfoWeakRef tableInfoWR = null;
      
@@ -80,7 +89,7 @@ public class ExpressSearchConfigCache
      */
     public static ExpressResultsTableInfo getTableInfoByName(final String name)
     {
-        return getTableInfoHashMaps().getTables().get(name);
+        return getTableInfoWeakRef().getTables().get(name);
     }
     
     /**
@@ -89,7 +98,7 @@ public class ExpressSearchConfigCache
      */
     public static Hashtable<String, ExpressResultsTableInfo> getTableInfoHash()
     {
-        return instance != null ? getTableInfoHashMaps().getTables() : null;
+        return instance != null ? getTableInfoWeakRef().getTables() : null;
     }
     
     /**
@@ -98,7 +107,7 @@ public class ExpressSearchConfigCache
      */
     public static Hashtable<String, ExpressResultsTableInfo> getSearchIdToTableInfoHash()
     {
-        return getTableInfoHashMaps().getSearchIdToTableInfoHash();
+        return getTableInfoWeakRef().getSearchIdToTableInfoHash();
     }
     
     /**
@@ -107,7 +116,7 @@ public class ExpressSearchConfigCache
      */
     public static Hashtable<String, List<ExpressResultsTableInfo>> getJoinIdToTableInfoHash()
     {
-        return getTableInfoHashMaps().getJoinIdToTableInfoHash();
+        return getTableInfoWeakRef().getJoinIdToTableInfoHash();
     }
 
     /**
@@ -119,47 +128,60 @@ public class ExpressSearchConfigCache
                                              final Hashtable<String, ExpressResultsTableInfo> tables,
                                              final Hashtable<String, ExpressResultsTableInfo> byIdHash,
                                              final Hashtable<String, List<ExpressResultsTableInfo>> joinIdToTableInfoHash,
-                                             final boolean isExpressSearch)
+                                             final boolean isExpressSearch,
+                                             final ResourceBundle resBundle)
     {
+        // Basically this creates three hashtables
+        // 1) A hash by ES Name
+        // 2) A hash by ES Id
+        // 3) A hash from the Actual Table Ids to a list of ExpressResultsTableInfo (Express Searches) 
+        //    that are associated with that (so for any given actual Table Id I know what Express Searches
+        //    that it particates in.
         for (Iterator<?> iter = tableItems.iterator(); iter.hasNext(); )
         {
+            // So create the ERTI
             Element                 tableElement = (Element)iter.next();
-            ExpressResultsTableInfo ti           = new ExpressResultsTableInfo(tableElement, isExpressSearch);
-            if (byIdHash.get(ti.getId()) == null)
+            ExpressResultsTableInfo erti         = new ExpressResultsTableInfo(tableElement, isExpressSearch, resBundle);
+            
+            // check for duplicate Ids
+            if (byIdHash.get(erti.getId()) == null)
             {
-                byIdHash.put(ti.getId(), ti);
+                // put into the Id hash
+                byIdHash.put(erti.getId(), erti);
                 
-                if (tables.get(ti.getName()) == null)
+                // Check for dumplicate names
+                if (tables.get(erti.getName()) == null)
                 {
-                    tables.put(ti.getName(), ti);
+                    tables.put(erti.getName(), erti);
                     
-                    if (!ti.isIndexed())
+                    // Get the List of Join Info
+                    ERTIJoinColInfo joinCols[] = erti.getJoins();
+                    if (joinCols != null)
                     {
-                        ERTIJoinColInfo joinCols[] = ti.getJoins();
-                        if (joinCols != null)
+                        // For the current ERTI loop through the Join Info and 
+                        // Look up to see if there is already an entry for that TableId
+                        // and then add the ERTI to the list.
+                        for (ERTIJoinColInfo jci :  joinCols)
                         {
-                            for (ERTIJoinColInfo jci :  joinCols)
+                            List<ExpressResultsTableInfo> list = joinIdToTableInfoHash.get(jci.getJoinTableId());
+                            if (list == null)
                             {
-                                List<ExpressResultsTableInfo> list = joinIdToTableInfoHash.get(jci.getJoinTableId());
-                                if (list == null)
-                                {
-                                    list = new ArrayList<ExpressResultsTableInfo>();
-                                    joinIdToTableInfoHash.put(jci.getJoinTableId(), list);
-                                    //log.debug("Adding JOin Table ID["+jci.getJoinTableId()+"]");
-                                }
-                                list.add(ti);
+                                list = new ArrayList<ExpressResultsTableInfo>();
+                                joinIdToTableInfoHash.put(jci.getJoinTableId(), list);
+                                //log.debug("Adding Join Table ID["+jci.getJoinTableId()+"]");
                             }
+                            list.add(erti);
                         }
                     }
                     
                 } else
                 {
-                    log.error("Duplicate express Search name["+ti.getName()+"]");
+                    log.error("Duplicate express Search name["+erti.getName()+"]");
                 }
 
             } else
             {
-                log.error("Duplicate Search Id["+ti.getId()+"]");
+                log.error("Duplicate Search Id["+erti.getId()+"]");
             }
         } 
     }
@@ -168,28 +190,39 @@ public class ExpressSearchConfigCache
      * Collects information about all the tables that will be processed for any search.
      * @return hash of named ExpressResultsTableInfo
      */
-    protected static TableInfoWeakRef intializeTableInfo()
+    protected static synchronized TableInfoWeakRef intializeTableInfo()
     {
         if (instance != null)
         {
             Hashtable<String, ExpressResultsTableInfo>       tables                = new Hashtable<String, ExpressResultsTableInfo>();
-            
             Hashtable<String, ExpressResultsTableInfo>       idToTableInfoHash     = new Hashtable<String, ExpressResultsTableInfo>();
             Hashtable<String, List<ExpressResultsTableInfo>> joinIdToTableInfoHash = new Hashtable<String, List<ExpressResultsTableInfo>>();
             
+            ResourceBundle resBundle = ResourceBundle.getBundle("expresssearch");
+
             try
             {
                 Element esDOM = AppContextMgr.getInstance().getResourceAsDOM("SearchConfig"); // Describes the definitions of the full text search
                 
-                intializeTableInfo(esDOM.selectNodes("/searches/express/table"), tables, idToTableInfoHash, joinIdToTableInfoHash, true);
+                intializeTableInfo(esDOM.selectNodes("/searches/express/table"), 
+                                   tables, 
+                                   idToTableInfoHash, 
+                                   joinIdToTableInfoHash, 
+                                   true,
+                                   resBundle);
                 
-                intializeTableInfo(esDOM.selectNodes("/searches/generic/table"), tables, idToTableInfoHash, joinIdToTableInfoHash, false);
-    
+                intializeTableInfo(esDOM.selectNodes("/searches/generic/table"), 
+                                                     tables, 
+                                                     idToTableInfoHash, 
+                                                     joinIdToTableInfoHash, 
+                                                     false,
+                                                     resBundle);
                     
             } catch (Exception ex)
             {
                 log.error(ex);
                 ex.printStackTrace();
+                
             }
             
             // This is sort of bad because it assumes the Task has already been created
@@ -200,15 +233,29 @@ public class ExpressSearchConfigCache
         return null;
     }
     
+    protected static String getResourceString(ResourceBundle resBundle, final String key)
+    {
+        try 
+        {
+            return resBundle.getString(key);
+            
+        } catch (MissingResourceException ex) 
+        {
+            log.error("Couldn't find key["+key+"] in resource bundle ["+key+"]");
+            return key;
+        }
+    }
+
+    
     //------------------------------------------------
     //-- TableInfoWeakRef Inner Class
     //------------------------------------------------
     public class TableInfoWeakRef
     {
-        Hashtable<String, ExpressResultsTableInfo>       tables                = new Hashtable<String, ExpressResultsTableInfo>();
+        protected Hashtable<String, ExpressResultsTableInfo>       tables                = new Hashtable<String, ExpressResultsTableInfo>();
         
-        Hashtable<String, ExpressResultsTableInfo>       idToTableInfoHash     = new Hashtable<String, ExpressResultsTableInfo>();
-        Hashtable<String, List<ExpressResultsTableInfo>> joinIdToTableInfoHash = new Hashtable<String, List<ExpressResultsTableInfo>>();
+        protected Hashtable<String, ExpressResultsTableInfo>       idToTableInfoHash     = new Hashtable<String, ExpressResultsTableInfo>();
+        protected Hashtable<String, List<ExpressResultsTableInfo>> joinIdToTableInfoHash = new Hashtable<String, List<ExpressResultsTableInfo>>();
         
         public TableInfoWeakRef(final Hashtable<String, ExpressResultsTableInfo> tables, 
                                 final Hashtable<String, ExpressResultsTableInfo> idToTableInfoHash, 

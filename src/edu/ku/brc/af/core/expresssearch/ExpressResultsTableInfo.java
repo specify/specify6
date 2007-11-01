@@ -20,9 +20,11 @@ import static edu.ku.brc.helpers.XMLHelper.getAttr;
 import java.awt.Color;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import edu.ku.brc.ui.UIHelper;
@@ -38,13 +40,15 @@ import edu.ku.brc.ui.UIHelper;
  */
 public class ExpressResultsTableInfo
 {
+    private static final Logger log = Logger.getLogger(ExpressResultsTableInfo.class);
+    
     protected String                    id;
     protected String                    tableId;
     protected String                    title;
     protected String                    name;
     protected boolean                   isExpressSearch       = true;
-    protected boolean                   isIndexed             = true;
     protected boolean                   isFieldNameOnlyForSQL = false;
+    protected String                    description;
 
     // These are used for viewing the results
     protected String                    iconName          = null;
@@ -64,27 +68,40 @@ public class ExpressResultsTableInfo
      * @param loadType what type of info to load from the DOM
      * @param isExpressSearch true/false
      */
-    public ExpressResultsTableInfo(final Element   tableElement, 
-                                   final boolean   isExpressSearch)
+    public ExpressResultsTableInfo(final Element        tableElement, 
+                                   final boolean        isExpressSearch,
+                                   final ResourceBundle resBundle)
     {
         this.isExpressSearch = isExpressSearch;
 
-        fill(tableElement);
+        fill(tableElement, resBundle);
     }
 
     /**
      * Fill the current object with the info from the DOM depending on the LOAD_TYPE
      * @param tableElement the DOM4J element used to fill the object
      */
-    public void fill(final Element tableElement)
+    public void fill(final Element        tableElement,
+                     final ResourceBundle resBundle)
     {
         id              = tableElement.attributeValue("id");
         tableId         = tableElement.attributeValue("tableid");
-        title           = tableElement.attributeValue("title");
         name            = tableElement.attributeValue("name");
         color           = UIHelper.parseRGB(tableElement.attributeValue("color"));
 
-        isIndexed    = getAttr(tableElement, "indexed", true);
+        if (isExpressSearch)
+        {
+            title = resBundle.getString(name);
+            if (StringUtils.isEmpty(title))
+            {
+                log.error("Express Search with name["+name+"] is missing it's title in the expressearch properties file.");
+            }
+            description = resBundle.getString(name + "_desc");
+            if (StringUtils.isEmpty(description))
+            {
+                log.error("Express Search with name["+name+"] is missing it's description in the expressearch properties file.");
+            }
+        }
         
         Element viewElement   = (Element)tableElement.selectSingleNode("detailView");
         Element sqlElement    = (Element)viewElement.selectSingleNode("sql");
@@ -102,7 +119,7 @@ public class ExpressResultsTableInfo
             for (Iterator<?> capIter = captionItems.iterator(); capIter.hasNext(); )
             {
                 Element captionElement = (Element)capIter.next();
-                ERTICaptionInfo capInfo = new ERTICaptionInfo(captionElement);
+                ERTICaptionInfo capInfo = new ERTICaptionInfo(captionElement, resBundle);
 
                 if (capInfo.isVisible())
                 {
@@ -139,15 +156,6 @@ public class ExpressResultsTableInfo
                 joinCols[i] = new ERTIJoinColInfo((Element)joinColItems.get(i));
             }
         }
-    }
-
-    /**
-     * Returns whether this Search Definition should be indexed or whether it is only used or viewing results.
-     * @return whether this Search Definition should be indexed or whether it is only used or viewing results.
-     */
-    public boolean isIndexed()
-    {
-        return isIndexed;
     }
 
     /**
@@ -248,6 +256,22 @@ public class ExpressResultsTableInfo
     public boolean isFieldNameOnlyForSQL()
     {
         return isFieldNameOnlyForSQL;
+    }
+
+    /**
+     * @return the description
+     */
+    public String getDescription()
+    {
+        return description;
+    }
+
+    /**
+     * @param description the description to set
+     */
+    public void setDescription(String description)
+    {
+        this.description = description;
     }
 
 }

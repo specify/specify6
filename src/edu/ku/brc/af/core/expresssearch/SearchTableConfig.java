@@ -18,7 +18,6 @@
 package edu.ku.brc.af.core.expresssearch;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Vector;
@@ -74,10 +73,12 @@ public class SearchTableConfig implements DisplayOrderingIFace,
         {
             sfc.setStc(this);
         }
+        
         for (DisplayFieldConfig dfc : displayFields)
         {
             dfc.setStc(this);
         }
+        
         if (wsFields != null)
         {
             for (DisplayFieldConfig wsfc : wsFields)
@@ -239,7 +240,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
             scrDateFormat.getSimpleDateFormat().parse(searchTerm);
             isDate = true;
             
-        } catch (ParseException ex)
+        } catch (Exception ex)
         {
         }
         

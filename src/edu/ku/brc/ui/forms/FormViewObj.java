@@ -483,8 +483,7 @@ public class FormViewObj implements Viewable,
             AltViewIFace.CreationMode mode = altViewArg.getMode();
             for (AltViewIFace av : viewArg.getAltViews())
             {
-                //ViewDef.ViewType type = av.getViewDef().getType();
-                if (av.getMode() == mode)//|| type == ViewDef.ViewType.table || type == ViewDef.ViewType.formtable)
+                if (av.getMode() == mode)
                 {
                     altViewsListArg.add(av);
                 }
@@ -944,6 +943,28 @@ public class FormViewObj implements Viewable,
      */
     public boolean checkForChanges()
     {
+        if (mvParent != null)
+        {
+            Object topParentData = mvParent.getTopLevel().getData();
+            if (topParentData != null && topParentData instanceof FormDataObjIFace)
+            {
+                if (((FormDataObjIFace)topParentData).getId() == null)
+                {
+                    if (formValidator != null)
+                    {
+                        return formValidator.isFormValid();   
+                    }
+                    return true;
+                }
+            }
+        }
+        
+        log.debug("Form     Val: "+(formValidator != null && formValidator.hasChanged()));
+        log.debug("mvParent Val: "+(mvParent != null && mvParent.isTopLevel() && mvParent.hasChanged()));
+        
+        int x = 0;
+        x++;
+        
         if ((formValidator != null && formValidator.hasChanged()) ||
             (mvParent != null && mvParent.isTopLevel() && mvParent.hasChanged()))
         {
@@ -1058,6 +1079,12 @@ public class FormViewObj implements Viewable,
         {
             carryFwdInfo.carryForward(carryFwdDataObj, obj);
         }
+        
+        if (formValidator != null && formValidator.hasChanged())
+        {
+            getDataFromUI();
+            formValidator.setHasChanged(false);
+        }
 
         dataObj = obj;
 
@@ -1078,11 +1105,18 @@ public class FormViewObj implements Viewable,
         // Not calling setHasNewData because we need to traverse and setHasNewData doesn't
         formIsInNewDataMode = true;
         traverseToToSetAsNew(mvParent, formIsInNewDataMode, false); // don't traverse deeper than our immediate children
+        
+        //setDataObj(dataObj, true);
+        //setDataIntoUI();
+        
         updateControllerUI();
 
         if (doSetIntoAndValidate)
         {
-            this.setDataIntoUI();
+            if (list == null) // skip doing the setDataIntoUI because changing the index of will do it.
+            {
+                this.setDataIntoUI();
+            }
     
             if (formValidator != null)
             {
@@ -1325,13 +1359,6 @@ public class FormViewObj implements Viewable,
             {
                 businessRules.afterSaveCommit(dObj);
             }
-
-            formValidator.setHasChanged(false);
-            if (mvParent != null)
-            {
-                mvParent.clearValidators();
-            }
-            
             session.refresh(dObj);
             
             replaceDataObjInList(dataObj, dObj);
@@ -1346,10 +1373,17 @@ public class FormViewObj implements Viewable,
         
             log.info("Session Saved[ and Flushed "+session.hashCode()+"]");
             
-            setDataIntoUI();
-
-            // Not calling setHasNewData because we need to traverse and setHasNewData doesn't
             formIsInNewDataMode = false;
+            
+            setDataIntoUI();
+            
+            formValidator.setHasChanged(false);
+            if (mvParent != null)
+            {
+                mvParent.clearValidators();
+            }
+            
+            // Not calling setHasNewData because we need to traverse and setHasNewData doesn't
             traverseToToSetAsNew(mvParent, false, true); // last arg means it should traverse
             updateControllerUI();
             
@@ -1360,7 +1394,7 @@ public class FormViewObj implements Viewable,
 
             CommandDispatcher.dispatch(new CommandAction("Data_Entry", "Save", dataObj));
 
-            if (saveBtn!=null)
+            if (saveBtn != null)
             {
                 saveBtn.setEnabled(false);
             }
@@ -1370,6 +1404,10 @@ public class FormViewObj implements Viewable,
                 session.close();
                 session = null;
             }
+            
+            log.debug("After save");
+            log.debug("Form     Val: "+(formValidator != null && formValidator.hasChanged()));
+            log.debug("mvParent Val: "+(mvParent != null && mvParent.isTopLevel() && mvParent.hasChanged()));
         }
     }
     
@@ -1431,6 +1469,12 @@ public class FormViewObj implements Viewable,
                 dataObj = list.get(newInx);
                 
                 setDataObj(dataObj, true); // true means the dataObj is already in the current "list" of data items we are working with
+                
+                if (formValidator != null)
+                {
+                    formValidator.validateForm();
+                }
+                
             } else 
             {
                 setDataObj(null, true); // true means the dataObj is already in the current "list" of data items we are working with
@@ -2038,6 +2082,7 @@ public class FormViewObj implements Viewable,
     @SuppressWarnings("unchecked")
     protected void setDataObj(final Object dataObj, final boolean alreadyInTheList)
     {
+        log.debug("Setting DataObj["+dataObj+"]");
         // Convert the Set over to a List so the RecordController can be used
         Object data = dataObj;
         if (!alreadyInTheList)
@@ -2123,9 +2168,10 @@ public class FormViewObj implements Viewable,
                 if (this.dataObj != null)
                 {
                     // I added this 'if' and I have no idea why the call was here in the first place. - rods
+                    // was it here for PaleoContext ?????
                     if (!alreadyInTheList)
                     {
-                        controlPanel.setRSCVisibility(!isEditting);
+                        //controlPanel.setRSCVisibility(!isEditting);
                     }
                     rsController.setEnabled(true);
                     
@@ -2283,6 +2329,8 @@ public class FormViewObj implements Viewable,
         
         if (weHaveData)
         {
+            log.debug("########################### weHaveData!" + dataObj);
+            
             Object[] defaultDataArray = new Object[1]; // needed for setting the default value
             
             // Now we know the we have data, so loop through all the controls
@@ -2375,7 +2423,7 @@ public class FormViewObj implements Viewable,
                         } else
                         {
                             setDataIntoUIComp(comp, null, defaultValue);
-                            if (isEditting && comp instanceof UIValidatable && StringUtils.isNotEmpty(defaultValue))
+                            if (formIsInNewDataMode && isEditting && comp instanceof UIValidatable && StringUtils.isNotEmpty(defaultValue))
                             {
                                 defaultValueList.add((UIValidatable)comp);
                             }
@@ -2416,8 +2464,13 @@ public class FormViewObj implements Viewable,
                     }
                 }
             }
+        } else
+        {
+            log.debug("******************* No Data!");
         }
-
+        
+        formIsInNewDataMode = false;
+        
         //log.debug(formViewDef.getName());
 
         // Adjust the formValidator now that all the data is in the controls
@@ -2521,14 +2574,10 @@ public class FormViewObj implements Viewable,
                         useThisData = false;
                     }
                     
-                    if (isReadOnly || fc.isIgnoreSetGet())
-                    {
-                        
-                    }
-                    
-                    log.debug(fieldInfo.getName()+"  "+fieldInfo.getFormCell().getName());
-
                     String id = fieldInfo.getFormCell().getIdent();
+                    
+                    log.debug(fieldInfo.getName()+"  "+fieldInfo.getFormCell().getName()+"   hasChanged: "+(!isReadOnly && hasFormControlChanged(id)));
+                    
                     if (!isReadOnly && hasFormControlChanged(id))
                     {
                         // this ends up calling the getData on the GetSetValueIFace 
@@ -3214,12 +3263,22 @@ public class FormViewObj implements Viewable,
      */
     public void indexChanged(int newIndex)
     {
+        log.debug("---------------------------------------------------------------------");
+        log.debug("Before setDataIntoUI");
+        log.debug("Form     Val: "+(formValidator != null && formValidator.hasChanged()));
+        log.debug("mvParent Val: "+(mvParent != null && mvParent.isTopLevel() && mvParent.hasChanged()));
+
         if (formValidator != null && formValidator.hasChanged())
         {
             getDataFromUI();
         }
         
         Object listDO = list.get(newIndex);
+        log.debug("newIndex "+newIndex+"  "+listDO);
+        for (int i=0;i<list.size();i++)
+        {
+            log.debug("i "+i+"  "+list.get(i));
+        }
         if (recordSetItemList != null && listDO == null)
         {
             dataObj = getDataObjectViaRecordSet(newIndex);
@@ -3229,13 +3288,31 @@ public class FormViewObj implements Viewable,
         } else
         {
             dataObj = listDO;    
-        }       
+        }
+        
+        log.debug("Before2 setDataIntoUI");
+        log.debug("Form     Val: "+(formValidator != null && formValidator.hasChanged()));
+        log.debug("mvParent Val: "+(mvParent != null && mvParent.isTopLevel() && mvParent.hasChanged()));
+
 
         setDataIntoUI();
+        
+        log.debug("After setDataIntoUI");
+        log.debug("Form     Val: "+(formValidator != null && formValidator.hasChanged()));
+        log.debug("mvParent Val: "+(mvParent != null && mvParent.isTopLevel() && mvParent.hasChanged()));
+
 
         if (saveBtn != null)
         {
             saveBtn.setEnabled(false);
+            
+        } else if (mvParent != null && mvParent.hasChanged())
+        {
+            Viewable currView = mvParent.getTopLevel().getCurrentView();
+            if (currView != null && currView.getSaveBtn() != null)
+            {
+                currView.getSaveBtn().setEnabled(false); 
+            }
         }
     }
 

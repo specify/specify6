@@ -235,6 +235,10 @@ public class Specify extends JPanel implements DatabaseLoginListener
     public void startUp()
     {
     	log.debug("StartUp");
+        
+        // Adjust Default Swing UI Default Resources (Color, Fonts, etc) per Platform
+        UIHelper.adjustUIDefaults();
+        
         // Insurance
         if (StringUtils.isEmpty(UIRegistry.getJavaDBPath()))
         {

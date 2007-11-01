@@ -14,6 +14,8 @@
  */
 package edu.ku.brc.ui.db;
 
+import javax.swing.JButton;
+
 import edu.ku.brc.ui.forms.MultiView;
 
 /**
@@ -67,6 +69,26 @@ public interface ViewBasedDisplayIFace
      * Tells the Display that it is being shutdown.
      */
     public abstract void shutdown();
+    
+    /**
+     * @return the ok btn
+     */
+    public abstract JButton getOkBtn();
+    
+    /**
+     * @return the cancel btn
+     */
+    public abstract JButton getCancelBtn();
+    
+    /**
+     * @return help btn
+     */
+    public abstract JButton getHelpBtn();
+    
+    /**
+     * @return apply btn
+     */
+    public abstract JButton getApplyBtn();
     
     /**
      * Disposes of native resources.

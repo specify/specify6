@@ -26,6 +26,7 @@ public class TableInfoRenderable implements TableNameRendererIFace, Comparable<T
     protected String      title;
     protected String      iconName;
     protected SortBy      sortBy = SortBy.Table; 
+    protected Object      userData = null;
     
     public TableInfoRenderable(final DBTableInfo tableInfo)
     {
@@ -96,6 +97,22 @@ public class TableInfoRenderable implements TableNameRendererIFace, Comparable<T
     public void setSortBy(final SortBy sortBy)
     {
         this.sortBy = sortBy;
+    }
+
+    /**
+     * @return the userData
+     */
+    public Object getUserData()
+    {
+        return userData;
+    }
+
+    /**
+     * @param userData the userData to set
+     */
+    public void setUserData(Object userData)
+    {
+        this.userData = userData;
     }
 
     /* (non-Javadoc)

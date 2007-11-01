@@ -163,6 +163,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
                                                                false,  // false means View mode
                                                                MultiView.NO_OPTIONS,
                                                                ViewBasedDialogFactoryIFace.FRAME_TYPE.FRAME);
+        
         frame.setCloseListener(new ViewBasedDisplayActionAdapter()
         {
             @Override
@@ -183,6 +184,8 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
         frame.setData(dataObj);
         frame.showDisplay(true);
         
+        frame.getOkBtn().setEnabled(true);
+
         if (multiView != null)
         {
             multiView.registerDisplayFrame(frame);

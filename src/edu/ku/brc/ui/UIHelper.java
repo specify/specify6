@@ -71,10 +71,12 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.plaf.ColorUIResource;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -164,6 +166,33 @@ public final class UIHelper
     public static boolean isMacOS()
     {
         return oSType == OSTYPE.MacOSX;
+    }
+    
+    /**
+     * @return whether the OS is Mac.
+     */
+    public static boolean isWindows()
+    {
+        return oSType == OSTYPE.Windows;
+    }
+    
+    /**
+     * @return whether the OS is Mac.
+     */
+    public static boolean isLinux()
+    {
+        return oSType == OSTYPE.Linux;
+    }
+    
+    /**
+     * Windows background selection color for JTables is too dark so use a lighter blue.
+     */
+    public static void adjustUIDefaults()
+    {
+        if (isWindows())
+        {
+            UIManager.put("Table.selectionBackground", new ColorUIResource(195, 212, 232));
+        }
     }
     
     /**
@@ -1383,7 +1412,7 @@ public final class UIHelper
             ViewBasedDisplayIFace dialog = UIRegistry.getViewbasedFactory().createDisplay(UIHelper.getFrame(mainComp),
                                                                         defFormName,
                                                                         title,
-                                                                        getResourceString(isNewObject && isEditMode ? "OK" : "Close"),
+                                                                        getResourceString(isEditMode ? "Save" : "Close"),
                                                                         isEditMode,
                                                                         opts,
                                                                         FRAME_TYPE.DIALOG);

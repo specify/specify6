@@ -36,7 +36,7 @@ public class RelatedQuery implements DisplayOrderingIFace, TableNameRendererIFac
     // Transient
     protected ExpressResultsTableInfo erti      = null;
     protected boolean                 isInUse   = false;
-    protected DBTableInfo  tableInfo = null;
+    protected DBTableInfo             tableInfo = null;
     /**
      * 
      */
@@ -130,7 +130,7 @@ public class RelatedQuery implements DisplayOrderingIFace, TableNameRendererIFac
     @Override
     public String toString()
     {
-        return tableInfo.getTitle();
+        return erti.getTitle();
     }
 
     /* (non-Javadoc)

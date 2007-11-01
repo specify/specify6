@@ -18,6 +18,7 @@ import static edu.ku.brc.ui.UIHelper.createIconBtn;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
@@ -42,6 +43,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JToggleButton;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
@@ -111,6 +113,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
     protected JList                          rtTableList;
     protected JList                          relatedTablesList;
     protected DefaultListModel               relatedTablesModel = new DefaultListModel();
+    protected JTextArea                      relatedTableDescTA;
     
     protected SearchConfigService            searchConfigService = SearchConfigService.getInstance();
     protected SearchConfig                   config              = new SearchConfig();
@@ -189,6 +192,18 @@ public class ExpressSearchConfigDlg extends CustomDialog
             
             for (DBFieldInfo fi : ti.getFields())
             {
+                /*if (fi.getColumn().endsWith("ID"))
+                {
+                    System.out.println(fi.getColumn());
+                    continue;
+                }
+                
+                if (fi.getName().endsWith("Id"))
+                {
+                    System.out.println(fi.getName());
+                    continue;
+                }*/
+                
                 if (fi.isIndexed())
                 {
                     // If found it sets inUse to true, otherwise it is false when created
@@ -235,7 +250,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
         //----------------------------------------
         //-- Search Fields Table
         //----------------------------------------
-        
+
         searchFieldsTableModel = new SearchFieldsTableModel();
         
         searchFieldsTable = new JTable(searchFieldsTableModel);
@@ -294,6 +309,16 @@ public class ExpressSearchConfigDlg extends CustomDialog
         
         relatedTablesList = new JList(relatedTablesModel);
         relatedTablesList.setCellRenderer(nameRender);
+        relatedTablesList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            //@Override
+            public void valueChanged(ListSelectionEvent e)
+            {
+                if (!e.getValueIsAdjusting())
+                {
+                    rtRelatedTableSelected();
+                }
+            }
+        });
         
         // Build Layout
 
@@ -474,17 +499,25 @@ public class ExpressSearchConfigDlg extends CustomDialog
      */
     protected JPanel createRelatedTabledPanel()
     {
-        PanelBuilder    outer = new PanelBuilder(new FormLayout("f:p:g", "p,2px,p,10px,p,2px,f:p:g"));
+        PanelBuilder    outer = new PanelBuilder(new FormLayout("p,4px,f:p:g", "p,2px,p,10px,p,2px,f:p:g"));
         CellConstraints cc      = new CellConstraints();
         
         rtTableList.setVisibleRowCount(10);
         JScrollPane sp = new JScrollPane(rtTableList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         outer.add(new JLabel(getResourceString("ES_WHEN_INFO_FOUND")), cc.xy(1,1));
-        outer.add(sp, cc.xy(1,3));
+        outer.add(sp, cc.xywh(1,3,3,1));
         
         sp = new JScrollPane(relatedTablesList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         outer.add(new JLabel(getResourceString("ES_INFORET_FOR")), cc.xy(1,5));
         outer.add(sp, cc.xy(1,7));
+        
+        relatedTableDescTA = new JTextArea();
+        relatedTableDescTA.setEditable(false);
+        relatedTableDescTA.setWrapStyleWord(true);
+        relatedTableDescTA.setBackground(Color.WHITE);
+        sp = new JScrollPane(relatedTableDescTA, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        outer.add(new JLabel(getResourceString("ES_RELATED_DESC")), cc.xy(3,5));
+        outer.add(sp, cc.xy(3,7));
         
         rtTableList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             //@Override
@@ -509,33 +542,68 @@ public class ExpressSearchConfigDlg extends CustomDialog
     {
         TableInfoRenderable tir = (TableInfoRenderable)rtTableList.getSelectedValue();
         
+        // This is a Hash of Table Ids to a List of Express Searches that this table is a part of
         Hashtable<String, List<ExpressResultsTableInfo>> joinHash = ExpressSearchConfigCache.getJoinIdToTableInfoHash();
         
-        relatedTablesModel.clear();
-
-        Hashtable<String, SearchTableConfig> duplicateHash = new Hashtable<String, SearchTableConfig>();
-        Hashtable<SearchTableConfig, ExpressResultsTableInfo> ertiHash = new Hashtable<SearchTableConfig, ExpressResultsTableInfo>();
+        Hashtable<String, SearchTableConfig>                  duplicateHash = new Hashtable<String, SearchTableConfig>();
+        Hashtable<SearchTableConfig, ExpressResultsTableInfo> ertiHash      = new Hashtable<SearchTableConfig, ExpressResultsTableInfo>();
         
+        // Now for the selected Table (this is a 'core' Table that has at least one indexed field)
+        // we look up all the related Express Searches
         for (ExpressResultsTableInfo erti : joinHash.get(Integer.toString(tir.getTableInfo().getTableId())))
         {
-            SearchTableConfig    joinSTC = tiRenderHash.get(Integer.parseInt(erti.getTableId()));
+            // Look up the Search Config Info for the Express Search table Id
+            // and add it to a Hash of the Search Config -> the ExpressSearch Info
+            SearchTableConfig joinSTC = tiRenderHash.get(Integer.parseInt(erti.getTableId()));
+            
+            // The duplicate has it merely so we we don't end with two of the same SearchTableConfig objects
             duplicateHash.put(joinSTC.getTableInfo().getClassObj().getSimpleName(), joinSTC);
             ertiHash.put(joinSTC, erti);
         }
         
         relatedTablesModel.clear();
+        
+        // Sort them by name using the duplicate hash
         Vector<SearchTableConfig> sortedSTCs = new Vector<SearchTableConfig>(duplicateHash.values());
         Collections.sort(sortedSTCs);
+        
+        // Now loop thought this duplicate name hash to list everything out
         for (SearchTableConfig joinSTC : sortedSTCs)
         {
             ExpressResultsTableInfo erti = ertiHash.get(joinSTC);
-            relatedTablesModel.addElement(new TableInfoRenderable(erti.getTitle(), joinSTC.getIconName()));
+            TableInfoRenderable ertiTI = new TableInfoRenderable(erti.getTitle(), joinSTC.getIconName());
+            ertiTI.setUserData(erti);
+            relatedTablesModel.addElement(ertiTI);
+            
+            // List the fields that the ES returns.
             for (ERTICaptionInfo caption : erti.getCaptionInfo())
             {
                 if (caption.isVisible())
                 {
-                    relatedTablesModel.addElement(new TableInfoRenderable(caption.getColLabel(), "BlankIcon"));
+                    TableInfoRenderable tirable = new TableInfoRenderable(caption.getColLabel(), "TableField");
+                    tirable.setUserData(caption);
+                    relatedTablesModel.addElement(tirable);
                 }
+            }
+        }
+    }
+    
+    protected void rtRelatedTableSelected()
+    {
+        TableInfoRenderable tir = (TableInfoRenderable)relatedTablesList.getSelectedValue();
+        if (tir != null)
+        {
+            if (tir.getUserData() instanceof ERTICaptionInfo)
+            {
+                relatedTableDescTA.setText(((ERTICaptionInfo)tir.getUserData()).getDescription());
+                
+            } else if (tir.getUserData() instanceof ExpressResultsTableInfo)
+            {
+                relatedTableDescTA.setText(((ExpressResultsTableInfo)tir.getUserData()).getDescription());
+                
+            } else
+            {
+                relatedTableDescTA.setText("");
             }
         }
     }

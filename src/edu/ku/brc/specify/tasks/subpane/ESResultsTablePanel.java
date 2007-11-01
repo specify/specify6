@@ -173,11 +173,11 @@ public class ESResultsTablePanel extends JPanel implements Comparable<ESResultsT
         for (ServiceInfo serviceInfo : services)
         {
             GradiantButton btn = new GradiantButton(serviceInfo.getIcon(IconManager.IconSize.Std16)); // XXX PREF
-            btn.setToolTipText(getResourceString(serviceInfo.getTooltip()));
+            btn.setToolTipText(serviceInfo.getTooltip());
             btn.setForeground(bannerColor);
             builder.add(btn, cc.xy(col,1));
 
-            btn.addActionListener(new ESTableAction(serviceInfo.getCommandAction(), table));
+            btn.addActionListener(new ESTableAction(serviceInfo.getCommandAction(), table, serviceInfo.getTooltip()));
 
             col += 2;
         }
@@ -483,17 +483,14 @@ public class ESResultsTablePanel extends JPanel implements Comparable<ESResultsT
         int[] rows = table.getSelectedRows();
         if (returnAll || rows.length == 0)
         {
-            table.selectAll();
-            rows = table.getSelectedRows();
-            table.clearSelection();
-            doReturnAll = true;
+            int numRows = table.getModel().getRowCount();
+            rows = new int[numRows];
+            for (int i=0;i<numRows;i++)
+            {
+                rows[i] = i;
+            }
         }
         RecordSetIFace rs = getRecordSet(rows, doReturnAll);
-
-        if (doReturnAll)
-        {
-            table.clearSelection();
-        }
 
         // Now we use the actual Table Id from the table info
         // to set it correctly in the RecordSet
@@ -602,25 +599,35 @@ public class ESResultsTablePanel extends JPanel implements Comparable<ESResultsT
         protected RecordSetIFace          recordSet;
         protected JTable                  estTable;
         protected Properties              props = new Properties();
+        protected String                  msg;
         
         public ESTableAction(final CommandAction cmd,
-                             final JTable estTable)
+                             final JTable estTable,
+                             final String msg)
         {
             this.cmd          = cmd;
             this.estTable     = estTable;
+            this.msg          = msg;
             this.props.put("jtable", estTable);
         }
 
         public void actionPerformed(ActionEvent e)
         {
-            cmd.setData(getRecordSet(false));
-            cmd.addProperties(props);
-            CommandDispatcher.dispatch(cmd);
+            UIRegistry.getStatusBar().setText(msg);
+            
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run()
+                {
+                    cmd.setData(getRecordSet(false));
+                    cmd.addProperties(props);
+                    CommandDispatcher.dispatch(cmd);
 
-            // always reset the consumed flag and set the data to null
-            // so the command can be used again
-            cmd.setConsumed(false);
-            cmd.setData(null);
+                    // always reset the consumed flag and set the data to null
+                    // so the command can be used again
+                    cmd.setConsumed(false);
+                    cmd.setData(null);
+                }
+            });
         }
     }
 

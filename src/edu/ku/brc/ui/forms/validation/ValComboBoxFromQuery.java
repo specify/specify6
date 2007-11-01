@@ -199,7 +199,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
 
         comboBox = new VCBCombobBox(tableName, idColumn, keyColumn, displayColumn, format);
         comboBox.setAllowNewValues(true);
-
+        
         init(objTitle, btns);
         
         setOpaque(false);
@@ -366,7 +366,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    currentMode = dataObj != null ? MODE.NewAndNotEmpty : MODE.NewAndEmpty;
+                    //currentMode = dataObj != null ? MODE.NewAndNotEmpty : MODE.NewAndEmpty;
+                    currentMode = MODE.NewAndNotEmpty;
                     createEditFrame(true);
                 }
             };
@@ -456,7 +457,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     protected void createEditFrame(final boolean isNewObject)
     {
-        String closeBtnTitle = getResourceString(isNewObject ? "Accept" : "Save");
+        String closeBtnTitle = getResourceString("Save");
         frame = UIRegistry.getViewbasedFactory().createDisplay(UIHelper.getFrame(this),
                                                                    displayInfoDialogName,
                                                                    frameTitle,
@@ -689,6 +690,11 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             {
                 editBtn.setEnabled(false);
             }
+            if (comboBox.getTextField() != null)
+            {
+                comboBox.getTextField().setText("");
+                comboBox.getTextField().repaint();
+            }
         }
         repaint();
     }
@@ -866,6 +872,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         {
             dataObj = (FormDataObjIFace)value;
             refreshUIFromData();
+            
+            comboBox.clearSearch();
             
         } else
         {

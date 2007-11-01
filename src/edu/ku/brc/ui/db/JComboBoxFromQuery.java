@@ -154,6 +154,11 @@ public class JComboBoxFromQuery extends JComboBox
         this.setEditable(true);
         setSelectedItem("");
     }
+    
+    public void clearSearch()
+    {
+        entryStr = null;
+    }
 
     /**
      * Sets wehether the searches for the items are case insensitive or not

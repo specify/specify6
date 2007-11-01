@@ -296,6 +296,38 @@ public class CustomFrame extends JFrame
         this.helpLabel = helpLabel;
     }
 
+    /**
+     * @return the applyBtn
+     */
+    public JButton getApplyBtn()
+    {
+        return applyBtn;
+    }
+
+    /**
+     * @return the cancelBtn
+     */
+    public JButton getCancelBtn()
+    {
+        return cancelBtn;
+    }
+
+    /**
+     * @return the helpBtn
+     */
+    public JButton getHelpBtn()
+    {
+        return helpBtn;
+    }
+
+    /**
+     * @return the okBtn
+     */
+    public JButton getOkBtn()
+    {
+        return okBtn;
+    }
+
     /*
      * (non-Javadoc)
      * @see java.awt.Dialog#setVisible(boolean)

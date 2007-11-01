@@ -272,9 +272,9 @@ public class QueryForIdResultsSQL implements QueryForIdResultsIFace
             String critiera = (tableInfo.isFieldNameOnlyForSQL() ? StringUtils.substringAfterLast(joinIdName, ".") : joinIdName)
                               + " in (" + idsStr.toString() + ")";
             
-            System.out.println("["+critiera+"]");
+            //System.out.println("["+critiera+"]");
             sqlStr = String.format(tableInfo.getViewSql(), new Object[] {joinIdName, critiera});
-            System.out.println("["+sqlStr+"]");
+            //System.out.println("["+sqlStr+"]");
             sqlStr = ExpressSearchSQLAdjuster.getInstance().adjustSQL(sqlStr);
         } else
         {

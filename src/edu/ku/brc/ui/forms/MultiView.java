@@ -194,7 +194,25 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
             setBackground(bgColor);
         }
 
-        createWithAltView(createDefaultViewable(defaultAltViewType));
+        AltViewIFace defaultAltView = createDefaultViewable(defaultAltViewType);
+        createWithAltView(defaultAltView, true);
+        
+        if (true)
+        {
+            for (AltViewIFace av : view.getAltViews())
+            {
+                if (av != defaultAltView)
+                {
+                    showView(av.getName());
+                }
+            }
+            showView(defaultAltView.getName());
+            
+            editable = defaultAltView.getMode() == AltViewIFace.CreationMode.EDIT;
+            log.debug(mvParent+"  "+editable);
+            int x = 0;
+            x++;
+        }
     }
 
     /**
@@ -220,7 +238,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         this.createWithMode = createWithMode;
         this.createOptions  = options | (createWithMode == AltViewIFace.CreationMode.EDIT ? IS_EDITTING : NO_OPTIONS);
         
-        createWithAltView(altView != null ? altView : createDefaultViewable(null));
+        createWithAltView(altView != null ? altView : createDefaultViewable(null), true);
     }
     
     /**
@@ -512,9 +530,20 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      * @param altView the altView to use.
      * @param bgColor the bgColor
      */
-    protected Viewable createWithAltView(final AltViewIFace altView)
+    protected Viewable createWithAltView(final AltViewIFace altView, final boolean doShow)
     {
         editable = altView.getMode() == AltViewIFace.CreationMode.EDIT;
+        if (!editable)
+        {
+            int x = 0;
+            x++;
+        }
+        log.debug("***********************************************************************");
+        log.debug("View :    " + altView.getView().getName());
+        log.debug("AltView : " + altView.getLabel());
+        log.debug("editable: " + editable);
+        printCreateOptions("createWithAltView", createOptions);
+        log.debug("***********************************************************************");
 
         // this call parents the viewable to the multiview
         Viewable viewable = ViewFactory.getInstance().buildViewable(view, altView, this, createOptions, getBackground());
@@ -523,7 +552,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
             viewable.setParentDataObj(parentDataObj);
     
             // Add Viewable to the CardLayout
-            if (add(viewable, altView.getName()))
+            if (add(viewable, altView.getName()) && doShow)
             {
                 showView(altView.getName());
             }
@@ -639,10 +668,12 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         // This needs to always map from the incoming name to the ID for that view
         // so first look it up by name
         Viewable viewable = viewMapByName.get(name);
+        
+        boolean creatingViewable = viewable == null;
 
         // If it isn't in the map then it needs to be created
         // all the view are created when needed.
-        if (viewable == null)
+        if (creatingViewable)
         {
             List<AltViewIFace> list = currentViewable.getView().getAltViews();
             int inx = 0;
@@ -661,19 +692,22 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                 ViewIFace newView = AppContextMgr.getInstance().getView(currentViewable.getView().getViewSetName(), altView.getView().getName());
                 if (newView != null)
                 {
-                    log.debug("--------------------------");
-                    for (int i=0;i<getComponentCount();i++)
+                    if (false)
                     {
-                        Component comp = getComponent(i);
-                        if (comp instanceof Viewable)
+                        log.debug("--------------------------");
+                        for (int i=0;i<getComponentCount();i++)
                         {
-                            log.debug(((Viewable)comp).getName());
-                        } else
-                        {
-                            log.debug(comp);
+                            Component comp = getComponent(i);
+                            if (comp instanceof Viewable)
+                            {
+                                log.debug(((Viewable)comp).getName());
+                            } else
+                            {
+                                log.debug(comp);
+                            }
                         }
+                        log.debug("--------------------------");
                     }
-                    log.debug("--------------------------");
 
                     String altViewName = altView.getName();
                     
@@ -743,6 +777,12 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         {
             currentViewable.setParentDataObj(parentDataObj);
         }
+        
+        if (!creatingViewable)
+        {
+            setData(data);
+        }
+    
     }
 
     /**
@@ -1124,6 +1164,10 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         log.debug("IS_NEW_OBJECT        ["+((options & MultiView.IS_NEW_OBJECT) == MultiView.IS_NEW_OBJECT ? "true" : "false")+"]");
         log.debug("VIEW_SWITCHER        ["+((options & MultiView.VIEW_SWITCHER) == MultiView.VIEW_SWITCHER ? "true" : "false")+"]");
         log.debug("HIDE_SAVE_BTN        ["+((options & MultiView.HIDE_SAVE_BTN) == MultiView.HIDE_SAVE_BTN ? "true" : "false")+"]");
+        log.debug("IS_EDITTING          ["+((options & MultiView.IS_EDITTING) == MultiView.IS_EDITTING ? "true" : "false")+"]");
+        log.debug("IS_SINGLE_OBJ        ["+((options & MultiView.IS_SINGLE_OBJ) == MultiView.IS_SINGLE_OBJ ? "true" : "false")+"]");
+        log.debug("NO_SCROLLBARS        ["+((options & MultiView.NO_SCROLLBARS) == MultiView.NO_SCROLLBARS ? "true" : "false")+"]");
+        log.debug("ADD_SEARCH_BTN       ["+((options & MultiView.ADD_SEARCH_BTN) == MultiView.ADD_SEARCH_BTN ? "true" : "false")+"]");
         log.debug(" ");        
     }
 

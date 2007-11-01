@@ -19,6 +19,7 @@ package edu.ku.brc.af.core.expresssearch;
 
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 
+import java.util.ResourceBundle;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
@@ -44,10 +45,11 @@ public class ERTICaptionInfo
     private static final Logger log = Logger.getLogger(ERTICaptionInfo.class);
     
     protected String                  colName;
-    protected String                  colLabel;
+    protected String                  colLabel      = null;
     protected boolean                 isVisible;
     protected String                  formatter;
     protected int                     posIndex;
+    protected String                  description   = null;
     
     protected String                  aggregatorName;
     protected String                  orderCol;
@@ -60,18 +62,55 @@ public class ERTICaptionInfo
     // Transient 
     protected Class<?>                colClass      = null;
     protected int                     orderColIndex = -1;
+    protected DBFieldInfo             fieldInfo     = null;
     
     
     /**
      * Constructor. Position Index is set after object is created.
      * @param element
      */
-    public ERTICaptionInfo(final Element element)
+    public ERTICaptionInfo(final Element element,
+                           final ResourceBundle resBundle)
     {
         super();
         
-        this.colName   = element.attributeValue("col");
-        this.colLabel  = element.attributeValue("text");
+        int tblId = getAttr(element, "tableid", -1);
+        if (tblId == -1)
+        {
+            throw new RuntimeException("search_config.xml caption has bad id["+getAttr(element, "tableid", "N/A")+"]");
+        }
+        
+        this.colName = element.attributeValue("col");
+        
+        String key = getAttr(element, "key", null);
+        if (StringUtils.isNotEmpty(key))
+        {
+            colLabel    = resBundle.getString(key);
+            description = resBundle.getString(key+"_desc");
+            
+        } else
+        {
+            DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(tblId);
+            if (ti != null)
+            {
+                fieldInfo = ti.getFieldByColumnName(this.colName);
+                if (fieldInfo == null)
+                {
+                    if (this.colName.endsWith("ID"))
+                    {
+                        colLabel    = this.colName;
+                        description = "";
+                    } else
+                    {
+                        throw new RuntimeException("Couldn't convert column Name["+this.colName+"] to a field name to find the field in table["+tblId+"]");
+                    }
+                }
+            } else
+            {
+                throw new RuntimeException("Table Id is bad id["+getAttr(element, "tableid", "N/A")+"]");
+            }
+        }
+        
         this.isVisible = getAttr(element, "visible", true);
         
         String dataObjFormatterName = getAttr(element, "dataobjformatter", null);
@@ -193,52 +232,46 @@ public class ERTICaptionInfo
         this.posIndex = posIndex;
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.SearchResultsCaptionIFace#getColName()
-     */
     public String getColName()
     {
         return colName;
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.SearchResultsCaptionIFace#getColLabel()
-     */
     public String getColLabel()
     {
+        if (colLabel == null)
+        {
+            return fieldInfo.getTitle();
+        }
         return colLabel;
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.SearchResultsCaptionIFace#isVisible()
-     */
     public boolean isVisible()
     {
         return isVisible;
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.SearchResultsCaptionIFace#getFormatter()
-     */
     public String getFormatter()
     {
         return formatter;
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.SearchResultsCaptionIFace#getPosIndex()
-     */
     public int getPosIndex()
     {
         return posIndex;
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.SearchResultsCaptionIFace#setPosIndex(int)
-     */
     public void setPosIndex(int posIndex)
     {
         this.posIndex = posIndex;
+    }
+
+    /**
+     * @return the fieldInfo
+     */
+    public DBFieldInfo getFieldInfo()
+    {
+        return fieldInfo;
     }
 
     /**
@@ -255,6 +288,18 @@ public class ERTICaptionInfo
     public void setColLabel(String colLabel)
     {
         this.colLabel = colLabel;
+    }
+
+    /**
+     * @return the description
+     */
+    public String getDescription()
+    {
+        if (description == null)
+        {
+            return fieldInfo.getDescription();
+        }
+        return description;
     }
 
     /**

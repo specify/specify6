@@ -970,7 +970,7 @@ public class FormEditor implements DatabaseLoginListener
 
         if (AppContextMgr.getInstance().setContext(databaseName, userName, false) == AppContextMgr.CONTEXT_STATUS.Error)
         {
-            log.error("Problems setting AppResourceDefault!");
+            log.error("Problems setting SpAppResourceDir!");
             System.exit(0);
         }
         //startup(databaseName, userName);

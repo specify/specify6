@@ -143,7 +143,8 @@ public class ESTableOrderPanel extends JPanel
     }
     
     /**
-     * @param currSearchableList
+     * Fills the Order List.
+     * @param currSearchableList the current search list of fields
      */
     protected void loadOrderList(final Vector<SearchFieldConfig> currSearchableList)
     {
@@ -181,6 +182,8 @@ public class ESTableOrderPanel extends JPanel
             }
         }
         
+        // Set all the Related Queries to 'Not In Use'
+        // so we can figure out which ones are in use.
         for (RelatedQuery rq : config.getRelatedQueries())
         {
             rq.setInUse(false);
@@ -196,19 +199,26 @@ public class ESTableOrderPanel extends JPanel
         {
             SearchTableConfig stc = sfc.getStc();
             
+            // First does it have any index fields selcted to be searched?
             if (stc.hasConfiguredSearchFields())
             {
+                // Now for thie 'core' table find all the related searches
                 List<ExpressResultsTableInfo> joinList = joinHash.get(Integer.toString(stc.getTableInfo().getTableId()));
                 if (joinList != null)
                 {
+                    // Ok, now loop though all the related searches for this table
+                    // so each erti refers to the Table in the STC
                     for (ExpressResultsTableInfo erti : joinList)
                     {
+                        // Check to see if the related has already be added.
                         if (duplicateHash.get(erti.getId()) == null)
                         {
+                            // Ok, now let's add the erti (related search)
                             RelatedQuery rq = relatedQueriesHash.get(erti.getId());
                             if (rq == null)
                             {
-                                // no old order so add one.
+                                // Check tro see if this has already been configured
+                                // if it can't find it then it is suppose to create a new one
                                 rq = config.findRelatedQuery(erti.getId(), true);
                                 rq.setDisplayOrder(newOrdercnt++);
                                 relatedQueriesHash.put(erti.getId(), rq); // Id is guaranteed to be unique
@@ -228,48 +238,19 @@ public class ESTableOrderPanel extends JPanel
             }
         }
         
+        // Now add in all the Related Queries
         for (RelatedQuery rq : config.getRelatedQueries())
         {
             if (rq.isInUse())
             {
-                //System.out.println(rq.getDisplayOrder());
                 tblList.add(rq);
             } 
         }
         
-        /*
-        // OK, now we have a hashtable of all the information we need to display
-        Vector<TableOrder> tblOrderList = new Vector<TableOrder>();
-        for (TableOrder tblOrder : new ArrayList<TableOrder>(tableOrderHash.values()))
-        {
-            if (tblOrder.isInUse())
-            {
-                tblOrderList.add(tblOrder);
-            } else
-            {
-                tableOrderHash.remove(tblOrder.getName());
-            }
-        }
-        Collections.sort(tblOrderList);
-        for (TableOrder tblOrder : tblOrderList)
-        {
-            System.out.println("-->  "+tblOrder.getName()+ " "+ tblOrder.getOrder());
-        }
-
-        
-        orderTablesModel.clear();
-        int order = 0;
-        for (TableOrder tblOrder : tblOrderList)
-        {
-            tblOrder.setOrder(order);
-            orderTablesModel.addElement(tblOrder);
-            System.out.println("X "+tblOrder.getName()+ " "+ order);
-            order++;
-        }
-        */
-        
+        // Clear the model
         orderTablesModel.clear();
         
+        // Sort the list containing both STC and Related Queries
         Collections.sort(tblList, new Comparator<TableNameRendererIFace>() {
             //@Override
             public int compare(TableNameRendererIFace o1, TableNameRendererIFace o2)
@@ -278,6 +259,7 @@ public class ESTableOrderPanel extends JPanel
             }
         });
         
+        // Now fill the model
         int i = 0;
         for (TableNameRendererIFace sr : tblList)
         {

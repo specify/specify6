@@ -240,7 +240,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="1" label="Number"/>
-                    <cell type="field" id="1" name="accessionNumber" isrequired="true" uitype="formattedtext" uifieldformatter="AccessionNumber" valtype="Focus"/>
+                    <cell type="field" id="1" name="accessionNumber" isrequired="true" uitype="formattedtext" uifieldformatter="AccessionNumber"/>
 
                     <cell type="label" labelfor="2" label="Status"/>
                     <cell type="field" id="2" name="status"  uitype="combobox" picklist="AccessionStatus" isrequired="true" valtype="Changed"/>
@@ -255,10 +255,10 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="5" label="Accessioned"/>
-                    <cell type="field" id="5" name="dateAccessioned" isrequired="true" uitype="formattedtext" uifieldformatter="Date" valtype="Focus" default="today"/>
+                    <cell type="field" id="5" name="dateAccessioned" isrequired="true" uitype="formattedtext" uifieldformatter="Date" default="today"/>
 
                     <cell type="label" labelfor="6" label="Received"/>
-                    <cell type="field" id="6" name="dateReceived" isrequired="true" uitype="formattedtext" uifieldformatter="Date" valtype="Focus" default="today"/>
+                    <cell type="field" id="6" name="dateReceived" isrequired="true" uitype="formattedtext" uifieldformatter="Date" default="today"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="7" label="Description"/>
@@ -558,7 +558,7 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1" label="Permit"/>
-                    <cell type="field" id="1" name="permit" uitype="querycbx" initialize="name=Permit;title=Permit" isrequired="true" valtype="Focus"/>
+                    <cell type="field" id="1" name="permit" uitype="querycbx" initialize="name=Permit;title=Permit" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="2" label="Remarks"/>

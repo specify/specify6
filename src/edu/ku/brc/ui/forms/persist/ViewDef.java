@@ -331,12 +331,12 @@ public class ViewDef implements Cloneable, ViewDefIFace
         this.height = height;
     }
     
-    protected void toXMLAttrs(final StringBuilder sb)
+    protected void toXMLAttrs(@SuppressWarnings("unused") final StringBuilder sb)
     {
         // no op
     }
     
-    protected void toXMLNodes(final StringBuilder sb)
+    protected void toXMLNodes(@SuppressWarnings("unused") final StringBuilder sb)
     {
         // no op
     }

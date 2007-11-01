@@ -360,8 +360,10 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
         
         locality = (Locality)value;
         
+        Integer currFormatterIndex = null;
         if (locality != null)
         {
+            currFormatterIndex  = locality.getOriginalLatLongUnit();
             currentType = convertLatLongType(locality.getLatLongType());
             setLatLon(locality.getLatitude1(), locality.getLongitude1(), 
                       locality.getLatitude2(), locality.getLongitude2());
@@ -371,7 +373,6 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
             setLatLon(null, null, null, null);
         }
         
-        Integer currFormatterIndex  = locality.getOriginalLatLongUnit();
         int     currFormatterInx    = currFormatterIndex == null ? 0 : currFormatterIndex;
         formatSelector.setSelectedIndex(currFormatterInx);
         

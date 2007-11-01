@@ -27,7 +27,8 @@ public class PickListDBAdapterFactory
      * @param name
      * @return
      */
-    public PickListDBAdapterIFace create(final String name, final boolean createWhenNotFound)
+    public PickListDBAdapterIFace create(@SuppressWarnings("unused") final String name, 
+                                         @SuppressWarnings("unused") final boolean createWhenNotFound)
     {
         throw new RuntimeException("You must override this factory with your own.");
     }
@@ -35,7 +36,7 @@ public class PickListDBAdapterFactory
     /**
      * @return
      */
-    public PickListIFace getPickList(final String name)
+    public PickListIFace getPickList(@SuppressWarnings("unused") final String name)
     {
         throw new RuntimeException("You must override this factory with your own.");
     }

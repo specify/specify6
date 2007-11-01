@@ -229,6 +229,11 @@ public interface Viewable
     public void updateSaveBtn();
     
     /**
+     * @return the save btn if it has one.
+     */
+    public JButton getSaveBtn();
+    
+    /**
      * Focus the appropriate UI element.
      */
     public void focus();

@@ -779,10 +779,19 @@ public class IconViewObj implements Viewable
         mainComp      = null;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#getSaveBtn()
+     */
+    public JButton getSaveBtn()
+    {
+        return null;
+    }
+    
     //-----------------------------------------------------------------------------------------------
     //-- Inner Classes
     //-----------------------------------------------------------------------------------------------
-    
+
+
     public class IconViewActionEvent extends ActionEvent
     {
         protected IconViewObj icIconViewObj;

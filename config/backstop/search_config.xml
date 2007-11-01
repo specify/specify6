@@ -5,7 +5,7 @@
     <!-- ************************************** -->
     <express>
     
-        <table id="1" tableid="4" indexed="false" name="CollObjToDeterminer" title="Determiner" priority="1" color="30, 144, 144">
+        <table id="1" tableid="4" indexed="false" name="CollObjToDeterminer" priority="1" color="30, 144, 144">
             <joins>
                 <join tableid="5" primary="true">agent.AgentID</join>
                 <join tableid="1">collectionobject.CollectionObjectID</join>
@@ -33,10 +33,10 @@
  WHERE  determinationstatus.IsCurrent = 1 and %s]]>
                 </sql>
                 <captions>
-                    <caption col="taxon.TaxonID" text="ID" visible="false"/>
-                    <caption col="TaxonName"  text="Taxon Name"/>
-                    <caption col="CommonName" text="Common Name"/>
-                    <caption text="Determiner" dataobjformatter="Agent">
+                    <caption tableid="4" col="taxon.TaxonID" visible="false"/>
+                    <caption tableid="4" col="TaxonName"  key="TaxonName"/>
+                    <caption tableid="4" col="CommonName"/>
+                    <caption tableid="4" key="Determiner" dataobjformatter="Agent">
                         <col name="agent.LastName"  field="lastName"/>
                         <col name="agent.FirstName" field="firstName"/>
                         <col name="agent.Name"      field="name"/>                        
@@ -47,7 +47,7 @@
             </detailView>
         </table>
     
-        <table id="2" tableid="1" indexed="false" name="CollObToLocality" title="Localities in Collecting Events" priority="1" color="30, 144, 144">
+        <table id="2" tableid="1" indexed="false" name="CollObToLocality" priority="1" color="30, 144, 144">
             <joins>
                 <join tableid="1" primary="true">collectingevent.CollectingEventID</join>
                 <join tableid="2">locality.LocalityID</join>
@@ -68,17 +68,17 @@
  where %s order by StartDate]]>
                 </sql>
                 <captions>
-                    <caption col="CollectingEventID" text="CollectingEventID" visible="false"/>
-                    <caption col="LocalityName" text="Locality Name"/>
-                    <caption col="StartDate"    text="Start Date"/>
-                    <caption col="EndDate"      text="End Date"/>
-                    <caption col="Latitude1"    text="Latitude1"/>
-                    <caption col="Longitude1"   text="Longitude1"/>
+                    <caption tableid="1" col="CollectingEventID" visible="false"/>
+                    <caption tableid="2" col="LocalityName"/>
+                    <caption tableid="10" col="StartDate"/>
+                    <caption tableid="10" col="EndDate"/>
+                    <caption tableid="2" col="Latitude1"/>
+                    <caption tableid="2" col="Longitude1"/>
                 </captions>
             </detailView>
         </table>
             
-        <table id="3" tableid="1" indexed="false" name="CollObject" title="Collection Object" priority="1" color="30, 144, 144">
+        <table id="3" tableid="1" indexed="false" name="CollObject" priority="1" color="30, 144, 144">
             <joins>
                 <join tableid="1" primary="true">collectionobject.CollectionObjectID</join>
                 <join tableid="4">taxon.TaxonID</join>
@@ -98,15 +98,15 @@
  where %s order by CatalogNumber asc]]>
                 </sql>
                 <captions>
-                    <caption col="collectionobject.CollectionObjectID" text="CollectionObjectID" visible="false"/>
-                    <caption col="CatalogNumber" text="Catalog Number" formatter="CatalogNumber"/>
-                    <caption col="CatalogedDate" text="Cataloged Date"/>
-                    <caption col="FullName"      text="Taxon Name"/>
+                    <caption tableid="1" col="collectionobject.CollectionObjectID" visible="false"/>
+                    <caption tableid="1" col="CatalogNumber" formatter="CatalogNumber"/>
+                    <caption tableid="1" col="CatalogedDate"/>
+                    <caption tableid="4" col="FullName" key="TaxonName"/>
                 </captions>
             </detailView>
         </table>
         
-        <table id="4" tableid="4" indexed="false" name="GeoToTaxon" title="Geography To Taxon" priority="1" color="30, 144, 144">
+        <table id="4" tableid="4" indexed="false" name="GeoToTaxon" priority="1" color="30, 144, 144">
             <joins>
                 <join tableid="4" primary="true">taxon.TaxonID</join>
                 <join tableid="2">locality.LocalityID</join>
@@ -134,18 +134,18 @@
  WHERE determinationstatus.IsCurrent = 1 AND %s]]>
                 </sql>
                 <captions>
-                    <caption col="taxon.TaxonID"         text="taxon.TaxonID" visible="false"/>
-                    <caption col="geography.FullName"    text="Geography"/>
-                    <caption col="locality.LocalityName" text="Locality Name"/>
-                    <caption col="CatalogNumber"  text="Cataloged Number" formatter="CatalogNumber"/>
-                    <caption col="CatalogedDate"  text="Cataloged Date"/>
-                    <caption col="StartDate"      text="Collected Date"/>
-                    <caption col="taxon.FullName" text="Taxon Name"/>
+                    <caption tableid="4" col="taxon.TaxonID"         visible="false"/>
+                    <caption tableid="3" col="geography.FullName"    key="Geography"/>
+                    <caption tableid="2" col="locality.LocalityName"/>
+                    <caption tableid="1" col="CatalogNumber" formatter="CatalogNumber"/>
+                    <caption tableid="1" col="CatalogedDate"/>
+                    <caption tableid="10" col="StartDate"/>
+                    <caption tableid="4" col="taxon.FullName"        key="TaxonName"/>
                 </captions>
             </detailView>
         </table>
 
-        <table id="5" tableid="1" indexed="false" name="ColObjCollectors" title="Collection Object Collectors" priority="1" color="30, 144, 144">
+        <table id="5" tableid="1" indexed="false" name="ColObjCollectors" priority="1" color="30, 144, 144">
             <joins>
                 <join tableid="1" primary="true">collectionobject.CollectionObjectID</join>
                 <join tableid="4">taxon.TaxonID</join>
@@ -176,12 +176,12 @@
  INNER JOIN determinationstatus ON determination.DeterminationStatusID = determinationstatus.DeterminationStatusID where determinationstatus.IsCurrent = 1 AND %s ORDER BY collectionobject.CollectionObjectID, collector.OrderNumber]]>
                 </sql>
                 <captions>
-                    <caption col="collectionobject.CollectionObjectID" text="collectionobject.CollectionObjectID" visible="false"/>
-                    <caption col="CatalogNumber"   text="Cataloged Number" formatter="CatalogNumber"/>
-                    <caption col="CatalogedDate"   text="Cataloged Date"/>
-                    <caption col="StartDate"       text="Collected Date"/>
-                    <caption col="taxon.FullName"  text="Taxon Name"/>
-                    <caption text="Collectors">
+                    <caption tableid="1"  col="collectionobject.CollectionObjectID" visible="false"/>
+                    <caption tableid="1"  col="CatalogNumber"   formatter="CatalogNumber"/>
+                    <caption tableid="1"  col="CatalogedDate"/>
+                    <caption tableid="10" col="StartDate"/>
+                    <caption tableid="4"  col="taxon.FullName"  key="TaxonName"/>
+                    <caption tableid="10" key="Collectors">
                         <agg class="edu.ku.brc.specify.datamodel.Collector" aggregator="Collector" ordercol="collector.OrderNumber"/>
                         <subobject class="edu.ku.brc.specify.datamodel.Agent" fieldname="agent"/>
                         <col name="agent.LastName"  field="lastName"/>
@@ -193,7 +193,7 @@
             </detailView>
         </table>
         
-        <table id="6" tableid="4" indexed="false" name="Accepted Taxon" title="Accepted Taxon" priority="1" color="30, 144, 144">
+        <table id="6" tableid="4" indexed="false" name="AcceptedTaxon" priority="1" color="30, 144, 144">
             <joins>
                 <join tableid="4" primary="true">t1.AcceptedID</join>
                 <join tableid="4">t2.TaxonID</join>
@@ -203,14 +203,14 @@
                     <![CDATA[SELECT t1.TaxonID, t1.FullName, t2.FullName, %s FROM taxon t1 INNER JOIN taxon t2 ON t1.AcceptedID = t2.TaxonID WHERE %s]]>
                 </sql>
                 <captions>
-                    <caption col="t1.TaxonID"         text="taxon.TaxonID" visible="false"/>
-                    <caption col="t1.FullName"        text="Old Name"/>
-                    <caption col="t2.FullName"        text="Accepted Name"/>
+                    <caption tableid="4" col="t1.TaxonID"  visible="false"/>
+                    <caption tableid="4" col="t1.FullName" key="OldTaxonName"/>
+                    <caption tableid="4" col="t2.FullName" key="AcceptedTaxonName"/>
                 </captions>
             </detailView>
         </table>
         
-        <table id="7" tableid="1" indexed="false" name="SynonymCollObjs" title="Synonym Coll Objs (type 4)" priority="1" color="30, 144, 144">
+        <table id="7" tableid="1" indexed="false" name="SynonymCollObjs" priority="1" color="30, 144, 144">
             <joins>
                 <join tableid="1" primary="true">co.CollectionObjectID</join>
                 <join tableid="9">d.CollectionObjectID</join>
@@ -219,18 +219,18 @@
             </joins>
             <detailView icon="Taxon">
                 <sql>
-                    <![CDATA[SELECT DISTINCT co.CollectionObjectID, co.CatalogNumber, t.FullName, t2.FullName, %s FROM collectionobject co INNER JOIN determination d ON d.CollectionObjectID=co.CollectionObjectID INNER JOIN taxon t ON d.TaxonID = t.TaxonID INNER JOIN taxon t2 ON t2.TaxonID = t.AcceptedID WHERE %s]]>
+                    <![CDATA[SELECT DISTINCT co.CollectionObjectID, co.CatalogNumber, t.FullName, t2.FullName, %s FROM collectionobject co INNER JOIN determination d ON d.CollectionObjectID = co.CollectionObjectID INNER JOIN taxon t ON d.TaxonID = t.TaxonID INNER JOIN taxon t2 ON t2.TaxonID = t.AcceptedID WHERE %s]]>
                 </sql>
                 <captions>
-                    <caption col="co.CollectionObjectID" text="co.CollectionObjectID" visible="false"/>
-                    <caption col="co.CatalogNumber"      text="Catalog Number"/>
-                    <caption col="t.FullName"            text="Determination Name"/>
-                    <caption col="t2.FullName"           text="Accepted Name"/>
+                    <caption tableid="1" col="co.CollectionObjectID" visible="false"/>
+                    <caption tableid="1" col="co.CatalogNumber"/>
+                    <caption tableid="4" col="t.FullName"   key="DeterminationName"/>
+                    <caption tableid="4" col="t2.FullName"  key="AcceptedTaxonName"/>
                 </captions>
             </detailView>
         </table>
         
-        <table id="8" tableid="1" indexed="false" name="AcceptedNameCollObjs" title="Accepted Name Coll Objs (type 3)" priority="1" color="30, 144, 144">
+        <table id="8" tableid="1" indexed="false" name="AcceptedNameCollObjs" priority="1" color="30, 144, 144">
             <joins>
                 <join tableid="1" primary="true">co.CollectionObjectID</join>
                 <join tableid="9">d.CollectionObjectID</join>
@@ -239,18 +239,18 @@
             </joins>
             <detailView icon="Taxon">
                 <sql>
-                    <![CDATA[SELECT DISTINCT co.CollectionObjectID, co.CatalogNumber, t.FullName, t2.FullName, %s FROM collectionobject co INNER JOIN determination d ON d.CollectionObjectID=co.CollectionObjectID INNER JOIN taxon t ON d.TaxonID = t.TaxonID INNER JOIN taxon t2 ON t.TaxonID = t2.AcceptedID WHERE %s]]>
+                    <![CDATA[SELECT DISTINCT co.CollectionObjectID, co.CatalogNumber, t.FullName, t2.FullName, %s FROM collectionobject co INNER JOIN determination d ON d.CollectionObjectID = co.CollectionObjectID INNER JOIN taxon t ON d.TaxonID = t.TaxonID INNER JOIN taxon t2 ON t.TaxonID = t2.AcceptedID WHERE %s]]>
                 </sql>
                 <captions>
-                    <caption col="co.CollectionObjectID" text="co.CollectionObjectID" visible="false"/>
-                    <caption col="co.CatalogNumber"      text="Catalog Number"/>
-                    <caption col="t.FullName"            text="Determination Name"/>
-                    <caption col="t2.FullName"           text="Old Name"/>
+                    <caption tableid="1" col="co.CollectionObjectID" visible="false"/>
+                    <caption tableid="1" col="co.CatalogNumber"/>
+                    <caption tableid="4" col="t.FullName"            key="DeterminationName"/>
+                    <caption tableid="4" col="t2.FullName"           key="OldTaxonName"/>
                 </captions>
             </detailView>
         </table>
         
-        <table id="9" tableid="1" indexed="false" name="OtherSynsCollObjs" title="Other Synonym Coll Objs (type 2)" priority="1" color="30, 144, 144">
+        <table id="9" tableid="1" indexed="false" name="OtherSynsCollObjs" priority="1" color="30, 144, 144">
             <joins>
                 <join tableid="1" primary="true">co.CollectionObjectID</join>
                 <join tableid="9">d.CollectionObjectID</join>
@@ -260,19 +260,19 @@
             </joins>
             <detailView icon="Taxon">
                 <sql>
-                    <![CDATA[SELECT DISTINCT co.CollectionObjectID, co.CatalogNumber, deterTax.FullName, acceptTax.FullName, oldTax.FullName, %s FROM collectionobject co INNER JOIN determination d ON d.CollectionObjectID=co.CollectionObjectID INNER JOIN taxon deterTax ON d.TaxonID = deterTax.TaxonID INNER JOIN taxon acceptTax ON acceptTax.TaxonID = deterTax.AcceptedID INNER JOIN taxon oldTax ON oldTax.AcceptedID = acceptTax.TaxonID  AND oldTax.TaxonID != deterTax.TaxonID WHERE %s]]>
+                    <![CDATA[SELECT DISTINCT co.CollectionObjectID, co.CatalogNumber, deterTax.FullName, acceptTax.FullName, oldTax.FullName, %s FROM collectionobject co INNER JOIN determination d ON d.CollectionObjectID = co.CollectionObjectID INNER JOIN taxon deterTax ON d.TaxonID = deterTax.TaxonID INNER JOIN taxon acceptTax ON acceptTax.TaxonID = deterTax.AcceptedID INNER JOIN taxon oldTax ON oldTax.AcceptedID = acceptTax.TaxonID  AND oldTax.TaxonID != deterTax.TaxonID WHERE %s]]>
                 </sql>
                 <captions>
-                    <caption col="co.CollectionObjectID" text="co.CollectionObjectID" visible="false"/>
-                    <caption col="co.CatalogNumber"      text="Catalog Number"/>
-                    <caption col="deterTax.FullName"     text="Old Name (on Determination)"/>
-                    <caption col="acceptTax.FullName"    text="Accepted Name"/>
-                    <caption col="oldTax.FullName"       text="Other Old Name"/>
+                    <caption tableid="1" col="co.CollectionObjectID" visible="false"/>
+                    <caption tableid="1" col="co.CatalogNumber"/>
+                    <caption tableid="4" col="deterTax.FullName"     key="OldTaxonOnDeter"/>
+                    <caption tableid="4" col="acceptTax.FullName"    key="AcceptedTaxonName"/>
+                    <caption tableid="4" col="oldTax.FullName"       key="OtherOldTaxonName"/>
                 </captions>
             </detailView>
         </table>
 
-        <table id="10" tableid="1" indexed="false" name="CurrCollObject" title="Current Collection Objects" priority="1" color="30, 144, 144">
+        <table id="10" tableid="1" indexed="false" name="CurrCollObject" priority="1" color="30, 144, 144">
             <joins>
                 <join tableid="1" primary="true">collectionobject.CollectionObjectID</join>
                 <join tableid="4">taxon.TaxonID</join>
@@ -293,10 +293,10 @@
  where %s order by CatalogNumber asc]]>
                 </sql>
                 <captions>
-                    <caption col="collectionobject.CollectionObjectID" text="CollectionObjectID" visible="false"/>
-                    <caption col="CatalogNumber" text="Catalog Number" formatter="CatalogNumber"/>
-                    <caption col="CatalogedDate" text="Cataloged Date"/>
-                    <caption col="FullName"      text="Taxon Name"/>
+                    <caption tableid="1" col="collectionobject.CollectionObjectID" visible="false"/>
+                    <caption tableid="1" col="CatalogNumber" formatter="CatalogNumber"/>
+                    <caption tableid="1" col="CatalogedDate"/>
+                    <caption tableid="4" col="FullName" key="TaxonName"/>
                 </captions>
             </detailView>
         </table>
@@ -307,7 +307,7 @@
     <!--  These are for Other Non-Express Search Searches  -->
     <!-- ************************************************* -->
     <generic>
-        <table id="100" tableid="5" name="AgentSearch" title="Agent Search" priority="1" color="30, 144, 255">
+        <table id="100" tableid="5" name="AgentSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
                     <![CDATA[SELECT * FROM (SELECT agent.AgentID,
@@ -315,186 +315,185 @@ agent.FirstName,  agent.LastName, agent.Name, agent.Email, address.Address, addr
 address.State, address.PostalCode, address.Country FROM agent  Left Join address ON agent.AgentID = address.AgentID) AS newTable WHERE (%s)]]>
                 </sql>
                 <captions>
-                    <caption col="AgentID" text="AgentID"  visible="false"/>
-                    <caption col="FirstName" text="First Name"/>
-                    <caption col="LastName" text="Last Name"/>
-                    <caption col="Name" text="Organization"/>
-                    <caption col="EMail" text="EMail"/>
-                    <caption col="Address" text="Address"/>
-                    <caption col="City" text="City"/>
-                    <caption col="State" text="State"/>
-                    <caption col="Postalcode" text="Zip"/>
-                    <caption col="Country" text="Country"/>
+                    <caption tableid="5" col="AgentID" visible="false"/>
+                    <caption tableid="5" col="FirstName"/>
+                    <caption tableid="5" col="LastName"/>
+                    <caption tableid="5" col="Name"/>
+                    <caption tableid="5" col="EMail"/>
+                    <caption tableid="8" col="Address"/>
+                    <caption tableid="8" col="City"/>
+                    <caption tableid="8" col="State"/>
+                    <caption tableid="8" col="Postalcode"/>
+                    <caption tableid="8" col="Country"/>
                 </captions>
             </detailView>
         </table>
     
-        <table id="101" tableid="6" name="PermitSearch" title="Permit" priority="1" color="30, 144, 255">
+        <table id="101" tableid="6" name="PermitSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
                     <![CDATA[SELECT * FROM (SELECT permit.PermitID, permit.PermitNumber,agent.LastName,permit.IssuedDate,permit.StartDate,
 permit.EndDate,permit.RenewalDate,permit.Type FROM permit left Join agent ON permit.IssuedByID = agent.AgentID) AS newTable WHERE (%s)]]>
                 </sql>
                 <captions>
-                    <caption col="PermitID" text="PermitID"  visible="false"/>
-                    <caption col="PermitNumber" text="Permit Number"/>
-                    <caption col="LastName" text="Issuer LastName"/>
-                    <caption col="IssuedDate" text="Issued Date"/>
-                    <caption col="StartDate" text="Start Date"/>
-                    <caption col="EndDate" text="End Date"/>
-                    <caption col="RenewalDate" text="Renewal Date"/>
-                    <caption col="Type" text="Type"/>
+                    <caption tableid="6" col="PermitID" visible="false"/>
+                    <caption tableid="6" col="PermitNumber"/>
+                    <caption tableid="5" col="LastName"/>
+                    <caption tableid="6" col="IssuedDate"/>
+                    <caption tableid="6" col="StartDate"/>
+                    <caption tableid="6" col="EndDate"/>
+                    <caption tableid="6" col="RenewalDate"/>
+                    <caption tableid="6" col="Type"/>
                 </captions>
             </detailView>
         </table>
         
-        <table id="102" tableid="7" name="AccessionSearch" title="Accessions" priority="1" color="30, 144, 255">
+        <table id="102" tableid="7" name="AccessionSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
-                    <![CDATA[SELECT accession.AccessionID, accession.Number, accession.Status, accession.Type, accession.Text1, 
-accession.DateAccessioned, accession.DateReceived FROM accession WHERE (%s)]]>
+                    <![CDATA[SELECT AccessionID, AccessionNumber, Status, Type, DateAccessioned, DateReceived FROM accession WHERE (%s)]]>
                 </sql>
                 <captions>
-                    <caption col="AccessionID" text="AccessionID"  visible="false"/>
-                    <caption col="Number" text="Number"/>
-                    <caption col="Status" text="Status"/>
-                    <caption col="Type" text="Type"/>
-                    <caption col="Text1" text="Division"/>
-                    <caption col="DateAccessioned" text="Date Accessioned"/>
-                    <caption col="DateReceived" text="Date Received"/>
+                    <caption tableid="7" col="AccessionID" visible="false"/>
+                    <caption tableid="7" col="AccessionNumber"/>
+                    <caption tableid="7" col="Status"/>
+                    <caption tableid="7" col="Type"/>
+                    <caption tableid="7" col="DateAccessioned"/>
+                    <caption tableid="7" col="DateReceived"/>
                 </captions>
             </detailView>
         </table>  
               
-        <table id="103" tableid="3" name="GeographySearch" title="Geography Search" priority="1" color="30, 144, 255">
+        <table id="103" tableid="3" name="GeographySearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
-                    <![CDATA[SELECT geography.GeographyID, geography.Name, geographytreedefitem.Name FROM geography INNER JOIN geographytreedefitem ON geography.GeographyTreeDefItemID = geographytreedefitem.GeographyTreeDefItemID WHERE (%s)]]>
+                    <![CDATA[SELECT geography.GeographyID, geography.Name, geography.FullName, geographytreedefitem.Name FROM geography INNER JOIN geographytreedefitem ON geography.GeographyTreeDefItemID = geographytreedefitem.GeographyTreeDefItemID WHERE (%s)]]>
                 </sql>
                 <captions>
-                    <caption col="geography.GeographyID" text="GeographyID"  visible="false"/>
-                    <caption col="geography.Name" text="Name"/>
-                    <caption col="geographytreedefitem.Name" text="Category"/>                    
+                    <caption tableid="3" col="geography.GeographyID" visible="false"/>
+                    <caption tableid="3" col="geography.Name"/>
+                    <caption tableid="3" col="geography.FullName"/>
+                    <caption tableid="3" col="geographytreedefitem.Name" key="GeoCategory"/>                    
                 </captions>
             </detailView>
         </table> 
         
         
-        <table id="104" tableid="65" name="PrepTypeSearch" title="PrepType Search" priority="1" color="30, 144, 255">
+        <table id="104" tableid="65" name="PrepTypeSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
                     <![CDATA[select PrepTypeID, Name from preptype where %s]]>
                 </sql>
                 <captions>
-                    <caption col="PrepTypeID" text="PrepTypeID"  visible="false"/>
-                    <caption col="Name" text="Name"/>
+                    <caption tableid="65" col="PrepTypeID" visible="false"/>
+                    <caption tableid="65" col="Name"/>
                 </captions>
             </detailView>
         </table>
         
-        <table id="105" tableid="26" name="CollectionTypeSearch" title="Collection Obj Def" priority="1" color="30, 144, 255">
+        <table id="105" tableid="26" name="CollectionTypeSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
                     <![CDATA[SELECT CollectionTypeID, Name, Discipline FROM collectiontype WHERE (%s)]]>
                 </sql>
                 <captions>
-                    <caption col="CollectionTypeID" text="CollectionTypeID"  visible="false"/>
-                    <caption col="Name" text="Name"/>
-                    <caption col="Discipline" text="Discipline"/>
+                    <caption tableid="26" col="CollectionTypeID" visible="false"/>
+                    <caption tableid="26" col="Name"/>
+                    <caption tableid="26" col="Discipline"/>
                 </captions>
             </detailView>
         </table>  
               
-        <table id="106" tableid="97" name="CatalogNumberingSchemeSearch" title="Catalog Numbering Scheme" priority="1" color="30, 144, 255">
+        <table id="106" tableid="97" name="CatalogNumberingSchemeSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
                     <![CDATA[SELECT CatalogNumberingSchemeID, SchemeName, IsNumericOnly FROM catalognumberingscheme WHERE (%s)]]>
                 </sql>
                 <captions>
-                    <caption col="CatalogNumberingSchemeID" text="CatalogNumberingSchemeID"  visible="false"/>
-                    <caption col="SchemeName" text="Name"/>
-                    <caption col="IsNumericOnly" text="Is Numeric"/>
+                    <caption tableid="97" col="CatalogNumberingSchemeID" visible="false"/>
+                    <caption tableid="97" col="SchemeName"/>
+                    <caption tableid="97" col="IsNumericOnly"/>
                 </captions>
             </detailView>
         </table>  
        
-        <table id="107" tableid="4" name="TaxonSearch" title="Taxon Search" priority="1" color="30, 144, 255">
+        <table id="107" tableid="4" name="TaxonSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
                     <![CDATA[SELECT TaxonID, FullName, CommonName FROM taxon WHERE (%s)]]>
                 </sql>
                 <captions>
-                    <caption col="TaxonID" text="TaxonID"  visible="false"/>
-                    <caption col="FullName" text="Name"/>
-                    <caption col="CommonName" text="Common Name"/>
+                    <caption tableid="4" col="TaxonID" visible="false"/>
+                    <caption tableid="4" col="FullName"/>
+                    <caption tableid="4" col="CommonName"/>
                 </captions>
             </detailView>
         </table>
         
-        <table id="108" tableid="5" name="AgentNameSearch" title="Agent Name Search" priority="1" color="30, 144, 255">
+        <table id="108" tableid="5" name="AgentNameSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
                     <![CDATA[SELECT AgentID, FirstName, LastName, Name FROM agent AS newTable WHERE (%s)]]>
                 </sql>
                 <captions>
-                    <caption col="AgentID" text="AgentID"  visible="false"/>
-                    <caption col="FirstName" text="First Name"/>
-                    <caption col="LastName" text="Last Name"/>
-                    <caption col="MiddleInitial" text="Middle Initial"/>
+                    <caption tableid="5" col="AgentID" visible="false"/>
+                    <caption tableid="5" col="FirstName"/>
+                    <caption tableid="5" col="LastName"/>
+                    <caption tableid="5" col="MiddleInitial"/>
                 </captions>
             </detailView>
         </table>
         
-        <table id="109" tableid="58" name="LocationSearch" title="Location Search" priority="1" color="30, 144, 255">
+        <table id="109" tableid="58" name="LocationSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
                     <![CDATA[SELECT LocationID, FullName FROM location WHERE (%s)]]>
                 </sql>
                 <captions>
-                    <caption col="LocationID" text="LocationID"  visible="false"/>
-                    <caption col="FullName" text="Name"/>
+                    <caption tableid="58" col="LocationID" visible="false"/>
+                    <caption tableid="58" col="FullName" key="LocationName"/>
                 </captions>
             </detailView>
         </table>
         
-        <table id="110" tableid="46" name="GeologicTimePeriodSearch" title="GeologicTimePeriod Search" priority="1" color="30, 144, 255">
+        <table id="110" tableid="46" name="GeologicTimePeriodSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
                     <![CDATA[SELECT GeologicTimePeriodID, FullName FROM geologictimeperiod WHERE (%s)]]>
                 </sql>
                 <captions>
-                    <caption col="GeologicTimePeriodID" text="GeologicTimePeriodID"  visible="false"/>
-                    <caption col="FullName" text="Name"/>
+                    <caption tableid="46" col="GeologicTimePeriodID" visible="false"/>
+                    <caption tableid="46" col="FullName" key="Name"/>
                 </captions>
             </detailView>
         </table>
         
-        <table id="111" tableid="100" name="LithoStrat" title="LithoStrat Search" priority="1" color="30, 144, 255">
+        <table id="111" tableid="100" name="LithoStrat" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
                     <![CDATA[SELECT LithoStratID, FullName FROM lithostrat WHERE (%s)]]>
                 </sql>
                 <captions>
-                    <caption col="LithoStratID" text="LithoStratID"  visible="false"/>
-                    <caption col="FullName" text="Name"/>
+                    <caption tableid="100" col="LithoStratID" visible="false"/>
+                    <caption tableid="100" col="FullName" key="Name"/>
                 </captions>
             </detailView>
         </table>
         
-        <table id="112" tableid="32" name="PaleoContextSearch" title="Paleo Context Search" priority="1" color="30, 144, 255">
+        <table id="112" tableid="32" name="PaleoContextSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
-                    <![CDATA[SELECT PaleoContextID, Distance, DistanceUnits FROM paleocontext WHERE (%s)]]>
+                    <![CDATA[SELECT PaleoContextID, TopDistance, DistanceUnits FROM paleocontext WHERE (%s)]]>
                 </sql>
                 <captions>
-                    <caption col="PaleoContextID" text="PaleoContextID"  visible="false"/>
-                    <caption col="Distance" text="Distance"/>
-                    <caption col="DistanceUnits" text="Distance Units"/>
+                    <caption tableid="32" col="PaleoContextID" visible="false"/>
+                    <caption tableid="32" col="TopDistance"/>
+                    <caption tableid="32" col="DistanceUnits"/>
                 </captions>
             </detailView>
         </table>
         
-        <table id="113" tableid="52" name="OpenLoans" title="Open Loans" priority="1" color="30, 144, 255">
+        <table id="113" tableid="52" name="OpenLoans" priority="1" color="30, 144, 255">
             <detailView icon="Loan">
                 <sql>
                     <![CDATA[SELECT DISTINCT loan.LoanID, LoanNumber, LoanDate, CurrentDueDate, OriginalDueDate FROM loan INNER JOIN loanpreparation ON loan.LoanID = loanpreparation.LoanID
@@ -507,37 +506,37 @@ accession.DateAccessioned, accession.DateReceived FROM accession WHERE (%s)]]>
                     datediff(CURDATE(), currentduedate) > 0]]>
                 </sql>
                 <captions>
-                    <caption col="loan.LoanID" text="LoanID" visible="false"/>
-                    <caption col="LoanNumber" text="Number"/>
-                    <caption col="LoanDate" text="Loan Date"/>
-                    <caption col="CurrentDueDate" text="Due Date"/>
-                    <caption col="OriginalDueDate" text="Orig Due Date"/>
+                    <caption tableid="52" col="loan.LoanID" visible="false"/>
+                    <caption tableid="52" col="LoanNumber"/>
+                    <caption tableid="52" col="LoanDate"/>
+                    <caption tableid="52" col="CurrentDueDate"/>
+                    <caption tableid="52" col="OriginalDueDate"/>
                 </captions>
             </detailView>
         </table>
         
-        <table id="114" tableid="2" name="LocalitySearch" title="Locality" priority="1" color="30, 144, 255">
+        <table id="114" tableid="2" name="LocalitySearch" priority="1" color="30, 144, 255">
             <detailView icon="Locality">
                 <sql>
                     <![CDATA[SELECT LocalityID, LocalityName,Latitude1,Longitude1  FROM locality WHERE (%s)]]>
                 </sql>
                 <captions>
-                    <caption col="LocalityID" text="ID" visible="false"/>
-                    <caption col="LocalityName" text="Locality Name"/>
-                    <caption col="Latitude1" text="Latitude"/>
-                    <caption col="Longitude1" text="Longitude"/>
+                    <caption tableid="2" col="LocalityID" visible="false"/>
+                    <caption tableid="2" col="LocalityName"/>
+                    <caption tableid="2" col="Latitude1"/>
+                    <caption tableid="2" col="Longitude1"/>
                 </captions>
             </detailView>
         </table>
         
-        <table id="115" tableid="41" name="AttachmentSearch" title="Attachment" priority="1" color="30, 144, 255">
+        <table id="115" tableid="41" name="AttachmentSearch" priority="1" color="30, 144, 255">
             <detailView icon="Attachment">
                 <sql>
                     <![CDATA[SELECT AttachmentID, OrigFilename FROM attachment WHERE (%s)]]>
                 </sql>
                 <captions>
-                    <caption col="AttachmentID" text="ID" visible="false"/>
-                    <caption col="OrigFilename" text="File name"/>
+                    <caption tableid="41" col="AttachmentID" visible="false"/>
+                    <caption tableid="41" col="OrigFilename"/>
                 </captions>
             </detailView>
         </table>

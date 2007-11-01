@@ -456,10 +456,10 @@ public class ViewFactory
                 DataChangeNotifier dcn = validator.hookupComponent(cbx, cellField.getIdent(), parseValidationType(cellField.getValidationType()), cellField.getValidationRule(), false);
                 cbx.getComboBox().getModel().addListDataListener(dcn);
 
-                if (dcn.getValidationType() == UIValidator.Type.Focus) // returns None when no Validator
-                {
+                //if (dcn.getValidationType() == UIValidator.Type.Focus) // returns None when no Validator
+                //{
                     cbx.addFocusListener(dcn);
-                }
+                //}
             }
             cbx.setCellName(cellField.getName());
             return cbx;

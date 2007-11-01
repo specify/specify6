@@ -317,7 +317,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
 
     /**
      * @return - 
-     * Set<AppResourceDefault>
+     * Set<SpAppResourceDir>
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "specifyUser")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })

@@ -1183,7 +1183,7 @@ public class InteractionsTask extends BaseTask
     @SuppressWarnings("unchecked")
     public void doCommand(final CommandAction cmdAction)
     {
-        log.debug("Processing Command ["+cmdAction.getType()+"]["+cmdAction.getAction()+"]");
+        //log.debug("Processing Command ["+cmdAction.getType()+"]["+cmdAction.getAction()+"]");
         
         if (cmdAction.isType(DB_CMD_TYPE))
         {

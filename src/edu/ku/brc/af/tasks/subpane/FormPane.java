@@ -92,12 +92,12 @@ public class FormPane extends DroppableTaskPane
      * @param data the data to fill the form
      * @param options the options needed for creating the form
      */
-    public FormPane(final String   name,
-                    final Taskable task,
-                    final ViewIFace     view,
-                    final String   mode,
-                    final Object   data,
-                    final int      options)
+    public FormPane(final String    name,
+                    final Taskable  task,
+                    final ViewIFace view,
+                    final String    mode,
+                    final Object    data,
+                    final int       options)
     {
         this(name, task, "");
 

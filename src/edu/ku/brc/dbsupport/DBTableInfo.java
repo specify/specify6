@@ -24,6 +24,7 @@ import java.util.Vector;
 
 import javax.swing.ImageIcon;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.ui.IconManager;
@@ -287,6 +288,26 @@ public class DBTableInfo extends DBInfoBase
             }
         }
         return fieldsHash.get(fieldName.toLowerCase());
+    }
+    
+    /**
+     * Converts the Column Name to a field name and returns the FieldInfo
+     * @param columnName the name of the column
+     * @return the field info
+     */
+    public DBFieldInfo getFieldByColumnName(final String columnName)
+    {
+        String      fName     = columnName.indexOf('.') > -1 ? StringUtils.substringAfterLast(columnName, ".") : columnName;
+        String      fieldName = fName.substring(0,1).toLowerCase() + fName.substring(1, fName.length());
+        DBFieldInfo fi        = getFieldByName(fieldName);
+        if (fi == null)
+        {
+            if (!fieldName.endsWith("ID"))
+            {
+                log.error("Couldn't find FieldName["+fieldName+"] in table ["+getTitle()+"]");
+            }
+        }
+        return fi;
     }
 
     /**

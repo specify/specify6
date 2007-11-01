@@ -135,15 +135,15 @@ public class TableViewObj implements Viewable,
     protected boolean                       isEditting     = false;
     protected boolean                       formIsInNewDataMode = false; // when this is true it means the form was cleared and new data is expected
     protected MultiView                     mvParent       = null;
-    protected ViewIFace                          view;
-    protected AltViewIFace                       altView;
-    protected ViewDefIFace                       viewDef;
-    protected FormViewDefIFace                   formViewDef;
+    protected ViewIFace                     view;
+    protected AltViewIFace                  altView;
+    protected ViewDefIFace                  viewDef;
+    protected FormViewDefIFace              formViewDef;
     protected int                           options;
     protected String                        cellName       = null;
     protected Component                     formComp       = null;
     protected List<MultiView>               kids           = new ArrayList<MultiView>();
-    protected Vector<AltViewIFace>               altViewsList   = null;
+    protected Vector<AltViewIFace>          altViewsList   = null;
     protected TableViewDef                  tableViewDef;
     protected DataObjectGettable            dataGetter      = null;
     
@@ -455,6 +455,7 @@ public class TableViewObj implements Viewable,
         table.setRowSelectionAllowed(true);
         table.setColumnSelectionAllowed(false);
         table.setFocusable(false);
+        table.setPreferredScrollableViewportSize(new Dimension(200,table.getRowHeight()*6));
         
         configColumns();
         
@@ -1384,6 +1385,14 @@ public class TableViewObj implements Viewable,
         return null;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#getSaveBtn()
+     */
+    public JButton getSaveBtn()
+    {
+        return null;
+    }
+
     //-----------------------------------------------------
     // ValidationListener
     //-----------------------------------------------------

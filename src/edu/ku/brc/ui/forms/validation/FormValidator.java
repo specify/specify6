@@ -1028,6 +1028,11 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public void setHasChanged(boolean hasChanged)
     {
+        if (!enabled)
+        {
+            int x = 0;
+            x++;
+        }
         log.debug("setHasChanged ["+name+"] "+hasChanged);
         this.hasChanged = hasChanged;
     }
