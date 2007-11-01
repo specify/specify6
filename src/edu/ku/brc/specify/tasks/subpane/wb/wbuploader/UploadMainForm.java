@@ -39,7 +39,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
  */
 public class UploadMainForm extends JFrame
 {
-    private static final Logger log = Logger.getLogger(Uploader.class);
+    private static final Logger log = Logger.getLogger(UploadMainForm.class);
 
     //action commands for user actions
     public static String DO_UPLOAD = "DO_UPLOAD";

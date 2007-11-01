@@ -27,6 +27,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.CriteriaIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
+import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Determination;
@@ -35,7 +36,6 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Relationship;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader.ParentTableEntry;
-import edu.ku.brc.specify.treeutils.HibernateTreeDataServiceImpl;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
 
@@ -77,7 +77,7 @@ public class UploadTable implements Comparable<UploadTable>
      *  ids of records uploaded during the most recent upload.  
      */
     protected Set<Object> uploadedKeys;
-    protected static final Logger log = Logger.getLogger(HibernateTreeDataServiceImpl.class);
+    protected static final Logger log = Logger.getLogger(UploadTable.class);
     /**
      * A vector storing the most recently written object for each 'sequence'.
      * 
@@ -1203,6 +1203,19 @@ public class UploadTable implements Comparable<UploadTable>
 //        }
 //        matchHQL = "from " + tblClass.getSimpleName() + " obj where " + wheres.toString();
 //    }
+    
+    protected boolean checkChildrenMatch(DataModelObjBase match)
+    {
+        log.debug("Checking to see if children match:" + match);
+        return true;
+    }
+    
+    protected boolean needToMatchChildren()
+    {
+        //temporary fix. Should determine based on cascade rules and the fields in the dataset.
+        //Currently, I think, CollectingEvent is the only class that applies.
+        return tblClass.equals(CollectingEvent.class);
+    }
    /**
      * @param recNum
      * @return
@@ -1271,6 +1284,10 @@ public class UploadTable implements Comparable<UploadTable>
             try
             {
                 match = (DataModelObjBase)critter.uniqueResult();
+                if (needToMatchChildren() && !checkChildrenMatch(match))
+                {
+                    match = null;
+                }
             }
             catch (NonUniqueResultException hex)
             {
@@ -1278,8 +1295,6 @@ public class UploadTable implements Comparable<UploadTable>
                 List<?> matches = critter.list();
                 if (matches.size() != 0)
                 {
-
-                    // match = (DataModelObjBase)matches.get(0);
                     ChooseFromListDlg<DataModelObjBase> dlg = new ChooseFromListDlg<DataModelObjBase>(
                             null, "you decide", (List<DataModelObjBase>) matches);
                     dlg.setModal(true);
@@ -1576,11 +1591,12 @@ public class UploadTable implements Comparable<UploadTable>
                 }
                 tblSession.commit();
                 tblTransactionOpen = false;
-                uploadedKeys.add(rec.getId());
                 if (busRule != null)
                 {
                     busRule.afterSaveCommit(rec);
                 }
+                tblSession.refresh(rec);
+                uploadedKeys.add(rec.getId());
             }
             catch (Exception ex)
             {

@@ -37,6 +37,7 @@ public class UploadTableTree extends UploadTable
 	protected Table baseTable; 
 	protected UploadTableTree parent;
     protected Integer rank;
+    protected DataModelObjBase treeRoot;
     private static GeographyTreeDef geoTreeDef = null;
     private static TaxonTreeDef taxTreeDef = null;
     
@@ -235,10 +236,76 @@ public class UploadTableTree extends UploadTable
         }
         else
         {
+            tRec.setParent((Treeable)getDefaultParent(tRec));
             tRec.setDefinition(getTreeDef());
             tRec.setDefinitionItem(getTreeDefItem());
             
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected DataModelObjBase getDefaultParent(Treeable rec) throws UploaderException
+    {
+        if (treeRoot == null)
+        {
+            loadTreeRoot();
+        }
+        return treeRoot;
+    }
+    
+    protected void loadTreeRoot() throws UploaderException
+    {
+        String hql = "from " + tblClass.getName() + " where " + getTreeDefFld() + "=" + getTreeDef().getTreeDefId() + " and " + getTreeDefItemFld() + "=" +
+            getTreeDef().getDefItemByRank(0).getTreeDefItemId();
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            QueryIFace q = session.createQuery(hql);
+            treeRoot = (DataModelObjBase)q.list().get(0);
+        }
+        finally
+        {
+            session.close();
+        }
+    }
+    
+    protected String getTreeDefFld() throws UploaderException
+    {
+        if (tblClass == Taxon.class)
+        {
+            return "TaxonTreeDefId";
+        }
+        if (tblClass == Geography.class)
+        {
+            return "GeographyTreeDefId";
+        }
+        throw new UploaderException("unable to find TreeDef field for " + baseTable.getName(), UploaderException.ABORT_IMPORT);
+    }
+
+    protected String getTreeDefItemFld() throws UploaderException
+    {
+        if (tblClass == Taxon.class)
+        {
+            return "TaxonTreeDefItemId";
+        }
+        if (tblClass == Geography.class)
+        {
+            return "GeographyTreeDefItemId";
+        }
+        throw new UploaderException("unable to find TreeDefItem field for " + baseTable.getName(), UploaderException.ABORT_IMPORT);
+    }
+
+    protected String getTreeDefItemTbl() throws UploaderException
+    {
+        if (tblClass == Taxon.class)
+        {
+            return "TaxonTreeDefItem";
+        }
+        if (tblClass == Geography.class)
+        {
+            return "GeographyTreeDefItem";
+        }
+        throw new UploaderException("unable to find TreeDefItem table for " + baseTable.getName(), UploaderException.ABORT_IMPORT);
     }
 
 }

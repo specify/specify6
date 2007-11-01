@@ -1194,7 +1194,6 @@ public class Uploader implements ActionListener, WindowStateListener
         else if (e.getActionCommand().equals(UploadMainForm.UNDO_UPLOAD))
         {
             undoUpload();
-            closeMainForm();
             wbSS.uploadDone();
         }
         else if (e.getActionCommand().equals(UploadMainForm.CANCEL_OPERATION))
@@ -1598,6 +1597,7 @@ public class Uploader implements ActionListener, WindowStateListener
                         statusBar.setText(getResourceString("WB_UPLOAD_ROLLBACK_FAILURE")); 
                         setCurrentOp(Uploader.FAILURE);
                 }
+                closeMainForm();
             }
 
         };

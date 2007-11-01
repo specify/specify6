@@ -57,7 +57,7 @@ import edu.ku.brc.util.Pair;
  */
 public class MissingDataResolver implements ActionListener
 {
-    protected static final Logger log = Logger.getLogger(Uploader.class);
+    protected static final Logger log = Logger.getLogger(MissingDataResolver.class);
 
     /**
      * Foreign keys not provided by the upload dataset.

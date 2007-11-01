@@ -121,6 +121,7 @@
     <field table="CollectionObjectAttributes" name="colObjAttributeYesNo7" actualname="YesNo7"/>
 
     <!-- determination -->
+    
     <field table="Determination" name="determinedDate1" actualname="determinedDate" onetomanysequence="0" relationshipname="collectionObject"/>
     <field table="Determination" name="determinerLastName1" onetomanysequence="0" relationshipname="determiner" relatedfieldname="lastName"/>
     <field table="Determination" name="determinerFirstName1" onetomanysequence="0" relationshipname="determiner" relatedfieldname="firstName"/>
