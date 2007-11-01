@@ -1144,6 +1144,12 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
     {
         return taxonAttachments;
     }
+    
+    @Transient
+    public Taxon getKingdom()
+    {
+        return getLevel(TaxonTreeDef.KINGDOM);
+    }
 
     @Transient
     public Taxon getGenus()
@@ -1161,6 +1167,12 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
     public Taxon getSubspecies()
     {
         return getLevel(TaxonTreeDef.SUBSPECIES);
+    }
+    
+    @Transient
+    public String getKingdomName()
+    {
+        return getLevelName(TaxonTreeDef.KINGDOM);
     }
     
     @Transient
