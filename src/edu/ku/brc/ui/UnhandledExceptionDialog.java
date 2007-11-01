@@ -26,6 +26,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -52,7 +53,7 @@ public class UnhandledExceptionDialog extends JDialog
         createUI(message, exception);
         
         setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));
-        setDefaultCloseOperation(HIDE_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         this.setAlwaysOnTop(true);
     }
 
@@ -65,7 +66,7 @@ public class UnhandledExceptionDialog extends JDialog
         
         createUI(message, null);
         setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         this.setAlwaysOnTop(true);
     }
 
@@ -79,7 +80,7 @@ public class UnhandledExceptionDialog extends JDialog
         createUI(throwable.getMessage(), throwable);
         
         setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         this.setAlwaysOnTop(true);
     }
 
