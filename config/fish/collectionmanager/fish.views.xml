@@ -739,7 +739,7 @@
                 <row>
                     <cell type="field" id="attachments" label="attachments" uitype="plugin" name="agentAttachments" initialize="name=SubformLauncherButton;title=Attachments"/>
                 </row>
-                
+				                
             </rows>
         </viewdef>
 
@@ -999,7 +999,11 @@
     		    <row>
                     <cell type="subview" id="attachments" viewname="CollectionObjectAttachment" name="collectionObjectAttachments" colspan="12"/>
                 </row>
-
+				<!--
+                <row>
+                    <cell type="field" id="attachments" label="attachments" uitype="plugin" name="collectionObjectAttachments" initialize="name=SubformLauncherButton;tableID=111;title=Attachments"/>
+                </row>
+                -->
     			<row>
     				<cell type="separator" label="" colspan="12"/>
     			</row>
