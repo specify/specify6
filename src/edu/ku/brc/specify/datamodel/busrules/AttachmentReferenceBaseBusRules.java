@@ -144,7 +144,7 @@ public class AttachmentReferenceBaseBusRules extends BaseBusRules
     {
         if (newParentDataObj instanceof ObjectAttachmentIFace)
         {
-            ObjectAttachmentIFace objAtt = (ObjectAttachmentIFace)newParentDataObj;
+            ObjectAttachmentIFace<?> objAtt = (ObjectAttachmentIFace<?>)newParentDataObj;
             objAtt.setAttachment((Attachment)dataObjectFromSearch);
             return objAtt;
         }

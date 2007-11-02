@@ -700,7 +700,7 @@ public class ViewFactory
         String pluginName = cellField.getProperty("name");
         if (StringUtils.isEmpty(pluginName))
         {
-            throw new RuntimeException("Creating plugin and the class property was missing.");
+            throw new RuntimeException("Creating plugin and the name property was missing. ["+cellField.getName()+"]");
         }
         
         // We should refactor the plugin manager.

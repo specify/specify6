@@ -943,6 +943,9 @@ public class FormViewObj implements Viewable,
      */
     public boolean checkForChanges()
     {
+        
+        //log.debug((formValidator != null) +" "+ formValidator.hasChanged() +"  "+mvParent.isTopLevel() +" "+ mvParent.hasChanged());
+        
         if (mvParent != null)
         {
             Object topParentData = mvParent.getTopLevel().getData();
@@ -961,9 +964,6 @@ public class FormViewObj implements Viewable,
         
         log.debug("Form     Val: "+(formValidator != null && formValidator.hasChanged()));
         log.debug("mvParent Val: "+(mvParent != null && mvParent.isTopLevel() && mvParent.hasChanged()));
-        
-        int x = 0;
-        x++;
         
         if ((formValidator != null && formValidator.hasChanged()) ||
             (mvParent != null && mvParent.isTopLevel() && mvParent.hasChanged()))

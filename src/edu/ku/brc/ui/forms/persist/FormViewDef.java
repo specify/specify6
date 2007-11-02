@@ -190,6 +190,7 @@ public class FormViewDef extends ViewDef implements Cloneable, FormViewDefIFace
      */
     public String getDefinitionName()
     {
+        System.out.println("getDefinitionName "+hashCode()+" ["+name+"]["+definitionName+"]");
         return definitionName;
     }
 
@@ -199,6 +200,18 @@ public class FormViewDef extends ViewDef implements Cloneable, FormViewDefIFace
     public void setDefinitionName(String definitionName)
     {
         this.definitionName = definitionName;
+        if (definitionName == null)
+        {
+            int x = 0;
+            x++;
+        }
+        System.out.println("Setting: "+hashCode()+" ["+definitionName+"]");
+        if (definitionName != null && definitionName.equals("Collectors"))
+        {
+            int x = 0;
+            x++;
+        }
+
     }
     
     /**
@@ -229,6 +242,7 @@ public class FormViewDef extends ViewDef implements Cloneable, FormViewDefIFace
         fvd.rows        = new Vector<FormRowIFace>(); 
         fvd.columnDef   = (JGDefItem)columnDef.clone();
         fvd.rowDef      = (JGDefItem)rowDef.clone();
+        fvd.definitionName = definitionName;
         for (FormRowIFace formRow : rows)
         {
             fvd.rows.add((FormRow)formRow.clone()); 
@@ -268,7 +282,7 @@ public class FormViewDef extends ViewDef implements Cloneable, FormViewDefIFace
             rowDef.toXML("rowDef", sb);
         }
         
-        System.out.println("["+definitionName+"]");
+        //System.out.println(hashCode()+" ["+definitionName+"]");
         if (isNotEmpty(definitionName))
         {
             sb.append("  ");
@@ -407,21 +421,24 @@ public class FormViewDef extends ViewDef implements Cloneable, FormViewDefIFace
         
         public void toXML(final String nodeName, final StringBuilder sb)
         {
-            sb.append("    <");
-            sb.append(nodeName);
-            if (isAuto)
+            if (defStr != null)
             {
-                xmlAttr(sb, "auto", true);
-                xmlAttr(sb, "cell", cellDefStr);
-                xmlAttr(sb, "sep", sepDefStr);
-                sb.append("/>\n");
-            } else
-            {
-                sb.append('>');
-                sb.append(defStr);
-                sb.append("</");
+                sb.append("    <");
                 sb.append(nodeName);
-                sb.append(">\n");
+                if (isAuto)
+                {
+                    xmlAttr(sb, "auto", true);
+                    xmlAttr(sb, "cell", cellDefStr);
+                    xmlAttr(sb, "sep", sepDefStr);
+                    sb.append("/>\n");
+                } else
+                {
+                    sb.append('>');
+                    sb.append(defStr);
+                    sb.append("</");
+                    sb.append(nodeName);
+                    sb.append(">\n");
+                }
             }
         }
 

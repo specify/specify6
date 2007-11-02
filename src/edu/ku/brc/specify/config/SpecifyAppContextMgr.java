@@ -581,7 +581,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 try
                 {
                     Element root = XMLHelper.readStrToDOM4J(vso.getDataAsString());
-                    viewSetList.add(new ViewSet(root));
+                    viewSetList.add(new ViewSet(root, true));
 
                 } catch (Exception ex)
                 {

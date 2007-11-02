@@ -283,7 +283,7 @@ public class AltView implements Comparable<AltViewIFace>, Cloneable, AltViewIFac
     {
         sb.append("        <altview ");
         xmlAttr(sb, "name", name);
-        xmlAttr(sb, "viewdef", name);
+        xmlAttr(sb, "viewdef", viewDef.getName());
         xmlAttr(sb, "label", label);
         xmlAttr(sb, "validated", validated);
         xmlAttr(sb, "default", isDefault);

@@ -66,9 +66,10 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
      * Constructor from a DOM element.
      * @param rootDOM the DOM element
      */
-    public ViewSet(final Element rootDOM) throws Exception
+    public ViewSet(final Element rootDOM,
+                   final boolean doMapDefinitions) throws Exception
     {
-        loadDOM(rootDOM, true);
+        loadDOM(rootDOM, true, doMapDefinitions);
     }
 
 
@@ -318,7 +319,9 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
      * Loads the ViewSet from a DOM element.
      * @param rootDOM the root
      */
-    protected void loadDOM(final Element rootDOM, final boolean doSetName) throws Exception
+    protected void loadDOM(final Element rootDOM, 
+                           final boolean doSetName,
+                           final boolean doMapDefinitions) throws Exception
     {
         if (rootDOM != null)
         {
@@ -326,7 +329,7 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
             views.clear();
 
             // Do these first so the view can check their altViews against them            
-            ViewLoader.getViewDefs(rootDOM, viewDefs);
+            ViewLoader.getViewDefs(rootDOM, viewDefs, doMapDefinitions);
 
             String viewsName = ViewLoader.getViews(rootDOM, views, viewDefs);
             if (doSetName)
@@ -372,6 +375,14 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
         Collections.sort(viewDefsList);
         for (ViewDefIFace viewDef : viewDefsList)
         {
+            if (viewDef instanceof FormViewDef)
+            {
+                if (((FormViewDef)viewDef).getDefinitionName() != null && ((FormViewDef)viewDef).getDefinitionName().equals("Collectors"))
+                {
+                    int x = 0;
+                    x++;
+                }
+            }
             viewDef.toXML(sb);
         }
         sb.append("  </viewdefs>\n");
@@ -385,7 +396,7 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
      */
     protected void loadViewFile(final FileInputStream fileInputStream) throws Exception
     {
-        loadDOM(XMLHelper.readFileToDOM4J(fileInputStream), false);
+        loadDOM(XMLHelper.readFileToDOM4J(fileInputStream), false, true);
     }
 
     /* (non-Javadoc)

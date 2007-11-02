@@ -450,7 +450,7 @@ public class XMLHelper
            sb.append("  <");
            sb.append(tag);
            sb.append(">");
-           if (useCData) sb.append("![CDATA[");
+           if (useCData) sb.append("<![CDATA[");
            sb.append(val);
            if (useCData) sb.append("]]>");
            sb.append("</");

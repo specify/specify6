@@ -50,6 +50,10 @@ public class DataObjectGettableFactory
     public static DataObjectGettable get(final String className, final String gettableClassName)
     {
         if (gettableClassName == null || gettableClassName.length() == 0) return null;
+        if (className == null)
+        {
+            throw new RuntimeException("Class Name is null and can't be!");
+        }
         
         Hashtable<String, DataObjectGettable> gettableHash = instance.hashTable.get(className);
         if (gettableHash == null)

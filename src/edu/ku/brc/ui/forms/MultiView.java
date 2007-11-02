@@ -116,7 +116,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      */
     public MultiView(final MultiView mvParent,
                      final String    cellName,
-                     final ViewIFace      view,
+                     final ViewIFace view,
                      final AltViewIFace.CreationMode createWithMode,
                      final int       options)
     {

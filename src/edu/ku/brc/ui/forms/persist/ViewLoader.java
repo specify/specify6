@@ -201,6 +201,26 @@ public class ViewLoader
         String   gettableClassName = element.attributeValue(GETTABLE);
         String   settableClassName = element.attributeValue(SETTABLE);
         String   desc              = getDesc(element);
+        
+        if (StringUtils.isEmpty(name))
+        {
+            throw new RuntimeException("name is null.");
+        }
+
+        if (StringUtils.isEmpty(className))
+        {
+            throw new RuntimeException("className is null. name["+name+"]");
+        }
+
+        if (StringUtils.isEmpty(gettableClassName))
+        {
+            throw new RuntimeException("gettableClassName Name is null.name["+name+"] classname["+className+"]");
+        }
+
+        if (StringUtils.isEmpty(settableClassName))
+        {
+            //throw new RuntimeException("settableClassName Name is null.name["+name+"] classname["+className+"] settableClassName["+settableClassName+"]");
+        }
 
         ViewDef.ViewType type;
         try
@@ -297,7 +317,9 @@ public class ViewLoader
      * @param viewDefs the list to be filled
      * @throws Exception for duplicate view set names or if a ViewDef name is not unique
      */
-    public static String getViewDefs(final Element doc, final Hashtable<String, ViewDefIFace> viewDefs) throws Exception
+    public static String getViewDefs(final Element doc, 
+                                     final Hashtable<String, ViewDefIFace> viewDefs,
+                                     final boolean doMapDefinitions) throws Exception
     {
         instance.viewSetName = doc.attributeValue(NAME);
 
@@ -321,30 +343,43 @@ public class ViewLoader
                 }
             }
             
-            // Now that all the definitions have been read in
-            // cycle thru and have all the tableform objects clone there definitions
-            for (ViewDefIFace viewDef : new Vector<ViewDefIFace>(viewDefs.values()))
+            if (doMapDefinitions)
             {
-                if (viewDef.getType() == ViewDefIFace.ViewType.formtable)
-                {
-                    ViewDefIFace actualDef = viewDefs.get(((FormViewDefIFace)viewDef).getDefinitionName());
-                    if (actualDef != null)
-                    {
-                        viewDefs.remove(viewDef.getName());
-                        actualDef = (ViewDef)actualDef.clone();
-                        actualDef.setType(ViewDefIFace.ViewType.formtable);
-                        actualDef.setName(viewDef.getName());
-                        viewDefs.put(actualDef.getName(), actualDef);
-                        
-                    } else
-                    {
-                        throw new RuntimeException("Couldn't find the ViewDef for formtable definition name["+((FormViewDefIFace)viewDef).getDefinitionName()+"]");
-                    }
-                }
+                mapDefinitionViewDefs(viewDefs);
             }
         }
 
         return instance.viewSetName;
+    }
+    
+    /**
+     * Re-maps and clones the definitions.
+     * @param viewDefs the hash table to be mapped
+     * @throws Exception
+     */
+    public static void mapDefinitionViewDefs(final Hashtable<String, ViewDefIFace> viewDefs)  throws Exception
+    {
+        // Now that all the definitions have been read in
+        // cycle thru and have all the tableform objects clone there definitions
+        for (ViewDefIFace viewDef : new Vector<ViewDefIFace>(viewDefs.values()))
+        {
+            if (viewDef.getType() == ViewDefIFace.ViewType.formtable)
+            {
+                ViewDefIFace actualDef = viewDefs.get(((FormViewDefIFace)viewDef).getDefinitionName());
+                if (actualDef != null)
+                {
+                    viewDefs.remove(viewDef.getName());
+                    actualDef = (ViewDef)actualDef.clone();
+                    actualDef.setType(ViewDefIFace.ViewType.formtable);
+                    actualDef.setName(viewDef.getName());
+                    viewDefs.put(actualDef.getName(), actualDef);
+                    
+                } else
+                {
+                    throw new RuntimeException("Couldn't find the ViewDef for formtable definition name["+((FormViewDefIFace)viewDef).getDefinitionName()+"]");
+                }
+            }
+        } 
     }
 
 
