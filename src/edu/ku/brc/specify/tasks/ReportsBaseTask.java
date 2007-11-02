@@ -208,7 +208,7 @@ public class ReportsBaseTask extends BaseTask
                          final Taskable            originatingTask,
                          final ImageIcon           paneIcon)
     {
-        int startPaneIndex = starterPane != null ? SubPaneMgr.getInstance().indexOfComponent((LabelsPane)starterPane) : -1;
+        int startPaneIndex = starterPane != null ? SubPaneMgr.getInstance().indexOfComponent(starterPane.getUIComponent()) : -1;
         
         LabelsPane labelsPane;
         if (startPaneIndex == -1)

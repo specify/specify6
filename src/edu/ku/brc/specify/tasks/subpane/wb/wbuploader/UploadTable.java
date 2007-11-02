@@ -16,6 +16,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRField;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.NonUniqueResultException;
@@ -34,6 +38,7 @@ import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Relationship;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader.ParentTableEntry;
@@ -1363,7 +1368,7 @@ public class UploadTable implements Comparable<UploadTable>
         //do nothing for now
     }
     
-    public class UploadTableInvalidValue
+    public class UploadTableInvalidValue 
     {
         protected UploadTable uploadTbl;
         protected UploadField uploadFld;
@@ -1389,7 +1394,16 @@ public class UploadTable implements Comparable<UploadTable>
          */
         public String getDescription()
         {
-            return cause.getLocalizedMessage();
+            if (cause == null)
+            {
+                return null;
+            }
+            StringBuilder result = new StringBuilder(cause.getClass().getSimpleName());
+            if (cause.getLocalizedMessage() != null)
+            {
+                result.append(cause.getLocalizedMessage());
+            }
+            return result.toString();
         }
         /**
          * @return the issueName
@@ -1445,9 +1459,8 @@ public class UploadTable implements Comparable<UploadTable>
         {
             return uploadTbl.getTable().getName() + "." + uploadFld.getWbFldName() + " (row " + rowNum.toString() + "): " + getIssueName();
         }
+     }
         
-    }
-    
     public Vector<UploadTableInvalidValue> validateValues(final UploadData uploadData)
     {
         Vector<UploadTableInvalidValue> result = new Vector<UploadTableInvalidValue>();

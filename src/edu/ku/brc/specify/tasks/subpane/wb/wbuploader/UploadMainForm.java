@@ -51,6 +51,7 @@ public class UploadMainForm extends JFrame
     public static String TBL_DBL_CLICK = "TBL_DBL_CLICK";
     public static String INVALID_VAL_CLICK = "INVALID_VAL_CLICK";
     public static String UNDO_UPLOAD = "UNDO_UPLOAD";
+    public static String PRINT_INVALID = "PRINT_INVALID";
     
     protected JLabel uploadTblLbl;
     protected JList uploadTbls;
@@ -62,6 +63,7 @@ public class UploadMainForm extends JFrame
     protected JButton closeBtn;
     protected JButton cancelBtn;
     protected JButton undoBtn;
+    protected JButton printInvalidBtn;
     protected JPanel invalidValPane;
     protected JLabel invalidValLbl;
     protected JList invalidVals;
@@ -150,6 +152,9 @@ public class UploadMainForm extends JFrame
             }
         });
         invalidValPane.add(invalidVals, BorderLayout.CENTER);
+        printInvalidBtn = new JButton(getResourceString("WB_UPLOAD_PRINT_INVALID_BTN")); 
+        printInvalidBtn.setActionCommand(PRINT_INVALID);
+        invalidValPane.add(printInvalidBtn, BorderLayout.SOUTH);
         mainPane.add(invalidValPane);
         
         mainPane.add(Box.createVerticalStrut(20));
@@ -350,6 +355,7 @@ public class UploadMainForm extends JFrame
         setBtnListener(closeBtn, listener);
         setBtnListener(cancelBtn, listener);
         setBtnListener(undoBtn, listener);
+        setBtnListener(printInvalidBtn, listener);
     }
     
     public class TesterThingy implements ActionListener
@@ -431,5 +437,13 @@ public class UploadMainForm extends JFrame
     public JButton getUndoBtn()
     {
         return undoBtn;
+    }
+
+    /**
+     * @return the printInvalidBtn
+     */
+    public JButton getPrintInvalidBtn()
+    {
+        return printInvalidBtn;
     }
 }

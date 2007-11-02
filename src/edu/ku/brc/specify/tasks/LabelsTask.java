@@ -219,7 +219,7 @@ public class LabelsTask extends ReportsBaseTask
                 }
             } else
             {
-                super.doCommand(cmdAction);
+                //super.doCommand(cmdAction);
                 
                 /*if (cmdAction.isType(APP_CMD_TYPE) && cmdAction.isAction(APP_RESTART_ACT))
                 {

@@ -27,9 +27,14 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRField;
+
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.tasks.ReportsBaseTask;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
 import edu.ku.brc.specify.tasks.subpane.wb.graph.DirectedGraph;
@@ -43,6 +48,8 @@ import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMappingDefRel.Import
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable.DefaultFieldEntry;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable.RelatedClassEntry;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable.UploadTableInvalidValue;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -132,7 +139,7 @@ public class Uploader implements ActionListener, WindowStateListener
      */
     protected String identifier;
 
-    private static final Logger log = Logger.getLogger(Uploader.class);
+    protected static final Logger log = Logger.getLogger(Uploader.class);
    
     /**
      * @return dataValidated
@@ -1223,8 +1230,94 @@ public class Uploader implements ActionListener, WindowStateListener
         {
              goToInvalidWBCell();
         }
+        else if (e.getActionCommand().equals(UploadMainForm.PRINT_INVALID))
+        {
+             printInvalidValReport();
+        }
+        else log.error("Unrecognized action: " + e.getActionCommand());
     }
-    
+
+    /**
+     * @author timbo
+     *
+     * @code_status Alpha
+     * 
+     * Datasource for printing validation issues for current upload.
+     *
+     */
+    class InvalidValueJRDataSource implements JRDataSource
+    {
+        protected int rowIndex;
+        protected final Vector<UploadTableInvalidValue> rows;
+        
+        public InvalidValueJRDataSource(final Vector<UploadTableInvalidValue> rows)
+        {
+            this.rows = rows;
+            rowIndex = -1;
+        }
+        
+        /*
+         * (non-Javadoc)
+         * @see net.sf.jasperreports.engine.JRDataSource#getFieldValue(net.sf.jasperreports.engine.JRField)
+         */
+        public Object getFieldValue(final JRField field) throws JRException
+        {
+            if (field.getName().equals("row"))
+            {
+                return String.valueOf(rows.get(rowIndex).getRowNum());
+            }
+            if (field.getName().equals("col"))
+            {
+                return String.valueOf(rows.get(rowIndex).getUploadFld().getWbFldName());
+            }
+            if (field.getName().equals("description"))
+            {
+                return rows.get(rowIndex).getDescription();
+            }
+            if (field.getName().equals("datasetName"))
+            {
+                return wbSS.getWorkbench().getName();
+            }
+            if (field.getName().equals("cellData"))
+            {
+                return uploadData.get(rows.get(rowIndex).getRowNum(), rows.get(rowIndex).getUploadFld().getIndex());                
+            }
+            log.error("Unrecognized field Name: " + field.getName());
+            return null;
+        }
+        
+        /*
+         * (non-Javadoc)
+         * @see net.sf.jasperreports.engine.JRDataSource#next()
+         */
+        public boolean next() throws JRException
+        {
+            if (rowIndex >= rows.size() - 1)
+            {
+                return false;
+            }
+            rowIndex++;
+            return true;
+        }
+    }
+
+    /**
+     * Launches ReportTask to display report of validation issues.
+     */
+    protected void printInvalidValReport()
+    {
+        if (validationIssues == null || validationIssues.size() == 0)
+        {
+            //this should never be called but just in case.
+            log.error("no validationIssues");
+            return;
+        }
+        InvalidValueJRDataSource src = new InvalidValueJRDataSource(validationIssues);
+        final CommandAction cmd = new CommandAction(ReportsBaseTask.REPORTS, ReportsBaseTask.PRINT_REPORT, src);
+        cmd.setProperty("title", "Validation Issues");
+        cmd.setProperty("file", "upload_problem_report.jrxml");
+        CommandDispatcher.dispatch(cmd);
+    }
     
     /**
      * Moves to dataset cell corresponding to currently selected validation issue and starts editor.

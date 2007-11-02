@@ -68,7 +68,7 @@ public class ReportsTask extends ReportsBaseTask
         String taskName = cmdAction.getPropertyAsString("task name");
         if (StringUtils.isEmpty(taskName) || taskName.equals(getName()))
         {
-            super.doCommand(cmdAction);
+           super.doCommand(cmdAction);
         }
     }
 
