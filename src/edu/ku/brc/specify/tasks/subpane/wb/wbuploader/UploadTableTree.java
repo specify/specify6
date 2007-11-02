@@ -9,7 +9,10 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Vector;
 
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -32,14 +35,17 @@ import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
  * @code_status Alpha
  *
  */
+@SuppressWarnings("unchecked")
 public class UploadTableTree extends UploadTable
 {
 	protected Table baseTable; 
 	protected UploadTableTree parent;
     protected Integer rank;
-    protected DataModelObjBase treeRoot;
+    protected DataModelObjBase treeRoot;    
+    protected Vector<Treeable> defaultParents;
     private static GeographyTreeDef geoTreeDef = null;
     private static TaxonTreeDef taxTreeDef = null;
+    
     
 
 	/**
@@ -56,6 +62,7 @@ public class UploadTableTree extends UploadTable
 		this.parent = parent;
 		this.required = required;
         this.rank = rank;
+        defaultParents = new Vector<Treeable>();
 	}
 
     /* (non-Javadoc)
@@ -239,7 +246,6 @@ public class UploadTableTree extends UploadTable
             tRec.setParent((Treeable)getDefaultParent(tRec));
             tRec.setDefinition(getTreeDef());
             tRec.setDefinitionItem(getTreeDefItem());
-            
         }
     }
 
@@ -253,6 +259,65 @@ public class UploadTableTree extends UploadTable
         return treeRoot;
     }
     
+
+    @SuppressWarnings("unchecked")
+    protected Treeable getDefaultParent2(TreeDefItemIface defItem) throws UploaderException
+    {
+        TreeDefItemIface parentDefItem = defItem.getParent();
+        while (parentDefItem != null)
+        {
+            if (parentDefItem.getIsEnforced())
+            {
+                break;
+            }
+            parentDefItem = parentDefItem.getParent();
+        }
+        if (parentDefItem == null)
+        {
+            throw new UploaderException("unable to find default parent for " + defItem.getName(), UploaderException.ABORT_ROW);
+        }
+        
+        for (Treeable p : defaultParents)
+        {
+            if (p.getDefinitionItem().getTreeDefItemId().equals(parentDefItem.getTreeDefItemId()))
+            {
+                return p;
+            }
+        }
+        
+        return createDefaultParent(parentDefItem);
+    }
+        
+    protected Treeable createDefaultParent(TreeDefItemIface defItem) throws UploaderException
+    {
+        try
+        {
+            Constructor<?> constructor = tblClass.getDeclaredConstructor(void.class);
+            DataModelObjBase result = (DataModelObjBase)constructor.newInstance((Object[])null);
+            result.initialize();
+            ((Treeable)result).setParent(getDefaultParent2(defItem)); //ouch
+            ((Treeable)result).setName(Uploader.currentUpload.getIdentifier());
+            
+        } 
+        catch (NoSuchMethodException ex)
+        {
+            throw new RuntimeException(ex);
+        } 
+        catch (InvocationTargetException ex)
+        {
+            throw new RuntimeException(ex);
+        } 
+        catch (InstantiationException ex)
+        {
+            throw new RuntimeException(ex);
+        }
+        catch (IllegalAccessException ex)
+        {
+            throw new RuntimeException(ex);
+        }
+        return null;
+    }
+    
     protected void loadTreeRoot() throws UploaderException
     {
         String hql = "from " + tblClass.getName() + " where " + getTreeDefFld() + "=" + getTreeDef().getTreeDefId() + " and " + getTreeDefItemFld() + "=" +
@@ -261,7 +326,7 @@ public class UploadTableTree extends UploadTable
         try
         {
             QueryIFace q = session.createQuery(hql);
-            treeRoot = (DataModelObjBase)q.list().get(0);
+            //treeRoot = (DataModelObjBase)q.list().get(0);
         }
         finally
         {
