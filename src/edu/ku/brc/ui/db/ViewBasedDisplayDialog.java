@@ -55,7 +55,7 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
      * @param idFieldName the name of the field in the clas that is the primary key which is filled in from the search table id
      * @param options the options needed for creating the form
      */
-    public ViewBasedDisplayDialog(final Frame  frame,
+    public ViewBasedDisplayDialog(final Frame  parentFrame,
                                   final String viewSetName,
                                   final String viewName,
                                   final String displayName,
@@ -66,7 +66,7 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
                                   final boolean isEdit,
                                   final int     options)
     {
-        super(frame, title, true, isEdit ? CustomDialog.OKCANCEL : CustomDialog.OK_BTN, null);
+        super(parentFrame, title, true, isEdit ? CustomDialog.OKCANCEL : CustomDialog.OK_BTN, null);
         
         viewBasedPanel = new ViewBasedDisplayPanel(this, 
                 viewSetName, 
@@ -95,7 +95,7 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
      * @param idFieldName the name of the field in the clas that is the primary key which is filled in from the search table id
      * @param options the options needed for creating the form
      */
-    public ViewBasedDisplayDialog(final Dialog  dlg,
+    public ViewBasedDisplayDialog(final Dialog  parentDialog,
                                   final String  viewSetName,
                                   final String  viewName,
                                   final String  displayName,
@@ -106,7 +106,7 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
                                   final boolean isEdit,
                                   final int     options)
     {
-        super(dlg, title, true, isEdit ? CustomDialog.OKCANCEL : CustomDialog.OK_BTN, null);
+        super(parentDialog, title, true, isEdit ? CustomDialog.OKCANCEL : CustomDialog.OK_BTN, null);
         
         viewBasedPanel = new ViewBasedDisplayPanel(this, 
                 viewSetName, 
