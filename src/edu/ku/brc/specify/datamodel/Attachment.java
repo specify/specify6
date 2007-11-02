@@ -175,7 +175,7 @@ public class Attachment extends DataModelObjBase implements Serializable
 //            return;
 //        }
         
-        this.origFilename = origFilename.trim();
+        this.origFilename = origFilename;
 
 //        // if there isn't a set location yet, set one
 //        if (origFilename != null && this.attachmentLocation == null)
