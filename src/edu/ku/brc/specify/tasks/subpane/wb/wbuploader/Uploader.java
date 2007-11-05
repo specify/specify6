@@ -24,6 +24,7 @@ import java.util.Vector;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 
@@ -33,6 +34,9 @@ import net.sf.jasperreports.engine.JRField;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.expresssearch.TableInfoRenderable;
+import edu.ku.brc.af.core.expresssearch.TableNameRenderer;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.tasks.ReportsBaseTask;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
@@ -50,6 +54,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable.RelatedClassEn
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable.UploadTableInvalidValue;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -1025,7 +1030,7 @@ public class Uploader implements ActionListener, WindowStateListener
     {
         buildMainUI();
         setCurrentOp(initOp);
-        mainForm.pack();
+        //mainForm.pack();
     }
     
     
@@ -1365,10 +1370,25 @@ public class Uploader implements ActionListener, WindowStateListener
         {
             tblNames.add(ut.getWriteTable().getName());
         }
+        
         DefaultListModel tbls = new DefaultListModel();
-        for (String tblName : tblNames)
+        if (false)
         {
-            tbls.addElement(tblName);
+            for (String tblName : tblNames)
+            {
+                tbls.addElement(tblName);
+            }
+        } else
+        {
+            JList tableList = mainForm.getUploadTbls();
+            TableNameRenderer nameRender = new TableNameRenderer(IconManager.IconSize.Std24);
+            nameRender.setUseIcon("PlaceHolder");
+            tableList.setCellRenderer(nameRender);
+            
+            for (String tblName : tblNames)
+            {
+                tbls.addElement(new TableInfoRenderable(DBTableIdMgr.getInstance().getByShortClassName(tblName)));
+            }
         }
         mainForm.getUploadTbls().setModel(tbls);
         mainForm.setActionListener(this);
@@ -1400,14 +1420,19 @@ public class Uploader implements ActionListener, WindowStateListener
 
         mainForm.getCancelBtn().setEnabled(canCancel(op));
         mainForm.getCancelBtn().setVisible(mainForm.getCancelBtn().isEnabled());
+        
         mainForm.getDoUploadBtn().setEnabled(canUpload(op));
-        mainForm.getDoUploadBtn().setVisible(mainForm.getDoUploadBtn().isEnabled());
+        //mainForm.getDoUploadBtn().setVisible(mainForm.getDoUploadBtn().isEnabled());
+        
         mainForm.getViewSettingsBtn().setEnabled(canViewSettings(op));
         mainForm.getViewSettingsBtn().setVisible(mainForm.getViewSettingsBtn().isEnabled());
+        
         mainForm.getViewUploadBtn().setEnabled(canViewUpload(op));
         mainForm.getViewUploadBtn().setVisible(mainForm.getViewUploadBtn().isEnabled());
+        
         mainForm.getUndoBtn().setEnabled(canUndo(op));
         mainForm.getUndoBtn().setVisible(mainForm.getUndoBtn().isEnabled());
+        
         mainForm.getCloseBtn().setEnabled(canClose(op));
         
         DefaultListModel invalids = new DefaultListModel();

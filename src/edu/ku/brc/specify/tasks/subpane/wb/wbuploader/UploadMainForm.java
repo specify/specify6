@@ -17,6 +17,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import javax.crypto.interfaces.PBEKey;
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
@@ -26,8 +28,15 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.WindowConstants;
 
 import org.apache.log4j.Logger;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
@@ -76,7 +85,7 @@ public class UploadMainForm extends JFrame
     /**
      * Builds the form.
      */
-    public void buildUI()
+    public void buildUIOld()
     {
         Box mainPane = new Box(BoxLayout.Y_AXIS);
         
@@ -116,7 +125,9 @@ public class UploadMainForm extends JFrame
                 // no comment.
             }
         });
-        uploadTblPane.add(uploadTbls, BorderLayout.CENTER);
+        
+        JScrollPane sp = new JScrollPane(uploadTbls, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        uploadTblPane.add(sp, BorderLayout.CENTER);
         mainPane.add(uploadTblPane);
         mainPane.add(Box.createVerticalStrut(10));
         
@@ -151,13 +162,16 @@ public class UploadMainForm extends JFrame
                 // no comment.
             }
         });
-        invalidValPane.add(invalidVals, BorderLayout.CENTER);
+        
+        sp = new JScrollPane(invalidVals, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        invalidValPane.add(sp, BorderLayout.CENTER);
         printInvalidBtn = new JButton(getResourceString("WB_UPLOAD_PRINT_INVALID_BTN")); 
         printInvalidBtn.setActionCommand(PRINT_INVALID);
         invalidValPane.add(printInvalidBtn, BorderLayout.SOUTH);
         mainPane.add(invalidValPane);
         
         mainPane.add(Box.createVerticalStrut(20));
+        
         JPanel progPane = new JPanel();
         progPane.setLayout(new BoxLayout(progPane, BoxLayout.Y_AXIS));
         JPanel progSubPane = new JPanel(new FlowLayout());
@@ -194,6 +208,147 @@ public class UploadMainForm extends JFrame
         add(mainPane);
         pack();
     }
+    
+    public void buildUI()
+    {
+        CellConstraints cc = new CellConstraints();
+        PanelBuilder pb = new PanelBuilder(new FormLayout("p:g", "p,2px,p, 10px, p, 2px,p, 4px,p"));
+        pb.getPanel().setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        
+        uploadTblLbl = new JLabel(getResourceString("WB_UPLOAD_AFFECTED_TBLS_LIST"));
+        //uploadTblLbl.setFont(uploadTblLbl.getFont().deriveFont(Font.BOLD));
+        pb.add(uploadTblLbl, cc.xy(1, 1));
+        
+        uploadTbls = new JList();
+        JScrollPane sp = new JScrollPane(uploadTbls, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        pb.add(sp, cc.xy(1, 3));
+        
+        // Invalid Pane
+        
+        invalidValPane = new JPanel(new BorderLayout());
+        PanelBuilder invalidValPanePB = new PanelBuilder(new FormLayout("p:g", "p,2px,p,4px,p"), invalidValPane);
+        
+        invalidValLbl  = new JLabel(getResourceString("WB_UPLOAD_INVALID_DATA_LIST"));
+        invalidValPanePB.add(invalidValLbl, cc.xy(1, 1));
+        
+        invalidVals = new JList();
+        sp = new JScrollPane(invalidVals, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        invalidValPanePB.add(sp, cc.xy(1, 3));
+
+        PanelBuilder rppb = new PanelBuilder(new FormLayout("f:p:g, p", "p"));
+        printInvalidBtn = new JButton(getResourceString("WB_UPLOAD_PRINT_INVALID_BTN")); 
+        printInvalidBtn.setActionCommand(PRINT_INVALID);
+        rppb.add(printInvalidBtn, cc.xy(2, 1));
+        invalidValPanePB.add(rppb.getPanel(), cc.xy(1, 5));
+        
+        pb.add(invalidValPane, cc.xy(1, 5));
+        
+        // Progress Pane
+        
+        JPanel progPane = new JPanel();
+        progPane.setLayout(new BoxLayout(progPane, BoxLayout.Y_AXIS));
+        
+        JPanel progSubPane = new JPanel(new FlowLayout());
+        currOpLbl = new JLabel("");
+        progSubPane.add(currOpLbl);
+        cancelBtn = new JButton(getResourceString("Cancel")); 
+        cancelBtn.setActionCommand(CANCEL_OPERATION);
+        progSubPane.add(cancelBtn);
+        progPane.add(progSubPane);
+        currOpProgress = new JProgressBar();
+        progPane.add(currOpProgress);
+        
+        pb.add(progPane, cc.xy(1, 7));
+        
+        FlowLayout btnPaneLayout = new FlowLayout(FlowLayout.RIGHT);
+        JPanel btnPane  = new JPanel(btnPaneLayout);
+        viewSettingsBtn = new JButton(getResourceString("WB_UPLOAD_SETTINGS_BTN")); 
+        viewSettingsBtn.setActionCommand(VIEW_SETTINGS);
+        doUploadBtn     = new JButton(getResourceString("WB_UPLOAD_BTN"));
+        doUploadBtn.setActionCommand(DO_UPLOAD);
+        viewUploadBtn   = new JButton(getResourceString("WB_UPLOAD_VIEW_BTN"));
+        viewUploadBtn.setActionCommand(VIEW_UPLOAD);
+        closeBtn        = new JButton(getResourceString("Close")); 
+        closeBtn.setActionCommand(CLOSE_UI);
+        undoBtn         = new JButton(getResourceString("WB_UPLOAD_UNDO_BTN")); 
+        undoBtn.setActionCommand(UNDO_UPLOAD);
+        btnPane.add(doUploadBtn);
+        btnPane.add(viewUploadBtn);
+        btnPane.add(viewSettingsBtn);
+        btnPane.add(undoBtn);
+        btnPane.add(closeBtn);
+        pb.add(btnPane, cc.xy(1, 9));
+        
+        uploadTbls.addMouseListener(new MouseListener()
+        {
+            public void mouseClicked(MouseEvent me)
+            {
+                if (me.getClickCount() == 2)
+                {
+                    uploadTblDblClick();
+                }
+                uploadTblClick();
+            }
+
+            public void mouseEntered(MouseEvent me)
+            {
+                // no comment.
+            }
+
+            public void mouseExited(MouseEvent me)
+            {
+                // no comment.
+            }
+
+            public void mousePressed(MouseEvent me)
+            {
+                // no comment.
+            }
+
+            public void mouseReleased(MouseEvent me)
+            {
+                // no comment.
+            }
+        });
+        
+        invalidVals.addMouseListener(new MouseListener()
+        {
+            public void mouseClicked(MouseEvent me)
+            {
+               invalidValClick();
+            }
+
+            public void mouseEntered(MouseEvent me)
+            {
+                // no comment.
+            }
+
+            public void mouseExited(MouseEvent me)
+            {
+                // no comment.
+            }
+
+            public void mousePressed(MouseEvent me)
+            {
+                // no comment.
+            }
+
+            public void mouseReleased(MouseEvent me)
+            {
+                // no comment.
+            }
+        });
+        
+
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        
+        setContentPane(pb.getPanel());
+        pack();
+        
+        setSize(600,550);
+        setTitle("WorkBench Upload Validation"); // I18N
+    }
+
     
     /**
      * Relays user action to listener.
@@ -408,6 +563,7 @@ public class UploadMainForm extends JFrame
         invalids.addElement("wrong");
         invalids.addElement("shame");
         tf.getInvalidVals().setModel(invalids);
+        
         tf.getInvalidValPane().setVisible(invalids.size() > 0);
         
         tf.setActionListener(tf.new TesterThingy());

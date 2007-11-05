@@ -16,10 +16,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
-import net.sf.jasperreports.engine.JRDataSource;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRField;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.NonUniqueResultException;
@@ -27,6 +23,7 @@ import org.hibernate.criterion.Restrictions;
 
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.CriteriaIFace;
@@ -38,7 +35,6 @@ import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Relationship;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader.ParentTableEntry;
@@ -1318,10 +1314,13 @@ public class UploadTable implements Comparable<UploadTable>
             for (DefaultFieldEntry dfe : missingRequiredFlds)
             {
                 critter.add(Restrictions.eq(deCapitalize(dfe.getFldName()), dfe.getDefaultValueArg()[0]));
-           }
+            }
+            
+            int tableId = -1;
             try
             {
-                match = (DataModelObjBase)critter.uniqueResult();
+                match   = (DataModelObjBase)critter.uniqueResult();
+                tableId = match.getTableId();
                 if (match != null && needToMatchChildren() && !checkChildrenMatch(match))
                 {
                     match = null;
@@ -1333,8 +1332,20 @@ public class UploadTable implements Comparable<UploadTable>
                 List<?> matches = critter.list();
                 if (matches.size() != 0)
                 {
+                    String title = null;
+                    if (tableId != -1)
+                    {
+                        DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(tableId);
+                        if (ti != null)
+                        {
+                            title = ti.getTitle();
+                        }
+                    }
+                    
+                    String msg = title != null ? String.format("Choose the a %s", title) : "Choose the best Match";
+                    
                     ChooseFromListDlg<DataModelObjBase> dlg = new ChooseFromListDlg<DataModelObjBase>(
-                            null, "you decide", (List<DataModelObjBase>) matches);
+                                                                     null, msg, (List<DataModelObjBase>) matches);
                     dlg.setModal(true);
                     dlg.setVisible(true);
                     if (!dlg.isCancelled())

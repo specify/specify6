@@ -34,6 +34,10 @@ import javax.swing.table.TableModel;
 
 import org.apache.log4j.Logger;
 
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
@@ -602,10 +606,13 @@ public class MissingDataResolver implements ActionListener
         mainPane.add(msg, BorderLayout.NORTH);
         if (!readOnly)
         {
+            CellConstraints cc = new CellConstraints();
+            PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,p", "p"));
             JButton defBtn = new JButton("Defaults"); //i18n
             defBtn.setActionCommand("DEFAULTS");
             defBtn.addActionListener(this);
-            mainPane.add(defBtn, BorderLayout.SOUTH);
+            pb.add(defBtn, cc.xy(2,1));
+            mainPane.add(pb.getPanel(), BorderLayout.SOUTH);
         }
         uiTbl = new JTable(bldModel(readOnly));
         uiTbl.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
