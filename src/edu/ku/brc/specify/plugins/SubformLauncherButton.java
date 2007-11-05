@@ -12,7 +12,6 @@ import javax.swing.event.ChangeListener;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RecordSetItem;
 import edu.ku.brc.specify.tasks.DataEntryTask;
@@ -26,7 +25,8 @@ public class SubformLauncherButton extends JButton implements GetSetValueIFace, 
 {
     private static Logger log = Logger.getLogger(SubformLauncherButton.class);
     
-    public Object data;
+    protected Object data;
+    protected int tableID;
     
     public SubformLauncherButton()
     {
@@ -63,6 +63,12 @@ public class SubformLauncherButton extends JButton implements GetSetValueIFace, 
         {
             setText(title);
         }
+        String tID = properties.getProperty("tableID");
+        if (tID != null)
+        {
+            tableID = Integer.parseInt(tID);
+        }
+        
     }
 
     public void setCellName(String cellName)
@@ -95,14 +101,13 @@ public class SubformLauncherButton extends JButton implements GetSetValueIFace, 
             // if so, make a RecordSet to fire in the CommandAction
             Collection<?> dataItems = (Collection)data;
             ArrayList<Integer> ids = new ArrayList<Integer>();
-            int tableID = -1;
+            
             for (Object dataItem: dataItems)
             {
                 if (dataItem instanceof FormDataObjIFace)
                 {
                     FormDataObjIFace formObj = (FormDataObjIFace)dataItem;
                     ids.add(formObj.getId());
-                    tableID = DBTableIdMgr.getInstance().getIdByClassName(formObj.getDataClass().getName());
                 }
                 else
                 {
@@ -127,7 +132,6 @@ public class SubformLauncherButton extends JButton implements GetSetValueIFace, 
         else if (data instanceof FormDataObjIFace)
         {
             FormDataObjIFace formObj = (FormDataObjIFace)data;
-            int tableID = DBTableIdMgr.getInstance().getIdByClassName(formObj.getDataClass().getName());
             
             RecordSet recordSet = new RecordSet("tmpCmdRS", tableID);
             recordSet.addItem(new RecordSetItem(formObj.getId()));

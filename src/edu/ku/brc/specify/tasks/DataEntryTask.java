@@ -89,6 +89,7 @@ public class DataEntryTask extends BaseTask
     public static final String     VIEW_WAS_SHOWN    = "ViewWasShown";
     public static final String     OPEN_NEW_VIEW     = "OpenNewView";
     public static final String     EDIT_DATA         = "Edit";
+    //public static final String     EDIT_IN_DIALOG    = "EditInDialog";
     public static final String     DATA              = "Data"; // Sent by FormHelper for when new DataObject are created
     
     public static final DataFlavor DATAENTRY_FLAVOR = new DataFlavor(DataEntryTask.class, "Data_Entry");
@@ -604,7 +605,32 @@ public class DataEntryTask extends BaseTask
                 log.error("The Edit Command was sent that didn't have data that was a RecordSet or an Object Array");
             }
             
-        } else if (cmdAction.isAction("ShowView"))
+        }
+//        else if (cmdAction.isAction(EDIT_IN_DIALOG))
+//        {
+//            if (cmdAction.getData() instanceof RecordSet)
+//            {
+//                RecordSet recordSet = (RecordSet)cmdAction.getData();
+//                FormPane form = createFormFor(this, name, recordSet);
+//                
+//                Window mostRecentWindow = UIRegistry.getMostRecentWindow();
+//                String viewSetName = form.getViewSetName();
+//                String viewName = form.getViewName();
+//                String displayName = "????";
+//                String formTitle = "????";
+//                String closeBtnText = "????";
+//                DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getTableId());
+//                String className = tableInfo.getClassName();
+//                String idFieldName = tableInfo.getIdFieldName();
+//                boolean isEdit = false;
+//                int options = 0;
+//                
+//                ViewBasedDisplayDialog formDialog = new ViewBasedDisplayDialog((Frame)mostRecentWindow,viewSetName,viewName,displayName,formTitle,closeBtnText,className,idFieldName,isEdit,options);
+//                formDialog.setModal(true);
+//                formDialog.setVisible(true);
+//            }
+//        }
+        else if (cmdAction.isAction("ShowView"))
         {
             if (cmdAction.getData() instanceof Object[])
             {
