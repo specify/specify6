@@ -1000,21 +1000,21 @@ public class FormViewObj implements Viewable,
             // NO  -> Means do nothing so return false
             
             String[] optionLabels;
-            int      options;
+            int      dlgOptions;
             if (isNewandIncomplete)
             {
-                options = JOptionPane.YES_NO_OPTION;
+                dlgOptions = JOptionPane.YES_NO_OPTION;
                 optionLabels = new String[] {getResourceString("DiscardChangesBtn"), getResourceString("Cancel")};
             } else
             {
-                options = JOptionPane.YES_NO_CANCEL_OPTION;
+                dlgOptions = JOptionPane.YES_NO_CANCEL_OPTION;
                 optionLabels = new String[] {getResourceString("SaveChangesBtn"), getResourceString("DiscardChangesBtn"), getResourceString("Cancel")};
             }
             
             int rv = JOptionPane.showOptionDialog(null,
                         isNewandIncomplete ? UIRegistry.getLocalizedMessage("DiscardChanges", title) : UIRegistry.getLocalizedMessage("SaveChanges", title),
                         isNewandIncomplete ? getResourceString("DiscardChangesTitle") : getResourceString("SaveChangesTitle"),
-                        options,
+                        dlgOptions,
                         JOptionPane.QUESTION_MESSAGE,
                         null,
                         optionLabels,
@@ -2031,6 +2031,8 @@ public class FormViewObj implements Viewable,
      */
     public void fixUpRequiredDerivedLabels()
     {
+        DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(formViewDef.getClassName());
+        
         Font        boldFont = null;
         for (String idFor : labels.keySet())
         {
@@ -2042,7 +2044,9 @@ public class FormViewObj implements Viewable,
             if (fieldInfo.getFormCell().getType() == FormCellIFace.CellType.field)
             {
                 FormCellField cell = (FormCellField)fieldInfo.getFormCell();
-                if (cell.isRequired())
+                System.out.println(fieldInfo.getFormCell().getName());
+                DBFieldInfo   fi   = ti.getFieldByName(fieldInfo.getFormCell().getName());
+                if (cell.isRequired() || (fi != null && fi.isRequired()))
                 {
                     if (boldFont == null)
                     {
@@ -2053,7 +2057,6 @@ public class FormViewObj implements Viewable,
                 
                 if (labelCell.isDerived())
                 {
-                    DBFieldInfo fi = tableInfo.getFieldByName(fieldInfo.getFormCell().getName());
                     if (fi != null)
                     {
                         label.setText(fi.getTitle());
@@ -2827,10 +2830,8 @@ public class FormViewObj implements Viewable,
                     fieldInfo.getFormCell().getType() == FormCellIFace.CellType.command,
                     id);
             
-        } else
-        {
-            log.error("FieldInfo is null "+id);
         }
+        log.error("FieldInfo is null "+id);
         return null;
     }
 
