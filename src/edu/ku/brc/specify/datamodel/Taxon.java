@@ -903,7 +903,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
     @Override
     public String toString()
     {
-        return (fullName!=null) ? fullName : super.toString();
+        return (fullName != null) ? fullName : ((name != null) ? name : super.toString());
     }
 
     @Transient
