@@ -93,8 +93,8 @@
     
     
     <icon name="CreateObj" alias="PlusSign"/>
-    <icon name="RelatedTable" file="RelatedTable.png"  sizes="16"/>
-    <icon name="TableField" file="field32x32.gif"  sizes="all"/>
+    <icon name="RelatedTable" file="related_table.png"  sizes="32"/>
+    <icon name="TableField" file="field.png"  sizes="all"/>
     
     
     <icon name="WebPage"       file="html.png"          sizes="all"/>

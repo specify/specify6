@@ -581,7 +581,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 try
                 {
                     Element root = XMLHelper.readStrToDOM4J(vso.getDataAsString());
-                    viewSetList.add(new ViewSet(root, true));
+                    
+                    // XXX RELEASE this is for testing
+                    if (vso.getFileName().indexOf("viewset.xml") == -1)
+                    {
+                        viewSetList.add(new ViewSet(root, true));
+                    }
 
                 } catch (Exception ex)
                 {

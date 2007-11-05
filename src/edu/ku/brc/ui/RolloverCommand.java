@@ -17,6 +17,7 @@ package edu.ku.brc.ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -79,6 +80,7 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
     
     protected static final int       ICON_TEXT_GAP = 4;
     protected static ImageIcon       hoverImg      = null;
+    protected static Font            defaultFont   = null;
     
     protected JTextField             txtFld     = null;
     protected JLabel                 iconLabel;
@@ -311,7 +313,13 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
             Insets ins = getBorder() != null ? getBorder().getBorderInsets(this) : new Insets(0,0,0,0);
             sizeBufImg = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g = sizeBufImg.createGraphics();
-            g.setFont(getFont());
+            if (defaultFont != null)
+            {
+                g.setFont(defaultFont);
+            } else
+            {
+                g.setFont(getFont());
+            }
             FontMetrics fm     = g.getFontMetrics();
             Insets      insets = getInsets();
 
@@ -331,6 +339,22 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
             }
             g.dispose();
         }
+    }
+
+    /**
+     * @return the defaultFont
+     */
+    public static Font getDefaultFont()
+    {
+        return defaultFont;
+    }
+
+    /**
+     * @param defaultFont the defaultFont to set
+     */
+    public static void setDefaultFont(Font defaultFont)
+    {
+        RolloverCommand.defaultFont = defaultFont;
     }
 
     /**
@@ -458,6 +482,10 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
 
                 if (label != null)
                 {
+                    if (defaultFont != null)
+                    {
+                        g.setFont(defaultFont);
+                    }
                     FontMetrics fm = g.getFontMetrics();
                     g.setColor(getForeground());
                     ((Graphics2D)g).setRenderingHints(UIHelper.createTextRenderingHints());
@@ -483,6 +511,10 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
 
                 if (label != null)
                 {
+                    if (defaultFont != null)
+                    {
+                        g.setFont(defaultFont);
+                    }
                     FontMetrics fm = g.getFontMetrics();
                     g.setColor(getForeground());
                     ((Graphics2D)g).setRenderingHints(UIHelper.createTextRenderingHints());

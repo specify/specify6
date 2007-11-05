@@ -137,7 +137,10 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         
         notifyListeners(NotificationType.Added, pane);
 
-        this.setSelectedIndex(getTabCount()-1);
+        if (getTabCount() > 0) // should never happen  that it is zero
+        {
+            this.setSelectedIndex(getTabCount()-1);
+        }
         
         adjustCloseAllMenu();
 
@@ -275,7 +278,17 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         {
             notifyListeners(NotificationType.Removed, pane);
             
-            this.remove(pane.getUIComponent());
+            // Sometimes things get out of wack, so catch the error
+            // this usually only happens during testing when other
+            // things have happened.
+            try
+            {
+                this.remove(pane.getUIComponent());
+                
+            } catch (ArrayIndexOutOfBoundsException ex)
+            {
+                
+            }
             
             panes.remove(pane.getPaneName());
             

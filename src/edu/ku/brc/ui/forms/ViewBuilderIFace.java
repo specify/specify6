@@ -108,4 +108,13 @@ public interface ViewBuilderIFace
      */
     public Component getControlByName(final String name);
     
+    /**
+     * Returns a Component by name from the Form.
+     * @param name the id of the field according to the XML definition
+     * @return the component or null
+     */
+    public Component getControlById(String id);
+    
+    public void fixUpRequiredDerivedLabels();
+    
 }

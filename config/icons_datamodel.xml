@@ -2,42 +2,65 @@
 <icons type="datamodel">
     
     <!--  Table Icons -->
-    <icon name="accession"      file="accession.gif" sizes="all"/>
-    <icon name="accessionagent" file="agent.gif" sizes="all"/>
+    <icon name="accession"      file="accession.png" sizes="all"/>
+    <icon name="deaccession"    file="deaccession.png" sizes="all"/>
+    <icon name="appraisal"      file="appraisal.png" sizes="all"/>
+    <icon name="accessionagent" file="agent.png" sizes="all"/>
     <icon name="address"        file="address.png" sizes="all"/>
-    <icon name="agent"          file="agent.gif" sizes="all"/>
-    <icon name="author"         file="author.png" sizes="all"/>
-    <icon name="collectingevent" file="collevent.gif" sizes="all"/>
-    <icon name="collectingtrip" file="canoe.png" sizes="all"/>
-    <icon name="collection"     file="package.png" sizes="all"/>
-    <icon name="collectionobject" file="catobj_fish32x32.gif" sizes="all"/>
+    <icon name="agent"          file="agent.png" sizes="all"/>
+    <icon name="author"         file="authors.png" sizes="all"/>
+    <icon name="borrow"         file="borrow.png" sizes="all"/>
+    <icon name="borrowmaterial" file="borrow_material.png" sizes="all"/>
+    <icon name="borrowreturnmaterial" file="borrow_return_material.png" sizes="all"/>
+    <icon name="collectingevent" file="collecting_event.png" sizes="all"/>
+    <icon name="collectingtrip" file="collection_trip.png" sizes="all"/>
+    <icon name="collection"     file="collection.png" sizes="all"/>
+    <icon name="collector"      file="collector.png" sizes="all"/>
+    <icon name="collectionobject" file="collection_object.png" sizes="all"/>
     <icon name="collectionobjectcitation" file="citation.png" sizes="all"/>
-    <icon name="colobj"         file="catobj_fish.gif" sizes="all"/>
+    <icon name="colobj"         file="fish.png" sizes="all"/>
     <icon name="colobjattributes" file="newworkbench.gif" sizes="32"/>
-    <icon name="determination"  file="agent.gif" sizes="all"/>
-    <icon name="geography"      file="earth.png" sizes="all"/>
-    <icon name="geologictimeperiod" file="geologictime.png" sizes="all"/>
-    <icon name="inforequest"    file="information.gif" sizes="all"/>
+    <icon name="commonname"      file="common_name.png" sizes="all"/>
+    <icon name="container"      file="container.png" sizes="all"/>
+    <icon name="conservator"    file="conservator.png" sizes="all"/>
+    <icon name="conservdescription" file="conserv_description.png" sizes="all"/>
+    <icon name="conservevent"    file="conserv_event.png" sizes="all"/>
+    <icon name="determination"  file="determination.png" sizes="all"/>
+    <icon name="division"       file="division.png" sizes="all"/>
+    <icon name="dnasequence"    file="dna.png" sizes="all"/>
+    <icon name="exchangein"     file="exchange_in.png" sizes="all"/>
+    <icon name="exchangeout"    file="exchange_out.png" sizes="all"/>
+    <icon name="fieldnotebook"  file="field_notebook.png" sizes="all"/>
+    <icon name="fieldnotebookpage" file="field_notebook_page.png" sizes="all"/>
+    <icon name="fieldnotebookpageset" file="field_notebook_page_set.png" sizes="all"/>
+    <icon name="geography"      file="geography.png" sizes="all"/>
+    <icon name="geologictimeperiod" file="geologic_time_period.png" sizes="all"/>
+    <icon name="inforequest"    file="information_request.png" sizes="all"/>
+    <icon name="institution"    file="institution.png" sizes="all"/>
     <icon name="journal"        file="journal.png" sizes="all"/>
-    <icon name="loan"           file="loans.gif" sizes="all"/>
-    <icon name="locality"       file="locality.gif" sizes="all"/>
-    <icon name="location"       file="location.gif" sizes="all"/>
+    <icon name="lithostrat"     file="stratigraphy.png" sizes="all"/>
+    <icon name="loan"           file="loan.png" sizes="all"/>
+    <icon name="loanreturnpreparation" file="loan_return_prep.png" sizes="all"/>
+    <icon name="locality"       file="locality.png" sizes="all"/>
+    <icon name="localitynamealias" file="locality_name_alias.png" sizes="all"/>
+    <icon name="location"       file="location.png" sizes="all"/>
     <icon name="permit"         file="permit.png" sizes="all"/>
-    <icon name="preptype"       file="preptype.png" sizes="all"/>
-    <icon name="referencework"  file="referencework.png" sizes="all"/>
-    <icon name="stratigraphy"   file="strat_icon32x32.gif" sizes="all"/>
-    <icon name="taxon"          file="taxon.gif" sizes="all"/>
+    <icon name="preparation"    file="preparation.png" sizes="all"/>
+    <icon name="preptype"       file="prep_type.png" sizes="all"/>
+    <icon name="project"        file="project.png" sizes="all"/>
+    <icon name="referencework"  file="reference_work.png" sizes="all"/>
+    <icon name="repositoryagreement"  file="repository_agreement.png" sizes="all"/>
+    <icon name="shipment"       file="shipment.png" sizes="all"/>
+    <icon name="taxon"          file="taxon.png" sizes="all"/>
 
     <!-- Aliases -->
     <icon name="attachment"             alias="unknown"/>
-    <icon name="preparation"            alias="cs"/>
     <icon name="determinationcitation"  alias="collectionobjectcitation"/>
     <icon name="localitycitation"       alias="collectionobjectcitation"/>
     <icon name="taxoncitation"          alias="collectionobjectcitation"/>
     <icon name="determinationcitaton"   alias="collectionobjectcitation"/>
     <icon name="localityxitation"       alias="collectionobjectcitation"/>
     <icon name="taxoncitation"          alias="collectionobjectcitation"/>
-    <icon name="repositoryagreement"    alias="accession"/>
     <icon name="habitatattributes"      alias="colobjattributes"/>
     <icon name="preparationattributes"  alias="colobjattributes"/>
     
@@ -46,39 +69,65 @@
     <icon name="Collecting Trip"        alias="collectingtrip"/>
     <icon name="Collection Object"      alias="collectionobject"/>
     <icon name="Collection Object Attributes" alias="colobjattributes"/>
+    <icon name="Container"              alias="container"/>
     <icon name="Habitat Attributes"     alias="colobjattributes"/>
     <icon name="Preparation Attributes" alias="colobjattributes"/>
     <icon name="Preparation Type"       alias="preptype"/>
-    <icon name="Repository Agreement"   alias="accession"/>
+    <icon name="Repository Agreement"   alias="repositoryagreement"/>
+    <icon name="RepositoryAgreement"   alias="repositoryagreement"/>
     <icon name="Reference Work"         alias="referencework"/>
     
-    <icon name="Agent"                  alias="agent"/>
-    <icon name="Attachment"             alias="attachment"/>
-    <icon name="Determination"          alias="agent"/>
-    <icon name="AccessionAgent"         alias="agent"/>
-    <icon name="CollectionObject"       alias="collectionobject"/>
-    <icon name="Taxon"                  alias="taxon"/>
-    <icon name="Geography"              alias="geography"/>
-    <icon name="Locality"               alias="locality"/>
-    <icon name="ColObj"                 alias="colobj"/>
-    <icon name="Address"                alias="address"/>
-    <icon name="Location"               alias="location"/>
-    <icon name="CollectingEvent"        alias="collectingevent"/>
     <icon name="Accession"              alias="accession"/>
-    <icon name="Permit"                 alias="permit"/>
-    <icon name="InfoRequest"            alias="inforequest"/>
-    <icon name="PrepType"               alias="preptype"/>
-    <icon name="Loan"                   alias="loan"/>
-    <icon name="Stratigraphy"           alias="stratigraphy"/>
+    <icon name="AccessionAgent"         alias="agent"/>
+    <icon name="Address"                alias="address"/>
+    <icon name="Agent"                  alias="agent"/>
+    <icon name="Appraisal"              alias="appraisal"/>
+    <icon name="Attachment"             alias="attachment"/>
+    <icon name="Author"                 alias="author"/>
+    <icon name="Borrow"                 alias="borrow"/>
+    <icon name="BorrowMaterial"         alias="borrowmaterial"/>
+    <icon name="BorrowReturnMaterial"   alias="borrowreturnmaterial"/>
+    <icon name="ColObjAttributes"       alias="colobjattributes"/>
+    <icon name="CollectionObjectCitation" alias="collectionobjectcitation"/>
+    <icon name="CollectingEvent"        alias="collectingevent"/>
     <icon name="CollectingTrip"         alias="collectingtrip"/>
     <icon name="Collection"             alias="collection"/>
-    <icon name="Journal"                alias="journal"/>
-    <icon name="CollectionObjectCitation" alias="collectionobjectcitation"/>
-    <icon name="Address"                alias="address"/>
-    <icon name="ReferenceWork"          alias="referencework"/>
-    <icon name="Author"                 alias="author"/>
+    <icon name="Collector"              alias="collector"/>
+    <icon name="CollectionName"         alias="collectionname"/>
+    <icon name="CollectionObject"       alias="collectionobject"/>
+    <icon name="ColObj"                 alias="colobj"/>
+    <icon name="CommonName"             alias="commonname"/>
+    <icon name="Conservator"            alias="conservator"/>
+    <icon name="ConservDescription"     alias="conservdescription"/>
+    <icon name="ConservEvent"           alias="conservevent"/>
+    <icon name="Determination"          alias="determination"/>
+    <icon name="Division"               alias="division"/>
+    <icon name="DNASequence"            alias="dnasequence"/>
+    <icon name="Deaccession"            alias="deaccession"/>
+    <icon name="ExchangeIn"             alias="exchangein"/>
+    <icon name="ExchangeOut"            alias="exchangeout"/>
+    <icon name="FieldNotebookPage"      alias="fieldnotebookpage"/>
+    <icon name="FieldNotebookPageSet"   alias="fieldnotebookpageset"/>
+    <icon name="FieldNotebook"          alias="fieldnotebook"/>
+    <icon name="Geography"              alias="geography"/>
     <icon name="GeologicTimePeriod"     alias="geologictimeperiod"/>
-    <icon name="ColObjAttributes"       alias="colobjattributes"/>
+    <icon name="InfoRequest"            alias="inforequest"/>
+    <icon name="Institution"            alias="institution"/>
+    <icon name="Journal"                alias="journal"/>
+    <icon name="LithoStrat"             alias="lithostrat"/>
+    <icon name="Loan"                   alias="loan"/>
+    <icon name="LoanReturnPreparation"  alias="loanreturnpreparation"/>
+    <icon name="Locality"               alias="locality"/>
+    <icon name="LocalityNameAlias"      alias="localitynamealias"/>
+    <icon name="Location"               alias="location"/>
+    <icon name="Permit"                 alias="permit"/>
+    <icon name="Preparation"            alias="preparation"/>
+    <icon name="PrepType"               alias="preptype"/>
+    <icon name="Project"                alias="project"/>
+    <icon name="ReferenceWork"          alias="referencework"/>
+    <icon name="Stratigraphy"           alias="lithostrat"/>
+    <icon name="Shipment"               alias="shipment"/>
+    <icon name="Taxon"                  alias="taxon"/>
     
     <icon name="taxontreedef"              alias="taxon"/>
     <icon name="geographytreedef"          alias="geography"/>
@@ -86,7 +135,7 @@
     <icon name="locationlreedef"           alias="location"/>
     
     <!-- Discipline Icons -->
-    <icon name="FishColObj"  file="catobj_fish.gif" sizes="all"/>    
+    <icon name="FishColObj"  file="fish.png" sizes="all"/>    
     
     <!-- Tree Task icons -->
     <icon name="Geography_Tree"     file="earth.png"    sizes="all"/>

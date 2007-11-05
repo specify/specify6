@@ -20,6 +20,7 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -68,6 +69,7 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
+import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -946,6 +948,8 @@ public class FormViewObj implements Viewable,
         
         //log.debug((formValidator != null) +" "+ formValidator.hasChanged() +"  "+mvParent.isTopLevel() +" "+ mvParent.hasChanged());
         
+        // Figure out if it is New and whether it has changed or is incomplete
+        boolean isNewandIncomplete = false;
         if (mvParent != null)
         {
             Object topParentData = mvParent.getTopLevel().getData();
@@ -955,9 +959,8 @@ public class FormViewObj implements Viewable,
                 {
                     if (formValidator != null)
                     {
-                        return formValidator.isFormValid();   
+                        isNewandIncomplete = !formValidator.isFormValid();
                     }
-                    return true;
                 }
             }
         }
@@ -976,26 +979,54 @@ public class FormViewObj implements Viewable,
                     tableInfo = DBTableIdMgr.getInstance().getByShortClassName(dataObj.getClass().getSimpleName());
                 }
                 
-                title     = tableInfo != null ? tableInfo.getTitle() : null;
+                title = tableInfo != null ? tableInfo.getTitle() : null;
                 
                 if (StringUtils.isEmpty(title))
                 {
                     title = UIHelper.makeNamePretty(dataObj.getClass().getSimpleName());
                 }
             }
+            
             if (StringUtils.isEmpty(title))
             {
                 title = "data"; // I18N, not really sure what to put here.
             }
             
-            int rv = JOptionPane.showConfirmDialog(null,
-                        UIRegistry.getLocalizedMessage("SaveChanges", title),
-                        getResourceString("SaveChangesTitle"),
-                        JOptionPane.YES_NO_CANCEL_OPTION);
+            // For the DISCARD
+            // Since JOptionPane doesn't have a YES_CANCEL_OPTION 
+            // I have to use YES_NO_OPTION and since this is a Discard question
+            // the rv has completely different meanings:
+            // YES -> Means don't save (Discard) and close dialog (return true)
+            // NO  -> Means do nothing so return false
+            
+            String[] optionLabels;
+            int      options;
+            if (isNewandIncomplete)
+            {
+                options = JOptionPane.YES_NO_OPTION;
+                optionLabels = new String[] {getResourceString("DiscardChangesBtn"), getResourceString("Cancel")};
+            } else
+            {
+                options = JOptionPane.YES_NO_CANCEL_OPTION;
+                optionLabels = new String[] {getResourceString("SaveChangesBtn"), getResourceString("DiscardChangesBtn"), getResourceString("Cancel")};
+            }
+            
+            int rv = JOptionPane.showOptionDialog(null,
+                        isNewandIncomplete ? UIRegistry.getLocalizedMessage("DiscardChanges", title) : UIRegistry.getLocalizedMessage("SaveChanges", title),
+                        isNewandIncomplete ? getResourceString("DiscardChangesTitle") : getResourceString("SaveChangesTitle"),
+                        options,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        optionLabels,
+                        optionLabels[0]);
+        
 
             if (rv == JOptionPane.YES_OPTION)
             {
-                saveObject();
+                if (!isNewandIncomplete)
+                {
+                    saveObject();
+                }
 
             } else if (rv == JOptionPane.CANCEL_OPTION)
             {
@@ -1003,6 +1034,10 @@ public class FormViewObj implements Viewable,
                 
             } else if (rv == JOptionPane.NO_OPTION)
             {
+                if (isNewandIncomplete) // this is the 'Cancel' 
+                {
+                    return false;
+                }
                 // Check to see if we are cancelling a new object or a previously saved object
                 // if the object is part of this Session then anychanges were already saved.
                 // If it is NOT part of this session then some of the object may not have been save.
@@ -1058,6 +1093,14 @@ public class FormViewObj implements Viewable,
         {
             return;
         }
+        
+        for (FieldInfo fi : controlsByName.values())
+        {
+            if (fi.getComp() instanceof EditViewCompSwitcherPanel)
+            {
+                ((EditViewCompSwitcherPanel)fi.getComp()).putIntoEditMode();
+            }
+        }
 
         //log.info("createNewDataObject "+hashCode() + " Session ["+(session != null ? session.hashCode() : "null")+"] ");
         FormDataObjIFace obj = FormHelper.createAndNewDataObj(view.getClassName());
@@ -1105,9 +1148,6 @@ public class FormViewObj implements Viewable,
         // Not calling setHasNewData because we need to traverse and setHasNewData doesn't
         formIsInNewDataMode = true;
         traverseToToSetAsNew(mvParent, formIsInNewDataMode, false); // don't traverse deeper than our immediate children
-        
-        //setDataObj(dataObj, true);
-        //setDataIntoUI();
         
         updateControllerUI();
 
@@ -1286,6 +1326,14 @@ public class FormViewObj implements Viewable,
                 session.flush();
                 
                 tryAgain = false;
+                
+                for (FieldInfo fi : controlsByName.values())
+                {
+                    if (fi.getComp() instanceof EditViewCompSwitcherPanel)
+                    {
+                        ((EditViewCompSwitcherPanel)fi.getComp()).putIntoViewMode();
+                    }
+                }
                 
             } catch (StaleObjectException e) // was StaleObjectStateException
             {
@@ -1968,6 +2016,61 @@ public class FormViewObj implements Viewable,
         }
         return map;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.ViewBuilderIFace#getControlById(java.lang.String)
+     */
+    public Component getControlById(String id)
+    {
+        FieldInfo fi = controlsById.get(id);
+        return fi != null ? fi.getComp() : null;
+    }
+    
+    /**
+     * 
+     */
+    public void fixUpRequiredDerivedLabels()
+    {
+        Font        boldFont = null;
+        for (String idFor : labels.keySet())
+        {
+            FieldInfo     labelInfo = labels.get(idFor);
+            JLabel        label     = (JLabel)labelInfo.getComp();
+            FormCellLabel labelCell = (FormCellLabel)labelInfo.getFormCell();
+            
+            FormViewObj.FieldInfo fieldInfo = controlsById.get(idFor);
+            if (fieldInfo.getFormCell().getType() == FormCellIFace.CellType.field)
+            {
+                FormCellField cell = (FormCellField)fieldInfo.getFormCell();
+                if (cell.isRequired())
+                {
+                    if (boldFont == null)
+                    {
+                        boldFont = label.getFont().deriveFont(Font.BOLD);
+                    }
+                    label.setFont(boldFont);
+                }
+                
+                if (labelCell.isDerived())
+                {
+                    DBFieldInfo fi = tableInfo.getFieldByName(fieldInfo.getFormCell().getName());
+                    if (fi != null)
+                    {
+                        label.setText(fi.getTitle());
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * @param id
+     * @return
+     */
+    public FieldInfo getFieldInfoForId(final String id)
+    {
+        return controlsById.get(id);
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#getValidator()
@@ -2083,6 +2186,9 @@ public class FormViewObj implements Viewable,
     protected void setDataObj(final Object dataObj, final boolean alreadyInTheList)
     {
         log.debug("Setting DataObj["+dataObj+"]");
+        
+        boolean isDataValueNew = dataObj instanceof FormDataObjIFace && ((FormDataObjIFace)dataObj).getId() == null;
+        
         // Convert the Set over to a List so the RecordController can be used
         Object data = dataObj;
         if (!alreadyInTheList)
@@ -2116,6 +2222,19 @@ public class FormViewObj implements Viewable,
                 fieldInfo.isOfType(FormCellIFace.CellType.iconview))
             {
                 fieldInfo.getSubView().setParentDataObj(null);
+            }
+            
+            if (isEditting && 
+                //!alreadyInTheList && 
+                fieldInfo.getComp() instanceof EditViewCompSwitcherPanel)
+            {
+                if (isDataValueNew)
+                {
+                    ((EditViewCompSwitcherPanel)fieldInfo.getComp()).putIntoEditMode();
+                } else
+                {
+                    ((EditViewCompSwitcherPanel)fieldInfo.getComp()).putIntoViewMode();
+                }
             }
         }
 
@@ -2278,10 +2397,6 @@ public class FormViewObj implements Viewable,
                 } else if (fieldInfo.isOfType(FormCellIFace.CellType.subview))
                 {
                     fieldInfo.getSubView().setData(null);
-                    
-                } else if (fieldInfo.isOfType(FormCellIFace.CellType.statictext))
-                {
-                    setDataIntoUIComp(fieldInfo.getComp(), null, null);
                 }
             }
             // Disable the ResultSet Controller
@@ -2566,7 +2681,7 @@ public class FormViewObj implements Viewable,
                     if (fc instanceof FormCellField)
                     {
                         FormCellFieldIFace fcf = (FormCellFieldIFace)fc;
-                        isReadOnly  = fcf.isReadOnly() || fcf.isEditOnCreate();
+                        isReadOnly  = fcf.isReadOnly();// || fcf.isEditOnCreate();
                         useThisData = fcf.useThisData();
                         
                     } else
@@ -2627,6 +2742,71 @@ public class FormViewObj implements Viewable,
         }
         return true;
     }
+    
+    public static Object getValueFromComponent(final Component comp, 
+                                               final boolean isSingleValueFromSet,
+                                               final boolean isCommand,
+                                               final String   id)
+    {
+        if (comp != null)
+        {
+            if (comp instanceof GetSetValueIFace)
+            {
+                return ((GetSetValueIFace)comp).getValue();
+
+            } else if (comp instanceof MultiView)
+            {
+                if (isSingleValueFromSet)
+                {
+                    return ((MultiView)comp).getData();
+                } 
+                // else
+                return null;
+
+            } else if (comp instanceof JTextField)
+            {
+                return ((JTextField)comp).getText();
+
+            } else if (comp instanceof JComboBox)
+            {
+                if (comp instanceof JAutoCompComboBox)
+                {
+                    PickListItemIFace pli = (PickListItemIFace)((JAutoCompComboBox)comp).getSelectedItem();
+                    return pli.getValueObject() == null ? pli.getValue() : pli.getValueObject();
+
+                }
+                // else
+                return ((JComboBox)comp).getSelectedItem().toString();
+
+            } else if (comp instanceof JLabel)
+            {
+                return ((JLabel)comp).getText();
+
+            } else if (comp instanceof ColorChooser)
+            {
+                return ColorWrapper.toString(((ColorChooser)comp).getBackground());
+
+            } else if (comp instanceof JList)
+            {
+                return ((JList)comp).getSelectedValue().toString();
+
+            } else if (comp instanceof JCheckBox)
+            {
+                return new Boolean(((JCheckBox)comp).isSelected());
+
+            } else if (isCommand)
+            {
+               // no op
+            } else
+            {
+                log.error("Not sure how to get data from object "+comp);
+            }
+        } else
+        {
+            log.error("Component is null in FieldInfo "+id);
+        }
+        return null;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#getDataFromUIComp(java.lang.String)
@@ -2636,64 +2816,17 @@ public class FormViewObj implements Viewable,
         FieldInfo fieldInfo = controlsById.get(id);
         if (fieldInfo != null)
         {
-            Component comp = fieldInfo.getComp();
-            if (comp != null)
+            boolean isSingleValueFromSet = false;
+            if (fieldInfo.getFormCell() instanceof FormCellSubViewIFace)
             {
-                if (comp instanceof GetSetValueIFace)
-                {
-                    return ((GetSetValueIFace)comp).getValue();
-
-                } else if (comp instanceof MultiView)
-                {
-                    if (((FormCellSubViewIFace)fieldInfo.getFormCell()).isSingleValueFromSet())
-                    {
-                        return ((MultiView)comp).getData();
-                    } 
-                    // else
-                    return null;
-
-                } else if (comp instanceof JTextField)
-                {
-                    return ((JTextField)comp).getText();
-
-                } else if (comp instanceof JComboBox)
-                {
-                    if (comp instanceof JAutoCompComboBox)
-                    {
-                        PickListItemIFace pli = (PickListItemIFace)((JAutoCompComboBox)comp).getSelectedItem();
-                        return pli.getValueObject() == null ? pli.getValue() : pli.getValueObject();
-
-                    }
-                    // else
-                    return ((JComboBox)comp).getSelectedItem().toString();
-
-                } else if (comp instanceof JLabel)
-                {
-                    return ((JLabel)comp).getText();
-
-                } else if (comp instanceof ColorChooser)
-                {
-                    return ColorWrapper.toString(((ColorChooser)comp).getBackground());
-
-                } else if (comp instanceof JList)
-                {
-                    return ((JList)comp).getSelectedValue().toString();
-
-                } else if (comp instanceof JCheckBox)
-                {
-                    return new Boolean(((JCheckBox)comp).isSelected());
-
-                } else if (fieldInfo.getFormCell().getType() == FormCellIFace.CellType.command)
-                {
-                   // no op
-                } else
-                {
-                    log.error("Not sure how to get data from object "+comp);
-                }
-            } else
-            {
-                log.error("Component is null in FieldInfo "+id);
+                isSingleValueFromSet = ((FormCellSubViewIFace)fieldInfo.getFormCell()).isSingleValueFromSet();
             }
+            
+            return getValueFromComponent(fieldInfo.getComp(), 
+                    isSingleValueFromSet, 
+                    fieldInfo.getFormCell().getType() == FormCellIFace.CellType.command,
+                    id);
+            
         } else
         {
             log.error("FieldInfo is null "+id);
@@ -2731,7 +2864,7 @@ public class FormViewObj implements Viewable,
      * @param comp the component to get the data
      * @param data the data to be set into the component
      */
-    public void setDataIntoUIComp(final Component comp, final Object data, final String defaultValue)
+    public static void setDataIntoUIComp(final Component comp, final Object data, final String defaultValue)
     {
         if (comp instanceof GetSetValueIFace)
         {
@@ -2789,7 +2922,7 @@ public class FormViewObj implements Viewable,
      * @param comboBox the combobox
      * @param data the data value
      */
-    protected void setComboboxValue(final JComboBox comboBox, final Object data)
+    protected static void setComboboxValue(final JComboBox comboBox, final Object data)
     {
         ComboBoxModel  model = comboBox.getModel();
 
@@ -2817,7 +2950,7 @@ public class FormViewObj implements Viewable,
      * @param list the list box
      * @param data the data value
      */
-    protected void setListValue(final JList list, final Object data)
+    protected static void setListValue(final JList list, final Object data)
     {
 
         Iterator<?> iter = null;

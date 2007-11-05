@@ -337,7 +337,7 @@ public class ViewLoader
                     
                 } else
                 {
-                    String msg = "View Set ["+instance.viewSetName+"] ["+viewDef.getName()+"] is not unique.";
+                    String msg = "View Set ["+instance.viewSetName+"] the View Def Name ["+viewDef.getName()+"] is not unique.";
                     log.error(msg);
                     throw new ConfigurationException(msg);
                 }

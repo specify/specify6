@@ -187,5 +187,19 @@ public class PanelViewable extends JPanel implements ViewBuilderIFace
         return null;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.ViewBuilderIFace#getControlById(java.lang.String)
+     */
+    public Component getControlById(String id)
+    {
+        return null;
+    }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.ViewBuilderIFace#fixUpRequiredDerivedLabels()
+     */
+    public void fixUpRequiredDerivedLabels()
+    {
+        // no op
+    }
 }

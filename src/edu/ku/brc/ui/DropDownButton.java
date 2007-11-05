@@ -16,6 +16,7 @@ package edu.ku.brc.ui;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.Rectangle;
@@ -103,6 +104,14 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
     public DropDownButton(ImageIcon icon)
     {
         init(null, icon, null);
+    }
+    
+    public void setFont(final Font font)
+    {
+        if (mainBtn != null)
+        {
+            mainBtn.setFont(font);
+        }
     }
 
     /**

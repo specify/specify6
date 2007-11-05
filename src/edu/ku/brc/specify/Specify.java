@@ -20,6 +20,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
@@ -80,6 +81,7 @@ import edu.ku.brc.af.core.expresssearch.ExpressSearchSQLAdjuster;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsEditor;
 import edu.ku.brc.af.prefs.PreferencesDlg;
+import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -133,6 +135,7 @@ import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.db.DatabaseLoginListener;
 import edu.ku.brc.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
+import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
@@ -183,7 +186,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private String               appName             = "Specify";
     private String               appVersion          = "6.0";
 
-    private String               appBuildVersion     = "200711011117 (SVN: 3000)";
+    private String               appBuildVersion     = "200710300830 (SVN: 2971)";
     
     protected static CacheManager cacheManager        = new CacheManager();
 
@@ -238,6 +241,14 @@ public class Specify extends JPanel implements DatabaseLoginListener
         
         // Adjust Default Swing UI Default Resources (Color, Fonts, etc) per Platform
         UIHelper.adjustUIDefaults();
+        
+        if (UIHelper.isMacOS())
+        {
+            Font labelFont = (new JLabel()).getFont();
+            Font defaultFont = labelFont.deriveFont((float)labelFont.getSize()-2);
+            BaseTask.setToolbarBtnFont(defaultFont); // For ToolbarButtons
+            RolloverCommand.setDefaultFont(defaultFont);
+        }
         
         // Insurance
         if (StringUtils.isEmpty(UIRegistry.getJavaDBPath()))
@@ -768,6 +779,18 @@ public class Specify extends JPanel implements DatabaseLoginListener
                             AppPreferences.getLocalPrefs().putBoolean("reload_views", isReload);
                             ((JMenuItem)ae.getSource()).setSelected(isReload);
                         }});
+    
+            cbMenuItem = new JCheckBoxMenuItem("Show Form Debug");
+            menu.add(cbMenuItem);
+            cbMenuItem.setSelected(FormViewObj.isUseDebugForm());
+            cbMenuItem.addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            boolean useDebugForm = !FormViewObj.isUseDebugForm();
+                            FormViewObj.setUseDebugForm(useDebugForm);
+                            ((JMenuItem)ae.getSource()).setSelected(useDebugForm);
+                        }});
+            menu.addSeparator();
     
             mi = UIHelper.createMenuItem(menu, "Config Loggers", "C", "Config Logger", true, null);
             mi.addActionListener(new ActionListener()

@@ -118,6 +118,10 @@
     		<string>$JAVAROOT/xstream.jar</string>
     		<string>$JAVAROOT/xpp3_minO.jar</string>
     		<string>$JAVAROOT/jtds.jar</string>
+    		<string>$JAVAROOT/jtds.jar</string>
+    		<string>$JAVAROOT/jtds.jar</string>
+    		<string>$JAVAROOT/jazzy-core.jar</string>
+    		<string>$JAVAROOT/jazzy-swing.jar</string>
 			<string>$JAVAROOT/help</string>
 			</array>
 		<key>Properties</key>

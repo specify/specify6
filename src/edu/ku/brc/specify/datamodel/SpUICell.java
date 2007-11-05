@@ -1828,6 +1828,25 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
     {
         return false;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellLabelIFace#isDerived()
+     */
+    @Transient
+    public boolean isDerived()
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellLabelIFace#setDerived(boolean)
+     */
+    public void setDerived(boolean isDerived)
+    {
+        // TODO Auto-generated method stub
+        
+    }
 
     /**
      * Recreates the initialize string from the properties and clones the properties hashtable.

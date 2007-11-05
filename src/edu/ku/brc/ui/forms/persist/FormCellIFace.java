@@ -18,7 +18,7 @@ import java.util.Properties;
 
 public interface FormCellIFace
 {
-    public enum CellType {separator, field, label, statictext, subview, command, panel, statusbar, iconview}
+    public enum CellType {separator, field, label, subview, command, panel, statusbar, iconview}
     
     public abstract int getColspan();
 

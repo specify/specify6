@@ -27,10 +27,12 @@ package edu.ku.brc.ui.forms.persist;
  */
 public interface FormCellFieldIFace extends FormCellIFace
 {
-    // NOTE: textpl is not intended to be defined in the form, it is for internal use only
+    // *****************************************************************************************************************
+    // NOTE: textpl and editoncreate are not intended to be defined in the form, it is for internal use only
+    // *****************************************************************************************************************
     public enum FieldType {text, formattedtext, label, dsptextfield, textfieldinfo, image, url, combobox, checkbox, spinner,
                            password, dsptextarea, textarea, browse, querycbx, list, colorchooser, button, progress, plugin,
-                           textpl}
+                           textpl, editoncreate}
 
     /**
      * @return the number of text columns to use for text controls

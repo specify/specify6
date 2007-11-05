@@ -15,6 +15,7 @@
 package edu.ku.brc.af.tasks;
 
 import java.awt.Cursor;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
@@ -93,6 +94,8 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     protected static final String INSERT_CMD_ACT = "Insert";
     protected static final String DELETE_CMD_ACT = "Delete";
     protected static final String UPDATE_CMD_ACT = "Update";
+    
+    protected static Font         toolbarBtnFont = null;
 
     // Data Members
     protected String              name;
@@ -153,6 +156,22 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     }
     
     /**
+     * @return the toolbarBtnFont
+     */
+    public static Font getToolbarBtnFont()
+    {
+        return toolbarBtnFont;
+    }
+
+    /**
+     * @param toolbarBtnFont the toolbarBtnFont to set
+     */
+    public static void setToolbarBtnFont(Font toolbarBtnFont)
+    {
+        BaseTask.toolbarBtnFont = toolbarBtnFont;
+    }
+
+    /**
      * Sets the icon from the IconCacheManager with the appropritae size.
      * @param iconName the name of the icon to use
      */
@@ -195,6 +214,10 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
         ImageIcon buttonIcon = IconManager.getIcon(iconName, IconManager.IconSize.Std24);
 
         ToolBarDropDownBtn btn = new ToolBarDropDownBtn(label, buttonIcon, SwingConstants.BOTTOM, menus);
+        if (toolbarBtnFont != null)
+        {
+            btn.setFont(toolbarBtnFont);
+        }
         btn.setStatusBarHintText(hint);
 
         btn.addActionListener(actionListener);

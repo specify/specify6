@@ -35,6 +35,9 @@ public class FormCellLabel extends FormCellSeparator implements FormCellLabelIFa
     protected ImageIcon icon;
     protected boolean   isRecordObj;
     
+    // Transient
+    protected boolean   isDerived = false;
+    
     public FormCellLabel()
     {
         
@@ -58,6 +61,22 @@ public class FormCellLabel extends FormCellSeparator implements FormCellLabelIFa
         icon = StringUtils.isNotEmpty(iconName) ? IconManager.getIcon(iconName, IconManager.IconSize.Std16) : null;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellLabelIFace#isDerived()
+     */
+    public boolean isDerived()
+    {
+        return isDerived;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellLabelIFace#setDerived(boolean)
+     */
+    public void setDerived(boolean isDerived)
+    {
+        this.isDerived = isDerived;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormCellLabelIFace#getLabelFor()
      */

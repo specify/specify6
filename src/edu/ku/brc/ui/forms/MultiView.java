@@ -197,7 +197,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         AltViewIFace defaultAltView = createDefaultViewable(defaultAltViewType);
         createWithAltView(defaultAltView, true);
         
-        if (true)
+        if (false)
         {
             for (AltViewIFace av : view.getAltViews())
             {
@@ -533,11 +533,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     protected Viewable createWithAltView(final AltViewIFace altView, final boolean doShow)
     {
         editable = altView.getMode() == AltViewIFace.CreationMode.EDIT;
-        if (!editable)
-        {
-            int x = 0;
-            x++;
-        }
+
         log.debug("***********************************************************************");
         log.debug("View :    " + altView.getView().getName());
         log.debug("AltView : " + altView.getLabel());
@@ -588,8 +584,6 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
             printCreateOptions("Error", createOptions);
         }
         
-        //viewable.focus();
-
         return viewable;
     }
 
@@ -780,9 +774,10 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         
         if (!creatingViewable)
         {
-            setData(data);
+            setData(data, false);
+            
+            setFormForSelector();
         }
-    
     }
 
     /**
@@ -816,18 +811,69 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      * Sets the Data Object into the View.
      * @param data the data object
      */
-    public void setData(Object data)
+    public void setData(final Object data)
+    {
+        setData(data, true);
+    }
+
+    /**
+     * Sets the Data Object into the View.
+     * @param data the data object
+     */
+    protected void setData(final Object data, final boolean doSelector)
     {
         this.data = data;
         
         ignoreDataChanges = true;
+
+        boolean doSetData = true;
+        if (doSelector)
+        {
+            doSetData = setFormForSelector();
+        }
         
-        // We the data gets set into the MultiView we need to display the correct
-        // AlView with the matching selector value.
-        AltViewIFace altView = currentViewable.getAltView();
+        if (doSetData)
+        {
+            currentViewable.setDataObj(data);
+        }
+        
+        if (isTopLevel() && currentViewable != null)
+        {
+            currentViewable.updateSaveBtn();
+        }
+        
+        if (isTopLevel())
+        {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run()
+                {
+                    currentViewable.focus();
+                }
+            });
+        }
+        
+        ignoreDataChanges = false;
+
+    }
+    
+    /**
+     * @return
+     */
+    protected boolean setFormForSelector()
+    {
+        boolean doSetData = true;
+        
+        boolean cacheIgnoreDataChanges = ignoreDataChanges;
+        ignoreDataChanges = true;
+        
         selectorValue = null;
         if (isSelectorForm)
         {
+            
+            // We the data gets set into the MultiView we need to display the correct
+            // AlView with the matching selector value.
+            AltViewIFace altView = currentViewable.getAltView();
+
             // Set the data into the Current view even though this may not be the correct AltViewIFace
             currentViewable.setDataObj(data);
             
@@ -862,37 +908,19 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
                             if (oldViewable != currentViewable)
                             {
                                 currentViewable.setDataObj(data);
+                                doSetData = false;
                             }
                             break;
                         }
                     }
                 }
-            } else
-            {
-                currentViewable.setDataObj(data);
             }
-            
-        } else
-        {
-            currentViewable.setDataObj(data);
         }
         
-        ignoreDataChanges = false;
+        ignoreDataChanges = cacheIgnoreDataChanges;
         
-        if (isTopLevel() && currentViewable != null)
-        {
-            currentViewable.updateSaveBtn();
-        }
-        
-        if (isTopLevel())
-        {
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run()
-                {
-                    currentViewable.focus();
-                }
-            });
-        }
+        return doSetData;
+
     }
 
     /**

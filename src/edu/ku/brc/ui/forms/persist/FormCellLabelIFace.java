@@ -67,6 +67,16 @@ public interface FormCellLabelIFace extends FormCellSeparatorIFace
      * @param iconName the name of the icon to use for the separator
      */
     public abstract void setIconName(String iconName);
+    
+    /**
+     * @return the isDerived
+     */
+    public boolean isDerived();
+
+    /**
+     * @param isDerived the isDerived to set
+     */
+    public void setDerived(boolean isDerived);
 
     //public abstract Object clone() throws CloneNotSupportedException;
 

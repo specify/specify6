@@ -709,6 +709,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     public boolean isInError()
     {
+        if (valState == UIValidatable.ErrorType.Incomplete)
+        {
+            return isRequired;
+        }
         return valState != UIValidatable.ErrorType.Valid;
     }
 
