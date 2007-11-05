@@ -152,7 +152,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	 */
     @Id
     @GeneratedValue
-    @Column(name = "GeographyID", unique = false, nullable = false, insertable = true, updatable = true)
+    @Column(name = "GeographyID")
 	public Integer getGeographyId()
 	{
 		return this.geographyId;
@@ -244,7 +244,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
-    @Column(name = "GeographyCode", unique = false, nullable = true, insertable = true, updatable = true, length = 8)
+    @Column(name = "GeographyCode", length = 8)
 	public String getGeographyCode()
 	{
 		return this.geographyCode;
@@ -258,7 +258,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
-    @Column(name = "RankID", unique = false, nullable = false, insertable = true, updatable = true, length = 10)
+    @Column(name = "RankID", nullable = false)
 	public Integer getRankId()
 	{
 		return this.rankId;
@@ -272,7 +272,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
-    @Column(name = "NodeNumber", unique = false, nullable = true, insertable = true, updatable = false, length = 10)
+    @Column(name = "NodeNumber", updatable = false)
 	public Integer getNodeNumber()
 	{
 		return this.nodeNumber;
@@ -286,7 +286,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
-    @Column(name = "HighestChildNodeNumber", unique = false, nullable = true, insertable = true, updatable = false, length = 10)
+    @Column(name = "HighestChildNodeNumber", updatable = false)
 	public Integer getHighestChildNodeNumber()
 	{
 		return this.highestChildNodeNumber;
@@ -300,7 +300,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
-    @Column(name = "Abbrev", unique = false, nullable = true, insertable = true, updatable = true, length = 16)
+    @Column(name = "Abbrev", length = 16)
 	public String getAbbrev()
 	{
 		return this.abbrev;
@@ -334,7 +334,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
     }
 
     @Lob
-    @Column(name = "GML")
+    @Column(name = "GML", length=4096)
     public String getGml()
     {
         return gml;
@@ -348,7 +348,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
     /**
 	 *
 	 */
-    @Column(name = "Text1", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    @Column(name = "Text1", length = 32)
 	public String getText1()
 	{
 		return this.text1;
@@ -362,7 +362,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
-    @Column(name = "Text2", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    @Column(name = "Text2", length = 32)
 	public String getText2()
 	{
 		return this.text2;
@@ -376,7 +376,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
-    @Column(name = "Number1", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
+    @Column(name = "Number1")
 	public Integer getNumber1()
 	{
 		return this.number1;
@@ -390,7 +390,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
-    @Column(name = "Number2", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
+    @Column(name = "Number2")
 	public Integer getNumber2()
 	{
 		return this.number2;
@@ -404,7 +404,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
-    @Column(name = "TimestampVersion", unique = false, nullable = true, insertable = true, updatable = true, length = 16)
+    @Column(name = "TimestampVersion")
 	public Date getTimestampVersion()
 	{
 		return this.timestampVersion;
@@ -415,7 +415,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 		this.timestampVersion = timestampVersion;
 	}
 
-    @Column(name = "IsCurrent", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "IsCurrent")
 	public Boolean getIsCurrent()
 	{
 		return this.isCurrent;
@@ -426,7 +426,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 		this.isCurrent = isCurrent;
 	}
 
-    @Column(name="IsAccepted", unique=false, nullable=true, insertable=true, updatable=true)
+    @Column(name="IsAccepted")
     public Boolean getIsAccepted()
     {
         return this.isAccepted;
@@ -449,7 +449,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
         this.acceptedChildren = acceptedChildren;
     }
 
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "AcceptedID")
     public Geography getAcceptedGeography()
     {
@@ -475,8 +475,8 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "geography")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OneToMany(mappedBy = "geography")
+    @Cascade( {CascadeType.ALL} )
 	public Set<Locality> getLocalities()
 	{
 		return this.localities;
@@ -490,8 +490,8 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @JoinColumn(name = "GeographyTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
+    @ManyToOne
+    @JoinColumn(name = "GeographyTreeDefID", nullable = false)
 	public GeographyTreeDef getDefinition()
 	{
 		return this.definition;
@@ -505,8 +505,8 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @JoinColumn(name = "GeographyTreeDefItemID", unique = false, nullable = false, insertable = true, updatable = true)
+    @ManyToOne
+    @JoinColumn(name = "GeographyTreeDefItemID", nullable = false)
 	public GeographyTreeDefItem getDefinitionItem()
 	{
 		return this.definitionItem;
@@ -524,8 +524,8 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @JoinColumn(name = "ParentID", unique = false, nullable = true, insertable = true, updatable = true)
+    @ManyToOne
+    @JoinColumn(name = "ParentID")
 	public Geography getParent()
 	{
 		return this.parent;
@@ -536,7 +536,8 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 		this.parent = parent;
 	}
 
-    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, fetch = FetchType.LAZY, mappedBy = "parent")
+    @OneToMany(mappedBy = "parent")
+    @Cascade( {CascadeType.ALL} )
 	public Set<Geography> getChildren()
 	{
 		return this.children;
