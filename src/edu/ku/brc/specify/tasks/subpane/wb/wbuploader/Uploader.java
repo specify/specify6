@@ -1586,13 +1586,13 @@ public class Uploader implements ActionListener, WindowStateListener
                     {
                         if (!holdIt)
                         {
+                            setCurrentOpProgress(r + 1);
                             for (UploadTable t : uploadTables)
                             {
                                 if (cancelled)
                                 {
                                     break;
                                 }
-                                setCurrentOpProgress(r + 1);
                                 try
                                 {
                                     uploadRow(t, r);

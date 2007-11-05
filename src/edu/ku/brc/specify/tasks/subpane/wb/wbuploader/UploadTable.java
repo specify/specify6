@@ -1276,7 +1276,6 @@ public class UploadTable implements Comparable<UploadTable>
         try
         {
             CriteriaIFace critter = session.createCriteria(tblClass);
-            //Criteria critter = session.createCriteria(tblClass);
             for (UploadField uf : uploadFields.get(recNum))
             {
                 if (uf.getSetter() != null)
@@ -1320,7 +1319,10 @@ public class UploadTable implements Comparable<UploadTable>
             try
             {
                 match   = (DataModelObjBase)critter.uniqueResult();
-                tableId = match.getTableId();
+                if (match != null)
+                {
+                    tableId = match.getTableId();
+                }
                 if (match != null && needToMatchChildren() && !checkChildrenMatch(match))
                 {
                     match = null;
@@ -1529,6 +1531,7 @@ public class UploadTable implements Comparable<UploadTable>
     protected void writeRowOrNot(final boolean doNotWrite) throws UploaderException
     {
         int recNum = 0;
+        log.debug("writeRowOrNot: " + this.table.getName());
         for (Vector<UploadField> seq : uploadFields)
         {
            try
