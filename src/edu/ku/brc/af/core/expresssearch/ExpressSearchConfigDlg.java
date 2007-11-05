@@ -515,6 +515,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
         relatedTableDescTA.setEditable(false);
         relatedTableDescTA.setWrapStyleWord(true);
         relatedTableDescTA.setBackground(Color.WHITE);
+        relatedTableDescTA.setLineWrap(true);
         sp = new JScrollPane(relatedTableDescTA, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         outer.add(new JLabel(getResourceString("ES_RELATED_DESC")), cc.xy(3,5));
         outer.add(sp, cc.xy(3,7));
