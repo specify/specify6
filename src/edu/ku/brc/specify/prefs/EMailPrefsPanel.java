@@ -55,6 +55,8 @@ import edu.ku.brc.ui.forms.ViewFactory;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.ViewIFace;
 import edu.ku.brc.ui.forms.validation.FormValidator;
+import edu.ku.brc.ui.forms.validation.UIValidatable;
+import edu.ku.brc.ui.forms.validation.ValComboBox;
 import edu.ku.brc.ui.forms.validation.ValPasswordField;
 
 /**
@@ -119,18 +121,32 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
         if (formView != null)
         {
             form = ViewFactory.createFormView(null, formView, null, AppPreferences.getRemote(), MultiView.NO_OPTIONS, null);
-            add(form.getUIComponent(), BorderLayout.CENTER);
+            if (form != null && form.getUIComponent() != null)
+            {
+                add(form.getUIComponent(), BorderLayout.CENTER);
+                
+                form.setDataObj(AppPreferences.getRemote());
+                
+                
+                ValComboBox  cbx   = (ValComboBox)form.getCompById("accounttype");
+                if (cbx.getComboBox().getSelectedIndex() == -1)
+                {
+                    cbx.getComboBox().setSelectedIndex(0);
+                }
+                form.getValidator().validateForm();
+
+                CommandDispatcher.register("EmailPref", this);
+
+
+            } else
+            {
+                log.error("The email preferences were not properly loaded because ["+viewName+"]["+viewSetName+"]");
+            }
 
         } else
         {
             log.error("Couldn't load form with name ["+viewSetName+"] Id ["+viewName+"]");
         }
-
-        form.setDataObj(AppPreferences.getRemote());
-
-        form.getValidator().validateForm();
-
-        CommandDispatcher.register("EmailPref", this);
 
     }
 
@@ -497,9 +513,22 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
     //---------------------------------------------------
     // PrefsPanelIFace
     //---------------------------------------------------
+    
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.prefs.PrefsPanelIFace#getValidator()
+     */
     public FormValidator getValidator()
     {
         return form.getValidator();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.prefs.PrefsPanelIFace#isFormValid()
+     */
+    public boolean isFormValid()
+    {
+        return form.getValidator().getState() == UIValidatable.ErrorType.Valid;
     }
 
 }

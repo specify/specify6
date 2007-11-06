@@ -23,7 +23,7 @@ import javax.swing.ImageIcon;
 import edu.ku.brc.ui.IconManager.IconSize;
 
 /**
- * An entry in the IconManager
+ * An entry in the IconManager. Note: is isAlias is set it is not the "true" own of the Icon hash.
  *
  * @code_status Beta
  * 
@@ -32,15 +32,62 @@ import edu.ku.brc.ui.IconManager.IconSize;
  */
 public class IconEntry
 { 
-    private String name;
-    private Hashtable<IconSize, URL> icons = new Hashtable<IconSize, URL>();
+    private String                   name;
+    private boolean                  isAlias;
+    private Hashtable<IconSize, URL> icons = null;
+    
+    /**
+     * 
+     * @param name the name of the icon entry
+     */
+    public IconEntry(final String name, 
+                     final boolean isAlias,
+                     final Hashtable<IconSize, URL> iconHash)
+    {
+        this.name    = name;
+        this.isAlias = isAlias;
+        this.icons   = iconHash;
+    }
+    
     /**
      * 
      * @param name the name of the icon entry
      */
     public IconEntry(final String name)
     {
-        this.name = name;
+        this(name, false, new Hashtable<IconSize, URL>());
+    }
+
+    /**
+     * @return the isAlias
+     */
+    public boolean isAlias()
+    {
+        return isAlias;
+    }
+
+    /**
+     * @param isAlias the isAlias to set
+     */
+    public void setAlias(boolean isAlias)
+    {
+        this.isAlias = isAlias;
+    }
+
+    /**
+     * @return the icons
+     */
+    public Hashtable<IconSize, URL> getIcons()
+    {
+        return icons;
+    }
+
+    /**
+     * @param icons the icons to set
+     */
+    public void setIcons(Hashtable<IconSize, URL> icons)
+    {
+        this.icons = icons;
     }
 
     /**

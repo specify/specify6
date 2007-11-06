@@ -83,7 +83,7 @@
                 <join tableid="1" primary="true">collectionobject.CollectionObjectID</join>
                 <join tableid="4">taxon.TaxonID</join>
             </joins>
-            <detailView icon="ColObj">
+            <detailView icon="CollectionObject">
                 <sql>
                     <![CDATA[
  SELECT distinct 
@@ -277,7 +277,7 @@
                 <join tableid="1" primary="true">collectionobject.CollectionObjectID</join>
                 <join tableid="4">taxon.TaxonID</join>
             </joins>
-            <detailView icon="ColObj">
+            <detailView icon="CollectionObject">
                 <sql>
                     <![CDATA[
  SELECT distinct 

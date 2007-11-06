@@ -43,6 +43,8 @@ import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.ToolBarItemDesc;
+import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.prefs.PreferencesDlg;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
@@ -101,6 +103,10 @@ public class DataEntryTask extends BaseTask
     
     protected Vector<NavBoxIFace> extendedNavBoxes = new Vector<NavBoxIFace>();
     protected NavBox              viewsNavBox      = null;
+    
+    // These are needed for changes with the Discipline icon
+    protected NavBoxButton        colObjNavBtn        = null;
+    protected String              iconClassLookUpName = "";
 
     /**
      * Default Constructor
@@ -113,6 +119,7 @@ public class DataEntryTask extends BaseTask
         CommandDispatcher.register(DATA_ENTRY, this);
         CommandDispatcher.register(APP_CMD_TYPE, this);
         CommandDispatcher.register(DATA, this);
+        CommandDispatcher.register(PreferencesDlg.PREFERENCES, this);
         
         // Do this here instead of in initialize because the static method will need to access the icon mapping first
         viewsNavBox = new NavBox(getResourceString("CreateAndUpdate"));
@@ -129,10 +136,10 @@ public class DataEntryTask extends BaseTask
         {
             super.initialize(); // sets isInitialized to false
 
-            // Temporary
-            NavBox navBox = new NavBox(getResourceString("Actions"));
-            navBox.add(NavBox.createBtn(getResourceString("Series_Processing"), name, IconManager.IconSize.Std16));
-            navBoxes.add(navBox);
+            // No Series Processing
+            //NavBox navBox = new NavBox(getResourceString("Actions"));
+            //navBox.add(NavBox.createBtn(getResourceString("Series_Processing"), name, IconManager.IconSize.Std16));
+            //navBoxes.add(navBox);
            
             navBoxes.add(viewsNavBox);
         }
@@ -371,10 +378,17 @@ public class DataEntryTask extends BaseTask
                             toolTip = getResourceString("EnterRecordSetTT");
                         }
                         
+                        boolean isColObj = nameStr.equals("Collection Object");
+                        
                         ImageIcon iconImage = IconManager.getIcon(iconname, IconManager.IconSize.Std16);
                         if (iconImage != null)
                         {
-                            iconForFormClass.put(createFullName(viewsetName, viewName), iconImage);
+                            String iconName = createFullName(viewsetName, viewName);
+                            iconForFormClass.put(iconName, iconImage);
+                            if (isColObj)
+                            {
+                                iconClassLookUpName = iconName;
+                            }
                             
                         } else
                         {
@@ -406,6 +420,10 @@ public class DataEntryTask extends BaseTask
                                     if (nbi instanceof NavBoxButton)
                                     {
                                         NavBoxButton roc = (NavBoxButton)nbi;
+                                        if (isColObj)
+                                        {
+                                           colObjNavBtn = roc; 
+                                        }
                                         
                                         // When Being Dragged
                                         roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
@@ -509,6 +527,30 @@ public class DataEntryTask extends BaseTask
     public Class<? extends BaseTask> getTaskClass()
     {
         return this.getClass();
+    }
+    
+    /**
+     * 
+     */
+    protected void prefsChanged(final AppPreferences appPrefs)
+    {
+        if (appPrefs == AppPreferences.getRemote())
+        {
+            String    iconName  = appPrefs.get("ui.formatting.disciplineicon", "CollectionObject");
+            ImageIcon iconImage = IconManager.getIcon(iconName, IconManager.IconSize.Std16);
+            if (iconImage != null)
+            {
+                if (colObjNavBtn != null)
+                {
+                    colObjNavBtn.setIcon(iconImage);
+                    colObjNavBtn.repaint();
+                }
+                if (iconForFormClass != null && StringUtils.isNotEmpty(iconClassLookUpName))
+                {
+                    iconForFormClass.put(iconClassLookUpName, iconImage);
+                }
+            }
+        }
     }
     
     //-------------------------------------------------------
@@ -656,6 +698,10 @@ public class DataEntryTask extends BaseTask
         } else if (cmdAction.isType(DataEntryTask.DATA) && cmdAction.isAction("NewObjDataCreated"))
         {
             adjustNewDataObject(cmdAction.getData());
+            
+        } else if (cmdAction.isType(PreferencesDlg.PREFERENCES))
+        {
+            prefsChanged((AppPreferences)cmdAction.getData());
             
         } else if (cmdAction.isType(APP_CMD_TYPE) && cmdAction.isAction(APP_RESTART_ACT))
         {

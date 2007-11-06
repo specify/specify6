@@ -40,6 +40,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.border.BevelBorder;
 
@@ -50,6 +51,8 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -73,6 +76,8 @@ import edu.ku.brc.ui.forms.validation.DataChangeNotifier;
 public class PreferencesDlg extends CustomDialog implements DataChangeListener
 {
     protected static final Logger log = Logger.getLogger(PreferencesDlg.class);
+    
+    public static final String PREFERENCES = "Preferences";
     
     protected JTextField    searchText;
     protected JButton       searchBtn;
@@ -160,6 +165,13 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
             log.error(ex);
         }
         super.okButtonPressed();
+        
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run()
+            {
+                CommandDispatcher.dispatch(new CommandAction(PREFERENCES, "Updated", AppPreferences.getRemote()));
+            }
+        });
     }
 
     /**
@@ -439,9 +451,9 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
         for (PrefsPanelIFace pp : prefPanels)
         {
             // but check all the forms
-            if (!pp.getValidator().isFormValid())
+            if (!pp.isFormValid())
             {
-                log.debug("false="+pp);
+                log.debug("false="+pp.getValidator().getName());
                 okToEnable = false;
                 break;
             }

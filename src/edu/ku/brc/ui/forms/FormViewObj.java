@@ -2031,35 +2031,38 @@ public class FormViewObj implements Viewable,
      */
     public void fixUpRequiredDerivedLabels()
     {
+        // NOTE: The forms can contain object that are not in our data model
         DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(formViewDef.getClassName());
-        
-        Font        boldFont = null;
-        for (String idFor : labels.keySet())
+        if (ti != null)
         {
-            FieldInfo     labelInfo = labels.get(idFor);
-            JLabel        label     = (JLabel)labelInfo.getComp();
-            FormCellLabel labelCell = (FormCellLabel)labelInfo.getFormCell();
-            
-            FormViewObj.FieldInfo fieldInfo = controlsById.get(idFor);
-            if (fieldInfo.getFormCell().getType() == FormCellIFace.CellType.field)
+            Font        boldFont = null;
+            for (String idFor : labels.keySet())
             {
-                FormCellField cell = (FormCellField)fieldInfo.getFormCell();
-                System.out.println(fieldInfo.getFormCell().getName());
-                DBFieldInfo   fi   = ti.getFieldByName(fieldInfo.getFormCell().getName());
-                if (cell.isRequired() || (fi != null && fi.isRequired()))
-                {
-                    if (boldFont == null)
-                    {
-                        boldFont = label.getFont().deriveFont(Font.BOLD);
-                    }
-                    label.setFont(boldFont);
-                }
+                FieldInfo     labelInfo = labels.get(idFor);
+                JLabel        label     = (JLabel)labelInfo.getComp();
+                FormCellLabel labelCell = (FormCellLabel)labelInfo.getFormCell();
                 
-                if (labelCell.isDerived())
+                FormViewObj.FieldInfo fieldInfo = controlsById.get(idFor);
+                if (fieldInfo.getFormCell().getType() == FormCellIFace.CellType.field)
                 {
-                    if (fi != null)
+                    FormCellField cell = (FormCellField)fieldInfo.getFormCell();
+                    System.out.println(fieldInfo.getFormCell().getName());
+                    DBFieldInfo   fi   = ti.getFieldByName(fieldInfo.getFormCell().getName());
+                    if (cell.isRequired() || (fi != null && fi.isRequired()))
                     {
-                        label.setText(fi.getTitle());
+                        if (boldFont == null)
+                        {
+                            boldFont = label.getFont().deriveFont(Font.BOLD);
+                        }
+                        label.setFont(boldFont);
+                    }
+                    
+                    if (labelCell.isDerived())
+                    {
+                        if (fi != null)
+                        {
+                            label.setText(fi.getTitle());
+                        }
                     }
                 }
             }
@@ -2332,6 +2335,24 @@ public class FormViewObj implements Viewable,
     {
         return parentDataObj;
     }
+    
+    /**
+     * @param enabled
+     */
+    public void setFormEnabled(final boolean enabled)
+    {
+        // Enable the labels
+        for (FieldInfo labelFI : labels.values())
+        {
+            labelFI.getComp().setEnabled(true);
+        }
+
+        // Enable the formn controls
+        for (FieldInfo compFI : controlsById.values())
+        {
+            compFI.setEnabled(true);
+        }
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#setDataIntoUI()
@@ -2412,17 +2433,7 @@ public class FormViewObj implements Viewable,
 
         } else if (dataObj != null && wasNull)
         {
-            // Enable the labels
-            for (FieldInfo labelFI : labels.values())
-            {
-                labelFI.getComp().setEnabled(true);
-            }
-
-            // Enable the formn controls
-            for (FieldInfo compFI : controlsById.values())
-            {
-                compFI.setEnabled(true);
-            }
+            setFormEnabled(true);
 
             // Enable the ResultSet Controller
             if (rsController != null)
@@ -3220,7 +3231,7 @@ public class FormViewObj implements Viewable,
                 throw new RuntimeException("Two controls have the same id ["+formCell.getIdent()+"] "+formViewDef.getName());
             }
 
-            if (controlsByName.get(formCell.getName()) != null)
+            if (!formCell.getName().equals("this") && controlsByName.get(formCell.getName()) != null)
             {
                 throw new RuntimeException("Two controls have the same Name ["+formCell.getName()+"] "+formViewDef.getName());
             }

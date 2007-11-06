@@ -117,6 +117,7 @@ public class ViewFactory
 
     // Data Members
     protected static ColorWrapper     viewFieldColor = null;
+    protected static boolean          doFixLabels    = true;
 
     protected MultiView               rootMultiView  = null; // transient - is valid only during a build process
 
@@ -135,6 +136,14 @@ public class ViewFactory
     public static ViewFactory getInstance()
     {
         return instance;
+    }
+
+    /**
+     * @param doFixLabels the doFixLabels to set
+     */
+    public static void setDoFixLabels(boolean doFixLabels)
+    {
+        ViewFactory.doFixLabels = doFixLabels;
     }
 
     /**
@@ -1401,7 +1410,7 @@ public class ViewFactory
         }
         
         // Check to see if there is at least one required field
-        if (bi.isRequired || bi.isDerivedLabel)
+        if (doFixLabels && (bi.isRequired || bi.isDerivedLabel))
         {
             viewBldObj.fixUpRequiredDerivedLabels();
         }
@@ -1456,6 +1465,11 @@ public class ViewFactory
         {
             try
             {
+                System.out.println("["+fieldNames[i]+"]");
+                if (fieldNames[i].equals("this"))
+                {
+                    continue;
+                }
                 Field fld = parentCls.getDeclaredField(fieldNames[i]);
                 if (fld != null)
                 {

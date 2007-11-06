@@ -372,7 +372,7 @@ public class IconManager extends Component
                     String name  = iconElement.attributeValue("name");
                     String sizes = iconElement.attributeValue("sizes");
                     String file  = iconElement.attributeValue("file");
-                    String alias  = iconElement.attributeValue("alias");
+                    String alias = iconElement.attributeValue("alias");
                     
                     if (StringUtils.isNotEmpty(alias))
                     {
@@ -415,6 +415,7 @@ public class IconManager extends Component
                     {
                         instance.defaultEntries.put(name, entry);
                     }
+                    //makeAlias(aliases.get(name), name);
                 }
             } else
             {
@@ -427,6 +428,47 @@ public class IconManager extends Component
         }
         
         instance.iconListForType = null;
+    }
+    
+    /**
+     * Makes a new IconEntry in the manager 
+     * @param iconName
+     * @param aliasName
+     */
+    public static void makeAlias(final String iconName, 
+                                 final String aliasName)
+    {
+        IconEntry entry = instance.defaultEntries.get(iconName);
+        if (entry != null)
+        {
+            IconEntry aliasEntry = new IconEntry(entry.getName(), true, entry.getIcons());
+            instance.defaultEntries.put(aliasName, aliasEntry);
+        }
+    }
+    
+    /**
+     * @param iconName
+     * @param aliasName
+     */
+    public static void aliasImages(final String iconName, 
+                                   final String aliasName)
+    {
+        IconEntry entry = instance.defaultEntries.get(iconName);
+        if (entry != null)
+        {
+            IconEntry aliasEntry = instance.defaultEntries.get(aliasName);
+            if (entry != null)
+            {
+                aliasEntry.setIcons(entry.getIcons());
+                
+            } else
+            {
+                log.error("Couldn't find icon entry["+aliasName+"] (destination of images)");
+            }
+        } else
+        {
+            log.error("Couldn't find icon entry["+iconName+"] (source of images)");
+        }
     }
     
     /**

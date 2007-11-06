@@ -33,4 +33,11 @@ public interface PrefsPanelIFace
      * @return Return the validator for the panel
      */
     public FormValidator getValidator();
+    
+    
+    /**
+     * @return
+     */
+    public boolean isFormValid();
+    
 }

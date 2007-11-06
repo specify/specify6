@@ -91,7 +91,9 @@ public class FormRow implements Cloneable, FormRowIFace
         sb.append("      <rows>\n");
         for (FormCellIFace cell : cells)
         {
+            sb.append("        <row>\n");
             cell.toXML(sb);
+            sb.append("        </row>\n");
         }
         sb.append("      </rows>\n");
     }    

@@ -330,7 +330,7 @@ public class DBTableIdMgr
                 return tableInfo;
             }
         }
-        throw new RuntimeException("Couldn't find table id for table name[" + className + "]");
+        return null;
     }
 
     /**

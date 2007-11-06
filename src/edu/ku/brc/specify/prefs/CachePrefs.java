@@ -27,6 +27,7 @@ import edu.ku.brc.ui.forms.ViewFactory;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.ViewIFace;
 import edu.ku.brc.ui.forms.validation.FormValidator;
+import edu.ku.brc.ui.forms.validation.UIValidatable;
 
 /**
  * @author rod
@@ -100,6 +101,14 @@ public class CachePrefs extends JPanel implements PrefsSavable, PrefsPanelIFace
     public FormValidator getValidator()
     {
         return form.getValidator();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.prefs.PrefsPanelIFace#isFormValid()
+     */
+    public boolean isFormValid()
+    {
+        return form.getValidator().getState() == UIValidatable.ErrorType.Valid;
     }
 
 }

@@ -186,7 +186,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private String               appName             = "Specify";
     private String               appVersion          = "6.0";
 
-    private String               appBuildVersion     = "200710300830 (SVN: 2971)";
+    private String               appBuildVersion     = "200711051400 (SVN: 3023)";
     
     protected static CacheManager cacheManager        = new CacheManager();
 
@@ -1132,6 +1132,12 @@ public class Specify extends JPanel implements DatabaseLoginListener
        // AppContextMgr.getInstance().
         SpecifyAppPrefs.initialPrefs();
         
+        String iconName = AppPreferences.getRemote().get("ui.formatting.disciplineicon", "CollectionObject");
+        IconManager.aliasImages(iconName,             // Source
+                                "collectionobject");  // Dest
+        
+
+        
         // XXX Get the current locale from prefs PREF
         int colTypeId = CollectionType.getCurrentCollectionType().getCollectionTypeId();
         SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, colTypeId, DBTableIdMgr.getInstance(), Locale.getDefault());
@@ -1480,6 +1486,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         	  IconManager.setApplicationClass(Specify.class);
               IconManager.loadIcons(XMLHelper.getConfigDir("icons_datamodel.xml"));
               IconManager.loadIcons(XMLHelper.getConfigDir("icons_plugins.xml"));
+              IconManager.loadIcons(XMLHelper.getConfigDir("icons_disciplines.xml"));
               
               if (!isRelease)
               {

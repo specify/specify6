@@ -63,6 +63,7 @@
 		    		<rule id="username"><![CDATA[accounttype.getComboBox().getSelectedIndex() > 0]]></rule>
 		    		<rule id="password"><![CDATA[accounttype.getComboBox().getSelectedIndex() > 0]]></rule>
 		    		<rule id="email"><![CDATA[accounttype.getComboBox().getSelectedIndex() > 0]]></rule>
+		    		<rule id="testconnection"><![CDATA[accounttype.getComboBox().getSelectedIndex() > 0]]></rule>
 
 		    	</enableRules>
 
@@ -71,7 +72,7 @@
 
 			<rows>
 				<row>
-				    <cell type="separator" label="Email Account Settings"/>
+				    <cell type="separator" label="Email Account Settings" colspan="7"/>
 				</row>
 				<row>
 					<cell type="label" name="accounttypeLabel" labelfor="accounttype" label="Account Type"/>
@@ -93,7 +94,7 @@
 				    <cell type="field" id="localmailbox" name="settings.email.localmailbox" cols="20" colspan="5" uitype="browse" isrequired="true" validation="obj.isNotEmpty()" valtype="Changed"/>
 				</row>
 				<row>
-				    <cell type="separator" label="User Information"/>
+				    <cell type="separator" label="User Information" colspan="7"/>
 				</row>
 				<row>
 					<cell type="label" name="usernameLabel" labelfor="username" label="Username"/>
@@ -129,7 +130,6 @@
 				<row>
 					<cell type="separator" label="Formatting" colspan="13"/>
 				</row>
-				<!--
 				<row>
 					<cell type="label" name="scrdateformatLabel" labelfor="scrdateformat" label="Screen Date Format"/>
 					<cell type="field" uitype="text" cols="10" id="scrdateformat" name="ui.formatting.scrdateformat" isrequired="true" colspan="3"/>
@@ -148,7 +148,6 @@
 					<cell type="label" labelfor="viewfieldcolor" label="View Field Color"/>
 					<cell type="field" uitype="colorchooser" id="viewfieldcolor" name="ui.formatting.viewfieldcolor"/>
 				</row>
-				-->
 				<row>
 					<cell type="label" labelfor="fontNames" label="Form Font"/>
 					<cell type="field" uitype="combobox" id="fontNames" name="ui.formatting.fontNames" readonly="true" changesonly="true" colspan="5"/>
@@ -156,6 +155,14 @@
 					<cell type="field" uitype="combobox" id="fontSizes" name="ui.formatting.fontSize" readonly="true" changesonly="true"/>
 					<cell type="field" uitype="dsptextfield" id="fontTest" name="fontTest" readonly="true"/>
 				</row>
+			    <row>
+					<cell type="label" labelfor="disciplineIcon" label="Discipline Icon"/>
+					<cell type="field" uitype="label" id="disciplineIcon" label="" />
+					
+					<cell type="label" labelfor="disciplineIconCBX" label="Choose"/>
+					<cell type="field" uitype="combobox" id="disciplineIconCBX" readonly="true" changesonly="true" />
+				</row>
+				
 			</rows>
 		</viewdef>
 		

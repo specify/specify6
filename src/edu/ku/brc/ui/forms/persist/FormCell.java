@@ -441,7 +441,7 @@ public class FormCell implements Comparable<FormCellIFace>, Cloneable, FormCellI
      */
     public void toXML(StringBuilder sb)
     {
-        sb.append("        <cell");
+        sb.append("          <cell");
         
         xmlAttr(sb, "type", type.toString());
         

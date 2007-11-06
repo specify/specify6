@@ -30,6 +30,8 @@ import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
+import edu.ku.brc.af.tasks.subpane.formeditor.BasicFormPreviewPanel;
+import edu.ku.brc.af.tasks.subpane.formeditor.ViewSetSelectorPanel;
 import edu.ku.brc.ui.CustomFrame;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
@@ -47,7 +49,7 @@ public class EditorTask extends BaseTask
 {
     public static final String EDITOR = "FormEditor";
     
-    //protected ViewSetSelectorPanel viewSetSelectorPanel;
+    protected ViewSetSelectorPanel viewSetSelectorPanel;
     protected JTree                tree          = null;
 
     
@@ -104,7 +106,6 @@ public class EditorTask extends BaseTask
         pane.removeAll();
         pane.setLayout(new BorderLayout());
         
-        /*
         BasicFormPreviewPanel previewPanel = new BasicFormPreviewPanel();
         CustomFrame frame = new CustomFrame("Layout Preview", previewPanel);
         
@@ -114,7 +115,7 @@ public class EditorTask extends BaseTask
         frame.setVisible(true);
         
         pane.add(viewSetSelectorPanel, BorderLayout.CENTER);
-        */
+        
         
         /*
         Hashtable<String, List<ViewSetIFace>> hash = AppContextMgr.getInstance().getViewSetHash();
