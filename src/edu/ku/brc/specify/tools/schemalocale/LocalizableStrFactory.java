@@ -22,8 +22,16 @@ import java.util.Locale;
 public interface LocalizableStrFactory
 {
 
+    /**
+     * @return
+     */
     public abstract LocalizableStrIFace create();
     
+    /**
+     * @param text
+     * @param locale
+     * @return
+     */
     public abstract LocalizableStrIFace create(final String text, final Locale locale);
     
 }

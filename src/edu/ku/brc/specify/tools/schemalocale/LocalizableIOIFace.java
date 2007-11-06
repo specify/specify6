@@ -24,30 +24,77 @@ import java.util.Vector;
  */
 public interface LocalizableIOIFace
 {
+    /**
+     * @return
+     */
     public abstract boolean load();
     
+    /**
+     * @return
+     */
     public abstract boolean didModelChangeDuringLoad();
     
+    /**
+     * @param item
+     * @return
+     */
     public abstract LocalizableContainerIFace getContainer(LocalizableJListItem item);
     
+    /**
+     * @param container
+     * @param item
+     * @return
+     */
     public abstract LocalizableItemIFace getItem(LocalizableContainerIFace container, LocalizableJListItem item);
     
+    /**
+     * @return
+     */
     public abstract Vector<LocalizableJListItem> getContainerDisplayItems();
     
+    /**
+     * @param container
+     * @return
+     */
     public abstract Vector<LocalizableJListItem> getDisplayItems(LocalizableJListItem container);
     
+    /**
+     * @param item
+     * @return
+     */
     public abstract LocalizableItemIFace realize(LocalizableItemIFace item);
     
+    /**
+     * @param locale
+     * @return
+     */
     public abstract boolean isLocaleInUse(final Locale locale);
     
+    /**
+     * @return
+     */
     public abstract Vector<Locale> getLocalesInUse();
     
+    /**
+     * @param src
+     * @param dst
+     */
     public abstract void copyLocale(Locale src, Locale dst);
     
+    /**
+     * @return
+     */
     public abstract boolean save();
     
-    public abstract boolean export(File expportFile);
+    /**
+     * @param expportFile
+     * @return
+     */
+    public abstract boolean exportToDirectory(File expportFile);
     
+    /**
+     * @return
+     */
     public boolean createResourceFiles();
     
     

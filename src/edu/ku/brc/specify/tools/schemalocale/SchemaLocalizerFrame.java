@@ -7,6 +7,7 @@
 package edu.ku.brc.specify.tools.schemalocale;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -25,20 +26,30 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
 import com.apple.eawt.Application;
 import com.apple.eawt.ApplicationAdapter;
 import com.apple.eawt.ApplicationEvent;
+import com.jgoodies.looks.plastic.PlasticLookAndFeel;
+import com.jgoodies.looks.plastic.theme.DesertBlue;
+import com.jgoodies.looks.plastic.theme.DesertGreen;
+import com.jgoodies.looks.plastic.theme.ExperienceBlue;
+import com.jgoodies.looks.plastic.theme.ExperienceRoyale;
+import com.jgoodies.looks.plastic.theme.SkyKrupp;
 
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.forms.persist.FormViewDef.JGDefItem;
 
 /**
  * @author rod
@@ -111,7 +122,7 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
         schemaLocPanel = new SchemaLocalizerPanel(null);
         schemaLocPanel.setLocalizableIO(localizableIO);
         schemaLocPanel.setStatusBar(statusBar);
-        schemaLocPanel.setIncludeHiddenUI(false);
+        schemaLocPanel.setIncludeHiddenUI(true);
         schemaLocPanel.buildUI();
         schemaLocPanel.setHasChanged(localizableIO.didModelChangeDuringLoad());
         
@@ -267,10 +278,34 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
         
         schemaLocPanel.getAllDataFromUI();
         
-        File outFile = new File(UIRegistry.getUserHomeDir() + File.separator + "schema_localization.xml");
-        if (localizableIO.export(outFile))
+        File outDir = new File(UIRegistry.getUserHomeDir() + File.separator + "schemas");
+        if (outDir.exists())
         {
-            JOptionPane.showMessageDialog(this, "The Schema was exported to: "+outFile.getAbsolutePath(),
+            if (!outDir.isDirectory())
+            {
+                JOptionPane.showMessageDialog(this, "There is a file named at: "+outDir.getAbsolutePath() + " is not a directory. Please deleted it and try again.",
+                        "Error Exporting", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+            
+            
+        } else
+        {
+            if (outDir.mkdir())
+            {
+                
+                
+            } else
+            {
+                JOptionPane.showMessageDialog(this, "There was a problem creating directory: "+outDir.getAbsolutePath() + " Please check your permissions and make sure this can be created, or create it yourself.",
+                        "Error Exporting", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+        }
+        
+        if (localizableIO.exportToDirectory(outDir))
+        {
+            JOptionPane.showMessageDialog(this, "The Schema was exported to: "+outDir.getAbsolutePath(),
                     "Exported", JOptionPane.INFORMATION_MESSAGE);
             statusBar.setText("Exported.");
             
@@ -344,6 +379,41 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
         {
             public void run()
             {
+                
+//              Set App Name, MUST be done very first thing!
+                UIRegistry.setAppName("Specify"); 
+                
+                // Then set this
+                IconManager.setApplicationClass(Specify.class);
+                IconManager.loadIcons(XMLHelper.getConfigDir("icons_datamodel.xml"));
+                IconManager.loadIcons(XMLHelper.getConfigDir("icons_plugins.xml"));
+                
+                try
+                {
+                    UIHelper.OSTYPE osType = UIHelper.getOSType();
+                    if (osType == UIHelper.OSTYPE.Windows )
+                    {
+                        //UIManager.setLookAndFeel(new WindowsLookAndFeel());
+                        UIManager.setLookAndFeel(new PlasticLookAndFeel());
+                        PlasticLookAndFeel.setPlasticTheme(new ExperienceBlue());
+                        
+                    } else if (osType == UIHelper.OSTYPE.Linux )
+                    {
+                        //UIManager.setLookAndFeel(new GTKLookAndFeel());
+                        PlasticLookAndFeel.setPlasticTheme(new SkyKrupp());
+                        //PlasticLookAndFeel.setPlasticTheme(new DesertBlue());
+                        //PlasticLookAndFeel.setPlasticTheme(new ExperienceBlue());
+                        //PlasticLookAndFeel.setPlasticTheme(new ExperienceRoyale());
+                        UIManager.setLookAndFeel(new PlasticLookAndFeel());
+                        
+                        
+                    }
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+
                 System.setProperty(SchemaI18NService.factoryName, "edu.ku.brc.specify.config.SpecifySchemaI18NService");    // Needed for Localization and Schema
                 
                 Object[] options = { "Full Specify Schema", "WorkBench Schema" };
@@ -363,6 +433,10 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
                 }
                 
                 sla.createDisplay();
+                sla.pack();
+                Dimension size = sla.getSize();
+                size.width += 250;
+                sla.setSize(size);
                 UIHelper.centerAndShow(sla);
             }
         });

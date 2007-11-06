@@ -90,7 +90,7 @@ public abstract class LocalizerBasePanel extends JPanel
     /**
      * @param localizableStrFactory the localizableStrFactory to set
      */
-    public static void setLocalizableStrFactory(LocalizableStrFactory localizableStrFactory)
+    public static void setLocalizableStrFactory(final LocalizableStrFactory localizableStrFactory)
     {
         LocalizerBasePanel.localizableStrFactory = localizableStrFactory;
     }

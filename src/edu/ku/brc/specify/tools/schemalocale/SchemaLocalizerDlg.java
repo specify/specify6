@@ -582,17 +582,17 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
 
     /**
      * Check the Database to see if the Locale is being used.
-     * @param schemaType the which set of locales
+     * @param schemaTypeArg the which set of locales
      * @param locale the locale in question
      * @return true/false
      */
-    public boolean isLocaleInUseInDB(final Byte schemaType, final Locale locale)
+    public boolean isLocaleInUseInDB(final Byte schemaTypeArg, final Locale locale)
     {
         
         Session session = HibernateUtil.getNewSession();
         try
         {
-            Query   query = session.createQuery("SELECT DISTINCT nms.language FROM SpLocaleContainer as ctn INNER JOIN ctn.items as itm INNER JOIN itm.names nms WHERE nms.language = '"+locale.getLanguage()+"' AND ctn.schemaType = "+ schemaType);
+            Query   query = session.createQuery("SELECT DISTINCT nms.language FROM SpLocaleContainer as ctn INNER JOIN ctn.items as itm INNER JOIN itm.names nms WHERE nms.language = '"+locale.getLanguage()+"' AND ctn.schemaType = "+ schemaTypeArg);
             List<?> list  = query.list();
             return list.size() > 0;
             
@@ -746,9 +746,9 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#export(java.io.File)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#exportToDirectory(java.io.File)
      */
-    public boolean export(File expportFile)
+    public boolean exportToDirectory(File expportDir)
     {
         throw new RuntimeException("Export is not implemented.");
     }

@@ -26,7 +26,7 @@ public class LocalizableJListItem implements Comparable<LocalizableJListItem>
     protected Integer id;
     protected String displayName;
 
-    public LocalizableJListItem(String name, Integer id, String displayName)
+    public LocalizableJListItem(final String name, final Integer id, final String displayName)
     {
         super();
         this.name = name;
