@@ -35,11 +35,11 @@ import edu.ku.brc.util.Orderable;
 @Table(name = "collectionobjectattachment")
 public class CollectionObjectAttachment extends CollectionMember implements ObjectAttachmentIFace<CollectionObject>, Orderable, Serializable
 {
-    protected Integer    collectionObjectAttachmentId;
-    protected CollectionObject     collectionObject;
-    protected Attachment attachment;
-    protected Integer    ordinal;
-    protected String     remarks;
+    protected Integer          collectionObjectAttachmentId;
+    protected CollectionObject collectionObject;
+    protected Attachment       attachment;
+    protected Integer          ordinal;
+    protected String           remarks;
     
     public CollectionObjectAttachment()
     {
@@ -60,9 +60,12 @@ public class CollectionObjectAttachment extends CollectionMember implements Obje
         super.init();
         collectionObjectAttachmentId = null;
         collectionObject             = null;
-        attachment         = new Attachment();
+        ordinal                      = null;
+        
+        // Since the UI always creates new objects that implement ObjectAttachmentIFace and NOT new Attachments, we
+        // need to create the new Attachment object here.
+        attachment                   = new Attachment();
         attachment.initialize();
-        ordinal            = null;
     }
 
     @Id
@@ -185,6 +188,19 @@ public class CollectionObjectAttachment extends CollectionMember implements Obje
         setCollectionObject(object);
     }
     
+    @Override
+    @Transient
+    public String getIdentityTitle()
+    {
+        if (attachment == null)
+        {
+            return super.getIdentityTitle() + ": NULL Attachment";
+        }
+        
+        Attachment a = attachment;
+        return a.getIdentityTitle();
+    }
+
     @Override
     public String toString()
     {

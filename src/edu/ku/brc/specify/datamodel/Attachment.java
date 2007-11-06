@@ -27,6 +27,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
 
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
@@ -36,6 +37,10 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "attachment")
+@org.hibernate.annotations.Table(appliesTo="attachment", indexes =
+    {   @Index (name="TitleIDX", columnNames={"Title"}),
+        @Index (name="DateImagedIDX", columnNames={"DateImaged"})
+    })
 public class Attachment extends DataModelObjBase implements Serializable
 {
     protected Integer                 attachmentId;
@@ -553,12 +558,21 @@ public class Attachment extends DataModelObjBase implements Serializable
     @Transient
     public String getIdentityTitle()
     {
-        if (getOrigFilename() != null)
+        String filename = getOrigFilename();
+        if (filename != null)
         {
-            File f = new File(getOrigFilename());
-            return f.getName();
+            // We have to do this in a system independent way b/c the file may have come from a Windows system but is being viewed on a Linux system (or vice versa)
+            // Using File.getName() only works for files with names that look like the filenames on the running VMs platform.
+            int lastWinSepIndex = filename.lastIndexOf('\\');
+            int lastUnixSepIndex = filename.lastIndexOf('/');
+            int lastIndex = Math.max(lastWinSepIndex, lastUnixSepIndex);
+            if (lastIndex != -1)
+            {
+                filename = filename.substring(lastIndex+1);
+            }
         }
-        return super.getIdentityTitle();
+        
+        return title + ": " + filename;
     }
 
     @Transient

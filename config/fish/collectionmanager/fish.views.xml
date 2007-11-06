@@ -2220,6 +2220,10 @@
                     <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse"/>
                 </row>
                 <row>
+                	<cell type="label" labelfor="title" label="Title"/>
+                	<cell type="field" id="title" name="attachment.title" cols="30"/>
+                </row>
+                <row>
                     <cell type="label" labelfor="mimeType" label="MIME Type"/>
                     <cell type="field" id="mimeType" name="attachment.mimeType" uitype="text"/>
                 </row>
