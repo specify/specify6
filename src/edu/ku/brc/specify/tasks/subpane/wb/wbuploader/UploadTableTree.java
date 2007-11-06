@@ -11,8 +11,12 @@ package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Vector;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import org.hibernate.NonUniqueResultException;
 
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -41,8 +45,8 @@ public class UploadTableTree extends UploadTable
 	protected Table baseTable; 
 	protected UploadTableTree parent;
     protected Integer rank;
-    protected DataModelObjBase treeRoot;    
-    protected Vector<Treeable> defaultParents;
+    protected Treeable treeRoot;    
+    protected SortedSet<Treeable> defaultParents;
     private static GeographyTreeDef geoTreeDef = null;
     private static TaxonTreeDef taxTreeDef = null;
     
@@ -62,7 +66,7 @@ public class UploadTableTree extends UploadTable
 		this.parent = parent;
 		this.required = required;
         this.rank = rank;
-        defaultParents = new Vector<Treeable>();
+        defaultParents = new TreeSet<Treeable>(new RankComparator());
 	}
 
     /* (non-Javadoc)
@@ -192,7 +196,6 @@ public class UploadTableTree extends UploadTable
     public DataModelObjBase getTreeDef(final String defName)
     {
         String hql = "from " + defName;
-        //Session session = getNewSession();
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();        
         try
         {
@@ -232,25 +235,17 @@ public class UploadTableTree extends UploadTable
     protected void finalizeWrite(DataModelObjBase rec, int recNum) throws UploaderException
     {
         //assign treedef and treedefitem to rec
-        //DUH. Treedef actually gets set in business rules for Treeable
         DataModelObjBase parentRec = parent == null ? null : parent.getCurrentRecord(recNum);
         Treeable tRec = (Treeable)rec;
-        if (parentRec != null)
+        tRec.setDefinition(getTreeDef());
+        tRec.setDefinitionItem(getTreeDefItem());
+        if (parentRec == null)
         {
-            Treeable pRec = (Treeable)parentRec;
-            tRec.setDefinition(pRec.getDefinition());
-            tRec.setDefinitionItem(pRec.getDefinition().getDefItemByRank(rank));
-        }
-        else
-        {
-            tRec.setParent((Treeable)getDefaultParent(tRec));
-            tRec.setDefinition(getTreeDef());
-            tRec.setDefinitionItem(getTreeDefItem());
+            tRec.setParent(getDefaultParent2(getTreeDefItem()));
         }
     }
 
-    @SuppressWarnings("unchecked")
-    protected DataModelObjBase getDefaultParent(Treeable rec) throws UploaderException
+    protected Treeable getTreeRoot() throws UploaderException
     {
         if (treeRoot == null)
         {
@@ -259,12 +254,11 @@ public class UploadTableTree extends UploadTable
         return treeRoot;
     }
     
-
     @SuppressWarnings("unchecked")
     protected Treeable getDefaultParent2(TreeDefItemIface defItem) throws UploaderException
     {
         TreeDefItemIface parentDefItem = defItem.getParent();
-        while (parentDefItem != null)
+        while (parentDefItem != null && parentDefItem.getRankId() > 0)
         {
             if (parentDefItem.getIsEnforced())
             {
@@ -276,7 +270,16 @@ public class UploadTableTree extends UploadTable
         {
             throw new UploaderException("unable to find default parent for " + defItem.getName(), UploaderException.ABORT_ROW);
         }
+        if (parentDefItem.getRankId() == 0)
+        {
+            return getTreeRoot();
+        }
         
+        return getDefaultParent(parentDefItem);
+     }
+        
+    protected Treeable getDefaultParent(TreeDefItemIface parentDefItem) throws UploaderException
+    {
         for (Treeable p : defaultParents)
         {
             if (p.getDefinitionItem().getTreeDefItemId().equals(parentDefItem.getTreeDefItemId()))
@@ -285,19 +288,44 @@ public class UploadTableTree extends UploadTable
             }
         }
         
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        QueryIFace q = session.createQuery("from " + tblClass.getName() + " where rankId=" + parentDefItem.getRankId().toString()
+                + " and name='" + getDefaultParentName() + "'");
+        try
+        {
+            Treeable result = (Treeable)q.uniqueResult();
+            if (result != null)
+            {
+                return result;
+            }
+        }
+        catch (NonUniqueResultException hex)
+        {
+            throw new RuntimeException(hex);
+        }
+        finally
+        {
+            session.close();
+        }
+        
         return createDefaultParent(parentDefItem);
     }
-        
+    
     protected Treeable createDefaultParent(TreeDefItemIface defItem) throws UploaderException
     {
         try
         {
-            Constructor<?> constructor = tblClass.getDeclaredConstructor(void.class);
-            DataModelObjBase result = (DataModelObjBase)constructor.newInstance((Object[])null);
+            Constructor<?> constructor = tblClass.getDeclaredConstructor();
+            Treeable result = (Treeable)constructor.newInstance((Object[])null);
             result.initialize();
-            ((Treeable)result).setParent(getDefaultParent2(defItem)); //ouch
-            ((Treeable)result).setName(Uploader.currentUpload.getIdentifier());
-            
+            result.setRankId(defItem.getRankId());
+            result.setParent(getDefaultParent2(defItem)); //ouch
+            result.setName(getDefaultParentName());
+            result.setDefinition(getTreeDef());
+            result.setDefinitionItem(defItem);
+            doWrite((DataModelObjBase)result, 0);
+            defaultParents.add(result);
+            return result;            
         } 
         catch (NoSuchMethodException ex)
         {
@@ -315,7 +343,6 @@ public class UploadTableTree extends UploadTable
         {
             throw new RuntimeException(ex);
         }
-        return null;
     }
     
     protected void loadTreeRoot() throws UploaderException
@@ -326,7 +353,7 @@ public class UploadTableTree extends UploadTable
         try
         {
             QueryIFace q = session.createQuery(hql);
-            //treeRoot = (DataModelObjBase)q.list().get(0);
+            treeRoot = (Treeable)q.list().get(0);
         }
         finally
         {
@@ -373,4 +400,76 @@ public class UploadTableTree extends UploadTable
         throw new UploaderException("unable to find TreeDefItem table for " + baseTable.getName(), UploaderException.ABORT_IMPORT);
     }
 
+    /**
+     * @return a name for a parent added to hold taxa added during an upload
+     */
+    protected String getDefaultParentName()
+    {
+        return Uploader.currentUpload.getIdentifier();
+    }
+    
+    /**
+     * undoes the most recent upload.
+     * 
+     */
+    @Override
+    public void undoUpload()
+    {
+        super.undoUpload();
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        String hql = "from " + getWriteTable().getName() + " where id =:theKey";
+        QueryIFace q = session.createQuery(hql);
+        try
+        {
+            for (Treeable defParent : defaultParents)
+            {
+                Object key = ((DataModelObjBase)defParent).getId();
+                try
+                {
+                    q.setParameter("theKey", key);
+                    DataModelObjBase obj = (DataModelObjBase)q.uniqueResult();
+                    session.beginTransaction();
+                    session.delete(obj);
+                    session.commit();
+                }
+                catch (Exception ex)
+                {
+                    //the delete may fail if another user has used or deleted uploaded records...
+                    //or if another UploadTreeTable has deleted the parent.
+                    log.info(ex);
+                }
+            }
+        }
+        finally
+        {
+            session.close();
+        }
+    }
+
+    /**
+     * Gets ready for an upload.
+     */
+    @Override
+    public void prepareToUpload() throws NoSuchMethodException, ClassNotFoundException
+    {
+        super.prepareToUpload();
+        defaultParents.clear();
+    }
+    
+    protected class RankComparator implements Comparator<Treeable>
+    {
+        //sorts in reverse order by rankId
+        public int compare(Treeable t1, Treeable t2)
+        {
+            if (t1.getRankId() < t2.getRankId())
+            {
+                return 1;
+            }
+            if (t1.getRankId() == t2.getRankId())
+            {
+                return 0;
+            }
+            return -1;
+        }
+    }
 }

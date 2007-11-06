@@ -209,7 +209,6 @@ public class UploadTable implements Comparable<UploadTable>
     {
         assignFldSetters();
         assignParentSetters();
-        //buildMatchHQL();
         uploadedKeys.clear();
     }
     
@@ -1549,6 +1548,7 @@ public class UploadTable implements Comparable<UploadTable>
                     if (!doNotWrite)
                     {
                         doWrite(rec, recNum);
+                        uploadedKeys.add(rec.getId());
                     }
                     setCurrentRecord(rec, recNum);
                 }
@@ -1588,7 +1588,7 @@ public class UploadTable implements Comparable<UploadTable>
      * 
      * Creates session and saves rec.
      */
-    private void doWrite(DataModelObjBase rec, int recNum) throws UploaderException
+    protected void doWrite(DataModelObjBase rec, int recNum) throws UploaderException
     {
         boolean goodRec = dataToWrite(recNum) && isValid(recNum);
         boolean tblTransactionOpen = false;
@@ -1626,7 +1626,6 @@ public class UploadTable implements Comparable<UploadTable>
                     busRule.afterSaveCommit(rec);
                 }
                 tblSession.refresh(rec);
-                uploadedKeys.add(rec.getId());
             }
             catch (Exception ex)
             {
