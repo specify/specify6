@@ -540,7 +540,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         {
             model.addElement(item);
 
-            if (item.getChild()==null || item.getIsEnforced()==Boolean.TRUE || item==bottomItem)
+            if (item.getChild()==null || item.getIsEnforced()==Boolean.TRUE || (bottomItem != null && item.getRankId().intValue()==bottomItem.getRankId().intValue()) )
             {
                 done = true;
             }
