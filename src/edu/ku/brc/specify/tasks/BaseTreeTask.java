@@ -9,7 +9,6 @@ package edu.ku.brc.specify.tasks;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Component;
-import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -35,9 +34,6 @@ import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
-import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
@@ -46,7 +42,6 @@ import edu.ku.brc.specify.ui.treetables.TreeTableViewer;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.GetSetValueIFace;
-import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.persist.AltViewIFace.CreationMode;
@@ -92,12 +87,6 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     public static final String OPEN_TREE        = "OpenTree";
     public static final String EDIT_TREE_DEF    = "EditTreeDef";
     public static final String SWITCH_VIEW_TYPE = "SwitchViewType";
-    
-    protected static DataFlavor TREE_DEF_FLAVOR = new DataFlavor(TreeDefIface.class,TreeDefIface.class.getName());
-
-    protected RolloverCommand openTreeCmdBtn;
-
-    protected RolloverCommand editDefCmdBtn;
     
 	/**
      * Constructor.
@@ -151,12 +140,16 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         showTreeMenuItem = new JMenuItem(getResourceString("TTV_SHOW_TREE_MENU_ITEM"));
         showTreeMenuItem.addActionListener(new ActionListener()
         {
+            @SuppressWarnings("synthetic-access")
             public void actionPerformed(ActionEvent ae)
             {
                 if (!currentDefInUse)
                 {
                     requestContext();
-                    showTree(currentDef);
+                    TreeTableViewer<T,D,I> treeViewer = createTreeViewer();
+                    currentDefInUse = true;
+                    visibleSubPane = treeViewer;
+                    addSubPaneToMgr(treeViewer);
                 }
                 else
                 {
@@ -176,12 +169,16 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         editDefMenuItem = new JMenuItem(getResourceString("TTV_EDIT_DEF_MENU_ITEM"));
         editDefMenuItem.addActionListener(new ActionListener()
         {
+            @SuppressWarnings("synthetic-access")
             public void actionPerformed(ActionEvent ae)
             {
                 if (!currentDefInUse)
                 {
                     requestContext();
-                    openTreeDefEditor(currentDef);
+                    TreeDefinitionEditor<T,D,I> defEditor = createDefEditor();
+                    currentDefInUse = true;
+                    visibleSubPane = defEditor;
+                    addSubPaneToMgr(defEditor);
                 }
                 else
                 {
@@ -204,62 +201,24 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         return menus;
 	}
     
-	/**
-     * Displays the tree associated with the given {@link TreeDefIface}.
-     * 
-	 * @param treeDef the {@link TreeDefIface} corresponding to the tree to be displayed
-	 * @return a {@link SubPaneIFace} for displaying the tree
-	 */
-	protected void showTree(final D treeDef)
-	{
-        SwingWorker bgWork = new SwingWorker()
-        {
-            @Override
-            @SuppressWarnings("unchecked")
-            public Object construct()
-            {
-                // get a clean copy of the tree def (one that isn't attached to everything else in the system)
-                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                D def = (D)session.load(treeDef.getClass(), treeDef.getTreeDefId());
-                session.close();
-                return def;
-            }
-
-            @SuppressWarnings({ "unchecked", "synthetic-access" })
-            @Override
-            public void finished()
-            {
-                // do the UI work to show the tree
-                D def = (D)getValue();
-                showTreeInternal(def);
-            }
-        };
-        
-        bgWork.start();
-	}
-    
-    protected TreeTableViewer<T,D,I> showTreeInternal(final D treeDef)
+    protected TreeTableViewer<T,D,I> createTreeViewer()
     {
         ContextMgr.requestContext(this);
-        String tabName = treeDef.getName();
-        TreeTableViewer<T,D,I> ttv = new TreeTableViewer<T,D,I>(treeDef,tabName,this);
-        addSubPaneToMgr(ttv);
+        String tabName = currentDef.getName();
+        TreeTableViewer<T,D,I> ttv = new TreeTableViewer<T,D,I>(currentDef,tabName,this);
         currentDefInUse = true;
         visibleSubPane = ttv;
         return ttv;
     }
 
     /**
-     * Opens a {@link SubPaneIFace} for viewing/editing a {@link TreeDefIface} object.
+     * Opens a {@link SubPaneIFace} for viewing/editing the current {@link TreeDefIface} object.
      */
-	public TreeDefinitionEditor<T,D,I> openTreeDefEditor(D treeDef)
+    protected TreeDefinitionEditor<T,D,I> createDefEditor()
 	{
         ContextMgr.requestContext(this);
-        String tabName = treeDef.getName();
-	    TreeDefinitionEditor<T,D,I> defEditor = new TreeDefinitionEditor<T,D,I>(treeDef,tabName,this);
-        addSubPaneToMgr(defEditor);
-        currentDefInUse = true;
-        visibleSubPane = defEditor;
+        String tabName = currentDef.getName();
+	    TreeDefinitionEditor<T,D,I> defEditor = new TreeDefinitionEditor<T,D,I>(currentDef,tabName,this);
         return defEditor;
 	}
     
@@ -270,21 +229,20 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 	@SuppressWarnings("unchecked")
     protected void switchViewType()
 	{
-	    // find out what def this refers to
-	    SubPaneIFace subPane = SubPaneMgr.getInstance().getCurrentSubPane();
-
-	    if (subPane instanceof TreeTableViewer)
+	    if (visibleSubPane instanceof TreeTableViewer)
 	    {
-	        TreeDefIface treeDef = ((TreeTableViewer)subPane).getTreeDef();
-	        SubPaneMgr.getInstance().closeCurrent();
-	        openTreeDefEditor((D)treeDef);
+            TreeDefinitionEditor<T,D,I> defEditor = createDefEditor();
+            SubPaneMgr.getInstance().replacePane(visibleSubPane, defEditor);
+            currentDefInUse = true;
+            visibleSubPane = defEditor;
 	        return;
 	    }
-        else if (subPane instanceof TreeDefinitionEditor)
+        else if (visibleSubPane instanceof TreeDefinitionEditor)
         {
-            TreeDefIface treeDef = ((TreeDefinitionEditor)subPane).getDisplayedTreeDef();
-            SubPaneMgr.getInstance().closeCurrent();
-            showTree((D)treeDef);
+            TreeTableViewer<T,D,I> treeViewer = createTreeViewer();
+            SubPaneMgr.getInstance().replacePane(visibleSubPane, treeViewer);
+            currentDefInUse = true;
+            visibleSubPane = treeViewer;
             return;
         }
 	    return;

@@ -20,9 +20,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JMenuItem;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.RecordSet;
@@ -76,97 +73,77 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
     /* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.BaseTreeTask#showTree(edu.ku.brc.specify.datamodel.TreeDefIface)
 	 */
-	@Override
-	protected void showTree(final TaxonTreeDef treeDef)
-	{
-        SwingWorker bgWork = new SwingWorker()
+    @Override
+    protected TreeTableViewer<Taxon,TaxonTreeDef,TaxonTreeDefItem> createTreeViewer()
+    {
+        final TreeTableViewer<Taxon, TaxonTreeDef, TaxonTreeDefItem> ttv = super.createTreeViewer();
+
+        if(ttv != null)
         {
-            @Override
-            @SuppressWarnings("unchecked")
-            public Object construct()
+            final TreeNodePopupMenu popup = ttv.getPopupMenu();
+            // install custom popup menu items
+            JMenuItem getITIS = new JMenuItem("View ITIS Page");
+            getITIS.addActionListener(new ActionListener()
             {
-                // get a clean copy of the tree def (one that isn't attached to everything else in the system)
-                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                TaxonTreeDef def = session.load(TaxonTreeDef.class, treeDef.getTreeDefId());
-                session.close();
-                return def;
-            }
-
-            @SuppressWarnings({ "unchecked", "synthetic-access" })
-            @Override
-            public void finished()
-            {
-                TaxonTreeDef def = (TaxonTreeDef)getValue();
-                final TreeTableViewer<Taxon, TaxonTreeDef, TaxonTreeDefItem> ttv = showTreeInternal(def);
-                
-                if(ttv != null)
+                public void actionPerformed(ActionEvent e)
                 {
-                    final TreeNodePopupMenu popup = ttv.getPopupMenu();
-                    // install custom popup menu items
-                  JMenuItem getITIS = new JMenuItem("View ITIS Page");
-                  getITIS.addActionListener(new ActionListener()
-                  {
-                      public void actionPerformed(ActionEvent e)
-                      {
-                          StringBuilder itisURL = new StringBuilder("http://www.cbif.gc.ca/pls/itisca/taxastep?p_action=containing&p_format=html&taxa=");
-                          Taxon taxon = ttv.getSelectedNode(popup.getList());
-                          String kingdom = taxon.getLevelName(TaxonTreeDef.KINGDOM);
-                          String fullName = taxon.getFullName();
-                          fullName = fullName.replaceAll(" ", "%20");
-                          itisURL.append(fullName);
-                          itisURL.append("&king=");
-                          itisURL.append(kingdom);
-                          try
-                          {
-                              AttachmentUtils.openURI(new URI(itisURL.toString()));
-                          }
-                          catch (Exception e1)
-                          {
-                              String errorMessage = getResourceString("ERROR_CANT_OPEN_WEBPAGE") + ": " + itisURL;
-                              log.warn(errorMessage, e1);
-                              UIRegistry.getStatusBar().setErrorMessage(errorMessage, e1);
-                          }
-                      }
-                  });
-                  popup.add(getITIS);
-                    
-                    JMenuItem getDeters = new JMenuItem(getResourceString("TTV_TAXON_ASSOC_DETERS"));
-                    getDeters.addActionListener(new ActionListener()
+                    StringBuilder itisURL = new StringBuilder("http://www.cbif.gc.ca/pls/itisca/taxastep?p_action=containing&p_format=html&taxa=");
+                    Taxon taxon = ttv.getSelectedNode(popup.getList());
+                    String kingdom = taxon.getLevelName(TaxonTreeDef.KINGDOM);
+                    String fullName = taxon.getFullName();
+                    fullName = fullName.replaceAll(" ", "%20");
+                    itisURL.append(fullName);
+                    itisURL.append("&king=");
+                    itisURL.append(kingdom);
+                    try
                     {
-                        public void actionPerformed(ActionEvent e)
-                        {
-                            Taxon taxon = ttv.getSelectedNode(popup.getList());
-                            
-                            // this call initializes all of the linked objects
-                            // it only initializes the immediate links, not objects that are multiple hops away
-                            ttv.initializeNodeAssociations(taxon);
-
-                            Set<Determination> deters = taxon.getDeterminations();
-                            
-                            if (deters.size() == 0)
-                            {
-                                UIRegistry.getStatusBar().setText(getResourceString("TTV_TAXON_NO_DETERS_FOR_NODE"));
-                                return;
-                            }
-                            
-                            int deterTblId = DBTableIdMgr.getInstance().getIdByClassName(Determination.class.getName());
-                            RecordSet rs = new RecordSet("TTV.showDeterminations", deterTblId);
-                            for(Determination deter : deters)
-                            {
-                                rs.addItem(deter.getDeterminationId());
-                            }
-                            
-                            UIRegistry.getStatusBar().setText(getResourceString("TTV_OPENING_DETERS_FORM"));
-                            CommandAction cmd = new CommandAction(DataEntryTask.DATA_ENTRY,DataEntryTask.EDIT_DATA,rs);
-                            CommandDispatcher.dispatch(cmd);
-                        }
-                    });
-                    popup.add(getDeters);
+                        AttachmentUtils.openURI(new URI(itisURL.toString()));
+                    }
+                    catch (Exception e1)
+                    {
+                        String errorMessage = getResourceString("ERROR_CANT_OPEN_WEBPAGE") + ": " + itisURL;
+                        log.warn(errorMessage, e1);
+                        UIRegistry.getStatusBar().setErrorMessage(errorMessage, e1);
+                    }
                 }
-            }
-        };
+            });
+            popup.add(getITIS);
+
+            JMenuItem getDeters = new JMenuItem(getResourceString("TTV_TAXON_ASSOC_DETERS"));
+            getDeters.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    Taxon taxon = ttv.getSelectedNode(popup.getList());
+
+                    // this call initializes all of the linked objects
+                    // it only initializes the immediate links, not objects that are multiple hops away
+                    ttv.initializeNodeAssociations(taxon);
+
+                    Set<Determination> deters = taxon.getDeterminations();
+
+                    if (deters.size() == 0)
+                    {
+                        UIRegistry.getStatusBar().setText(getResourceString("TTV_TAXON_NO_DETERS_FOR_NODE"));
+                        return;
+                    }
+
+                    int deterTblId = DBTableIdMgr.getInstance().getIdByClassName(Determination.class.getName());
+                    RecordSet rs = new RecordSet("TTV.showDeterminations", deterTblId);
+                    for(Determination deter : deters)
+                    {
+                        rs.addItem(deter.getDeterminationId());
+                    }
+
+                    UIRegistry.getStatusBar().setText(getResourceString("TTV_OPENING_DETERS_FORM"));
+                    CommandAction cmd = new CommandAction(DataEntryTask.DATA_ENTRY,DataEntryTask.EDIT_DATA,rs);
+                    CommandDispatcher.dispatch(cmd);
+                }
+            });
+            popup.add(getDeters);
+        }
         
-        bgWork.start();
+        return ttv;
     }
 	
 	@Override
