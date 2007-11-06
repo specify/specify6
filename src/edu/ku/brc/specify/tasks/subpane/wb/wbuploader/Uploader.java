@@ -36,6 +36,7 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.expresssearch.TableInfoRenderable;
 import edu.ku.brc.af.core.expresssearch.TableNameRenderer;
+import edu.ku.brc.af.core.expresssearch.TableNameRendererIFace;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.tasks.ReportsBaseTask;
@@ -1470,7 +1471,7 @@ public class Uploader implements ActionListener, WindowStateListener
                     }
                     if (bogusViewer != null)
                     {
-                        bogusViewer.viewBogusTbl(mainForm.getUploadTbls().getSelectedValue().toString(), true);
+                        bogusViewer.viewBogusTbl(((TableNameRendererIFace)mainForm.getUploadTbls().getSelectedValue()).getTitle(), true);
                     }
                 }
             }
@@ -1798,15 +1799,16 @@ public class Uploader implements ActionListener, WindowStateListener
                             Vector<Vector<String>> vals = ut.printUpload();
                             if (vals.size() > 0)
                             {
-                                if (!bogusStorages.containsKey(ut.getWriteTable().getName()))
+                                String title = DBTableIdMgr.getInstance().getByShortClassName(ut.getWriteTable().getName()).getTitle();
+                                if (!bogusStorages.containsKey(title))
                                 {
-                                    bogusStorages.put(ut.getWriteTable().getName(), vals);
+                                    bogusStorages.put(title, vals);
                                 }
                                 else
                                 {
                                     // delete header
                                     vals.remove(0);
-                                    bogusStorages.get(ut.getWriteTable().getName()).addAll(vals);
+                                    bogusStorages.get(title).addAll(vals);
                                 }
                             }
                         }
