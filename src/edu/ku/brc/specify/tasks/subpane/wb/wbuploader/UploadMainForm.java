@@ -9,6 +9,8 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -17,7 +19,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-import javax.crypto.interfaces.PBEKey;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -37,8 +38,6 @@ import org.apache.log4j.Logger;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 /**
  * @author timbo
