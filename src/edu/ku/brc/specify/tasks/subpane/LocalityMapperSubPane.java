@@ -691,53 +691,56 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
         /* (non-Javadoc)
          * @see java.awt.LayoutManager#layoutContainer(java.awt.Container)
          */
-        public void layoutContainer(Container arg0)
+        public void layoutContainer(Container target)
         {
-        	Dimension size      = arg0.getSize();
-        	Dimension formSize  = form.getPreferredSize();
-        	//Dimension labelSize = label.getPreferredSize();
-
-
-        	if (size.width > formSize.width && size.height > formSize.height)
-        	{
-                //preferredSize.setSize(size.width - formSize.width - (3 * gap), size.height - formSize.height - (2*gap));
-                preferredSize.setSize(size.width - formSize.width - (3 * gap), formSize.height);
-                //preferredSize.setSize(300, 250); // XXX
-
-                int formY = (size.height - formSize.height) / 2;
-        		form.setLocation((size.width - formSize.width)-gap, formY);
-        		//System.out.println("1 formSize: "+formSize);
-        		form.setSize(formSize);
-        		form.setVisible(true);
-
-                Dimension compSize = titleLbl.getPreferredSize();
-                titleLbl.setBounds((size.width - compSize.width) / 2, (formY - compSize.height) / 2, compSize.width, compSize.height);
-
-                //label.setLocation((size.width - (preferredSize.width + (gap * 2))) / 2, (size.height - preferredSize.height)/2);
-                int labelX = gap;
-                int labelY = (size.height - preferredSize.height)/2;
-                label.setLocation(labelX, labelY);
-
-        		//System.out.println("2 label preferredSize "+preferredSize);
-        		label.setSize(preferredSize);
-                localityMapper.setMaxMapWidth(preferredSize.width);
-                localityMapper.setMaxMapHeight(preferredSize.height);
-
-                // XXXX DEBUG
-                //localityMapper.setPreferredMapWidth(300);
-                //localityMapper.setPreferredMapHeight(250);
-
-
-                compSize = controlBar.getPreferredSize();
-                controlBar.setBounds(labelX + (preferredSize.width - compSize.width) / 2, labelY + preferredSize.height + gap, compSize.width, compSize.height);
-
-        	} else
-        	{
-        		preferredSize.setSize(size.width - (2 * gap), size.height - (2*gap));
-        		label.setLocation(0,0);
-        		label.setSize(preferredSize);
-        		form.setVisible(false);
-        	}
+            synchronized (target.getTreeLock()) 
+            {
+            	Dimension size      = target.getSize();
+            	Dimension formSize  = form.getPreferredSize();
+            	//Dimension labelSize = label.getPreferredSize();
+    
+    
+            	if (size.width > formSize.width && size.height > formSize.height)
+            	{
+                    //preferredSize.setSize(size.width - formSize.width - (3 * gap), size.height - formSize.height - (2*gap));
+                    preferredSize.setSize(size.width - formSize.width - (3 * gap), formSize.height);
+                    //preferredSize.setSize(300, 250); // XXX
+    
+                    int formY = (size.height - formSize.height) / 2;
+            		form.setLocation((size.width - formSize.width)-gap, formY);
+            		//System.out.println("1 formSize: "+formSize);
+            		form.setSize(formSize);
+            		form.setVisible(true);
+    
+                    Dimension compSize = titleLbl.getPreferredSize();
+                    titleLbl.setBounds((size.width - compSize.width) / 2, (formY - compSize.height) / 2, compSize.width, compSize.height);
+    
+                    //label.setLocation((size.width - (preferredSize.width + (gap * 2))) / 2, (size.height - preferredSize.height)/2);
+                    int labelX = gap;
+                    int labelY = (size.height - preferredSize.height)/2;
+                    label.setLocation(labelX, labelY);
+    
+            		//System.out.println("2 label preferredSize "+preferredSize);
+            		label.setSize(preferredSize);
+                    localityMapper.setMaxMapWidth(preferredSize.width);
+                    localityMapper.setMaxMapHeight(preferredSize.height);
+    
+                    // XXXX DEBUG
+                    //localityMapper.setPreferredMapWidth(300);
+                    //localityMapper.setPreferredMapHeight(250);
+    
+    
+                    compSize = controlBar.getPreferredSize();
+                    controlBar.setBounds(labelX + (preferredSize.width - compSize.width) / 2, labelY + preferredSize.height + gap, compSize.width, compSize.height);
+    
+            	} else
+            	{
+            		preferredSize.setSize(size.width - (2 * gap), size.height - (2*gap));
+            		label.setLocation(0,0);
+            		label.setSize(preferredSize);
+            		form.setVisible(false);
+            	}
+            }
         }
     }
 

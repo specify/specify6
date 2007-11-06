@@ -471,9 +471,10 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
         
         boolean isTextEmpty = StringUtils.isEmpty(text);
         
-        int len = formatter.getLength();
-        int inx = 0;
-        int pos = 0;
+        int txtLen = text.length();
+        int len    = formatter.getLength();
+        int inx    = 0;
+        int pos    = 0;
         for (UIFieldFormatterField field : fields)
         {
             String val;
@@ -495,7 +496,13 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
                 val = "";
             } else
             {
-                val = text.substring(pos, Math.min(pos+field.getSize(), len));
+                if (pos < txtLen)
+                {
+                    val = text.substring(pos, Math.min(pos+field.getSize(), txtLen));
+                } else
+                {
+                    val = "";
+                }
             }
             
             if (comps[inx] instanceof JLabel)

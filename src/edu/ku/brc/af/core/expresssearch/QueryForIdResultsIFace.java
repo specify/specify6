@@ -104,4 +104,6 @@ public interface QueryForIdResultsIFace
      */
     public abstract boolean isExpanded();
     
+    public abstract String getDescription();
+    
 }

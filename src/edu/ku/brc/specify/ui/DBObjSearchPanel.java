@@ -497,11 +497,11 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.subpane.ExpressSearchResultsPaneIFace#removeTable(edu.ku.brc.af.tasks.subpane.ExpressTableResultsBase)
      */
-    public void removeTable(final ESResultsTablePanel etrbTable)
+    public void removeTable(final ESResultsTablePanelIFace etrbTable)
     {
         etrbTable.cleanUp();
         
-        panel.remove(etrbTable);
+        panel.remove(etrbTable.getUIComponent());
         panel.invalidate();
         panel.doLayout();
         panel.repaint();
@@ -514,7 +514,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace#addTable(edu.ku.brc.specify.tasks.subpane.ExpressTableResultsBase)
      */
-    public void addTable(final ESResultsTablePanel etrBase)
+    public void addTable(final ESResultsTablePanelIFace etrBase)
     {
         // It has already been added so don't do anything
     }

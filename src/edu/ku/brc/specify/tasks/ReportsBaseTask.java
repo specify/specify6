@@ -662,7 +662,7 @@ public class ReportsBaseTask extends BaseTask
             dumpProps(cmdAction.getProperties(), 0);
         }*/
         
-        log.debug("*************** "+this);
+        //log.debug("*************** "+this);
         if (cmdAction.isType(REPORTS))
         {
             processReportCommands(cmdAction);

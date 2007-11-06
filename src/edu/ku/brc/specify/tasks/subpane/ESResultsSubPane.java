@@ -20,6 +20,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Vector;
 
@@ -64,7 +65,7 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
     protected NavBoxLayoutManager  layoutMgr;
     protected JScrollPane          scrollPane;
     
-    protected List<ESResultsTablePanel> expTblResults        = new Vector<ESResultsTablePanel>();
+    protected List<ESResultsTablePanelIFace> expTblResults        = new Vector<ESResultsTablePanelIFace>();
     
     protected NavBox      navBox  = null;
     protected int         positionOfUnIndexed = -1;
@@ -72,9 +73,11 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
     protected boolean     added   = false;
     
     // Tables are added here waiting for their first results to come back.
-    protected Vector<ESResultsTablePanel> expTblResultsCache = new Vector<ESResultsTablePanel>();
+    protected Vector<ESResultsTablePanelIFace> expTblResultsCache = new Vector<ESResultsTablePanelIFace>();
     
     protected JPanel      explainPanel = null;
+    
+    protected Comparator<ESResultsTablePanelIFace> sorter;
     
     //protected TableOrderingService tableOrderingService = new TableOrderingService();
 
@@ -96,6 +99,16 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
 
         scrollPane = new JScrollPane(contentPanel);
         add(scrollPane, BorderLayout.CENTER);
+        
+        sorter = new Comparator<ESResultsTablePanelIFace>()
+        {
+            public int compare(ESResultsTablePanelIFace left, ESResultsTablePanelIFace right)
+            {
+                Integer leftOrder = left.getResults().getDisplayOrder();
+                Integer rightOrder = right.getResults().getDisplayOrder();
+                return leftOrder.compareTo(rightOrder);
+            }
+        };
         
         if (includeExplainPane)
         {
@@ -129,14 +142,14 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
      * Removes a table from the content pane.
      * @param expressTableResultsBase the table of results to be removed
      */
-    public synchronized void removeTable(final ESResultsTablePanel expressTableResultsBase)
+    public synchronized void removeTable(final ESResultsTablePanelIFace expressTableResultsBase)
     {
 
         expTblResults.remove(expressTableResultsBase);
         
         expressTableResultsBase.cleanUp();
         
-        contentPanel.remove(expressTableResultsBase);
+        contentPanel.remove(expressTableResultsBase.getUIComponent());
         contentPanel.invalidate();
         contentPanel.doLayout();
         contentPanel.repaint();
@@ -149,7 +162,7 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace#addTable(edu.ku.brc.specify.tasks.subpane.ExpressTableResultsBase)
      */
-    public synchronized void addTable(final ESResultsTablePanel expTblRes)
+    public synchronized void addTable(final ESResultsTablePanelIFace expTblRes)
     {
         expTblResultsCache.remove(expTblRes);
         
@@ -165,16 +178,20 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
         // Add it to the appropriate list to be sorted
 
         expTblResults.add(expTblRes);
-        Collections.sort(expTblResults);
-        for (ESResultsTablePanel etr : expTblResults)
+        
+        Collections.sort(expTblResults, sorter);
+        
+        for (ESResultsTablePanelIFace etr : expTblResults)
         {
-            //log.debug("Order: "+etr.getResults().getDisplayOrder());
-            contentPanel.add(etr); 
+            contentPanel.add(etr.getUIComponent()); 
         }
         
         List<Component> comps = layoutMgr.getComponentList();
         comps.clear();
-        comps.addAll(expTblResults);
+        for (ESResultsTablePanelIFace etr : expTblResults)
+        {
+            comps.add(etr.getUIComponent()); 
+        }
         
         if (explainPanel != null)
         {
@@ -187,7 +204,7 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
             {
                 panel.validate();
                 panel.repaint();
-                expTblRes.repaint();
+                expTblRes.getUIComponent().repaint();
             }
         });
         

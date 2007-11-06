@@ -30,9 +30,9 @@ import edu.ku.brc.dbsupport.DBInfoBase;
 import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
-import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpLocaleContainerItem;
 import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
+import edu.ku.brc.specify.tools.schemalocale.DisciplineBasedContainer;
 import edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerXMLHelper;
 
 /**
@@ -94,44 +94,45 @@ public class SpecifySchemaI18NServiceXML extends SchemaI18NService
      * @see edu.ku.brc.af.core.SchemaI18NService#loadWithLocale(java.lang.Byte, int, edu.ku.brc.dbsupport.DBTableIdMgr, java.util.Locale)
      */
     @Override
-    public void loadWithLocale(final Byte schemaType, 
-                               final int  collectionTypeId,
+    public void loadWithLocale(final Byte         schemaType, 
+                               final int          collectionTypeId,
                                final DBTableIdMgr tableMgr, 
-                               final Locale locale)
+                               final Locale       locale)
     {
         schemaIO = new SchemaLocalizerXMLHelper(schemaType, tableMgr);
         schemaIO.load();
         
-        Vector<SpLocaleContainer> containers = schemaIO.getSpLocaleContainers();
+        Vector<DisciplineBasedContainer> containers = schemaIO.getSpLocaleContainers();
         
-        for (SpLocaleContainer container : containers)
+        for (DisciplineBasedContainer container : containers)
         {
             DBTableInfo ti = tableMgr.getInfoByTableName(container.getName());
             if (ti != null)
             {
                setNameDesc(container.getNames(), container.getDescs(), ti); 
+               
+               for (SpLocaleContainerItem item : container.getItems())
+               {
+                   DBFieldInfo fi = ti.getFieldByName(item.getName());
+                   if (fi != null)
+                   {
+                      setNameDesc(item.getNames(), item.getDescs(), fi); 
+                   } else
+                   {
+                       DBRelationshipInfo ri = ti.getRelationshipByName(item.getName());
+                       if (ri != null)
+                       {
+                           setNameDesc(item.getNames(), item.getDescs(), ri); 
+                       } else
+                       {
+                           log.error("Couldn't find field ["+item.getName()+"] in table ["+ti.getName()+"]");
+                       }
+                   }
+               }
+               
             } else
             {
                 log.error("Couldn't find table ["+container.getName()+"]");
-            }
-
-            for (SpLocaleContainerItem item : container.getItems())
-            {
-                DBFieldInfo fi = ti.getFieldByName(item.getName());
-                if (fi != null)
-                {
-                   setNameDesc(item.getNames(), item.getDescs(), fi); 
-                } else
-                {
-                    DBRelationshipInfo ri = ti.getRelationshipByName(item.getName());
-                    if (ri != null)
-                    {
-                        setNameDesc(item.getNames(), item.getDescs(), ri); 
-                    } else
-                    {
-                        log.error("Couldn't find field ["+item.getName()+"] in table ["+ti.getName()+"]");
-                    }
-                }
             }
         }
     }

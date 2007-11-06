@@ -12,6 +12,7 @@ package edu.ku.brc.specify.tasks.subpane.qb;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Insets;
 import java.awt.LayoutManager2;
 import java.util.List;
 import java.util.Vector;
@@ -93,27 +94,32 @@ public class HorzLayoutManager implements LayoutManager2
     /* (non-Javadoc)
      * @see java.awt.LayoutManager#layoutContainer(java.awt.Container)
      */
-    public void layoutContainer(Container arg0)
+    public void layoutContainer(Container target)
     {
-        Dimension parentSize =  arg0.getSize();
-        parentSize.width  -= 2 * borderPadding;
-        parentSize.height -= 2 * borderPadding;
-
-        int x = borderPadding;
-        int y = borderPadding;
-
-        for (Component comp: comps)
+        synchronized (target.getTreeLock()) 
         {
-            Dimension size = comp.getPreferredSize();
-            if (comp instanceof JButton)
+            Insets insets = target.getInsets();
+
+            Dimension parentSize =  target.getSize();
+            parentSize.width  -= (2 * borderPadding) + insets.left + insets.right;
+            parentSize.height -= (2 * borderPadding) + insets.top + insets.bottom;
+    
+            int x = borderPadding;
+            int y = borderPadding;
+    
+            for (Component comp: comps)
             {
-                comp.setBounds(x, y+parentSize.height-size.height, size.width, size.height);
-                
-            } else
-            {
-                comp.setBounds(x, y, size.width, parentSize.height);
+                Dimension size = comp.getPreferredSize();
+                if (comp instanceof JButton)
+                {
+                    comp.setBounds(x, y+parentSize.height-size.height, size.width, size.height);
+                    
+                } else
+                {
+                    comp.setBounds(x, y, size.width, parentSize.height);
+                }
+                x += size.width + xSeparation;
             }
-            x += size.width + xSeparation;
         }
     }
 
@@ -123,9 +129,10 @@ public class HorzLayoutManager implements LayoutManager2
      * around all the boxes.
      *
      */
-    protected void calcPreferredSize()
+    protected void calcPreferredSize(Container target)
     {
-        preferredSize.setSize(borderPadding, borderPadding*2);
+        Insets insets = target.getInsets();
+        preferredSize.setSize(borderPadding+insets.left+insets.right, (borderPadding*2)+insets.top+insets.bottom);
 
         for (Component comp : comps)
         {
@@ -195,7 +202,7 @@ public class HorzLayoutManager implements LayoutManager2
     public void invalidateLayout(Container target)
     {
         preferredSize.setSize(0, 0);
-        calcPreferredSize();
+        calcPreferredSize(target);
     }
     
     /* (non-Javadoc)
@@ -203,7 +210,7 @@ public class HorzLayoutManager implements LayoutManager2
      */
     public Dimension maximumLayoutSize(Container target)
     {
-        calcPreferredSize();
+        calcPreferredSize(target);
         return new Dimension(minimumSize);
     }
 }

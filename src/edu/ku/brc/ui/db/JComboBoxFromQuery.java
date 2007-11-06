@@ -31,6 +31,8 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.plaf.basic.BasicComboBoxEditor;
 import javax.swing.text.BadLocationException;
 
@@ -75,7 +77,9 @@ public class JComboBoxFromQuery extends JComboBox
     protected int                  numColumns      = -1;
     protected Object[]             values;
     
-    protected int prevCaretPos = -1;
+    protected int                  prevCaretPos = -1;
+    
+    protected boolean              skipSearch = false;
 
 
 
@@ -98,6 +102,7 @@ public class JComboBoxFromQuery extends JComboBox
                               final String format)
     {
         this(tableName, idColumn, keyColumn, null, format);
+        
     }
 
     /**
@@ -116,7 +121,12 @@ public class JComboBoxFromQuery extends JComboBox
         this.displayColumns = displayColumns != null ? displayColumns : keyColumn;
         this.format         = format;
 
+        
         init();
+        
+        //System.out.println(getUI().getClass().getCanonicalName());
+        
+        //setUI(new SizablePopUpMenuUI());
     }
 
     /* (non-Javadoc)
@@ -153,6 +163,40 @@ public class JComboBoxFromQuery extends JComboBox
         this.setEditor(new BasicComboBoxEditor());
         this.setEditable(true);
         setSelectedItem("");
+        
+        addPopupMenuListener(new PopupMenuListener() {
+            public void popupMenuCanceled(PopupMenuEvent e)
+            {
+                
+            }
+            public void popupMenuWillBecomeInvisible(PopupMenuEvent e)
+            {
+
+            }
+            public void popupMenuWillBecomeVisible(PopupMenuEvent e)
+            {
+                /*
+                log.error("skipSearch "+skipSearch);
+                if (!skipSearch)
+                {
+                    String str = tf.getText();
+                    fillBox(str);
+                    lookForMatch();
+                }
+                skipSearch = false;
+                */
+                /*cbx
+                final JPopupMenu pm = (JPopupMenu)e.getSource();
+                SwingUtilities.invokeLater(new Runnable() {
+                    //@Override
+                    public void run()
+                    {
+                        pm.setSize(pm.getPreferredSize());
+                    }
+                });*/
+            }
+            
+        });
     }
     
     public void clearSearch()
@@ -417,10 +461,11 @@ public class JComboBoxFromQuery extends JComboBox
     {
         if (true)
         {
-            if (ev.getKeyCode() == JAutoCompComboBox.SEARCH_KEY)
+            if (ev.getKeyCode() == JAutoCompComboBox.SEARCH_KEY ||
+                ev.getKeyCode() == KeyEvent.VK_ENTER)
             {
+                skipSearch = true;
                 String str = tf.getText();
-                
                 fillBox(str);
                 lookForMatch();
                 

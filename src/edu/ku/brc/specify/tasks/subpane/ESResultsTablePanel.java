@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -43,6 +44,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -75,7 +77,7 @@ import edu.ku.brc.ui.UIRegistry;
  * @author rods
  *
  */
-public class ESResultsTablePanel extends JPanel implements Comparable<ESResultsTablePanel>, ESResultsTablePanelIFace
+public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIFace
 {
 	private static final Logger log = Logger.getLogger(ESResultsTablePanel.class);
 
@@ -117,7 +119,7 @@ public class ESResultsTablePanel extends JPanel implements Comparable<ESResultsT
         this.esrPane     = esrPane;
         this.results     = results;
         this.bannerColor = results.getBannerColor();
-
+        
         table = new JTable();
         table.setShowVerticalLines(false);
         table.setRowSelectionAllowed(true);
@@ -136,6 +138,12 @@ public class ESResultsTablePanel extends JPanel implements Comparable<ESResultsT
                 }
             }
         });
+        
+        String description = results.getDescription();
+        if (StringUtils.isNotEmpty(description))
+        {
+            topTitleBar.setToolTipText(description);
+        }
 
         expandBtn = new TriangleButton();
         expandBtn.setToolTipText(getResourceString("CollapseTBL"));
@@ -195,6 +203,7 @@ public class ESResultsTablePanel extends JPanel implements Comparable<ESResultsT
         tablePane.setLayout(new BorderLayout());
         tablePane.add(table.getTableHeader(), BorderLayout.PAGE_START);
         tablePane.add(table, BorderLayout.CENTER);
+        tablePane.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
 
         add(tablePane, BorderLayout.CENTER);
 
@@ -244,10 +253,7 @@ public class ESResultsTablePanel extends JPanel implements Comparable<ESResultsT
             }
         });
         
-        //-----------------
         
-        //esrPane.addTable(this);
-
         ResultSetTableModel rsm = new ResultSetTableModel(results);
         rsm.setPropertyListener(this);
 
@@ -369,15 +375,28 @@ public class ESResultsTablePanel extends JPanel implements Comparable<ESResultsT
      */
     protected void configColumns()
     {
-        ((DefaultTableCellRenderer)table.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
-        
-        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-        renderer.setHorizontalAlignment(SwingConstants.CENTER);
+        CenterRenderer centerRenderer = new CenterRenderer();
 
         TableColumnModel tableColModel = table.getColumnModel();
         for (int i=0;i<tableColModel.getColumnCount();i++)
         {
-            tableColModel.getColumn(i).setCellRenderer(renderer);
+            tableColModel.getColumn(i).setCellRenderer(centerRenderer);
+        }
+        
+    }
+    
+    class CenterRenderer extends DefaultTableCellRenderer
+    {
+        public CenterRenderer()
+        {
+            setHorizontalAlignment( CENTER );
+        }
+ 
+        public Component getTableCellRendererComponent(
+            JTable tableArg, Object value, boolean isSelected, boolean hasFocus, int row, int column)
+        {
+            super.getTableCellRendererComponent(tableArg, value, isSelected, hasFocus, row, column);
+            return this;
         }
     }
 
@@ -532,14 +551,6 @@ public class ESResultsTablePanel extends JPanel implements Comparable<ESResultsT
     public String getTitle()
     {
         return results.getTitle();
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace#compareTo(edu.ku.brc.specify.tasks.subpane.ESResultsTablePanel)
-     */
-    public int compareTo(ESResultsTablePanel obj)
-    {
-        return results.getDisplayOrder().compareTo(obj.results.getDisplayOrder());
     }
 
     /* (non-Javadoc)

@@ -38,13 +38,13 @@ public interface ExpressSearchResultsPaneIFace
      * Removes a table from the content pane
      * @param table the table of results to be removed
      */
-    public void removeTable(ESResultsTablePanel table);
+    public void removeTable(ESResultsTablePanelIFace table);
 
     /**
      * Adds a table to the content pane.
      * @param table the table of results to be added
      */
-    public void addTable(ESResultsTablePanel table);
+    public void addTable(ESResultsTablePanelIFace table);
 
     /**
      * Revalidate the scroll pane

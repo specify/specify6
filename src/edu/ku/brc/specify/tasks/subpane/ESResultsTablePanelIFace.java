@@ -63,4 +63,10 @@ public interface ESResultsTablePanelIFace extends PropertyChangeListener
      */
     public abstract void setPropertyChangeListener(PropertyChangeListener pcl);
     
+    
+    /**
+     * @return
+     */
+    public abstract QueryForIdResultsIFace getResults();
+    
 }

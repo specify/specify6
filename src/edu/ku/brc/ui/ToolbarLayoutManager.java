@@ -17,6 +17,7 @@ package edu.ku.brc.ui;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.LayoutManager2;
 import java.util.List;
@@ -122,35 +123,39 @@ public class ToolbarLayoutManager implements LayoutManager, LayoutManager2
     /* (non-Javadoc)
      * @see java.awt.LayoutManager#layoutContainer(java.awt.Container)
      */
-    public void layoutContainer(final Container arg0)
+    public void layoutContainer(final Container target)
     {        
-        calcPreferredSize();
-
-        int x = borderPadding;
-        int y = borderPadding;
-        
-        Component lastComp = adjustRightLastComp ? (comps.size() > 0 ? comps.lastElement() : null) : null;
-        for (Component comp : comps)
+        synchronized (target.getTreeLock()) 
         {
-            Dimension size = comp.getPreferredSize();
-            if (lastComp != null && comp == lastComp)
-            {
-                int lastCompX = arg0.getSize().width - (borderPadding + size.width);
-                if (lastCompX > x)
-                {
-                    x = lastCompX;
-                }
-            }
+            Insets insets = target.getInsets();
+                
+            calcPreferredSize(target);
+    
+            int x = borderPadding + insets.left;
+            int y = borderPadding + insets.top;
             
-            int yc = y;
-            if (size.height < preferredSize.height)
+            Component lastComp = adjustRightLastComp ? (comps.size() > 0 ? comps.lastElement() : null) : null;
+            for (Component comp : comps)
             {
-                yc = (preferredSize.height - size.height) / 2;
+                Dimension size = comp.getPreferredSize();
+                if (lastComp != null && comp == lastComp)
+                {
+                    int lastCompX = target.getWidth() - (borderPadding + size.width +  insets.right);
+                    if (lastCompX > x)
+                    {
+                        x = lastCompX;
+                    }
+                }
+                
+                int yc = y;
+                if (size.height < preferredSize.height)
+                {
+                    yc = (preferredSize.height - size.height) / 2;
+                }
+                comp.setBounds(x, yc, size.width, size.height);
+                x += size.width + separation;
             }
-            comp.setBounds(x, yc, size.width, size.height);
-            x += size.width + separation;
         }
-
     }
     
     /**
@@ -159,11 +164,12 @@ public class ToolbarLayoutManager implements LayoutManager, LayoutManager2
      * aroound all the boxes
      *
      */
-    protected void calcPreferredSize()
+    protected void calcPreferredSize(final Container target)
     {
         if (maxCompHeight == 0)
         {
-            preferredSize.setSize(borderPadding*2, borderPadding);
+            Insets insets = target.getInsets();
+            preferredSize.setSize((borderPadding*2)+insets.left+insets.right, borderPadding+insets.top+insets.bottom);
             
             // Assumes Horizontal layout at the moment
             for (Component comp : comps)
@@ -215,11 +221,11 @@ public class ToolbarLayoutManager implements LayoutManager, LayoutManager2
     {
         maxCompHeight = 0;
         preferredSize.setSize(0, 0);
-        calcPreferredSize();
+        calcPreferredSize(target);
     }
     public Dimension maximumLayoutSize(final Container target) 
     {
-        calcPreferredSize();        
+        calcPreferredSize(target);        
         return new Dimension(preferredSize); 
     }
 

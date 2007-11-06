@@ -215,4 +215,14 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
     {
         overrideSQL = sql;
     }
+    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace#getDescription()
+     */
+    public String getDescription()
+    {
+        return null;
+    }
+
 }

@@ -36,6 +36,7 @@ import edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
+import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanel;
 import edu.ku.brc.specify.ui.DBObjSearchDialog;
@@ -76,7 +77,7 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
     protected Color          textBGColor    = null;
     protected Color          badSearchColor = new Color(255,235,235);
 
-    protected ESResultsTablePanel  etrb;
+    protected ESResultsTablePanelIFace  etrb;
 
     protected int            tableId        = -1;
     protected RecordSetIFace      recordSet      = null;
@@ -282,11 +283,11 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace#removeTable(edu.ku.brc.specify.tasks.subpane.ExpressTableResultsBase)
      */
-    public void removeTable(ESResultsTablePanel expTblRes)
+    public void removeTable(ESResultsTablePanelIFace expTblRes)
     {
         expTblRes.cleanUp();
         
-        contentPanel.remove(expTblRes);
+        contentPanel.remove(expTblRes.getUIComponent());
         contentPanel.invalidate();
         contentPanel.doLayout();
         contentPanel.repaint();
@@ -299,7 +300,7 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace#addTable(edu.ku.brc.specify.tasks.subpane.ExpressTableResultsBase)
      */
-    public void addTable(ESResultsTablePanel expTblRes)
+    public void addTable(ESResultsTablePanelIFace expTblRes)
     {
         // it has already been added so don't do anything
     }

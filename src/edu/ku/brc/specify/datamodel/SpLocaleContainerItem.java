@@ -55,7 +55,7 @@ import edu.ku.brc.specify.tools.schemalocale.LocalizableStrIFace;
 @org.hibernate.annotations.Table(appliesTo="localecontaineritem", indexes =
     {   @Index (name="SpLocaleContainerItemNameIDX", columnNames={"Name"})
     })
-public class SpLocaleContainerItem extends SpLocaleBase implements LocalizableItemIFace
+public class SpLocaleContainerItem extends SpLocaleBase implements LocalizableItemIFace, Comparable<SpLocaleContainerItem>
 {
     private static final Logger log = Logger.getLogger(SpLocaleContainerItem.class);
     
@@ -287,4 +287,13 @@ public class SpLocaleContainerItem extends SpLocaleBase implements LocalizableIt
             log.error("LocalizableStrIFace was null or not of Class SpLocaleItemStr");
         }
     }
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(SpLocaleContainerItem o)
+    {
+        return name.compareTo(o.name);
+    }
+    
 }
