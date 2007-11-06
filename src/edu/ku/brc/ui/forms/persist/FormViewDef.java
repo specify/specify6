@@ -190,7 +190,6 @@ public class FormViewDef extends ViewDef implements Cloneable, FormViewDefIFace
      */
     public String getDefinitionName()
     {
-        System.out.println("getDefinitionName "+hashCode()+" ["+name+"]["+definitionName+"]");
         return definitionName;
     }
 
@@ -205,13 +204,6 @@ public class FormViewDef extends ViewDef implements Cloneable, FormViewDefIFace
             int x = 0;
             x++;
         }
-        System.out.println("Setting: "+hashCode()+" ["+definitionName+"]");
-        if (definitionName != null && definitionName.equals("Collectors"))
-        {
-            int x = 0;
-            x++;
-        }
-
     }
     
     /**
