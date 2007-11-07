@@ -18,6 +18,7 @@ import java.util.TreeSet;
 
 import org.hibernate.NonUniqueResultException;
 
+import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
@@ -470,6 +471,21 @@ public class UploadTableTree extends UploadTable
                 return 0;
             }
             return -1;
+        }
+    }
+    /**
+     * @return a name for recordset of uploaded objects.
+     */
+    @Override
+    protected String getRecordSetName()
+    {
+        try
+        {
+            return getTreeDefItem().getName() + "_" + Uploader.currentUpload.getIdentifier();
+        }
+        catch (UploaderException e)
+        {
+            throw new RuntimeException(e);
         }
     }
 }

@@ -12,7 +12,9 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowStateListener;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -38,7 +40,10 @@ import edu.ku.brc.af.core.expresssearch.TableInfoRenderable;
 import edu.ku.brc.af.core.expresssearch.TableNameRenderer;
 import edu.ku.brc.af.core.expresssearch.TableNameRendererIFace;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.tasks.ReportsBaseTask;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
@@ -177,8 +182,9 @@ public class Uploader implements ActionListener, WindowStateListener
      */
     protected void buildIdentifier()
     {
-        Date now = new Date(System.currentTimeMillis());
-        identifier =  "Upload " + uploadData.getWbRow(0).getWorkbench().getName() + now.toString();
+        Calendar now = new GregorianCalendar();
+        identifier =  uploadData.getWbRow(0).getWorkbench().getName() + "_"+ now.get(Calendar.YEAR) + "-" + now.get(Calendar.MONTH) + "-"
+            + now.get(Calendar.DAY_OF_MONTH) + "_" + now.get(Calendar.MILLISECOND);
     }
     
     /**
@@ -1135,6 +1141,18 @@ public class Uploader implements ActionListener, WindowStateListener
         }
     }
     
+    /**
+     * @return count of total number of objects uploaded
+     */
+    protected Integer getUploadedObjects()
+    {
+        Integer result = 0;
+        for (UploadTable ut : uploadTables)
+        {
+            result += ut.getUploadedKeys().size();
+        }
+        return result;
+    }
     
     /**
      * Shuts down upload UI.
@@ -1201,6 +1219,7 @@ public class Uploader implements ActionListener, WindowStateListener
         }
         else if (e.getActionCommand().equals(UploadMainForm.CLOSE_UI))
         {
+            saveRecordSets();
             closeMainForm();
             wbSS.uploadDone();
         }
@@ -1426,7 +1445,7 @@ public class Uploader implements ActionListener, WindowStateListener
         //mainForm.getDoUploadBtn().setVisible(mainForm.getDoUploadBtn().isEnabled());
         
         mainForm.getViewSettingsBtn().setEnabled(canViewSettings(op));
-        mainForm.getViewSettingsBtn().setVisible(mainForm.getViewSettingsBtn().isEnabled());
+        //mainForm.getViewSettingsBtn().setVisible(mainForm.getViewSettingsBtn().isEnabled());
         
         mainForm.getViewUploadBtn().setEnabled(canViewUpload(op));
         mainForm.getViewUploadBtn().setVisible(mainForm.getViewUploadBtn().isEnabled());
@@ -1449,7 +1468,13 @@ public class Uploader implements ActionListener, WindowStateListener
         
         mainForm.getCurrOpProgress().setVisible(mainForm.getCancelBtn().isVisible());
         
-        mainForm.getCurrOpLbl().setText(getResourceString(op));
+        
+        String statText = getResourceString(op);
+        if (op.equals(Uploader.SUCCESS))
+        {
+            statText += ". " + getUploadedObjects().toString() + " " + getResourceString("WB_UPLOAD_OBJECT_COUNT") + ".";
+        }
+        mainForm.getCurrOpLbl().setText(statText);
     }
     
     
@@ -1914,5 +1939,37 @@ public class Uploader implements ActionListener, WindowStateListener
         t.writeRow();
     }
             
-
+	protected void saveRecordSets()
+    {
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            for (UploadTable ut : uploadTables)
+            {
+                RecordSet rs = ut.getRecordSet();
+                if (rs.getItems().size() > 0)
+                {
+                    session.beginTransaction();
+                    try
+                    {
+                        session.save(rs);
+                        session.commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        session.rollback();
+                        throw new RuntimeException(ex);
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new RuntimeException(ex);
+        }
+        finally
+        {
+            session.close();
+        }
+    }
 }

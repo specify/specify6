@@ -34,6 +34,8 @@ import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Preparation;
+import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Relationship;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader.ParentTableEntry;
@@ -1872,5 +1874,28 @@ public class UploadTable implements Comparable<UploadTable>
     public final Class<?> getTblClass()
     {
         return tblClass;
+    }
+    
+    /**
+     * @return a name for recordset of uploaded objects.
+     */
+    protected String getRecordSetName()
+    {
+        return DBTableIdMgr.getInstance().getByShortClassName(tblClass.getSimpleName()).getTitle() + "_" + Uploader.currentUpload.getIdentifier();
+    }
+    
+    /**
+     * @return a recordset containing the the objects created during last upload.
+     */
+    public RecordSet getRecordSet()
+    {
+        RecordSet result = new RecordSet(getRecordSetName(), DBTableIdMgr.getInstance().getByShortClassName(tblClass.getSimpleName()).getTableId());
+        result.initialize();
+        result.setSpecifyUser(SpecifyUser.getCurrentUser());
+        for (Object key : uploadedKeys)
+        {
+            result.addItem(((Integer)key).intValue());
+        }
+        return result;
     }
 }
