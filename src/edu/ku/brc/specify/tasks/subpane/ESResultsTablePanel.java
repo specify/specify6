@@ -42,6 +42,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
 import org.apache.commons.lang.StringUtils;
@@ -200,7 +201,6 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         add(builder.getPanel(), BorderLayout.NORTH);
 
         tablePane = new JPanel(new BorderLayout());
-        tablePane.setLayout(new BorderLayout());
         tablePane.add(table.getTableHeader(), BorderLayout.PAGE_START);
         tablePane.add(table, BorderLayout.CENTER);
         tablePane.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
@@ -261,7 +261,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         table.setModel(rsm);
 
         configColumns();
-
+        
         rowCount = rsm.getRowCount();
         if (rowCount > topNumEntries + 2)
         {
@@ -375,17 +375,27 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
      */
     protected void configColumns()
     {
-        CenterRenderer centerRenderer = new CenterRenderer();
+        /*CenterRenderer centerRenderer = new CenterRenderer();
 
         TableColumnModel tableColModel = table.getColumnModel();
         for (int i=0;i<tableColModel.getColumnCount();i++)
         {
             tableColModel.getColumn(i).setCellRenderer(centerRenderer);
-        }
+        }*/
+        
+        ((DefaultTableCellRenderer)table.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
+        
+        TableCellRenderer tcr = table.getDefaultRenderer(String.class);
+        
+        // For Strings with no changes made to the table, the render is a DefaultTableCellRender.
+        DefaultTableCellRenderer dtcr = (DefaultTableCellRenderer) tcr;
+        
+        // set the alignment to center
+        dtcr.setHorizontalAlignment(DefaultTableCellRenderer.CENTER);
         
     }
     
-    class CenterRenderer extends DefaultTableCellRenderer
+    /*class CenterRenderer extends DefaultTableCellRenderer
     {
         public CenterRenderer()
         {
@@ -398,7 +408,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
             super.getTableCellRendererComponent(tableArg, value, isSelected, hasFocus, row, column);
             return this;
         }
-    }
+    }*/
 
     /**
      * Builds the "more" panel.
