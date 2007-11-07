@@ -27,6 +27,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -101,6 +103,18 @@ public class ExpressResultsTableInfo
             {
                 log.error("Express Search with name["+name+"] is missing it's description in the expressearch properties file.");
             }
+        } else
+        {
+            DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(tableId);
+            if (tableInfo != null)
+            {
+                title = tableInfo.getTitle();
+            }
+        }
+        
+        if (StringUtils.isEmpty(title))
+        {
+            title = "(No Title)";  // XXX This should never happen! I18N
         }
         
         Element viewElement   = (Element)tableElement.selectSingleNode("detailView");
