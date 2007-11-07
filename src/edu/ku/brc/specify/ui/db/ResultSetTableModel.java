@@ -505,9 +505,9 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                             
                         } else if (id != prevId)
                         {
-                            int aggInx = captions.indexOf(aggCaption);
                             if (row != null && aggList != null)
                             {
+                                int aggInx = captions.indexOf(aggCaption);
                                 row.remove(aggInx);
                                 row.insertElementAt(DataObjFieldFormatMgr.aggregate(aggList, aggCaption.getAggClass()), aggInx);
 
@@ -516,7 +516,9 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                                     aggListRecycler.addAll(aggList);
                                 }
                                 aggList.clear();
-                                row = null;
+                                
+                                row = new Vector<Object>();
+                                cache.add(row);
                             }
                             
                         } else if (row == null)
