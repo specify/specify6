@@ -123,6 +123,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
         super.init();
 		geographyId = null;
 		name = null;
+        fullName = null;
 		remarks = null;
 		commonName = null;
 		geographyCode = null;

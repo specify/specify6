@@ -115,6 +115,7 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
 		lithoStratId = null;
 		rankId = null;
 		name = null;
+        fullName = null;
 		remarks = null;
 		guid = null;
 		nodeNumber = null;

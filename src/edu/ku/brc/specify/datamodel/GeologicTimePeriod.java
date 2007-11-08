@@ -118,6 +118,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
         geologicTimePeriodId = null;
         rankId = null;
         name = null;
+        fullName = null;
         remarks = null;
         guid = null;
         nodeNumber = null;

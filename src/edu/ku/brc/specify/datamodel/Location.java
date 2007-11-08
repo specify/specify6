@@ -94,6 +94,7 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
         super.init();
 		locationId = null;
 		name = null;
+        fullName = null;
 		remarks = null;
 		rankId = null;
 		nodeNumber = null;
