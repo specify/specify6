@@ -1616,33 +1616,21 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			log.info("User requested new link be created between " + draggedNode.getName() + " and " + droppedOnNode.getName());
 			String statusMsg = dataService.synonymize(draggedRecord, droppedRecord);
             draggedNode.setAcceptedParentId(droppedOnNode.getId());
+            
+            // fix all synonyms of the new synonym to point at the "final" accepted name in the chain
+            for (Pair<Integer, String> idAndName: draggedNode.getSynonymIdsAndNames())
+            {
+                int synNodeID = idAndName.first;
+                TreeNode synNode = listModel.getNodeById(synNodeID);
+                synNode.setAcceptedParentId(droppedOnNode.getId());
+                synNode.setAcceptedParentFullName(droppedOnNode.getFullName());
+                droppedOnNode.getSynonymIdsAndNames().add(new Pair<Integer,String>(synNode.getId(),synNode.getFullName()));
+            }
+            
+            draggedNode.getSynonymIdsAndNames().clear();
+            
             draggedNode.setAcceptedParentFullName(droppedOnNode.getFullName());
             droppedOnNode.getSynonymIdsAndNames().add(new Pair<Integer,String>(draggedNode.getId(),draggedNode.getFullName()));
-            
-//            // hide the modified nodes, then reshow them
-//            T draggedRecordParent = draggedRecord.getParent();
-//            if (draggedRecordParent != null)
-//            {
-//                TreeNode parentNode = listModel.getNodeById(draggedRecordParent.getTreeId());
-//                if (parentNode != null)
-//                {
-//                    listModel.removeChildNodes(parentNode);
-//                    List<TreeNode> childNodes = dataService.getChildTreeNodes(draggedRecordParent);
-//                    listModel.showChildNodes(childNodes, parentNode);
-//                }
-//            }
-//
-//            T droppedRecordParent = droppedRecord.getParent();
-//            if (droppedRecordParent != null)
-//            {
-//                TreeNode parentNode = listModel.getNodeById(droppedRecordParent.getTreeId());
-//                if (parentNode != null)
-//                {
-//                    listModel.removeChildNodes(parentNode);
-//                    List<TreeNode> childNodes = dataService.getChildTreeNodes(droppedRecordParent);
-//                    listModel.showChildNodes(childNodes, parentNode);
-//                }
-//            }
             
             updateAllUI();
 			if (statusMsg != null)
