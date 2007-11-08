@@ -281,7 +281,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		bgs[0] = new Color(202,238,255);
 		bgs[1] = new Color(151,221,255);
         Color lineColor = new Color(0x00, 0x00, 0x00, 0x66);
-		listCellRenderer = new TreeViewerNodeRenderer(listModel, bgs, lineColor);
+		listCellRenderer = new TreeViewerNodeRenderer(this, listModel, bgs, lineColor);
 		ListSelectionListener listSelListener = new ListSelectionListener()
 		{
 			@SuppressWarnings("unchecked")
@@ -321,7 +321,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		lists[1].setCellRenderer(listCellRenderer);
 		lists[1].addListSelectionListener(listSelListener);
         lists[1].setFixedCellHeight(rowHeight);
-		
+        
         Map<Integer,String> rankNamesMap = new HashMap<Integer, String>();
         for (I defItem: treeDef.getTreeDefItems())
         {
@@ -693,20 +693,27 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         UIRegistry.forceTopFrameRepaint();
 	}
     
-    protected void invalidateAndRepaintEverything()
+    public void updateAllUI()
     {
-        listHeaders[0].invalidate();
-        listHeaders[0].repaint();
-        listHeaders[1].invalidate();
-        listHeaders[1].repaint();
+        listModel.layoutChanged();
         
-        lists[0].invalidate();
-        lists[0].repaint();
-        lists[1].invalidate();
-        lists[1].repaint();
-        
-        invalidate();
-        repaint();        
+//        listHeaders[0].invalidate();
+//        listHeaders[0].repaint();
+//        listHeaders[1].invalidate();
+//        listHeaders[1].repaint();
+//        
+//        lists[0].invalidate();
+//        lists[0].repaint();
+//        lists[1].invalidate();
+//        lists[1].repaint();
+//        
+//        scrollers[0].invalidate();
+//        scrollers[0].repaint();
+//        scrollers[1].invalidate();
+//        scrollers[1].invalidate();
+//        
+//        invalidate();
+//        repaint();        
     }
 	
 	@SuppressWarnings("unchecked")
@@ -756,7 +763,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         syncViews0.setEnabled(mode == DUAL_VIEW_MODE);
         syncViews1.setEnabled(mode == DUAL_VIEW_MODE);
 		
-		invalidateAndRepaintEverything();
+        updateAllUI();
     	UIRegistry.forceTopFrameRepaint();
 	}
     
@@ -775,7 +782,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			// set to dual view mode
 			this.add(new JSplitPane(JSplitPane.VERTICAL_SPLIT,treeListPanels[0],treeListPanels[1]),BorderLayout.CENTER);
 		}
-		invalidateAndRepaintEverything();
+        updateAllUI();
 	}
     
 	protected void syncViewWithOtherView(JList list)
@@ -952,7 +959,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         wholeTree0.setEnabled(true);
         wholeTree1.setEnabled(true);
         
-        invalidateAndRepaintEverything();
+        updateAllUI();
 	}
 	
     public synchronized void zoomOutOneLevel(JList list)
@@ -980,7 +987,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             wholeTree1.setEnabled(false);
         }
         
-        invalidateAndRepaintEverything();
+        updateAllUI();
     }
     
 	/**
@@ -1431,7 +1438,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                     
                     UIRegistry.clearGlassPaneMsg();
                  
-                    invalidateAndRepaintEverything();
+                    updateAllUI();
                 }
             };
             
@@ -1498,6 +1505,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             private T nodeRecord;
             private boolean canDelete = false;
             private boolean canAddChild = false;
+            private boolean isVisibleRoot = false;
             
             @SuppressWarnings("synthetic-access")
             @Override
@@ -1512,6 +1520,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 // these calls should work even if nodeRecord is null
                 canDelete   = (businessRules != null) ? businessRules.okToDelete(nodeRecord) : false;
                 canAddChild = (selectedNode != null) ? (selectedNode.getRank() < getHighestPossibleNodeRank()) : false;
+                isVisibleRoot = (selectedNode != null) ? (selectedNode.getId() == listModel.getVisibleRoot().getId()) : false;
                 return null;
             }
 
@@ -1542,7 +1551,15 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                     
                     editNode0.setEnabled(enable);
                     subtree0.setEnabled(enable);
-                    toParent0.setEnabled(enable);
+                    
+                    if (!isVisibleRoot && enable)
+                    {
+                        toParent0.setEnabled(true);
+                    }
+                    else
+                    {
+                        toParent0.setEnabled(false);
+                    }
                 }
                 else
                 {
@@ -1551,7 +1568,15 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                     
                     editNode1.setEnabled(enable);
                     subtree1.setEnabled(enable);
-                    toParent1.setEnabled(enable);
+                    
+                    if (!isVisibleRoot && enable)
+                    {
+                        toParent1.setEnabled(true);
+                    }
+                    else
+                    {
+                        toParent1.setEnabled(false);
+                    }
                 }
             }            
         };
@@ -1619,7 +1644,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 //                }
 //            }
             
-            invalidateAndRepaintEverything();
+            updateAllUI();
 			if (statusMsg != null)
 			{
 			    statusBar.setText(statusMsg);
@@ -2028,7 +2053,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         }
         listModel.showChildNodes(childNodes, parentNode);
 
-        idsToReexpand.add(parentNode.getId());
+        if (parentNode != null)
+        {
+            idsToReexpand.add(parentNode.getId());
+        }
 
         if (restoreTreeState)
         {

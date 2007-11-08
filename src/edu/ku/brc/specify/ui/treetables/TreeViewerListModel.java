@@ -329,4 +329,9 @@ public class TreeViewerListModel extends AbstractListModel
             fireContentsChanged(this, indexOfNode, indexOfNode);
         }
     }
+    
+    public synchronized void layoutChanged()
+    {
+        fireContentsChanged(this,0,visibleSize-1);
+    }
 }

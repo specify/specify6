@@ -71,12 +71,15 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
     protected Stroke lineStroke;
     protected Color  lineColor;
     
+    protected TreeTableViewer<?,?,?> treeViewer;
+    
     /**
      * 
      */
-    public TreeViewerNodeRenderer(TreeViewerListModel model, Color[] bgColors, Color lineColor)
+    public TreeViewerNodeRenderer(TreeTableViewer<?,?,?> ttv, TreeViewerListModel model, Color[] bgColors, Color lineColor)
     {
         this.model = model;
+        this.treeViewer = ttv;
         
         bgs = new Color[2];
         bgs[0] = bgColors[0];
@@ -275,6 +278,8 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
     {
         int width = columnWidths.get(rank);
         columnWidths.put(rank, width+change);
+        
+        treeViewer.updateAllUI();
     }
     
     protected synchronized int[] getRanksSurroundingPoint(int x)
@@ -332,7 +337,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
     public void contentsChanged(ListDataEvent e)
     {
         widthsValid = false;
-        if (list.getGraphics() != null)
+        if (list != null && list.getGraphics() != null)
         {
             computeMissingColumnWidths(list.getGraphics());
         }
