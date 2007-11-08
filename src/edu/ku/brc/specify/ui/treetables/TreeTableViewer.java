@@ -1614,6 +1614,13 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		if( dropAction == DnDConstants.ACTION_COPY || dropAction == DnDConstants.ACTION_NONE )
 		{
 			log.info("User requested new link be created between " + draggedNode.getName() + " and " + droppedOnNode.getName());
+            
+            if ((draggedNode.getAcceptedParentId() != null) && (droppedOnNode.getId() == draggedNode.getAcceptedParentId()))
+            {
+                log.info("User request to synonymize a node with it's current accepted parent.  Nothing to do.");
+                return false;
+            }
+            
 			String statusMsg = dataService.synonymize(draggedRecord, droppedRecord);
             draggedNode.setAcceptedParentId(droppedOnNode.getId());
             
@@ -1702,7 +1709,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			if(dragged instanceof TreeNode && droppedOn instanceof TreeNode)
 			{
                 TreeNode droppedOnNode = (TreeNode)droppedOn;
-                if (droppedOnNode.getAcceptedParentId() == null)
+                if (droppedOnNode.getAcceptedParentId() == null && droppedOnNode != dragged)
                 {
                     return true;
                 }
